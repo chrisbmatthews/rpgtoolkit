@@ -188,3 +188,4 @@ EXPORTS
 	RPGCParseAfter		@235
 	RPGCParseBefore		@236
 	RPGCInitParser		@237
+	RPGCGetVarList		@238

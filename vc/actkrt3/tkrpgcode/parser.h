@@ -27,7 +27,9 @@
 //////////////////////////////////////////////////////////////////////////
 // Definitions
 //////////////////////////////////////////////////////////////////////////
-#define TAB "	"							//the tab key
+#define TAB			"\t"					//the tab key
+#define QUOTE		"\""					//a quote
+#define BACKSLASH	"\\"					//a backslash
 
 //////////////////////////////////////////////////////////////////////////
 // Types
@@ -57,6 +59,7 @@ void APIENTRY RPGCInitParser(int);
 void APIENTRY RPGCGetMethodName(VB_STRING);
 void APIENTRY RPGCParseAfter(VB_STRING, VB_STRING);
 void APIENTRY RPGCParseBefore(VB_STRING, VB_STRING);
+void APIENTRY RPGCGetVarList(VB_STRING, int);
 
 //////////////////////////////////////////////////////////////////////////
 // End of the file

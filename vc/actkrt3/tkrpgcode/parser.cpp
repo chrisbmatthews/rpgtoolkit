@@ -20,6 +20,67 @@
 CBOneParamStr setLastString;	//set the last parser string
 
 //////////////////////////////////////////////////////////////////////////
+// Get the variable at number in an equation
+//////////////////////////////////////////////////////////////////////////
+void APIENTRY RPGCGetVarList(VB_STRING pText, int number)
+{
+
+	inlineString text = initVbString(pText);	//the text
+	inlineString part(1);						//a character
+	inlineString returnVal;						//value to return
+	bool ignoreNext = false;					//ignore quotes?
+	int element = 0;							//current element
+
+	for (int p = 1; p <= (text.len() + 1); p++)
+	{
+
+		//grab a character
+		part = text.mid(p, 1);
+
+		if (part == QUOTE)
+		{
+			//it was a quote
+			ignoreNext = (!ignoreNext);
+            returnVal += part;
+		}
+        else if ( part == "=" || part == "+" || part == "-" || part == "/" || part == "*" || part == BACKSLASH || part == "^" )
+		{
+			//it was a math sign
+            if (!ignoreNext)
+			{
+				//okay to use it
+                element++;
+                if (element == number)
+				{
+					//this one was the one we wanted
+                    returnVbString(returnVal);
+                    return;
+				}
+                else
+				{
+					//not the one we wanted
+                    returnVal = "";
+                }
+			}
+            else
+			{
+				//inside quotes, can't use it
+                returnVal += part;
+            }
+		}
+        else
+		{
+			//save the character
+            returnVal += part;
+        }
+
+    }
+ 
+    returnVbString(returnVal);
+
+}
+
+//////////////////////////////////////////////////////////////////////////
 // Return content in text after startSymbol is located
 //////////////////////////////////////////////////////////////////////////
 void APIENTRY RPGCParseAfter(VB_STRING pText, VB_STRING startSymbol)
@@ -45,7 +106,7 @@ void APIENTRY RPGCParseAfter(VB_STRING pText, VB_STRING startSymbol)
 		}
 	}
 
-	if(foundIt)
+	if (foundIt)
 	{
 		for (t = startAt + 1; t <= length; t++)
 		{
