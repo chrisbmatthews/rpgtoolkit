@@ -230,24 +230,26 @@ Public Sub openItems()
 
             'Copy item values to itmPos() array
             itmPos(itemNum).frame = 0
-            itmPos(itemNum).X = .itmX(itemNum)
-            itmPos(itemNum).Y = .itmY(itemNum)
+            itmPos(itemNum).x = .itmX(itemNum)
+            itmPos(itemNum).y = .itmY(itemNum)
             itmPos(itemNum).l = .itmLayer(itemNum)
-            itmPos(itemNum).stance = "STAND_S"  'I am now depreciating the item
+            itmPos(itemNum).stance = "stand_s"  'I am now depreciating the item
                                                 'REST graphic into the southern
                                                 'idling graphic. Older items will
                                                 'have REST copied to this stance
                                                 'upon being opened.
-
+                                                
             'Indicate that there was no last render
             lastItemRender(itemNum).canvas = -1
-
+            
             'Copy values to pending item movements
             With pendingItemMovement(itemNum)
-                .xOrig = itmPos(itemNum).X
-                .xTarg = itmPos(itemNum).X
-                .yOrig = itmPos(itemNum).Y
-                .yTarg = itmPos(itemNum).Y
+                .xOrig = itmPos(itemNum).x
+                .xTarg = .xOrig
+                .yOrig = itmPos(itemNum).y
+                .yTarg = .yOrig
+                .lOrig = itmPos(itemNum).l
+                .lTarg = .lOrig
             End With
 
             'Check if we should run this item
@@ -284,9 +286,11 @@ Public Sub openItems()
             End If
 
         End With
-
+        
+    itemMem(itemNum).loopSpeed = 1 '[ 3.0.5 temp!]
+        
     Next itemNum
-
+    
 End Sub
 
 '=========================================================================
@@ -535,14 +539,12 @@ End Sub
 '=========================================================================
 Public Sub gameSpeed(ByVal speed As Integer)
     Select Case speed
-        Case 0: walkDelay = 0.09
-        Case 1: walkDelay = 0.06
-        Case 2: walkDelay = 0.03
-        Case 3: walkDelay = 0.01
-        Case 4: walkDelay = 0
+        Case 0: walkDelay = 0.09: loopOffset = 4
+        Case 1: walkDelay = 0.06: loopOffset = 3
+        Case 2: walkDelay = 0.03: loopOffset = 2
+        Case 3: walkDelay = 0.01: loopOffset = 1
+        Case 4: walkDelay = 0: loopOffset = 0
     End Select
-    'Adjust for pixel movement.
-    walkDelay = walkDelay * movementSize
 End Sub
 
 '=========================================================================
