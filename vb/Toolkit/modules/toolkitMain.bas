@@ -14,7 +14,6 @@ Public Sub Main()
     On Error Resume Next
     Call Load(configfile)
     Call initRuntimes
-    Call initTimer
     Call createFileAssociations
     Call StartTracing("tktrace.txt")
     Call Randomize(Timer)
@@ -27,7 +26,7 @@ Public Sub Main()
     Call initPlayers
     Call initLocalization
     Call ExecCmd("regsvr32 /s TABCTL32.OCX")
-    Call frmMain.Show(vbModal)
+    Call initTimer
     Call tkMainForm.Show
     Call displayTip
     Call askTutorial
@@ -79,12 +78,13 @@ Private Sub initTimer()
     '=======================================================
     On Error Resume Next
     frmMain.Timer1.interval = 1
-    If Command <> "" Then
+    If (Command <> "") Then
         'Do nothing
     ElseIf GetSetting("RPGToolkit3", "Settings", "Splash", "1") = "0" Then
-        frmMain.Visible = False
+        'Do nothing
     Else
         frmMain.Timer1.interval = 3800
+        Call frmMain.Show(vbModal)
     End If
 End Sub
 
