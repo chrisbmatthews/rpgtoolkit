@@ -69,25 +69,22 @@ End Sub
 '=========================================================================
 Private Function isFileOpen(ByRef strFileName As String) As Boolean
 
-    Dim hFile As Long, lngError As Long
+    On Error GoTo error
 
-    ' Attempt to open exclusively
-    hFile = lOpen(strFileName, OF_SHARE_EXCLUSIVE)
+    ' Directories cannot be opened
+    If (RightB$(strFileName, 2) = "\") Then Exit Function
 
-    If (hFile = -1) Then
+    ' Try to open the file for writing
+    Dim ff As Integer
+    ff = FreeFile()
+    Open strFileName For Binary Access Write As ff
+    Close ff
 
-        ' Could not open file -- grab last error
-        lngError = Err.LastDllError
+    Exit Function
 
-    Else
-
-        ' Close the file on success
-        Call lClose(hFile)
-
-    End If
-
-    ' Return whether we triggered a sharing violation
-    isFileOpen = ((hFile = -1) And (lngError = 32))
+error:
+    ' File is open
+    isFileOpen = True
 
 End Function
 
