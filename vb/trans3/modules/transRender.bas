@@ -314,9 +314,9 @@ Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer
     'first, get the shade color of the board...
     Dim shadeR As Double, shadeG As Double, shadeB As Double
     Dim a As Long, l As String, lightShade As Double
-    a = GetIndependentVariable("AmbientRed!", l$, shadeR)
-    a = GetIndependentVariable("AmbientGreen!", l$, shadeG)
-    a = GetIndependentVariable("AmbientBlue!", l$, shadeB)
+    a = getIndependentVariable("AmbientRed!", l$, shadeR)
+    a = getIndependentVariable("AmbientGreen!", l$, shadeG)
+    a = getIndependentVariable("AmbientBlue!", l$, shadeB)
     'now check day and night info...
     If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
         lightShade = DetermineLightLevel()
@@ -338,7 +338,7 @@ Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer
     Dim hdcMask As Long
     For lll = 1 To boardList(activeBoardIndex).theData.Bsizel
         If BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData) <> "" Then
-            Call drawtileCNV(cnvScrollCache, _
+            Call drawTileCNV(cnvScrollCache, _
                           projectPath$ + tilePath$ + BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                           xx, _
                           yy, _
@@ -346,7 +346,7 @@ Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer
                           boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addonG, _
                           boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addonB, False)
             If cnvScrollCacheMask <> -1 Then
-                Call drawtileCNV(cnvScrollCacheMask, _
+                Call drawTileCNV(cnvScrollCacheMask, _
                               projectPath$ + tilePath$ + BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                               xx, _
                               yy, _
@@ -384,9 +384,9 @@ Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
     'internal engine drawing routines
     'first, get the shade color of the board...
     Dim a As Long, l As String, shadeR As Double, shadeG As Double, shadeB As Double
-    a = GetIndependentVariable("AmbientRed!", l$, shadeR)
-    a = GetIndependentVariable("AmbientGreen!", l$, shadeG)
-    a = GetIndependentVariable("AmbientBlue!", l$, shadeB)
+    a = getIndependentVariable("AmbientRed!", l$, shadeR)
+    a = getIndependentVariable("AmbientGreen!", l$, shadeG)
+    a = getIndependentVariable("AmbientBlue!", l$, shadeB)
     'now check day and night info...
     Dim lightShade As Long
     If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
@@ -411,7 +411,7 @@ Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
             runIt = 1
             If boardList(activeBoardIndex).theData.progActivate(prgnum) = 1 Then
                 runIt = 0
-                checkIt = GetIndependentVariable(boardList(activeBoardIndex).theData.progVarActivate$(prgnum), lit$, num)
+                checkIt = getIndependentVariable(boardList(activeBoardIndex).theData.progVarActivate$(prgnum), lit$, num)
                 If checkIt = 0 Then
                     'it's a numerical variable
                     valueTest = num
@@ -433,7 +433,7 @@ Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
                     
                     'If FileExists(projectPath$ + tilepath$ + boardList(activeBoardIndex).theData.progGraphic$(prgNum)) Then
                         If cnv <> -1 Then
-                            Call drawtileCNV(cnv, _
+                            Call drawTileCNV(cnv, _
                                           projectPath$ + tilePath$ + boardList(activeBoardIndex).theData.progGraphic$(prgnum), _
                                           x - scTopX, _
                                           y - scTopY, _
@@ -443,7 +443,7 @@ Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
                         End If
                         
                         If cnvMask <> -1 Then
-                            Call drawtileCNV(cnvMask, _
+                            Call drawTileCNV(cnvMask, _
                                           projectPath$ + tilePath$ + boardList(activeBoardIndex).theData.progGraphic$(prgnum), _
                                           x - scTopX, _
                                           y - scTopY, _
@@ -687,9 +687,9 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
                 'internal engine drawing routines
                 'first, get the shade color of the board...
                 Dim shadeR As Double, shadeG As Double, shadeB As Double
-                a = GetIndependentVariable("AmbientRed!", l$, shadeR)
-                a = GetIndependentVariable("AmbientGreen!", l$, shadeG)
-                a = GetIndependentVariable("AmbientBlue!", l$, shadeB)
+                a = getIndependentVariable("AmbientRed!", l$, shadeR)
+                a = getIndependentVariable("AmbientGreen!", l$, shadeG)
+                a = getIndependentVariable("AmbientBlue!", l$, shadeB)
                 'now check day and night info...
                 If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
                     lightShade = DetermineLightLevel()
@@ -714,7 +714,7 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
                         If UCase$(ext$) <> "TAN" Then
                             'not the animated part
                             If cnv <> -1 Then
-                                Call drawtileCNV(cnv, _
+                                Call drawTileCNV(cnv, _
                                               projectPath$ + tilePath$ + BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                                               xx, _
                                               yy, _
@@ -724,7 +724,7 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
                             End If
                             
                             If cnvMask <> -1 Then
-                                Call drawtileCNV(cnvMask, _
+                                Call drawTileCNV(cnvMask, _
                                               projectPath$ + tilePath$ + BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                                               xx, _
                                               yy, _
@@ -849,9 +849,9 @@ Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long
     End Select
 
     'first, get the shade color of the board...
-    a = GetIndependentVariable("AmbientRed!", l$, shadeR)
-    a = GetIndependentVariable("AmbientGreen!", l$, shadeG)
-    a = GetIndependentVariable("AmbientBlue!", l$, shadeB)
+    a = getIndependentVariable("AmbientRed!", l$, shadeR)
+    a = getIndependentVariable("AmbientGreen!", l$, shadeG)
+    a = getIndependentVariable("AmbientBlue!", l$, shadeB)
     
     shadeR = shadeR + addonR
     shadeG = shadeG + addonG
@@ -1504,9 +1504,9 @@ Function renderBoard() As Boolean
     End Select
 
     'first, get the shade color of the board...
-    a = GetIndependentVariable("AmbientRed!", l$, shadeR)
-    a = GetIndependentVariable("AmbientGreen!", l$, shadeG)
-    a = GetIndependentVariable("AmbientBlue!", l$, shadeB)
+    a = getIndependentVariable("AmbientRed!", l$, shadeR)
+    a = getIndependentVariable("AmbientGreen!", l$, shadeG)
+    a = getIndependentVariable("AmbientBlue!", l$, shadeB)
     
     shadeR = shadeR + addonR
     shadeG = shadeG + addonG
@@ -1642,7 +1642,7 @@ Sub renderNow(Optional ByVal cnvTarget As Long = -1)
         
         'Lay down board...
         Call DXDrawBoard(cnvTarget)
-               
+
         'lay down sprites...
         Call DXDrawSprites(cnvTarget)
         

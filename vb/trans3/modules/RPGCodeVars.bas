@@ -93,8 +93,7 @@ Public Function dataType( _
             'if we encounter quotes before we encounter
             '# or ( then it's not a command!
             Exit For
-        End If
-        If part$ = "(" Or part$ = "#" Then
+        ElseIf part$ = "(" Or part$ = "#" Then
             dType = DT_COMMAND
             Exit For
         End If
@@ -102,16 +101,12 @@ Public Function dataType( _
     
     'wasn't a command-- try other types
     If dType = -1 Then
-        For p = 1 To Length
-            part$ = Mid$(Text$, p, 1)
-            If part$ = Chr$(34) Then
-                dType = DT_STRING
-            ElseIf part$ = "$" Then
-                dType = DT_LIT
-            ElseIf part$ = "!" Then
-                dType = DT_NUM
-            End If
-        Next p
+        part = Right(Trim(replaceOutsideQuotes(Text, vbTab, "")), 1)
+        If part$ = "$" Then
+            dType = DT_LIT
+        ElseIf part$ = "!" Then
+            dType = DT_NUM
+        End If
     End If
 
     If dType = -1 Then
@@ -126,10 +121,12 @@ Public Function dataType( _
         End If
     End If
 
+    Dim styleA As Boolean
+    styleA = (Not ((dType = DT_STRING) And (Not stringContains(Text, Chr(34)))))
+
     'Before we leave, check if there is an equation
     Dim equResult As RPGC_DT
-    If isEquation(Text, equResult) And _
-       (Not ((dType = DT_STRING) And (Not stringContains(Text, Chr(34))))) Then
+    If isEquation(Text, equResult) And (styleA) Then
         dType = DT_EQUATION
         If equType = -1 Then
             dType = equResult
