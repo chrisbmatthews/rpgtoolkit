@@ -831,9 +831,9 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 							CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
 
 							// Calculate translucent rgb value
-							CONST INT r = (GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity));
-							CONST INT g = (GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity));
-							CONST INT b = (GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity));
+							CONST INT r = INT((GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity)));
+							CONST INT g = INT((GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity)));
+							CONST INT b = INT((GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity)));
 
 							// Lay down translucently
 							pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
@@ -896,9 +896,9 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 							CONST LONG destRGB = GetRGBPixel(&destSurface, &ddpfDest, xx + x, yy + y);
 
 							// Calculate new rgb color
-							CONST INT r = (GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity));
-							CONST INT g = (GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity));
-							CONST INT b = (GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity));
+							CONST INT r = INT((GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity)));
+							CONST INT g = INT((GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity)));
+							CONST INT b = INT((GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity)));
 
 							// Set the pixel
 							SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, RGB(r, g, b));

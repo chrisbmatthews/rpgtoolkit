@@ -66,7 +66,8 @@ CCanvasPool::~CCanvasPool()
 int CCanvasPool::getFree()
 {
 	//search for a free one...
-	for ( int i = 0; i < getPoolSize(); i++ )
+	int i = 0;
+	for ( i = 0; i < getPoolSize(); i++ )
 	{
 		if ( !m_vOccupied[ i ] )
 		{
