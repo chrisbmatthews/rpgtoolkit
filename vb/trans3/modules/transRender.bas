@@ -327,10 +327,10 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
     'internal engine drawing routines
     'first, get the shade color of the board...
     Dim shadeR As Double, shadeG As Double, shadeB As Double
-    Dim a As Long, l As String, lightShade As Double
-    a = getIndependentVariable("AmbientRed!", l$, shadeR)
-    a = getIndependentVariable("AmbientGreen!", l$, shadeG)
-    a = getIndependentVariable("AmbientBlue!", l$, shadeB)
+    Dim l As String, lightShade As Double
+    Call getIndependentVariable("AmbientRed!", l$, shadeR)
+    Call getIndependentVariable("AmbientGreen!", l$, shadeG)
+    Call getIndependentVariable("AmbientBlue!", l$, shadeB)
     'now check day and night info...
     If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
         lightShade = DetermineLightLevel()
@@ -397,10 +397,10 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
     End Select
     'internal engine drawing routines
     'first, get the shade color of the board...
-    Dim a As Long, l As String, shadeR As Double, shadeG As Double, shadeB As Double
-    a = getIndependentVariable("AmbientRed!", l$, shadeR)
-    a = getIndependentVariable("AmbientGreen!", l$, shadeG)
-    a = getIndependentVariable("AmbientBlue!", l$, shadeB)
+    Dim l As String, shadeR As Double, shadeG As Double, shadeB As Double
+    Call getIndependentVariable("AmbientRed!", l$, shadeR)
+    Call getIndependentVariable("AmbientGreen!", l$, shadeG)
+    Call getIndependentVariable("AmbientBlue!", l$, shadeB)
     'now check day and night info...
     Dim lightShade As Long
     If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
@@ -653,7 +653,6 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
     Dim hdcMask As Long
     Dim t As Long
     Dim l As String
-    Dim a As Long
     Dim lightShade As Long
     Dim x As Double
     Dim y As Double
@@ -690,9 +689,9 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                 'internal engine drawing routines
                 'first, get the shade color of the board...
                 Dim shadeR As Double, shadeG As Double, shadeB As Double
-                a = getIndependentVariable("AmbientRed!", l$, shadeR)
-                a = getIndependentVariable("AmbientGreen!", l$, shadeG)
-                a = getIndependentVariable("AmbientBlue!", l$, shadeB)
+                Call getIndependentVariable("AmbientRed!", l$, shadeR)
+                Call getIndependentVariable("AmbientGreen!", l$, shadeG)
+                Call getIndependentVariable("AmbientBlue!", l$, shadeB)
                 'now check day and night info...
                 If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
                     lightShade = DetermineLightLevel()
@@ -815,7 +814,6 @@ Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX
     Dim addOnG As Long
     Dim addOnB As Long
     Dim shadeR As Double, shadeG As Double, shadeB As Double
-    Dim a As Long
     Dim l As String
     
     Dim hdc As Long
@@ -842,9 +840,9 @@ Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX
     End Select
 
     'first, get the shade color of the board...
-    a = getIndependentVariable("AmbientRed!", l$, shadeR)
-    a = getIndependentVariable("AmbientGreen!", l$, shadeG)
-    a = getIndependentVariable("AmbientBlue!", l$, shadeB)
+    Call getIndependentVariable("AmbientRed!", l$, shadeR)
+    Call getIndependentVariable("AmbientGreen!", l$, shadeG)
+    Call getIndependentVariable("AmbientBlue!", l$, shadeB)
     
     shadeR = shadeR + addOnR
     shadeG = shadeG + addOnG
@@ -1431,7 +1429,6 @@ Private Function renderBoard() As Boolean
     Dim addOnG As Long
     Dim addOnB As Long
     Dim shadeR As Double, shadeG As Double, shadeB As Double
-    Dim a As Long
     Dim l As String
     
     Dim hdc As Long
@@ -1529,12 +1526,12 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1)
 
     On Error Resume Next
 
-    Dim newBoard As Boolean
-    Dim newSprites As Boolean
-    Dim newTileAnm As Boolean
-    Dim newItem As Boolean
-    Dim newBackground As Boolean
-    Dim t As Long
+    Dim newBoard As Boolean         'update board?
+    Dim newSprites As Boolean       'update sprites?
+    Dim newTileAnm As Boolean       'update tile animations?
+    Dim newItem As Boolean          'update items?
+    Dim newBackground As Boolean    'update background
+    Dim t As Long                   'for loop control variable
 
     'Check if we need to render the background
     newBackground = renderBackground()
@@ -1595,7 +1592,7 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1)
 End Sub
 
 '=========================================================================
-' Save as renderNow, but used while running RPGCode
+' Same as renderNow, but used while running RPGCode
 '=========================================================================
 Public Sub renderRPGCodeScreen()
 
@@ -1633,7 +1630,7 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
     'Render sprites (players and items)
     'Called by RenderNow only.
     'Calls putSpriteAt.
-    
+
     On Error Resume Next
 
     'build some arrays for quick sorting the order we will display the sprites in...
@@ -1642,7 +1639,7 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
     Dim t As Long, ns As Boolean, ni As Boolean
     Dim theValue As Long
     Dim curIdx As Long
-   
+
     'set up location values for players
     For t = 0 To UBound(cnvPlayer)
         If showPlayer(t) Then
@@ -1905,13 +1902,13 @@ Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal
 
     'Set the dimensions the host window will be created with
     With host
-        .Width = Width * screen.TwipsPerPixelX
-        .height = height * screen.TwipsPerPixelY
-        .Top = (screen.height - .height) / 2
-        .Left = (screen.Width - .Width) / 2
+        .Width = Width * Screen.TwipsPerPixelX
+        .height = height * Screen.TwipsPerPixelY
+        .Top = (Screen.height - .height) / 2
+        .Left = (Screen.Width - .Width) / 2
         If Not inFullScreenMode Then
-            .Width = .Width + 6 * screen.TwipsPerPixelX
-            .height = .height + 24 * screen.TwipsPerPixelY
+            .Width = .Width + 6 * Screen.TwipsPerPixelX
+            .height = .height + 24 * Screen.TwipsPerPixelY
         End If
     End With
 
@@ -1981,12 +1978,12 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     useJoystick = JoyTest()
 
     'Get screen width and height (in twips)
-    screenWidth = screen.height * (1 / 0.75)
-    screenHeight = screen.height
+    screenWidth = Screen.height * (1 / 0.75)
+    screenHeight = Screen.height
 
     'Get resolution x/y
-    resX = (screenWidth) / screen.TwipsPerPixelX
-    resY = screenHeight / screen.TwipsPerPixelY
+    resX = (screenWidth) / Screen.TwipsPerPixelX
+    resY = screenHeight / Screen.TwipsPerPixelY
 
     'Get res from main file
     If mainMem.mainResolution = 0 Then
@@ -2004,8 +2001,8 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     Call showScreen(screenWidth, screenHeight, testingPRG)
 
     'Update screen width and height
-    screenWidth = screenWidth * screen.TwipsPerPixelX
-    screenHeight = screenHeight * screen.TwipsPerPixelY
+    screenWidth = screenWidth * Screen.TwipsPerPixelX
+    screenHeight = screenHeight * Screen.TwipsPerPixelY
 
 End Sub
 

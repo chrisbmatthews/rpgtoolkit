@@ -16,23 +16,22 @@ Option Explicit
 ' Declarations
 '=======================================================================
 
-Public gGameState As GAME_LOGIC_STATE
-Public gPrevGameState As GAME_LOGIC_STATE
+Public gGameState As GAME_LOGIC_STATE   'current state of logic
 
-Public Enum GAME_LOGIC_STATE      'state of gameLogic() procedure
-    GS_IDLE = 0                   '  just re-renders the screen
-    GS_QUIT = 1                   '  shutdown sequence
-    GS_MOVEMENT = 2               '  movement is occurring (players or items)
-    GS_DONEMOVE = 3               '  movement is finished
-    GS_PAUSE = 4                  '  pause game (do nothing)
+Public Enum GAME_LOGIC_STATE            'state of gameLogic() procedure
+    GS_IDLE = 0                         '  just re-renders the screen
+    GS_QUIT = 1                         '  shutdown sequence
+    GS_MOVEMENT = 2                     '  movement is occurring (players or items)
+    GS_DONEMOVE = 3                     '  movement is finished
+    GS_PAUSE = 4                        '  pause game (do nothing)
 End Enum
 
-Public movementCounter As Long    'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
-Public saveFileLoaded As Boolean  'was the game loaded from start menu?
-Public runningAsEXE As Boolean    'are we running as an exe file?
-Public gShuttingDown As Boolean   'Has the shutdown process been initiated?
-Public slackTime As Double        'cpu speed estimate
-Public host As New clsDirectXHost 'DirectX host window
+Public movementCounter As Long          'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
+Public saveFileLoaded As Boolean        'was the game loaded from start menu?
+Public runningAsEXE As Boolean          'are we running as an exe file?
+Public gShuttingDown As Boolean         'Has the shutdown process been initiated?
+Public slackTime As Double              'cpu speed estimate
+Public host As New clsDirectXHost       'DirectX host window
 
 '=======================================================================
 ' Main entry point

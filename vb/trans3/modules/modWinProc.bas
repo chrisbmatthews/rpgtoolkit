@@ -93,6 +93,8 @@ Public Function WndProc( _
 
     'This procecure handles events in the DirectX host window
 
+    Static prevGameState As GAME_LOGIC_STATE    'Previous game state
+
     Select Case msg
 
         Case WM_PAINT
@@ -136,7 +138,7 @@ Public Function WndProc( _
                 gGameState = gPrevGameState
             Else
                 'Window is being *deactivated*
-                gPrevGameState = gGameState
+                prevGameState = gGameState
                 gGameState = GS_PAUSE
             End If
 
