@@ -34,7 +34,7 @@ int APIENTRY CNVCreateCanvasHost(int hInstance)
 	wnd.cbClsExtra = NULL; //Not applicable
 	wnd.cbSize = sizeof(wnd); //callback size == length of the structure
 	wnd.cbWndExtra = NULL; //Not applicable
-	wnd.hbrBackground = NULL; //Not applicable
+	wnd.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wnd.hCursor = NULL; //Not applicable
 	wnd.hIcon = NULL; //Not applicable
 	wnd.hIconSm = NULL; //Not applicable
