@@ -67,7 +67,7 @@ Public Type TKMain
     mouseCursor As String             'mouse cursor to use
     hotSpotX As Byte                  'x hot spot on mouse
     hotSpotY As Byte                  'y hot spot on mouse
-    transpColor As Long               'transparent color on cursor
+    transpcolor As Long               'transparent color on cursor
 End Type
 
 '=========================================================================
@@ -123,25 +123,25 @@ Public Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
     For t = 0 To UBound(theMain.plugins)
         If UCase$(theMain.plugins(t)) = UCase$(file) Then
             If t = UBound(theMain.plugins) Then
-                If isVBPlugin(projectPath & plugPath & theMain.plugins(t)) Then
-                    For a = 0 To UBound(vbPlugins)
-                        If vbPlugins(a).filename = projectPath & plugPath & theMain.plugins(t) Then
-                            vbPlugins(a).filename = vbNullString
-                        End If
-                    Next a
-                End If
+                'If isComPlugin(projectPath & plugPath & theMain.plugins(t)) Then
+                '    For a = 0 To UBound(vbPlugins)
+                '        If comPlugins(a).filename = projectPath & plugPath & theMain.plugins(t) Then
+                '            comPlugins(a).filename = vbNullString
+                '        End If
+                '    Next a
+                'End If
                 theMain.plugins(t) = vbNullString
                 Exit Sub
             Else
                 Dim l As Long
                 For l = t To UBound(theMain.plugins)
-                If isVBPlugin(projectPath & plugPath & theMain.plugins(l)) Then
-                    For a = 0 To UBound(vbPlugins)
-                        If vbPlugins(a).filename = projectPath & plugPath & theMain.plugins(l) Then
-                            vbPlugins(a).filename = vbNullString
-                        End If
-                    Next a
-                End If
+                    ' If isComPlugin(projectPath & plugPath & theMain.plugins(l)) Then
+                    '     For a = 0 To UBound(vbPlugins)
+                    '         If comPlugins(a).filename = projectPath & plugPath & theMain.plugins(l) Then
+                    '             comPlugins(a).filename = vbNullString
+                    '         End If
+                    '     Next a
+                    ' End If
                     theMain.plugins(l - 1) = theMain.plugins(l)
                 Next l
                 theMain.plugins(UBound(theMain.plugins)) = vbNullString
@@ -158,7 +158,7 @@ Private Sub upgradeBattleSystem()
 
     On Error Resume Next
 
-    If mainMem.fightPlugin = "tk3fight.dll" Then
+    If (mainMem.fightPlugin = "tk3fight.dll") Then
 
         Dim fullPath As String
         fullPath = projectPath & plugPath & "tk3fight.dll"
@@ -166,7 +166,7 @@ Private Sub upgradeBattleSystem()
         Dim theVersion As Long
         theVersion = pluginVersion(fullPath)
 
-        If theVersion = 30 Then
+        If (theVersion = 30) Then
 
             'Initial version 3 battle system-- needs updating
 
@@ -189,7 +189,7 @@ Private Sub upgradeBattleSystem()
                 Call ExecCmd("regsvr32 /s """ & fullPath & """")
 
                 'Now setup the plugin for usage
-                Call setupVBPlugin(fullPath)
+                Call setupComPlugin(fullPath)
 
 #End If
 
@@ -198,16 +198,8 @@ Private Sub upgradeBattleSystem()
         Else
 
 #If (isToolkit = 1) Then
-            'Close the plugin
-            Dim a As Long
-            For a = 0 To UBound(vbPlugins)
-                If (vbPlugins(a).filename = fullPath) Then
-                    Call Unload(vbPlugins(a).obj)
-                    Set vbPlugins(a).obj = Nothing
-                    vbPlugins(a).filename = vbNullString
-                    Exit For
-                End If
-            Next a
+            ' Close the plugin
+            Call releaseComPlugins
 #End If
 
         End If
@@ -386,11 +378,11 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                 .mouseCursor = BinReadString(num)
                 .hotSpotX = BinReadByte(num)
                 .hotSpotY = BinReadByte(num)
-                .transpColor = BinReadLong(num)
+                .transpcolor = BinReadLong(num)
             End If
 
             If (.mouseCursor = "TK DEFAULT") Then
-                .transpColor = RGB(255, 0, 0)
+                .transpcolor = RGB(255, 0, 0)
             End If
 
         Close num
@@ -618,7 +610,7 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         Call BinWriteString(num, theMain.mouseCursor)
         Call BinWriteByte(num, theMain.hotSpotX)
         Call BinWriteByte(num, theMain.hotSpotY)
-        Call BinWriteLong(num, theMain.transpColor)
+        Call BinWriteLong(num, theMain.transpcolor)
         
     Close num
 
@@ -677,6 +669,6 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .gameSpeed = 2
         .hotSpotX = 0
         .hotSpotY = 0
-        .transpColor = RGB(255, 0, 0)
+        .transpcolor = RGB(255, 0, 0)
     End With
 End Sub

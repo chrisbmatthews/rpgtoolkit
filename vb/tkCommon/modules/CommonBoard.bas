@@ -11,15 +11,6 @@ Attribute VB_Name = "Commonboard"
 '=========================================================================
 
 '=========================================================================
-'EDITED [KSNiloc] [Augest 31, 2004]
-'----------------------------------
-' + Bug fix: memory leak when loading boards
-'   Cause: arrays were constantly enlarged, but memory was never freed
-' + Improvement: using same loop control variable where possible in
-'   opening routine
-'=========================================================================
-
-'========================================================================='
 ' RPGToolkit board file format (*.brd)
 '=========================================================================
 

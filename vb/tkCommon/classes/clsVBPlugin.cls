@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "CVbPlugin"
+Attribute VB_Name = "CComPlugin"
 Attribute VB_GlobalNameSpace = True
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 '=========================================================================
 
 '=========================================================================
-' VB plugin manager
+' COM plugin manager
 '=========================================================================
 
 Option Explicit
@@ -27,10 +27,10 @@ Option Explicit
 ' Class members
 '============================================================
 
-'The filename of the plugin
+' The filename of the plugin
 Public filename As String
 
-'The object
+' The object
 Public obj As Object
 
 '============================================================
@@ -65,7 +65,9 @@ End Sub
 
 Public Function Query(ByVal commandName As String) As Long: On Error Resume Next
     'Querys a plugin to see if it can do a command
-    Query = booleanToLong(obj.RPGCode_Query(commandName))
+    If (obj.RPGCode_Query(commandName)) Then
+        Query = 1
+    End If
 End Function
 
 Public Function Execute( _
@@ -78,8 +80,10 @@ Public Function Execute( _
 
     On Error Resume Next
 
-    'Executes an RPGCode command using a plugin
-    Execute = booleanToLong(obj.RPGCode_Execute(commandLine, retValDT, retValLit, retValNum, usingReturnData))
+    ' Executes an RPGCode command using a plugin
+    If (obj.RPGCode_Execute(commandLine, retValDT, retValLit, retValNum, usingReturnData)) Then
+        Execute = 1
+    End If
 
 End Function
 
@@ -100,7 +104,9 @@ End Function
 
 Public Function plugType(ByVal requestedFeature As Long) As Long: On Error Resume Next
     'Detects what this plugin does
-    plugType = booleanToLong(obj.plugType(requestedFeature))
+    If (obj.plugType(requestedFeature)) Then
+        plugType = 1
+    End If
 End Function
 
 '============================================================

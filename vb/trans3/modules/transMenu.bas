@@ -36,8 +36,8 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
 
         ' Determine if we have a menu plugin
-        If isVBPlugin(plugName) Then
-            isMenuPlugin = VBPlugin(plugName).plugType(PT_MENU)
+        If isComPlugin(plugName) Then
+            isMenuPlugin = comPlugin(plugName).plugType(PT_MENU)
         Else
             isMenuPlugin = plugType(plugName, PT_MENU)
         End If
@@ -45,8 +45,8 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
         ' Yep-- we do
         If isMenuPlugin = 1 Then
             bInMenu = True
-            If isVBPlugin(plugName) Then
-                Call VBPlugin(plugName).menu(requestedMenu)
+            If isComPlugin(plugName) Then
+                Call comPlugin(plugName).menu(requestedMenu)
             Else
                 Call PLUGMenu(plugName, requestedMenu)
             End If
@@ -67,8 +67,8 @@ Public Sub startMenuPlugin()
     If LenB(mainMem.menuPlugin) <> 0 Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
-        If isVBPlugin(plugName) Then
-            Call VBPlugin(plugName).Initialize
+        If isComPlugin(plugName) Then
+            Call comPlugin(plugName).Initialize
         Else
             Call PLUGBegin(plugName)
         End If
@@ -83,8 +83,8 @@ Public Sub stopMenuPlugin()
     If (LenB(mainMem.menuPlugin) <> 0) Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
-        If isVBPlugin(plugName) Then
-            Call VBPlugin(plugName).Terminate
+        If isComPlugin(plugName) Then
+            Call comPlugin(plugName).Terminate
         Else
             Call PLUGEnd(plugName)
         End If

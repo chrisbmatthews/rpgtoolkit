@@ -6,7 +6,7 @@ Begin VB.MDIForm tkMainForm
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
    ClientHeight    =   10710
    ClientLeft      =   165
-   ClientTop       =   735
+   ClientTop       =   855
    ClientWidth     =   15240
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
@@ -576,8 +576,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10AA6
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2541,13 +2541,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "07/11/2003"
+            TextSave        =   "11/13/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   10980
-            TextSave        =   "11:09 AM"
+            Object.Width           =   10954
+            TextSave        =   "5:57 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -4398,7 +4398,7 @@ Private Sub boardAutotileDraw_Click(): On Error Resume Next
     Call activeBoard.boardAutotiler(boardAutotileDraw.value)
 End Sub
 Private Sub boardMultiSelect_Click(): On Error Resume Next
-    Call activeBoard.boardMultiSelect
+    ' Call activeBoard.boardMultiSelect
 End Sub
 Private Sub boardGradient_Click(): On Error Resume Next
     Call activeBoard.boardGradient

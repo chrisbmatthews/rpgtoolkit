@@ -181,8 +181,8 @@ Sub BeginPlugins()
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
 
             ' ! MODIFIED BY KSNiloc...
-            If isVBPlugin(plugName) Then
-                Call VBPlugin(plugName).Initialize
+            If isComPlugin(plugName) Then
+                Call comPlugin(plugName).Initialize
             Else
                 Call PLUGBegin(plugName)
             End If
@@ -217,8 +217,8 @@ Sub EndPlugins()
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
             ' ! MODIFIED BY KSNiloc...
-            If isVBPlugin(plugName) Then
-                VBPlugin(plugName).Terminate
+            If isComPlugin(plugName) Then
+                comPlugin(plugName).Terminate
             Else
                 PLUGEnd plugName
             End If
@@ -423,8 +423,9 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
 
             ' ! MODIFIED BY KSNiloc...
-            If isVBPlugin(plugName) Then
-                tt = VBPlugin(plugName).plugType(PT_RPGCODE)
+            If isComPlugin(plugName) Then
+                Debug.Print comPlugin(plugName) Is Nothing
+                tt = comPlugin(plugName).plugType(PT_RPGCODE)
             Else
                 tt = plugType(plugName, PT_RPGCODE)
             End If
@@ -432,8 +433,8 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
             If tt = 1 Then
 
                 ' ! MODIFIED BY KSNiloc...
-                If isVBPlugin(plugName) Then
-                    aa = VBPlugin(plugName).Query(LCase$(mName))
+                If isComPlugin(plugName) Then
+                    aa = comPlugin(plugName).Query(LCase$(mName))
                 Else
                     aa = PLUGQuery(plugName, LCase$(mName$))
                 End If
@@ -442,8 +443,8 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
                     'so, pass execution to the plugin!
 
                     ' ! MODIFIED BY KSNiloc...
-                    If isVBPlugin(plugName) Then
-                        aa = VBPlugin(plugName).Execute(Text, retval.dataType, retval.lit, retval.num, retval.usingReturnData)
+                    If isComPlugin(plugName) Then
+                        aa = comPlugin(plugName).Execute(Text, retval.dataType, retval.lit, retval.num, retval.usingReturnData)
                     Else
                         aa = PLUGExecute(plugName, Text$)
                     End If

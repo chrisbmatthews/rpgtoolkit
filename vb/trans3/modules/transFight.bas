@@ -162,8 +162,8 @@ Public Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighter
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             
-            If isVBPlugin(plugName) Then
-                Call VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
+            If isComPlugin(plugName) Then
+                Call comPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
             Else
                 Call PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
             End If
@@ -189,16 +189,16 @@ Public Sub fightInformRemoveStat(ByVal targetPartyIndex As Long, ByVal targetFig
             If toSMP Then
                 code = INFORM_REMOVE_HP
                 
-                If isVBPlugin(plugName) Then
-                    Call VBPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                If isComPlugin(plugName) Then
+                    Call comPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
                 Else
                     Call PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
                 End If
                 
             Else
                 code = INFORM_REMOVE_SMP
-                If isVBPlugin(plugName) Then
-                    Call VBPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                If isComPlugin(plugName) Then
+                    Call comPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
                 Else
                     Call PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
                 End If
@@ -220,8 +220,8 @@ Public Sub fightInformItemUse(ByVal sourcePartyIndex As Long, ByVal sourceFighte
             Const code = INFORM_SOURCE_ITEM
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
-            If isVBPlugin(plugName) Then
-                Call VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
+            If isComPlugin(plugName) Then
+                Call comPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
             Else
                 Call PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
             End If
@@ -242,8 +242,8 @@ Public Sub fightInformSpecialMove(ByVal sourcePartyIndex As Long, ByVal sourceFi
             Const code = INFORM_SOURCE_SMP
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
-            If isVBPlugin(plugName) Then
-                Call VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
+            If isComPlugin(plugName) Then
+                Call comPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
             Else
                 Call PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
             End If
@@ -265,8 +265,8 @@ Public Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
             Const code = INFORM_SOURCE_PARTY_DEFEATED
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
-            If isVBPlugin(plugName) Then
-                Call VBPlugin(plugName).fightInform(sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
+            If isComPlugin(plugName) Then
+                Call comPlugin(plugName).fightInform(sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
             Else
                 Call PLUGFightInform(plugName, sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
             End If
@@ -288,8 +288,8 @@ Public Sub fightInformCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
             Const code = INFORM_SOURCE_CHARGED
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
-            If isVBPlugin(plugName) Then
-                Call VBPlugin(plugName).fightInform(partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
+            If isComPlugin(plugName) Then
+                Call comPlugin(plugName).fightInform(partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
             Else
                 Call PLUGFightInform(plugName, partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
             End If
@@ -537,8 +537,8 @@ Public Sub runFight( _
 
         'Check if the plugin is a fight plugin
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
-        If isVBPlugin(plugName) Then
-            isFightPlugin = VBPlugin(plugName).plugType(PT_FIGHT)
+        If isComPlugin(plugName) Then
+            isFightPlugin = comPlugin(plugName).plugType(PT_FIGHT)
         Else
             isFightPlugin = plugType(plugName, PT_FIGHT)
         End If
@@ -548,8 +548,8 @@ Public Sub runFight( _
 
             'Tell fight plugin to run the fight
             Dim fightOutcome As Long
-            If isVBPlugin(plugName) Then
-                fightOutcome = VBPlugin(plugName).fight(num, -1, bkg, canrun)
+            If isComPlugin(plugName) Then
+                fightOutcome = comPlugin(plugName).fight(num, -1, bkg, canrun)
             Else
                 fightOutcome = PLUGFight(plugName, num, -1, bkg, canrun)
             End If
@@ -642,10 +642,10 @@ Public Sub startFightPlugin()
     If (LenB(mainMem.fightPlugin) <> 0) Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
-        If Not isVBPlugin(plugName) Then
+        If Not isComPlugin(plugName) Then
             Call PLUGBegin(plugName)
         Else
-            Call VBPlugin(plugName).Initialize
+            Call comPlugin(plugName).Initialize
         End If
     End If
 End Sub
@@ -658,8 +658,8 @@ Public Sub stopFightPlugin()
     If (LenB(mainMem.fightPlugin) <> 0) Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
-        If isVBPlugin(plugName) Then
-            Call VBPlugin(plugName).Terminate
+        If isComPlugin(plugName) Then
+            Call comPlugin(plugName).Terminate
         Else
             Call PLUGEnd(plugName)
         End If

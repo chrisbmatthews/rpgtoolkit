@@ -12,7 +12,7 @@ Attribute VB_Name = "CommonTKPlugin"
 Option Explicit
 
 '=========================================================================
-' C++ plugin manager
+' Old style plugin manager
 '=========================================================================
 Public Declare Function PLUGInitSystem Lib "actkrt3.dll" (cbArray As Long, ByVal cbArrayCount As Long) As Long
 Public Declare Function PLUGShutdownSystem Lib "actkrt3.dll" () As Long
@@ -27,7 +27,7 @@ Public Declare Function PLUGMenu Lib "actkrt3.dll" (ByVal plugFilename As String
 Public Declare Function PLUGFight Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal enemyCount As Long, ByVal skilllevel As Long, ByVal backgroundFile As String, ByVal canrun As Long) As Long
 Public Declare Function PLUGFightInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal sourceHPLost As Long, ByVal sourceSMPLost As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal strMessage As String, ByVal attackCode As Long) As Long
 Public Declare Function PLUGInputRequested Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal inputCode As Long) As Long
-Public Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal x As Long, ByVal y As Long, ByVal Button As Long, ByVal Shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
+Public Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal X As Long, ByVal Y As Long, ByVal Button As Long, ByVal Shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
 
 '=========================================================================
 ' Win32 APIs
@@ -40,28 +40,28 @@ Private Declare Function GetExitCodeProcess Lib "kernel32" (ByVal hProcess As Lo
 '=========================================================================
 ' Plugin constants
 '=========================================================================
-Public Const PT_RPGCODE = 1                   'plugin type rpgcode
-Public Const PT_MENU = 2                      'plugin type menu
-Public Const PT_FIGHT = 4                     'plugin type battle system
-Public Const MNU_MAIN = 1                     'main menu requested
-Public Const MNU_INVENTORY = 2                'inventory menu requested
-Public Const MNU_EQUIP = 4                    'equip menu requested
-Public Const MNU_ABILITIES = 8                'abilities menu requested
-Public Const INFORM_REMOVE_HP = 0             'hp was removed
-Public Const INFORM_REMOVE_SMP = 1            'smp was removed
-Public Const INFORM_SOURCE_ATTACK = 2         'source attacks
-Public Const INFORM_SOURCE_SMP = 3            'source does special move
-Public Const INFORM_SOURCE_ITEM = 4           'source uses item
-Public Const INFORM_SOURCE_CHARGED = 5        'source is charged
-Public Const INFORM_SOURCE_DEAD = 6           'source has died
-Public Const INFORM_SOURCE_PARTY_DEFEATED = 7 'source party is all dead
-Public Const INPUT_KB = 0                     'keyboard input code
-Public Const INPUT_MOUSEDOWN = 1              'mouse down input code
-Public Const FIGHT_RUN_AUTO = 0               'Player party ran - have trans apply the running progrma for us
-Public Const FIGHT_RUN_MANUAL = 1             'Player party ran - tell trans that the plugin has already executed the run prg
-Public Const FIGHT_WON_AUTO = 2               'Player party won - have trans apply the rewards for us
-Public Const FIGHT_WON_MANUAL = 3             'Player party won - tell trans that the plugin has already given rewards
-Public Const FIGHT_LOST = 4                   'Player party lost
+Public Const PT_RPGCODE = 1                   ' plugin type rpgcode
+Public Const PT_MENU = 2                      ' plugin type menu
+Public Const PT_FIGHT = 4                     ' plugin type battle system
+Public Const MNU_MAIN = 1                     ' main menu requested
+Public Const MNU_INVENTORY = 2                ' inventory menu requested
+Public Const MNU_EQUIP = 4                    ' equip menu requested
+Public Const MNU_ABILITIES = 8                ' abilities menu requested
+Public Const INFORM_REMOVE_HP = 0             ' hp was removed
+Public Const INFORM_REMOVE_SMP = 1            ' smp was removed
+Public Const INFORM_SOURCE_ATTACK = 2         ' source attacks
+Public Const INFORM_SOURCE_SMP = 3            ' source does special move
+Public Const INFORM_SOURCE_ITEM = 4           ' source uses item
+Public Const INFORM_SOURCE_CHARGED = 5        ' source is charged
+Public Const INFORM_SOURCE_DEAD = 6           ' source has died
+Public Const INFORM_SOURCE_PARTY_DEFEATED = 7 ' source party is all dead
+Public Const INPUT_KB = 0                     ' keyboard input code
+Public Const INPUT_MOUSEDOWN = 1              ' mouse down input code
+Public Const FIGHT_RUN_AUTO = 0               ' Player party ran - have trans apply the running progrma for us
+Public Const FIGHT_RUN_MANUAL = 1             ' Player party ran - tell trans that the plugin has already executed the run prg
+Public Const FIGHT_WON_AUTO = 2               ' Player party won - have trans apply the rewards for us
+Public Const FIGHT_WON_MANUAL = 3             ' Player party won - tell trans that the plugin has already given rewards
+Public Const FIGHT_LOST = 4                   ' Player party lost
 
 '=========================================================================
 ' Win32 constants
@@ -106,7 +106,7 @@ End Type
 '=========================================================================
 ' VB plugins manager
 '=========================================================================
-Public vbPlugins() As CVbPlugin
+Private m_comPlugins() As CComPlugin
 
 '=========================================================================
 ' Get description of a plugin
@@ -115,8 +115,8 @@ Public Function pluginDescription(ByVal plugFile As String) As String
 
     On Error Resume Next
 
-    If isVBPlugin(plugFile) Then
-        pluginDescription = VBPlugin(plugFile).description
+    If (isComPlugin(plugFile)) Then
+        pluginDescription = comPlugin(plugFile).description
     Else
         Dim ret As String * 1025
         Dim le As Long
@@ -127,14 +127,43 @@ Public Function pluginDescription(ByVal plugFile As String) As String
 End Function
 
 '=========================================================================
+' Decrement reference count on all COM plugins (set to nothing)
+'=========================================================================
+Public Sub releaseComPlugins()
+
+    On Error GoTo skip
+
+    ' Iterate over each plugin
+    Dim idx As Long
+    For idx = 0 To UBound(m_comPlugins)
+
+        ' If there's an object here
+        If (Not m_comPlugins(idx) Is Nothing) Then
+
+            ' Release the plugin
+            Set m_comPlugins(idx).obj = Nothing
+            Set m_comPlugins(idx) = Nothing
+
+        End If
+
+    Next idx
+
+skip:
+
+    ' Redimension the plugins array
+    ReDim m_comPlugins(0)
+
+End Sub
+
+'=========================================================================
 ' Get version of a plugin
 '=========================================================================
 Public Function pluginVersion(ByVal plugFile As String) As Long
 
     On Error Resume Next
     
-    If isVBPlugin(plugFile) Then
-        pluginVersion = VBPlugin(plugFile).version
+    If (isComPlugin(plugFile)) Then
+        pluginVersion = CLng(comPlugin(plugFile).version) ' Discard letters for now
     Else
         pluginVersion = PLUGVersion(plugFile)
     End If
@@ -142,30 +171,33 @@ Public Function pluginVersion(ByVal plugFile As String) As Long
 End Function
 
 '=========================================================================
-' Setup a VB plugin
+' Setup a COM plugin
 '=========================================================================
-Public Sub setupVBPlugin(ByVal plugName As String)
+Public Sub setupComPlugin(ByVal plugName As String, Optional ByVal vendorIndependentId As String = vbNullString)
 
     On Error Resume Next
 
     ' Get the upper bound
     Dim ub As Long
-    ub = UBound(vbPlugins)
-    ub = ub + 1
+    ub = UBound(m_comPlugins) + 1
 
     ' Enlarge the array
-    ReDim Preserve vbPlugins(ub)
+    ReDim Preserve m_comPlugins(ub)
 
     ' Create the object
-    Set vbPlugins(ub) = New CVbPlugin
+    Set m_comPlugins(ub) = New CComPlugin
 
-    With vbPlugins(ub)
+    With m_comPlugins(ub)
 
         ' Create the object
-        Set .obj = CreateObject(getObjectFromFile(plugName))
+        If (Not IsMissing(vendorIndependentId)) Then
+            Set .obj = CreateObject(vendorIndependentId)
+        Else
+            Set .obj = CreateObject(getObjectFromFile(plugName))
+        End If
 
         ' Setup the callbacks
-        .obj.setCallbacks = New CVbPlugin
+        .obj.setCallbacks = m_comPlugins(ub)
 
         ' Record the filename
         .filename = plugName
@@ -175,47 +207,62 @@ Public Sub setupVBPlugin(ByVal plugName As String)
 End Sub
 
 '=========================================================================
-' Access a VB plugin by name (rather than index)
+' Access a COM plugin by name (rather than index)
 '=========================================================================
-Public Function VBPlugin(ByVal plugName As String) As CVbPlugin
+Public Function comPlugin(ByVal plugName As String) As CComPlugin
 
+    ' Bail on error: too risky to resume
     On Error GoTo skipError
 
-    Set VBPlugin = Nothing
+    ' Default to returning nothing
+    Set comPlugin = Nothing
 
-    Dim a As Long
-    For a = 0 To UBound(vbPlugins)
-        If vbPlugins(a).filename = plugName Then
-            Set VBPlugin = vbPlugins(a)
-            Exit Function
+    ' Iterate over each loaded COM plugin
+    Dim idx As Long
+    For idx = 0 To UBound(m_comPlugins)
+
+        ' If this object is not NULL
+        If (Not m_comPlugins(idx) Is Nothing) Then
+
+            ' Check if it's the file we're looking for
+            If (m_comPlugins(idx).filename = plugName) Then
+
+                ' Return said object
+                Set comPlugin = m_comPlugins(idx)
+                Exit Function
+
+            End If
+
         End If
-    Next a
+
+    Next idx
 
 skipError:
 End Function
 
 '=========================================================================
-' Determine if the plugin passed in is a VB plugin (true) or C++ (false)
+' Determine if the plugin passed in is a COM plugin
 '=========================================================================
-Public Function isVBPlugin(ByVal plugName As String) As Boolean
+Public Function isComPlugin(ByVal plugName As String) As Boolean
 
     On Error Resume Next
 
-    'See if it's already setup
-    If Not VBPlugin(plugName) Is Nothing Then
-        'Already setup!
-        isVBPlugin = True
+    ' See if it's already setup
+    If (Not comPlugin(plugName) Is Nothing) Then
+        ' Already setup!
+        isComPlugin = True
         Exit Function
     End If
 
-    'See if we can create an object from this file
-    Dim obj As Object
-    Set obj = CreateObject(getObjectFromFile(plugName))
+    ' See if we can create an object from this file
+    Dim obj As Object, vidid As String
+    vidid = getObjectFromFile(plugName)
+    Set obj = CreateObject(vidid)
 
-    'Do we have something?
-    If Not obj Is Nothing Then
-        Call setupVBPlugin(plugName)
-        isVBPlugin = True
+    ' Do we have something?
+    If (Not obj Is Nothing) Then
+        Call setupComPlugin(plugName, vidid)
+        isComPlugin = True
     End If
 
 End Function
@@ -227,18 +274,18 @@ Private Function getObjectFromFile(ByVal filename As String) As String
 
     On Error Resume Next
 
-    #If isToolkit = 1 Then
-        'First (try to) register the file
+    #If (isToolkit = 1) Then
+        ' First (try to) register the file
         Call ExecCmd("regsvr32 /s " & filename)
     #End If
 
-    'Remove the path from the file
+    ' Remove the path from the file
     filename = RemovePath(filename)
 
-    'Remove the extension
+    ' Remove the extension
     getObjectFromFile = Left$(filename, Len(filename) - 4)
 
-    'Attach a class
+    ' Attach a class
     getObjectFromFile = getObjectFromFile & ".cls" & getObjectFromFile
 
 End Function
@@ -252,14 +299,14 @@ Public Sub ExecCmd(ByVal cmdline As String)
     Dim start As STARTUPINFO
     Dim ret As Long
 
-    'Initialize the STARTUPINFO structure:
+    ' Initialize the STARTUPINFO structure:
     start.cb = Len(start)
 
-    'Start the shelled application:
+    ' Start the shelled application:
     ret = CreateProcessA(0, cmdline, 0, 0, 1, _
     NORMAL_PRIORITY_CLASS, 0, 0, start, proc)
 
-    'Wait for the shelled application to finish:
+    ' Wait for the shelled application to finish:
     ret = WaitForSingleObject(proc.hProcess, INFINITE)
     Call GetExitCodeProcess(proc.hProcess, ret)
     Call CloseHandle(proc.hThread)
