@@ -91,6 +91,9 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
         For y = 0 To 32
             If bufTile(x, y) <> -1 Then
                 Call vbPicPSet(pic, x + xLoc, y + yLoc, bufTile(x, y))
+            Else
+                'White pixel.
+                Call vbPicPSet(pic, x + xLoc, y + yLoc, RGB(255, 255, 255))
             End If
         Next y
     Next x
