@@ -8,6 +8,7 @@
 // Inclusions
 //--------------------------------------------------------------------------
 #include "GDICanvas.h"				// Contains stuff for this file
+#include <map>						// Maps
 
 //--------------------------------------------------------------------------
 // Externs
@@ -132,6 +133,47 @@ INLINE CGDICanvas::~CGDICanvas(VOID)
 	{
 		Destroy();
 	}
+}
+
+//--------------------------------------------------------------------------
+// Find the closest match to a colour
+//--------------------------------------------------------------------------
+COLORREF FAST_CALL CGDICanvas::matchColor(CONST COLORREF rgb) CONST
+{
+
+	// Map of colours
+	STATIC std::map<COLORREF, COLORREF> colors;
+
+	// Just return colour if in map
+	if (colors.count(rgb)) return colors[rgb];
+
+	// Lay down a pixel
+	HDC hdc = NULL;
+	m_lpddsSurface->GetDC(&hdc);					// Open the surface's DC
+	CONST COLORREF rgbT = ::GetPixel(hdc, 0, 0);	// Save current pixel value
+	::SetPixel(hdc, 0, 0, rgb);						// Set the colour in question
+	m_lpddsSurface->ReleaseDC(hdc);					// Release the DC
+
+	// Lock the surface
+	DDSURFACEDESC2 ddsd;
+	DD_INIT_STRUCT(ddsd);
+	while ((m_lpddsSurface->Lock(NULL, &ddsd, 0, NULL)) == DDERR_WASSTILLDRAWING);
+
+	// Get the colour that was actually set
+	COLORREF toRet = *reinterpret_cast<LPCOLORREF>(ddsd.lpSurface);
+	if (ddsd.ddpfPixelFormat.dwRGBBitCount < 32)
+	{
+		// Reduce if colour is less than 32 bit
+		toRet &= (1 << ddsd.ddpfPixelFormat.dwRGBBitCount) - 1;
+	}
+	m_lpddsSurface->Unlock(NULL);
+
+	// Set back old pixel
+	const_cast<CGDICanvas *>(this)->SetPixel(0, 0, rgbT);
+
+	// Return the result
+	return (colors[rgb] = toRet);
+
 }
 
 //--------------------------------------------------------------------------
@@ -811,7 +853,7 @@ INT FAST_CALL CGDICanvas::BltTransparentPart(
 	{
 
 		// Obtain RGB color
-		CONST LONG rgb = GetRGBColor(crTransparentColor);
+		CONST LONG rgb = matchColor(crTransparentColor);
 
 		// Setup color key
 		DDCOLORKEY ddck = {rgb, rgb};
@@ -1291,22 +1333,6 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 }
 
 //--------------------------------------------------------------------------
-// Obtain the contained DirectX surface
-//--------------------------------------------------------------------------
-INLINE LPDIRECTDRAWSURFACE7 CGDICanvas::GetDXSurface(VOID) CONST
-{
-	return m_lpddsSurface;
-}
-
-//--------------------------------------------------------------------------
-// Are we using DirectX?
-//--------------------------------------------------------------------------
-INLINE BOOL CGDICanvas::usingDX(VOID) CONST
-{
-	return m_bUseDX;
-}
-
-//--------------------------------------------------------------------------
 // Shift the canvas left
 //--------------------------------------------------------------------------
 INT FAST_CALL CGDICanvas::ShiftLeft(
@@ -1496,45 +1522,6 @@ INLINE LONG CGDICanvas::GetSurfaceColor(
 		return dxColor;
 	}
 
-}
-
-//--------------------------------------------------------------------------
-// Convert a RGB color to a color reference
-//--------------------------------------------------------------------------
-INLINE LONG CGDICanvas::GetRGBColor(
-	CONST LONG crColor
-		) CONST
-{
-
-	if (usingDX())
-	{
-		DDPIXELFORMAT ddpf;
-		DD_INIT_STRUCT(ddpf);
-		GetDXSurface()->GetPixelFormat(&ddpf);
-		return ConvertColorRef(crColor, &ddpf);
-	}
-	else
-	{
-		// GDI only uses RGB
-		return crColor;
-	}
-
-}
-
-//--------------------------------------------------------------------------
-// Obtain width of the canvas
-//--------------------------------------------------------------------------
-INLINE INT CGDICanvas::GetWidth(VOID) CONST
-{
-	return m_nWidth;
-}
-
-//--------------------------------------------------------------------------
-// Obtain height of the canvas
-//--------------------------------------------------------------------------
-INLINE INT CGDICanvas::GetHeight(VOID) CONST
-{
-	return m_nHeight;
 }
 
 //--------------------------------------------------------------------------

@@ -94,11 +94,11 @@ public:
 
 	INT GetWidth(
 		VOID
-	) CONST;
+	) CONST { return m_nWidth; }
 
 	INT GetHeight(
 		VOID
-	) CONST;
+	) CONST { return m_nHeight; }
 
 	HDC OpenDC(
 		VOID
@@ -132,7 +132,7 @@ public:
 
 	BOOL usingDX(
 		VOID
-	) CONST;
+	) CONST { return m_bUseDX; }
 
 	INT FAST_CALL Blt(
 		CONST HDC hdcTarget,
@@ -366,14 +366,14 @@ public:
 
 	LPDIRECTDRAWSURFACE7 GetDXSurface(
 		VOID
-	) CONST;
-
-	LONG GetRGBColor(
-		CONST LONG crColor
-	) CONST;
+	) CONST { return m_lpddsSurface; }
 
 	LONG GetSurfaceColor(
 		CONST LONG dxColor
+	) CONST;
+
+	COLORREF FAST_CALL matchColor(
+		CONST COLORREF rgb
 	) CONST;
 
 //

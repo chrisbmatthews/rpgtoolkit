@@ -440,7 +440,7 @@ INT APIENTRY CNVGetRGBColor(
 {
 
 	// Return the color
-	return reinterpret_cast<CGDICanvas *>(cnv)->GetRGBColor(crColor);
+	return reinterpret_cast<CGDICanvas *>(cnv)->matchColor(crColor);
 
 }
 
