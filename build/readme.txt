@@ -20,7 +20,7 @@ ii. THE SYSTEM IS NOT BUG FREE
 
 While we have put forth a great amount of time and effort to increase the stability of the Toolkit, this is by no means a bug free release. If you believe you have located a bug, first read the Help File's Frequently Asked Questions and Technical Issues pages to see whether your problem is known. If it is not, please make a post on the Suggestions, Bugs, and General Questions at The Toolkit Zone (http://toolkitzone.com). Be sure to include as many relevant details as possible, as well as your system's statistics, and other hardware information.
 
-Note to Windows 9x users: if you have experienced the imfamous Win9x bug, it's likely you'll still experience with 3.0.6. We hope to address this bug in subsequent releases, but by all means try out 3.0.6 just to be sure!
+Note to Windows 9x users: if you have experienced the infamous Win9x bug, it's likely you'll still experience with 3.0.6. We hope to address this bug in subsequent releases, but by all means try out 3.0.6 just to be sure!
 
 iii. HELP FILES
 ----------------------------------------------------------------------

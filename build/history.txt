@@ -79,7 +79,7 @@ Corrected
     * Animated tile editor does not save correctly
     * Comments "flow" onto the next line in the RPGCode editor
     * RPGCode editor colouring defects after switching to and from another document
-    * Enviroment doesn't change completely after creating a new project
+    * Environment doesn't change completely after creating a new project
     * Editors should show an error when trying to save Read-Only files
     * Tileset browser on right sometimes displays sets starting at the wrong row
     * Placing a partly transparent tile on a board doesn't erase the replaced tile from the screen
