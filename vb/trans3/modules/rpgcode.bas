@@ -742,7 +742,23 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Else
         'If not running concurrently, run the queued movements now.
-        Call runQueuedMovements
+        
+        Do While movePlayers(playerNum)
+            Call renderNow
+            Call processEvent
+        Loop
+        
+        'Update the rpgcode canvas in case we're still in a program.
+        Call CanvasGetScreen(cnvRPGCodeScreen)
+        
+        Select Case UCase$(pPos(selectedPlayer).stance)
+            Case "WALK_S": facing = South
+            Case "WALK_W": facing = West
+            Case "WALK_N": facing = North
+            Case "WALK_E": facing = East
+        End Select
+        
+        'Call runQueuedMovements
         
     End If
 
@@ -808,8 +824,17 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Else
         'If not running concurrently, run the queued movements now.
-        Call runQueuedMovements
         
+        Do While moveItems(itemNum)
+            Call renderNow
+            Call processEvent
+        Loop
+        
+        'Update the rpgcode canvas in case we're still in a program.
+        Call CanvasGetScreen(cnvRPGCodeScreen)
+        
+        'Call runQueuedMovements
+    
     End If
 
 End Sub
@@ -1938,7 +1963,7 @@ Sub GetBoardTileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval 
         num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
         num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
         num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.bSizeL)
-        ll = boardList(activeBoardIndex).theData.tiletype(num1, num2, num3)
+        ll = boardList(activeBoardIndex).theData.tileType(num1, num2, num3)
         Select Case ll
             Case 0:
                 t$ = "NORMAL"
@@ -3596,17 +3621,18 @@ Public Function ItemLocationRPG(ByVal Text As String, ByRef theProgram As RPGCod
     'Bound the item number in the valid range.
     itemNum = inBounds(paras(0).num, 0, maxItem)
     
-    If LenB(pendingItemMovement(itemNum).queue) <> 0 Then
-        'Uh-oh we're still moving. Hold the line!
+    If LenB(pendingItemMovement(itemNum).queue) <> 0 And isMultiTasking() Then
+        'We're still moving. Hold the line until movement finishes,
+        'but only for multitasking otherwise movement will never finish.
         ItemLocationRPG = False
         Exit Function
     End If
     
     'Set the variables passed in. Might want to return the current location, although this
     'could be messy decimal!
-    Call SetVariable(paras(1).num, CStr(pendingItemMovement(itemNum).xTarg), theProgram)
-    Call SetVariable(paras(2).num, CStr(pendingItemMovement(itemNum).yTarg), theProgram)
-    Call SetVariable(paras(3).num, CStr(pendingItemMovement(itemNum).lTarg), theProgram)
+    Call SetVariable(paras(1).dat, CStr(pendingItemMovement(itemNum).xTarg), theProgram)
+    Call SetVariable(paras(2).dat, CStr(pendingItemMovement(itemNum).yTarg), theProgram)
+    Call SetVariable(paras(3).dat, CStr(pendingItemMovement(itemNum).lTarg), theProgram)
     
     ItemLocationRPG = True
         
@@ -4451,6 +4477,8 @@ Sub PathFindRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef 
     Call SetVariable(useIt5$, p$, theProgram)
     retval.dataType = DT_LIT
     retval.lit = p$
+    
+    Call traceString("PathFind: x1=" & num1 & " y1=" & num2 & " x2=" & num3 & " y2=" & num4 & " path=" & p)
 
     Exit Sub
 'Begin error handling code:
@@ -4762,6 +4790,8 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     'cbm: Do not require comma delimited inputs (for backwards compatibility)
     paras(1).lit = formatDirectionString(paras(1).lit)
     
+Call traceString("PUSHITEM: path=" & paras(1).lit & " Len=" & Len(pendingItemMovement(itemNum).queue))
+    
     'Make sure the queue isn't too long.
     If Len(pendingItemMovement(itemNum).queue) > 32 Then Exit Sub
         'We have more than 16 movements queued up.
@@ -4781,7 +4811,16 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         
     Else
         'If not running concurrently, run the queued movements now.
-        Call runQueuedMovements
+        
+        Do While moveItems(itemNum)
+            Call renderNow
+            Call processEvent
+        Loop
+        
+        'Update the rpgcode canvas in case we're still in a program.
+        Call CanvasGetScreen(cnvRPGCodeScreen)
+    
+        'Call runQueuedMovements
         
     End If
 
@@ -4858,8 +4897,12 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     'cbm: Do not require comma delimited inputs (for backwards compatibility)
     paras(0).lit = formatDirectionString(paras(0).lit)
     
+Call traceString("PUSH: path=" & paras(0).lit & " Len=" & Len(pendingPlayerMovement(playerNum).queue) & _
+                " .queue=" & pendingPlayerMovement(playerNum).queue)
+    
+    
     'Make sure the queue isn't too long.
-    If Len(pendingItemMovement(playerNum).queue) > 32 Then Exit Sub
+    If Len(pendingPlayerMovement(playerNum).queue) > 32 Then Exit Sub
         'We have more than 16 movements queued up.
     
     Call setQueuedMovements(pendingPlayerMovement(playerNum).queue, paras(0).lit)
@@ -4877,8 +4920,24 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         multiRunStatus = 2
         
     Else
-        'If not running concurrently, run the queued movements now.
-        Call runQueuedMovements
+        'If not running concurrently, run these queued movements now.
+        
+        Do While movePlayers(playerNum)
+            Call renderNow
+            Call processEvent
+        Loop
+        
+        'Update the rpgcode canvas in case we're still in a program.
+        Call CanvasGetScreen(cnvRPGCodeScreen)
+        
+        Select Case UCase$(pPos(selectedPlayer).stance)
+            Case "WALK_S": facing = South
+            Case "WALK_W": facing = West
+            Case "WALK_N": facing = North
+            Case "WALK_E": facing = East
+        End Select
+        
+        'Call runQueuedMovements
         
     End If
 
@@ -7370,31 +7429,31 @@ Sub TileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         theLay = inBounds(num4, 1, boardList(activeBoardIndex).theData.bSizeL)
         Select Case UCase$(lit1$)
             Case "NORMAL":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 0
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 0
             Case "SOLID":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 1
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 1
             Case "UNDER":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 2
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 2
             Case "NS":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 3
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 3
             Case "EW":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 4
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 4
             Case "STAIRS1":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 11
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 11
             Case "STAIRS2":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 12
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 12
             Case "STAIRS3":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 13
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 13
             Case "STAIRS4":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 14
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 14
             Case "STAIRS5":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 15
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 15
             Case "STAIRS6":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 16
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 16
             Case "STAIRS7":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 17
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 17
             Case "STAIRS8":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 18
+                boardList(activeBoardIndex).theData.tileType(theX, theY, theLay) = 18
         End Select
     End If
 
@@ -7935,7 +7994,16 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         
     Else
         'If not running concurrently, run the queued movements now.
-        Call runQueuedMovements
+        
+        Do While moveItems(itemNum)
+            Call renderNow
+            Call processEvent
+        Loop
+        
+        'Update the rpgcode canvas in case we're still in a program.
+        Call CanvasGetScreen(cnvRPGCodeScreen)
+        
+        'Call runQueuedMovements
         
     End If
 
@@ -11723,9 +11791,24 @@ Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) A
         Call debugger("MultiRun() requires no data elements-- " & Text)
     Else
         multiRunStatus = 1
+        
+        'Clear all the object queues: this is a prg and we don't want movement occuring.
+        'But we do want multitasking objects to move, so check this isn't a thread!
+        If Not isMultiTasking() Then
+            Dim i As Long
+            For i = 0 To UBound(pendingPlayerMovement)
+                pendingPlayerMovement(i).queue = vbNullString
+            Next i
+            For i = 0 To maxItem
+                pendingItemMovement(i).queue = vbNullString
+            Next i
+        End If
+        
         MultiRunRPG = runBlock(1, prg)
+        
         'Added: 3.0.5: Run any movements made in the block simultaneously at the end of the block.
-        If multiRunStatus = 2 Then Call runQueuedMovements
+        If multiRunStatus = 2 Then runQueuedMovements
+        
         multiRunStatus = 0
     End If
     
