@@ -84,9 +84,6 @@ Public facing As FACING_DIRECTION       'which direction are you facing? 1-s, 2-
 
 Private mVarAnimationDelay As Double
 
-'Public Const framesPerMove = 4          'Number of (animation) frames per TILE movement
-                                        'Pixel and tile movement use same number of .frames.
-
 Public loopOffset As Long               '3.0.5 main loop offset.
 
 Public Property Get framesPerMove() As Long
@@ -1365,12 +1362,14 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                     
                     With itemMem(itmIdx)
                         'Normalise the speed to the average mainloop time.
-                        .loopSpeed = Round(.speed / gAvgTime)
-                        
+                        'Also, add the gamespeed loopoffset here.
+                        'Scale the offset to match the fps. Take a 10th of the fps.
+                        .loopSpeed = Round(.speed / gAvgTime) + (loopOffset * Round((1 / gAvgTime) / 10))
+   
                         '.loopSpeed = CLng(.speed)    'If not using decimal delay.
                         
                         'Check divide by zero.
-                        If .loopSpeed = 0 Then .loopSpeed = 1
+                        If .loopSpeed <= 0 Then .loopSpeed = 1
                         
 ' Call traceString("ITM.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
                         
@@ -1387,7 +1386,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                     
                     With itmPos(itmIdx)
     
-                        If .loopFrame Mod ((itemMem(itmIdx).loopSpeed + loopOffset) / movementSize) = 0 Then
+                        If .loopFrame Mod (itemMem(itmIdx).loopSpeed / movementSize) = 0 Then
                             'Only increment the frame if we're on a multiple of .speed.
                             '/ movementSize to handle pixel movement.
                             .frame = .frame + 1
@@ -1395,7 +1394,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                                     
                         .loopFrame = .loopFrame + 1
                         
-                        If .loopFrame = framesPerMove * (itemMem(itmIdx).loopSpeed + loopOffset) Then
+                        If .loopFrame = framesPerMove * itemMem(itmIdx).loopSpeed Then
                             'The item has finished moving, update origin, reset the counter.
                             
                             With pendingItemMovement(itmIdx)
@@ -1476,7 +1475,7 @@ Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) A
     testPend = pendingItemMovement(itemNum)
     
     'moveFraction is a fraction of the tile.
-    moveFraction = movementSize / (framesPerMove * (itemMem(itemNum).loopSpeed + loopOffset))
+    moveFraction = movementSize / (framesPerMove * itemMem(itemNum).loopSpeed)
     
     'Insert the new fractional co-ords into the test location.
     Call incrementPosition(testPos, testPend, moveFraction)
@@ -1506,7 +1505,7 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
 'Called by: gameLogic, runQueuedMovements
 '======================================================
 
-    Dim playerIdx As Long, mvOccured As Boolean
+    Dim playerIdx As Long
     Static staticTileType() As Byte
     ReDim Preserve staticTileType(UBound(pendingPlayerMovement))
 
@@ -1562,18 +1561,20 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                     
                     With playerMem(playerIdx)
                         'Normalise the speed to the average mainloop time.
-                        .loopSpeed = Round(.speed / gAvgTime)
+                        'Scale the offset to match the fps. Take a 10th of the fps.
+                        .loopSpeed = Round(.speed / gAvgTime) + (loopOffset * Round((1 / gAvgTime) / 10))
                         
                         '.loopSpeed = CLng(.speed)    'If not using decimal delay.
                         
                         'Check divide by zero.
-                        If .loopSpeed = 0 Then .loopSpeed = 1
+                        If .loopSpeed <= 0 Then .loopSpeed = 1
                         
    'Call traceString(" ")
-   'Call traceString("PLY.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
+   'Call traceString("PLY.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2) & _
+                    "totalLoopOffset=" & Round(loopOffset * Round((1 / gAvgTime) / 10)))
                         
                         'Set all players to move at the selected player's speed regardless,
-                        '(won't work otherwise!).
+                        '(won't work otherwise!). I know this is a bug!
                         .loopSpeed = playerMem(selectedPlayer).loopSpeed
                     End With
                 
@@ -1594,14 +1595,12 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
         
                 
                 'Always increment the position as a fraction of the total movement.
-                mvOccured = pushPlayer(playerIdx, staticTileType(playerIdx))
-                
-                If mvOccured Or staticTileType(playerIdx) = SOLID Then
+                If pushPlayer(playerIdx, staticTileType(playerIdx)) Or staticTileType(playerIdx) = SOLID Then
                     'Only increment frames if we're moving or are not allowed to move.
                 
                     With pPos(playerIdx)
                     
-                        If .loopFrame Mod ((playerMem(playerIdx).loopSpeed + loopOffset) / movementSize) = 0 Then
+                        If .loopFrame Mod ((playerMem(playerIdx).loopSpeed) / movementSize) = 0 Then
                             'Only increment the frame if we're on a multiple of .speed.
                             '/ movementSize to handle pixel movement.
                             .frame = .frame + 1
@@ -1609,7 +1608,7 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                                     
                         .loopFrame = .loopFrame + 1
                         
-                        If .loopFrame = framesPerMove * (playerMem(playerIdx).loopSpeed + loopOffset) Then
+                        If .loopFrame = framesPerMove * (playerMem(playerIdx).loopSpeed) Then
                             'Movement has ended, update origin, reset the counter.
                             
                             'Do not set the direction to idle, do it after prg check in main loop.
@@ -1699,7 +1698,7 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
     testPend = pendingPlayerMovement(pNum)
     
     'moveFraction is a fraction of the tile.
-    moveFraction = movementSize / (framesPerMove * (playerMem(pNum).loopSpeed + loopOffset))
+    moveFraction = movementSize / (framesPerMove * playerMem(pNum).loopSpeed)
     
     'Insert the new fractional co-ords into the test location.
     Call incrementPosition(testPos, testPend, moveFraction)

@@ -1092,7 +1092,7 @@ Private Function renderPlayer(ByVal cnv As Long, _
             If Left$(UCase$(.stance), 5) = "STAND" Then
                 'We're standing!
 
-                If .loopFrame Mod (((thePlayer.loopSpeed + loopOffset) * 8) / movementSize) = 0 Then
+                If .loopFrame Mod ((thePlayer.loopSpeed * 8) / movementSize) = 0 Then
                     'Only increment the frame if we're on a multiple of .speed.
                     'Include a scaling factor (8) to slow down this animation.
                     '/ movementSize to handle pixel movement.
@@ -1209,7 +1209,7 @@ Private Function renderItem(ByVal cnv As Long, _
             If Left$(UCase$(.stance), 5) = "STAND" Then
                 'We're standing!
                 
-                If .loopFrame Mod (((theItem.loopSpeed + loopOffset) * 8) / movementSize) = 0 Then
+                If .loopFrame Mod ((theItem.loopSpeed * 8) / movementSize) = 0 Then
                     'Only increment the frame if we're on a multiple of .speed.
                     'Include a scaling factor (8) to slow down this animation.
                     '/ movementSize to handle pixel movement.

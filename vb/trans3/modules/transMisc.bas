@@ -531,11 +531,11 @@ End Sub
 '=========================================================================
 Public Sub gameSpeed(ByVal speed As Integer)
     Select Case speed
-        Case 0: walkDelay = 0.09: loopOffset = 4
-        Case 1: walkDelay = 0.06: loopOffset = 3
-        Case 2: walkDelay = 0.03: loopOffset = 2
-        Case 3: walkDelay = 0.01: loopOffset = 1
-        Case 4: walkDelay = 0: loopOffset = 0
+        Case 0: walkDelay = 0.09: loopOffset = 2
+        Case 1: walkDelay = 0.06: loopOffset = 1
+        Case 2: walkDelay = 0.03: loopOffset = 0
+        Case 3: walkDelay = 0.01: loopOffset = -1
+        Case 4: walkDelay = 0: loopOffset = -2
     End Select
 End Sub
 

@@ -339,7 +339,7 @@ Public Sub gameLogic()
 
             ' Make sure this runs for the duration of the player's move.
             ' Run this before movePlayers since .loopFrame will be reset by it.
-            If (pPos(selectedPlayer).loopFrame + 1 < framesPerMove * (playerMem(selectedPlayer).loopSpeed + loopOffset)) Then
+            If (pPos(selectedPlayer).loopFrame + 1 < framesPerMove * playerMem(selectedPlayer).loopSpeed) Then
                 ' We're still moving
                 gGameState = GS_MOVEMENT
             Else
