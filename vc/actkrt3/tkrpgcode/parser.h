@@ -63,6 +63,7 @@ void APIENTRY RPGCGetVarList(VB_STRING, int);
 void APIENTRY RPGCParseWithin(VB_STRING, VB_STRING, VB_STRING);
 void APIENTRY RPGCGetElement(VB_STRING, int);
 int APIENTRY RPGCValueNumber(VB_STRING);
+int APIENTRY RPGCInStrOutsideQuotes(int, VB_STRING, VB_STRING);
 
 //////////////////////////////////////////////////////////////////////////
 // End of the file

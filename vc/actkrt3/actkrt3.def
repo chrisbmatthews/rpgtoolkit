@@ -199,3 +199,4 @@ EXPORTS
 	RPGCParseWithin	    @239
 	RPGCValueNumber		@240
 	RPGCGetElement		@241
+	RPGCInStrOutsideQuotes	@242

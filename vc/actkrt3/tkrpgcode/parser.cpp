@@ -20,19 +20,51 @@
 CBOneParamStr setLastString;	//set the last parser string
 
 //////////////////////////////////////////////////////////////////////////
+// InStr outside quotes
+//////////////////////////////////////////////////////////////////////////
+int APIENTRY RPGCInStrOutsideQuotes(int start, VB_STRING pText, VB_STRING pFind)
+{
+
+	inlineString text = initVbString(pText);	//text to look in
+	inlineString find = initVbString(pFind);	//sub-string to find
+	inlineString chr(1);						//a character
+	bool ignore = false;						//within quotes?
+
+	//loop over each character
+    for (int chrIdx = start; chrIdx <= text.len(); chrIdx++)
+	{
+
+		//grab a character
+		chr = text.mid(chrIdx, find.len());
+
+		if (chr.left(1) == QUOTE)
+			//found a quote
+			ignore = (!ignore);
+
+		else if ( (chr == find) && (!ignore) )
+			//found it
+            return chrIdx;
+
+    }
+
+	//if we get here, it wasn't found, so return 0
+	return 0;
+
+}
+
+//////////////////////////////////////////////////////////////////////////
 // Get the bracket element at elemNum
 //////////////////////////////////////////////////////////////////////////
 void APIENTRY RPGCGetElement(VB_STRING pText, int elemNum)
 {
 
 	inlineString text = initVbString(pText);		//Text we're operating on
-	int t = 0;										//For loop
-	int element = 0;								//Current element
-	bool ignore = false;							//Do we need to ignore?
 	inlineString returnVal;							//What we will return		
 	inlineString part(1);							//Character
+	int element = 0;								//Current element
+	bool ignore = false;							//Do we need to ignore?
 
-	for (t = 1; t <= text.len(); t++)
+	for (int t = 1; t <= text.len(); t++)
 	{
 
 		//grab a character
@@ -79,14 +111,14 @@ void APIENTRY RPGCGetElement(VB_STRING pText, int elemNum)
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY RPGCValueNumber(VB_STRING pText)
 {
+
 	inlineString text = initVbString(pText);		//Text we're operating on
-	int length = text.len();						//Text length
-	int t = 0;										//For loop
-	int ele = 1;									//Current return value
 	inlineString part(1);							//Character
 	bool ignoreNext = false;						//Within quotes?
+	int length = text.len();						//Text length
+	int ele = 1;									//Current return value
 
-	for (t = 1; t <= length; t++)
+	for (int t = 1; t <= length; t++)
 	{
 		part = text.mid(t, 1);
 		if (part == QUOTE)
@@ -99,7 +131,9 @@ int APIENTRY RPGCValueNumber(VB_STRING pText)
 				ele++;
 		}
 	}
+
 	return ele;
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -113,19 +147,17 @@ void APIENTRY RPGCParseWithin(VB_STRING pText, VB_STRING startSymbol, VB_STRING 
 	inlineString symbolEnd(initVbString(endSymbol), 1);		//Ending symbol
 
 	int length = text.len();
-	int t = 0;												//For loop
-	int l = 0;												//For loop
 	int ignoreDepth = 0;									//Ignore
 	inlineString part(1);									//Character
 	inlineString toRet;										//The stuff we'll return
 
-	for (t = 1; t <= length; t++)
+	for (int t = 1; t <= length; t++)
 	{
 		part = text.mid(t, 1);
 		if (part == symbolStart)
 		{
 			//Found starting symbol, now get end symbol
-			for (l = t + 1; l <= length; l++)
+			for (int l = t + 1; l <= length; l++)
 			{
 
 				part = text.mid(l, 1);
@@ -220,12 +252,11 @@ void APIENTRY RPGCParseAfter(VB_STRING pText, VB_STRING startSymbol)
 	inlineString part(1);								//A character
 	inlineString toRet;									//The thing we'll return
 	inlineString symbol(initVbString(startSymbol), 1);	//symbol we're looking for
-	int t = 0;				 							//Loop control variables
 	int length = text.len();							//Length of text
 	bool foundIt = false;								//found symbol yet?
 	int startAt = 0;									//char to start looking
 
-	for (t = 1; t <= length; t++)
+	for (int t = 1; t <= length; t++)
 	{
 		//Find the start symbol
 		part = text.mid(t, 1);
@@ -238,8 +269,8 @@ void APIENTRY RPGCParseAfter(VB_STRING pText, VB_STRING startSymbol)
 
 	if (foundIt)
 	{
-		for (t = startAt + 1; t <= length; t++)
-			toRet += text.mid(t, 1);
+		for (int i = startAt + 1; i <= length; i++)
+			toRet += text.mid(i, 1);
 	}
 
 	//Return what we found
@@ -257,10 +288,9 @@ void APIENTRY RPGCParseBefore(VB_STRING pText, VB_STRING startSymbol)
 	inlineString part(1);								//A character
 	inlineString toRet;									//The thing we'll return
 	inlineString symbol(initVbString(startSymbol), 1);	//Symbol we're looking for
-	int t = 0;				 							//Loop control variables
 	int length = text.len();							//Length of text
 
-	for (t = 1; t <= length; t++)
+	for (int t = 1; t <= length; t++)
 	{
 
 		//Find the start symbol
