@@ -711,26 +711,26 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                               boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
                             End If
                             
-                            If cnvMask <> -1 Then
-                                Call drawTileCNV(cnvMask, _
-                                              projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
-                                              xx, _
-                                              yy, _
-                                              boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
-                                              boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
-                                              boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, False)
-                            End If
+                            'If cnvMask <> -1 Then
+                            '    Call drawTileCNV(cnvMask, _
+                            '                  projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
+                            '                  xx, _
+                            '                  yy, _
+                            '                  boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                            '                  boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                            '                  boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, False)
+                            'End If
                         Else
                             If cnv <> -1 Then
-                                If cnvMask <> -1 Then
-                                    Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
-                                                                cnv, _
-                                                                xx, _
-                                                                yy, _
-                                                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
-                                                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
-                                                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
-                                Else
+                                'If cnvMask <> -1 Then
+                                '    Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
+                                '                                cnv, _
+                                '                                xx, _
+                                '                                yy, _
+                                '                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                '                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                '                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
+                                'Else
                                     Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
                                                                 cnv, _
                                                                 xx, _
@@ -738,17 +738,17 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                                                 boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
                                                                 boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
                                                                 boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, False)
-                                End If
+                                'End If
                             End If
-                            If cnvMask <> -1 Then
-                                Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
-                                                            cnvMask, _
-                                                            xx, _
-                                                            yy, _
-                                                            boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
-                                                            boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
-                                                            boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, True)
-                            End If
+                            'If cnvMask <> -1 Then
+                            '    Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
+                            '                                cnvMask, _
+                            '                                xx, _
+                            '                                yy, _
+                            '                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                            '                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                            '                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, True)
+                            'End If
                         End If
                     End If
                 Next lll
@@ -1925,14 +1925,6 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     screenHeight = screenHeight * Screen.TwipsPerPixelY
 
 End Sub
-
-'=========================================================================
-' Using DirectX?
-'=========================================================================
-Public Property Get usingDX() As Boolean
-    ' Return true
-    usingDX = inDXMode
-End Property
 
 '=========================================================================
 ' In full-screen mode?
