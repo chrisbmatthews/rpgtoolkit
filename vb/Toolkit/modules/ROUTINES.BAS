@@ -47,22 +47,19 @@ Attribute VB_Name = "Routines"
 '    Resume Next
 'End Sub
 
-Public Sub hideAllTools()
-    'hide all tool menus
-    On Error Resume Next
-    'extras
-    tkMainForm.animationExtras.Visible = False
-    tkMainForm.bottomFrame.Visible = False
-    tkMainForm.tileExtras.Visible = False
-    ''tkMainForm.boardExtras.Visible = False
-    tkMainForm.tileBmpExtras.Visible = False
-    
-    'tools
-    tkMainForm.tilebmpTools.Visible = False
-    tkMainForm.animationTools.Visible = False
-    tkMainForm.rpgcodeTools.Visible = False
-    tkMainForm.tileTools.Visible = False
-    tkMainForm.boardTools.Visible = False
+Public Sub hideAllTools(): On Error Resume Next
+     With tkMainForm
+             .animationExtras.Visible = False
+             .bottomFrame.Visible = False
+             .tileExtras.Visible = False
+             .bBar.Visible = False
+             .tileBmpExtras.Visible = False
+             .tilebmpTools.Visible = False
+             .animationTools.Visible = False
+             .rpgcodeTools.Visible = False
+             .tileTools.Visible = False
+             .boardTools.Visible = False
+     End With
 End Sub
 
 
@@ -107,7 +104,7 @@ dllerr:
     'MsgBox "using brddraw"
 End Sub
 Function absNoPath(file$) As String
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     f$ = nopath(file$)
     f$ = Mid$(f$, 2, Len(f$) - 1)
     absNoPath = f$
@@ -115,7 +112,7 @@ Function absNoPath(file$) As String
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -124,14 +121,14 @@ End Function
 
 Sub clearGame()
     'clears all game data
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     projectPath$ = ""
     editmainfile.clearAll
     Unload editmainfile
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -139,7 +136,7 @@ End Sub
 
 Sub makeFolders(ppath$)
     'creates all folders for a game, under projectpath ppath$
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     MkDir Mid$(ppath$ + tilepath$, 1, Len(ppath$ + tilepath$) - 1)
     MkDir Mid$(ppath$ + brdpath$, 1, Len(ppath$ + brdpath$) - 1)
     MkDir Mid$(ppath$ + tempath$, 1, Len(ppath$ + tempath$) - 1)
@@ -157,7 +154,7 @@ Sub makeFolders(ppath$)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -165,46 +162,46 @@ End Sub
 'FIXIT: Declare 'resolve' with an early-bound data type                                    FixIT90210ae-R1672-R1B8ZE
 Function resolve(dfile$)
     'Resolves a directory (puts it in order)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     d$ = dfile$
     d$ = replaceChar(d$, " ", "")
-    length = Len(d$)
-    part$ = Mid$(d$, length, 1)
+    Length = Len(d$)
+    part$ = Mid$(d$, Length, 1)
     If part$ <> "\" Then d$ = d$ + "\"
     resolve = d$
 
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 'FIXIT: Declare 'AddUnderscore' with an early-bound data type                              FixIT90210ae-R1672-R1B8ZE
-Function AddUnderscore(text$)
-    On Error GoTo errorhandler
-manip$ = text$
+Function AddUnderscore(Text$)
+    On Error GoTo ErrorHandler
+manip$ = Text$
 lengthof = Len(manip$)
 newtext$ = ""
-For Position = 1 To lengthof
-    part$ = Mid$(manip$, Position, 1)
+For position = 1 To lengthof
+    part$ = Mid$(manip$, position, 1)
     If part$ = " " Then part$ = "_"
     newtext$ = newtext$ + part$
-Next Position
+Next position
 AddUnderscore = newtext$
 
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 'FIXIT: Declare 'all' and 'longcolorin' and 'whichone' with an early-bound data type       FixIT90210ae-R1672-R1B8ZE
 Function all(longcolorin, whichone)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 longcolor = longcolorin
 bluecomp = Int(longcolor / 65536)
 bb = bluecomp
@@ -227,14 +224,14 @@ If whichone = 3 Then all = bb
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 'FIXIT: Declare 'blue' and 'longcolor' with an early-bound data type                       FixIT90210ae-R1672-R1B8ZE
 Function blue(longcolor)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 jj = longcolor
 bluecomp = Int(jj / 65536)
 blue = bluecomp
@@ -242,135 +239,135 @@ blue = bluecomp
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 Sub color_16()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call wincolor
     colorDepth.Show
     If detail = 2 Or detail = 4 Or detail = 6 Then
-        For X = 1 To 16
-            For Y = 1 To 16
-                If tilemem(X, Y) = -1 Then
-                    tilemem(X, Y) = -1
+        For x = 1 To 16
+            For y = 1 To 16
+                If tilemem(x, y) = -1 Then
+                    tilemem(x, y) = -1
                 Else
-                    qb = tocolor(tilemem(X, Y), "16")
-                    tilemem(X, Y) = qb
-                    qbtile(X, Y) = qb
+                    qb = tocolor(tilemem(x, y), "16")
+                    tilemem(x, y) = qb
+                    qbtile(x, y) = qb
                 End If
-            Next Y
+            Next y
             'colordepth.status.Line (0, 0)-((x / 16) * 100, 10), vbqbcolor(9), BF
-            Call vbPicFillRect(colorDepth.status, 0, 0, (X / 16) * 100, 10, vbQBColor(9))
-        Next X
+            Call vbPicFillRect(colorDepth.status, 0, 0, (x / 16) * 100, 10, vbQBColor(9))
+        Next x
     End If
     If detail = 1 Or detail = 3 Or detail = 5 Then
-        For X = 1 To 32
-            For Y = 1 To 32
-                If tilemem(X, Y) = -1 Then
-                    tilemem(X, Y) = -1
+        For x = 1 To 32
+            For y = 1 To 32
+                If tilemem(x, y) = -1 Then
+                    tilemem(x, y) = -1
                 Else
-                    qb = tocolor(tilemem(X, Y), "16")
-                    tilemem(X, Y) = qb
-                    qbtile(X, Y) = qb
+                    qb = tocolor(tilemem(x, y), "16")
+                    tilemem(x, y) = qb
+                    qbtile(x, y) = qb
                 End If
-            Next Y
-            Call vbPicFillRect(colorDepth.status, 0, 0, (X / 32) * 100, 10, vbQBColor(9))
+            Next y
+            Call vbPicFillRect(colorDepth.status, 0, 0, (x / 32) * 100, 10, vbQBColor(9))
             'colordepth.status.Line (0, 0)-((x / 32) * 100, 10), vbqbcolor(9), BF
-        Next X
+        Next x
     End If
     Unload colorDepth
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub color_16million()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'colordepth.Show
     If detail = 2 Or detail = 4 Or detail = 6 Then
-        For X = 1 To 16
-            For Y = 1 To 16
-                If tilemem(X, Y) = -1 Then
-                    tilemem(X, Y) = -1
+        For x = 1 To 16
+            For y = 1 To 16
+                If tilemem(x, y) = -1 Then
+                    tilemem(x, y) = -1
                 Else
                     'tilemem(x, y) = gfxgetdoscolor(tilemem(x, y))
-                    tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
+                    tilemem(x, y) = GFXGetDOSColor(tilemem(x, y))
                 End If
-            Next Y
+            Next y
             'colordepth.status.Line (0, 0)-((x / 16) * 100, 10), vbqbcolor(9), BF
-            Call vbPicFillRect(colorDepth.status, 0, 0, (X / 16) * 100, 10, vbQBColor(9))
+            Call vbPicFillRect(colorDepth.status, 0, 0, (x / 16) * 100, 10, vbQBColor(9))
         
-        Next X
+        Next x
     End If
     If detail = 3 Or detail = 5 Then
-        For X = 1 To 32
-            For Y = 1 To 32
-                If tilemem(X, Y) = -1 Then
-                    tilemem(X, Y) = -1
+        For x = 1 To 32
+            For y = 1 To 32
+                If tilemem(x, y) = -1 Then
+                    tilemem(x, y) = -1
                 Else
                     'tilemem(x, y) = gfxgetdoscolor(tilemem(x, y))
-                    tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
+                    tilemem(x, y) = GFXGetDOSColor(tilemem(x, y))
                 End If
-            Next Y
+            Next y
             'colordepth.status.Line (0, 0)-((x / 32) * 100, 10), vbqbcolor(9), BF
-            Call vbPicFillRect(colorDepth.status, 0, 0, (X / 32) * 100, 10, vbQBColor(9))
-        Next X
+            Call vbPicFillRect(colorDepth.status, 0, 0, (x / 32) * 100, 10, vbQBColor(9))
+        Next x
         detail = 1
     End If
     'Unload colordepth
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub color_256()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call wincolor
     colorDepth.Show
     If detail = 2 Or detail = 4 Or detail = 6 Then
-        For X = 1 To 16
-            For Y = 1 To 16
-                If tilemem(X, Y) = -1 Then
-                    tilemem(X, Y) = -1
+        For x = 1 To 16
+            For y = 1 To 16
+                If tilemem(x, y) = -1 Then
+                    tilemem(x, y) = -1
                 Else
-                    qb = tocolor(tilemem(X, Y), "256")
-                    tilemem(X, Y) = qb
-                    qbtile(X, Y) = qb
+                    qb = tocolor(tilemem(x, y), "256")
+                    tilemem(x, y) = qb
+                    qbtile(x, y) = qb
                 End If
-            Next Y
+            Next y
             'colordepth.status.Line (0, 0)-((x / 16) * 100, 10), vbqbcolor(9), BF
-            Call vbPicFillRect(colorDepth.status, 0, 0, (X / 16) * 100, 10, vbQBColor(9))
-        Next X
+            Call vbPicFillRect(colorDepth.status, 0, 0, (x / 16) * 100, 10, vbQBColor(9))
+        Next x
     End If
     If detail = 1 Or detail = 3 Or detail = 5 Then
-        For X = 1 To 32
-            For Y = 1 To 32
-                If tilemem(X, Y) = -1 Then
-                    tilemem(X, Y) = -1
+        For x = 1 To 32
+            For y = 1 To 32
+                If tilemem(x, y) = -1 Then
+                    tilemem(x, y) = -1
                 Else
-                    qb = tocolor(tilemem(X, Y), "256")
-                    tilemem(X, Y) = qb
-                    qbtile(X, Y) = qb
+                    qb = tocolor(tilemem(x, y), "256")
+                    tilemem(x, y) = qb
+                    qbtile(x, y) = qb
                 End If
-            Next Y
+            Next y
             'colordepth.status.Line (0, 0)-((x / 32) * 100, 10), vbqbcolor(9), BF
-            Call vbPicFillRect(colorDepth.status, 0, 0, (X / 32) * 100, 10, vbQBColor(9))
-        Next X
+            Call vbPicFillRect(colorDepth.status, 0, 0, (x / 32) * 100, 10, vbQBColor(9))
+        Next x
     End If
     Unload colorDepth
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -389,7 +386,7 @@ Function extention(ByVal file As String) As String: On Error Resume Next
 End Function
 
 'FIXIT: Declare 'fileExist' with an early-bound data type                                  FixIT90210ae-R1672-R1B8ZE
-Function fileExist(filename$)
+Function FileExist(filename$)
     '0=no, 1-yes
     'Function checks if a file exists.
     'First see if it's in an archive:
@@ -400,7 +397,7 @@ Function fileExist(filename$)
     num = FreeFile
     Open file$ For Input As #num
     Close #num
-    If anError = 1 Then fileExist = 0 Else fileExist = 1
+    If anError = 1 Then FileExist = 0 Else FileExist = 1
     Exit Function
 
 errcatch:
@@ -413,9 +410,9 @@ Function getTipCount(file$)
     On Error Resume Next
     num = FreeFile
     Open file$ For Input As #num
-        Input #num, temp
+        Input #num, Temp
     Close #num
-    getTipCount = val(temp)
+    getTipCount = val(Temp)
 End Function
 
 'FIXIT: Declare 'tnum' with an early-bound data type                                       FixIT90210ae-R1672-R1B8ZE
@@ -435,7 +432,7 @@ End Function
 
 'FIXIT: Declare 'green' and 'longcolor' with an early-bound data type                      FixIT90210ae-R1672-R1B8ZE
 Function green(longcolor)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 jj = longcolor
 bluecomp = Int(jj / 65536)
 takeaway = bluecomp * 256 * 256
@@ -448,49 +445,49 @@ green = greencomp
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 
 Sub highredrawLIGHT()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'light.tileform.Line (0, 0)-(1000, 1000), vbqbcolor(1), BF
     Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
     didthat = 0
-    For X = 1 To 32
-        For Y = 1 To 32
-            xx = (X * 10) - 9
-            yy = (Y * 10) - 9
+    For x = 1 To 32
+        For y = 1 To 32
+            xx = (x * 10) - 9
+            yy = (y * 10) - 9
             'If didthat = 0 Then MsgBox detail: didthat = 1
-            If tilemem(X, Y) <> -1 Then
+            If tilemem(x, y) <> -1 Then
                 If detail = 1 Then
                     'light.tileform.Line (xx, yy)-((xx + 8), (yy + 8)), tilemem(x, y), BF
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tilemem(X, Y))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tilemem(x, y))
                 End If
                 If detail = 3 Or detail = 5 Then
                     'MsgBox "hi"
                     'MsgBox tilemem(x, y)
                     'light.tileform.Line (xx, yy)-((xx + 8), (yy + 8)), gfxgetdoscolor(tilemem(x, y)), BF
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tilemem(X, Y)))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tilemem(x, y)))
                 End If
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     publicTile.grid = 0
     'If publictile.grid = 1 Then publictile.grid = 0: activetile.gridonoff_click Else publictile.grid = 1: activetile.gridonoff_click
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: Declare 'inbounds' and 'num' and 'low' and 'high' with an early-bound data type     FixIT90210ae-R1672-R1B8ZE
 Function inbounds(num, low, high)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     l = num
     If l < low Then l = low
     If l > high Then l = high
@@ -499,169 +496,169 @@ Function inbounds(num, low, high)
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 Sub increasedetail()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 ReDim buffertile(32, 32)
     If detail = 2 Then detail = 1
     If detail = 4 Then detail = 3
     If detail = 6 Then detail = 5
-    For X = 1 To 16
-        For Y = 1 To 16
-            buffertile(X, Y) = tilemem(X, Y)
-            tilemem(X, Y) = -1
-        Next Y
-    Next X
+    For x = 1 To 16
+        For y = 1 To 16
+            buffertile(x, y) = tilemem(x, y)
+            tilemem(x, y) = -1
+        Next y
+    Next x
     
     interpolate = 0
     
     If interpolate = 1 Then
         'Increase detail
         xx = 1: yy = 1
-        For X = 1 To 16
-            For Y = 1 To 16
-                If X = 16 Then
-                    If buffertile(1, Y) <> -1 And buffertile(X, Y) <> -1 Then
+        For x = 1 To 16
+            For y = 1 To 16
+                If x = 16 Then
+                    If buffertile(1, y) <> -1 And buffertile(x, y) <> -1 Then
                         nextcolor = 0
-                        r1 = red(buffertile(X, Y))
-                        g1 = green(buffertile(X, Y))
-                        b1 = blue(buffertile(X, Y))
-                        r2 = red(buffertile(1, Y))
-                        g2 = green(buffertile(1, Y))
-                        b2 = blue(buffertile(1, Y))
+                        r1 = red(buffertile(x, y))
+                        g1 = green(buffertile(x, y))
+                        b1 = blue(buffertile(x, y))
+                        r2 = red(buffertile(1, y))
+                        g2 = green(buffertile(1, y))
+                        b2 = blue(buffertile(1, y))
                         
                         nextcolor = RGB((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2)
                         
-                        tilemem(xx, yy) = buffertile(X, Y)
+                        tilemem(xx, yy) = buffertile(x, y)
                         tilemem(xx + 1, yy) = nextcolor
                         tilemem(xx + 1, yy + 1) = nextcolor
                     Else
-                        tilemem(xx, yy) = buffertile(X, Y)
-                        tilemem(xx + 1, yy) = buffertile(X, Y)
-                        tilemem(xx + 1, yy + 1) = buffertile(X, Y)
+                        tilemem(xx, yy) = buffertile(x, y)
+                        tilemem(xx + 1, yy) = buffertile(x, y)
+                        tilemem(xx + 1, yy + 1) = buffertile(x, y)
                     End If
                 Else
-                    If buffertile(X + 1, Y) <> -1 And buffertile(X, Y) <> -1 Then
+                    If buffertile(x + 1, y) <> -1 And buffertile(x, y) <> -1 Then
                         nextcolor = 0
-                        r1 = red(buffertile(X, Y))
-                        g1 = green(buffertile(X, Y))
-                        b1 = blue(buffertile(X, Y))
-                        r2 = red(buffertile(X + 1, Y))
-                        g2 = green(buffertile(X + 1, Y))
-                        b2 = blue(buffertile(X + 1, Y))
+                        r1 = red(buffertile(x, y))
+                        g1 = green(buffertile(x, y))
+                        b1 = blue(buffertile(x, y))
+                        r2 = red(buffertile(x + 1, y))
+                        g2 = green(buffertile(x + 1, y))
+                        b2 = blue(buffertile(x + 1, y))
                         
                         nextcolor = RGB((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2)
                         
-                        tilemem(xx, yy) = buffertile(X, Y)
+                        tilemem(xx, yy) = buffertile(x, y)
                         tilemem(xx + 1, yy) = nextcolor
                         tilemem(xx + 1, yy + 1) = nextcolor
                     Else
-                        tilemem(xx, yy) = buffertile(X, Y)
-                        tilemem(xx + 1, yy) = buffertile(X, Y)
-                        tilemem(xx + 1, yy + 1) = buffertile(X, Y)
+                        tilemem(xx, yy) = buffertile(x, y)
+                        tilemem(xx + 1, yy) = buffertile(x, y)
+                        tilemem(xx + 1, yy + 1) = buffertile(x, y)
                     End If
                 End If
-                If Y = 16 Then
-                    If buffertile(X, 1) <> -1 And buffertile(X, Y) <> -1 Then
+                If y = 16 Then
+                    If buffertile(x, 1) <> -1 And buffertile(x, y) <> -1 Then
                         nextcolor = 0
-                        r1 = red(buffertile(X, Y))
-                        g1 = green(buffertile(X, Y))
-                        b1 = blue(buffertile(X, Y))
-                        r2 = red(buffertile(X, 1))
-                        g2 = green(buffertile(X, 1))
-                        b2 = blue(buffertile(X, 1))
+                        r1 = red(buffertile(x, y))
+                        g1 = green(buffertile(x, y))
+                        b1 = blue(buffertile(x, y))
+                        r2 = red(buffertile(x, 1))
+                        g2 = green(buffertile(x, 1))
+                        b2 = blue(buffertile(x, 1))
                         
                         nextcolor = RGB((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2)
                         tilemem(xx, yy + 1) = nextcolor
                     Else
-                        tilemem(xx, yy + 1) = buffertile(X, Y)
+                        tilemem(xx, yy + 1) = buffertile(x, y)
                     End If
                 Else
-                    If buffertile(X, Y + 1) <> -1 And buffertile(X, Y) <> -1 Then
+                    If buffertile(x, y + 1) <> -1 And buffertile(x, y) <> -1 Then
                         nextcolor = 0
-                        r1 = red(buffertile(X, Y))
-                        g1 = green(buffertile(X, Y))
-                        b1 = blue(buffertile(X, Y))
-                        r2 = red(buffertile(X, Y + 1))
-                        g2 = green(buffertile(X, Y + 1))
-                        b2 = blue(buffertile(X, Y + 1))
+                        r1 = red(buffertile(x, y))
+                        g1 = green(buffertile(x, y))
+                        b1 = blue(buffertile(x, y))
+                        r2 = red(buffertile(x, y + 1))
+                        g2 = green(buffertile(x, y + 1))
+                        b2 = blue(buffertile(x, y + 1))
                         
                         nextcolor = RGB((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2)
                         tilemem(xx, yy + 1) = nextcolor
                     Else
-                        tilemem(xx, yy + 1) = buffertile(X, Y)
+                        tilemem(xx, yy + 1) = buffertile(x, y)
                     End If
                 End If
                 yy = yy + 2
-            Next Y
+            Next y
             yy = 1
             xx = xx + 2
-        Next X
+        Next x
     Else
         'Increase detail
         xx = 1: yy = 1
-        For X = 1 To 16
-            For Y = 1 To 16
-                tilemem(xx, yy) = buffertile(X, Y)
-                tilemem(xx, yy + 1) = buffertile(X, Y)
-                tilemem(xx + 1, yy) = buffertile(X, Y)
-                tilemem(xx + 1, yy + 1) = buffertile(X, Y)
+        For x = 1 To 16
+            For y = 1 To 16
+                tilemem(xx, yy) = buffertile(x, y)
+                tilemem(xx, yy + 1) = buffertile(x, y)
+                tilemem(xx + 1, yy) = buffertile(x, y)
+                tilemem(xx + 1, yy + 1) = buffertile(x, y)
                 yy = yy + 2
-            Next Y
+            Next y
             yy = 1
             xx = xx + 2
-        Next X
+        Next x
     End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub lowredrawLIGHT()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'light.tileform.Line (0, 0)-(1000, 1000), vbqbcolor(1), BF
     Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
-    For X = 1 To 16
-        For Y = 1 To 16
-            xx = (X * 20) - 19
-            yy = (Y * 20) - 19
-            If tilemem(X, Y) <> -1 Then
+    For x = 1 To 16
+        For y = 1 To 16
+            xx = (x * 20) - 19
+            yy = (y * 20) - 19
+            If tilemem(x, y) <> -1 Then
                 If detail = 2 Then
                     'light.tileform.Line (xx, yy)-(xx + 18, yy + 18), tilemem(x, y), BF
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tilemem(X, Y))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tilemem(x, y))
                 End If
                 If detail = 4 Or detail = 6 Then
                     'light.tileform.Line (xx, yy)-(xx + 18, yy + 18), gfxgetdoscolor(tilemem(x, y)), BF
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tilemem(X, Y)))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tilemem(x, y)))
                 End If
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     publicTile.grid = 0
     'If publictile.grid = 1 Then publictile.grid = 0: activetile.gridonoff_click Else publictile.grid = 1: activetile.gridonoff_click
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: Declare 'NoExtention' with an early-bound data type                                FixIT90210ae-R1672-R1B8ZE
 Function NoExtention(file$)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 workon$ = file$
 running$ = ""
 col = 1
-length = Len(file$)
-Do While part$ <> "." And col <= length + 1
+Length = Len(file$)
+Do While part$ <> "." And col <= Length + 1
     running$ = running$ + part$
     part$ = Mid$(workon$, col, 1)
     col = col + 1
@@ -671,37 +668,37 @@ NoExtention = running$
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
-Function nopath$(text$)
+Function nopath$(Text$)
     'removes path of filename
-    On Error GoTo errorhandler
-    a$ = text$
-    length = Len(a$)
+    On Error GoTo ErrorHandler
+    a$ = Text$
+    Length = Len(a$)
     'first, see if there IS a path:
     apath = 0
-    For t = 1 To length
+    For t = 1 To Length
         part$ = Mid$(a$, t, 1)
         If part$ = ":" Or part$ = "\" Then apath = 1
     Next t
     If apath = 0 Then nopath = a$: Exit Function
     'Now see if the path terminates with a \ or a :
-    For t = 1 To length
+    For t = 1 To Length
         part$ = Mid$(a$, t, 1)
         If part$ = ":" Or part$ = "\" Then term$ = part$
     Next t
     pathuse$ = ""
     If term$ = ":" Then
         'if it terminates with a :, then the filename is right after :
-        For t = 1 To length
+        For t = 1 To Length
             part$ = Mid$(a$, t, 1)
             pathuse$ = pathuse$ + part$
             If part$ = ":" Then
                 path$ = ""
-                For ll = t To length
+                For ll = t To Length
                     part$ = Mid$(a$, ll, 1)
                     path$ = path$ + part$
                 Next ll
@@ -712,13 +709,13 @@ Function nopath$(text$)
     If term$ = "\" Then
         lastone = 1
         'If it terminates with a "\" then we've got problems.  where is the last one at?
-        For t = 1 To length
+        For t = 1 To Length
             part$ = Mid$(a$, t, 1)
             If part$ = "\" Then lastone = t
         Next t
         'Now let's scoop out the path"
         pathuse$ = ""
-        For t = lastone To length
+        For t = lastone To Length
             part$ = Mid$(a$, t, 1)
             pathuse$ = pathuse$ + part$
         Next t
@@ -729,28 +726,28 @@ Function nopath$(text$)
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 'FIXIT: Declare 'NoSpaces' with an early-bound data type                                   FixIT90210ae-R1672-R1B8ZE
-Function NoSpaces(text$)
-    On Error GoTo errorhandler
-manip$ = text$
+Function NoSpaces(Text$)
+    On Error GoTo ErrorHandler
+manip$ = Text$
 lengthof = Len(manip$)
 newtext$ = ""
-For Position = 1 To lengthof
-    part$ = Mid$(manip$, Position, 1)
+For position = 1 To lengthof
+    part$ = Mid$(manip$, position, 1)
     If part$ = " " Then part$ = ""
     newtext$ = newtext$ + part$
-Next Position
+Next position
 NoSpaces = newtext$
 
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -853,19 +850,19 @@ On Error GoTo loadtileerr
         Input #num, comp              'Compression used? 1- yes, 0-no
         If comp = 0 Then     'If compression was not used, the tile is stored with each value representing a pixel.
             If detail = 1 Or detail = 3 Or detail = 5 Then
-                For X = 1 To 32
-                    For Y = 1 To 32
-                        Input #num, tilemem(X, Y) 'Pixel by pixel
-                    Next Y
-                Next X
+                For x = 1 To 32
+                    For y = 1 To 32
+                        Input #num, tilemem(x, y) 'Pixel by pixel
+                    Next y
+                Next x
 '                call activetile.highredraw
             End If
             If detail = 2 Or detail = 4 Or detail = 6 Then
-                For X = 1 To 16
-                    For Y = 1 To 16
-                        Input #num, tilemem(X, Y)
-                    Next Y
-                Next X
+                For x = 1 To 16
+                    For y = 1 To 16
+                        Input #num, tilemem(x, y)
+                    Next y
+                Next x
 '                call activetile.lowredraw
             End If
         End If
@@ -970,19 +967,19 @@ On Error GoTo loadtileerr2
         Input #num, comp              'Compression used? 1- yes, 0-no
         If comp = 0 Then     'If compression was not used, the tile is stored with each value representing a pixel.
             If detail = 1 Or detail = 3 Or detail = 5 Then
-                For X = 1 To 32
-                    For Y = 1 To 32
-                        Input #num, tilemem(X, Y) 'Pixel by pixel
-                    Next Y
-                Next X
+                For x = 1 To 32
+                    For y = 1 To 32
+                        Input #num, tilemem(x, y) 'Pixel by pixel
+                    Next y
+                Next x
 '                call activetile.highredraw
             End If
             If detail = 2 Or detail = 4 Or detail = 6 Then
-                For X = 1 To 16
-                    For Y = 1 To 16
-                        Input #num, tilemem(X, Y)
-                    Next Y
-                Next X
+                For x = 1 To 16
+                    For y = 1 To 16
+                        Input #num, tilemem(x, y)
+                    Next y
+                Next x
 '                call activetile.lowredraw
             End If
         End If
@@ -1049,27 +1046,27 @@ Resume Next
 End Sub
 
 
-Function pathof$(text$)
+Function pathof$(Text$)
     'Determines path of filename
-    On Error GoTo errorhandler
-    a$ = text$
-    length = Len(a$)
+    On Error GoTo ErrorHandler
+    a$ = Text$
+    Length = Len(a$)
     'first, see if there IS a path:
     apath = 0
-    For t = 1 To length
+    For t = 1 To Length
         part$ = Mid$(a$, t, 1)
         If part$ = ":" Or part$ = "\" Then apath = 1
     Next t
     If apath = 0 Then pathof$ = ""
     'Now see if the path terminates with a \ or a :
-    For t = 1 To length
+    For t = 1 To Length
         part$ = Mid$(a$, t, 1)
         If part$ = ":" Or part$ = "\" Then term$ = part$
     Next t
     pathuse$ = ""
     If term$ = ":" Then
         'if it terminates with a :, then the filename is right after :
-        For t = 1 To length
+        For t = 1 To Length
             part$ = Mid$(a$, t, 1)
             pathuse$ = pathuse$ + part$
             If part$ = ":" Then pathof$ = pathuse$
@@ -1078,7 +1075,7 @@ Function pathof$(text$)
     If term$ = "\" Then
         lastone = 1
         'If it terminates with a "\" then we've got problems.  where is the last one at?
-        For t = 1 To length
+        For t = 1 To Length
             part$ = Mid$(a$, t, 1)
             If part$ = "\" Then lastone = t
         Next t
@@ -1095,14 +1092,14 @@ Function pathof$(text$)
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 'FIXIT: Declare 'red' and 'longcolor' with an early-bound data type                        FixIT90210ae-R1672-R1B8ZE
 Function red(longcolor)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 jj = longcolor
 bluecomp = Int(jj / 65536)
 takeaway = bluecomp * 256 * 256
@@ -1118,40 +1115,40 @@ red = redcomp
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 Sub reducedetail()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 ReDim buffertile(32, 32)
     If detail = 1 Then detail = 2
     If detail = 3 Then detail = 4
     If detail = 5 Then detail = 6
 
-    For X = 1 To 32
-        For Y = 1 To 32
-            buffertile(X, Y) = tilemem(X, Y)
-            tilemem(X, Y) = -1
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            buffertile(x, y) = tilemem(x, y)
+            tilemem(x, y) = -1
+        Next y
+    Next x
     
     'Reduce detail
     xx = 1: yy = 1
-    For X = 1 To 32 Step 2
-        For Y = 1 To 32 Step 2
-            tilemem(xx, yy) = buffertile(X, Y)
+    For x = 1 To 32 Step 2
+        For y = 1 To 32 Step 2
+            tilemem(xx, yy) = buffertile(x, y)
             yy = yy + 1
-        Next Y
+        Next y
         yy = 1
         xx = xx + 1
-    Next X
+    Next x
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1192,24 +1189,24 @@ Sub RemoveArchiveFile(archivefile$, Remove$)
 End Sub
 
 Sub renameFile(f$)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     fileToRename$ = f$
     rename.Show vbModal
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
-Function replaceChar(text$, char$, rep$) As String
+Function replaceChar(Text$, char$, rep$) As String
     'replaces the characters in text$ with rep$
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     ret$ = ""
-    For l = 1 To Len(text$)
-        part$ = Mid$(text$, l, 1)
+    For l = 1 To Len(Text$)
+        part$ = Mid$(Text$, l, 1)
         If part$ = char$ Then part$ = rep$
         ret$ = ret$ + part$
     Next l
@@ -1218,14 +1215,14 @@ Function replaceChar(text$, char$, rep$) As String
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 'FIXIT: Declare 'roundoff' and 'number' with an early-bound data type                      FixIT90210ae-R1672-R1B8ZE
 Function roundoff(number)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     toround = number
     lower = Int(toround)
     upper = lower + 1
@@ -1237,7 +1234,7 @@ Function roundoff(number)
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -1291,7 +1288,7 @@ Sub saveprogram(file$)
     num = FreeFile
     Open file$ For Output As #num
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, activeRPGCode.codeform.text
+        Print #num, activeRPGCode.codeform.Text
     Close #num
 End Sub
 
@@ -1324,69 +1321,69 @@ Sub savetile(ByVal filenm As String): On Error Resume Next
         Print #num, compression        'Compression 1-on, 0-off
         If compression = 0 Then         'If no compression was usd, save it normally, pixel by pixel.
             If detail = 1 Or detail = 3 Or detail = 5 Then
-                For X = 1 To 32
-                    For Y = 1 To 32
+                For x = 1 To 32
+                    For y = 1 To 32
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                        Print #num, tilemem(X, Y) 'Pixel by pixel
-                    Next Y
-                Next X
+                        Print #num, tilemem(x, y) 'Pixel by pixel
+                    Next y
+                Next x
             End If
             If detail = 2 Or detail = 4 Or detail = 6 Then
-                For X = 1 To 16
-                    For Y = 1 To 16
+                For x = 1 To 16
+                    For y = 1 To 16
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                        Print #num, tilemem(X, Y)
-                    Next Y
-                Next X
+                        Print #num, tilemem(x, y)
+                    Next y
+                Next x
             End If
         End If
         If compression = 1 Then         'If there is compression, save it in bundles, count how many times pixels occur together, and write #of times, color of pixel
             occurances = 1
             older = tilemem(1, 1)
             If detail = 1 Or detail = 3 Or detail = 5 Then
-                For X = 1 To 32
-                    For Y = 1 To 32
-                        If X = 1 And Y = 1 Then
+                For x = 1 To 32
+                    For y = 1 To 32
+                        If x = 1 And y = 1 Then
                             'nothing
                         Else
-                            If tilemem(X, Y) = older Then
+                            If tilemem(x, y) = older Then
                                 occurances = occurances + 1
                             Else
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                                 Print #num, occurances    'how many times it occurred.
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                                 Print #num, older         'what color it is
-                                older = tilemem(X, Y)
+                                older = tilemem(x, y)
                                 occurances = 1
                             End If
                         End If
-                    Next Y
-                Next X
+                    Next y
+                Next x
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                 Print #num, occurances
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                 Print #num, older
             End If
             If detail = 2 Or detail = 4 Or detail = 6 Then
-                For X = 1 To 16
-                    For Y = 1 To 16
-                        If X = 1 And Y = 1 Then
+                For x = 1 To 16
+                    For y = 1 To 16
+                        If x = 1 And y = 1 Then
                             'nothing
                         Else
-                            If tilemem(X, Y) = older Then
+                            If tilemem(x, y) = older Then
                                 occurances = occurances + 1
                             Else
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                                 Print #num, occurances    'how many times it occurred.
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                                 Print #num, older         'what color it is
-                                older = tilemem(X, Y)
+                                older = tilemem(x, y)
                                 occurances = 1
                                 starting = 0
                             End If
                         End If
-                    Next Y
-                Next X
+                    Next y
+                Next x
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                 Print #num, occurances
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
@@ -1526,7 +1523,7 @@ End Sub
 'FIXIT: Declare 'val' with an early-bound data type                                        FixIT90210ae-R1672-R1B8ZE
 Function toString(val) As String
     'returns sting-- no spaces!
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     t$ = str$(val)
     t$ = NoSpaces(t$)
     toString = t$
@@ -1534,14 +1531,14 @@ Function toString(val) As String
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 'FIXIT: Declare 'tocolor' and 'getit' with an early-bound data type                        FixIT90210ae-R1672-R1B8ZE
 Function tocolor(getit, level$)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 ReDim thesecolors(255)
 If level$ = "16" Then loops = 15
 If level$ = "256" Then loops = 255
@@ -1577,35 +1574,35 @@ tocolor = qblesser
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 Sub wincolor()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If publicTile.oldDetail = 4 Or publicTile.oldDetail = 6 Then
-        For X = 1 To 16
-            For Y = 1 To 16
-                If tilemem(X, Y) = -1 Then tilemem(X, Y) = vbQBColor(15)
-                tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
-            Next Y
+        For x = 1 To 16
+            For y = 1 To 16
+                If tilemem(x, y) = -1 Then tilemem(x, y) = vbQBColor(15)
+                tilemem(x, y) = GFXGetDOSColor(tilemem(x, y))
+            Next y
         
-        Next X
+        Next x
     End If
     If publicTile.oldDetail = 3 Or publicTile.oldDetail = 5 Then
-        For X = 1 To 32
-            For Y = 1 To 32
-                If tilemem(X, Y) = -1 Then tilemem(X, Y) = vbQBColor(15)
-                tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
-            Next Y
-        Next X
+        For x = 1 To 32
+            For y = 1 To 32
+                If tilemem(x, y) = -1 Then tilemem(x, y) = vbQBColor(15)
+                tilemem(x, y) = GFXGetDOSColor(tilemem(x, y))
+            Next y
+        Next x
     End If
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
