@@ -7570,13 +7570,8 @@ Sub DrawCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPG
                     cnvDest = num6
                 End If
                 
-                Dim hdcDest As Long
-                hdcDest = canvasOpenHDC(cnvDest)
-                
-                Call canvasStretchBlt(cnv, num4, num5, num2, num3, hdcDest)
-                
-                Call canvasCloseHDC(cnvDest, hdcDest)
-                
+                Call canvasStretchBlt(cnv, num4, num5, num2, num3, cnvDest)
+              
                 If number = 5 Then
                     Call renderRPGCodeScreen
                 End If
@@ -9606,7 +9601,7 @@ Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 
             offx = -1 * Int((newWidth - (32 * tilesX)) / 2)
             offy = -1 * Int((newHeight - (32 * tilesY)) / 2)
-            
+
             hdc = canvasOpenHDC(cnvRpgCodeScreen)
             hdc2 = canvasOpenHDC(cnv)
             
@@ -9616,6 +9611,18 @@ Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
             
             Call canvasCloseHDC(cnvRpgCodeScreen, hdc)
             Call canvasCloseHDC(cnv, hdc2)
+
+            ' Call CNVBltStretchCanvas( _
+                cnv, _
+                cnvRpgCodeScreen, _
+                offx, offy, _
+                0, 0, _
+                Int(tilesX * 32), _
+                Int(tilesY * 32), _
+                newWidth, newHeight, _
+                SRCCOPY _
+            )
+
             Call renderRPGCodeScreen
             Call delay(MISC_DELAY)
         Next tt
@@ -11661,15 +11668,8 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     Dim cnv As Long
     cnv = createCanvas(width, height)
 
-    ' Get its DC
-    Dim hCnvDC As Long
-    hCnvDC = canvasOpenHDC(cnv)
-
     ' Stretch the canvas
-    Call canvasStretchBlt(cnvSource, width, height, 0, 0, hCnvDC)
-
-    ' Close its DC
-    Call canvasCloseHDC(cnv, hCnvDC)
+    Call canvasStretchBlt(cnvSource, width, height, 0, 0, cnv)
 
     If (UBound(paras) = 7) Then
 

@@ -325,13 +325,13 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
 
     If (canvasOccupied(cnvSource)) Then
 
-        Dim w As Long, h As Long, hdcMask As Long, hdcSource As Long
-        Dim hdcInt As Long, cnvInt As Long
+        Dim w As Long, h As Long, cnvInt As Long
 
+        ' Get dimensions of canvas in question
         w = getCanvasWidth(cnvSource)
         h = getCanvasHeight(cnvSource)
 
-        ' Create an intermediate canvas.
+        ' Create an intermediate canvas
         cnvInt = createCanvas(newWidth, newHeight)
         Call canvasFill(cnvInt, crTranspColor)
 
@@ -339,37 +339,15 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
             cnvMask, cnvInt, _
             0, 0, 0, 0, _
             w, h, newWidth, newHeight, _
-            vbSrcCopy _
+            SRCAND _
         )
-
-#If (False) Then
 
         Call CNVBltStretchCanvas( _
             cnvSource, cnvInt, _
             0, 0, 0, 0, _
             w, h, newWidth, newHeight, _
-            vbSrcPaint _
+            SRCPAINT _
         )
-
-#Else
-
-        hdcInt = canvasOpenHDC(cnvInt)
-
-        ' Stretch the image onto the intermediate canvas
-        hdcSource = canvasOpenHDC(cnvSource)
-        Call StretchBlt(hdcInt, _
-                           0, 0, _
-                           newWidth, _
-                           newHeight, _
-                           hdcSource, _
-                           0, 0, _
-                           w, h, _
-                           vbSrcPaint)
-        Call canvasCloseHDC(cnvSource, hdcSource)
- 
-        Call canvasCloseHDC(cnvInt, hdcInt)
-
-#End If
 
         ' Blt the intermediate canvas to the target canvas
         Call canvas2CanvasBltTransparent(cnvInt, cnvTarget, destX, destY, crTranspColor)
@@ -711,19 +689,21 @@ End Function
 ' Reder a canvas (resized) onto a picture box
 ' Called by DrawCanvasRPG, DrawCanvasTransparentRPG.
 '=========================================================================
-Public Function canvasStretchBlt(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
+Public Function canvasStretchBlt(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal destCnv As Long) As Long
     On Error Resume Next
-    If canvasOccupied(canvasID) Then
-        Dim hdc As Long
-        hdc = canvasOpenHDC(canvasID)
-        canvasStretchBlt = StretchBlt(destPicHdc, _
-                                     destX, destY, _
-                                     newWidth, newHeight, _
-                                     hdc, _
-                                     0, 0, _
-                                     getCanvasWidth(canvasID), getCanvasHeight(canvasID), _
-                                     SRCCOPY)
-        Call canvasCloseHDC(canvasID, hdc)
+    If (canvasOccupied(canvasID)) Then
+
+        Call CNVBltStretchCanvas( _
+            canvasID, _
+            destCnv, _
+            destX, destY, _
+            0, 0, _
+            getCanvasWidth(canvasID), _
+            getCanvasHeight(canvasID), _
+            newWidth, newHeight, _
+            SRCCOPY _
+        )
+
     Else
         canvasStretchBlt = -1
     End If
