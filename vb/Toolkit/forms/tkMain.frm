@@ -6,7 +6,7 @@ Begin VB.MDIForm tkMainForm
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
    ClientHeight    =   8190
    ClientLeft      =   165
-   ClientTop       =   735
+   ClientTop       =   855
    ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
@@ -908,8 +908,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2464,13 +2464,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "10/08/2004"
+            TextSave        =   "11-8-2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   5054
-            TextSave        =   "6:49 PM"
+            Object.Width           =   5027
+            TextSave        =   "13:33"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2478,7 +2478,6 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel5 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   2
-            Enabled         =   0   'False
             TextSave        =   "NUM"
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -3198,7 +3197,7 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
     Exit Sub
 End Sub
 
-Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
 '===========================================================
 'MouseDown event on the flyout tileset viewer.
 '===========================================================
@@ -3222,14 +3221,14 @@ Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, x 
     If iMetric = 0 Then
         'Not isometric.
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tileX = Int(x / 32)                                                        'x-tile clicked.
+        tileX = Int(X / 32)                                                        'x-tile clicked.
     Else
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(x / 64)
+        tileX = Int(X / 64)
     End If
     
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
-    tileY = Int(y / 32)
+    tileY = Int(Y / 32)
     
     'Alterations for the scroller. Now scrolls row by row.
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
@@ -3414,7 +3413,7 @@ Private Sub mnuShowSplashScreen_Click()
     End If
 End Sub
 
-Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -3468,14 +3467,14 @@ Private Sub ReadCommandLine_Timer()
         Dim Edit As New rpgcodeedit
         With Edit
             .tag = "1"
-            .mnunewproject.Visible = False
+            .mnuNewProject.Visible = False
             .mnunew.Visible = False
             .mnuNewPRG.Visible = True
             .mnuOpenProject.Visible = False
-            .mnusaveall.Visible = False
+            .mnuSaveAll.Visible = False
             .closemnu.Visible = False
             .mnuToolkit.Visible = False
-            .mnuBuild.Visible = False
+            .mnubuild.Visible = False
             .mnuWindow.Visible = False
             .Show
             Dim fCaption As String
@@ -3842,8 +3841,8 @@ Private Sub Option5_Click(): On Error Resume Next
     Call activeAnimation.Option5_Click
 End Sub
 
-Private Sub palettebox_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    Call activeTile.palettebox_MouseDown(button, Shift, x, y)
+Private Sub palettebox_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+    Call activeTile.palettebox_MouseDown(button, Shift, X, Y)
 End Sub
 
 Private Sub pausebar_Change(): On Error Resume Next
@@ -3938,7 +3937,7 @@ Private Sub rightbar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub rightbar_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub rightbar_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
     'ignoreFocus = False
     'rightbar.SetFocus
     'If rightbar.width = 2730 Then
@@ -4212,8 +4211,8 @@ Private Sub tileTool_Click(Index As Integer): On Error Resume Next
     Call activeTile.ToolSet(Index)
 End Sub
 
-Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    Call activeBoard.ChangeTileType(button, Shift, x, y)
+Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+    Call activeBoard.ChangeTileType(button, Shift, X, Y)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -4224,7 +4223,7 @@ Public Sub toggle_Click(): On Error Resume Next
     Call activeBoard.toggleTileType
 End Sub
 
-Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -4244,7 +4243,7 @@ Private Sub TreeView1_DblClick(): On Error Resume Next
     ignoreFocus = False
 End Sub
 
-Private Sub TreeView1_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub TreeView1_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
     ignoreFocus = True
 End Sub
 
