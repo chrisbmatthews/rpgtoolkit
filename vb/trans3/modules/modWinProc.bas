@@ -71,7 +71,7 @@ Public Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hdc As
 '=========================================================================
 ' Public declarations
 '=========================================================================
-Public Declare Sub initEventProcessor Lib "actkrt3.dll" (ByVal openSystemsAddress As Long, ByVal closeSystemsAddress As Long)
+Public Declare Sub initEventProcessor Lib "actkrt3.dll" (ByVal closeSystemsAddress As Long)
 Public Declare Sub processEvent Lib "actkrt3.dll" ()
 
 '=========================================================================
