@@ -37,6 +37,7 @@ Public Const FT_CONFIG = 25
 Public Const FT_FIGHTING = 26
 Public Const FT_RUNTIME = 27
 Public Const FT_TIPS = 28
+Public Const FT_TUTORIAL = 29
 
 '=========================================================================
 ' Editor documents

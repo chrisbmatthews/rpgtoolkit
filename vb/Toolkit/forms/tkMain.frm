@@ -96,13 +96,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   360
+      Height          =   570
       Left            =   0
       TabIndex        =   7
       Top             =   0
       Width           =   11880
       _ExtentX        =   20955
-      _ExtentY        =   635
+      _ExtentY        =   1005
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -859,12 +859,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   4200
+      Height          =   3990
       Left            =   465
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   3510
       TabIndex        =   99
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -1087,12 +1087,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
+      Height          =   3990
       Left            =   -1350
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   1815
       TabIndex        =   95
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   1815
       Begin VB.PictureBox newBar 
@@ -1132,12 +1132,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   4200
+      Height          =   3990
       Left            =   0
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   975
       TabIndex        =   50
-      Top             =   360
+      Top             =   570
       Width           =   975
       Begin VB.PictureBox leftbar 
          BorderStyle     =   0  'None
@@ -2050,12 +2050,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
+      Height          =   3990
       Left            =   11505
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   375
       TabIndex        =   22
-      Top             =   360
+      Top             =   570
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2254,12 +2254,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
+      Height          =   3990
       Left            =   3975
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   4800
       TabIndex        =   8
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2362,12 +2362,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
+      Height          =   3990
       Left            =   8775
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   2730
       TabIndex        =   1
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   2730
       Begin VB.CommandButton exitbutton 
@@ -2469,13 +2469,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "15/09/2003"
+            TextSave        =   "18/09/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "5:50 PM"
+            TextSave        =   "3:15 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2488,6 +2488,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
+            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -4287,7 +4288,7 @@ Private Sub TreeView1_MouseMove(Button As Integer, Shift As Integer, X As Single
 End Sub
 
 Public Sub tutorialmnu_Click(): On Error Resume Next
-    MsgBox "tutorial"
+    Call frmTutorial.Show
 End Sub
 
 Public Sub usersguidemnu_Click(): On Error GoTo ErrorHandler

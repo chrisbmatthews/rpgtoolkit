@@ -852,7 +852,7 @@ End Sub
 '========================================================================
 Private Sub txtFrameTime_KeyPress(ByRef KeyAscii As Integer)
     On Error GoTo noKey
-    If (KeyAscii = 8) Then Exit Sub
+    If (KeyAscii = 8) Or (chr(KeyAscii) = ".") Then Exit Sub
     KeyAscii = Asc(CStr(CDbl(chr(KeyAscii))))
     Exit Sub
 noKey:
@@ -864,7 +864,7 @@ End Sub
 '========================================================================
 Private Sub txtIdleTime_KeyPress(ByRef KeyAscii As Integer)
     On Error GoTo noKey
-    If (KeyAscii = 8) Then Exit Sub
+    If (KeyAscii = 8) Or (chr(KeyAscii) = ".") Then Exit Sub
     KeyAscii = Asc(CStr(CDbl(chr(KeyAscii))))
     Exit Sub
 noKey:

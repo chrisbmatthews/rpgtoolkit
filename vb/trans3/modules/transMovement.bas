@@ -10,9 +10,6 @@ Option Explicit
 
 'Movement constants for pending movements
 
-Private Const IDLE_SECONDS = 3      'Seconds that a player must not move
-                                    'to be considered idle
-
 Public Const MV_IDLE = 0
 Public Const MV_NORTH = 1
 Public Const MV_SOUTH = 2
@@ -1676,39 +1673,17 @@ Public Function playerShouldDrawFrame(ByVal num As Long) As Boolean
 End Function
 
 '=========================================================================
-' Determine if a player is idle
+' Should we draw the next item frame?
 '=========================================================================
-Public Function isPlayerIdle(ByVal num As Long) As Boolean
+Public Function itemShouldDrawFrame(ByVal num As Long) As Boolean
 
-    On Error Resume Next
+    Static timeStamps() As Double       'Time stamps of movement
+    ReDim Preserve timeStamps(maxItem)  'Make one spot for each item
 
-    Static timeStamps() As Double   'Time stamps of idleness
-    ReDim Preserve timeStamps(4)    'Make one spot for each character
-
-    If (Right(UCase(pPos(num).frame), 5) = "STAND") Then
-        'Player is already marked as idle
-        isPlayerIdle = True
-    End If
-
-    If ((Timer() - timeStamps(num)) >= playerMem(num).idleTime) Then
-        'It's been long enough-- now he's idle
-        With pPos(num)
-            Select Case UCase(.stance)
-                Case "WALK_N": .stance = "STAND_N"
-                Case "WALK_S": .stance = "STAND_S"
-                Case "WALK_E": .stance = "STAND_E"
-                Case "WALK_W": .stance = "STAND_W"
-                Case "WALK_NW": .stance = "STAND_NW"
-                Case "WALK_NE": .stance = "STAND_NE"
-                Case "WALK_SW": .stance = "STAND_SW"
-                Case "WALK_SE": .stance = "STAND_SE"
-            End Select
-        End With
-        isPlayerIdle = True
-    End If
-
-    If (isPlayerIdle) Then
-        'Player was idle, update the time stamp
+    If (Timer() - timeStamps(num) >= itemMem(num).speed) Then
+        'Draw next frame
+        itemShouldDrawFrame = True
+        'Update time stamp
         timeStamps(num) = Timer()
     End If
 
@@ -1726,13 +1701,15 @@ Public Sub moveItems()
 
     Dim itmIdx As Long
     For itmIdx = 0 To UBound(pendingItemMovement)
-        Select Case pendingItemMovement(itmIdx).direction
-            Case MV_IDLE
-                'This item isn't moving...
-            Case Else
-                'Cleaned up into one sub!
-                Call pushItem(itmIdx, moveFraction)
-        End Select
+        If (itemShouldDrawFrame(itmIdx)) Then
+            Select Case pendingItemMovement(itmIdx).direction
+                Case MV_IDLE
+                    'This item isn't moving...
+                Case Else
+                    'Cleaned up into one sub!
+                    Call pushItem(itmIdx, moveFraction)
+            End Select
+        End If
     Next itmIdx
 
     'Check if we should reset movedThisFrame
@@ -1843,16 +1820,18 @@ Public Sub movePlayers()
     'Loop over each player, moving them
     Dim playerIdx As Long
     For playerIdx = 0 To UBound(pendingPlayerMovement)
-        Select Case pendingPlayerMovement(playerIdx).direction
-            Case MV_NORTH: Call pushPlayerNorth(playerIdx, moveFraction)
-            Case MV_SOUTH: Call pushPlayerSouth(playerIdx, moveFraction)
-            Case MV_EAST: Call pushPlayerEast(playerIdx, moveFraction)
-            Case MV_WEST: Call pushPlayerWest(playerIdx, moveFraction)
-            Case MV_NE: Call pushPlayerNorthEast(playerIdx, moveFraction)
-            Case MV_NW: Call pushPlayerNorthWest(playerIdx, moveFraction)
-            Case MV_SE: Call pushPlayerSouthEast(playerIdx, moveFraction)
-            Case MV_SW: Call pushPlayerSouthWest(playerIdx, moveFraction)
-        End Select
+        If (playerShouldDrawFrame(playerIdx)) Then
+            Select Case pendingPlayerMovement(playerIdx).direction
+                Case MV_NORTH: Call pushPlayerNorth(playerIdx, moveFraction)
+                Case MV_SOUTH: Call pushPlayerSouth(playerIdx, moveFraction)
+                Case MV_EAST: Call pushPlayerEast(playerIdx, moveFraction)
+                Case MV_WEST: Call pushPlayerWest(playerIdx, moveFraction)
+                Case MV_NE: Call pushPlayerNorthEast(playerIdx, moveFraction)
+                Case MV_NW: Call pushPlayerNorthWest(playerIdx, moveFraction)
+                Case MV_SE: Call pushPlayerSouthEast(playerIdx, moveFraction)
+                Case MV_SW: Call pushPlayerSouthWest(playerIdx, moveFraction)
+            End Select
+        End If
     Next playerIdx
 
     'Check if we should reset movedThisFrame

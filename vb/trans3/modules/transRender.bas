@@ -1160,8 +1160,11 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
     'Check if we need to render the item sprites
     For t = 0 To maxItem
         If itemMem(t).bIsActive Then
-            If renderItem(cnvSprites(t), itemMem(t), itmPos(t), t) Then
-                newItem = True
+            Call isItemIdle(t)
+            If itemShouldDrawFrame(t) Then
+                If renderItem(cnvSprites(t), itemMem(t), itmPos(t), t) Then
+                    newItem = True
+                End If
             End If
         End If
     Next t
@@ -1221,6 +1224,84 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
     End If
 
 End Sub
+
+'=========================================================================
+' Determine if an item is idle
+'=========================================================================
+Private Function isItemIdle(ByVal num As Long) As Boolean
+
+    On Error Resume Next
+
+    Static timeStamps() As Double       'Time stamps of idleness
+    ReDim Preserve timeStamps(maxItem)  'Make one spot for each item
+
+    If (Right(UCase(itmPos(num).frame), 5) = "STAND") Then
+        'Item is already marked as idle
+        isItemIdle = True
+    End If
+
+    If ((Timer() - timeStamps(num)) >= itemMem(num).idleTime) Then
+        'It's been long enough-- now he's idle
+        With itmPos(num)
+            Select Case UCase(.stance)
+                Case "WALK_N": .stance = "STAND_N"
+                Case "WALK_S": .stance = "STAND_S"
+                Case "WALK_E": .stance = "STAND_E"
+                Case "WALK_W": .stance = "STAND_W"
+                Case "WALK_NW": .stance = "STAND_NW"
+                Case "WALK_NE": .stance = "STAND_NE"
+                Case "WALK_SW": .stance = "STAND_SW"
+                Case "WALK_SE": .stance = "STAND_SE"
+            End Select
+        End With
+        isItemIdle = True
+    End If
+
+    If (isItemIdle) Then
+        'Item was idle, update the time stamp
+        timeStamps(num) = Timer()
+    End If
+
+End Function
+
+'=========================================================================
+' Determine if a player is idle
+'=========================================================================
+Private Function isPlayerIdle(ByVal num As Long) As Boolean
+
+    On Error Resume Next
+
+    Static timeStamps() As Double   'Time stamps of idleness
+    ReDim Preserve timeStamps(4)    'Make one spot for each character
+
+    If (Right(UCase(pPos(num).frame), 5) = "STAND") Then
+        'Player is already marked as idle
+        isPlayerIdle = True
+    End If
+
+    If ((Timer() - timeStamps(num)) >= playerMem(num).idleTime) Then
+        'It's been long enough-- now he's idle
+        With pPos(num)
+            Select Case UCase(.stance)
+                Case "WALK_N": .stance = "STAND_N"
+                Case "WALK_S": .stance = "STAND_S"
+                Case "WALK_E": .stance = "STAND_E"
+                Case "WALK_W": .stance = "STAND_W"
+                Case "WALK_NW": .stance = "STAND_NW"
+                Case "WALK_NE": .stance = "STAND_NE"
+                Case "WALK_SW": .stance = "STAND_SW"
+                Case "WALK_SE": .stance = "STAND_SE"
+            End Select
+        End With
+        isPlayerIdle = True
+    End If
+
+    If (isPlayerIdle) Then
+        'Player was idle, update the time stamp
+        timeStamps(num) = Timer()
+    End If
+
+End Function
 
 '=========================================================================
 ' Same as renderNow, but used while running RPGCode
