@@ -958,7 +958,7 @@ Private Sub fillTile( _
 
     'Create a canvas
     Dim cnv As Long
-    cnv = CreateCanvas(xRange + 1, 32 + 1)
+    cnv = createCanvas(xRange + 1, 32 + 1)
 
     'Draw the tile on the canvas
     Dim a As Long, b As Long
@@ -967,14 +967,14 @@ Private Sub fillTile( _
         
             If openTileEditorDocs(indice).isometric And isoMaskBmp(a, b) <> 0 Then
                 'Mask the corners with another "transparent" color.
-                Call CanvasSetPixel(cnv, a, b, isoColor)
+                Call canvasSetPixel(cnv, a, b, isoColor)
                 
             ElseIf tileMem(a, b) = -1 Then
                 'Change to the transparent color.
-                Call CanvasSetPixel(cnv, a, b, transparentColor)
+                Call canvasSetPixel(cnv, a, b, transparentColor)
                 
             Else
-                Call CanvasSetPixel(cnv, a, b, tileMem(a, b))
+                Call canvasSetPixel(cnv, a, b, tileMem(a, b))
             End If
             
         Next b
@@ -982,7 +982,7 @@ Private Sub fillTile( _
     
     'Open the canvas' device context
     Dim hdc As Long
-    hdc = CanvasOpenHDC(cnv)
+    hdc = canvasOpenHDC(cnv)
 
     'Create a brush
     Dim brush As Long
@@ -998,12 +998,12 @@ Private Sub fillTile( _
     Call DeleteObject(brush)
 
     'Close the device context
-    Call CanvasCloseHDC(cnv, hdc)
+    Call canvasCloseHDC(cnv, hdc)
 
     'Transfer the content on the canvas back to the tileMem() array
     For a = 1 To xRange
         For b = 1 To 32
-            tileMem(a, b) = CanvasGetPixel(cnv, a, b)
+            tileMem(a, b) = canvasGetPixel(cnv, a, b)
             
             'Restore the transparent colour.
             If tileMem(a, b) = transparentColor Then tileMem(a, b) = -1
@@ -1012,7 +1012,7 @@ Private Sub fillTile( _
     Next a
 
     'Destroy the canvas
-    Call DestroyCanvas(cnv)
+    Call destroyCanvas(cnv)
 
     'Redraw the tile
     Call tileRedraw
@@ -1028,20 +1028,20 @@ Private Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
     Dim Canv As Long
     Dim tc As Long, p As Long
     'Create an offscreen canvas, and test it
-    Canv = CreateCanvas(xRange, 32)
+    Canv = createCanvas(xRange, 32)
     tc = RGB(255, 100, 50)
-    Call CanvasSetPixel(Canv, 0, 0, tc)
-    tc = CanvasGetPixel(Canv, 0, 0)
+    Call canvasSetPixel(Canv, 0, 0, tc)
+    tc = canvasGetPixel(Canv, 0, 0)
     
     'Copy the tilemem to the offscreen canvas.
     For X = 1 To xRange
         For Y = 1 To 32
             If tileMem(X, Y) <> -1 Then
-                Call CanvasSetPixel(Canv, X - 1, Y - 1, tileMem(X, Y))
+                Call canvasSetPixel(Canv, X - 1, Y - 1, tileMem(X, Y))
             Else
                 'Set tc (from above) as the transparent color
-                Call CanvasSetPixel(Canv, X - 1, Y - 1, tc)
-                p = CanvasGetPixel(Canv, X - 1, Y - 1)
+                Call canvasSetPixel(Canv, X - 1, Y - 1, tc)
+                p = canvasGetPixel(Canv, X - 1, Y - 1)
             End If
         Next Y
     Next X
@@ -1049,40 +1049,40 @@ Private Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
     Select Case how
         Case 1 'Filled Rectangle
             If openTileEditorDocs(indice).currentColor <> -1 Then
-                Call CanvasFillBox(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
+                Call canvasFillBox(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
             Else
-                Call CanvasFillBox(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
+                Call canvasFillBox(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
             End If
         Case 2 'Rectangle
             If openTileEditorDocs(indice).currentColor <> -1 Then
-                Call CanvasBox(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
+                Call canvasBox(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
             Else
-                Call CanvasBox(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
+                Call canvasBox(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
             End If
         Case 3 'Filled Ellipse
             If openTileEditorDocs(indice).currentColor <> -1 Then
-                Call CanvasDrawFilledEllipse(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
+                Call canvasDrawFilledEllipse(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
             Else
-                Call CanvasDrawFilledEllipse(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
+                Call canvasDrawFilledEllipse(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
             End If
         Case 4 'Ellipse
             If openTileEditorDocs(indice).currentColor <> -1 Then
-                Call CanvasDrawEllipse(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
+                Call canvasDrawEllipse(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
             Else
-                Call CanvasDrawEllipse(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
+                Call canvasDrawEllipse(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
             End If
         Case 5 'Line
             If openTileEditorDocs(indice).currentColor <> -1 Then
-                Call CanvasDrawLine(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
+                Call canvasDrawLine(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, openTileEditorDocs(indice).currentColor)
             Else
-                Call CanvasDrawLine(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
+                Call canvasDrawLine(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
             End If
     End Select
 
     'Copy the canvas back to the tilemem.
     For X = 1 To xRange
         For Y = 1 To 32
-            p = CanvasGetPixel(Canv, X - 1, Y - 1)
+            p = canvasGetPixel(Canv, X - 1, Y - 1)
             If p = tc Then
                 'Transparent colour.
                 tileMem(X, Y) = -1
@@ -1093,7 +1093,7 @@ Private Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
     Next X
     
     'Destroy the Canvas
-    Call DestroyCanvas(Canv)
+    Call destroyCanvas(Canv)
     
     'Redraw
     Call tileRedraw
@@ -1164,20 +1164,9 @@ Private Sub Form_Deactivate(): On Error Resume Next
 End Sub
 
 '========================================================================
-' New instance of form created
-'========================================================================
-Private Sub Form_Initialize()
-    'Create a new indice
-    indice = newTileEditIndice()
-    Set openTileEditors(indice) = Me
-    Set activeTile = Me
-    Call clearTileDoc(openTileEditorDocs(indice))
-End Sub
-
-'========================================================================
 ' Form_KeyPress
 '========================================================================
-Private Sub Form_KeyPress(KeyAscii As Integer): On Error GoTo ErrorHandler
+Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
     If UCase(chr(KeyAscii)) = "L" Then
         If configfile.lastTileset = "" Then
             Call opentile_Click
@@ -1185,7 +1174,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error GoTo ErrorHandler
         End If
         tstFile = configfile.lastTileset
         ignoreDeactivate = True
-        tilesetform.Show vbModal ', me
+        tilesetForm.Show vbModal ', me
         If setFilename$ = "" Then Exit Sub
         
         'Open tile
@@ -1202,18 +1191,19 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error GoTo ErrorHandler
         activeTile.Caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
 
     End If
-        
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+
 End Sub
 
 '========================================================================
 ' Form_Load
 '========================================================================
-Private Sub Form_Load(): On Error GoTo ErrorHandler
+Private Sub Form_Load(): On Error Resume Next
+
+    'Create a new index.
+    indice = newTileEditIndice()
+    Set openTileEditors(indice) = Me
+    Set activeTile = Me
+    Call clearTileDoc(openTileEditorDocs(indice))
 
     'Set some variables for the form
     Call LocalizeForm(Me)
@@ -1235,11 +1225,6 @@ Private Sub Form_Load(): On Error GoTo ErrorHandler
     'Make the current tool the pen tool
     Call ToolSet(0)
     
-    Exit Sub
-'Error Handler
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 '========================================================================
@@ -1291,10 +1276,32 @@ End Sub
 '========================================================================
 Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
 
-    'Hide all tools
+    'See if the tile needs saving.
+    If openTileEditorDocs(indice).tileNeedUpdate Then
+        
+        'Yup, ask if the user wants to.
+        Dim answer As VbMsgBoxResult
+        answer = MsgBox("Save changes to " & insideBrackets(Me.Caption) & "?", vbYesNoCancel + vbQuestion)
+        
+        If answer = vbCancel Then
+        
+            'Cancel unload.
+            Cancel = 1
+            Exit Sub
+            
+        ElseIf answer = vbYes Then
+        
+            'Save the file, prompt if untitled.
+            Call saveFile
+            
+        End If
+    
+    End If
+
+    'Hide all tools.
     Call hideAllTools
     
-    'Remove this form's indice
+    'Remove this form's indice.
     Set openTileEditors(indice) = Nothing
 
 End Sub
@@ -1621,16 +1628,16 @@ Private Sub tileform_MouseMove(Button As Integer, Shift As Integer, X As Single,
             End If
         Case 5, 6:
             '(Filled) Ellipse
-            Dim Temp As Integer
+            Dim temp As Integer
             If mouseX < x1 Then
-                Temp = x1
+                temp = x1
                 x1 = mouseX
-                mouseX = Temp
+                mouseX = temp
             End If
             If mouseY < y1 Then
-                Temp = y1
+                temp = y1
                 y1 = mouseY
-                mouseY = Temp
+                mouseY = temp
             End If
     
             Dim cx As Integer, cy As Integer
@@ -1760,11 +1767,11 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     If tag <> 1 Then Call checkSave      'Check if a tile is already open and needs saving.
     openTileEditorDocs(indice).tileNeedUpdate = False
     
-    Dim antiPath As String
+    Dim antipath As String
     filename(1) = file
-    antiPath = absNoPath(file)
+    antipath = absNoPath(file)
     
-    Call FileCopy(filename(1), projectPath & tilePath & antiPath)
+    Call FileCopy(filename(1), projectPath & tilePath & antipath)
 
     Dim whichType As String
     whichType = GetExt(filename(1))
@@ -1781,12 +1788,12 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     
         tstnum = 0
         
-        configfile.lastTileset = antiPath
-        tstFile = antiPath
+        configfile.lastTileset = antipath
+        tstFile = antipath
 
         Call Hide
         Call redrawAllTiles
-        Call tilesetform.Show(vbModal)             'Show the tileset browser.
+        Call tilesetForm.Show(vbModal)             'Show the tileset browser.
         Call Show
         Set activeTile = Me
         DoEvents
@@ -1854,8 +1861,8 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         DoEvents
         Call openTile2(filename(1))
         Call highRedraw
-        openTileEditorDocs(indice).tileName = antiPath
-        Caption = LoadStringLoc(801, "Tile Editor") & "  (" & antiPath & ")"
+        openTileEditorDocs(indice).tileName = antipath
+        Caption = LoadStringLoc(801, "Tile Editor") & "  (" & antipath & ")"
 
     End If
 
@@ -1878,10 +1885,10 @@ Public Sub opentile_Click(): On Error Resume Next
     dlg.strDefaultExt = "tst"
     dlg.strFileTypes = "Supported Files|*.gph;*.tst;*.iso|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Tile (*.gph)|*.gph|RPG Toolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
     
-    Dim antiPath As String
+    Dim antipath As String
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename(1) = dlg.strSelectedFile
-        antiPath = dlg.strSelectedFileNoPath
+        antipath = dlg.strSelectedFileNoPath
     Else
         Exit Sub
     End If
@@ -1890,7 +1897,7 @@ Public Sub opentile_Click(): On Error Resume Next
 
 
     If filename(1) = "" Then Exit Sub
-    Call FileCopy(filename(1), projectPath & tilePath & antiPath)
+    Call FileCopy(filename(1), projectPath & tilePath & antipath)
     Dim whichType As String
     whichType = GetExt(filename(1))
 
@@ -1903,11 +1910,11 @@ Public Sub opentile_Click(): On Error Resume Next
 
     If UCase(whichType) = "TST" Or UCase(whichType) = "ISO" Then      'Yipes! we've selected an archive!
         tstnum = 0
-        tstFile = antiPath
+        tstFile = antipath
         configfile.lastTileset = tstFile
         
         ignoreDeactivate = True
-        Call tilesetform.Show(vbModal)
+        Call tilesetForm.Show(vbModal)
         If setFilename$ <> "" Then
         
             Call openFromTileSet(projectPath$ + tilePath$ + tilesetFilename(setFilename$), getTileNum(setFilename$))
@@ -1924,8 +1931,8 @@ Public Sub opentile_Click(): On Error Resume Next
     Else
         Call openTile2(filename$(1))
         Call highRedraw
-        openTileEditorDocs(indice).tileName = antiPath$
-        Caption = LoadStringLoc(801, "Tile Editor") + "  (" + antiPath$ + ")"
+        openTileEditorDocs(indice).tileName = antipath$
+        Caption = LoadStringLoc(801, "Tile Editor") + "  (" + antipath$ + ")"
     End If
     Call tileGrid(tkMainForm.tileGrid.value)
 
@@ -2076,8 +2083,8 @@ Private Sub savetile2_Click(): On Error Resume Next
     
     If SaveFileDialog(dlg, Me.hwnd) Then
         filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
+        Dim antipath As String
+        antipath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub            'User pressed cancel.
     End If
@@ -2107,7 +2114,7 @@ Private Sub savetile2_Click(): On Error Resume Next
             If aa > 0 Then
                 'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
                 MsgBox ("Your tile has been added to the tileset: tile number " & aa & " in " & chr$(13) & filename(1) & ".")
-                openTileEditorDocs(indice).tileName = antiPath$ + CStr(aa)
+                openTileEditorDocs(indice).tileName = antipath$ + CStr(aa)
                 Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName + ")"
             End If
         Else
@@ -2116,7 +2123,7 @@ Private Sub savetile2_Click(): On Error Resume Next
             If aa > 0 Then
                 'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
                 MsgBox ("A new tileset has been created: " & chr$(13) & filename$(1) & chr$(13) & " and the first tile added.")
-                openTileEditorDocs(indice).tileName = antiPath$ + "1"
+                openTileEditorDocs(indice).tileName = antipath$ + "1"
                 Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName + ")"
             End If
         End If
@@ -2126,8 +2133,8 @@ Private Sub savetile2_Click(): On Error Resume Next
         '.gph
 
         Call saveTile(filename(1))
-        openTileEditorDocs(indice).tileName = antiPath
-        Caption = LoadStringLoc(801, "Tile Editor") + " (" + antiPath$ + ")"
+        openTileEditorDocs(indice).tileName = antipath
+        Caption = LoadStringLoc(801, "Tile Editor") + " (" + antipath$ + ")"
         
     End If 'tst, iso.
     
@@ -2156,8 +2163,8 @@ Private Sub mnusts_Click(): On Error Resume Next
     
     If SaveFileDialog(dlg, Me.hwnd) Then
         filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
+        Dim antipath As String
+        antipath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub    'user pressed cancel
     End If
@@ -2179,13 +2186,13 @@ Private Sub mnusts_Click(): On Error Resume Next
     If a = TSTTYPE Or a = ISOTYPE Then
         'The header could be read.
     
-        tstFile$ = antiPath$
+        tstFile$ = antipath$
         configfile.lastTileset$ = tstFile$
         
         openTileEditorDocs(indice).bAllowExtraTst = True    'Allow insertion onto end of tileset.
         ignoreDeactivate = True
         
-        tilesetform.Show vbModal
+        tilesetForm.Show vbModal
         openTileEditorDocs(indice).bAllowExtraTst = False
         
         If setFilename$ = "" Then Exit Sub
@@ -2199,7 +2206,7 @@ Private Sub mnusts_Click(): On Error Resume Next
             Dim aa As Long
             aa = addToTileSet(filename$(1))
             'MsgBox "Your tile has been added to the tileset", , "Save into tileset"
-            openTileEditorDocs(indice).tileName = antiPath$ + CStr(tNum)
+            openTileEditorDocs(indice).tileName = antipath$ + CStr(tNum)
             Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName$ + ")"
             
         Else
@@ -2220,7 +2227,7 @@ Private Sub mnusts_Click(): On Error Resume Next
         If aa > 0 Then
             'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
             MsgBox ("A new tileset has been created: " & chr$(13) & filename$(1) & chr$(13) & " and the first tile added.")
-            openTileEditorDocs(indice).tileName = antiPath$ + "1"
+            openTileEditorDocs(indice).tileName = antipath$ + "1"
             Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName$ + ")"
         End If
         
@@ -2278,7 +2285,7 @@ End Sub
 Private Sub mnuSkew_Click()
     On Error GoTo ErrorHandler
     ignoreDeactivate = True
-    Skew.Show vbModal ', me
+    skew.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
@@ -2372,16 +2379,11 @@ ErrorHandler:
 End Sub
 
 'Color
-Public Sub scolormnu_Click()
-    On Error GoTo ErrorHandler
+Public Sub scolormnu_Click(): On Error Resume Next
+
     openTileEditorDocs(indice).currentColor = ColorDialog()
     Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(indice).currentColor)
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 'DOS Color
@@ -2575,7 +2577,7 @@ End Sub
 Private Sub mnuTranslucentize_Click()
     On Error GoTo ErrorHandler
     ignoreDeactivate = True
-    tileTranslucentize.Show vbModal
+    tiletranslucentize.Show vbModal
 
     Exit Sub
 'Begin error handling code:
