@@ -1100,20 +1100,6 @@ Private Sub drawImage( _
 
 End Sub
 
-Private Function waitForKey() As String
-
-    '====================================================================================
-    'Waits until a key is pressed and returns it
-    '====================================================================================
-
-    Call CBRpgCode("key$ = Wait()")
-    Dim key As String
-    key = UCase(CBGetString("key$"))
-    Call CBRpgCode("Kill(key$)")
-    waitForKey = key
-
-End Function
-
 Private Sub mainMenuScanKeys(ByRef player As Fighter)
 
     '====================================================================================
@@ -1212,81 +1198,79 @@ Private Sub mainMenuScanKeys(ByRef player As Fighter)
         Call CBDrawCanvas(cnv, 0, 0)
         Call CBRefreshScreen
 
-        Select Case waitForKey()
+        If isPressed("UP") Then
+            If menuPos <> 0 Then
+                menuPos = menuPos - 1
+                Call cursorMoveSound
+            End If
 
-            Case "UP"
-                If menuPos <> 0 Then
-                    menuPos = menuPos - 1
-                    Call cursorMoveSound
-                End If
+        ElseIf isPressed("DOWN") Then
+            If menuPos <> 3 Then
+                menuPos = menuPos + 1
+                Call cursorMoveSound
+            End If
 
-            Case "DOWN"
-                If menuPos <> 3 Then
-                    menuPos = menuPos + 1
-                    Call cursorMoveSound
-                End If
+        ElseIf isPressed("ENTER", "SPACE") Then
 
-            Case "ENTER", " "
+            Call cursorSelSound
 
-                Call cursorSelSound
+            Select Case menuPos
 
-                Select Case menuPos
+                Case 0 'Fight
+                    Call characterSelect(tarParty, tarMember, ENEMY_PARTY)
+                    If tarMember <> -1 Then
+                        Call CBFightDoAttack( _
+                                                PLAYER_PARTY, player.idx, _
+                                                tarParty, tarMember, _
+                                                CBGetFighterFP(PLAYER_PARTY, player.idx), 0)
+                        done = True
+                    Else
+                        Call cursorCancelSound
+                    End If
 
-                    Case 0 'Fight
-                        Call characterSelect(tarParty, tarMember, ENEMY_PARTY)
-                        If tarMember <> -1 Then
-                            Call CBFightDoAttack( _
-                                                    PLAYER_PARTY, player.idx, _
-                                                    tarParty, tarMember, _
-                                                    CBGetFighterFP(PLAYER_PARTY, player.idx), 0)
+                Case 1 'Special
+                    Call CBDrawCanvas(oldCnv, 0, 0)
+                    Call CBRefreshScreen
+                    If CBGetPlayerNum(PLAYER_DOES_SM, 0, player.idx) = 1 Then
+                        If specialMoveMenuScanKeys(player) Then
                             done = True
-                        Else
-                            Call cursorCancelSound
                         End If
+                    Else
+                        Call cursorCancelSound
+                    End If
 
-                    Case 1 'Special
-                        Call CBDrawCanvas(oldCnv, 0, 0)
-                        Call CBRefreshScreen
-                        If CBGetPlayerNum(PLAYER_DOES_SM, 0, player.idx) = 1 Then
-                            If specialMoveMenuScanKeys(player) Then
-                                done = True
-                            End If
+                Case 2 'Item
+                    Call CBDrawCanvas(oldCnv, 0, 0)
+                    Call CBRefreshScreen
+                    If itemMenuScanKeys(player) Then
+                        done = True
+                    Else
+                        Call cursorCancelSound
+                    End If
+
+                Case 3 'Run
+                    If canRunAway Then
+                        Dim rand As Long
+                        Call Randomize(Timer())
+                        rand = Int(Rnd(1) * 5) + 1
+                        If rand > 3 Then
+                            Call CBRpgCode("MWin(""Ran away successfully!"")")
+                            ranAway = True
                         Else
-                            Call cursorCancelSound
+                            Call CBRpgCode("MWin(""Couldn't get away!"")")
                         End If
+                        Call CBRpgCode("Delay(.5)")
+                        Call CBRpgCode("MWinCls()")
+                        done = True
+                    Else
+                        Call cursorCancelSound
+                    End If
 
-                    Case 2 'Item
-                        Call CBDrawCanvas(oldCnv, 0, 0)
-                        Call CBRefreshScreen
-                        If itemMenuScanKeys(player) Then
-                            done = True
-                        Else
-                            Call cursorCancelSound
-                        End If
+            End Select
 
-                    Case 3 'Run
-                        If canRunAway Then
-                            Dim rand As Long
-                            Call Randomize(Timer())
-                            rand = Int(Rnd(1) * 5) + 1
-                            If rand > 3 Then
-                                Call CBRpgCode("MWin(""Ran away successfully!"")")
-                                ranAway = True
-                            Else
-                                Call CBRpgCode("MWin(""Couldn't get away!"")")
-                            End If
-                            Call CBRpgCode("Delay(.5)")
-                            Call CBRpgCode("MWinCls()")
-                            done = True
-                        Else
-                            Call cursorCancelSound
-                        End If
+        End If
 
-                End Select
-
-        End Select
-
-        DoEvents
+        Call CBDoEvents
 
     Loop
 
@@ -1358,125 +1342,123 @@ Private Sub characterSelect( _
         Call CBDrawCanvas(cnv, 0, 0)
         Call CBRefreshScreen
 
-        Select Case waitForKey()
+        If isPressed("LEFT") Then
+            If party = ENEMY_PARTY Then
+                If (pos = 0) _
+                    Or (pos = 1 And CBGetFighterHP(ENEMY_PARTY, 0) <= 0) _
+                    Or (pos = 3 And CBGetFighterHP(ENEMY_PARTY, 2) <= 0) _
+                    Or (pos = 2) Then
+                    party = PLAYER_PARTY
+                    For a = 0 To UBound(Players)
+                        If CBGetFighterHP(PLAYER_PARTY, a) > 0 Then
+                            pos = a
+                            Exit For
+                        End If
+                    Next a
+                ElseIf pos = 1 Then
+                    If CBGetFighterHP(ENEMY_PARTY, 0) > 0 Then
+                        pos = 0
+                    End If
+                ElseIf pos = 3 Then
+                    If CBGetFighterHP(ENEMY_PARTY, 2) > 0 Then
+                        pos = 2
+                    ElseIf CBGetFighterHP(ENEMY_PARTY, 1) > 0 Then
+                        pos = 1
+                    ElseIf CBGetFighterHP(ENEMY_PARTY, 0) > 0 Then
+                        pos = 0
+                    End If
+                End If
+            Else
+                party = ENEMY_PARTY
+                For a = 0 To UBound(Enemies)
+                    If CBGetFighterHP(ENEMY_PARTY, a) > 0 Then
+                        pos = a
+                        Exit For
+                    End If
+                Next a
+            End If
+            Call cursorMoveSound
+                
+        ElseIf isPressed("RIGHT") Then
+            If party = ENEMY_PARTY Then
+                If (pos = 1) _
+                    Or (pos = 0 And CBGetFighterHP(ENEMY_PARTY, 1) <= 0) _
+                    Or (pos = 2 And CBGetFighterHP(ENEMY_PARTY, 3) <= 0) _
+                    Or (pos = 3) Then
+                    party = PLAYER_PARTY
+                    For a = 0 To UBound(Players)
+                        If CBGetFighterHP(PLAYER_PARTY, a) > 0 Then
+                            pos = a
+                            Exit For
+                        End If
+                    Next a
+                ElseIf (pos = 0) Then
+                    pos = 1
+                ElseIf (pos = 2) Then
+                    pos = 3
+                End If
+            Else
+                party = ENEMY_PARTY
+                For a = 0 To UBound(Enemies)
+                    If CBGetFighterHP(ENEMY_PARTY, a) > 0 Then
+                        pos = a
+                        Exit For
+                    End If
+                Next a
+            End If
+            Call cursorMoveSound
 
-            Case "LEFT"
-                If party = ENEMY_PARTY Then
-                    If (pos = 0) _
-                       Or (pos = 1 And CBGetFighterHP(ENEMY_PARTY, 0) <= 0) _
-                       Or (pos = 3 And CBGetFighterHP(ENEMY_PARTY, 2) <= 0) _
-                       Or (pos = 2) Then
-                        party = PLAYER_PARTY
-                        For a = 0 To UBound(Players)
-                            If CBGetFighterHP(PLAYER_PARTY, a) > 0 Then
-                                pos = a
-                                Exit For
-                            End If
-                        Next a
-                    ElseIf pos = 1 Then
+        ElseIf isPressed("UP") Then
+            If party = ENEMY_PARTY Then
+                Select Case pos
+                    Case 2
                         If CBGetFighterHP(ENEMY_PARTY, 0) > 0 Then
                             pos = 0
                         End If
-                    ElseIf pos = 3 Then
+                    Case 3
+                        If CBGetFighterHP(ENEMY_PARTY, 1) > 0 Then
+                            pos = 1
+                        End If
+                End Select
+            Else
+                If pos <> 0 Then
+                    pos = pos - 1
+                End If
+            End If
+            Call cursorMoveSound
+
+        ElseIf isPressed("DOWN") Then
+            If party = ENEMY_PARTY Then
+                Select Case pos
+                    Case 0
                         If CBGetFighterHP(ENEMY_PARTY, 2) > 0 Then
                             pos = 2
-                        ElseIf CBGetFighterHP(ENEMY_PARTY, 1) > 0 Then
-                            pos = 1
-                        ElseIf CBGetFighterHP(ENEMY_PARTY, 0) > 0 Then
-                            pos = 0
                         End If
-                    End If
-                Else
-                    party = ENEMY_PARTY
-                    For a = 0 To UBound(Enemies)
-                        If CBGetFighterHP(ENEMY_PARTY, a) > 0 Then
-                            pos = a
-                            Exit For
+                    Case 1
+                        If CBGetFighterHP(ENEMY_PARTY, 3) > 0 Then
+                            pos = 3
                         End If
-                    Next a
+                End Select
+            Else
+                If pos <> UBound(Players) Then
+                    pos = pos + 1
                 End If
-                Call cursorMoveSound
-                
-            Case "RIGHT"
-                If party = ENEMY_PARTY Then
-                    If (pos = 1) _
-                       Or (pos = 0 And CBGetFighterHP(ENEMY_PARTY, 1) <= 0) _
-                       Or (pos = 2 And CBGetFighterHP(ENEMY_PARTY, 3) <= 0) _
-                       Or (pos = 3) Then
-                        party = PLAYER_PARTY
-                        For a = 0 To UBound(Players)
-                            If CBGetFighterHP(PLAYER_PARTY, a) > 0 Then
-                                pos = a
-                                Exit For
-                            End If
-                        Next a
-                    ElseIf (pos = 0) Then
-                        pos = 1
-                    ElseIf (pos = 2) Then
-                        pos = 3
-                    End If
-                Else
-                    party = ENEMY_PARTY
-                    For a = 0 To UBound(Enemies)
-                        If CBGetFighterHP(ENEMY_PARTY, a) > 0 Then
-                            pos = a
-                            Exit For
-                        End If
-                    Next a
-                End If
-                Call cursorMoveSound
+            End If
+            Call cursorMoveSound
 
-            Case "UP"
-                If party = ENEMY_PARTY Then
-                    Select Case pos
-                        Case 2
-                            If CBGetFighterHP(ENEMY_PARTY, 0) > 0 Then
-                                pos = 0
-                            End If
-                        Case 3
-                            If CBGetFighterHP(ENEMY_PARTY, 1) > 0 Then
-                                pos = 1
-                            End If
-                    End Select
-                Else
-                    If pos <> 0 Then
-                        pos = pos - 1
-                    End If
-                End If
-                Call cursorMoveSound
+        ElseIf isPressed("ESC", "B", "Q") Then
+            Call cursorCancelSound
+            done = True
 
-            Case "DOWN"
-                If party = ENEMY_PARTY Then
-                    Select Case pos
-                        Case 0
-                            If CBGetFighterHP(ENEMY_PARTY, 2) > 0 Then
-                                pos = 2
-                            End If
-                        Case 1
-                            If CBGetFighterHP(ENEMY_PARTY, 3) > 0 Then
-                                pos = 3
-                            End If
-                    End Select
-                Else
-                    If pos <> UBound(Players) Then
-                        pos = pos + 1
-                    End If
-                End If
-                Call cursorMoveSound
+        ElseIf isPressed("ENTER", "SPACE") Then
+            Call cursorSelSound
+            chosenFighter = pos
+            chosenParty = party
+            done = True
 
-            Case "", "B", "Q"
-                Call cursorCancelSound
-                done = True
+        End If
 
-            Case "ENTER", " "
-                Call cursorSelSound
-                chosenFighter = pos
-                chosenParty = party
-                done = True
-
-        End Select
-
-        DoEvents
+        Call CBDoEvents
 
     Loop
 
@@ -1599,65 +1581,63 @@ Private Function specialMoveMenuScanKeys(ByRef player As Fighter) As Boolean
         Call CBDrawCanvas(cnv, 0, 0)
         Call CBRefreshScreen
 
-        Select Case waitForKey()
-        
-            Case "DOWN"
-                If (startGrab + 6) < b Then
-                    startGrab = startGrab + 1
-                Else
-                    If menuPos <> 5 Then
-                        menuPos = menuPos + 1
-                    End If
+        If isPressed("DOWN") Then
+            If (startGrab + 6) < b Then
+                startGrab = startGrab + 1
+            Else
+                If menuPos <> 5 Then
+                    menuPos = menuPos + 1
                 End If
-                Call cursorMoveSound
-                
-            Case "UP"
-                If (startGrab) > 0 Then
-                    startGrab = startGrab - 1
-                Else
-                    If menuPos <> 0 Then
-                        menuPos = menuPos - 1
-                    End If
+            End If
+            Call cursorMoveSound
+
+        ElseIf isPressed("UP") Then
+            If (startGrab) > 0 Then
+                startGrab = startGrab - 1
+            Else
+                If menuPos <> 0 Then
+                    menuPos = menuPos - 1
                 End If
-                Call cursorMoveSound
-            
-            Case "ENTER", " "
-                Dim theMove As String
-                theMove = moves(startGrab + menuPos).filename
-                If theMove <> "" Then
-                    If CBGetFighterSMP(PLAYER_PARTY, player.idx) >= moves(startGrab + menuPos).mp Then
-                        Dim tarParty As Long, tarMember As Long
-                        Call characterSelect(tarParty, tarMember, ENEMY_PARTY)
-                        If tarMember <> -1 Then
-                            Call cursorSelSound
-                            Call CBFightUseSpecialMove( _
-                                                          PLAYER_PARTY, _
-                                                          player.idx, _
-                                                          tarParty, _
-                                                          tarMember, _
-                                                          theMove)
-                            done = True
-                            specialMoveMenuScanKeys = True
-                        Else
-                            Call cursorCancelSound
-                        End If
+            End If
+            Call cursorMoveSound
+
+        ElseIf isPressed("ENTER", "SPACE") Then
+            Dim theMove As String
+            theMove = moves(startGrab + menuPos).filename
+            If theMove <> "" Then
+                If CBGetFighterSMP(PLAYER_PARTY, player.idx) >= moves(startGrab + menuPos).mp Then
+                    Dim tarParty As Long, tarMember As Long
+                    Call characterSelect(tarParty, tarMember, ENEMY_PARTY)
+                    If tarMember <> -1 Then
+                        Call cursorSelSound
+                        Call CBFightUseSpecialMove( _
+                                                      PLAYER_PARTY, _
+                                                      player.idx, _
+                                                      tarParty, _
+                                                      tarMember, _
+                                                      theMove)
+                        done = True
+                        specialMoveMenuScanKeys = True
                     Else
                         Call cursorCancelSound
-                        Call CBRpgCode("MWin(""Not enough SMP!"")")
-                        Call CBRpgCode("Delay(0.5)")
-                        Call CBRpgCode("MWinCls()")
                     End If
                 Else
                     Call cursorCancelSound
+                    Call CBRpgCode("MWin(""Not enough SMP!"")")
+                    Call CBRpgCode("Delay(0.5)")
+                    Call CBRpgCode("MWinCls()")
                 End If
-
-            Case "", "B", "Q"
+            Else
                 Call cursorCancelSound
-                done = True
+            End If
 
-        End Select
+        ElseIf isPressed("ESC", "B", "Q") Then
+            Call cursorCancelSound
+            done = True
+            
+        End If
 
-        DoEvents
+        Call CBDoEvents
 
     Loop
 
@@ -1776,58 +1756,56 @@ Private Function itemMenuScanKeys(ByRef player As Fighter) As Boolean
         Call CBDrawCanvas(cnv, 0, 0)
         Call CBRefreshScreen
 
-        Select Case waitForKey()
-        
-            Case "DOWN"
-                If (startGrab + 6) < b Then
-                    startGrab = startGrab + 1
-                Else
-                    If menuPos <> 5 Then
-                        menuPos = menuPos + 1
-                    End If
+        If isPressed("DOWN") Then
+            If (startGrab + 6) < b Then
+                startGrab = startGrab + 1
+            Else
+                If menuPos <> 5 Then
+                    menuPos = menuPos + 1
                 End If
-                Call cursorMoveSound
-                
-            Case "UP"
-                If (startGrab) > 0 Then
-                    startGrab = startGrab - 1
-                Else
-                    If menuPos <> 0 Then
-                        menuPos = menuPos - 1
-                    End If
-                End If
-                Call cursorMoveSound
-            
-            Case "ENTER", " "
-                Dim theItem As String
-                theItem = items(startGrab + menuPos).filename
-                If theItem <> "" Then
-                    Dim tarParty As Long, tarMember As Long
-                    Call characterSelect(tarParty, tarMember, PLAYER_PARTY)
-                    If tarMember <> -1 Then
-                        Call cursorSelSound
-                        Call CBFightUseItem( _
-                                               PLAYER_PARTY, _
-                                               player.idx, _
-                                               tarParty, _
-                                               tarMember, _
-                                               theItem)
-                        done = True
-                        itemMenuScanKeys = True
-                    Else
-                        Call cursorCancelSound
-                    End If
-                Else
-                    Call cursorCancelSound
-                End If
+            End If
+            Call cursorMoveSound
 
-            Case "", "B", "Q"
-                Call cursorCancelSound
+        ElseIf isPressed("UP") Then
+            If (startGrab) > 0 Then
+                startGrab = startGrab - 1
+            Else
+                If menuPos <> 0 Then
+                    menuPos = menuPos - 1
+                End If
+            End If
+            Call cursorMoveSound
+
+        ElseIf isPressed("ENTER", "SPACE") Then
+            Dim theItem As String
+            theItem = items(startGrab + menuPos).filename
+            If theItem <> "" Then
+            Dim tarParty As Long, tarMember As Long
+            Call characterSelect(tarParty, tarMember, PLAYER_PARTY)
+            If tarMember <> -1 Then
+                Call cursorSelSound
+                Call CBFightUseItem( _
+                                       PLAYER_PARTY, _
+                                       player.idx, _
+                                       tarParty, _
+                                       tarMember, _
+                                       theItem)
                 done = True
+                itemMenuScanKeys = True
+            Else
+                Call cursorCancelSound
+            End If
+        Else
+            Call cursorCancelSound
+        End If
 
-        End Select
+        ElseIf isPressed("ESC", "B", "Q") Then
+            Call cursorCancelSound
+            done = True
+       
+        End If
 
-        DoEvents
+        Call CBDoEvents
 
     Loop
 
@@ -1864,3 +1842,17 @@ Private Sub cursorSelSound()
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
 End Sub
+
+'====================================================================================
+' Check if a key is pressed
+'====================================================================================
+Private Function isPressed(ParamArray keys() As Variant) As Boolean
+    On Error Resume Next
+    Dim keyIdx As Long
+    For keyIdx = LBound(keys) To UBound(keys)
+        If CBCheckKey(keys(keyIdx)) = 1 Then
+            isPressed = True
+            Exit Function
+        End If
+    Next keyIdx
+End Function
