@@ -35,6 +35,7 @@ Private Declare Function InitCommonControlsEx Lib "comctl32.dll" (ByRef iccex As
 Private Const REG_SZ = 1
 Private Const HKEY_LOCAL_MACHINE = &H80000002
 Private Const ICC_USEREX_CLASSES = &H200
+Public Const RPGTOOLKIT_VERSION = "3.05"
 
 '=======================================================================
 ' Common controls structure
@@ -64,7 +65,20 @@ Public Sub Main()
     ' First, initiate the common controls
     Call initCommonControls
 
-    ' Next, show the main form
+    ' Check if same version is already installed
+    If (GetSetting("RPGToolkit3", "Settings", "Version", vbNullString) = RPGTOOLKIT_VERSION) Then
+
+        ' Alert the user
+        If (MsgBox("Version " & RPGTOOLKIT_VERSION & " of the RPGToolkit appears to be already installed on this computer. It is recommended you uninstall (via ""Add or Remove Programs"") before attempting to install again. Proceed anyway?", vbDefaultButton2 Or vbYesNo) = vbNo) Then
+
+            ' Do not proceed
+            Exit Sub
+
+        End If
+
+    End If
+
+    ' Finally, show the main form
     Call frmMain.Show
 
 End Sub
@@ -159,7 +173,7 @@ Public Sub performSetup()
     On Error Resume Next
 
     Dim strPath As String, strExe As String
-    strPath = frmMain.txtDirecory.Text
+    strPath = frmMain.txtDirectory.Text
     If (RightB$(strPath, 2) <> "\") Then strPath = strPath & "\"
     strExe = App.Path & "\" & App.EXEName & ".exe"
 
@@ -183,8 +197,10 @@ Public Sub performSetup()
     Call registerServer(strPath & "richtx32.ocx", frmMain.hwnd)
     Call registerServer(strPath & "tabctl32.ocx", frmMain.hwnd)
 
-    ' Store path in a key
+    ' Store some settings
     Call SaveSetting("RPGToolkit3", "Settings", "Path", strPath)
+    Call SaveSetting("RPGToolkit3", "Settings", "Group", IIf(frmMain.chkCreateStartMenuGroup.Value, frmMain.txtGroupName, vbNullString))
+    Call SaveSetting("RPGToolkit3", "Settings", "Version", RPGTOOLKIT_VERSION)
 
     ' Add an entry to Add or Remove programs
     Dim hKey As Long, hNewKey As Long
@@ -192,19 +208,32 @@ Public Sub performSetup()
     Call RegCreateKey(hKey, "RPGToolkit3", hNewKey)
     Call RegCloseKey(hKey)
     hKey = hNewKey
-    Call RegSetValueEx(hKey, "DisplayName", 0, REG_SZ, ByVal "RPGToolkit, Version 3.05", Len("RPGToolkit, Version 3.05"))
+    Call RegSetValueEx(hKey, "DisplayName", 0, REG_SZ, ByVal "RPGToolkit, Version " & RPGTOOLKIT_VERSION, Len("RPGToolkit, Version " & RPGTOOLKIT_VERSION))
     Call RegSetValueEx(hKey, "UninstallString", 0, REG_SZ, ByVal (strPath & "uninstall.exe"), Len(strPath & "uninstall.exe"))
     Call RegSetValueEx(hKey, "DisplayIcon", 0, REG_SZ, ByVal (strPath & "trans3.exe,0"), Len(strPath & "trans3.exe,0"))
     Call RegSetValueEx(hKey, "URLInfoAbout", 0, REG_SZ, ByVal "http://www.toolkitzone.com", Len("http://www.toolkitzone.com"))
     Call RegSetValueEx(hKey, "URLUpdateInfo", 0, REG_SZ, ByVal "http://www.toolkitzone.com", Len("http://www.toolkitzone.com"))
     Call RegCloseKey(hKey)
 
+    ' Make sure the start menu group has no trailing "\"
+    Dim lngLength As Long
+    lngLength = LenB(frmMain.txtGroupName)
+    If (lngLength) Then
+        Dim rB As String
+        rB = RightB$(frmMain.txtGroupName, 2)
+        If (rB = "\" Or rB = "/") Then
+            frmMain.txtGroupName = LeftB$(frmMain.txtGroupName, lngLength - 2)
+        End If
+    End If
+
     ' Create start menu icons
-    Call FileCopy(strPath & "vb5stkit.dll", "vb5stkit.dll")
-    Call MkDir(StartMenuDir() & "RPG Toolkit 3")
-    Call MakeShortcut(strPath & "trans3.exe", "", "RPG Toolkit 3\Game Engine")
-    Call MakeShortcut(strPath & "trans3.exe", "demo.gam", "RPG Toolkit 3\Play Demo Game")
-    Call MakeShortcut(strPath & "toolkit3.exe", "", "RPG Toolkit 3\RPG Toolkit Editor")
+    If (frmMain.chkCreateStartMenuGroup.Value) Then
+        Call FileCopy(strPath & "vb5stkit.dll", "vb5stkit.dll")
+        Call MkDir(StartMenuDir() & frmMain.txtGroupName)
+        Call MakeShortcut(strPath & "trans3.exe", "", frmMain.txtGroupName & "\Game Engine")
+        Call MakeShortcut(strPath & "trans3.exe", "demo.gam", frmMain.txtGroupName & "\Play Demo Game")
+        Call MakeShortcut(strPath & "toolkit3.exe", "", frmMain.txtGroupName & "\RPG Toolkit Editor")
+    End If
 
     ' Clean up
     Call Kill("zip.zip")
@@ -225,12 +254,13 @@ Private Sub extractDir( _
     Call ZIPOpen(zipFile)
     cnt = ZIPGetFileCount()
     frmMain.progress.Min = 0
-    frmMain.progress.Max = cnt - 1
+    frmMain.progress.Max = cnt
     For fileIdx = 0 To (cnt - 1)
         Dim strName As String
         strName = GetZipFilename(fileIdx)
         frmMain.progress.Value = fileIdx
-        frmMain.progress.Text = CStr(Round(frmMain.progress.Percent)) & "% complete"
+        frmMain.progress.Text = CStr(Round(frmMain.progress.Percent)) & "%"
+        frmMain.lblCurrentFile.Caption = Replace(strName, "/", "\")
         Call ZIPExtract(strName, extractInto & strName)
         DoEvents
     Next fileIdx

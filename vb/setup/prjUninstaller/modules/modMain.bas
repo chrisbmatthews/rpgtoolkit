@@ -14,8 +14,9 @@ Public Sub Main()
     If (MsgBox("This will uninstall the RPGToolkit, version 3; your game projects will not be removed. Proceed?", vbCritical Or vbOKCancel Or vbDefaultButton2, "Uninstaller") = vbOK) Then
 
         ' Get path to TK3
-        Dim strPath As String
+        Dim strPath As String, strStartMenu As String
         strPath = GetSetting("RPGToolkit3", "Settings", "Path")
+        strStartMenu = GetSetting("RPGToolkit3", "Settings", "Group")
 
         ' Blow it away
         Call deletePath(strPath & "help\help1_std_files\")
@@ -37,9 +38,13 @@ Public Sub Main()
         Call deletePath(strPath & "game\basic\")
         Call deletePath(strPath & "resources\")
         Call deletePath(strPath)
-        Call deletePath(StartMenuDir() & "RPG Toolkit 3\")
+
+        If (LenB(strStartMenu)) Then
+            Call deletePath(StartMenuDir() & strStartMenu & "\")
+        End If
 
         ' Kill registry keys
+        Call DeleteSetting("RPGToolkit3", "Settings", "Version")
         Call RegDeleteKey(&H80000002, "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\RPGToolkit3\")
 
         Call MsgBox("The RPGToolkit, version 3 was successfully uninstalled!", , "Uninstaller")
