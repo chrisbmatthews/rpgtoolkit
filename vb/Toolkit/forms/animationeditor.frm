@@ -749,7 +749,7 @@ End Sub
 ' and resizes it. Also updates the framecount caption, sound textbox and
 ' transparent picturebox.
 '========================================================================
-Private Sub DrawFrame(ByVal frameNum As Long)
+Private Sub DrawFrame(ByVal framenum As Long)
 
     On Error Resume Next
 
@@ -757,7 +757,7 @@ Private Sub DrawFrame(ByVal frameNum As Long)
     Call vbPicCls(arena)
 
     'Draw the frame
-    Call AnimDrawFrame(animationList(activeAnimationIndex).theData, frameNum, 0, 0, vbPicHDC(arena))
+    Call AnimDrawFrame(animationList(activeAnimationIndex).theData, framenum, 0, 0, vbPicHDC(arena))
 
     'Refresh the picturebox
     Call vbPicRefresh(arena)
@@ -767,7 +767,7 @@ Private Sub DrawFrame(ByVal frameNum As Long)
     maxFrame = animGetMaxFrame(animationList(activeAnimationIndex).theData)
 
     'Update the boxes and such
-    tkMainForm.framecount.Caption = "Frame " & toString(animationList(activeAnimationIndex).theData.animCurrentFrame + 1) & " / " & toString(maxFrame + 1)
+    tkMainForm.framecount.Caption = "Frame " & CStr(animationList(activeAnimationIndex).theData.animCurrentFrame + 1) & " / " & CStr(maxFrame + 1)
     tkMainForm.soundeffect.Text = animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame)
     Call vbPicFillRect(tkMainForm.transpcolor, 0, 0, 1000, 1000, animationList(activeAnimationIndex).theData.animTransp(animationList(activeAnimationIndex).theData.animCurrentFrame))
 

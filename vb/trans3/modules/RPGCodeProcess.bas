@@ -139,24 +139,24 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     num = FreeFile()
 
     'Open the file
-    Open file For Input As num
+    Open file For Input Access Read As num
 
         'Dimension the .program() array...
         ReDim thePrg.program(0)
 
         Do Until EOF(num)
 
-            'Read a line from the file
-            theLine = fread(num)
-           
-            Dim c(2) As String
-            Dim lines() As String
-            Dim uD() As String
-            Dim a As Long
+            'Read a line
+            Line Input #num, theLine
+
+            Dim c(2) As String      'Delimiter array
+            Dim lines() As String   'Array of lines
+            Dim uD() As String      'Delimters used
+            Dim a As Long           'Loop control variables
 
             'Trim up that line...
             theLine = replaceOutsideQuotes(Trim(theLine), vbTab, "")
-           
+
             If Right(theLine, 1) = "_" Then
                 'This line is actually only part of a line, let's get the
                 'whole line...

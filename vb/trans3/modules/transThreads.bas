@@ -79,7 +79,7 @@ Public Sub ClearNonPersistentThreads()
     
     For c = 0 To UBound(threads)
         If (threads(c).bPersistent = False) Then
-            Call TellThread(c, "Unload()", retval)
+            Call TellThread(c, "Unload()", retval, True)
             threads(c).filename = ""
             threads(c).thread.programPos = -1
             threads(c).thread.threadID = -1
@@ -114,7 +114,7 @@ Public Sub ClearAllThreads()
     Dim retval As RPGCODE_RETURN    'unused rpgcode return value
 
     For c = 0 To UBound(threads)
-        Call TellThread(c, "Unload()", retval)
+        Call TellThread(c, "Unload()", retval, True)
         threads(c).filename = ""
         threads(c).thread.programPos = -1
         threads(c).thread.threadID = -1
@@ -135,33 +135,37 @@ End Sub
 '=========================================================================
 Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean) As Long
 
-    Dim c As Long
-    Dim size As Long
-    
+    Dim c As Long       'for loop control variables
+    Dim size As Long    'size of threads() array
+
     'search for a free persistent thread slot
     For c = 0 To UBound(threads)
-        If (threads(c).filename = "") Then
-            'this is a thread that has been halted, thus it's slot is free
-            threads(c).thread = openProgram(file)
-            threads(c).filename = file
-            threads(c).bPersistent = bPersistent
-            threads(c).thread.threadID = c
-            threads(c).bIsSleeping = False
-            CreateThread = c
-            Exit Function
-        End If
+        With threads(c)
+            If (.filename = "") Then
+                'this is a thread that has been halted, thus it's slot is free
+                .thread = openProgram(file)
+                .filename = file
+                .bPersistent = bPersistent
+                .thread.threadID = c
+                .bIsSleeping = False
+                CreateThread = c
+                Exit Function
+            End If
+        End With
     Next c
-    
+
     'need a free slot...
     size = UBound(threads)
     ReDim Preserve threads(size * 2)
-    
-    threads(size).thread = openProgram(file)
-    threads(size).filename = file
-    threads(size).bPersistent = bPersistent
-    threads(size).thread.threadID = c
-    threads(size).bIsSleeping = False
+    With threads(size)
+        .thread = openProgram(file)
+        .filename = file
+        .bPersistent = bPersistent
+        .thread.threadID = c
+        .bIsSleeping = False
+    End With
     CreateThread = size
+
 End Function
 
 '=========================================================================
@@ -247,11 +251,11 @@ End Sub
 '=========================================================================
 ' Call a method from a thread
 '=========================================================================
-Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN)
+Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
     On Error Resume Next
     Dim shortName As String
     shortName = UCase(GetCommandName(rpgcodeCommand, threads(threadID).thread))
-    Call MethodCallRPG(rpgcodeCommand, shortName, threads(threadID).thread, retval)
+    Call MethodCallRPG(rpgcodeCommand, shortName, threads(threadID).thread, retval, noMethodNotFound)
 End Sub
 
 '=========================================================================
@@ -299,7 +303,7 @@ skip:
     Dim retval As RPGCODE_RETURN
     For a = 0 To UBound(threads)
         If threads(a).bPersistent Then
-            Call TellThread(a, "EnterNewBoard()", retval)
+            Call TellThread(a, "EnterNewBoard()", retval, True)
         End If
     Next a
 skipAgain:

@@ -178,8 +178,8 @@ Public Sub Create()
         .lpfnwndproc = getAddress(AddressOf WndProc) 'Address of WinProc
         .hInstance = App.hInstance 'instance of owning application
         If fileExists("icon.ico") Then
-            .hIcon = LoadIcon(0, "icon.ico")
-            .hIconSm = LoadIcon(0, "icon.ico")
+            .hIcon = LoadPicture(0, "icon.ico").handle
+            .hIconSm = LoadPicture(0, "icon.ico").handle
         End If
         .hbrBackground = GetStockObject(BLACK_BRUSH) 'black background
         .lpszClassName = WINDOWS_CLASS 'name of this class
@@ -230,7 +230,7 @@ Public Sub mainEventLoop()
     'to break out of this loop is to call PostQuitMessage().
 
     Dim message As msg
-    Do While True
+    Do
         If PeekMessage(message, host.hwnd, 0, 0, PM_REMOVE) Then
             'There was a message, check if it's WinProc asking
             'to leave this loop...

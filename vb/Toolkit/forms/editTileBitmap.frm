@@ -344,8 +344,8 @@ Sub infofill()
     End If
     
     'fill in other info
-    tkMainForm.tilebmpSizeX.Text = toString(xx)
-    tkMainForm.tileBmpSizeY.Text = toString(yy)
+    tkMainForm.tilebmpSizeX.Text = CStr(xx)
+    tkMainForm.tileBmpSizeY.Text = CStr(yy)
     
     Call vbPicFillRect(tkMainForm.tilebmpColor, 0, 0, 1000, 1000, RGB(tileBmpList(activeTileBmpIndex).ambientR, tileBmpList(activeTileBmpIndex).ambientG, tileBmpList(activeTileBmpIndex).ambientB))
     
@@ -395,7 +395,7 @@ Public Sub tileBmpAmbientSlider()
     tileBmpList(activeTileBmpIndex).ambientR = tkMainForm.tileBmpAmbientSlider.value
     tileBmpList(activeTileBmpIndex).ambientG = tkMainForm.tileBmpAmbientSlider.value
     tileBmpList(activeTileBmpIndex).ambientB = tkMainForm.tileBmpAmbientSlider.value
-    tkMainForm.tileBmpAmbient.Text = toString(tkMainForm.tileBmpAmbientSlider.value)
+    tkMainForm.tileBmpAmbient.Text = CStr(tkMainForm.tileBmpAmbientSlider.value)
     Call vbPicFillRect(tkMainForm.tilebmpColor, 0, 0, 1000, 1000, RGB(tileBmpList(activeTileBmpIndex).ambientR, tileBmpList(activeTileBmpIndex).ambientG, tileBmpList(activeTileBmpIndex).ambientB))
 
     Exit Sub

@@ -691,7 +691,7 @@ Sub createHashTable()
             Print #num, total
             
             num2 = FreeFile
-            Open hashPath$ + toString(total) + ".hsd" For Append As #num2
+            Open hashPath$ + CStr(total) + ".hsd" For Append As #num2
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                 Print #num2, a$
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
@@ -754,7 +754,7 @@ Sub compareHash()
             cnt = cnt + 1
             If fileExists(projectPath & tilePath & fn) Then
                 'now check the corresponding hash file
-                hnum$ = toString(fhash) & ".hsd"
+                hnum$ = CStr(fhash) & ".hsd"
                 num2 = FreeFile
                 Open hashPath$ + hnum$ For Input As #num2
                     Do While Not EOF(num2)

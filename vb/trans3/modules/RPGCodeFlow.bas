@@ -89,10 +89,10 @@ End Sub
 ' Checks if the user has error handling in place
 '=========================================================================
 Private Function checkErrorHandling() As Boolean
-    If Not errorBranch = "" Then
+    If (errorBranch <> "") Then
         checkErrorHandling = True
         errorKeep.program(0) = errorKeep.program(0) & "*ERROR CHECKING FLAG"
-        If Not errorBranch = "Resume Next" Then
+        If (errorBranch <> "Resume Next") Then
             Call Branch("Branch(" & errorBranch & ")", errorKeep)
         Else
             preErrorPos = errorKeep.programPos
@@ -116,7 +116,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
 
     On Error GoTo errorhandler
 
@@ -143,7 +143,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     If methodName <> "" Then
         'include file...
         includeFile = addExt(includeFile, ".prg")
-        Call IncludeRPG("include(" + Chr$(34) + includeFile & Chr$(34) + ")", theProgram)
+        Call IncludeRPG("include(" & Chr$(34) & includeFile & Chr$(34) & ")", theProgram)
         mName = methodName
     End If
 
@@ -161,7 +161,10 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         End If
     Next t
     If foundIt = -1 Then
-        Call debugger("Error: Method not found!-- " & Text$)
+        'Method doesn't exist!
+        If (Not noMethodNotFound) Then
+            Call debugger("Error: Method not found!-- " & Text$)
+        End If
         Exit Sub
     Else
         'Alright! we found this method!
@@ -201,7 +204,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
             
             If dataG = 0 Then
-                dUse$ = str$(num)
+                dUse$ = CStr(num)
             Else
                 dUse$ = lit$
             End If
@@ -822,7 +825,7 @@ Public Sub runProgram( _
 
     Dim mainRetVal As RPGCODE_RETURN
     mainRetVal.usingReturnData = True
-    Call DoSingleCommand("Main()", theProgram, mainRetVal)
+    Call MethodCallRPG("Main()", "", theProgram, mainRetVal, True)
     If Not mainRetVal.num = 1 Then
         theProgram.programPos = 0
         Do While _

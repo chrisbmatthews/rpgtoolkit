@@ -14,7 +14,6 @@ Option Explicit
 '=========================================================================
 ' Integral variables
 '=========================================================================
-
 Public bRPGCStarted As Boolean             'has rpgcode been initiated?
 Public globalHeap As Long                  'the ID of the global heap
 
@@ -44,13 +43,13 @@ Public Declare Function RPGCEvaluate Lib "actkrt3.dll" (ByVal equation As String
 '=========================================================================
 ' Declarations for the actkrt3.dll redirection exports
 '=========================================================================
-Declare Function RPGCSetRedirect Lib "actkrt3.dll" (ByVal methodOrig As String, ByVal methodTarget As String) As Long
-Declare Function RPGCRedirectExists Lib "actkrt3.dll" (ByVal methodToCheck As String) As Long
-Declare Function RPGCGetRedirect Lib "actkrt3.dll" (ByVal methodToGet As String, ByVal pstrToVal As String) As Long
-Declare Function RPGCKillRedirect Lib "actkrt3.dll" (ByVal pstrMethod As String) As Long
-Declare Function RPGCGetRedirectName Lib "actkrt3.dll" (ByVal nItrOffset As Long, ByVal pstrToVal As String) As Long
-Declare Function RPGCClearRedirects Lib "actkrt3.dll" () As Long
-Declare Function RPGCCountRedirects Lib "actkrt3.dll" () As Long
+Public Declare Function RPGCSetRedirect Lib "actkrt3.dll" (ByVal methodOrig As String, ByVal methodTarget As String) As Long
+Public Declare Function RPGCRedirectExists Lib "actkrt3.dll" (ByVal methodToCheck As String) As Long
+Public Declare Function RPGCGetRedirect Lib "actkrt3.dll" (ByVal methodToGet As String, ByVal pstrToVal As String) As Long
+Public Declare Function RPGCKillRedirect Lib "actkrt3.dll" (ByVal pstrMethod As String) As Long
+Public Declare Function RPGCGetRedirectName Lib "actkrt3.dll" (ByVal nItrOffset As Long, ByVal pstrToVal As String) As Long
+Public Declare Function RPGCClearRedirects Lib "actkrt3.dll" () As Long
+Public Declare Function RPGCCountRedirects Lib "actkrt3.dll" () As Long
 
 '=========================================================================
 ' Get the value of a variable - unattached to a program
@@ -78,53 +77,62 @@ Public Function dataType( _
                             ByVal Text As String, _
                             Optional ByRef equType As RPGC_DT = -1 _
                                                                      ) As RPGC_DT
-   
-    On Error GoTo datatypeerr
-    Dim Length As Long, dType As RPGC_DT, p As Long, part As String, a As Double, errorsA As Long
-    Length = Len(Text$)
-    dType = -1
-    
-    'first check if it's a command...
+
+    On Error Resume Next
+
+    Dim Length As Long      'Length of text
+    Dim dType As RPGC_DT    'Data type
+    Dim p As Long           'Position
+    Dim part As String      'Part of string
+    Dim ret As Double       'Return from CDbl()
+    Dim errors As Boolean   'Was there an error?
+
+    Length = Len(Text)      'Get the text's length
+    dType = -1              'Flag we haven't got a type yet
+
+    'Check if we have a command
     For p = 1 To Length
-        part$ = Mid$(Text$, p, 1)
-        If part$ = Chr$(34) Then
-            'if we encounter quotes before we encounter
-            '# or ( then it's not a command!
+        part = Mid(Text, p, 1)
+        If part = Chr(34) Then
             Exit For
-        ElseIf part$ = "(" Or part$ = "#" Then
+        ElseIf (part = "(") Or (part = "#") Then
             dType = DT_COMMAND
             Exit For
         End If
     Next p
-    
-    'wasn't a command-- try other types
+
+    'Haven't got it yet; check right most character for type character (! or $)
     If dType = -1 Then
         part = Right(Trim(replaceOutsideQuotes(Text, vbTab, "")), 1)
-        If part$ = "$" Then
+        If part = "$" Then
             dType = DT_LIT
-        ElseIf part$ = "!" Then
+        ElseIf part = "!" Then
             dType = DT_NUM
         End If
     End If
 
+    'Still haven't got it, resort to error handling
     If dType = -1 Then
+
+        'Setup error handling
+        On Error GoTo dataTypeErr
+
         'Try to change the text to a double
-        a = CDbl(Text)
-        If errorsA = 1 Then
+        ret = CDbl(Text)
+
+        If (errors) Then
             'If we got here, it's an error so it must be a string
             dType = DT_STRING
         Else
             'If here, it was successful meaning it's a number
             dType = DT_NUMBER
         End If
-    End If
 
-    Dim styleA As Boolean
-    styleA = (Not ((dType = DT_STRING) And (Not stringContains(Text, Chr(34)))))
+    End If
 
     'Before we leave, check if there is an equation
     Dim equResult As RPGC_DT
-    If isEquation(Text, equResult) And (styleA) Then
+    If isEquation(Text, equResult) Then
         dType = DT_EQUATION
         If equType = -1 Then
             dType = equResult
@@ -132,13 +140,15 @@ Public Function dataType( _
             equType = equResult
         End If
     End If
-    
+
+    'Return what we've found
     dataType = dType
-    
+
     Exit Function
 
-datatypeerr:
-    errorsA = 1
+dataTypeErr:
+    'Flag there was an error
+    errors = True
     Resume Next
 
 End Function
@@ -163,6 +173,7 @@ Public Function getRedirect(ByVal originalMethod As String) As String
     Else
         getRedirect = ""
     End If
+
 End Function
 
 '=========================================================================
@@ -182,6 +193,7 @@ Public Function getRedirectName(ByVal Index As Long) As String
         Length = RPGCGetRedirectName(Index, inBuf)
         getRedirectName = Mid$(inBuf, 1, Length)
     End If
+
 End Function
 
 '=========================================================================
@@ -224,12 +236,11 @@ Public Function isEquation( _
 
     On Error Resume Next
 
-    'Declarations...
-    Dim parts() As String
-    Dim tSigns(5) As String
-    Dim uD() As String
-    Dim dt As Long
-    Dim a As Long
+    Dim parts() As String       'Parts of the equation
+    Dim tSigns(5) As String     'Math signs array
+    Dim uD() As String          'Delimiters that were used (dummy)
+    Dim dt As Long              'Data type
+    Dim a As Long               'Loop control variables
 
     litOrNum = DT_VOID
  
@@ -240,23 +251,6 @@ Public Function isEquation( _
     If Left(lineText, 1) = "-" Then
         'Probably a negative number...
         Exit Function
-    End If
- 
-    Dim check As String
-    check = replace(lineText, " ", "")
-    If _
-         stringContains(check, "--") Or _
-         stringContains(check, "++") Or _
-         stringContains(check, "+=") Or _
-         stringContains(check, "+-") Or _
-         stringContains(check, "-=") Or _
-         stringContains(check, "+=") _
-                                       Then
-
-        litOrNum = 6
-        isEquation = True
-        Exit Function
-    
     End If
  
     'Populate the tSigns() array...
@@ -283,10 +277,8 @@ Public Function isEquation( _
     On Error GoTo wrongType
     For a = 1 To UBound(parts)
         Select Case dataType(parts(a))
-            Case 0, 3
-                If Not dt = DT_NUM Then Error 0
-            Case 1, 2
-                If Not dt = DT_LIT Then Error 0
+            Case 0, 3: If (Not dt = DT_NUM) Then Error 0
+            Case 1, 2: If (Not dt = DT_LIT) Then Error 0
         End Select
     Next a
  
@@ -314,51 +306,28 @@ Public Function RPGCodeEquation( _
     ' prg - the rpgcode program (in)
     ' litOrNum - literal or numerical (in, but may be modified)
     ' return - evaluated equation (out)
+    '
     '======================================================================================
 
-    RPGCodeEquation.dataType = litOrNum
+    On Error Resume Next
 
-    'Use a crazily named variable to prevent overwriting
-    'an existing one...
-    Dim tempVar As String
-    Select Case litOrNum
- 
-        Case DT_NUM
-            tempVar = "superlongvariablenobodyintheirright3456hjkchJHKJHKJHsdfsd" _
-            & "mindwouldeverdreamofusingeveniftheywereinsanesdfdsfsdfdshkjhjkh!"
-        Case DT_LIT
-            tempVar = "superlongvariablenobodyintheirright345643hdkh345435jkhkjh" _
-            & "mindwouldeverdreamofusingeveniftheywereinsane3245325dfgdsdfg734$"
-  
-        Case 6
-            ' ++,--,-=,+=
-            Dim oPP As Long
-            Dim rV As RPGCODE_RETURN
-            oPP = prg.programPos
-            DoSingleCommand equ, prg, rV
-            prg.programPos = oPP
-            RPGCodeEquation.dataType = DT_NUM
-            RPGCodeEquation.num = CBGetNumerical(GetVarList(equ, 1))
-            litOrNum = DT_NUM
-            Exit Function
+    With RPGCodeEquation
+        .dataType = litOrNum
+        Select Case .dataType
+            Case DT_NUM
+                'Numerical!
+                .num = RPGCEvaluate(equ)
+            Case DT_LIT
+                'Literal!
+                Dim varIdx As Long, num As Double, dat As String
+                For varIdx = 1 To ValueNumber(equ)
+                    dat = GetVarList(equ, varIdx)
+                    Call getValue(dat, dat, num, prg)
+                    .lit = .lit & dat
+                Next varIdx
+        End Select
+    End With
 
-    End Select
- 
-    'Evaluate the equation using RPGCode...
-    Call VariableManip(tempVar & " = " & equ, prg, True)
-
-    'Use a plugin callback to get the variable's value in
-    'as little code as possible...
-    Select Case litOrNum
-        Case DT_NUM
-            RPGCodeEquation.num = CBGetNumerical(tempVar)
-        Case DT_LIT
-            RPGCodeEquation.lit = CBGetString(tempVar)
-    End Select
-
-    'Kill our little temp variable...
-    Call KillRPG("Kill(" & tempVar & ")", prg)
- 
 End Function
 
 '=========================================================================
@@ -366,106 +335,98 @@ End Function
 '=========================================================================
 Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
 
-    On Error GoTo errorhandler
-    
-    Dim dType As Long, aa As Long, numa As Double, lita As String, p As Long, part As String
-    Dim Length As Long, checkIt As Long, newPos As Long, sendText As String
-    
-    Dim EquTyp As RPGC_DT
-    dType = dataType(Text, EquTyp)
-  
-    Select Case dType
-        Case DT_NUM:
-            'numerical var
-            aa = getVariable(Text$, lita$, numa, theProgram)
-            If aa = 0 Then
-                num = numa
-                getValue = 0
-                Exit Function
-            Else
-                num = 0
-                getValue = 0
-                Exit Function
+    On Error Resume Next
+
+    Dim numA As Double      'Numerical value
+    Dim litA As String      'Literal value
+    Dim p As Long           'For loop control variable
+    Dim Length As Long      'Length of text
+    Dim part As String      'A character
+    Dim checkIt As Boolean  'In quotes?
+    Dim newPos As Long      'New position
+    Dim sendText As String  'Text to return
+    Dim equTyp As RPGC_DT   'Type of equation
+
+    'Switch on the data type
+    Select Case dataType(Text, equTyp)
+
+        Case DT_NUM         'NUMERICAL VARIABLE
+                            '------------------
+
+            If getVariable(Text, litA, numA, theProgram) = DT_NUM Then
+                'Found one!
+                num = numA
             End If
-        Case DT_LIT:
-            'literal var
-            aa = getVariable(Text$, lita$, numa, theProgram)
-            If aa = 1 Then
-                lit$ = lita$
-                getValue = 1
-                Exit Function
-            Else
-                lit$ = ""
-                getValue = 1
-                Exit Function
+            getValue = DT_NUM
+
+        Case DT_LIT         'LITERAL VARIABLE
+                            '----------------
+
+            If getVariable(Text, litA, numA, theProgram) = DT_LIT Then
+                'Found one!
+                lit = litA
             End If
-        Case 2:
-            Length = Len(Text$)
+            getValue = DT_LIT
+
+        Case DT_STRING      'STRING
+                            '------
+
+            'Get the length of the text
+            Length = Len(Text)
+
+            'Check if text is in quotes
             For p = 1 To Length
-                part$ = Mid$(Text$, p, 1)
-                If part$ = Chr$(34) Then checkIt = 1
+                If Mid(Text, p, 1) = Chr(34) Then
+                    checkIt = True
+                    Exit For
+                End If
             Next p
-            If checkIt = 1 Then
-                'it's in quotes!
+
+            If (checkIt) Then
+                'It is!
                 For p = 1 To Length
-                    part$ = Mid$(Text$, p, 1)
-                    If part$ = Chr$(34) Then newPos = p: p = Length
+                    If Mid(Text, p, 1) = Chr(34) Then
+                        newPos = p
+                        Exit For
+                    End If
                 Next p
-                For p = newPos + 1 To Length
-                    part$ = Mid$(Text$, p, 1)
-                    If part$ = Chr$(34) Or part$ = "" Then
-                        lit$ = sendText$
-                        getValue = 1
+                For p = (newPos + 1) To (Length)
+                    part = Mid(Text, p, 1)
+                    If (part = Chr(34)) Or (part = "") Then
+                        lit = sendText
+                        getValue = DT_LIT
                         Exit Function
                     Else
-                        sendText$ = sendText & part$
+                        sendText = sendText & part
                     End If
                 Next p
             Else
-                lit$ = Text$
-                getValue = 1
-                Exit Function
+                'It's not!
+                lit = Text
+                getValue = DT_LIT
             End If
-    
-        Case 3:
-            num = val(Text$)
-            getValue = 0
-            Exit Function
-            
-        Case DT_COMMAND:
-            'if it's a command, run the command
-            'and return the value it produces...
-            Dim retval As RPGCODE_RETURN
-            Dim oldPos As Long
-            oldPos = theProgram.programPos
-            Call DoSingleCommand(Text$, theProgram, retval)
-            theProgram.programPos = oldPos
-            If retval.dataType = DT_LIT Then
-                getValue = getValue(retval.lit, lit$, num, theProgram)
-            Else
-                getValue = getValue(str$(retval.num), lit$, num, theProgram)
-            End If
-            
-        Case DT_EQUATION
-            'It's an equation!
+
+        Case DT_NUMBER      'NUMBER
+                            '------
+
+            num = CDbl(Text)
+            getValue = DT_NUM
+
+        Case DT_EQUATION    'EQUATION
+                            '--------
+
             Dim equVal As parameters
-            equVal = RPGCodeEquation(Text, theProgram, EquTyp)
-            Select Case equVal.dataType
-                Case DT_NUM
-                    num = equVal.num
-                Case DT_LIT
-                    lit = equVal.lit
-            End Select
-            getValue = equVal.dataType
+            equVal = RPGCodeEquation(Text, theProgram, equTyp)
+            With equVal
+                Select Case .dataType
+                    Case DT_NUM: num = .num
+                    Case DT_LIT: lit = .lit
+                End Select
+                getValue = .dataType
+            End With
 
     End Select
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 '=========================================================================
@@ -895,98 +856,4 @@ Public Function GetLitVar(ByVal varname As String, ByVal heapID As Long) As Stri
     Else
         GetLitVar = ""
     End If
-End Function
-
-'=========================================================================
-' Parse an array
-'=========================================================================
-Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram) As String
-
-    'This will take an array such as Array[a!+2]["Pos"]$ and replace variables, commands,
-    'equations, etc with their values.
-
-    'Just skip errors because they're probably the rpgcoder's fault
-    On Error GoTo skipError
-
-    'Have something to return incase we leave early
-    parseArray = variable
-
-    Dim toParse As String
-    'First remove spaces and tabs
-    toParse = replaceOutsideQuotes(variable, " ", "")
-    toParse = replaceOutsideQuotes(toParse, vbTab, "")
-
-    If InStr(1, toParse, "[", vbTextCompare) = 0 Then
-        'There's not a [ so it's not an array and we're not needed
-        Exit Function
-    End If
-
-    Dim variableType As String
-    'Grab the variable's type (! or $)
-    variableType = Right(toParse, 1)
-
-    Dim start As Long
-    Dim tEnd As Long
-
-    'See where the first [ is
-    start = InStr(1, toParse, "[", vbTextCompare)
-    
-    Dim variableName As String
-    'Grab the variable's name
-    variableName = Mid(toParse, 1, start - 1)
-    
-    'Find the last ]
-    tEnd = InStr(1, StrReverse(toParse), "]", vbTextCompare)
-    tEnd = Len(toParse) - tEnd + 1
-
-    'Just keep what's inbetween the two
-    toParse = Mid(toParse, start + 1, tEnd - start - 1)
-
-    Dim parseArrayD() As String
-    'Split it at '][' (bewteen elements)
-    parseArrayD() = Split(toParse, "][", , vbTextCompare)
-
-    Dim build As String
-    Dim a As Long
-
-    build = "Array("
-
-    'Mould the array as if it were parameters passed to a command
-    For a = 0 To UBound(parseArrayD)
-        build = build & parseArrayD(a)
-        If Not a = UBound(parseArrayD) Then
-            build = build & ","
-        Else
-            build = build & ")"
-        End If
-    Next a
-
-    Dim arrayElements() As parameters
-    'Use my getParameters() function to retrieve the values of the dimensions
-    arrayElements() = GetParameters(build, prg)
-
-    'Begin to build the return value
-    build = variableName
-
-    'For each dimension
-    For a = 0 To UBound(arrayElements)
-
-        'Add on a [
-        build = build & "["
-
-        'Add in the content...
-        Select Case arrayElements(a).dataType
-            Case DT_NUM: build = build & CStr(arrayElements(a).num)
-            Case DT_LIT: build = build & """" & arrayElements(a).lit & """"
-        End Select
-
-        'Add on a ]
-        build = build & "]"
-
-    Next a
-
-    'Pass it back with the type (! or $) on the end
-    parseArray = build & variableType
-
-skipError:
 End Function

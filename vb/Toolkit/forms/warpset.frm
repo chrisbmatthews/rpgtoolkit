@@ -171,7 +171,7 @@ Option Explicit
 
 Private Sub Command1_Click()
 
-    Dim de As String, deX As Long, deY As Long, deL As Long, st As Long, done As Boolean, length As Long
+    Dim de As String, deX As Long, deY As Long, deL As Long, st As Long, done As Boolean, Length As Long
 
     de = Text1.Text
     deX = val(Text2.Text)
@@ -181,16 +181,16 @@ Private Sub Command1_Click()
     Do Until done
     
         Dim tX As String
-        tX = toString(st)
+        tX = CStr(st)
         If Len(tX) < 8 Then
-            length = Len(tX)
+            Length = Len(tX)
             Dim t As Long
-            For t = 1 To 8 - length
+            For t = 1 To 8 - Length
                 tX = "0" & tX
             Next t
         End If
         tX = "warp" & tX & ".prg"
-        If Not FileExists(projectPath & prgPath & tX) Then
+        If Not fileExists(projectPath & prgPath & tX) Then
             done = True
         Else
             st = st + 1

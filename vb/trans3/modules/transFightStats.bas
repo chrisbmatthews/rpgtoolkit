@@ -138,7 +138,7 @@ Sub giveExperience(amount, thePlayer As TKPlayer)
     Dim l As String
     aa = getIndependentVariable(thePlayer.experienceVar$, l$, expr)
     expr = expr + amount
-    Call setIndependentVariable(thePlayer.experienceVar$, str$(expr))
+    Call setIndependentVariable(thePlayer.experienceVar$, CStr(expr))
     thePlayer.nextLevel = thePlayer.nextLevel - amount
     
     Dim nxtLev As Integer
@@ -179,7 +179,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     aa = getIndependentVariable(thePlayer.leVar$, l$, lev)
     If lev >= thePlayer.maxLevel Then Exit Sub
     lev = lev + 1
-    Call setIndependentVariable(thePlayer.leVar$, str$(lev))
+    Call setIndependentVariable(thePlayer.leVar$, CStr(lev))
     If thePlayer.charLevelUpType = 0 Then
         thePlayer.levelProgression = thePlayer.levelProgression + Int(thePlayer.levelProgression * (thePlayer.experienceIncrease / 100))
     Else
@@ -196,7 +196,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
         hp = hp + thePlayer.levelHp
     End If
     hp = Int(hp)
-    Call setIndependentVariable(thePlayer.maxHealthVar$, str$(hp))
+    Call setIndependentVariable(thePlayer.maxHealthVar$, CStr(hp))
     
     'dp up:
     aa = getIndependentVariable(thePlayer.defenseVar$, l$, hp)
@@ -206,7 +206,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
         hp = hp + thePlayer.levelDp
     End If
     hp = Int(hp)
-    Call setIndependentVariable(thePlayer.defenseVar$, str$(hp))
+    Call setIndependentVariable(thePlayer.defenseVar$, CStr(hp))
     
     'fp up:
     aa = getIndependentVariable(thePlayer.fightVar$, l$, hp)
@@ -216,7 +216,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
         hp = hp + thePlayer.levelFp
     End If
     hp = Int(hp)
-    Call setIndependentVariable(thePlayer.fightVar$, str$(hp))
+    Call setIndependentVariable(thePlayer.fightVar$, CStr(hp))
 
     'smp up:
     aa = getIndependentVariable(thePlayer.smMaxVar$, l$, hp)
@@ -226,7 +226,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
         hp = hp + thePlayer.levelSm
     End If
     hp = Int(hp)
-    Call setIndependentVariable(thePlayer.smMaxVar$, str$(hp))
+    Call setIndependentVariable(thePlayer.smMaxVar$, CStr(hp))
 
     Dim h As String
     h$ = getPlayerName(thePlayer) + ": "
@@ -311,7 +311,7 @@ Sub setPlayerHP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
         stat = 0
     End If
     
-    Call setIndependentVariable(thePlayer.healthVar$, str$(stat))
+    Call setIndependentVariable(thePlayer.healthVar$, CStr(stat))
 End Sub
 
 Sub setPlayerSMP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
@@ -327,34 +327,34 @@ Sub setPlayerSMP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
         stat = 0
     End If
     
-    Call setIndependentVariable(thePlayer.smVar$, str$(stat))
+    Call setIndependentVariable(thePlayer.smVar$, CStr(stat))
 End Sub
 
 Sub setPlayerDP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
     'set player's dp
     On Error Resume Next
     
-    Call setIndependentVariable(thePlayer.defenseVar$, str$(stat))
+    Call setIndependentVariable(thePlayer.defenseVar$, CStr(stat))
 End Sub
 
 Sub setPlayerFP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
     'set player's fp
     On Error Resume Next
     
-    Call setIndependentVariable(thePlayer.fightVar$, str$(stat))
+    Call setIndependentVariable(thePlayer.fightVar$, CStr(stat))
 End Sub
 
 Sub setPlayerMaxHP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
     'set player's max hp
     On Error Resume Next
     
-    Call setIndependentVariable(thePlayer.maxHealthVar$, str$(stat))
+    Call setIndependentVariable(thePlayer.maxHealthVar$, CStr(stat))
 End Sub
 
 Sub setPlayerMaxSMP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
     'set player's max smp
     On Error Resume Next
     
-    Call setIndependentVariable(thePlayer.smMaxVar$, str$(stat))
+    Call setIndependentVariable(thePlayer.smMaxVar$, CStr(stat))
 End Sub
 

@@ -34,7 +34,7 @@ Sub ListCategories(file$, elist As ListBox)
     
     elist.Clear
     elist.AddItem ("All")
-    If FileExists(file$) Then
+    If fileExists(file$) Then
         num = FreeFile
         Open file$ For Input As #num
             'first get the categories...
@@ -244,7 +244,7 @@ Function GetDescription(commandName$) As String
     toTest$ = "#" + UCase$(commandName$)
    
     file$ = helpPath$ + ObtainCaptionFromTag(DB_EventFile, resourcePath$ + m_LangFile)
-    If FileExists(file$) Then
+    If fileExists(file$) Then
         num = FreeFile
         Open file$ For Input As #num
             'first get the categories...
@@ -360,7 +360,7 @@ Sub DisplayEventCommands(file$, category$, elist As ListBox)
     On Error Resume Next
     
     elist.Clear
-    If FileExists(file$) Then
+    If fileExists(file$) Then
         num = FreeFile
         Open file$ For Input As #num
             'first get the categories...
@@ -435,7 +435,7 @@ Sub OpenEventList(file$, eventlist As ListBox)
     Call eventlist.Clear
     
     num = FreeFile
-    If FileExists(file$) Then
+    If fileExists(file$) Then
         Open file$ For Input As #num
             t = 0
             Do While Not EOF(num)
@@ -448,7 +448,7 @@ Sub OpenEventList(file$, eventlist As ListBox)
                 Input #num, evtfile$                'corresponding rpgcode file
                 
                 'now put the event info into the list...
-                Text$ = "Event " + toString(t) + ": " + evtDescription$ + " (" + evtfile$ + " (" + evtBoard$ + " " + toString(evtx) + ", " + toString(evty) + ", " + toString(evtl) + "))"
+                Text$ = "Event " + CStr(t) + ": " + evtDescription$ + " (" + evtfile$ + " (" + evtBoard$ + " " + CStr(evtx) + ", " + CStr(evty) + ", " + CStr(evtl) + "))"
                 eventlist.AddItem (Text$)
                 t = t + 1
             Loop

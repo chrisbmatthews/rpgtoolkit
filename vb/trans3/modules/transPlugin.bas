@@ -572,7 +572,7 @@ Sub CBSetNumerical(ByVal varname As String, ByVal newValue As Double)
     'newValue is the new value
     'this is callback 4
     On Error GoTo errorhandler
-    Call setIndependentVariable(varname, str$(newValue))
+    Call setIndependentVariable(varname, CStr(newValue))
 
     Exit Sub
 'Begin error handling code:

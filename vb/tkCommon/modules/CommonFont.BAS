@@ -183,7 +183,7 @@ Sub fontunderline()
     currentY = currentY + 2
 End Sub
 
-Sub loadFont(filename$)
+Sub loadFont(ByVal filename As String)
     On Error Resume Next
     'loadingfont.Show
     Dim num As Long, f As String, a As String, t As Long, numi As Long
@@ -414,7 +414,7 @@ Function toBinary(ByVal decimala As Long) As String
     For t = 1 To 8
         remain = decimala Mod 2
         decimala = Int(decimala / 2)
-        binNum$ = str$(remain) + binNum$
+        binNum$ = CStr(remain) + binNum$
     Next t
     Length = Len(binNum$)
     newNum$ = ""

@@ -64,7 +64,7 @@ Public Type TKBoard
     borderBack As String                  'border background img
     brdColor As Long                      'board color
     borderColor As Long                   'Border color
-    ambienteffect As Integer              'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
+    ambientEffect As Integer              'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
     dirLink(4) As String                  'Direction links 1- N, 2- S, 3- E, 4-W
     boardSkill As Integer                 'Board skill level
     boardBackground As String             'Fighting background
@@ -525,7 +525,7 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
         .borderBack = ""
         .brdColor = RGB(255, 255, 255)
         .borderColor = 0
-        .ambienteffect = 0
+        .ambientEffect = 0
         For t = 0 To 4
             .dirLink(t) = ""
         Next t
@@ -671,7 +671,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
         Call BinWriteString(num, theBoard.borderBack)   'border background img
         Call BinWriteLong(num, theBoard.brdColor)    'board color
         Call BinWriteLong(num, theBoard.borderColor)    'Border color
-        Call BinWriteInt(num, theBoard.ambienteffect) 'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
+        Call BinWriteInt(num, theBoard.ambientEffect) 'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
         For t = 1 To 4
             Call BinWriteString(num, theBoard.dirLink(t)) 'Direction links 1- N, 2- S, 3- E, 4-W
         Next t
@@ -781,7 +781,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
             minorVer = BinReadInt(num)      'Minor version (ie 2.0)
             If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit " + fileOpen, , "Unable to open tile": Exit Function
             If minorVer > 2 Then
-                user = MsgBox("This board was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
+                user = MsgBox("This board was created using Version " & CStr(majorVer) & "." & CStr(minorVer) & ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", 4, "Different Version")
                 If user = 7 Then Close #num: Exit Function 'selected no
             End If
             If minorVer <> 2 Then
@@ -907,7 +907,7 @@ exitTheFor:
             .borderBack = BinReadString(num)   'border background img
             .brdColor = BinReadLong(num)    'board color
             .borderColor = BinReadLong(num)    'Border color
-            .ambienteffect = BinReadInt(num) 'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
+            .ambientEffect = BinReadInt(num) 'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
             For t = 1 To 4
                 .dirLink(t) = BinReadString(num)  'Direction links 1- N, 2- S, 3- E, 4-W
             Next t
@@ -999,7 +999,7 @@ ver2oldboard:
             Input #num, minorVer       'Minor version (ie 2.0)
             If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit", , "Unable to open tile": Close #num: Exit Function
             If minorVer > 2 Then
-                user = MsgBox("This board was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
+                user = MsgBox("This board was created using Version " + CStr(majorVer) + "." + CStr(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
                 If user = 7 Then Close #num: Exit Function 'selected no
             End If
         
@@ -1033,7 +1033,7 @@ ver2oldboard:
             .borderBack$ = fread(num)     'Border background image
             .brdColor = fread(num)        'Board color
             .borderColor = fread(num)    'Border color
-            .ambienteffect = fread(num)    'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
+            .ambientEffect = fread(num)    'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
             For loopControl = 1 To 4
                 .dirLink$(loopControl) = fread(num)      'Direction links 1- N, 2- S, 3- E, 4-W
             Next loopControl

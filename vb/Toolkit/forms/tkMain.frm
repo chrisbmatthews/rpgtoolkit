@@ -908,8 +908,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2464,13 +2464,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "22/08/2004"
+            TextSave        =   "03/09/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "10:52 PM"
+            TextSave        =   "6:59 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3246,7 +3246,7 @@ Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, X 
     'Fix:Check we've not selected a tile that isn't in the set.
     If tileNumber > tileset.tilesInSet Then Exit Sub
     
-    setFilename$ = tstFile$ + toString(tileNumber)
+    setFilename$ = tstFile$ + CStr(tileNumber)
     'inform the system that the set filename has changed. For loading into whichever editor is active.
     Call activeForm.changeSelectedTile(setFilename$)
 
@@ -3300,7 +3300,7 @@ Private Sub Label15_DblClick(Index As Integer)
 
     'Undock this sucker... [KSNiloc]
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.w = True
+    uD.E = True: uD.W = True
 
     unDock tilesetContainer, "Current Tileset", uD
     tilesetBar.Visible = False
@@ -3314,7 +3314,7 @@ Private Sub Label2_DblClick()
 
     'Undock this sucker... [KSNiloc]
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.w = True
+    uD.E = True: uD.W = True
 
     unDock TreeView1, "Project List", uD
     rightbar.Visible = False
@@ -3419,7 +3419,7 @@ End Sub
 
 Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.w = True
+    uD.E = True: uD.W = True
     Call unDock(newBar, "New", uD)
     newBarContainerContainer.Visible = False
     popButton(1).Enabled = False
@@ -4212,7 +4212,7 @@ Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, X As Sing
  ' ! ADDED BY KSNiloc...
 
  Dim uD As TK_UNDOCK_DATA
- uD.E = True: uD.w = True
+ uD.E = True: uD.W = True
  
  unDock leftbar, "Tools", uD
  leftBarContainer.Visible = False
@@ -4248,13 +4248,13 @@ End Sub
 
 Public Sub ShowPic(ByRef file As String): On Error Resume Next
     
-    Dim w As Long, h As Long
+    Dim W As Long, h As Long
     
-    w = Me.Width / Screen.TwipsPerPixelX
+    W = Me.Width / Screen.TwipsPerPixelX
     h = Me.height / Screen.TwipsPerPixelY
     
     If cnvBkgImage = 0 Then
-        cnvBkgImage = CreateCanvas(w, h)
+        cnvBkgImage = CreateCanvas(W, h)
         Call CanvasFill(cnvBkgImage, 0)
     End If
     
@@ -4303,7 +4303,7 @@ Private Sub bTools_Title_DblClick()
 
     'Undock this sucker... [KSNiloc]
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.w = True
+    uD.E = True: uD.W = True
  
     Dim oldTree As TreeView
     Dim of1 As String
@@ -4412,19 +4412,19 @@ End Sub
 '=========================================================================================
 '(EDIT for 3.0.4)
 Private Sub Command15_Click(): On Error Resume Next
-    Call activeTile.scroll(4)
+    Call activeTile.Scroll(4)
 End Sub
 '(EDIT for 3.0.4)
 Private Sub Command16_Click(): On Error Resume Next
-    Call activeTile.scroll(2)
+    Call activeTile.Scroll(2)
 End Sub
 '(EDIT for 3.0.4)
 Private Sub Command18_Click(): On Error Resume Next
-    Call activeTile.scroll(3)
+    Call activeTile.Scroll(3)
 End Sub
 '(EDIT for 3.0.4)
 Private Sub Command19_Click(): On Error Resume Next
-    Call activeTile.scroll(1)
+    Call activeTile.Scroll(1)
 End Sub
 '(NEW for 3.0.4)
 Private Sub cmdImport_Click()

@@ -523,7 +523,7 @@ On Error Resume Next
                 anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
                 anmName$ = projectPath & miscPath & anmName$
                 
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(x) + ".tbm"
                 tbmName$ = projectPath & bmpPath & tbmName$
                 
                 Call TileBitmapClear(tbm)
@@ -597,19 +597,19 @@ On Error Resume Next
                 Next y
                 
                 'now save those tile bitmaps...
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + CStr(x) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmFight)
                 anmFight.animFrame(x) = tbmName$
             
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + CStr(x) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDef)
                 anmDef.animFrame(x) = tbmName$
             
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + CStr(x) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmSPC)
                 anmSPC.animFrame(x) = tbmName$
             
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" & CStr(x) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDead)
                 anmDead.animFrame(x) = tbmName$
             Next x
@@ -665,13 +665,13 @@ On Error Resume Next
                 If tbm.tiles(0, 0) = "" And tbm.tiles(0, 1) = "" Then
                     'nothing there
                 Else
-                    tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".tbm"
+                    tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(x) + ".tbm"
                     Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
                     anm.animFrame(0) = tbmName$
-                    anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".anm"
+                    anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(x) + ".anm"
                     Call saveAnimation(projectPath & miscPath & anmName$, anm)
                     'thePlayer.customgfx(x) = anmname$
-                    Call playerAddCustomGfx(thePlayer, "Custom " + toString(x), anmName$)
+                    Call playerAddCustomGfx(thePlayer, "Custom " + CStr(x), anmName$)
                 End If
             Next x
         End If
@@ -737,9 +737,8 @@ ver2oldchar:
                 Next y
             Next x
             Call createNewTileSet(tstName$)
-            'walkGfx32$(0) = RemovePath(tstname$) + toString(tstPos)
             walkGfx$(0, 0) = ""
-            walkGfx$(0, 1) = RemovePath(tstName$) + toString(tstPos)
+            walkGfx$(0, 1) = RemovePath(tstName$) + CStr(tstPos)
             tstPos = tstPos + 1
             
             For t = 1 To 15
@@ -749,9 +748,8 @@ ver2oldchar:
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
-                'walkGfx32$(t) = RemovePath$(tstname$) + toString(tstPos)
                 walkGfx$(t, 0) = ""
-                walkGfx$(t, 1) = RemovePath(tstName$) + toString(tstPos)
+                walkGfx$(t, 1) = RemovePath(tstName$) + CStr(tstPos)
                 tstPos = tstPos + 1
             Next t
             
@@ -776,11 +774,11 @@ ver2oldchar:
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
-                'fightGfx32$(t - 1) = RemovePath$(tstname$) + toString(tstPos)
+
                 fightingGfx$(t - 1, 0, 0) = ""
                 fightingGfx$(t - 1, 0, 1) = ""
                 fightingGfx$(t - 1, 1, 0) = ""
-                fightingGfx$(t - 1, 1, 1) = RemovePath$(tstName$) + toString(tstPos)
+                fightingGfx$(t - 1, 1, 1) = RemovePath$(tstName$) + CStr(tstPos)
                 tstPos = tstPos + 1
             Next t
             For t = 1 To 4
@@ -790,11 +788,11 @@ ver2oldchar:
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
-                'smGfx32$(t - 1) = RemovePath$(tstname$) + toString(tstPos)
+
                 specialGfx$(t - 1, 0, 0) = ""
                 specialGfx$(t - 1, 0, 1) = ""
                 specialGfx$(t - 1, 1, 0) = ""
-                specialGfx$(t - 1, 1, 1) = RemovePath$(tstName$) + toString(tstPos)
+                specialGfx$(t - 1, 1, 1) = RemovePath$(tstName$) + CStr(tstPos)
                 tstPos = tstPos + 1
             Next t
             For t = 1 To 4
@@ -804,11 +802,11 @@ ver2oldchar:
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
-                'defGfx32$(t - 1) = RemovePath$(tstname$) + toString(tstPos)
+
                 defenseGfx$(t - 1, 0, 0) = ""
                 defenseGfx$(t - 1, 0, 1) = ""
                 defenseGfx$(t - 1, 1, 0) = ""
-                defenseGfx$(t - 1, 1, 1) = RemovePath$(tstName$) + toString(tstPos)
+                defenseGfx$(t - 1, 1, 1) = RemovePath$(tstName$) + CStr(tstPos)
                 tstPos = tstPos + 1
             Next t
             For t = 1 To 4
@@ -818,11 +816,11 @@ ver2oldchar:
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
-                'dieGfx32$(t - 1) = RemovePath$(tstname$) + toString(tstPos)
+
                 deathGfx$(t - 1, 0, 0) = ""
                 deathGfx$(t - 1, 0, 1) = ""
                 deathGfx$(t - 1, 1, 0) = ""
-                deathGfx$(t - 1, 1, 1) = RemovePath$(tstName$) + toString(tstPos)
+                deathGfx$(t - 1, 1, 1) = RemovePath$(tstName$) & CStr(tstPos)
                 tstPos = tstPos + 1
             Next t
             
@@ -832,11 +830,11 @@ ver2oldchar:
                 Next y
             Next x
             Call addToTileSet(tstName$)
-            'restGfx32$ = RemovePath$(tstname$) + toString(tstPos)
+
             fightRestGfx$(0, 0) = ""
             fightRestGfx$(0, 1) = ""
             fightRestGfx$(1, 0) = ""
-            fightRestGfx$(1, 1) = RemovePath$(tstName$) + toString(tstPos)
+            fightRestGfx$(1, 1) = RemovePath$(tstName$) & CStr(tstPos)
             tstPos = tstPos + 1
             
             For t = 0 To 9
@@ -847,7 +845,7 @@ ver2oldchar:
                 Next x
                 Call addToTileSet(tstName$)
                 customisedGfx$(t, 0) = ""
-                customisedGfx$(t, 1) = RemovePath$(tstName$) + toString(tstPos)
+                customisedGfx$(t, 1) = RemovePath$(tstName$) & CStr(tstPos)
                 tstPos = tstPos + 1
             Next t
         Else
@@ -934,7 +932,7 @@ ver2oldchar:
         anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
         anmName$ = projectPath & miscPath & anmName$
         
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(x) + ".tbm"
         tbmName$ = projectPath & bmpPath & tbmName$
         
         Call TileBitmapClear(tbm)
@@ -999,19 +997,19 @@ ver2oldchar:
         Next y
         
         'now save those tile bitmaps...
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + CStr(x) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmFight)
         anmFight.animFrame(x) = tbmName$
     
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + CStr(x) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDef)
         anmDef.animFrame(x) = tbmName$
     
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + CStr(x) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmSPC)
         anmSPC.animFrame(x) = tbmName$
     
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" + CStr(x) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDead)
         anmDead.animFrame(x) = tbmName$
     Next x
@@ -1066,12 +1064,12 @@ ver2oldchar:
             'nothing there
             thePlayer.customGfx(x) = ""
         Else
-            tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".tbm"
+            tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(x) + ".tbm"
             Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
             anm.animFrame(0) = tbmName$
-            anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".anm"
+            anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(x) + ".anm"
             Call saveAnimation(projectPath & miscPath & anmName$, anm)
-            Call playerAddCustomGfx(thePlayer, "Custom " + toString(x), anmName$)
+            Call playerAddCustomGfx(thePlayer, "Custom " + CStr(x), anmName$)
         End If
     Next x
     

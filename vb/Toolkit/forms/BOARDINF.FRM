@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
 Begin VB.Form boardinformation 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Board Information"
@@ -1121,17 +1121,17 @@ On Error GoTo ErrorHandler
     If boardList(activeBoardIndex).theData.fightingYN = 0 Then
         fyes.value = 0
         Label3(0).Enabled = 0
-        Command5.Enabled = 0
+        command5.Enabled = 0
         skillbox.Enabled = 0
         bkgbox.Enabled = 0
     Else
         fyes.value = 1
         Label3(0).Enabled = 1
-        Command5.Enabled = 1
+        command5.Enabled = 1
         skillbox.Enabled = 1
         bkgbox.Enabled = 1
     End If
-    skillbox.Text = boardList(activeBoardIndex).theData.boardskill
+    skillbox.Text = boardList(activeBoardIndex).theData.boardSkill
     If boardList(activeBoardIndex).theData.boardBackground$ <> "" Then Text2.Text = boardList(activeBoardIndex).theData.boardBackground$
     
     'Constant values
@@ -1165,7 +1165,7 @@ On Error GoTo ErrorHandler
 
     Check1.value = boardList(activeBoardIndex).theData.brdSavingYN
     
-    bs.Caption = str$(boardList(activeBoardIndex).theData.Bsizex) + " X" + str$(boardList(activeBoardIndex).theData.Bsizey)
+    bs.Caption = str$(boardList(activeBoardIndex).theData.bSizeX) + " X" + str$(boardList(activeBoardIndex).theData.bSizeY)
 
     daynight.value = boardList(activeBoardIndex).theData.BoardDayNight
     If boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
@@ -1174,13 +1174,13 @@ On Error GoTo ErrorHandler
         Command10.Enabled = False
     End If
     
-    If boardList(activeBoardIndex).theData.Bsizel = 4 Then
+    If boardList(activeBoardIndex).theData.bSizeL = 4 Then
         Option1.value = True
     Else
         Option2.value = True
     End If
-    sx.Text = toString(boardList(activeBoardIndex).theData.Bsizex)
-    sy.Text = toString(boardList(activeBoardIndex).theData.Bsizey)
+    sx.Text = CStr(boardList(activeBoardIndex).theData.bSizeX)
+    sy.Text = CStr(boardList(activeBoardIndex).theData.bSizeY)
 
     Exit Sub
 'Begin error handling code:
@@ -1380,7 +1380,7 @@ Private Sub Command6_Click(): On Error GoTo ErrorHandler
 'Altered for isometrics by Delano for 3.0.4.
 'Added label on this tab listing minmum board sizes.
 
-    boardList(activeBoardIndex).theData.boardskill = val(skillbox.Text)
+    boardList(activeBoardIndex).theData.boardSkill = val(skillbox.Text)
     
     'Fix: allow for minimum board size for isometric boards:
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
@@ -1401,12 +1401,12 @@ Private Sub Command6_Click(): On Error GoTo ErrorHandler
     bx = val(sx.Text): By = val(sy.Text)
     
     ' If changes were made to board width/height
-    If bx <> boardList(activeBoardIndex).theData.Bsizex Or By <> boardList(activeBoardIndex).theData.Bsizey Then
+    If bx <> boardList(activeBoardIndex).theData.bSizeX Or By <> boardList(activeBoardIndex).theData.bSizeY Then
         
         ' Assign new values
-        boardList(activeBoardIndex).theData.Bsizex = bx
-        boardList(activeBoardIndex).theData.Bsizey = By
-        boardList(activeBoardIndex).theData.Bsizel = bl
+        boardList(activeBoardIndex).theData.bSizeX = bx
+        boardList(activeBoardIndex).theData.bSizeY = By
+        boardList(activeBoardIndex).theData.bSizeL = bl
         
         ' Resize board
         Call BoardResize(bx, By, bl, boardList(activeBoardIndex).theData)
@@ -1417,10 +1417,10 @@ Private Sub Command6_Click(): On Error GoTo ErrorHandler
         boardNeedUpdate = True
         
     ' If only the layer choice was changed
-    ElseIf bl <> boardList(activeBoardIndex).theData.Bsizel Then
+    ElseIf bl <> boardList(activeBoardIndex).theData.bSizeL Then
 
         ' Assign new value
-        boardList(activeBoardIndex).theData.Bsizel = bl
+        boardList(activeBoardIndex).theData.bSizeL = bl
         
         boardNeedUpdate = True
 
@@ -1537,7 +1537,7 @@ If boardList(activeBoardIndex).theData.boardMusic$ = "" Then MsgBox LoadStringLo
 ext$ = extention(boardList(activeBoardIndex).theData.boardMusic$)
 If UCase$(ext$) = "WAV" Then
     wFlags% = SND_ASYNC Or SND_NODEFAULT
-    x% = sndPlaySound(projectPath$ + mediaPath$ + boardList(activeBoardIndex).theData.boardMusic$, wFlags%)
+    X% = sndPlaySound(projectPath$ + mediaPath$ + boardList(activeBoardIndex).theData.boardMusic$, wFlags%)
 Else
     'If UCase$(ext$) = "MID" Then
     '    OLE1.SourceDoc = projectPath$ + mediapath$ + boardmusic$
@@ -1558,7 +1558,7 @@ Private Sub Command9_Click()
 ext$ = extention(boardList(activeBoardIndex).theData.boardMusic$)
 If UCase$(ext$) = "WAV" Then
     wFlags% = SND_ASYNC
-    x% = sndPlaySound("stop.wav", wFlags%)
+    X% = sndPlaySound("stop.wav", wFlags%)
 Else
     'OLE1.Action = 10
     Call mp3player.stopMusic
@@ -1642,13 +1642,13 @@ Private Sub fyes_Click()
     If boardList(activeBoardIndex).theData.fightingYN = 0 Then
         'fyes.Value = 0
         Label3(0).Enabled = 0
-        Command5.Enabled = 0
+        command5.Enabled = 0
         skillbox.Enabled = 0
         bkgbox.Enabled = 0
     Else
         'fyes.Value = 1
         Label3(0).Enabled = 1
-        Command5.Enabled = 1
+        command5.Enabled = 1
         skillbox.Enabled = 1
         bkgbox.Enabled = 1
     End If
@@ -1663,12 +1663,12 @@ End Sub
 
 Private Sub HScroll1_Change()
     On Error GoTo ErrorHandler
-    boardList(activeBoardIndex).theData.Bsizex = HScroll1.value
-    bs.Caption = str$(boardList(activeBoardIndex).theData.Bsizex) + " X" + str$(boardList(activeBoardIndex).theData.Bsizey)
+    boardList(activeBoardIndex).theData.bSizeX = HScroll1.value
+    bs.Caption = str$(boardList(activeBoardIndex).theData.bSizeX) + " X" + str$(boardList(activeBoardIndex).theData.bSizeY)
 
-    activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.Bsizey - tilesY + 1
-    activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.Bsizex - tilesX + 1
-    Call BoardSetSize(boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, boardList(activeBoardIndex).theData)
+    activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
+    activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
+    Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
     Call activeBoard.resizeForm(activeBoard.Width, activeBoard.height)
 
     Exit Sub
@@ -1780,12 +1780,12 @@ End Sub
 
 Private Sub VScroll1_Change()
     On Error GoTo ErrorHandler
-    boardList(activeBoardIndex).theData.Bsizey = VScroll1.value
-    bs.Caption = str$(boardList(activeBoardIndex).theData.Bsizex) + " X" + str$(boardList(activeBoardIndex).theData.Bsizey)
+    boardList(activeBoardIndex).theData.bSizeY = VScroll1.value
+    bs.Caption = str$(boardList(activeBoardIndex).theData.bSizeX) + " X" + str$(boardList(activeBoardIndex).theData.bSizeY)
 
-    activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.Bsizey - tilesY + 1
-    activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.Bsizex - tilesX + 1
-    Call BoardSetSize(boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, boardList(activeBoardIndex).theData)
+    activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
+    activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
+    Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
     Call activeBoard.resizeForm(activeBoard.Width, activeBoard.height)
 
     Exit Sub

@@ -136,7 +136,7 @@ ver2bkg:
         minorVer = fread(num)
         If majorVer <> major Then MsgBox "This Background was created with an unrecognised version of the Toolkit", , "Unable to open Background": Close #num: Exit Sub
         If minorVer <> minor Then
-            user = MsgBox("This Background was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
+            user = MsgBox("This Background was created using Version " + CStr(majorVer) + "." + CStr(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
         For x = 1 To 19

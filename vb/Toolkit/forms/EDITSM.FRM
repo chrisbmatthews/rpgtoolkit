@@ -849,9 +849,9 @@ End Sub
 Private Sub infofill()
     On Error GoTo ErrorHandler
     namebox.Text = specialMoveList(activeSpecialMoveIndex).theData.smname$
-    fpbox.Text = toString(specialMoveList(activeSpecialMoveIndex).theData.smFP)
-    smbox.Text = toString(specialMoveList(activeSpecialMoveIndex).theData.smSMP)
-    targSMPbox.Text = toString(specialMoveList(activeSpecialMoveIndex).theData.smtargSMP)
+    fpbox.Text = CStr(specialMoveList(activeSpecialMoveIndex).theData.smFP)
+    smbox.Text = CStr(specialMoveList(activeSpecialMoveIndex).theData.smSMP)
+    targSMPbox.Text = CStr(specialMoveList(activeSpecialMoveIndex).theData.smtargSMP)
     rpgcodebox.Text = specialMoveList(activeSpecialMoveIndex).theData.smPrg$
     If specialMoveList(activeSpecialMoveIndex).theData.smBattle = 0 Then Check1.value = 1 Else Check1.value = 0
     If specialMoveList(activeSpecialMoveIndex).theData.smMenu = 0 Then Check2.value = 1 Else Check2.value = 0

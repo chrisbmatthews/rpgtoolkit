@@ -83,7 +83,6 @@ End Enum
 
 Public facing As FACING_DIRECTION     'which direction are you facing? 1-s, 2-w, 3-n, 4-e
 
-Private movedThisFrame As Double
 Private mVarAnimationDelay As Double
 
 Public itmPos() As PLAYER_POSITION    'positions of items on board
@@ -697,7 +696,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
     CheckEdges = False
 End Function
 
-Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -735,9 +734,7 @@ Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_ne"
-    ' MODIFIED BY KSNiloc...
-    incrementFrame pPos(pNum).frame
-    'ppos(pNum).frame = ppos(pNum).frame + 1
+    Call incrementFrame(pPos(pNum).frame)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -785,8 +782,7 @@ Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
     End Select
 End Sub
 
-
-Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -825,9 +821,7 @@ Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_nw"
-    ' MODIFIED BY KSNiloc...
-    incrementFrame pPos(pNum).frame
-    'ppos(pNum).frame = ppos(pNum).frame + 1
+    Call incrementFrame(pPos(pNum).frame)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -876,7 +870,7 @@ Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
     End Select
 End Sub
 
-Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double)
     '=====================================
     'EDITED: [Isometrics - Delano 3/05/04]
     'Substituted tile type constants.
@@ -961,21 +955,17 @@ Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double)
             End If
             
             pPos(pNum).stance = "walk_se"
-            ' MODIFIED BY KSNiloc...
-            incrementFrame pPos(pNum).frame
-            'ppos(pNum).frame = ppos(pNum).frame + 1
+            Call incrementFrame(pPos(pNum).frame)
             Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         Case SOLID:
             'Walk on the spot.
             pPos(pNum).stance = "walk_se"
-            ' MODIFIED BY KSNiloc...
-            incrementFrame pPos(pNum).frame
-            'ppos(pNum).frame = ppos(pNum).frame + 1
+            Call incrementFrame(pPos(pNum).frame)
     End Select
 End Sub
 
-Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double)
     '=====================================
     'EDITED: [Isometrics - Delano 3/05/04]
     'Substituted tile type constants.
@@ -1062,21 +1052,17 @@ Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double)
             End If
             
             pPos(pNum).stance = "walk_sw"
-            ' MODIFIED BY KSNiloc...
-            incrementFrame pPos(pNum).frame
-            'ppos(pNum).frame = ppos(pNum).frame + 1
+            Call incrementFrame(pPos(pNum).frame)
             Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         Case SOLID:
             'Walk on the spot.
             pPos(pNum).stance = "walk_sw"
-            ' MODIFIED BY KSNiloc...
-            incrementFrame pPos(pNum).frame
-            'ppos(pNum).frame = ppos(pNum).frame + 1
+            Call incrementFrame(pPos(pNum).frame)
     End Select
 End Sub
 
-Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1114,10 +1100,7 @@ Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_n"
-    
-    ' MODIFIED BY KSNiloc...
-    incrementFrame pPos(pNum).frame
-    'ppos(pNum).frame = ppos(pNum).frame + 1
+    Call incrementFrame(pPos(pNum).frame)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -1138,7 +1121,7 @@ Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
     
 End Sub
 
-Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1176,9 +1159,7 @@ Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_s"
-    ' MODIFIED BY KSNiloc...
-    incrementFrame pPos(pNum).frame
-    'ppos(pNum).frame = ppos(pNum).frame + 1
+    Call incrementFrame(pPos(pNum).frame)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -1198,8 +1179,7 @@ Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
     End Select
 End Sub
 
-
-Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1237,10 +1217,7 @@ Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_e"
-    
-    ' MODIFIED BY KSNiloc...
-    incrementFrame pPos(pNum).frame
-    'ppos(pNum).frame = ppos(pNum).frame + 1
+    Call incrementFrame(pPos(pNum).frame)
     
     Select Case typetile
     
@@ -1261,7 +1238,7 @@ Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
     End Select
 End Sub
 
-Sub pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Sub pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1299,9 +1276,7 @@ Sub pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_w"
-    ' MODIFIED BY KSNiloc...
-    incrementFrame pPos(pNum).frame
-    'ppos(pNum).frame = ppos(pNum).frame + 1
+    Call incrementFrame(pPos(pNum).frame)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -1792,66 +1767,38 @@ End Sub
 
 Public Sub movePlayers()
 
-    '=====================================================================================
-    'MODIFIED BY KSNiloc
-    '
-    'Modified to help prevent super fast character animation, especially now that we use
-    'pixel movement.
-    '=====================================================================================
-
-    'move all pending players
     On Error Resume Next
-    
-    Dim maxP As Long
-    maxP = UBound(pendingPlayerMovement)
-    
-    Dim t As Long
-    
+
+    'Distance to move each player
     Dim moveFraction As Double
     moveFraction = movementSize / framesPerMove
 
+    'Increase movedThisFrame
     Call incrementFrame(-1)
-    
-    For t = 0 To maxP
-        Select Case pendingPlayerMovement(t).direction
-            Case MV_IDLE:
-                'this player isn't moving...
-            Case MV_NORTH:
-                Call pushPlayerNorth(t, moveFraction)
-            Case MV_SOUTH:
-                Call pushPlayerSouth(t, moveFraction)
-            Case MV_EAST:
-                Call pushPlayerEast(t, moveFraction)
-            Case MV_WEST:
-                Call pushPlayerWest(t, moveFraction)
-            Case MV_NE:
-                Call pushPlayerNorthEast(t, moveFraction)
-            Case MV_NW:
-                Call pushPlayerNorthWest(t, moveFraction)
-            Case MV_SE:
-                Call pushPlayerSouthEast(t, moveFraction)
-            Case MV_SW:
-                Call pushPlayerSouthWest(t, moveFraction)
-        End Select
-    Next t
 
+    'Loop over each player, moving them
+    Dim playerIdx As Long
+    For playerIdx = 0 To UBound(pendingPlayerMovement)
+        Select Case pendingPlayerMovement(playerIdx).direction
+            Case MV_NORTH: Call pushPlayerNorth(playerIdx, moveFraction)
+            Case MV_SOUTH: Call pushPlayerSouth(playerIdx, moveFraction)
+            Case MV_EAST: Call pushPlayerEast(playerIdx, moveFraction)
+            Case MV_WEST: Call pushPlayerWest(playerIdx, moveFraction)
+            Case MV_NE: Call pushPlayerNorthEast(playerIdx, moveFraction)
+            Case MV_NW: Call pushPlayerNorthWest(playerIdx, moveFraction)
+            Case MV_SE: Call pushPlayerSouthEast(playerIdx, moveFraction)
+            Case MV_SW: Call pushPlayerSouthWest(playerIdx, moveFraction)
+        End Select
+    Next playerIdx
+
+    'Check if we should reset movedThisFrame
     Call incrementFrame(-2)
-    
+
 End Sub
 
-Public Sub incrementFrame(Optional ByRef frame As Long = -1)
+Public Sub incrementFrame(ByRef frame As Long)
 
-    '=====================================================================================
-    'Increments the frame a player walking animation is on [KSNiloc]
-    '
-    'PURPOSE:   Even with pixel movement, we want the animation to play four frames a
-    '           tile in order to prevent 'super-fast' animation
-    '
-    'ARGUMENT:  Passed the .frame property of a player position (i.e. ppos(t).frame)
-    '
-    'NOTES:     Called only by the PushPlayer[Direction]() subs and movePlayers()
-    '
-    '=====================================================================================
+    Static movedThisFrame As Double     'How far have we moved this frame?
 
     Dim fraction As Double
     fraction = 1 / framesPerMove * animationDelay
@@ -1862,7 +1809,6 @@ Public Sub incrementFrame(Optional ByRef frame As Long = -1)
         movedThisFrame = movedThisFrame + movementSize
     Else
         If movedThisFrame >= fraction Then
-            'We HAVE moved a quarter of a tile!
             frame = frame + 1
         End If
     End If

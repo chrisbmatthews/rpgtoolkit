@@ -9,23 +9,24 @@ Begin VB.UserControl TKTopBar
    ScaleHeight     =   405
    ScaleWidth      =   4110
    ToolboxBitmap   =   "ctlTKTopBar.ctx":0000
-   Begin VB.PictureBox CloseX 
+   Begin VB.PictureBox closeX 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
-      FillColor       =   &H00FFFFFF&
       ForeColor       =   &H80000008&
-      Height          =   375
-      Left            =   15
-      ScaleHeight     =   375
-      ScaleWidth      =   375
+      Height          =   285
+      Left            =   50
+      Picture         =   "ctlTKTopBar.ctx":0312
+      ScaleHeight     =   285
+      ScaleMode       =   0  'User
+      ScaleWidth      =   300
       TabIndex        =   1
-      Top             =   15
-      Width           =   375
+      Top             =   20
+      Width           =   300
    End
    Begin VB.Label Label1 
       BackStyle       =   0  'Transparent
-      Caption         =   "Caption"
+      Caption         =   "      Caption"
       BeginProperty Font 
          Name            =   "Trebuchet MS"
          Size            =   11.25
@@ -104,17 +105,15 @@ End Property
 '''''''''
 
 Private Sub CloseX_Click()
- Unload theForm
+    Unload theForm
 End Sub
 
 Private Sub UserControl_Initialize()
- Call GFXInitScreen(640, 480)
- Call GFXBitBltTransparent(CloseX.hdc, 0, 0, 10, 10, frmCommonImages.picNewX.hdc, 0, 0, 0, 255, 0)
- CloseX.Width = 310
- CloseX.height = 300
- topBar.Picture = Images.Corner
- resizeMe
- CloseX.MouseIcon = Images.MouseLink
+    On Error Resume Next
+    topBar.Picture = Images.Corner
+    Call resizeMe
+    closeX.MousePointer = 99
+    closeX.MouseIcon = Images.MouseLink
 End Sub
 
 Public Sub resizeMe()

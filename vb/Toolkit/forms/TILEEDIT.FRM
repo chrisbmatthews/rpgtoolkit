@@ -1539,7 +1539,7 @@ Private Sub tileform_MouseMove(button As Integer, Shift As Integer, X As Single,
     If mouseX > (xRange - 1) Or mouseY > 31 Then Exit Sub
     
     'Update Co-ordinate label
-    tkMainForm.coords.Caption = "(" + toString(mouseX + 1) + "," + toString(mouseY + 1) + ")"
+    tkMainForm.coords.Caption = "(" + CStr(mouseX + 1) + "," + CStr(mouseY + 1) + ")"
     
     '...?
     If ignore = 1 Then ignore = 0: Exit Sub
@@ -2058,7 +2058,7 @@ Private Sub savetile2_Click(): On Error Resume Next
             If aa > 0 Then
                 'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
                 MsgBox ("Your tile has been added to the tileset: tile number " & aa & " in " & chr$(13) & filename(1) & ".")
-                openTileEditorDocs(indice).tileName = antiPath$ + toString(aa)
+                openTileEditorDocs(indice).tileName = antiPath$ + CStr(aa)
                 Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName + ")"
             End If
         Else
@@ -2154,7 +2154,7 @@ Private Sub mnusts_Click(): On Error Resume Next
             Dim aa As Long
             aa = addToTileSet(filename$(1))
             'MsgBox "Your tile has been added to the tileset", , "Save into tileset"
-            openTileEditorDocs(indice).tileName = antiPath$ + toString(tNum)
+            openTileEditorDocs(indice).tileName = antiPath$ + CStr(tNum)
             Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName$ + ")"
             
         Else

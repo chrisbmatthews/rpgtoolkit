@@ -129,19 +129,19 @@ Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
             'Randomly choose one of them
             Dim toAttack As Long
             toAttack = indices(Int(Rnd(1) * b) + 1)
-            
+
             'Set target, source, and run the program
             Call CBSetTarget(toAttack, TYPE_PLAYER)
             Call CBSetSource(fightIdx, TYPE_ENEMY)
             Call runProgram(projectPath & prgPath & ene.eneRPGCode, , False)
-            
+
         Else
         
             'No AI program, use internal AI
             Call preformFightAI(ene.eneAI, partyIdx, fightIdx)
-        
+
         End If
-        
+
     End If
 
 End Sub
@@ -424,10 +424,10 @@ Public Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
         Call CanvasGetScreen(cnvRPGCodeScreen)
         lineNum = 1
         If exp > 0 Then
-            Call AddToMsgBox("Players gained" + str$(exp) + " experience!", thePrg)
+            Call AddToMsgBox("Players gained" & CStr(exp) & " experience!", thePrg)
         End If
         If gp > 0 Then
-            Call AddToMsgBox("Players gained" + str$(gp) + " GP!", thePrg)
+            Call AddToMsgBox("Players gained" & CStr(gp) & " GP!", thePrg)
         End If
         Call renderRPGCodeScreen
         Call WaitForKey
@@ -632,7 +632,7 @@ Public Sub skilledFight(ByVal skill As Long, ByVal bkg As String)
     For t = 0 To numEne - 1
         enemies(t) = getEnemy(skill)
         If enemies(t) = "" Then
-            Call MBox(LoadStringLoc(829, "No Enemies of skill ") + str$(skill) + LoadStringLoc(830, " found!!!"), LoadStringLoc(831, "Can't Fight"), 0, menuColor, projectPath & bmpPath & mainMem.skinWindow$, projectPath & bmpPath & mainMem.skinButton$)
+            Call MBox(LoadStringLoc(829, "No Enemies of skill ") & CStr(skill) & LoadStringLoc(830, " found!!!"), LoadStringLoc(831, "Can't Fight"), 0, menuColor, projectPath & bmpPath & mainMem.skinWindow$, projectPath & bmpPath & mainMem.skinButton$)
             Exit Sub
         End If
     Next t

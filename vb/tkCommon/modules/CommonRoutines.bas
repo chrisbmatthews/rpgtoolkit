@@ -452,7 +452,7 @@ tabErr:
             If majorVer <> major Then MsgBox "This tile was created with an unrecognised version of the Toolkit", , "Unable to open tile": Exit Sub
             If minorVer <> minor Then
                 Dim user As VbMsgBoxResult
-                user = MsgBox("This tile was created using Version " & str(majorVer) & "." & str(minorVer) & ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", vbYesNo, "Different Version")
+                user = MsgBox("This tile was created using Version " & CStr(majorVer) & "." & CStr(minorVer) & ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", vbYesNo, "Different Version")
                 If user = vbNo Then
                     Close num
                     Exit Sub
@@ -934,14 +934,6 @@ Public Function booleanToLong(ByVal bol As Boolean) As Long
     'Return a boolean as 1/0
     '=======================================================
     If bol Then booleanToLong = 1
-End Function
-
-Public Function toString(ByVal val As String) As String
-     '=======================================================
-     'Returns the value passed in without spaces
-     '=======================================================
-     On Error Resume Next
-     toString = str(noSpaces(val))
 End Function
 
 Public Function noSpaces(ByVal Text As String) As String

@@ -441,9 +441,9 @@ Private Sub EraseTile_Click()
     Dim xx As Long, yy As Long
     
     Call BoardSetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, "", boardList(activeBoardIndex).theData)
-    boardList(activeBoardIndex).theData.ambientred(boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
-    boardList(activeBoardIndex).theData.ambientgreen(boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
-    boardList(activeBoardIndex).theData.ambientblue(boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
+    boardList(activeBoardIndex).theData.ambientRed(boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
+    boardList(activeBoardIndex).theData.ambientGreen(boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
+    boardList(activeBoardIndex).theData.ambientBlue(boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
     xx = boardList(activeBoardIndex).infoX * 32 - 32
     yy = boardList(activeBoardIndex).infoY * 32 - 32
     Call vbPicFillRect(activeBoard.boardform, xx, yy, xx + 32, yy + 32, vbQBColor(15))
@@ -621,7 +621,7 @@ Private Sub Form_Load()
         fn$ = projectPath$ + tilePath$ + fn$
         fn$ = noPath$(fn$)
         fn$ = Mid$(fn$, 2, Len(fn$) - 1)
-        fn$ = fn$ + toString(numof)
+        fn$ = fn$ + CStr(numof)
         'fn$ = nospace(fn$)
         Temp$ = fn$
     Else

@@ -124,7 +124,7 @@ Public Sub LoadState(ByVal file As String)
     Dim t As Long, z As Long
     Dim fn As String
 
-    Open file For Input As #num
+    Open file For Input Access Read As #num
         If fread(num) = "RPGTLKIT SAVE" Then
         
             'It's a version two old save state
@@ -218,12 +218,9 @@ Public Sub LoadState(ByVal file As String)
             Input #num, menuColor   'main menu color
 
             'Reverse compatibility stuff:
-            fread num
-            fread num
-            fread num
-            'Input #num, v14main     'used version 1.4 main file? 1- y 0- n
-            'Input #num, v14board    'version 1.4 board? 0-no, 1-yes
-            'Line Input #num, player14$   'filename of 1.4 graphic
+            Call fread(num)
+            Call fread(num)
+            Call fread(num)
 
             'Constants:
             Input #num, selectedPlayer 'number of player graphic
@@ -259,39 +256,38 @@ Public Sub LoadState(ByVal file As String)
                 Input #num, playerMem(t).nextLevel 'next level for players
                 Input #num, playerMem(t).levelProgression
             Next t
-            fread num
-            fread num
-            fread num
+            Call fread(num)
+            Call fread(num)
+            Call fread(num)
             For t = 0 To 25
                 Line Input #num, otherPlayers$(t)    'filenames of 25 other players that used to be equipped (0-25)
                 Line Input #num, otherPlayersHandle$(t) 'handles of 25 other players that used to be equipped (0-25)
             Next t
-            fread num
-            fread num
-            fread num
+            Call fread(num)
+            Call fread(num)
+            Call fread(num)
             Input #num, menuGraphic$     'graphic of main menu
             Input #num, fightMenuGraphic$     'graphic of main menu
-            fread num
+            Call fread(num)
             Input #num, MWinSize
-            fread num
+            Call fread(num)
             Input #num, newPlyrName
-            initTime = Timer
+            initTime = Timer()
             addTime = gameTime
-        
+
             Exit Sub
         
         End If
-    Close #num
+    Close num
 
-    Open file$ For Binary As #num
+    Open file For Binary Access Read As num
         Dim header As String
         header = BinReadString(num)
         If header$ <> "RPGTLKIT SAVE" Then
-            ' ! MODIFIED BY KSNiloc
-            If errorBranch = "" Or errorBranch = "Resume Next" Then
+            If (errorBranch = "") Or (errorBranch = "Resume Next") Then
                 Call MBox("Invalid Save Format")
             Else
-                debugger "Branch!"
+                Call debugger("Branch!")
             End If
             Exit Sub
         End If
@@ -476,8 +472,8 @@ Public Sub LoadState(ByVal file As String)
     
         'Movement size...
         transLocate.movementSize = BinReadDouble(num)
-    Close #num
-    initTime = Timer
+    Close num
+    initTime = Timer()
     addTime = gameTime
 End Sub
 

@@ -587,7 +587,7 @@ Private Sub resetLayerList()
     Next i
     
     ' if board has 8 layers possible
-    If boardList(activeBoardIndex).theData.Bsizel = 8 Then
+    If boardList(activeBoardIndex).theData.bSizeL = 8 Then
     For i = 5 To 8
         If boardList(activeBoardIndex).theData.boardTitle(i) = "" Then
             name = "Untitled"
@@ -717,8 +717,8 @@ Public Sub fillBoard(ByVal X As Long, ByVal Y As Long, ByVal l As Long, ByVal ti
     Dim sizex As Long, sizey As Long
     
     ' get current board size
-    sizex = boardList(activeBoardIndex).theData.Bsizex
-    sizey = boardList(activeBoardIndex).theData.Bsizey
+    sizex = boardList(activeBoardIndex).theData.bSizeX
+    sizey = boardList(activeBoardIndex).theData.bSizeY
     
     Dim x2 As Long, y2 As Long
     
@@ -792,18 +792,18 @@ Sub boardIso(ByVal val As Integer): On Error Resume Next
         minBoardSizeX = 10
         minBoardSizeY = 23
         
-        If boardList(activeBoardIndex).theData.Bsizey < 30 Then _
-            Call BoardResize(boardList(activeBoardIndex).theData.Bsizex, 30, _
-                boardList(activeBoardIndex).theData.Bsizel, boardList(activeBoardIndex).theData)
+        If boardList(activeBoardIndex).theData.bSizeY < 30 Then _
+            Call BoardResize(boardList(activeBoardIndex).theData.bSizeX, 30, _
+                boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
         
     Else
         'Minimum *viewing* dimensions!!!
         minBoardSizeX = 19
         minBoardSizeY = 11
         
-        If boardList(activeBoardIndex).theData.Bsizex < 19 Then _
-            Call BoardResize(19, boardList(activeBoardIndex).theData.Bsizey, _
-            boardList(activeBoardIndex).theData.Bsizel, boardList(activeBoardIndex).theData)
+        If boardList(activeBoardIndex).theData.bSizeX < 19 Then _
+            Call BoardResize(19, boardList(activeBoardIndex).theData.bSizeY, _
+            boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
         
     End If
     
@@ -857,7 +857,7 @@ Public Sub drawLayers(Optional ByVal buttonClick As Boolean = False): On Error R
     Dim layernum As Integer
     
     ' loop through each layer and redraw
-    For layernum = 1 To boardList(activeBoardIndex).theData.Bsizel: Call activeBoard.redrawbrd(layernum): Next layernum
+    For layernum = 1 To boardList(activeBoardIndex).theData.bSizeL: Call activeBoard.redrawbrd(layernum): Next layernum
     
     ' refresh grid
     Call refreshGrid
@@ -1209,7 +1209,7 @@ Public Sub changeAmbientLight(): On Error Resume Next
     boardList(activeBoardIndex).ambientB = tkMainForm.ambientlight.value
     
     ' update form caption for ambient value
-    tkMainForm.ambientnumber.Text = toString(tkMainForm.ambientlight.value)
+    tkMainForm.ambientnumber.Text = CStr(tkMainForm.ambientlight.value)
     
     ' set picture box as ambience
     Call vbPicFillRect(tkMainForm.Picture1, 0, 0, 1000, 1000, RGB(255, 255, 255))
@@ -1350,15 +1350,15 @@ Sub applyGradient(): On Error Resume Next
                     
                     If boardList(activeBoardIndex).boardGradMaintainPrev = True Then
                     
-                        boardList(activeBoardIndex).theData.ambientred(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientred(xx, yy, boardList(activeBoardIndex).currentLayer) + r1 + ra
-                        boardList(activeBoardIndex).theData.ambientgreen(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientgreen(xx, yy, boardList(activeBoardIndex).currentLayer) + g1 + ga
-                        boardList(activeBoardIndex).theData.ambientblue(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientblue(xx, yy, boardList(activeBoardIndex).currentLayer) + b1 + ba
+                        boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) + r1 + ra
+                        boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) + g1 + ga
+                        boardList(activeBoardIndex).theData.ambientBlue(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientBlue(xx, yy, boardList(activeBoardIndex).currentLayer) + b1 + ba
                     
                     Else
                     
-                        boardList(activeBoardIndex).theData.ambientred(xx, yy, boardList(activeBoardIndex).currentLayer) = r1 + ra
-                        boardList(activeBoardIndex).theData.ambientgreen(xx, yy, boardList(activeBoardIndex).currentLayer) = g1 + ga
-                        boardList(activeBoardIndex).theData.ambientblue(xx, yy, boardList(activeBoardIndex).currentLayer) = b1 + ba
+                        boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) = r1 + ra
+                        boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) = g1 + ga
+                        boardList(activeBoardIndex).theData.ambientBlue(xx, yy, boardList(activeBoardIndex).currentLayer) = b1 + ba
                         
                     End If
                     
@@ -1391,15 +1391,15 @@ Sub applyGradient(): On Error Resume Next
                     
                     If boardList(activeBoardIndex).boardGradMaintainPrev = True Then
                         
-                        boardList(activeBoardIndex).theData.ambientred(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientred(xx, yy, boardList(activeBoardIndex).currentLayer) + r1 + ra
-                        boardList(activeBoardIndex).theData.ambientgreen(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientgreen(xx, yy, boardList(activeBoardIndex).currentLayer) + g1 + ga
-                        boardList(activeBoardIndex).theData.ambientblue(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientblue(xx, yy, boardList(activeBoardIndex).currentLayer) + b1 + ba
+                        boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) + r1 + ra
+                        boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) + g1 + ga
+                        boardList(activeBoardIndex).theData.ambientBlue(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).theData.ambientBlue(xx, yy, boardList(activeBoardIndex).currentLayer) + b1 + ba
                     
                     Else
                     
-                        boardList(activeBoardIndex).theData.ambientred(xx, yy, boardList(activeBoardIndex).currentLayer) = r1 + ra
-                        boardList(activeBoardIndex).theData.ambientgreen(xx, yy, boardList(activeBoardIndex).currentLayer) = g1 + ga
-                        boardList(activeBoardIndex).theData.ambientblue(xx, yy, boardList(activeBoardIndex).currentLayer) = b1 + ba
+                        boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) = r1 + ra
+                        boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) = g1 + ga
+                        boardList(activeBoardIndex).theData.ambientBlue(xx, yy, boardList(activeBoardIndex).currentLayer) = b1 + ba
                     
                     End If
                     
@@ -1950,8 +1950,8 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
     End If
     
     ' check width/height against actual board width/height
-    If boardList(activeBoardIndex).tilesX > boardList(activeBoardIndex).theData.Bsizex Then boardList(activeBoardIndex).tilesX = boardList(activeBoardIndex).theData.Bsizex
-    If boardList(activeBoardIndex).tilesY > boardList(activeBoardIndex).theData.Bsizey Then boardList(activeBoardIndex).tilesY = boardList(activeBoardIndex).theData.Bsizey
+    If boardList(activeBoardIndex).tilesX > boardList(activeBoardIndex).theData.bSizeX Then boardList(activeBoardIndex).tilesX = boardList(activeBoardIndex).theData.bSizeX
+    If boardList(activeBoardIndex).tilesY > boardList(activeBoardIndex).theData.bSizeY Then boardList(activeBoardIndex).tilesY = boardList(activeBoardIndex).theData.bSizeY
     
     ' update picture
     boardform.Left = 0
@@ -1971,7 +1971,7 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
     
     ' calculate scroll bar lengths
     ignore = 1
-    If boardList(activeBoardIndex).tilesY = boardList(activeBoardIndex).theData.Bsizey Then
+    If boardList(activeBoardIndex).tilesY = boardList(activeBoardIndex).theData.bSizeY Then
         VScroll1.Visible = False
         Me.Width = boardform.Width + 115
     Else
@@ -1980,11 +1980,11 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
         VScroll1.Left = boardform.Width
     VScroll1.height = boardform.height
         VScroll1.value = boardList(activeBoardIndex).topY
-    VScroll1.max = boardList(activeBoardIndex).theData.Bsizey - boardList(activeBoardIndex).tilesY + 1
+    VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - boardList(activeBoardIndex).tilesY + 1
         VScroll1.LargeChange = boardList(activeBoardIndex).tilesY - 1           'Added.
         Me.Width = boardform.Width + VScroll1.Width + 115
     End If
-    If boardList(activeBoardIndex).tilesX = boardList(activeBoardIndex).theData.Bsizex Then
+    If boardList(activeBoardIndex).tilesX = boardList(activeBoardIndex).theData.bSizeX Then
         HScroll1.Visible = False
         Me.height = boardform.height + HScroll1.height + 206
     Else
@@ -1993,7 +1993,7 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
         HScroll1.Top = boardform.height
         HScroll1.Width = boardform.Width
         HScroll1.value = boardList(activeBoardIndex).topX
-    HScroll1.max = boardList(activeBoardIndex).theData.Bsizex - boardList(activeBoardIndex).tilesX + 1
+    HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - boardList(activeBoardIndex).tilesX + 1
         HScroll1.LargeChange = boardList(activeBoardIndex).tilesX - 1           'Added.
         Me.height = boardform.height + (HScroll1.height * 2) + 206
     End If
@@ -2172,9 +2172,9 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
                 Call BoardSetTile(xx, yy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).selectedTile$, boardList(activeBoardIndex).theData)
                 
                 ' set ambient details
-                boardList(activeBoardIndex).theData.ambientred(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientR
-                boardList(activeBoardIndex).theData.ambientgreen(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientG
-                boardList(activeBoardIndex).theData.ambientblue(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientB
+                boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientR
+                boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientG
+                boardList(activeBoardIndex).theData.ambientBlue(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientB
                 
                 ' set tiletype details
                 boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).currentTileType
@@ -2230,18 +2230,18 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
                             If ly > 11 Then ly = 11: If ly < 1 Then ly = 1
                             
                             If lx >= 1 And lx <= 20 And ly >= 1 And ly <= 12 Then
-                                boardList(activeBoardIndex).theData.ambientred(lx + boardList(activeBoardIndex).topX, ly + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = startR
-                                boardList(activeBoardIndex).theData.ambientgreen(lx + boardList(activeBoardIndex).topX, ly + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = startG
-                                boardList(activeBoardIndex).theData.ambientblue(lx + boardList(activeBoardIndex).topX, ly + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = startB
+                                boardList(activeBoardIndex).theData.ambientRed(lx + boardList(activeBoardIndex).topX, ly + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = startR
+                                boardList(activeBoardIndex).theData.ambientGreen(lx + boardList(activeBoardIndex).topX, ly + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = startG
+                                boardList(activeBoardIndex).theData.ambientBlue(lx + boardList(activeBoardIndex).topX, ly + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = startB
                             End If
 
                         Next openTileEditorDocs(activeTile.indice).angle
                         
                     Next radius
                     
-                    boardList(activeBoardIndex).theData.ambientred(newX + boardList(activeBoardIndex).topX, newY + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientR
-                    boardList(activeBoardIndex).theData.ambientgreen(newX + boardList(activeBoardIndex).topX, newY + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientG
-                    boardList(activeBoardIndex).theData.ambientblue(newX + boardList(activeBoardIndex).topX, newY + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientB
+                    boardList(activeBoardIndex).theData.ambientRed(newX + boardList(activeBoardIndex).topX, newY + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientR
+                    boardList(activeBoardIndex).theData.ambientGreen(newX + boardList(activeBoardIndex).topX, newY + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientG
+                    boardList(activeBoardIndex).theData.ambientBlue(newX + boardList(activeBoardIndex).topX, newY + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientB
                 
                 End If
                 
@@ -2365,9 +2365,9 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
         If boardList(activeBoardIndex).drawState = 6 Then
         
             ' reset ambient data
-            boardList(activeBoardIndex).theData.ambientred(xx, yy, boardList(activeBoardIndex).currentLayer) = 0
-            boardList(activeBoardIndex).theData.ambientgreen(xx, yy, boardList(activeBoardIndex).currentLayer) = 0
-            boardList(activeBoardIndex).theData.ambientblue(xx, yy, boardList(activeBoardIndex).currentLayer) = 0
+            boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) = 0
+            boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) = 0
+            boardList(activeBoardIndex).theData.ambientBlue(xx, yy, boardList(activeBoardIndex).currentLayer) = 0
             
             ' reset tiletype data
             boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer) = 0
@@ -2438,7 +2438,7 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
         If boardList(activeBoardIndex).currentTileType >= 11 Then mnuPop_Type_L.Item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
         
         ' setup popup menu
-        If boardList(activeBoardIndex).theData.Bsizel = 4 Then
+        If boardList(activeBoardIndex).theData.bSizeL = 4 Then
             With mnuPop_Type_L
                 For i = 15 To 18
                     .Item(i).Visible = False
@@ -2519,9 +2519,9 @@ End Sub
 Private Sub mnuPop_Erase_Click()
 
     ' reset ambient data
-    boardList(activeBoardIndex).theData.ambientred(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
-    boardList(activeBoardIndex).theData.ambientgreen(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
-    boardList(activeBoardIndex).theData.ambientblue(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
+    boardList(activeBoardIndex).theData.ambientRed(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
+    boardList(activeBoardIndex).theData.ambientGreen(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
+    boardList(activeBoardIndex).theData.ambientBlue(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
             
     ' reset tiletype data
     boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
@@ -2654,16 +2654,16 @@ Private Sub deleteLayer(): On Error Resume Next
     If user = 6 Then
     
         ' loop through tiles
-        For X = 0 To boardList(activeBoardIndex).theData.Bsizex
-            For Y = 0 To boardList(activeBoardIndex).theData.Bsizey
+        For X = 0 To boardList(activeBoardIndex).theData.bSizeX
+            For Y = 0 To boardList(activeBoardIndex).theData.bSizeY
 
                 ' get tile data
                 Call BoardSetTile(X, Y, boardList(activeBoardIndex).currentLayer, "", boardList(activeBoardIndex).theData)
                 
                 ' reset tile data
-                boardList(activeBoardIndex).theData.ambientred(X, Y, boardList(activeBoardIndex).currentLayer) = 0
-                boardList(activeBoardIndex).theData.ambientgreen(X, Y, boardList(activeBoardIndex).currentLayer) = 0
-                boardList(activeBoardIndex).theData.ambientblue(X, Y, boardList(activeBoardIndex).currentLayer) = 0
+                boardList(activeBoardIndex).theData.ambientRed(X, Y, boardList(activeBoardIndex).currentLayer) = 0
+                boardList(activeBoardIndex).theData.ambientGreen(X, Y, boardList(activeBoardIndex).currentLayer) = 0
+                boardList(activeBoardIndex).theData.ambientBlue(X, Y, boardList(activeBoardIndex).currentLayer) = 0
                 boardList(activeBoardIndex).theData.tiletype(X, Y, boardList(activeBoardIndex).currentLayer) = 0
             
             Next Y
@@ -2901,14 +2901,14 @@ Private Sub HScroll1_Change(): On Error Resume Next
     'End If
     
     ' check scroll bar boundries
-    If HScroll1.max <> boardList(activeBoardIndex).theData.Bsizex - tX + 1 Then
-        HScroll1.max = boardList(activeBoardIndex).theData.Bsizex - tX + 1
+    If HScroll1.max <> boardList(activeBoardIndex).theData.bSizeX - tX + 1 Then
+        HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tX + 1
     End If
     
-    If HScroll1.value + tX - 1 > boardList(activeBoardIndex).theData.Bsizex Then
+    If HScroll1.value + tX - 1 > boardList(activeBoardIndex).theData.bSizeX Then
         ignore = 1
         
-        HScroll1.value = boardList(activeBoardIndex).theData.Bsizex - tX - 1
+        HScroll1.value = boardList(activeBoardIndex).theData.bSizeX - tX - 1
         
         Call boardRedraw
         
@@ -3017,8 +3017,8 @@ Private Sub newBoard(): On Error Resume Next
     boardList(activeBoardIndex).topY = 0
     
     ' set width / height values
-    boardList(activeBoardIndex).theData.Bsizex = 19
-    boardList(activeBoardIndex).theData.Bsizey = 11
+    boardList(activeBoardIndex).theData.bSizeX = 19
+    boardList(activeBoardIndex).theData.bSizeY = 11
     
     ' fill picture box with board colour
     Call vbPicFillRect(boardform, 0, 0, 1000, 1000, boardList(activeBoardIndex).theData.brdColor)
@@ -3083,7 +3083,7 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
     Dim addonR As Long, addonG As Long, addonB As Long, tX As Long, tY As Long
     
     ' get RGB add-on value depending on ambient effect selected
-    Select Case boardList(activeBoardIndex).theData.ambienteffect
+    Select Case boardList(activeBoardIndex).theData.ambientEffect
     
         Case 0 ' None
             addonR = 0
@@ -3123,9 +3123,9 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
     Call GFXdrawboard(vbPicHDC(boardform), -1, layer, _
                     boardList(activeBoardIndex).topX, boardList(activeBoardIndex).topY, _
                     tX, tY, _
-                    boardList(activeBoardIndex).theData.Bsizex, _
-                    boardList(activeBoardIndex).theData.Bsizey, _
-                    boardList(activeBoardIndex).theData.Bsizel, _
+                    boardList(activeBoardIndex).theData.bSizeX, _
+                    boardList(activeBoardIndex).theData.bSizeY, _
+                    boardList(activeBoardIndex).theData.bSizeL, _
                     addonR, addonG, addonB, _
                     boardList(activeBoardIndex).theData.isIsometric)
     
@@ -3555,14 +3555,14 @@ Private Sub VScroll1_Change(): On Error Resume Next
     'End If
     
     ' check maximum values
-    If VScroll1.max <> boardList(activeBoardIndex).theData.Bsizey - tY + 1 Then
-        VScroll1.max = boardList(activeBoardIndex).theData.Bsizey - tY + 1
+    If VScroll1.max <> boardList(activeBoardIndex).theData.bSizeY - tY + 1 Then
+        VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tY + 1
     End If
     
-    If VScroll1.value + tY - 1 > boardList(activeBoardIndex).theData.Bsizey Then
+    If VScroll1.value + tY - 1 > boardList(activeBoardIndex).theData.bSizeY Then
         ignore = 1
         
-        VScroll1.value = boardList(activeBoardIndex).theData.Bsizey - tY - 1
+        VScroll1.value = boardList(activeBoardIndex).theData.bSizeY - tY - 1
         
         Call boardRedraw
         

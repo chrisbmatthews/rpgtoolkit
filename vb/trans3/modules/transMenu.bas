@@ -24,7 +24,7 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
 
     On Error Resume Next
 
-    'Quit if we're already shpwing the menu
+    'Quit if we're already showing the menu
     If bInMenu Or isFightInProgress() Then Exit Sub
    
     If mainMem.menuPlugin <> "" Then

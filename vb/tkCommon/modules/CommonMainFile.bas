@@ -184,7 +184,7 @@ Public Sub upgradeBattleSystem()
 
                     'It's trans3 and the DLL is supposed to already be registered
                     'but it's not-- make it happen
-                    Call ExecCmd("regsrv32 /s " & chr(34) & fullPath & chr(34))
+                    Call ExecCmd("regsrv32 /s " & Chr(34) & fullPath & Chr(34))
 
                     'Now setup the plugin for usage
                     Call setupVBPlugin(fullPath)
@@ -319,7 +319,7 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                 For t = 0 To cnt
                     readin = BinReadInt(num)
                     If readin = 1 Then
-                        Call MainAddPlugin(theMain, "tkplug" & toString(t) & ".dll")
+                        Call MainAddPlugin(theMain, "tkplug" & CStr(t) & ".dll")
                     End If
                 Next t
             Else
@@ -328,7 +328,7 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                     Call MainAddPlugin(theMain, BinReadString(num))
                 Next t
             End If
-        
+
             'day/night stuff...
             .mainUseDayNight = BinReadInt(num)
             .mainDayNightType = BinReadInt(num)
@@ -382,7 +382,7 @@ ver2oldMain:
             If majorVer <> major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Sub
             If minorVer <> minor Then
                 Dim user As VbMsgBoxResult
-                user = MsgBox("This file was created using Version " & str(majorVer) & "." & str(minorVer) & ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", 4, "Different Version")
+                user = MsgBox("This file was created using Version " & CStr(majorVer) & "." & CStr(minorVer) & ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", 4, "Different Version")
                 If user = 7 Then Close #num: Exit Sub      'selected no
             End If
             Call fread(num)          'registeredYN
@@ -429,7 +429,7 @@ ver2oldMain:
                     Dim inr As Integer
                     inr = fread(num)      'use plugin yn?
                     If inr = 1 Then
-                        Call MainAddPlugin(theMain, "tkplug" & toString(t) & ".dll")
+                        Call MainAddPlugin(theMain, "tkplug" & CStr(t) & ".dll")
                     End If
                 Next t
             End If

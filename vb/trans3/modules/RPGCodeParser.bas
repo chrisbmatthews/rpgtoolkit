@@ -435,6 +435,7 @@ Public Function GetVarList(ByVal Text As String, ByVal number As Long) As String
             Else
                 ignoreNext = 0
             End If
+            returnVal = returnVal & part
 
         ElseIf part = "=" Or part = "+" Or part = "-" Or part = "/" Or part = "*" Or part = "\" Or part = "^" Then
             If ignoreNext = 0 Then
@@ -490,7 +491,7 @@ Public Function ParseWithin(ByVal Text As String, ByVal startSymbol As String, B
                     End If
                     ignoreDepth = ignoreDepth - 1
                 Else
-                    toRet = toRet + part
+                    toRet = toRet & part
                 End If
             Next l
             ParseWithin = toRet
@@ -912,69 +913,85 @@ Public Function ParseRPGCodeCommand( _
     'even commands added to variables. Yes, this is the parser to end all
     'parsers (heh...)
 
-    'First see if we'll actually be of any use...
+    'Some things don't require parsing
     Select Case UCase(GetCommandName(line, prg))
-        Case "@", "*", "LABEL", "OPENBLOCK", "CLOSEBLOCK", _
-            "REDIRECT", "METHOD"
+        Case "@", "*", "", "LABEL", "OPENBLOCK", "CLOSEBLOCK", "REDIRECT", "METHOD"
             ParseRPGCodeCommand = line
             Exit Function
     End Select
- 
-    Dim depth As Long
- 
-    Dim char As String
-    Dim a As Long
-    Dim b As Long
- 
-    Dim prefix As String
-    prefix = LCase(GetCommandName(line, prg))
- 
-    Dim bT As String
-    bT = " " & GetBrackets(line)
-    If GetCommandName(line, prg) = "VAR" Then bT = line
-    
-    Dim cN As String
-    Dim rV As RPGCODE_RETURN
-    Dim v As String
- 
-    Dim oPP As Long
- 
-    Dim ignore As Boolean
- 
-    For a = 1 To Len(bT)
-        char = Mid(bT, a, 1)
-        Select Case UCase(char)
 
-            Case """"
+    Dim depth As Long           'Depth within brackets
+    Dim char As String          'A character
+    Dim char2 As String         'Another character
+    Dim a As Long               'Loop control
+    Dim b As Long               'Loop control
+    Dim prefix As String        'Command name
+    Dim bT As String            'Line to work on
+    Dim cN As String            'Function to execute
+    Dim rV As RPGCODE_RETURN    'Value the function returned
+    Dim v As String             'String value of rV
+    Dim oPP As Long             'Program position before running function
+    Dim ignore As Boolean       'Within quotes?
+    Dim ret As String           'Value to return
+    Dim varExp As Boolean       'Variable expression?
+
+    'Check if we have a variable expression
+    varExp = (GetCommandName(line, prg) = "VAR")
+
+    'Get the text to operate on
+    If (varExp) Then
+        bT = line
+    Else
+        prefix = LCase(GetCommandName(line, prg))
+        bT = " " & GetBrackets(line)
+    End If
+
+    'Loop over each character
+    For a = 1 To Len(bT)
+
+        'Get a character
+        char = Mid(bT, a, 1)
+
+        Select Case char
+
+            'Quote
+            Case Chr(34)
                 If ignore Then
                     ignore = False
                 Else
                     ignore = True
                 End If
 
+            'Opening bracket
             Case "(": If Not ignore Then depth = depth + 1
 
+            'Closing bracket
             Case ")"
-                If Not ignore Then
+                If (Not ignore) Then
                     depth = depth - 1
-                    If depth = 0 Then
+                    If (depth = 0) Then
 
-                        Dim char2 As String
+                        'Loop from current position backwards
                         For b = a To 1 Step -1
-                            'Work backwards and find the name of this command!
+
+                            'Get a character
                             char2 = Mid(bT, b, 1)
+
                             Select Case char2
 
-                                Case """"
+                                'Quote
+                                Case Chr(34)
                                     If ignore Then
                                         ignore = False
                                     Else
                                         ignore = True
                                     End If
-                                    
+
+                                'Opening/closing bracket
                                 Case "(": If Not ignore Then depth = depth - 1
                                 Case ")": If Not ignore Then depth = depth + 1
 
+                                'Divider
                                 Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^"
 
                                     If (depth = 0) And (Not ignore) Then
@@ -992,12 +1009,12 @@ Public Function ParseRPGCodeCommand( _
                                         'Get the value it returned...
                                         Select Case rV.dataType
                                             Case DT_NUM: v = CStr(rV.num)
-                                            Case DT_LIT: v = """" & rV.lit & """"
+                                            Case DT_LIT: v = Chr(34) & rV.lit & Chr(34)
                                         End Select
 
-                                        'Replace the command's name with its returned value...
-                                        Dim ret As String
-                                        If Not GetCommandName(line, prg) = "VAR" Then
+                                        'Replace the command's name with
+                                        'the value it returned
+                                        If (Not varExp) Then
                                             ret = _
                                                     prefix & _
                                                     "(" & _
@@ -1016,17 +1033,18 @@ Public Function ParseRPGCodeCommand( _
                                         ParseRPGCodeCommand = _
                                             ParseRPGCodeCommand(ret, prg)
 
-                                    Exit Function
-                                End If
-                            End Select
-                        Next b
-                    End If
-                End If
-            End Select
-        Next a
+                                        Exit Function
+                                    End If '(depth = 0) And (Not ignore)
+                            End Select '(char2)
+                        Next b '(b = a To 1 Step -1)
+                    End If '(depth = 0)
+                End If '(Not ignore)
+        End Select '(char)
+    Next a '(a = 1 To Len(bT))
 
-        ParseRPGCodeCommand = line
-        
+    'Return what we've done
+    ParseRPGCodeCommand = line
+
 End Function
 
 '=========================================================================
@@ -1078,4 +1096,156 @@ Private Function inStrOutsideQuotes(ByVal start As Long, ByVal Text As String, B
             Exit Function
         End If
     Next a
+End Function
+
+'=========================================================================
+' Replace vars like <var!> with their values
+'=========================================================================
+Public Function MWinPrepare(ByVal Text As String, ByRef prg As RPGCodeProgram) As String
+
+    On Error Resume Next
+
+    'Find the first <
+    Dim firstLocation As Long
+    firstLocation = InStr(1, Text, "<")
+
+    'If we found one
+    If firstLocation > 0 Then
+
+        'Find the associated >
+        Dim secondLocation As Long
+        secondLocation = InStr(1, Text, ">")
+
+        'If we found one
+        If secondLocation > 0 Then
+
+            'Get the name of the variable between them
+            Dim theVar As String
+            theVar = Mid(Text, firstLocation + 1, secondLocation - firstLocation - 1)
+
+            'Put the variable in brackets
+            Dim cLine As String
+            cLine = "(" & theVar & ")"
+
+            'Use GetParameters() to get its value
+            Dim value() As parameters
+            value() = GetParameters(cLine, prg)
+
+            'Change it to a string, if required
+            Dim theValue As String
+            If (value(0).dataType <> DT_NUM) Then
+                theValue = value(0).lit
+            Else
+                theValue = CStr(value(0).num)
+            End If
+
+            'Replace <var!> with the var's value
+            Text = replace(Text, "<" & theVar & ">", theValue)
+
+            'Recurse passing in the running text
+            MWinPrepare = MWinPrepare(Text, prg)
+
+            Exit Function
+
+        End If
+
+    End If
+
+    'Return what we've done
+    MWinPrepare = Text
+
+End Function
+
+'=========================================================================
+' Parse an array
+'=========================================================================
+Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram) As String
+
+    'This will take an array such as Array[a!+2]["Pos"]$ and replace variables, commands,
+    'equations, etc with their values.
+
+    'Just skip errors because they're probably the rpgcoder's fault
+    On Error GoTo skipError
+
+    'Have something to return incase we leave early
+    parseArray = variable
+
+    Dim toParse As String
+    'First remove spaces and tabs
+    toParse = replaceOutsideQuotes(variable, " ", "")
+    toParse = replaceOutsideQuotes(toParse, vbTab, "")
+
+    If InStr(1, toParse, "[") = 0 Then
+        'There's not a [ so it's not an array and we're not needed
+        Exit Function
+    End If
+
+    Dim variableType As String
+    'Grab the variable's type (! or $)
+    variableType = Right(toParse, 1)
+
+    Dim start As Long
+    Dim tEnd As Long
+
+    'See where the first [ is
+    start = InStr(1, toParse, "[")
+
+    Dim variableName As String
+    'Grab the variable's name
+    variableName = Mid(toParse, 1, start - 1)
+
+    'Find the last ]
+    tEnd = InStr(1, StrReverse(toParse), "]")
+    tEnd = Len(toParse) - tEnd + 1
+
+    'Just keep what's inbetween the two
+    toParse = Mid(toParse, start + 1, tEnd - start - 1)
+
+    Dim parseArrayD() As String
+    'Split it at '][' (bewteen elements)
+    parseArrayD() = Split(toParse, "][")
+
+    Dim build As String
+    Dim a As Long
+
+    build = "Array("
+
+    'Mould the array as if it were parameters passed to a command
+    For a = 0 To UBound(parseArrayD)
+        build = build & parseArrayD(a)
+        If Not a = UBound(parseArrayD) Then
+            build = build & ","
+        Else
+            build = build & ")"
+        End If
+    Next a
+
+    Dim arrayElements() As parameters
+    'Use my getParameters() function to retrieve the values of the dimensions
+    arrayElements() = GetParameters(build, prg)
+
+    'Begin to build the return value
+    build = variableName
+
+    'For each dimension
+    For a = 0 To UBound(arrayElements)
+
+        'Add on a [
+        build = build & "["
+
+        'Add in the content...
+        Select Case arrayElements(a).dataType
+            Case DT_NUM: build = build & CStr(arrayElements(a).num)
+            Case DT_LIT: build = build & Chr(34) & arrayElements(a).lit & Chr(34)
+        End Select
+
+        'Add on a ]
+        build = build & "]"
+
+    Next a
+
+    'Pass it back with the type (! or $) on the end
+    parseArray = build & variableType
+
+skipError:
 End Function

@@ -179,7 +179,6 @@ End Sub
 Sub DrawSizedTileBitmap(ByRef tbm As TKTileBitmap, ByVal x As Long, ByVal y As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long)
     'load and draw an image
     On Error Resume Next
-    'MsgBox "drawsized image: " + filename + str$(x) + str$(y) + str$(sizex) + str$(sizey) + str$(hdc)
     
     If screenWidth = 0 Then screenWidth = 4000 * Screen.TwipsPerPixelX
     If screenHeight = 0 Then screenHeight = 4000 * Screen.TwipsPerPixelY

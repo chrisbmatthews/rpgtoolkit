@@ -491,12 +491,12 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
 
         'Setup player position
-        With boardList(activeBoardIndex).theData
-            pPos(0).x = .playerX
-            pPos(0).y = .playerY
-            pPos(0).l = .playerLayer
-            pPos(0).stance = "WALK_S"
-            pPos(0).frame = 0
+        With pPos(0)
+            .x = boardList(activeBoardIndex).theData.playerX
+            .y = boardList(activeBoardIndex).theData.playerY
+            .l = boardList(activeBoardIndex).theData.playerLayer
+            .stance = "WALK_S"
+            .frame = 0
         End With
     
         'Set to use player 0 as walking graphics

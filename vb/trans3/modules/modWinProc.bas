@@ -145,7 +145,7 @@ End Function
 ' Get high word
 '=========================================================================
 Public Function HiWord(ByRef LongIn As Long) As Integer
-   Call CopyMemory(HiWord, ByVal (VarPtr(LongIn) + 2), 2)
+   Call CopyMemory(HiWord, ByVal (varptr(LongIn) + 2), 2)
 End Function
 
 '=========================================================================

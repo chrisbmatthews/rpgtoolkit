@@ -554,7 +554,13 @@ End Sub
 
 Public Function animGetMaxFrame(ByRef theAnim As TKAnimation) As Long
     On Error Resume Next
-    animGetMaxFrame = theAnim.animFrames
+    animGetMaxFrame = -1
+    Dim frameIdx As Long
+    For frameIdx = 0 To UBound(theAnim.animFrame)
+        If theAnim.animFrame(frameIdx) <> "" Then
+            animGetMaxFrame = animGetMaxFrame + 1
+        End If
+    Next frameIdx
 End Function
 
 Public Sub DrawAnimationIndex(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long)

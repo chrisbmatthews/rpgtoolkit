@@ -97,33 +97,33 @@ Attribute VB_Exposed = False
 
 Sub infofill()
     'will fill in info for the event
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     'find length of event program array...
     evtTop = UBound(evtList$)
     
     'find last entry in the array...
-    lastone = evtTop
+    lastOne = evtTop
     For t = evtTop To 0 Step -1
         If evtList$(t) <> "" Then
             Exit For
         Else
-            lastone = t
+            lastOne = t
         End If
     Next t
 
     'now fill in event listbox...
     List1.Clear
-    For t = 0 To lastone
+    For t = 0 To lastOne
         Dim a As Boolean
         evtDesc$ = DescribeEvent(evtList$(t), a)
-        evtDesc$ = toString(t) + ": " + evtDesc$
+        evtDesc$ = CStr(t) + ": " + evtDesc$
         List1.AddItem (evtDesc$)
     Next t
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -132,33 +132,33 @@ End Sub
 Private Sub Command1_Click()
     'now put this stuff back into the rpgcode editor...
     'will fill in info for the event
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     'find length of event program array...
     evtTop = UBound(evtList$)
     
     'find last entry in the array...
-    lastone = evtTop
+    lastOne = evtTop
     For t = evtTop To 0 Step -1
         If evtList$(t) <> "" Then
             Exit For
         Else
-            lastone = t
+            lastOne = t
         End If
     Next t
 
     'now fill in event listbox...
     toRet$ = ""
-    For t = 0 To lastone
-        toRet$ = toRet$ + evtList(t) + Chr$(13) + Chr$(10)
+    For t = 0 To lastOne
+        toRet$ = toRet$ + evtList(t) + chr$(13) + chr$(10)
     Next t
-    activeRPGCode.codeform.text = toRet$
+    activeRPGCode.codeForm.Text = toRet$
     
     Unload EventEdit
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -166,24 +166,24 @@ End Sub
 
 Private Sub Command2_Click()
     'insert line into event.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     'find length of event program array...
     evtTop = UBound(evtList$)
     
     'find last entry in the array...
-    lastone = evtTop
+    lastOne = evtTop
     For t = evtTop To 0 Step -1
         If evtList$(t) <> "" Then
             Exit For
         Else
-            lastone = t
+            lastOne = t
         End If
     Next t
 
     insertTo = List1.ListIndex
     If insertTo = -1 Then insertTo = 1
-    For t = lastone To insertTo Step -1
+    For t = lastOne To insertTo Step -1
         evtList$(t + 1) = evtList$(t)
     Next t
     evtList$(insertTo) = ""
@@ -192,40 +192,40 @@ Private Sub Command2_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command3_Click()
     'insert line into event.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     'find length of event program array...
     evtTop = UBound(evtList$)
     
     'find last entry in the array...
-    lastone = evtTop
+    lastOne = evtTop
     For t = evtTop To 0 Step -1
         If evtList$(t) <> "" Then
             Exit For
         Else
-            lastone = t
+            lastOne = t
         End If
     Next t
 
     delTo = List1.ListIndex
     If delTo = -1 Then delTo = 1
-    For t = delTo To lastone
+    For t = delTo To lastOne
         evtList$(t) = evtList$(t + 1)
     Next t
-    evtList$(lastone) = ""
+    evtList$(lastOne) = ""
     
     Call infofill
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

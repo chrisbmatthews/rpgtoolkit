@@ -345,15 +345,15 @@ Public Sub CreateCharacter(ByVal file As String, ByVal number As Long)
     playerListAr$(number) = playerMem(number).charname 'Save player handle
     
     playerFile$(number) = file$
-    Call setIndependentVariable(playerMem(number).experienceVar$, str$(playerMem(number).initExperience))
-    Call setIndependentVariable(playerMem(number).defenseVar$, str$(playerMem(number).initDefense))
-    Call setIndependentVariable(playerMem(number).fightVar$, str$(playerMem(number).initFight))
-    Call setIndependentVariable(playerMem(number).healthVar$, str$(playerMem(number).initHealth))
-    Call setIndependentVariable(playerMem(number).maxHealthVar$, str$(playerMem(number).initMaxHealth))
+    Call setIndependentVariable(playerMem(number).experienceVar$, CStr(playerMem(number).initExperience))
+    Call setIndependentVariable(playerMem(number).defenseVar$, CStr(playerMem(number).initDefense))
+    Call setIndependentVariable(playerMem(number).fightVar$, CStr(playerMem(number).initFight))
+    Call setIndependentVariable(playerMem(number).healthVar$, CStr(playerMem(number).initHealth))
+    Call setIndependentVariable(playerMem(number).maxHealthVar$, CStr(playerMem(number).initMaxHealth))
     Call setIndependentVariable(playerMem(number).nameVar$, playerMem(number).charname$)
-    Call setIndependentVariable(playerMem(number).smVar$, str$(playerMem(number).initSm))
-    Call setIndependentVariable(playerMem(number).smMaxVar$, str$(playerMem(number).initSmMax))
-    Call setIndependentVariable(playerMem(number).leVar$, str$(playerMem(number).initLevel))
+    Call setIndependentVariable(playerMem(number).smVar$, CStr(playerMem(number).initSm))
+    Call setIndependentVariable(playerMem(number).smMaxVar$, CStr(playerMem(number).initSmMax))
+    Call setIndependentVariable(playerMem(number).leVar$, CStr(playerMem(number).initLevel))
     playerMem(number).nextLevel = playerMem(number).levelType
     playerMem(number).levelProgression = playerMem(number).levelType
 End Sub
@@ -411,7 +411,6 @@ Public Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     Dim SMa As Long
     Dim DPa As Long
     Dim FPa As Long
-    Dim a As Long
     Dim lit As String
     Dim maxHP As Double
     Dim maxSM As Double
@@ -424,12 +423,13 @@ Public Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     SMa = anItem.equipSM     'amt of smp added by equipment.
     DPa = anItem.equipDP     'amt of dp added by equipment.
     FPa = anItem.equipFP     'amt of fp added by equipment.
-    a = getIndependentVariable(playerMem(playerNum).maxHealthVar$, lit$, maxHP)
-    a = getIndependentVariable(playerMem(playerNum).smMaxVar$, lit$, maxSM)
-    a = getIndependentVariable(playerMem(playerNum).healthVar$, lit$, hp)
-    a = getIndependentVariable(playerMem(playerNum).smVar$, lit$, sm)
-    a = getIndependentVariable(playerMem(playerNum).defenseVar$, lit$, dp)
-    a = getIndependentVariable(playerMem(playerNum).fightVar$, lit$, fp)
+
+    Call getIndependentVariable(playerMem(playerNum).maxHealthVar$, lit$, maxHP)
+    Call getIndependentVariable(playerMem(playerNum).smMaxVar$, lit$, maxSM)
+    Call getIndependentVariable(playerMem(playerNum).healthVar$, lit$, hp)
+    Call getIndependentVariable(playerMem(playerNum).smVar$, lit$, sm)
+    Call getIndependentVariable(playerMem(playerNum).defenseVar$, lit$, dp)
+    Call getIndependentVariable(playerMem(playerNum).fightVar$, lit$, fp)
     
     maxHP = maxHP - HPa
     If hp > maxHP Then hp = maxHP
@@ -438,12 +438,12 @@ Public Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     dp = dp - DPa
     fp = fp - FPa
 
-    Call setIndependentVariable(playerMem(playerNum).defenseVar$, str$(dp))
-    Call setIndependentVariable(playerMem(playerNum).fightVar$, str$(fp))
-    Call setIndependentVariable(playerMem(playerNum).healthVar$, str$(hp))
-    Call setIndependentVariable(playerMem(playerNum).maxHealthVar$, str$(maxHP))
-    Call setIndependentVariable(playerMem(playerNum).smVar$, str$(sm))
-    Call setIndependentVariable(playerMem(playerNum).smMaxVar$, str$(maxSM))
+    Call setIndependentVariable(playerMem(playerNum).defenseVar$, CStr(dp))
+    Call setIndependentVariable(playerMem(playerNum).fightVar$, CStr(fp))
+    Call setIndependentVariable(playerMem(playerNum).healthVar$, CStr(hp))
+    Call setIndependentVariable(playerMem(playerNum).maxHealthVar$, CStr(maxHP))
+    Call setIndependentVariable(playerMem(playerNum).smVar$, CStr(sm))
+    Call setIndependentVariable(playerMem(playerNum).smMaxVar$, CStr(maxSM))
 End Sub
 
 '=========================================================================
@@ -469,7 +469,6 @@ Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file 
     equipDPadd(playerNum) = anItem.equipDP     'amt of dp added by equipment.
     equipFPadd(playerNum) = anItem.equipFP     'amt of fp added by equipment.
 
-    Dim a As Long
     Dim lit As String
     Dim maxHP As Double
     Dim maxSM As Double

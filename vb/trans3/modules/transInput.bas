@@ -337,7 +337,7 @@ Function WaitForKey() As String
         'Check the other buttons.
     
         If jButton(jButtonNum) Then
-            WaitForKey = "BUTTON" + toString(jButtonNum + 1)
+            WaitForKey = "BUTTON" & CStr(jButtonNum + 1)
         End If
     Next jButtonNum
     
@@ -687,14 +687,14 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         '    debugging = Not (debugging)
         'End If
         
-        If UCase$(str$(mainMem.Key)) = UCase$(str$(keyCode)) Then
+        If UCase$(CStr(mainMem.Key)) = UCase$(CStr(keyCode)) Then
             'User pressed the activation key.
             'Check to see if there is a program to be activated at this location.
             Call programTest(pPos(selectedPlayer))
         End If
         
         'Check primary runtime key: run its associated program if so.
-        If UCase$(str$(keyCode)) = UCase$(str$(mainMem.runKey)) Then
+        If UCase$(CStr(keyCode)) = UCase$(CStr(mainMem.runKey)) Then
             Call runProgram(projectPath & prgPath & mainMem.runTime$)
             Exit Sub
         End If
@@ -712,7 +712,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         Next Index
         
         'Check the menu key.
-        If UCase$(str$(keyCode)) = UCase$(str$(mainMem.menuKey)) Then
+        If UCase$(CStr(keyCode)) = UCase$(CStr(mainMem.menuKey)) Then
             Call showMenu
             Exit Sub
         End If

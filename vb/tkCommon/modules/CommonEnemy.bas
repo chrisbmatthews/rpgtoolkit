@@ -367,7 +367,7 @@ ver2oldenemy:
         minorVer = val(fread(num))         'Minor version (ie 2.0)
         If majorVer <> major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit " + file$, , "Unable to open Enemy": Close #num: Exit Function
         If minorVer <> minor Then
-            user = MsgBox("This Enemy was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
+            user = MsgBox("This Enemy was created using Version " + CStr(majorVer) + "." + CStr(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Function 'selected no
         End If
         theEnemy.eneName$ = fread(num)  'Name

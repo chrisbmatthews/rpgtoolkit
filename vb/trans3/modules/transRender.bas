@@ -273,8 +273,8 @@ End Sub
 '=========================================================================
 ' Apply the board's ambient effect
 '=========================================================================
-Public Sub ambienteffect()
-    Select Case boardList(activeBoardIndex).theData.ambienteffect
+Public Sub ambientEffect()
+    Select Case boardList(activeBoardIndex).theData.ambientEffect
         Case 0
             addOnR = 0
             addOnG = 0
@@ -1570,7 +1570,7 @@ Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal
     'Create the DirectX host window
     Call host.Create
 
-    Do While True
+    Do
 
         'enter Graphics mode...
         If DXInitGfxMode(host.hwnd, Width, height, useDX, depth, fullScreen) = 0 Then
@@ -1580,7 +1580,7 @@ Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal
                 'tried everything...
                 Call Unload(host)
                 Call MsgBox("Error initializing graphics mode. Make sure you have DirectX 8 or higher installed.")
-                End
+                Call showEndForm(True)
             ElseIf depth = 32 Then
                 depth = 24
             ElseIf depth = 24 Then

@@ -11,8 +11,14 @@ Attribute VB_Name = "RPGCode"
 
 Option Explicit
 
+'=========================================================================
+' Public variables
+'=========================================================================
 Public inWith() As String
 
+'=========================================================================
+' Member variables
+'=========================================================================
 Private RPGCodeSwitchCase As New Collection
 Private foundSwitch() As Boolean
 Private doneIf() As Boolean
@@ -102,7 +108,7 @@ Sub CompilerPushRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, By
     
     Dim toUse As String
     If dType = DT_NUM Then
-        toUse = toString(num)
+        toUse = CStr(num)
     Else
         toUse = lit
     End If
@@ -223,7 +229,7 @@ Sub GetThreadIDRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByR
         
     If number = 1 Then
         'save value in destination var...
-        Call SetVariable(useIt1, str$(theID), theProgram)
+        Call SetVariable(useIt1, CStr(theID), theProgram)
     End If
         
     retval.dataType = DT_NUM
@@ -303,7 +309,7 @@ Sub ThreadSleepRemainingRPG(ByVal Text As String, ByRef theProgram As RPGCodePro
         retval.dataType = DT_NUM
         retval.num = ThreadSleepRemaining(num1)
         If number = 2 Then
-            Call SetVariable(useIt2, str$(retval.num), theProgram)
+            Call SetVariable(useIt2, CStr(retval.num), theProgram)
         End If
     End If
 End Sub
@@ -354,7 +360,7 @@ Sub LocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
         retval.num = num1
     
         If number = 2 Then
-            Call SetVariable(useIt2, str$(retval.num), theProgram)
+            Call SetVariable(useIt2, CStr(retval.num), theProgram)
         End If
     Else
         'literal variable...
@@ -369,7 +375,7 @@ Sub LocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
         retval.lit = lit1
     
         If number = 2 Then
-            Call SetVariable(useIt2, str$(retval.lit), theProgram)
+            Call SetVariable(useIt2, CStr(retval.lit), theProgram)
         End If
     End If
 End Sub
@@ -424,7 +430,7 @@ Sub GlobalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         retval.num = num1
     
         If number = 2 Then
-            Call SetVariable(useIt2, str$(retval.num), theProgram)
+            Call SetVariable(useIt2, CStr(retval.num), theProgram)
         End If
     Else
         'literal variable...
@@ -444,7 +450,7 @@ Sub GlobalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         retval.lit = lit1
     
         If number = 2 Then
-            Call SetVariable(useIt2, str$(retval.lit), theProgram)
+            Call SetVariable(useIt2, CStr(retval.lit), theProgram)
         End If
     End If
 End Sub
@@ -490,9 +496,9 @@ Sub TellThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRe
     If number = 3 Then
         'save value in destination var...
         If retval.dataType = DT_LIT Then
-            Call SetVariable(useIt3, str$(retval.lit), theProgram)
+            Call SetVariable(useIt3, CStr(retval.lit), theProgram)
         Else
-            Call SetVariable(useIt3, str$(retval.num), theProgram)
+            Call SetVariable(useIt3, CStr(retval.num), theProgram)
         End If
     End If
 End Sub
@@ -1147,7 +1153,7 @@ End Sub
 Public Sub CallPlayerSwapRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     'CallPlayerSwap()
     On Error Resume Next
-    Call debugger("Warning: CallPlayerShop() is temporarily unavaliable; use AddPlayer() and RemovePlayer() player!")
+    Call debugger("Warning: CallPlayerSwap() is temporarily unavaliable; use AddPlayer() and RemovePlayer() player!")
 End Sub
 
 Sub CharacterSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -1249,7 +1255,7 @@ Sub checkButtonRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     Next t
     
     If number = 3 Then
-        Call SetVariable(var3$, str$(theOne), theProgram)
+        Call SetVariable(var3$, CStr(theOne), theProgram)
     End If
     retval.dataType = DT_NUM
     retval.num = theOne
@@ -2095,9 +2101,9 @@ Sub GetColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
     rr = red(fontColor)
     gg = green(fontColor)
     bb = blue(fontColor)
-    Call SetVariable(useIt1$, str$(rr), theProgram)
-    Call SetVariable(useIt2$, str$(gg), theProgram)
-    Call SetVariable(useIt3$, str$(bb), theProgram)
+    Call SetVariable(useIt1$, CStr(rr), theProgram)
+    Call SetVariable(useIt2$, CStr(gg), theProgram)
+    Call SetVariable(useIt3$, CStr(bb), theProgram)
 
     Exit Sub
 'Begin error handling code:
@@ -2120,8 +2126,8 @@ Sub GetCornerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim var1 As String, var2 As String
     var1$ = GetElement(dataUse$, 1)
     var2$ = GetElement(dataUse$, 2)
-    Call SetVariable(var1$, str$(topX), theProgram)
-    Call SetVariable(var2$, str$(topY), theProgram)
+    Call SetVariable(var1$, CStr(topX), theProgram)
+    Call SetVariable(var2$, CStr(topY), theProgram)
 
     Exit Sub
 'Begin error handling code:
@@ -2159,7 +2165,7 @@ Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 theOne = target
                 aa = getVariable(playerMem(theOne).defenseVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2169,7 +2175,7 @@ Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 'enemy was targeted.
                 theOne = target
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneDP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneDP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneDP
@@ -2182,7 +2188,7 @@ Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 theOne = Source
                 aa = getVariable(playerMem(theOne).defenseVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2192,7 +2198,7 @@ Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 'enemy was targeted.
                 theOne = Source
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneDP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneDP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneDP
@@ -2204,7 +2210,7 @@ Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         
         aa = getVariable(playerMem(theOne).defenseVar$, lit$, curhp, theProgram)
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(curhp), theProgram)
+            Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = curhp
@@ -2231,7 +2237,7 @@ Sub GetFontSizeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     End If
     useIt1$ = GetElement(dataUse$, 1)
     If number = 1 Then
-        Call SetVariable(useIt1$, str$(fontSize), theProgram)
+        Call SetVariable(useIt1$, CStr(fontSize), theProgram)
     End If
     retval.dataType = DT_NUM
     retval.num = fontSize
@@ -2272,7 +2278,7 @@ Sub getFPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 theOne = target
                 aa = getVariable(playerMem(theOne).fightVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2282,20 +2288,19 @@ Sub getFPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 'enemy was targeted.
                 theOne = target
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneFP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneFP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneFP
                 Exit Sub
             End If
-        End If
-        If UCase$(lit1$) = "SOURCE" Then
+        ElseIf UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
                 'player was targeted
                 theOne = Source
                 aa = getVariable(playerMem(theOne).fightVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2305,7 +2310,7 @@ Sub getFPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 'enemy was targeted.
                 theOne = Source
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneFP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneFP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneFP
@@ -2317,7 +2322,7 @@ Sub getFPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         
         aa = getVariable(playerMem(theOne).fightVar$, lit$, curhp, theProgram)
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(curhp), theProgram)
+            Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = curhp
@@ -2343,7 +2348,7 @@ Sub GetGPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         Exit Sub
     End If
     If number = 1 Then
-        Call SetVariable(dataUse$, str$(GPCount), theProgram)
+        Call SetVariable(dataUse$, CStr(GPCount), theProgram)
     End If
     retval.dataType = DT_NUM
     retval.num = GPCount
@@ -2384,7 +2389,7 @@ Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 theOne = target
                 aa = getVariable(playerMem(theOne).healthVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                     retval.dataType = DT_NUM
                     retval.num = curhp
                 Else
@@ -2397,7 +2402,7 @@ Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 'enemy was targeted.
                 theOne = target
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneHP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneHP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneHP
@@ -2410,7 +2415,7 @@ Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 theOne = Source
                 aa = getVariable(playerMem(theOne).healthVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2420,7 +2425,7 @@ Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 'enemy was targeted.
                 theOne = Source
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneHP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneHP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneHP
@@ -2432,7 +2437,7 @@ Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         
         aa = getVariable(playerMem(theOne).healthVar$, lit$, curhp, theProgram)
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(curhp), theProgram)
+            Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = curhp
@@ -2473,7 +2478,7 @@ Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 theOne = target
                 aa = getVariable(playerMem(theOne).leVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2483,7 +2488,7 @@ Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 'enemy was targeted (level 0)
                 theOne = target
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(0), theProgram)
+                    Call SetVariable(useIt2$, CStr(0), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = 0
@@ -2495,7 +2500,7 @@ Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 theOne = Source
                 aa = getVariable(playerMem(theOne).leVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2505,7 +2510,7 @@ Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 'enemy was targeted (level 0)
                 theOne = Source
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(0), theProgram)
+                    Call SetVariable(useIt2$, CStr(0), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = 0
@@ -2517,7 +2522,7 @@ Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
         
         aa = getVariable(playerMem(theOne).leVar$, lit$, curhp, theProgram)
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(curhp), theProgram)
+            Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = curhp
@@ -2558,7 +2563,7 @@ Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 theOne = target
                 aa = getVariable(playerMem(theOne).maxHealthVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2568,7 +2573,7 @@ Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 'enemy was targeted.
                 theOne = target
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneMaxHP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneMaxHP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneMaxHP
@@ -2580,7 +2585,7 @@ Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 theOne = Source
                 aa = getVariable(playerMem(theOne).maxHealthVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2590,7 +2595,7 @@ Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 'enemy was targeted.
                 theOne = Source
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneMaxHP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneMaxHP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneMaxHP
@@ -2602,7 +2607,7 @@ Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
         
         aa = getVariable(playerMem(theOne).maxHealthVar$, lit$, curhp, theProgram)
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(curhp), theProgram)
+            Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = curhp
@@ -2645,7 +2650,7 @@ Sub GetMaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
                 theOne = target
                 aa = getVariable(playerMem(theOne).smMaxVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
@@ -2655,29 +2660,27 @@ Sub GetMaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
                 'enemy was targeted.
                 theOne = target
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneMaxSMP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneMaxSMP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneMaxSMP
                 Exit Sub
             End If
-        End If
-        If UCase$(lit1$) = "SOURCE" Then
-            If sourceType = 0 Then
+        ElseIf UCase$(lit1$) = "SOURCE" Then
+            If sourceType = TYPE_PLAYER Then
                 theOne = Source
                 aa = getVariable(playerMem(theOne).smMaxVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
                 Exit Sub
-            End If
-            If sourceType = 2 Then
+            ElseIf sourceType = TYPE_ENEMY Then
                 'enemy was targeted.
                 theOne = Source
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneMaxSMP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneMaxSMP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneMaxSMP
@@ -2689,7 +2692,7 @@ Sub GetMaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
         
         aa = getVariable(playerMem(theOne).smMaxVar$, lit$, curhp, theProgram)
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(curhp), theProgram)
+            Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = curhp
@@ -2742,9 +2745,9 @@ Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
         rr = red(p)
         gg = green(p)
         bb = blue(p)
-        Call SetVariable(useIt3$, str$(rr), theProgram)
-        Call SetVariable(useIt4$, str$(gg), theProgram)
-        Call SetVariable(useIt5$, str$(bb), theProgram)
+        Call SetVariable(useIt3$, CStr(rr), theProgram)
+        Call SetVariable(useIt4$, CStr(gg), theProgram)
+        Call SetVariable(useIt5$, CStr(bb), theProgram)
     End If
 
     Exit Sub
@@ -2772,8 +2775,8 @@ Sub GetResRPG(Text$, ByRef theProgram As RPGCodeProgram)
     xx = resX
     yy = resY
     
-    Call SetVariable(var1$, str$(xx), theProgram)
-    Call SetVariable(var2$, str$(yy), theProgram)
+    Call SetVariable(var1$, CStr(xx), theProgram)
+    Call SetVariable(var2$, CStr(yy), theProgram)
 
     Exit Sub
 'Begin error handling code:
@@ -2877,43 +2880,40 @@ Sub GetSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
             If UCase$(playerListAr$(t)) = UCase$(lit1$) Then theOne = t
         Next t
         If UCase$(lit1$) = "TARGET" Then
-            If targetType = 0 Then
+            If targetType = TYPE_PLAYER Then
                 theOne = target
                 aa = getVariable(playerMem(theOne).smVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
                 Exit Sub
-            End If
-            If targetType = 2 Then
+            ElseIf targetType = TYPE_ENEMY Then
                 'enemy was targeted.
                 theOne = target
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneSMP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneSMP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneSMP
                 Exit Sub
             End If
-        End If
-        If UCase$(lit1$) = "SOURCE" Then
-            If sourceType = 0 Then
+        ElseIf UCase$(lit1$) = "SOURCE" Then
+            If sourceType = TYPE_PLAYER Then
                 theOne = Source
                 aa = getVariable(playerMem(theOne).smVar$, lit$, curhp, theProgram)
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(curhp), theProgram)
+                    Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = curhp
                 Exit Sub
-            End If
-            If sourceType = 2 Then
+            ElseIf sourceType = TYPE_ENEMY Then
                 'enemy was targeted.
                 theOne = Source
                 If number = 2 Then
-                    Call SetVariable(useIt2$, str$(enemyMem(theOne).eneSMP), theProgram)
+                    Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneSMP), theProgram)
                 End If
                 retval.dataType = DT_NUM
                 retval.num = enemyMem(theOne).eneSMP
@@ -2925,7 +2925,7 @@ Sub GetSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
         
         aa = getVariable(playerMem(theOne).smVar$, lit$, curhp, theProgram)
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(curhp), theProgram)
+            Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = curhp
@@ -2998,7 +2998,7 @@ Sub GiveHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 If curhp > tooBig Then curhp = tooBig
                 If curhp < 0 Then curhp = 0
         
-                Call SetVariable(playerMem(theOne).healthVar$, str$(curhp), theProgram)
+                Call SetVariable(playerMem(theOne).healthVar$, CStr(curhp), theProgram)
                 Exit Sub
             End If
             If targetType = 2 Then
@@ -3019,7 +3019,7 @@ Sub GiveHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 If curhp > tooBig Then curhp = tooBig
                 If curhp < 0 Then curhp = 0
         
-                Call SetVariable(playerMem(theOne).healthVar$, str$(curhp), theProgram)
+                Call SetVariable(playerMem(theOne).healthVar$, CStr(curhp), theProgram)
                 Exit Sub
             End If
             If sourceType = 2 Then
@@ -3041,7 +3041,7 @@ Sub GiveHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         If curhp < 0 Then curhp = 0
         
-        Call SetVariable(playerMem(theOne).healthVar$, str$(curhp), theProgram)
+        Call SetVariable(playerMem(theOne).healthVar$, CStr(curhp), theProgram)
     End If
 
     Exit Sub
@@ -3106,7 +3106,7 @@ Sub GiveSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
                 If curhp < 0 Then curhp = 0
         
-                Call SetVariable(playerMem(theOne).smVar$, str$(curhp), theProgram)
+                Call SetVariable(playerMem(theOne).smVar$, CStr(curhp), theProgram)
                 Exit Sub
             End If
             If targetType = 2 Then
@@ -3128,7 +3128,7 @@ Sub GiveSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
                 If curhp < 0 Then curhp = 0
         
-                Call SetVariable(playerMem(theOne).smVar$, str$(curhp), theProgram)
+                Call SetVariable(playerMem(theOne).smVar$, CStr(curhp), theProgram)
                 Exit Sub
             End If
             If sourceType = 2 Then
@@ -3150,7 +3150,7 @@ Sub GiveSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         If curhp < 0 Then curhp = 0
         
-        Call SetVariable(playerMem(theOne).smVar$, str$(curhp), theProgram)
+        Call SetVariable(playerMem(theOne).smVar$, CStr(curhp), theProgram)
     End If
 
 
@@ -3238,7 +3238,7 @@ Sub HPRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 theOne = target
                 aa = getVariable(playerMem(theOne).maxHealthVar$, lit$, tooBig, theProgram)
                 If num2 > tooBig Then num2 = tooBig
-                Call SetVariable(playerMem(theOne).healthVar$, str$(num2), theProgram)
+                Call SetVariable(playerMem(theOne).healthVar$, CStr(num2), theProgram)
             End If
             If targetType = 2 Then
                 'enemy was targeted.
@@ -3253,7 +3253,7 @@ Sub HPRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 theOne = Source
                 aa = getVariable(playerMem(theOne).maxHealthVar$, lit$, tooBig, theProgram)
                 If num2 > tooBig Then num2 = tooBig
-                Call SetVariable(playerMem(theOne).healthVar$, str$(num2), theProgram)
+                Call SetVariable(playerMem(theOne).healthVar$, CStr(num2), theProgram)
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
@@ -3268,7 +3268,7 @@ Sub HPRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         aa = getVariable(playerMem(theOne).maxHealthVar$, lit$, tooBig, theProgram)
         If num2 > tooBig Then num2 = tooBig
-        Call SetVariable(playerMem(theOne).healthVar$, str$(num2), theProgram)
+        Call SetVariable(playerMem(theOne).healthVar$, CStr(num2), theProgram)
     End If
 
     Exit Sub
@@ -3508,8 +3508,8 @@ Sub innRPG(Text$, ByRef theProgram As RPGCodeProgram)
         If playerListAr$(t) <> "" Then
             nHP = getPlayerMaxHP(playerMem(t))
             nSMP = getPlayerMaxSMP(playerMem(t))
-            Call SetVariable(playerMem(t).healthVar$, str$(nHP), theProgram)
-            Call SetVariable(playerMem(t).smVar$, str$(nSMP), theProgram)
+            Call SetVariable(playerMem(t).healthVar$, CStr(nHP), theProgram)
+            Call SetVariable(playerMem(t).smVar$, CStr(nSMP), theProgram)
         End If
     Next t
 
@@ -3644,7 +3644,7 @@ Sub itemCountRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
             retNum = inv.quantities(theOne)
         End If
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(retNum), theProgram)
+            Call SetVariable(useIt2$, CStr(retNum), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = retNum
@@ -3695,9 +3695,9 @@ Sub ItemLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
         theOne = x
     End If
     theOne = inBounds(theOne, 0, maxItem)
-    Call SetVariable(useIt2$, str$(boardList(activeBoardIndex).theData.itmX(theOne)), theProgram)
-    Call SetVariable(useIt3$, str$(boardList(activeBoardIndex).theData.itmY(theOne)), theProgram)
-    Call SetVariable(useIt4$, str$(boardList(activeBoardIndex).theData.itmLayer(theOne)), theProgram)
+    Call SetVariable(useIt2$, CStr(boardList(activeBoardIndex).theData.itmX(theOne)), theProgram)
+    Call SetVariable(useIt3$, CStr(boardList(activeBoardIndex).theData.itmY(theOne)), theProgram)
+    Call SetVariable(useIt4$, CStr(boardList(activeBoardIndex).theData.itmLayer(theOne)), theProgram)
 
     Exit Sub
 'Begin error handling code:
@@ -3828,7 +3828,7 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If ax = 1 Or ay = 1 Or al = 1 Or ag = 0 Then
         Call debugger("Error: LayerPut data must be numeric, numeric, numeric, literal!-- " + Text$)
     Else
-        Call ambienteffect
+        Call ambientEffect
         'internal engine drawing routines
         'first, get the shade color of the board...
         Dim shadeR As Double, shadeG As Double, shadeB As Double, lightShade As Long
@@ -4025,23 +4025,22 @@ Sub MaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
             If UCase$(playerListAr$(t)) = UCase$(lit1$) Then theOne = t
         Next t
         If UCase$(lit1$) = "TARGET" Then
-            If targetType = 0 Then
+            If targetType = TYPE_PLAYER Then
                 theOne = target
-                Call SetVariable(playerMem(theOne).maxHealthVar$, str$(num2), theProgram)
+                Call SetVariable(playerMem(theOne).maxHealthVar$, CStr(num2), theProgram)
                 Exit Sub
             End If
-        End If
-        If UCase$(lit1$) = "SOURCE" Then
-            If sourceType = 0 Then
+        ElseIf UCase$(lit1$) = "SOURCE" Then
+            If sourceType = TYPE_PLAYER Then
                 theOne = Source
-                Call SetVariable(playerMem(theOne).maxHealthVar$, str$(num2), theProgram)
+                Call SetVariable(playerMem(theOne).maxHealthVar$, CStr(num2), theProgram)
                 Exit Sub
             End If
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
         'Set the health level:
         
-        Call SetVariable(playerMem(theOne).maxHealthVar$, str$(num2), theProgram)
+        Call SetVariable(playerMem(theOne).maxHealthVar$, CStr(num2), theProgram)
     End If
 
     Exit Sub
@@ -4076,23 +4075,22 @@ Sub MaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
             If UCase$(playerListAr$(t)) = UCase$(lit1$) Then theOne = t
         Next t
         If UCase$(lit1$) = "TARGET" Then
-            If targetType = 0 Then
+            If targetType = TYPE_PLAYER Then
                 theOne = target
-                Call SetVariable(playerMem(theOne).smMaxVar$, str$(num2), theProgram)
+                Call SetVariable(playerMem(theOne).smMaxVar$, CStr(num2), theProgram)
                 Exit Sub
             End If
-        End If
-        If UCase$(lit1$) = "SOURCE" Then
-            If sourceType = 0 Then
+        ElseIf UCase$(lit1$) = "SOURCE" Then
+            If sourceType = TYPE_PLAYER Then
                 theOne = Source
-                Call SetVariable(playerMem(theOne).smMaxVar$, str$(num2), theProgram)
+                Call SetVariable(playerMem(theOne).smMaxVar$, CStr(num2), theProgram)
                 Exit Sub
             End If
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
         'Set the health level:
         
-        Call SetVariable(playerMem(theOne).smMaxVar$, str$(num2), theProgram)
+        Call SetVariable(playerMem(theOne).smMaxVar$, CStr(num2), theProgram)
     End If
 
 
@@ -4261,13 +4259,13 @@ Sub mouseClickRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim my As Long
     
     If paras(2).num <> 1 Then
-        getMouse mx, my
+        Call getMouse(mx, my)
     Else
-        getMouseNoWait mx, my
+        Call getMouseNoWait(mx, my)
     End If
     
-    Call SetVariable(var1$, str$(mx), theProgram)
-    Call SetVariable(var2$, str$(my), theProgram)
+    Call SetVariable(var1$, CStr(mx), theProgram)
+    Call SetVariable(var2$, CStr(my), theProgram)
 
     Exit Sub
 'Begin error handling code:
@@ -4296,8 +4294,8 @@ Sub mouseMoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim my As Long
     Call getMouseMove(mx, my)
     
-    Call SetVariable(var1$, str$(mx), theProgram)
-    Call SetVariable(var2$, str$(my), theProgram)
+    Call SetVariable(var1$, CStr(mx), theProgram)
+    Call SetVariable(var2$, CStr(my), theProgram)
 
     Exit Sub
 'Begin error handling code:
@@ -4398,40 +4396,11 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Function MWinPrepare(ByVal Text As String, ByRef prg As RPGCodeProgram) As String
-    'Replace variables in <>s with their respective values
-    On Error Resume Next
-    Dim firstLocation As Long
-    firstLocation = InStr(1, Text, "<")
-    If firstLocation > 0 Then
-        Dim secondLocation As Long
-        secondLocation = InStr(1, Text, ">")
-        If secondLocation > 0 Then
-            Dim theVar As String
-            theVar = Mid(Text, firstLocation + 1, secondLocation - firstLocation - 1)
-            Dim cLine As String
-            cLine = "(" & theVar & ")"
-            Dim value() As parameters
-            value() = GetParameters(cLine, prg)
-            Dim theValue As String
-            If value(0).dataType <> DT_NUM Then
-                theValue = value(0).lit
-            Else
-                theValue = CStr(value(0).num)
-            End If
-            Text = replace(Text, "<" & theVar & ">", theValue)
-            MWinPrepare = MWinPrepare(Text, prg)
-            Exit Function
-        End If
-    End If
-    MWinPrepare = Text
-End Function
-
 Public Sub MWinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     'MWin(text$)
     'Add to the message box
     If CountData(Text) <> 1 Then
-        Call debugger(" MWin() requires one data element-- " & Text)
+        Call debugger("MWin() requires one data element-- " & Text)
     End If
     Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
@@ -4556,7 +4525,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PathFindRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub PathFindRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #PathFind (x1!, y1!, x2!, y2!, dest$ [, layer!])
     'find the shortest walkable path between two points on the board, and return it
     'as a string in dest$
@@ -4576,7 +4545,7 @@ Sub PathFindRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
     useIt3$ = GetElement(dataUse$, 3)
     useIt4$ = GetElement(dataUse$, 4)
     useIt5$ = GetElement(dataUse$, 5)
-    If number = 6 Then useIt6$ = GetElement(dataUse$, 6) Else useIt6$ = toString(pPos(selectedPlayer).l)
+    If number = 6 Then useIt6$ = GetElement(dataUse$, 6) Else useIt6$ = CStr(pPos(selectedPlayer).l)
     
     Dim e1 As Long, e2 As Long, e3 As Long, e4 As Long, e5 As Long, e6 As Long
     Dim lit4 As String, lit5 As String, lit6 As String
@@ -4587,7 +4556,7 @@ Sub PathFindRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
     e5 = getValue(useIt5$, lit5$, num5, theProgram)
     e6 = getValue(useIt6$, lit6$, num6, theProgram)
     If e1 = 1 Or e2 = 1 Or e3 = 1 Or e4 = 1 Or e5 = 0 Or e6 = 1 Then
-        Call debugger("Error: PathFind data type must be num, num, num, num, lit [, num]!-- " + Text$)
+        Call debugger("Error: PathFind data type must be num, num, num, num, lit [, num]!-- " & Text$)
         Exit Sub
     End If
     
@@ -4718,10 +4687,8 @@ Sub PostureRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
-        'MsgBox Str$(theone)
-        'MsgBox Str$(num) + text$
         num = inBounds(num, 0, 9)
-        pPos(theOne).stance = "Custom " + toString(num)
+        pPos(theOne).stance = "Custom " & CStr(num)
         Call renderNow
         Call CanvasGetScreen(cnvRPGCodeScreen)
         Call renderRPGCodeScreen
@@ -4805,7 +4772,7 @@ Sub PrintRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        lit$ = str$(num)
+        lit$ = CStr(num)
     End If
     'replace <> w/vars
     lit$ = MWinPrepare(lit$, theProgram)
@@ -4994,7 +4961,7 @@ errorhandler:
     
 End Sub
 
-Sub PushRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub PushRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     '=================================================
     'REWRITTEN: [Isometrics - Delano - 30/04/04]
     'Rewritten to accept diagonal directions (for both board types).
@@ -5159,7 +5126,7 @@ Sub PutItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt4$ = GetElement(dataUse$, 4)
     
     'If layer not supplied, then use the current player's layer.
-    If number = 3 Then useIt4$ = str$(pPos(selectedPlayer).l)
+    If number = 3 Then useIt4$ = CStr(pPos(selectedPlayer).l)
     
     ah = getValue(useIt1$, lit1$, num1, theProgram)
     ax = getValue(useIt2$, lit2$, num2, theProgram)
@@ -5232,7 +5199,7 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt4$ = GetElement(dataUse$, 4)
     
     'If layer not supplied, then use the current player's layer.
-    If number = 3 Then useIt4$ = str$(pPos(selectedPlayer).l)
+    If number = 3 Then useIt4$ = CStr(pPos(selectedPlayer).l)
     
     'Literals not needed for 2-4:
     parameter1Type = getValue(useIt1$, handeName$, num1, theProgram)
@@ -5323,7 +5290,7 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If ax = 1 Or ay = 1 Or ag = 0 Then
         Call debugger("Error: Put data must be numeric, numeric, literal!-- " + Text$)
     Else
-        Call ambienteffect
+        Call ambientEffect
         'internal engine drawing routines
         'first, get the shade color of the board...
         Dim shadeR As Double, shadeG As Double, shadeB As Double, lightShade As Long
@@ -5389,7 +5356,7 @@ Sub RandomRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     
         aa = Int(Rnd(1) * ceiling) + 1
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(aa), theProgram)
+            Call SetVariable(useIt2$, CStr(aa), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = aa
@@ -5769,8 +5736,8 @@ Sub RestoreScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Else
         useIt1$ = "0"
         useIt2$ = "0"
-        useIt3$ = str$(tilesX * 32)
-        useIt4$ = str$(tilesY * 32)
+        useIt3$ = CStr(tilesX * 32)
+        useIt4$ = CStr(tilesY * 32)
         useIt5$ = "0"
         useIt6$ = "0"
     End If
@@ -5816,7 +5783,7 @@ Sub ReturnMethodRPG(Text$, ByRef theProgram As RPGCodeProgram)
             foundIt = 1
             aa = getVariable(pointer$(t), lit$, num, theProgram)
             If aa = 0 Then
-                datu$ = str$(num)
+                datu$ = CStr(num)
             
                 methodReturn.dataType = DT_NUM
                 methodReturn.num = num
@@ -5941,46 +5908,6 @@ Public Sub RPGCodeRPG(ByVal Text As String, _
             tempPRG.program(a)
     Next a
     
-    '========================================================================
-    'End bug fix by KSNiloc
-    '========================================================================
-
-    '========================================================================
-    'Commenting by KSNiloc
-    '========================================================================
-
-    'On Error GoTo errorhandler
-    'Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    'use$ = text$
-    'dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    'number = CountData(dataUse$)        'how many data elements are there?
-    'If number <> 1 Then
-    '    Call debugger("Warning: RPGCode has more than 1 data element!-- " + text$)
-    'End If
-    'useIt$ = GetElement(dataUse$, 1)
-    'If useIt$ = "" Then
-    '    Call debugger("Error: RPGCode has no data element!-- " + text$)
-    '    Exit Sub
-    'End If
-    'a = GetValue(useIt$, lit$, num, theProgram)
-    'If a = 0 Then
-    '    lit$ = str$(num)
-    'End If
-    
-    'Dim retval As RPGCODE_RETURN
-    'Dim vv As Long
-    'vv = DoIndependentCommand(lit$, retval)
-
-    'Exit Sub
-'Begin error handling code:
-'errorhandler:
-'
-'    Resume Next
-
-    '========================================================================
-    'End commenting by KSNiloc
-    '========================================================================
-
 End Sub
 
 
@@ -6066,7 +5993,7 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         
         If number = 3 Then
             'save value in destination var...
-            Call SetVariable(useIt3$, str$(tID), theProgram)
+            Call SetVariable(useIt3$, CStr(tID), theProgram)
         End If
         
         retval.dataType = DT_NUM
@@ -6324,13 +6251,10 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     lastRender.canvas = -1
     scTopX = -1000
     scTopY = -1000
-    
-    'MsgBox Str$(Timer - aa)
-    
+       
     Call alignBoard(targetX, targetY)
     Call openItems
     
-    ' ! ADDED BY KSNiloc...
     launchBoardThreads boardList(activeBoardIndex).theData
     
     pPos(selectedPlayer).x = targetX
@@ -6448,37 +6372,37 @@ Sub setConstants()
     Dim hh As String
     Dim cc As String
     
-    Call setIndependentVariable("GameTime!", str$(gameTime))
+    Call setIndependentVariable("GameTime!", CStr(gameTime))
     Call setIndependentVariable("Music$", musicPlaying$)
     For t = 0 To 4
-        xx$ = removeChar("playerX[" + str$(t) + "]!", " ")
-        yy$ = removeChar("playerY[" + str$(t) + "]!", " ")
-        ll$ = removeChar("playerLayer[" + str$(t) + "]!", " ")
-        hh$ = removeChar("playerHandle[" + str$(t) + "]$", " ")
-        Call setIndependentVariable(xx$, str$(pPos(t).x))
-        Call setIndependentVariable(yy$, str$(pPos(t).y))
-        Call setIndependentVariable(ll$, str$(pPos(t).l))
+        xx$ = removeChar("playerX[" + CStr(t) + "]!", " ")
+        yy$ = removeChar("playerY[" + CStr(t) + "]!", " ")
+        ll$ = removeChar("playerLayer[" + CStr(t) + "]!", " ")
+        hh$ = removeChar("playerHandle[" + CStr(t) + "]$", " ")
+        Call setIndependentVariable(xx$, CStr(pPos(t).x))
+        Call setIndependentVariable(yy$, CStr(pPos(t).y))
+        Call setIndependentVariable(ll$, CStr(pPos(t).l))
         Call setIndependentVariable(hh$, playerListAr$(t))
     Next t
     For t = 0 To 10
-        cc$ = removeChar("Constant[" + str$(t) + "]!", " ")
-        Call setIndependentVariable(cc$, str$(boardList(activeBoardIndex).theData.brdConst(t)))
+        cc$ = removeChar("Constant[" + CStr(t) + "]!", " ")
+        Call setIndependentVariable(cc$, CStr(boardList(activeBoardIndex).theData.brdConst(t)))
     Next t
     For t = 1 To 8
-        cc$ = removeChar("BoardTitle[" + str$(t) + "]$", " ")
+        cc$ = removeChar("BoardTitle[" + CStr(t) + "]$", " ")
         Call setIndependentVariable(cc$, boardList(activeBoardIndex).theData.boardTitle$(t))
     Next t
     'board skill and background
     If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 And boardList(activeBoardIndex).theData.BoardNightBattleOverride = 1 Then
         If IsNight() Then
-            Call setIndependentVariable("BoardSkill!", str$(boardList(activeBoardIndex).theData.BoardSkillNight))
+            Call setIndependentVariable("BoardSkill!", CStr(boardList(activeBoardIndex).theData.BoardSkillNight))
             Call setIndependentVariable("BoardBackground$", boardList(activeBoardIndex).theData.BoardBackgroundNight$)
         Else
-            Call setIndependentVariable("BoardSkill!", str$(boardList(activeBoardIndex).theData.boardSkill))
+            Call setIndependentVariable("BoardSkill!", CStr(boardList(activeBoardIndex).theData.boardSkill))
             Call setIndependentVariable("BoardBackground$", boardList(activeBoardIndex).theData.boardBackground$)
         End If
     Else
-        Call setIndependentVariable("BoardSkill!", str$(boardList(activeBoardIndex).theData.boardSkill))
+        Call setIndependentVariable("BoardSkill!", CStr(boardList(activeBoardIndex).theData.boardSkill))
         Call setIndependentVariable("BoardBackground$", boardList(activeBoardIndex).theData.boardBackground$)
     End If
     
@@ -6866,7 +6790,7 @@ Sub ShowRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 1 Then
         inWin$ = lit$
     Else
-        inWin$ = str$(num)
+        inWin$ = CStr(num)
     End If
     Call AddToMsgBox(inWin$, theProgram)
 
@@ -7029,7 +6953,7 @@ Sub SmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 theOne = target
                 aa = getVariable(playerMem(theOne).smMaxVar$, lit$, tooBig, theProgram)
                 If num2 > tooBig Then num2 = tooBig
-                Call SetVariable(playerMem(theOne).smVar$, str$(num2), theProgram)
+                Call SetVariable(playerMem(theOne).smVar$, CStr(num2), theProgram)
                 Exit Sub
             End If
             If targetType = 2 Then
@@ -7045,7 +6969,7 @@ Sub SmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 theOne = Source
                 aa = getVariable(playerMem(theOne).smMaxVar$, lit$, tooBig, theProgram)
                 If num2 > tooBig Then num2 = tooBig
-                Call SetVariable(playerMem(theOne).smVar$, str$(num2), theProgram)
+                Call SetVariable(playerMem(theOne).smVar$, CStr(num2), theProgram)
                 Exit Sub
             End If
             If sourceType = 2 Then
@@ -7061,7 +6985,7 @@ Sub SmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         aa = getVariable(playerMem(theOne).smMaxVar$, lit$, tooBig, theProgram)
         If num2 > tooBig Then num2 = tooBig
-        Call SetVariable(playerMem(theOne).smVar$, str$(num2), theProgram)
+        Call SetVariable(playerMem(theOne).smVar$, CStr(num2), theProgram)
     End If
 
     Exit Sub
@@ -7097,17 +7021,17 @@ Sub SourceHandleRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     End If
     Dim var1 As String, tar As String
     var1$ = GetElement(dataUse$, 1)
-    If sourceType = 0 Then
+    If sourceType = TYPE_PLAYER Then
         'player
         tar$ = playerListAr$(Source)
     End If
-    If sourceType = 1 Then
+    If sourceType = TYPE_ITEM Then
         'item
-        tar$ = "ITEM" + str$(Source)
+        tar$ = "ITEM" & CStr(Source)
     End If
-    If sourceType = 2 Then
+    If sourceType = TYPE_ENEMY Then
         'enemy
-        tar$ = "ENEMY" + str$(Source)
+        tar$ = "ENEMY" & CStr(Source)
     End If
     If number = 1 Then
         Call SetVariable(var1$, tar$, theProgram)
@@ -7138,21 +7062,19 @@ Sub SourceLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
     var2$ = GetElement(dataUse$, 2)
     If sourceType = 0 Then
         'player
-        tarX$ = str$(pPos(Source).x)
-        tarY$ = str$(pPos(Source).y)
+        tarX$ = CStr(pPos(Source).x)
+        tarY$ = CStr(pPos(Source).y)
     End If
     If sourceType = 1 Then
         'item
-        'MsgBox Str$(itmx(target)) + Str$(itmy(target))
-        tarX$ = str$(boardList(activeBoardIndex).theData.itmX(Source))
-        tarY$ = str$(boardList(activeBoardIndex).theData.itmY(Source))
+        tarX$ = CStr(boardList(activeBoardIndex).theData.itmX(Source))
+        tarY$ = CStr(boardList(activeBoardIndex).theData.itmY(Source))
     End If
     If sourceType = 2 Then
         'enemy
-        tarX$ = str$(enemyMem(Source).x)
-        tarY$ = str$(enemyMem(Source).y)
+        tarX$ = CStr(enemyMem(Source).x)
+        tarY$ = CStr(enemyMem(Source).y)
     End If
-    'MsgBox tarx & "," + tary & "   " + Str$(curx(0)) + Str$(cury(0))
     Call SetVariable(var1$, tarX$, theProgram)
     Call SetVariable(var2$, tarY$, theProgram)
 
@@ -7186,7 +7108,7 @@ Sub SqrtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_R
     Dim calcu As Double
     calcu = Sqr(num1)
     If number = 2 Then
-        Call SetVariable(useIt2$, str$(calcu), theProgram)
+        Call SetVariable(useIt2$, CStr(calcu), theProgram)
     End If
     retval.dataType = DT_NUM
     retval.num = calcu
@@ -7231,56 +7153,46 @@ Sub StanceRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
-        'MsgBox Str$(theone)
-        'MsgBox Str$(num) + text$
+
         num = inBounds(num, 1, 43)
         
         If within(num, 1, 4) = 1 Then
             'facing south
             pPos(theOne).frame = num - 1
             pPos(theOne).stance = "WALK_S"
-        End If
-        If within(num, 5, 8) = 1 Then
+        ElseIf within(num, 5, 8) = 1 Then
             'facing south
             pPos(theOne).frame = num - 5
             pPos(theOne).stance = "WALK_E"
-        End If
-        If within(num, 9, 12) = 1 Then
+        ElseIf within(num, 9, 12) = 1 Then
             'facing south
             pPos(theOne).frame = num - 9
             pPos(theOne).stance = "WALK_N"
-        End If
-        If within(num, 13, 16) = 1 Then
+        ElseIf within(num, 13, 16) = 1 Then
             'facing south
             pPos(theOne).frame = num - 13
             pPos(theOne).stance = "WALK_W"
-        End If
-        If within(num, 17, 20) = 1 Then
+        ElseIf within(num, 17, 20) = 1 Then
             'facing south
             pPos(theOne).frame = num - 17
             pPos(theOne).stance = "FIGHT"
-        End If
-        If within(num, 21, 24) = 1 Then
+        ElseIf within(num, 21, 24) = 1 Then
             'facing south
             pPos(theOne).frame = num - 21
             pPos(theOne).stance = "SPC"
-        End If
-        If within(num, 25, 28) = 1 Then
+        ElseIf within(num, 25, 28) = 1 Then
             'facing south
             pPos(theOne).frame = num - 25
             pPos(theOne).stance = "DEFEND"
-        End If
-        If within(num, 29, 32) = 1 Then
+        ElseIf within(num, 29, 32) = 1 Then
             'facing south
             pPos(theOne).frame = num - 29
             pPos(theOne).stance = "DIE"
-        End If
-        If within(num, 33, 42) = 1 Then
+        ElseIf within(num, 33, 42) = 1 Then
             'facing south
             pPos(theOne).frame = 0
-            pPos(theOne).stance = "CUSTOM " + toString(num - 33)
-        End If
-        If num = 43 Then
+            pPos(theOne).stance = "CUSTOM " + CStr(num - 33)
+        ElseIf num = 43 Then
             pPos(theOne).frame = 0
             pPos(theOne).stance = "REST"
         End If
@@ -7491,11 +7403,11 @@ Sub TargetHandleRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     End If
     If targetType = 1 Then
         'item
-        tar$ = "ITEM" + str$(target)
+        tar$ = "ITEM" + CStr(target)
     End If
     If targetType = 2 Then
         'enemy
-        tar$ = "ENEMY" + str$(target)
+        tar$ = "ENEMY" + CStr(target)
     End If
     If number = 1 Then
         Call SetVariable(var1$, tar$, theProgram)
@@ -7536,25 +7448,23 @@ Sub TargetLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
             If aa = 1 Then xx = 18 Else xx = 19
             yy = target + 3
         
-            tarX$ = str$(xx)
-            tarY$ = str$(yy)
+            tarX$ = CStr(xx)
+            tarY$ = CStr(yy)
         Else
-            tarX$ = str$(pPos(target).x)
-            tarY$ = str$(pPos(target).y)
+            tarX$ = CStr(pPos(target).x)
+            tarY$ = CStr(pPos(target).y)
         End If
     End If
     If targetType = 1 Then
         'item
-        'MsgBox Str$(itmx(target)) + Str$(itmy(target))
-        tarX$ = str$(boardList(activeBoardIndex).theData.itmX(target))
-        tarY$ = str$(boardList(activeBoardIndex).theData.itmY(target))
+        tarX$ = CStr(boardList(activeBoardIndex).theData.itmX(target))
+        tarY$ = CStr(boardList(activeBoardIndex).theData.itmY(target))
     End If
     If targetType = 2 Then
         'enemy
-        tarX$ = str$(enemyMem(target).x)
-        tarY$ = str$(enemyMem(target).y)
+        tarX$ = CStr(enemyMem(target).x)
+        tarY$ = CStr(enemyMem(target).y)
     End If
-    'MsgBox tarx & "," + tary & "   " + Str$(curx(0)) + Str$(cury(0))
     Call SetVariable(var1$, tarX$, theProgram)
     Call SetVariable(var2$, tarY$, theProgram)
 
@@ -7597,7 +7507,7 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If cnv = 0 Then cnv = cnvRPGCodeScreen
     
     If txtto = 0 Then
-        lit1$ = str$(num3)
+        lit1$ = CStr(num3)
     End If
     If xto = 1 Or yto = 1 Then
         Call debugger("Error: Text location data type must be numerical!-- " + Text$)
@@ -7858,19 +7768,19 @@ Public Sub VariableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
             If equal = "-=" Or equal = "=-" Then
                 SetVariable Destination, _
-                    str(CBGetNumerical(Destination) - _
+                    CStr(CBGetNumerical(Destination) - _
                     numberUse(number)), theProgram
             ElseIf equal = "+=" Or equal = "=+" Then
                 SetVariable Destination, _
-                    str(numberUse(number) + CBGetNumerical(Destination)), theProgram
+                    CStr(numberUse(number) + CBGetNumerical(Destination)), theProgram
             ElseIf equal = "=*" Or equal = "*=" Then
                 SetVariable Destination, _
-                    str(numberUse(number) * CBGetNumerical(Destination)), theProgram
+                    CStr(numberUse(number) * CBGetNumerical(Destination)), theProgram
             ElseIf equal = "/=" Or equal = "=/" Then
                 SetVariable Destination, _
-                    str(CBGetNumerical(Destination) / numberUse(number)), theProgram
+                    CStr(CBGetNumerical(Destination) / numberUse(number)), theProgram
             Else
-                Call SetVariable(Destination$, str$(numberUse(number)), theProgram)
+                Call SetVariable(Destination$, CStr(numberUse(number)), theProgram)
             End If
 
         Case 1:
@@ -8007,7 +7917,7 @@ Sub CreateCursorMapRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval A
         var$ = GetElement(dataUse$, 1)
         
         idx = CreateCursorMapTable()
-        Call SetVariable(var$, str$(idx), theProgram)
+        Call SetVariable(var$, CStr(idx), theProgram)
     Else
         idx = CreateCursorMapTable()
     End If
@@ -8124,7 +8034,7 @@ Sub CreateCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
             retval.dataType = DT_NUM
             
             If number = 3 Then
-                Call SetVariable(useIt3, str$(cnv), theProgram)
+                Call SetVariable(useIt3, CStr(cnv), theProgram)
             End If
         End If
     End If
@@ -8269,7 +8179,7 @@ Sub CursorMapRunRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
             retval.dataType = DT_NUM
             retval.num = res
             If number = 2 Then
-                Call SetVariable(useIt2$, str$(res), theProgram)
+                Call SetVariable(useIt2$, CStr(res), theProgram)
             End If
         End If
     End If
@@ -8806,7 +8716,7 @@ Sub CastIntRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
         Dim value As Long
         value = Int(num1)
         If number = 2 Then
-            Call SetVariable(useIt2$, str$(value), theProgram)
+            Call SetVariable(useIt2$, CStr(value), theProgram)
         End If
         retval.dataType = DT_NUM
         retval.num = value
@@ -8838,8 +8748,7 @@ Sub CastLitRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
     If cst = 1 Then
         Call debugger("Error: CastLit data type must be numerical!-- " + Text$)
     Else
-        value$ = str$(num1)
-        value$ = removeChar(value$, " ")
+        value$ = CStr(num1)
         ' ! MODIFIED BY KSNiloc
         If number = 2 Then
             Call SetVariable(useIt2$, value, theProgram)
@@ -8873,11 +8782,11 @@ Sub CastNumRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
     cst = getValue(useIt1$, lit$, num1, theProgram)
     If cst = DT_NUM Then
         'silently recover...
-        lit = toString(num1)
+        lit = CStr(num1)
     End If
     value = val(lit$)
     If number = 2 Then
-        Call SetVariable(useIt2$, str$(value), theProgram)
+        Call SetVariable(useIt2$, CStr(value), theProgram)
     End If
     retval.dataType = DT_NUM
     retval.num = value
@@ -9645,7 +9554,7 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                 pY = ((pPos(selectedPlayer).y - topY) * 32) - 16
                 'wi = (mainForm.boardform.width / Screen.TwipsPerPixelX) + 100 * ddx
                 wi = tilesX * 32 + 200
-                'MsgBox Str$(cury(selectedplayer))
+
                 For radius = wi To 0 Step stepSize
                     'mainForm.boardform.Circle (px * ddx, py * ddy), radius, 0
                     Call CanvasDrawEllipse(cnvRPGCodeScreen, pX - radius / 2, pY - radius / 2, pX + radius / 2, pY + radius / 2, 0)
@@ -11257,19 +11166,20 @@ Public Function SwitchCase( _
     
     End With
 
-resumeErrorHandling:
+    Exit Function
 
-'=============================================================================
-'Error handling
-'=============================================================================
-Exit Function
+    '=============================================================================
+    'Error handling
+    '=============================================================================
 
 skipBlock:
-    prg.programPos = increment(prg)
-    prg.programPos = runBlock(Text, 0, prg)
-    prg.programPos = increment(prg)
-    SwitchCase = prg.programPos
-    Resume resumeErrorHandling
+    With prg
+        .programPos = increment(prg)
+        .programPos = runBlock(Text, 0, prg)
+        .programPos = increment(prg)
+        SwitchCase = .programPos
+    End With
+    Exit Function
     
 dimensionFoundSwitch:
     ReDim foundSwitch(0)
@@ -12039,12 +11949,12 @@ Public Sub midRPG( _
     'Rewritten by KSNiloc
     '=========================================================================
     'mid$ = Mid(string$,start!,length! [,dest$])
-   
+
     Dim cd As Long
     cd = CountData(Text)
-   
-    If cd <> 3 And cd <> 4 Then
-        debugger "Mid() requires three or four data elements-- " & Text
+
+    If (cd <> 3) And (cd <> 4) Then
+        Call debugger("Mid() requires three or four data elements-- " & Text)
         Exit Sub
     End If
    
@@ -12056,22 +11966,22 @@ Public Sub midRPG( _
          Or paras(1).dataType <> DT_NUM _
          Or paras(2).dataType <> DT_NUM _
                                          Then
-                                         
-        debugger "Mid()'s data elements are lit, num, num-- " & Text
+
+        Call debugger("Mid()'s data elements are lit, num, num-- " & Text)
         Exit Sub
-       
+
     End If
-   
+
     Dim toRet As String
     toRet = Mid(paras(0).lit, paras(1).num, paras(2).num)
-   
+
     If retval.usingReturnData Then
         retval.dataType = DT_LIT
         retval.lit = toRet
     ElseIf cd = 4 Then
-        SetVariable paras(3).dat, toRet, prg
+        Call SetVariable(paras(3).dat, toRet, prg)
     End If
-   
+
 End Sub
 
 Public Sub replaceRPG( _
@@ -12122,7 +12032,7 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     'PixelMovement(ON/OFF)
 
     If CountData(Text) <> 1 Then
-        debugger "PixelMovement() requires one data element-- " & Text
+        Call debugger("PixelMovement() requires one data element-- " & Text)
         Exit Sub
     End If
    
@@ -12130,7 +12040,7 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     paras() = GetParameters(Text, prg)
    
     If paras(0).dataType <> DT_LIT Then
-        debugger "PixelMovement() requires a literal data element-- " & Text
+        Call debugger("PixelMovement() requires a literal data element-- " & Text)
         Exit Sub
     End If
 
@@ -12143,7 +12053,7 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
             movementSize = 1
 
         Case Else
-            debugger "PixelMovement()'s data element must be ON or OFF-- " & Text
+            Call debugger("PixelMovement()'s data element must be ON or OFF-- " & Text)
    
     End Select
 

@@ -419,7 +419,7 @@ Public Function openItem(ByVal file As String) As TKItem
                 anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
                 anmName$ = projectPath & miscPath & anmName$
                 
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(x) + ".tbm"
                 tbmName$ = projectPath & bmpPath & tbmName$
                 
                 Call TileBitmapClear(tbm)
@@ -545,13 +545,13 @@ ver2olditem:
                     If Not (bCreated) Then
                         Call createNewTileSet(tstName$)
                         itmwalkGfx$(t - 1, 0) = ""
-                        itmwalkGfx$(t - 1, 1) = RemovePath(tstName$) + toString(tstPos)
+                        itmwalkGfx$(t - 1, 1) = RemovePath(tstName$) + CStr(tstPos)
                         tstPos = tstPos + 1
                         bCreated = True
                     Else
                         Call addToTileSet(tstName$)
                         itmwalkGfx$(t - 1, 0) = ""
-                        itmwalkGfx$(t - 1, 1) = RemovePath(tstName$) + toString(tstPos)
+                        itmwalkGfx$(t - 1, 1) = RemovePath(tstName$) + CStr(tstPos)
                         tstPos = tstPos + 1
                     End If
                 End If
@@ -575,13 +575,13 @@ ver2olditem:
                 If Not (bCreated) Then
                     Call createNewTileSet(tstName$)
                     itmrestGfx$(0) = ""
-                    itmrestGfx$(1) = RemovePath(tstName$) + toString(tstPos)
+                    itmrestGfx$(1) = RemovePath(tstName$) + CStr(tstPos)
                     tstPos = tstPos + 1
                     bCreated = True
                 Else
                     Call addToTileSet(tstName$)
                     itmrestGfx$(0) = ""
-                    itmrestGfx$(1) = RemovePath(tstName$) + toString(tstPos)
+                    itmrestGfx$(1) = RemovePath(tstName$) + CStr(tstPos)
                     tstPos = tstPos + 1
                 End If
             End If
@@ -617,7 +617,7 @@ ver2olditem:
             anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
             anmName$ = projectPath & miscPath & anmName$
             
-            tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
+            tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(x) + ".tbm"
             tbmName$ = projectPath & bmpPath & tbmName$
             
             Call TileBitmapClear(tbm)
