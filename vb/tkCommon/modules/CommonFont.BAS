@@ -21,7 +21,7 @@ Public fName As String
 'last used font attribs...
 Type fontAttribs
     name As String  'font name
-    Size As Long    'size
+    size As Long    'size
     Bold As Boolean 'bold?
     Italics As Boolean  'italicized?
     Underline As Boolean    'underlined?
@@ -51,12 +51,12 @@ Public Const OPAQUE = 2
 Sub drawGDIText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVal coltxt As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal fontFace As String, ByVal Bold As Boolean, ByVal Italics As Boolean, ByVal Underline As Boolean, ByVal hdc As Long, Optional ByVal centred As Boolean = False, Optional ByVal outlined As Boolean = False)
     On Error Resume Next
                
-    Dim length As String
-    length = Len(stringin$)
+    Dim Length As String
+    Length = Len(stringin$)
     
     Dim theAttrib As fontAttribs
     theAttrib.name = fontFace
-    theAttrib.Size = sizey
+    theAttrib.size = sizey
     theAttrib.Italics = Italics
     theAttrib.Bold = Bold
     theAttrib.Underline = Underline
@@ -79,14 +79,14 @@ Sub drawGDIText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, 
        
     If outlined Then
         Call BeginPath(hdc)
-        Call TextOut(hdc, xx, yy, stringin$, length)
+        Call TextOut(hdc, xx, yy, stringin$, Length)
         Call EndPath(hdc)
         
         Call SetBkColor(hdc, coltxt)
         Call SetBkMode(hdc, OPAQUE)
         Call StrokeAndFillPath(hdc)
     Else
-        Call TextOut(hdc, xx, yy, stringin$, length)
+        Call TextOut(hdc, xx, yy, stringin$, Length)
     End If
     
     Call SelectObject(hdc, hOldBrush)
@@ -272,8 +272,8 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
             
     Call SetBkMode(hdc, TRANSPARENT)
       
-    Dim length As Long
-    length = Len(stringin$)
+    Dim Length As Long
+    Length = Len(stringin$)
     Dim dx As Double
     dx = x
     'If staticText = 1 Then
@@ -292,17 +292,16 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
     End If
     If useTTFont Then
         'using a true type font!
-    
-        'Modifed by Shao for 3.0.5 -- fixed support for Bold(), Italics(), etc.
-        'Dim Bold As Boolean, italic As Boolean, Underline As Boolean
-        'If Bold = 1 Then Bold = True
-        'If Italics = 1 Then italic = True
-        'If Underline = 1 Then Underline = True
+        'pic.AutoRedraw = True
+        Dim Bold As Boolean, italic As Boolean, Underline As Boolean
+        If Bold = 1 Then Bold = True
+        If Italics = 1 Then italic = True
+        If Underline = 1 Then Underline = True
         
         Dim theAttrib As fontAttribs
         theAttrib.name = fontName$
-        theAttrib.Size = sizey
-        theAttrib.Italics = Italics
+        theAttrib.size = sizey
+        theAttrib.Italics = italic
         theAttrib.Bold = Bold
         theAttrib.Underline = Underline
         
@@ -315,7 +314,6 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
         xx = (dx * sizex) - sizex
         yy = (y - 1) * sizey
         a = TextOut(hdc, xx, yy, stringin$, Len(stringin$))
-        
         Call SelectObject(hdc, hFontOld)
         Call DeleteObject(hFontNew)
     Else
@@ -323,7 +321,7 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
         '    pic.AutoRedraw = False
         'End If
         Dim t As Long, part As String
-        For t = 1 To length
+        For t = 1 To Length
             xx = (dx * sizex) - sizex
             part$ = Mid$(stringin$, t, 1)
             Call putchar(part$, xx, (y - 1) * sizey, coltxt, sizex, sizey, hdc)
@@ -395,24 +393,24 @@ Function SetDeviceFont(ByVal hdc As Long, ByRef theAttribs As fontAttribs, ByRef
     
     Dim fnt As Long
     Dim newFnt As Long
-    fnt = SelectFontToDevice(theAttribs.name, hdc, theAttribs.Size, newFnt, theAttribs.Italics, theAttribs.Bold, theAttribs.Underline, centred)
+    fnt = SelectFontToDevice(theAttribs.name, hdc, theAttribs.size, newFnt, theAttribs.Italics, theAttribs.Bold, theAttribs.Underline, centred)
     hFontNew = newFnt
     SetDeviceFont = fnt
 End Function
 
 Function toBinary(ByVal decimala As Long) As String
     On Error GoTo errorhandler
-    Dim binNum As String, t As Long, length As Long, newNum As String, part As String
+    Dim binNum As String, t As Long, Length As Long, newNum As String, part As String
     Dim remain As Long
-    binNum$ = ""
+    binNum$ = vbNullString
     For t = 1 To 8
         remain = decimala Mod 2
         decimala = Int(decimala / 2)
         binNum$ = CStr(remain) + binNum$
     Next t
-    length = Len(binNum$)
-    newNum$ = ""
-    For t = 1 To length
+    Length = Len(binNum$)
+    newNum$ = vbNullString
+    For t = 1 To Length
         part$ = Mid$(binNum$, t, 1)
         If part$ <> " " Then newNum$ = newNum & part$
     Next t
@@ -428,10 +426,10 @@ End Function
 
 Function toDecimal(ByVal bin As String) As Long
     On Error Resume Next
-    Dim length As Long, toadd As Long, addon As String, t As Long, dec As Long, part As String
-    length = Len(bin$)
-    If length < 8 Then
-        toadd = 8 - length
+    Dim Length As Long, toadd As Long, addon As String, t As Long, dec As Long, part As String
+    Length = Len(bin$)
+    If Length < 8 Then
+        toadd = 8 - Length
         For t = 1 To toadd
             addon$ = addon & "0"
         Next t
