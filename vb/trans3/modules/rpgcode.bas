@@ -11726,7 +11726,7 @@ Public Sub newRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retva
         End If
     Next a
     retval.dataType = DT_NUM
-    retval.num = createRPGCodeObject(paras(0).lit, prg, construct, (UBound(paras) = 0))
+    retval.num = createRPGCodeObject(paras(0).lit, prg, construct, (UBound(paras) = 0), g_garbageHeap)
     If (retval.num = 0) Then
         Call debugger("Error creating object-- " & Text)
     End If
