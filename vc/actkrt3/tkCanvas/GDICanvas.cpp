@@ -183,6 +183,9 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 	// Select the bitmap into the device context
 	m_hOldBitmap = HBITMAP(SelectObject(m_hdcMem, m_hBitmap));
 
+	// Set StretchBlt mode
+	SetStretchBltMode(m_hdcMem, COLORONCOLOR);
+
 }
 
 //--------------------------------------------------------------------------
@@ -1305,6 +1308,8 @@ INLINE HDC CGDICanvas::OpenDC(VOID) CONST
 		// Using DirectX
 		HDC toRet = NULL;
 		m_lpddsSurface->GetDC(&toRet);
+		// Lock is implicit -- DC will not be consistent
+		SetStretchBltMode(toRet, COLORONCOLOR);
 		return toRet;
 	}
 	else

@@ -61,6 +61,7 @@ Private Declare Function SetBkColor Lib "gdi32" (ByVal hdc As Long, ByVal crColo
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function CreateIconIndirect Lib "user32" (ByRef pIconInfo As ICONINFO) As Long
+Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hdc As Long, ByVal nStretchMode As Long) As Long
 
 '=========================================================================
 ' Information on an icon
@@ -77,6 +78,7 @@ End Type
 ' Constants
 '=========================================================================
 Private Const GCL_HCURSOR = (-12)
+Private Const COLORONCOLOR = 3
 
 '=========================================================================
 ' Member enumerations
@@ -157,6 +159,7 @@ Public Property Let mousePointer(ByRef newValue As String)
         Call SelectObject(hColorDc, hColorBmp)
 
         ' Draw the image to the DC (and ultimately, the bitmap)
+        Call SetStretchBltMode(hColorDc, COLORONCOLOR)
         Call DrawSizedImage(projectPath & bmpPath & newValue, 0, 0, 32, 32, hColorDc)
 
     End If
