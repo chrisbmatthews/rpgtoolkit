@@ -15,7 +15,6 @@ Option Explicit
 ' Read a line from a file
 '=========================================================================
 Public Function fread(ByVal fileNo As Integer) As String
-    On Error Resume Next
     Line Input #fileNo, fread
 End Function
 

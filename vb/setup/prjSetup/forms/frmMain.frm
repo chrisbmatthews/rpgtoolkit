@@ -466,7 +466,7 @@ Private Sub cmdBrowse_Click()
     If Not (f Is Nothing) Then
 
         ' Update the text box
-        txtDirecory.Text = f.Self().path()
+        txtDirecory.Text = f.Self().Path()
         lblFolderName.Caption = txtDirecory.Text
 
     End If

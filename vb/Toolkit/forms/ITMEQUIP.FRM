@@ -921,7 +921,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     If itemList(activeItemIndex).theData.itemArmor(1) = 1 Then Check1.value = 1
     If itemList(activeItemIndex).theData.itemArmor(2) = 1 Then Check2.value = 1

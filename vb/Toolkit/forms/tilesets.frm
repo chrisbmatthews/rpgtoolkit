@@ -187,7 +187,7 @@ Private Sub Form_Load(): On Error Resume Next
 '==============================================================================
     Dim x As Integer, y As Integer, setType As Integer
     
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     setFilename = ""
     If tstnum = 0 Then tstnum = 1

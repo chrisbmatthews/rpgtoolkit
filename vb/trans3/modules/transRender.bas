@@ -40,28 +40,28 @@ Public Declare Function DXUnlockScreen Lib "actkrt3.dll" () As Long
 #If Not (USE_BACK_CANVAS) Then
 
 ' Plot a pixel on the screen
-Public Declare Function DXDrawPixel Lib "actkrt3.dll" (ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
+Public Declare Function DXDrawPixel Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
 
 ' Black out the screen
 Public Declare Function DXClearScreen Lib "actkrt3.dll" (ByVal crColor As Long) As Long
 
 ' Draw text onto the screen
-Public Declare Function DXDrawText Lib "actkrt3.dll" (ByVal X As Long, ByVal Y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
+Public Declare Function DXDrawText Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
 
 ' Render a canvas to the screen
-Public Declare Function DXDrawCanvas Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Public Declare Function DXDrawCanvas Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 
 ' Draw a canavs transparently onto the screen
-Public Declare Function DXDrawCanvasTransparent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crTranspColor As Long) As Long
+Public Declare Function DXDrawCanvasTransparent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
 
 ' Draw a canavs translucently onto the screen
-Public Declare Function DXDrawCanvasTranslucent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+Public Declare Function DXDrawCanvasTranslucent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
 ' Draw part of a canvas on the screen
-Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 
 ' Draw part of a canvas onto the screen using transparency
-Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
+Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
 
 ' Copy the screen to a canvas
 Public Declare Function DXCopyScreenToCanvas Lib "actkrt3.dll" (ByVal canvasID As Long) As Long
@@ -69,13 +69,13 @@ Public Declare Function DXCopyScreenToCanvas Lib "actkrt3.dll" (ByVal canvasID A
 #Else
 
 ' Render a canvas to the screen
-Private Declare Function DXRenderCanvas Lib "actkrt3.dll" Alias "DXDrawCanvas" (ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Private Declare Function DXRenderCanvas Lib "actkrt3.dll" Alias "DXDrawCanvas" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 
 ' Draw a canavs transparently onto the screen
-Private Declare Function DXRenderCanvasTransparent Lib "actkrt3.dll" Alias "DXDrawCanvasTransparent" (ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crTranspColor As Long) As Long
+Private Declare Function DXRenderCanvasTransparent Lib "actkrt3.dll" Alias "DXDrawCanvasTransparent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
 
 ' Draw a canavs translucently onto the screen
-Private Declare Function DXRenderCanvasTranslucent Lib "actkrt3.dll" Alias "DXDrawCanvasTranslucent" (ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+Private Declare Function DXRenderCanvasTranslucent Lib "actkrt3.dll" Alias "DXDrawCanvasTranslucent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
 #End If
 
@@ -86,7 +86,7 @@ Private Declare Function ClientToScreen Lib "user32" (ByVal hwnd As Long, lpPoin
 Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 
 ' Offset a rect
-Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal X As Long, ByVal Y As Long) As Long
+Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 
 ' Move memory around
 Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
@@ -235,8 +235,8 @@ Private Type PlayerRender
     canvas As Long              ' Canvas used for this render
     stance As String            ' Stance player was rendered in
     frame As Long               ' Frame of this stance
-    X As Double                 ' X position the render occured in
-    Y As Double                 ' Y position the render occured in
+    x As Double                 ' X position the render occured in
+    y As Double                 ' Y position the render occured in
 End Type
 
 '=========================================================================
@@ -253,8 +253,8 @@ End Type
 ' A point
 '=========================================================================
 Private Type POINTAPI
-    X As Long                   ' X coord
-    Y As Long                   ' Y coord
+    x As Long                   ' X coord
+    y As Long                   ' Y coord
 End Type
 
 #If (USE_BACK_CANVAS) Then
@@ -273,10 +273,10 @@ End Function
 '=========================================================================
 ' Plot a pixel on the screen
 '=========================================================================
-Public Function DXDrawPixel(ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
+Public Function DXDrawPixel(ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
 
     ' Draw to the back buffer
-    Call canvasSetPixel(m_cnvBack, X, Y, crColor)
+    Call canvasSetPixel(m_cnvBack, x, y, crColor)
 
 End Function
 
@@ -294,60 +294,60 @@ End Function
 '=========================================================================
 ' Draw text onto the screen
 '=========================================================================
-Public Function DXDrawText(ByVal X As Long, ByVal Y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
+Public Function DXDrawText(ByVal x As Long, ByVal y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
 
     ' Draw to the back buffer
-    Call canvasDrawText(m_cnvBack, strText, strTypeFace, size, X, Y, clr, Bold, Italics, Underline, centred, outlined)
+    Call canvasDrawText(m_cnvBack, strText, strTypeFace, size, x, y, clr, Bold, Italics, Underline, centred, outlined)
 
 End Function
 
 '=========================================================================
 ' Render a canvas to the screen
 '=========================================================================
-Public Function DXDrawCanvas(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Public Function DXDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 
     ' Draw to the back buffer
-    Call canvas2CanvasBlt(canvasID, m_cnvBack, X, Y, rasterOp)
+    Call canvas2CanvasBlt(canvasID, m_cnvBack, x, y, rasterOp)
 
 End Function
 
 '=========================================================================
 ' Draw a canavs transparently onto the screen
 '=========================================================================
-Public Function DXDrawCanvasTransparent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crTranspColor As Long) As Long
+Public Function DXDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
 
     ' Draw to the back buffer
-    Call canvas2CanvasBltTransparent(canvasID, m_cnvBack, X, Y, crTranspColor)
+    Call canvas2CanvasBltTransparent(canvasID, m_cnvBack, x, y, crTranspColor)
 
 End Function
 
 '=========================================================================
 ' Draw a canavs translucently onto the screen
 '=========================================================================
-Public Function DXDrawCanvasTranslucent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+Public Function DXDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
     ' Draw to the back buffer
-    Call canvas2CanvasBltTranslucent(canvasID, m_cnvBack, X, Y, dIntensity, crUnaffectedColor, crTransparentColor)
+    Call canvas2CanvasBltTranslucent(canvasID, m_cnvBack, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
 
 End Function
 
 '=========================================================================
 ' Draw part of a canvas on the screen
 '=========================================================================
-Public Function DXDrawCanvasPartial(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Public Function DXDrawCanvasPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 
     ' Draw to the back buffer
-    Call canvas2CanvasBltPartial(canvasID, m_cnvBack, X, Y, xsrc, ysrc, width, height, rasterOp)
+    Call canvas2CanvasBltPartial(canvasID, m_cnvBack, x, y, xsrc, ysrc, width, height, rasterOp)
 
 End Function
 
 '=========================================================================
 ' Draw part of a canvas onto the screen using transparency
 '=========================================================================
-Public Function DXDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
+Public Function DXDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
 
     ' Draw to the back buffer
-    Call canvas2CanvasBltTransparentPartial(canvasID, m_cnvBack, X, Y, xsrc, ysrc, width, height, crTranspColor)
+    Call canvas2CanvasBltTransparentPartial(canvasID, m_cnvBack, x, y, xsrc, ysrc, width, height, crTranspColor)
 
 End Function
 
@@ -373,13 +373,13 @@ Public Sub DXRefresh()
     Call DXFlip
 
     ' Declare some variables
-    Dim hdc As Long, xdc As Long, X As Long, Y As Long
+    Dim hdc As Long, xdc As Long, x As Long, y As Long
 
     ' Compute mouse x position
-    X = mouseMoveX - host.cursorHotSpotX
+    x = mouseMoveX - host.cursorHotSpotX
 
     ' Compute mouse y position
-    Y = mouseMoveY - host.cursorHotSpotY
+    y = mouseMoveY - host.cursorHotSpotY
 
     ' Get the window's HDC
     xdc = GetDC(host.hwnd)
@@ -388,7 +388,7 @@ Public Sub DXRefresh()
     hdc = CNVOpenHDC(cnvMousePointer)
 
     ' Blt the mouse onto the window
-    Call TransparentBlt(xdc, X, Y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
+    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
 
     ' Close the canvas' HDC
     Call CNVCloseHDC(cnvMousePointer, hdc)
@@ -519,16 +519,16 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
     Call getAmbientLevel(shadeR, shadeB, shadeG)
 
     'now redraw the layers...
-    Dim xx As Long, yy As Long, X As Long, Y As Long, layer As Long
+    Dim xx As Long, yy As Long, x As Long, y As Long, layer As Long
 
-    X = xBoardCoord
-    Y = yBoardCoord
-    xx = X - scTopX
-    yy = Y - scTopY
+    x = xBoardCoord
+    y = yBoardCoord
+    xx = x - scTopX
+    yy = y - scTopY
 
     For layer = 1 To boardList(activeBoardIndex).theData.bSizeL
         Dim bgt As String
-        bgt = BoardGetTile(X, Y, layer, boardList(activeBoardIndex).theData)
+        bgt = BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData)
         If LenB(bgt) Then
             'If there is a tile here.
 
@@ -536,9 +536,9 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
                           projectPath & tilePath & bgt, _
                           xx, _
                           yy, _
-                          boardList(activeBoardIndex).theData.ambientRed(X, Y, layer) + shadeR, _
-                          boardList(activeBoardIndex).theData.ambientGreen(X, Y, layer) + shadeG, _
-                          boardList(activeBoardIndex).theData.ambientBlue(X, Y, layer) + shadeB, False)
+                          boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                          boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                          boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, False)
 
             'If cnvScrollCacheMask <> -1 Then
             '
@@ -615,21 +615,21 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
                 runIt = True
             End If
             If (runIt) And (boardList(activeBoardIndex).theData.progGraphic$(prgNum) <> "None") Then
-                Dim layAt As Long, X As Long, Y As Long
+                Dim layAt As Long, x As Long, y As Long
                 layAt = boardList(activeBoardIndex).theData.progLayer(prgNum)
                 If layAt = layer Then
                     'yes!  it's on this layer!
-                    X = boardList(activeBoardIndex).theData.progX(prgNum)
-                    Y = boardList(activeBoardIndex).theData.progY(prgNum)
+                    x = boardList(activeBoardIndex).theData.progX(prgNum)
+                    y = boardList(activeBoardIndex).theData.progY(prgNum)
                     
                     If cnv <> -1 Then
                         Call drawTileCNV(cnv, _
                                         projectPath & tilePath & boardList(activeBoardIndex).theData.progGraphic$(prgNum), _
-                                        X - scTopX, _
-                                        Y - scTopY, _
-                                        boardList(activeBoardIndex).theData.ambientRed(X, Y, layer) + shadeR, _
-                                        boardList(activeBoardIndex).theData.ambientGreen(X, Y, layer) + shadeG, _
-                                        boardList(activeBoardIndex).theData.ambientBlue(X, Y, layer) + shadeB, False)
+                                        x - scTopX, _
+                                        y - scTopY, _
+                                        boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                                        boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                                        boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, False)
                     End If
 
                     'If cnvMask <> -1 Then
@@ -759,7 +759,7 @@ End Sub
 '=========================================================================
 ' Render a canvas in a certain way (called only by CBPopupCanvas)
 '=========================================================================
-Public Sub PopupCanvas(ByVal cnv As Long, ByVal X As Long, ByVal Y As Long, ByVal stepSize As Long, ByVal popupType As Long)
+Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVal stepSize As Long, ByVal popupType As Long)
 
     On Error Resume Next
 
@@ -774,33 +774,33 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal X As Long, ByVal Y As Long, ByVa
         Select Case popupType
             Case POPUP_NOFX:
                 'just put it on the screen
-                Call DXDrawCanvas(cnv, X, Y)
+                Call DXDrawCanvas(cnv, x, y)
                 Call DXRefresh
                 
             Case POPUP_VERTICAL:
                 stepSize = -stepSize
                 For c = h \ 2 To 0 Step stepSize
                     Call DXDrawCanvas(cnvAllPurpose, 0, 0)
-                    Call DXDrawCanvasPartial(cnv, X, Y + c, 0, 0, w, h / 2 - c)
-                    Call DXDrawCanvasPartial(cnv, X, Y + h / 2, 0, h - cnt, w, h / 2 - c)
+                    Call DXDrawCanvasPartial(cnv, x, y + c, 0, 0, w, h / 2 - c)
+                    Call DXDrawCanvasPartial(cnv, x, y + h / 2, 0, h - cnt, w, h / 2 - c)
                     Call DXRefresh
                     cnt = cnt - stepSize
                     Call delay(MISC_DELAY)
                 Next c
-                Call DXDrawCanvas(cnv, X, Y)
+                Call DXDrawCanvas(cnv, x, y)
                 Call DXRefresh
         
             Case POPUP_HORIZONTAL:
                 stepSize = -stepSize
                 For c = w \ 2 To 0 Step stepSize
                     Call DXDrawCanvas(cnvAllPurpose, 0, 0)
-                    Call DXDrawCanvasPartial(cnv, X + c, Y, 0, 0, w \ 2 - c, h)
-                    Call DXDrawCanvasPartial(cnv, X + w \ 2, Y, w - cnt, 0, w \ 2 - c, h)
+                    Call DXDrawCanvasPartial(cnv, x + c, y, 0, 0, w \ 2 - c, h)
+                    Call DXDrawCanvasPartial(cnv, x + w \ 2, y, w - cnt, 0, w \ 2 - c, h)
                     Call DXRefresh
                     cnt = cnt - stepSize
                     Call delay(MISC_DELAY)
                 Next c
-                Call DXDrawCanvas(cnv, X, Y)
+                Call DXDrawCanvas(cnv, x, y)
                 Call DXRefresh
         End Select
     End If
@@ -818,8 +818,8 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
     Dim hdcMask As Long
     Dim t As Long
     Dim lightShade As Long
-    Dim X As Double
-    Dim Y As Double
+    Dim x As Double
+    Dim y As Double
     Dim xx As Double
     Dim yy As Double
     Dim lll As Long
@@ -846,14 +846,14 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                 toRet = True
                 
                 'now redraw the layers...
-                X = boardList(activeBoardIndex).theData.animatedTile(t).X
-                Y = boardList(activeBoardIndex).theData.animatedTile(t).Y
-                xx = boardList(activeBoardIndex).theData.animatedTile(t).X - scTopX
-                yy = boardList(activeBoardIndex).theData.animatedTile(t).Y - scTopY
+                x = boardList(activeBoardIndex).theData.animatedTile(t).x
+                y = boardList(activeBoardIndex).theData.animatedTile(t).y
+                xx = boardList(activeBoardIndex).theData.animatedTile(t).x - scTopX
+                yy = boardList(activeBoardIndex).theData.animatedTile(t).y - scTopY
                 
                 For lll = 1 To boardList(activeBoardIndex).theData.bSizeL
                     Dim bgt As String
-                    bgt = BoardGetTile(X, Y, lll, boardList(activeBoardIndex).theData)
+                    bgt = BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData)
                     If LenB(bgt) Then
                         ext$ = GetExt(bgt)
                         If UCase$(ext$) <> "TAN" Then
@@ -863,9 +863,9 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                               projectPath & tilePath & bgt, _
                                               xx, _
                                               yy, _
-                                              boardList(activeBoardIndex).theData.ambientRed(X, Y, lll) + shadeR, _
-                                              boardList(activeBoardIndex).theData.ambientGreen(X, Y, lll) + shadeG, _
-                                              boardList(activeBoardIndex).theData.ambientBlue(X, Y, lll) + shadeB, False)
+                                              boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                              boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                              boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
                             End If
                             
                             'If cnvMask <> -1 Then
@@ -892,9 +892,9 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                                                 cnv, _
                                                                 xx, _
                                                                 yy, _
-                                                                boardList(activeBoardIndex).theData.ambientRed(X, Y, lll) + shadeR, _
-                                                                boardList(activeBoardIndex).theData.ambientGreen(X, Y, lll) + shadeG, _
-                                                                boardList(activeBoardIndex).theData.ambientBlue(X, Y, lll) + shadeB, True, True, False)
+                                                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, False)
                                 'End If
                             End If
                             'If cnvMask <> -1 Then
@@ -1273,8 +1273,8 @@ Private Function renderPlayer(ByVal cnv As Long, _
         If .canvas = cnv And _
            .frame = playerPosition.frame And _
            .stance = playerPosition.stance And _
-           .X = playerPosition.X And _
-           .Y = playerPosition.Y Then
+           .x = playerPosition.x And _
+           .y = playerPosition.y Then
            'We've just rendered this frame so we don't need to again.
             Exit Function
         End If
@@ -1283,8 +1283,8 @@ Private Function renderPlayer(ByVal cnv As Long, _
         .canvas = cnv
         .frame = playerPosition.frame
         .stance = playerPosition.stance
-        .X = playerPosition.X
-        .Y = playerPosition.Y
+        .x = playerPosition.x
+        .y = playerPosition.y
 
         Call renderAnimationFrame(cnv, playerGetStanceAnm(.stance, thePlayer), .frame, 0, 0)
 
@@ -1310,17 +1310,17 @@ Private Function renderItem(ByVal cnv As Long, _
         If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
             'Substituting for isoTopY = topY * 2 + 1
             'might need to substitute topx for topx + 1
-            If .X < topX - 1 Or _
-                .X > topX + isoTilesX + 1 Or _
-                .Y < (topY * 2 + 1) - 1 Or _
-                .Y > (topY * 2 + 1) + isoTilesY + 1 Then
+            If .x < topX - 1 Or _
+                .x > topX + isoTilesX + 1 Or _
+                .y < (topY * 2 + 1) - 1 Or _
+                .y > (topY * 2 + 1) + isoTilesY + 1 Then
                 Exit Function
             End If
         Else
-            If .X < topX - 1 Or _
-                .X > topX + tilesX + 1 Or _
-                .Y < topY - 1 Or _
-                .Y > topY + tilesY + 1 Then
+            If .x < topX - 1 Or _
+                .x > topX + tilesX + 1 Or _
+                .y < topY - 1 Or _
+                .y > topY + tilesY + 1 Then
                 Exit Function
             End If
         End If
@@ -1391,8 +1391,8 @@ Private Function renderItem(ByVal cnv As Long, _
             If .canvas = cnv And _
                .frame = itemPosition.frame And _
                .stance = itemPosition.stance And _
-               .X = itemPosition.X And _
-               .Y = itemPosition.Y Then
+               .x = itemPosition.x And _
+               .y = itemPosition.y Then
                'We've just rendered this frame so we don't need to again.
                Exit Function
             End If
@@ -1401,8 +1401,8 @@ Private Function renderItem(ByVal cnv As Long, _
             .canvas = cnv
             .frame = itemPosition.frame
             .stance = itemPosition.stance
-            .X = itemPosition.X
-            .Y = itemPosition.Y
+            .x = itemPosition.x
+            .y = itemPosition.y
                 
         End With
         
@@ -1677,13 +1677,13 @@ Public Sub renderRPGCodeScreen()
     Call DXFlip
 
     ' Declare some variables
-    Dim hdc As Long, xdc As Long, X As Long, Y As Long
+    Dim hdc As Long, xdc As Long, x As Long, y As Long
 
     ' Compute mouse x position
-    X = mouseMoveX - host.cursorHotSpotX
+    x = mouseMoveX - host.cursorHotSpotX
 
     ' Compute mouse y position
-    Y = mouseMoveY - host.cursorHotSpotY
+    y = mouseMoveY - host.cursorHotSpotY
 
     ' Get the window's HDC
     xdc = GetDC(host.hwnd)
@@ -1692,7 +1692,7 @@ Public Sub renderRPGCodeScreen()
     hdc = CNVOpenHDC(cnvMousePointer)
 
     ' Blt the mouse onto the window
-    Call TransparentBlt(xdc, X, Y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
+    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
 
     ' Close the canvas' HDC
     Call CNVCloseHDC(cnvMousePointer, hdc)
@@ -1743,7 +1743,7 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
     For t = 0 To UBound(cnvPlayer)
         If showPlayer(t) Then
             'determine a location value...
-            theValue = (pPos(t).Y * boardList(activeBoardIndex).theData.bSizeY) + pPos(t).X
+            theValue = (pPos(t).y * boardList(activeBoardIndex).theData.bSizeY) + pPos(t).x
             'playes will have a negative index so we can differentiate them
             indicies(curIdx) = -(t + 1)
             locationValues(curIdx) = theValue
@@ -1755,7 +1755,7 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
     For t = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
         If itemMem(t).bIsActive Then
             'determine a location value...
-            theValue = (itmPos(t).Y * boardList(activeBoardIndex).theData.bSizeY) + itmPos(t).X
+            theValue = (itmPos(t).y * boardList(activeBoardIndex).theData.bSizeY) + itmPos(t).x
             'items will have a positive index so we can differentiate them
             indicies(curIdx) = t
             locationValues(curIdx) = theValue
@@ -1772,8 +1772,8 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
             'this is a player
             curNum = (-indicies(t)) - 1
             Call putSpriteAt(cnvPlayer(curNum), _
-                    pPos(curNum).X, _
-                    pPos(curNum).Y, _
+                    pPos(curNum).x, _
+                    pPos(curNum).y, _
                     pPos(curNum).l, _
                     pendingPlayerMovement(curNum), _
                     cnvTarget)
@@ -1781,8 +1781,8 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
             'this is an item
             curNum = indicies(t)
             Call putSpriteAt(cnvSprites(curNum), _
-                    itmPos(curNum).X, _
-                    itmPos(curNum).Y, _
+                    itmPos(curNum).x, _
+                    itmPos(curNum).y, _
                     itmPos(curNum).l, _
                     pendingItemMovement(curNum), _
                     cnvTarget)
