@@ -589,6 +589,13 @@ Private Sub Form_Load()
     Call infofill
 End Sub
 
+Private Sub Form_Resize(): On Error Resume Next
+
+    mainFrame.Left = (Me.width - mainFrame.width) / 2
+    mainFrame.Top = (Me.Height - mainFrame.Height - 500) / 2
+
+End Sub
+
 Private Sub Form_Terminate()
     Call tkMainForm.refreshTabs
 End Sub

@@ -1,7 +1,5 @@
 VERSION 5.00
 Begin VB.Form brdbackground 
-   Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Board Backgrounds"
    ClientHeight    =   1815
@@ -37,8 +35,6 @@ Begin VB.Form brdbackground
       Width           =   855
    End
    Begin VB.Frame brdColour 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "Board Color"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -49,7 +45,6 @@ Begin VB.Form brdbackground
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H80000008&
       Height          =   1215
       Left            =   3600
       TabIndex        =   3
@@ -90,8 +85,6 @@ Begin VB.Form brdbackground
       End
    End
    Begin VB.Frame brdBitmap 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "Board Bitmap"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -102,7 +95,6 @@ Begin VB.Form brdbackground
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H80000008&
       Height          =   1215
       Left            =   120
       TabIndex        =   0
@@ -145,8 +137,6 @@ Begin VB.Form brdbackground
          Width           =   2295
       End
       Begin VB.Label brdBitmapFilename 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "Filename:"
          BeginProperty Font 
@@ -158,7 +148,6 @@ Begin VB.Form brdbackground
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000008&
          Height          =   255
          Index           =   0
          Left            =   240

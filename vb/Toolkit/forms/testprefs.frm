@@ -1,11 +1,10 @@
 VERSION 5.00
 Begin VB.Form testprefs 
-   BackColor       =   &H00FFFFFF&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Test Run Preferences"
    ClientHeight    =   3075
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   435
    ClientWidth     =   7815
    Icon            =   "testprefs.frx":0000
    LinkTopic       =   "Form2"
@@ -26,10 +25,7 @@ Begin VB.Form testprefs
       Width           =   1095
    End
    Begin VB.Frame Frame1 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "Preferences"
-      ForeColor       =   &H80000008&
       Height          =   2775
       Left            =   120
       TabIndex        =   0
@@ -37,7 +33,6 @@ Begin VB.Form testprefs
       Top             =   120
       Width           =   6375
       Begin VB.PictureBox Picture1 
-         BackColor       =   &H80000009&
          BorderStyle     =   0  'None
          Height          =   1815
          Left            =   5040

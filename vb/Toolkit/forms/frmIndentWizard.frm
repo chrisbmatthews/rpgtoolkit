@@ -1,13 +1,12 @@
 VERSION 5.00
 Begin VB.Form frmIndentWizard 
-   Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Indent Wizard"
    ClientHeight    =   2820
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   435
    ClientWidth     =   4335
+   Icon            =   "frmIndentWizard.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -25,8 +24,6 @@ Begin VB.Form frmIndentWizard
       Width           =   1575
    End
    Begin VB.Frame frmInfo 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "Info"
       BeginProperty Font 
          Name            =   "Trebuchet MS"
@@ -37,7 +34,6 @@ Begin VB.Form frmIndentWizard
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H80000008&
       Height          =   615
       Left            =   2640
       TabIndex        =   2
@@ -46,8 +42,6 @@ Begin VB.Form frmIndentWizard
       Width           =   1575
       Begin VB.Label lblWait 
          Alignment       =   2  'Center
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          BeginProperty Font 
             Name            =   "Trebuchet MS"
             Size            =   9
@@ -57,7 +51,6 @@ Begin VB.Form frmIndentWizard
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
          TabIndex        =   3
@@ -66,8 +59,6 @@ Begin VB.Form frmIndentWizard
       End
    End
    Begin VB.Frame frmDescription 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "Description"
       BeginProperty Font 
          Name            =   "Trebuchet MS"
@@ -78,15 +69,12 @@ Begin VB.Form frmIndentWizard
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H80000008&
       Height          =   2535
       Left            =   120
       TabIndex        =   0
       Top             =   120
       Width           =   2415
       Begin VB.Label lblMoreDescription 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          Caption         =   "This will not damage any existing indentation and your code will be indented in accordance with today's standards."
          BeginProperty Font 
             Name            =   "Trebuchet MS"
@@ -97,7 +85,6 @@ Begin VB.Form frmIndentWizard
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000008&
          Height          =   1335
          Left            =   120
          TabIndex        =   4
@@ -105,8 +92,6 @@ Begin VB.Form frmIndentWizard
          Width           =   2175
       End
       Begin VB.Label lblDescription 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          Caption         =   "This wizard will properly indent your code for readability pruposes."
          BeginProperty Font 
             Name            =   "Trebuchet MS"
@@ -117,7 +102,6 @@ Begin VB.Form frmIndentWizard
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000008&
          Height          =   735
          Left            =   120
          TabIndex        =   1
@@ -180,7 +164,7 @@ Public Sub indentCode(ByVal ic As String)
     frmInfo.Visible = True
 
     ' Indent the code
-    With activeRPGCode.codeForm
+    With activeRPGCode.CodeForm
         .Locked = True
         lblWait.Caption = "Splitting..."
         lines = Split(.Text, vbNewLine)

@@ -1,12 +1,10 @@
 VERSION 5.00
 Begin VB.Form itemGraphics 
-   Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Item Sprite List"
    ClientHeight    =   5835
    ClientLeft      =   480
-   ClientTop       =   1155
+   ClientTop       =   1275
    ClientWidth     =   7680
    Icon            =   "itemGraphics.frx":0000
    LinkTopic       =   "Form2"
@@ -27,19 +25,13 @@ Begin VB.Form itemGraphics
       Width           =   855
    End
    Begin VB.Frame Frame1 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
       Height          =   5535
       Left            =   120
       TabIndex        =   0
       Top             =   120
       Width           =   6495
       Begin VB.PictureBox Picture2 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
          Height          =   975
          Left            =   3240
          ScaleHeight     =   975
@@ -72,10 +64,7 @@ Begin VB.Form itemGraphics
          End
       End
       Begin VB.PictureBox Picture1 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
          Height          =   1695
          Left            =   120
          ScaleHeight     =   1695
@@ -163,11 +152,8 @@ Begin VB.Form itemGraphics
          Width           =   3015
       End
       Begin VB.PictureBox picAnim 
-         Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
-         BackColor       =   &H80000005&
          BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
          Height          =   735
          Left            =   4320
          ScaleHeight     =   49
@@ -178,10 +164,7 @@ Begin VB.Form itemGraphics
          Width           =   1215
       End
       Begin VB.Label lblToBig 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          Caption         =   "The animation is to big for this animation screen. Press the play button to view the animation in a new window."
-         ForeColor       =   &H80000008&
          Height          =   975
          Left            =   3360
          TabIndex        =   9
@@ -197,10 +180,7 @@ Begin VB.Form itemGraphics
          Width           =   2415
       End
       Begin VB.Label lblAnimation 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          Caption         =   "Animation"
-         ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3240
          TabIndex        =   7
@@ -208,10 +188,7 @@ Begin VB.Form itemGraphics
          Width           =   2535
       End
       Begin VB.Label lblWalking 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          Caption         =   "Walking Animations"
-         ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
          TabIndex        =   5
@@ -219,10 +196,7 @@ Begin VB.Form itemGraphics
          Width           =   3015
       End
       Begin VB.Label lblStanding 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          Caption         =   "Idle Animations"
-         ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3240
          TabIndex        =   4
@@ -230,10 +204,7 @@ Begin VB.Form itemGraphics
          Width           =   3015
       End
       Begin VB.Label lblCustom 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          Caption         =   "Custom Animations/Postures"
-         ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
          TabIndex        =   3
@@ -504,13 +475,13 @@ Private Sub setAnim(): On Error Resume Next
         Else
         
             'Position the picture box & set the width and height
-            picAnim.Width = anm.animSizeX * Screen.TwipsPerPixelX
+            picAnim.width = anm.animSizeX * Screen.TwipsPerPixelX
             picAnim.Height = anm.animSizeY * Screen.TwipsPerPixelY
             picAnim.Left = Shape2.Left + 100
             picAnim.Top = Shape2.Top + 100
             
             'Draw it
-            Call picAnim.cls
+            Call picAnim.Cls
             Call AnimDrawFrame(anm, 0, 0, 0, picAnim.hdc, False)
             Call picAnim.Refresh
             
@@ -621,7 +592,7 @@ Private Sub picPlay_Click(): On Error Resume Next
         
             'Position the picture box & set the width and height
             With picAnim
-                .Width = anm.animSizeX * Screen.TwipsPerPixelX
+                .width = anm.animSizeX * Screen.TwipsPerPixelX
                 .Height = anm.animSizeY * Screen.TwipsPerPixelY
                 .Left = Shape2.Left + 100
                 .Top = Shape2.Top + 100
@@ -633,7 +604,7 @@ Private Sub picPlay_Click(): On Error Resume Next
             DoEvents
             
             'Animate it
-            Call picAnim.cls
+            Call picAnim.Cls
             Dim repeat As Long
             For repeat = 1 To 3
                Call AnimateAt(anm, 0, 0, anm.animSizeX, anm.animSizeY, picAnim)

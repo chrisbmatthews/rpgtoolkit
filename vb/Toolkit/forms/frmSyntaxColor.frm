@@ -2,14 +2,13 @@ VERSION 5.00
 Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "richtx32.ocx"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form frmColoringOptions 
-   Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "RPGCode Editor Options"
    ClientHeight    =   3330
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   435
    ClientWidth     =   4455
+   Icon            =   "frmSyntaxColor.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -46,20 +45,21 @@ Begin VB.Form frmColoringOptions
       TabHeight       =   520
       BackColor       =   0
       TabCaption(0)   =   "Coloring"
-      TabPicture(0)   =   "frmSyntaxColor.frx":0000
+      TabPicture(0)   =   "frmSyntaxColor.frx":000C
       Tab(0).ControlEnabled=   -1  'True
       Tab(0).Control(0)=   "fraTab0"
       Tab(0).Control(0).Enabled=   0   'False
       Tab(0).ControlCount=   1
       TabCaption(1)   =   "Misc"
-      TabPicture(1)   =   "frmSyntaxColor.frx":001C
+      TabPicture(1)   =   "frmSyntaxColor.frx":0028
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "fraTab1"
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Common"
-      TabPicture(2)   =   "frmSyntaxColor.frx":0038
+      TabPicture(2)   =   "frmSyntaxColor.frx":0044
       Tab(2).ControlEnabled=   0   'False
       Tab(2).Control(0)=   "fraTab2"
+      Tab(2).Control(0).Enabled=   0   'False
       Tab(2).ControlCount=   1
       Begin VB.Frame fraTab2 
          Appearance      =   0  'Flat
@@ -83,7 +83,7 @@ Begin VB.Form frmColoringOptions
             Enabled         =   -1  'True
             ScrollBars      =   3
             Appearance      =   0
-            TextRTF         =   $"frmSyntaxColor.frx":0054
+            TextRTF         =   $"frmSyntaxColor.frx":0060
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Courier New"
                Size            =   9

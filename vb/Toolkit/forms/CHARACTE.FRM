@@ -151,6 +151,7 @@ Begin VB.Form characteredit
          Width           =   975
       End
       Begin VB.Frame frStats 
+         Caption         =   "Stats          "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -537,6 +538,7 @@ Begin VB.Form characteredit
          End
       End
       Begin VB.Frame frVariables 
+         Caption         =   "Variables        "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -1562,8 +1564,8 @@ End Sub
 
 Private Sub Form_Load(): On Error Resume Next
 
-    Call LocalizeForm(Me)
-    Call LocalizeTabStrip(tabCharacter)
+    'Call LocalizeForm(Me)
+    'Call LocalizeTabStrip(tabCharacter)
     
     Set activePlayer = Me
     
@@ -1578,7 +1580,7 @@ End Sub
 
 Private Sub Form_Resize(): On Error Resume Next
 
-    mainFrame.Left = (Me.Width - mainFrame.Width) / 2
+    mainFrame.Left = (Me.width - mainFrame.width) / 2
     mainFrame.Top = (Me.Height - mainFrame.Height - 500) / 2
 
 End Sub

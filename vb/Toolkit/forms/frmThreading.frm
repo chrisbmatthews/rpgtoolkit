@@ -1,13 +1,12 @@
 VERSION 5.00
 Begin VB.Form frmThreading 
-   Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Threading"
    ClientHeight    =   3795
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   435
    ClientWidth     =   4215
+   Icon            =   "frmThreading.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False

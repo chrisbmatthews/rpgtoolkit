@@ -1,14 +1,13 @@
 VERSION 5.00
 Begin VB.Form frmMouseCursor 
-   Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "(Mouse Cursor)"
+   BorderStyle     =   3  'Fixed Dialog
+   Caption         =   "Mouse Cursor"
    ClientHeight    =   4095
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   435
    ClientWidth     =   4815
-   ControlBox      =   0   'False
+   FillColor       =   &H8000000F&
+   Icon            =   "frmMouseCursor.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -25,17 +24,13 @@ Begin VB.Form frmMouseCursor
       Width           =   855
    End
    Begin VB.Frame fraCustom 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "Custom Cursor"
-      ForeColor       =   &H80000008&
       Height          =   3255
       Left            =   120
       TabIndex        =   3
       Top             =   120
       Width           =   4575
       Begin VB.PictureBox Picture1 
-         BackColor       =   &H80000009&
          BorderStyle     =   0  'None
          Height          =   2895
          Left            =   120
@@ -106,11 +101,8 @@ Begin VB.Form frmMouseCursor
          End
          Begin VB.Label Label2 
             Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
             BackStyle       =   0  'Transparent
             Caption         =   "Current Transparent Color"
-            ForeColor       =   &H80000008&
             Height          =   375
             Left            =   3000
             TabIndex        =   13
@@ -118,10 +110,7 @@ Begin VB.Form frmMouseCursor
             Width           =   1335
          End
          Begin VB.Label Label1 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
             Caption         =   "In game the cursor will be 32x32 pixels, it is shown larger here for your convenience."
-            ForeColor       =   &H80000008&
             Height          =   615
             Left            =   1560
             TabIndex        =   12
@@ -131,10 +120,7 @@ Begin VB.Form frmMouseCursor
       End
    End
    Begin VB.OptionButton optCustom 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "Custom"
-      ForeColor       =   &H80000008&
       Height          =   255
       Left            =   2640
       TabIndex        =   2
@@ -142,10 +128,7 @@ Begin VB.Form frmMouseCursor
       Width           =   975
    End
    Begin VB.OptionButton optNoCursor 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "None"
-      ForeColor       =   &H80000008&
       Height          =   255
       Left            =   1440
       TabIndex        =   1
@@ -153,10 +136,7 @@ Begin VB.Form frmMouseCursor
       Width           =   1095
    End
    Begin VB.OptionButton optDefault 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "Default"
-      ForeColor       =   &H80000008&
       Height          =   255
       Left            =   240
       TabIndex        =   0
@@ -187,7 +167,7 @@ Private setTranspColor As Boolean
 ' Fill in the form
 '=========================================================================
 Private Sub fillInfo(Optional ByVal noHotSpot As Boolean, Optional ByVal noOptionButtons As Boolean)
-    Call picPreview.cls
+    Call picPreview.Cls
     With mainMem
         If ((.mouseCursor <> "TK DEFAULT") And (.mouseCursor <> "")) Then
             fraCustom.Enabled = True

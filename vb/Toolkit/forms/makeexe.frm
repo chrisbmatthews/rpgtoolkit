@@ -1,12 +1,10 @@
 VERSION 5.00
 Begin VB.Form makeexe 
-   Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Make EXE"
    ClientHeight    =   2625
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   435
    ClientWidth     =   6015
    Icon            =   "makeexe.frx":0000
    LinkTopic       =   "Form2"
@@ -36,10 +34,7 @@ Begin VB.Form makeexe
       Width           =   1335
    End
    Begin VB.Frame Frame2 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
       Caption         =   "Icon"
-      ForeColor       =   &H80000008&
       Height          =   1095
       Left            =   120
       TabIndex        =   2
@@ -75,10 +70,7 @@ Begin VB.Form makeexe
       End
    End
    Begin VB.Frame Frame1 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   "Select Target"
-      ForeColor       =   &H80000008&
       Height          =   1095
       Left            =   120
       TabIndex        =   0
@@ -86,7 +78,6 @@ Begin VB.Form makeexe
       Top             =   120
       Width           =   4335
       Begin VB.PictureBox Picture1 
-         BackColor       =   &H80000009&
          BorderStyle     =   0  'None
          Height          =   375
          Left            =   3720
@@ -216,11 +207,11 @@ Private Sub cmdChange_Click()
         'Extract the icon from the EXE and save it...
         ExtractIcons filename(1), TempDir & "TKIconTemp.ico"
         filename(1) = TempDir & "TKIconTemp.ico"
-        iconPreview.Picture = Images.Corner
+        iconPreview.picture = Images.Corner
     End If
 
     iconPath = filename(1)
-    iconPreview.Picture = LoadPicture(iconPath)
+    iconPreview.picture = LoadPicture(iconPath)
 
 End Sub
 

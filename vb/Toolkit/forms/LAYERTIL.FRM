@@ -1,12 +1,12 @@
 VERSION 5.00
 Begin VB.Form frmLayerTile 
-   BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Layer Tile"
    ClientHeight    =   2100
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   435
    ClientWidth     =   3735
+   Icon            =   "LAYERTIL.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -33,16 +33,12 @@ Begin VB.Form frmLayerTile
       Width           =   1095
    End
    Begin VB.Frame Frame1 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
       Height          =   1815
       Left            =   120
       TabIndex        =   0
       Top             =   120
       Width           =   2295
       Begin VB.PictureBox Picture1 
-         BackColor       =   &H80000009&
          BorderStyle     =   0  'None
          Height          =   495
          Left            =   120
@@ -62,7 +58,6 @@ Begin VB.Form frmLayerTile
       End
       Begin VB.CheckBox chkTrans 
          Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          Caption         =   "Transparently Layer"
          ForeColor       =   &H80000008&
          Height          =   255
@@ -73,7 +68,6 @@ Begin VB.Form frmLayerTile
       End
       Begin VB.CheckBox chkPreview 
          Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          Caption         =   "Preview"
          ForeColor       =   &H80000008&
          Height          =   375
@@ -187,7 +181,7 @@ Private Sub butOpenTile_click(): On Error Resume Next
     End If
     
     'Clear the preview picturebox
-    picPreview.cls
+    picPreview.Cls
     
     'Paint the opened tile on the picturebox
     For x = 1 To 32

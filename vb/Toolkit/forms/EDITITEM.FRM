@@ -902,6 +902,17 @@ ErrorHandler:
 End Sub
 
 '=========================================================================
+' Form resize
+'=========================================================================
+Private Sub Form_Resize(): On Error Resume Next
+
+    mainFrame.Left = (Me.width - mainFrame.width) / 2
+    mainFrame.Top = (Me.Height - mainFrame.Height - 500) / 2
+
+End Sub
+
+
+'=========================================================================
 ' Fill in form
 '=========================================================================
 Private Sub infofill()

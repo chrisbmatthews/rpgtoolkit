@@ -1,9 +1,7 @@
 VERSION 5.00
 Begin VB.Form commandRef 
-   Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "RPGCode Version 2 Language Specification"
+   Caption         =   "RPGCode Version 3 Language Specification"
    ClientHeight    =   4755
    ClientLeft      =   3885
    ClientTop       =   1050
