@@ -638,4 +638,8 @@ Public Sub CBCheckMusic()
     Call checkMusic(True)
 End Sub
 
+Public Sub CBReleaseScreenDC()
+    Call ReleaseDC(host.hwnd, obtainedDC)
+End Sub
+
 #End If

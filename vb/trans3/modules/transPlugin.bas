@@ -151,6 +151,8 @@ Public plugtest As Long
 Private specialMoveList() As String
 Private plugItems() As TKItem
 
+Public obtainedDC As Long
+
 Function CBGetHwnd() As Long
     'obtain the hwnd of the mainForm window
     'callback 43
@@ -588,6 +590,7 @@ Function CBGetScreenDC() As Long
     On Error GoTo errorhandler
 
     CBGetScreenDC = host.hdc
+    obtainedDC = CBGetScreenDC
 
     Exit Function
 
@@ -2827,13 +2830,13 @@ End Sub
 
 'VERSION 3.0
 
-Function CBCreateCanvas(ByVal width As Long, ByVal height As Long) As Long
+Function CBCreateCanvas(ByVal Width As Long, ByVal height As Long) As Long
     'callback 45
     'create an offscreen canvas, return it's id
     On Error Resume Next
-    If width <= 0 Then width = 1
+    If Width <= 0 Then Width = 1
     If height <= 0 Then height = 1
-    CBCreateCanvas = CreateCanvas(width, height)
+    CBCreateCanvas = CreateCanvas(Width, height)
 End Function
 
 Function CBDestroyCanvas(ByVal canvasID As Long) As Long
@@ -2856,12 +2859,12 @@ Function CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) 
     End If
 End Function
 
-Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long) As Long
+Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long) As Long
     'callback 48
     'display an offscreen canvas (partially)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height)
+        Call DXDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, Width, height)
         CBDrawCanvasPartial = 1
     Else
         CBDrawCanvasPartial = 0
@@ -2880,12 +2883,12 @@ Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal 
     End If
 End Function
 
-Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
+Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
     'callback 50
     'display an offscreen canvas (partially) with transparency
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
+        Call DXDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, Width, height, crTransparentColor)
         CBDrawCanvasTransparentPartial = 1
     Else
         CBDrawCanvasTransparentPartial = 0
@@ -2933,12 +2936,12 @@ Function CBCanvasFill(ByVal canvasID As Long, ByVal crColor As Long) As Long
     CBCanvasFill = 1
 End Function
 
-Function CBCanvasResize(ByVal canvasID As Long, ByVal width As Long, ByVal height As Long) As Long
+Function CBCanvasResize(ByVal canvasID As Long, ByVal Width As Long, ByVal height As Long) As Long
     'callback 55
     'resize canvas
     On Error Resume Next
     
-    Call SetCanvasSize(canvasID, width, height)
+    Call SetCanvasSize(canvasID, Width, height)
     CBCanvasResize = 1
 End Function
 
@@ -2950,12 +2953,12 @@ Function CBCanvas2CanvasBlt(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal x
     CBCanvas2CanvasBlt = Canvas2CanvasBlt(cnvSrc, cnvDest, xDest, yDest)
 End Function
 
-Function CBCanvas2CanvasBltPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long) As Long
+Function CBCanvas2CanvasBltPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long) As Long
     'callback 57
     'copy one canvas into another (partially)
     On Error Resume Next
     
-    CBCanvas2CanvasBltPartial = Canvas2CanvasBltPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height)
+    CBCanvas2CanvasBltPartial = Canvas2CanvasBltPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, Width, height)
 End Function
 
 Function CBCanvas2CanvasBltTransparent(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal crTransparentColor As Long) As Long
@@ -2966,12 +2969,12 @@ Function CBCanvas2CanvasBltTransparent(ByVal cnvSrc As Long, ByVal cnvDest As Lo
     CBCanvas2CanvasBltTransparent = Canvas2CanvasBltTransparent(cnvSrc, cnvDest, xDest, yDest, crTransparentColor)
 End Function
 
-Function CBCanvas2CanvasBltTransparentPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
+Function CBCanvas2CanvasBltTransparentPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
     'callback 59
     'copy one canvas into another, using transparency (partially)
     On Error Resume Next
     
-    CBCanvas2CanvasBltTransparentPartial = Canvas2CanvasBltTransparentPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
+    CBCanvas2CanvasBltTransparentPartial = Canvas2CanvasBltTransparentPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, Width, height, crTransparentColor)
 End Function
 
 Function CBCanvas2CanvasBltTranslucent(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
@@ -3381,11 +3384,11 @@ Sub CBSetEnemySMP(ByVal amount As Long, ByVal eneIdx As Long)
     Call setEnemySMP(amount, enemyMem(eneIdx))
 End Sub
 
-Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long)
+Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
     'callback 104
     'draw fight background to canvas
     On Error Resume Next
-    Call CanvasDrawBackground(canvasID, projectPath & bkgPath & bkgFile, x, y, width, height)
+    Call CanvasDrawBackground(canvasID, projectPath & bkgPath & bkgFile, x, y, Width, height)
 End Sub
 
 Function CBCreateAnimation(ByVal file As String) As Long
