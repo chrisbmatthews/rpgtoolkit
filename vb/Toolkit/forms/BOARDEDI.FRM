@@ -624,10 +624,20 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     boardList(activeBoardIndex).selectedTile$ = file
 
     tkMainForm.animTileTimer.Enabled = False
+    
+    Dim x As Long, y As Long, buffer(32, 32) As Long
+    
+    ' Delano: Temporary fix (3.0.6)
+    ' hold the old tile (not in bufTile since drawIsoTile operates on it - crap, I know)
+    For x = 1 To 32
+        For y = 1 To 32
+            buffer(x, y) = tileMem(x, y)
+        Next y
+    Next x
 
     ' open tileset
     If (UCase$(GetExt(file)) <> "TAN") Then
-        Call openWinTile(projectPath$ & tilePath$ & file)
+        Call openWinTile(projectPath & tilePath & file)
         tkMainForm.Command20.Enabled = False
         tkMainForm.Command22.Enabled = False
     Else
@@ -638,14 +648,13 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
             file = strFirstFrame
             Call openWinTile(projectPath & tilePath & strFirstFrame)
         Else
-            ' Colin, 3.06: Deal with lack of first frame
+            ' Colin, 3.0.6: Deal with lack of first frame
             file = vbNullString
-            Dim i As Long, j As Long
-            For i = 1 To 32
-                For j = 1 To 32
-                    tileMem(i, j) = RGB(255, 255, 255)
-                Next j
-            Next i
+            For x = 1 To 32
+                For y = 1 To 32
+                    tileMem(x, y) = RGB(255, 255, 255)
+                Next y
+            Next x
         End If
         tkMainForm.Command20.Enabled = True
         tkMainForm.Command22.Enabled = True
@@ -659,19 +668,17 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     
     ' call draw isomtric tile routine
     'Added!: different arguement for .iso:
-    If UCase$(GetExt(tilesetFilename(file$))) = "ISO" Then
+    If UCase$(GetExt(tilesetFilename(file))) = "ISO" Then
         Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, ISODETAIL)
     Else
         Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
     End If
     
-    Dim x As Long, y As Long
-    
-    ' update current board tile
+    ' update current board tile, restore tileMem
     For x = 1 To 32
         For y = 1 To 32
             boardList(activeBoardIndex).BoardTile(x, y) = tileMem(x, y)
-            tileMem(x, y) = bufTile(x, y)
+            tileMem(x, y) = buffer(x, y)
         Next y
     Next x
     
@@ -679,22 +686,19 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     boardList(activeBoardIndex).BoardDetail = detail
     detail = openTileEditorDocs(activeTile.indice).oldDetail
     
-    Dim dx As Long, dy As Long, colorDraw As Long
-    
     ' clear current tile picture box
     Call vbPicCls(tkMainForm.currenttile)
     
     ' draw new tile in 'current tile' picture box
-    For dx = 1 To 32
-        For dy = 1 To 32
-            colorDraw = boardList(activeBoardIndex).BoardTile(dx, dy)
-            
-            'Added: draw white for .iso
-            If colorDraw = -1 Or UCase$(GetExt(tilesetFilename(file$))) = "ISO" Then colorDraw = vbQBColor(15)
-            
-            Call vbPicPSet(tkMainForm.currenttile, dx - 1, dy - 1, colorDraw)
-        Next dy
-    Next dx
+    For x = 1 To 32
+        For y = 1 To 32
+            If boardList(activeBoardIndex).BoardTile(x, y) = -1 Or UCase$(GetExt(tilesetFilename(file))) = "ISO" Then
+                Call vbPicPSet(tkMainForm.currenttile, x - 1, y - 1, QBColor(15))
+            Else
+                Call vbPicPSet(tkMainForm.currenttile, x - 1, y - 1, boardList(activeBoardIndex).BoardTile(x, y))
+            End If
+        Next y
+    Next x
     
     ' update current tileset caption to filename. Extra blank characters for XP style captions.
     tkMainForm.bFrame(2).Caption = "Current Tile - " & boardList(activeBoardIndex).selectedTile & "       "
@@ -952,7 +956,7 @@ Public Sub drawLayers(Optional ByVal buttonClick As Boolean = False): On Error R
     Dim Temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
     
     ' drawbackground
-    drawBackground
+    DrawBackground
     
     ' set picture box auto redraw to true
     Call vbPicAutoRedraw(boardform, True)
@@ -1582,7 +1586,7 @@ End Sub
 '========================================================================
 ' draw background image
 '========================================================================
-Public Sub drawBackground()
+Public Sub DrawBackground()
 
     Dim x As Long, y As Long
     
@@ -1638,7 +1642,7 @@ Public Sub boardRedraw(): On Error Resume Next
     ' fill picture box with board color
     Call vbPicFillRect(boardform, 0, 0, 2000, 2000, boardList(activeBoardIndex).theData.brdColor)
         
-    Call drawBackground
+    Call DrawBackground
     
     ' set picture box auto redraw to true
     Call vbPicAutoRedraw(boardform, True)
@@ -1674,7 +1678,7 @@ Public Sub boardSelectTile(): On Error Resume Next
 'Edited by Delano for 3.0.4 new isometric tilesets.
 'Added .iso to available tiles.
     
-    Dim x As Long, y As Long, antiPath As String, whichType As String
+    Dim x As Long, y As Long, antiPath As String, whichType As String, buffer(32, 32) As Long
     
     bCurrentTileIsTransparent = False
     
@@ -1683,15 +1687,16 @@ Public Sub boardSelectTile(): On Error Resume Next
     ' set old detail
     openTileEditorDocs(activeTile.indice).oldDetail = detail
     
-    ' get old tile
+    ' Delano: Temporary fix (3.0.6)
+    ' hold the old tile (not in bufTile since drawIsoTile operates on it - crap, I know)
     For x = 1 To 32
         For y = 1 To 32
-            bufTile(x, y) = tileMem(x, y)
+            buffer(x, y) = tileMem(x, y)
         Next y
     Next x
     
     ' change directory
-    ChDir (currentDir$)
+    ChDir (currentDir)
     
     ' initialise file dialog
     Dim dlg As FileDialogInfo
@@ -1763,7 +1768,7 @@ Public Sub boardSelectTile(): On Error Resume Next
         For x = 1 To 32
             For y = 1 To 32
                 boardList(activeBoardIndex).BoardTile(x, y) = tileMem(x, y)
-                tileMem(x, y) = bufTile(x, y)
+                tileMem(x, y) = buffer(x, y)
             Next y
         Next x
 
