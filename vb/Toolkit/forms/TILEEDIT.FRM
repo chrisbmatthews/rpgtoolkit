@@ -2354,8 +2354,8 @@ End Sub
 'Color
 Public Sub scolormnu_Click(): On Error Resume Next
 
-    openTileEditorDocs(indice).currentColor = ColorDialog()
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(indice).currentColor)
+    openTileEditorDocs(activeTile.indice).currentColor = ColorDialog()
+    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(activeTile.indice).currentColor)
 
 End Sub
 
