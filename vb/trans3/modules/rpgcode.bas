@@ -4181,11 +4181,7 @@ Sub MidiPlayRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Else
         boardList(activeBoardIndex).theData.boardMusic$ = lit$
         Call processEvent
-        Dim oi As Boolean
-        oi = bWaitingForInput
-        bWaitingForInput = False
-        Call checkMusic
-        bWaitingForInput = oi
+        Call checkMusic(True)
         Call processEvent
     End If
 
@@ -4204,11 +4200,7 @@ Sub MidiRestRPG(Text$, ByRef theProgram As RPGCodeProgram)
     On Error GoTo errorhandler
     boardList(activeBoardIndex).theData.boardMusic$ = ""
     Call processEvent
-    Dim oi As Boolean
-    oi = bWaitingForInput
-    bWaitingForInput = False
-    Call checkMusic
-    bWaitingForInput = oi
+    Call checkMusic(True)
     Call processEvent
 
     Exit Sub
