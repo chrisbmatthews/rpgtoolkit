@@ -23,7 +23,6 @@ int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer)
 	initVbString(pText);
 	
 	inlineString text = pText;			//Text we're operating on
-	inlineString symbol = startSymbol;	//Symbol we're looking for
 	inlineString part;					//A character
 	inlineString toRet;					//The thing we'll return
 	int t = 0;				 			//Loop control variables
@@ -34,7 +33,7 @@ int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer)
 	{
 		//Find the start symbol
 		part = text.mid(t, 1);
-		if (part.contains(symbol))
+		if (part.contains(startSymbol))
 		{
 			startAt = t;
 			foundIt = true;
@@ -60,22 +59,21 @@ int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer)
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY RPGCParseBefore(char* pText, char* startSymbol, int &lengthBuffer)
 {
-	
+
 	//Read the VB string
 	initVbString(pText);
-	
+
 	inlineString text = pText;			//Text we're operating on
-	inlineString symbol = startSymbol;	//Symbol we're looking for
 	inlineString part;					//A character
 	inlineString toRet;					//The thing we'll return
 	int t = 0;				 			//Loop control variables
 	int length = text.len();			//Length of text
-	
+
 	for (t = 1; t <= length; t++)
 	{
 		//Find the start symbol
 		part = text.mid(t, 1);
-		if (part.contains(symbol))
+		if (part.contains(startSymbol))
 		{
 			//Found it
 			return returnVbString(toRet, lengthBuffer);
@@ -194,7 +192,7 @@ inline int returnVbString(inlineString theString, int &lengthBuffer)
 	if (memAdd) delete memAdd;
 
 	//allocate some memory for the string
-	memAdd = new(char[theString.len()]);
+	memAdd = new(char[theString.len() + 1]);
 
 	//copy the string into the memory
 	theString.newMem(memAdd);
