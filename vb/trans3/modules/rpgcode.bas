@@ -10712,13 +10712,13 @@ Public Sub cursorMapHand( _
     Dim paras() As parameters
     paras() = getParameters(Text, prg)
     
-    If Not paras(0).dataType = DT_LIT Then
+    If (paras(0).dataType <> DT_LIT) Then
         debugger "CursorMapHand()'s first data element must be literal-- " & Text
         Exit Sub
     End If
 
-    If cd = 2 Then
-        If Not paras(1).dataType = DT_NUM Then
+    If (cd = 2) Then
+        If (paras(1).dataType <> DT_NUM) Then
             debugger "CursorMapHand()'s second data element must be numerical-- " & Text
             Exit Sub
         End If
@@ -10730,19 +10730,20 @@ Public Sub cursorMapHand( _
     End If
 
     Dim fface As String
-    fface = paras(0).lit
-    fface = projectPath & bmpPath & fface
+    fface = projectPath & bmpPath & paras(0).lit
 
     If cd = 2 Then
         If paras(1).num = 1 Then
             DrawSizedImage fface, 0, 0, 32, 32, handHdc
         ElseIf paras(1).num = 0 Then
-            drawImage fface, 0, 0, handHdc
+            ' Colin, 3.0.6: Clear the hand graphic before drawing
+            Call vbHdcFillRect(handHdc, 0, 0, 32, 32, RGB(255, 0, 0))
+            Call drawImage(fface, 0, 0, handHdc)
         Else
-            debugger "CursorMapHand()'s second data element must be 1 or 0-- " & Text
+            Call debugger("CursorMapHand()'s second data element must be 1 or 0-- " & Text)
         End If
     Else
-        DrawSizedImage fface, 0, 0, 32, 32, handHdc
+        Call DrawSizedImage(fface, 0, 0, 32, 32, handHdc)
     End If
 
 End Sub
