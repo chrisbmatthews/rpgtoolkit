@@ -62,7 +62,7 @@ Begin VB.Form itmmenu
       Top             =   120
       Width           =   7095
       Begin VB.Frame Frame1 
-         Caption         =   "Effects of Using Item"
+         Caption         =   "Effects of Using Item            "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -209,7 +209,7 @@ Begin VB.Form itmmenu
          End
       End
       Begin VB.Frame Frame2 
-         Caption         =   "RPGCode"
+         Caption         =   "RPGCode     "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25

@@ -217,7 +217,7 @@ Begin VB.Form itmequip
             Height          =   285
             Left            =   1080
             TabIndex        =   23
-            Top             =   2040
+            Top             =   2160
             Visible         =   0   'False
             Width           =   1815
          End
@@ -236,7 +236,7 @@ Begin VB.Form itmequip
             Left            =   360
             TabIndex        =   31
             Tag             =   "1509"
-            Top             =   2040
+            Top             =   2160
             Visible         =   0   'False
             Width           =   615
          End

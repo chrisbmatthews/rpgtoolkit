@@ -262,7 +262,7 @@ Begin VB.Form editenemy
             Width           =   735
          End
          Begin VB.Label Label4 
-            Caption         =   "Chances of sneaking up on enemy: 1 in"
+            Caption         =   "Chances of a critical hit on the enemy: (1 in)"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -280,7 +280,7 @@ Begin VB.Form editenemy
             Width           =   3495
          End
          Begin VB.Label Label5 
-            Caption         =   "Chances of enemy sneaking up on you: 1 in"
+            Caption         =   "Chances of a critical hit on the player: (1 in)"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -419,7 +419,7 @@ Begin VB.Form editenemy
             Width           =   2655
          End
          Begin VB.Label Label2 
-            Caption         =   "Defense Power:"
+            Caption         =   "Defence Power:"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
