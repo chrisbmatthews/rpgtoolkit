@@ -100,7 +100,7 @@ Public Type PROCESS_INFORMATION
 End Type
 
 'KSNiloc...
-Private vbPlugins() As New clsVbPlugin
+Public vbPlugins() As New clsVbPlugin
 
 Function pluginDescription(ByVal plugFile As String) As String
     On Error Resume Next
@@ -214,7 +214,7 @@ Private Function getObjectFromFile(ByVal filename As String) As String
     getObjectFromFile = Left(filename, Len(filename) - 4)
 
     'Attach a class
-    getObjectFromFile = getObjectFromFile & ".clsMain"
+    getObjectFromFile = getObjectFromFile & ".cls" & getObjectFromFile
 
 End Function
 

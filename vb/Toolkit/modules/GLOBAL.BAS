@@ -54,6 +54,7 @@ Public Const hashPath = "Hash\"                'hash file path
 Public Const miscPath = "Misc\"                'misc file path
 Public Const pluginPath = "Plugin\"            'plugin file path
 Public Const resourcePath = "Resources\"       'resource file path
+Public Const plugPath = "Plugin\"
 
 'Top most form
 Public activeForm As Form   'the top most window

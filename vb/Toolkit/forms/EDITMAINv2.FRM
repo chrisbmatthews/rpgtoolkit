@@ -79,8 +79,8 @@ Begin VB.Form editmainfile
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "prgframe"
-      Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(0)=   "actionframe"
+      Tab(2).Control(1)=   "prgframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -95,14 +95,15 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label24"
+      Tab(5).Control(0)=   "Frame3"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Frame3"
+      Tab(5).Control(2)=   "Label24"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
       Tab(6).ControlEnabled=   0   'False
       Tab(6).Control(0)=   "Frame1"
+      Tab(6).Control(0).Enabled=   0   'False
       Tab(6).ControlCount=   1
       Begin VB.Frame fightframe 
          Caption         =   "Fighting:"
@@ -1811,7 +1812,7 @@ Sub plugininfofill()
     Call plugList.Clear
     For t = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(t) <> "" Then
-            descr$ = pluginDescription(projectPath$ + plugpath$ + mainMem.plugins(t))
+            descr$ = pluginDescription(projectPath$ + plugPath$ + mainMem.plugins(t))
             Call plugList.AddItem(mainMem.plugins(t) + "    " + descr$)
         End If
     Next t
@@ -2120,11 +2121,11 @@ Private Sub Command5_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + plugpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + plugPath$ + antiPath$
        
     Call MainAddPlugin(mainMem, antiPath$)
     
-    descr$ = pluginDescription(projectPath$ + plugpath$ + antiPath$)
+    descr$ = pluginDescription(projectPath$ + plugPath$ + antiPath$)
     plugList.AddItem (antiPath$ + "    " + descr$)
     Call PLUGShutdownSystem
     

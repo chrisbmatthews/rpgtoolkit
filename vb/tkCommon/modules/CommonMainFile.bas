@@ -106,16 +106,30 @@ End Function
 Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
     'add a filename to the list of plugins...
     On Error Resume Next
-    Dim t As Long
+    Dim t As Long, a As Long
     For t = 0 To UBound(theMain.plugins)
         If UCase$(theMain.plugins(t)) = UCase$(file) Then
             'found it...
             If t = UBound(theMain.plugins) Then
+                If isVBPlugin(projectPath & plugPath & theMain.plugins(t)) Then
+                    For a = 0 To UBound(vbPlugins)
+                        If vbPlugins(a).filename = projectPath & plugPath & theMain.plugins(t) Then
+                            vbPlugins(a).filename = ""
+                        End If
+                    Next a
+                End If
                 theMain.plugins(t) = ""
                 Exit Sub
             Else
                 Dim l As Long
-                For l = t + 1 To UBound(theMain.plugins)
+                For l = t To UBound(theMain.plugins)
+                If isVBPlugin(projectPath & plugPath & theMain.plugins(l)) Then
+                    For a = 0 To UBound(vbPlugins)
+                        If vbPlugins(a).filename = projectPath & plugPath & theMain.plugins(l) Then
+                            vbPlugins(a).filename = ""
+                        End If
+                    Next a
+                End If
                     theMain.plugins(l - 1) = theMain.plugins(l)
                 Next l
                 theMain.plugins(UBound(theMain.plugins)) = ""

@@ -135,7 +135,7 @@ Public Function addUnderscore(ByVal Text As String) As String
     'Replaces spaces with underscores
     '=======================================================
     On Error Resume Next
-    addUnderscore = replace(Text, " ", "_")
+    addUnderscore = Replace(Text, " ", "_")
 End Function
 
 Public Function all(ByVal longColor As Long, ByVal requestedColor As Integer) As Long
@@ -170,10 +170,10 @@ Public Sub color_16million()
     If detail = 2 Or detail = 4 Or detail = 6 Then
         For X = 1 To 16
             For Y = 1 To 16
-                If tilemem(X, Y) = -1 Then
-                    tilemem(X, Y) = -1
+                If tileMem(X, Y) = -1 Then
+                    tileMem(X, Y) = -1
                 Else
-                    tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
+                    tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
                 End If
             Next Y
         Next X
@@ -181,13 +181,13 @@ Public Sub color_16million()
     If detail = 3 Or detail = 5 Then
         For X = 1 To 32
             For Y = 1 To 32
-                If tilemem(X, Y) = -1 Then
-                    tilemem(X, Y) = -1
+                If tileMem(X, Y) = -1 Then
+                    tileMem(X, Y) = -1
                 Else
-                    tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
+                    tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
                 End If
             Next Y
-            Call vbPicFillRect(colorDepth.status, 0, 0, (X / 32) * 100, 10, vbQBColor(9))
+            Call vbPicFillRect(colordepth.status, 0, 0, (X / 32) * 100, 10, vbQBColor(9))
         Next X
         detail = 1
     End If
@@ -244,7 +244,7 @@ Public Function green(ByVal longColor As Long) As Long
     green = Int(longColor - blue(longColor) / 256)
 End Function
 
-Public Sub highRedrawLight()
+Public Sub highredrawLIGHT()
     '=======================================================
     'Redraws a tile's light source (high-quality)
     '=======================================================
@@ -257,12 +257,12 @@ Public Sub highRedrawLight()
         For Y = 1 To 32
             xx = (X * 10) - 9
             yy = (Y * 10) - 9
-            If tilemem(X, Y) <> -1 Then
+            If tileMem(X, Y) <> -1 Then
                 If detail = 1 Then
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tilemem(X, Y))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tileMem(X, Y))
                 End If
                 If detail = 3 Or detail = 5 Then
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tilemem(X, Y)))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tileMem(X, Y)))
                 End If
             End If
         Next Y
@@ -297,8 +297,8 @@ Public Sub increaseDetail()
 
     For X = 1 To 16
         For Y = 1 To 16
-            bufferTile(X, Y) = tilemem(X, Y)
-            tilemem(X, Y) = -1
+            bufferTile(X, Y) = tileMem(X, Y)
+            tileMem(X, Y) = -1
         Next Y
     Next X
 
@@ -306,10 +306,10 @@ Public Sub increaseDetail()
     xx = 1: yy = 1
     For X = 1 To 16
         For Y = 1 To 16
-            tilemem(xx, yy) = bufferTile(X, Y)
-            tilemem(xx, yy + 1) = bufferTile(X, Y)
-            tilemem(xx + 1, yy) = bufferTile(X, Y)
-            tilemem(xx + 1, yy + 1) = bufferTile(X, Y)
+            tileMem(xx, yy) = bufferTile(X, Y)
+            tileMem(xx, yy + 1) = bufferTile(X, Y)
+            tileMem(xx + 1, yy) = bufferTile(X, Y)
+            tileMem(xx + 1, yy + 1) = bufferTile(X, Y)
             yy = yy + 2
         Next Y
         yy = 1
@@ -318,7 +318,7 @@ Public Sub increaseDetail()
 
 End Sub
 
-Public Sub lowRedrawLight()
+Public Sub lowredrawLIGHT()
     '=======================================================
     'Redraws a tile's light source (low-quality)
     '=======================================================
@@ -332,12 +332,12 @@ Public Sub lowRedrawLight()
         For Y = 1 To 16
             xx = (X * 20) - 19
             yy = (Y * 20) - 19
-            If tilemem(X, Y) <> -1 Then
+            If tileMem(X, Y) <> -1 Then
                 If detail = 2 Then
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tilemem(X, Y))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tileMem(X, Y))
                 End If
                 If detail = 4 Or detail = 6 Then
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tilemem(X, Y)))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tileMem(X, Y)))
                 End If
             End If
         Next Y
@@ -426,7 +426,7 @@ Public Function noSpaces(ByVal Text As String) As String
     'Remove spaces from the text passed in
     '=======================================================
     On Error Resume Next
-    noSpaces = replace(Text, " ", "")
+    noSpaces = Replace(Text, " ", "")
 End Function
 
 Public Sub openConfig(ByVal file As String)
@@ -475,7 +475,6 @@ Public Sub openMainFile(ByVal file As String)
     Call openMain(file, mainMem)
     oldpath = currentDir & "\" & projectPath
     Call tkMainForm.fillTree("", projectPath)
-    tkMainForm.Caption = "RPG Toolkit Development System, Version 2.2 (" + absNoPath(file) + ")"
 End Sub
 
 Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
@@ -537,13 +536,13 @@ Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
             If detail = 1 Or detail = 3 Or detail = 5 Then
                 For X = 1 To 32
                     For Y = 1 To 32
-                        Input #num, tilemem(X, Y) 'Pixel by pixel
+                        Input #num, tileMem(X, Y) 'Pixel by pixel
                     Next Y
                 Next X
             ElseIf detail = 2 Or detail = 4 Or detail = 6 Then
                 For X = 1 To 16
                     For Y = 1 To 16
-                        Input #num, tilemem(X, Y)
+                        Input #num, tileMem(X, Y)
                     Next Y
                 Next X
             End If
@@ -558,7 +557,7 @@ Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
                     Input #num, times
                     Input #num, colorTime
                     For loopIt = 1 To times
-                        tilemem(xx, yy) = colorTime
+                        tileMem(xx, yy) = colorTime
                         yy = yy + 1
                         If yy > 32 Then yy = 1: xx = xx + 1
                     Next loopIt
@@ -570,7 +569,7 @@ Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
                     Input #num, times
                     Input #num, colorTime
                     For loopIt = 1 To times
-                        tilemem(xx, yy) = colorTime
+                        tileMem(xx, yy) = colorTime
                         yy = yy + 1
                         If yy > 16 Then yy = 1: xx = xx + 1
                     Next loopIt
@@ -604,7 +603,7 @@ Version1Tile:
                     Dim theValue As Long
                     theValue = Asc(part)
                     theValue = theValue - 33
-                    tilemem(xx, yy) = GFXGetDOSColor(theValue)
+                    tileMem(xx, yy) = GFXGetDOSColor(theValue)
                 Next xx
         Next yy
     Close num
@@ -783,31 +782,31 @@ Public Sub saveTile(ByVal filenm As String): On Error Resume Next
             If detail = 1 Or detail = 3 Or detail = 5 Then
                 For X = 1 To 32
                     For Y = 1 To 32
-                        Print #num, tilemem(X, Y) 'Pixel by pixel
+                        Print #num, tileMem(X, Y) 'Pixel by pixel
                     Next Y
                 Next X
             End If
             If detail = 2 Or detail = 4 Or detail = 6 Then
                 For X = 1 To 16
                     For Y = 1 To 16
-                        Print #num, tilemem(X, Y)
+                        Print #num, tileMem(X, Y)
                     Next Y
                 Next X
             End If
 
         ElseIf compression = 1 Then         'If there is compression, save it in bundles, count how many times pixels occur together, and write #of times, color of pixel
             occurances = 1
-            older = tilemem(1, 1)
+            older = tileMem(1, 1)
             If detail = 1 Or detail = 3 Or detail = 5 Then
                 For X = 1 To 32
                     For Y = 1 To 32
                         If Not (X = 1 And Y = 1) Then
-                            If tilemem(X, Y) = older Then
+                            If tileMem(X, Y) = older Then
                                 occurances = occurances + 1
                             Else
                                 Print #num, occurances    'how many times it occurred.
                                 Print #num, older         'what color it is
-                                older = tilemem(X, Y)
+                                older = tileMem(X, Y)
                                 occurances = 1
                             End If
                         End If
@@ -820,12 +819,12 @@ Public Sub saveTile(ByVal filenm As String): On Error Resume Next
                 For X = 1 To 16
                     For Y = 1 To 16
                         If Not (X = 1 And Y = 1) Then
-                            If tilemem(X, Y) = older Then
+                            If tileMem(X, Y) = older Then
                                 occurances = occurances + 1
                             Else
                                 Print #num, occurances    'how many times it occurred.
                                 Print #num, older         'what color it is
-                                older = tilemem(X, Y)
+                                older = tileMem(X, Y)
                                 occurances = 1
                                 starting = 0
                             End If
@@ -930,8 +929,8 @@ Public Sub winColor()
     If publicTile.oldDetail = 4 Or publicTile.oldDetail = 6 Then
         For X = 1 To 16
             For Y = 1 To 16
-                If tilemem(X, Y) = -1 Then tilemem(X, Y) = vbQBColor(15)
-                tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
+                If tileMem(X, Y) = -1 Then tileMem(X, Y) = vbQBColor(15)
+                tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
             Next Y
         Next X
     End If
@@ -939,8 +938,8 @@ Public Sub winColor()
     If publicTile.oldDetail = 3 Or publicTile.oldDetail = 5 Then
         For X = 1 To 32
             For Y = 1 To 32
-                If tilemem(X, Y) = -1 Then tilemem(X, Y) = vbQBColor(15)
-                tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
+                If tileMem(X, Y) = -1 Then tileMem(X, Y) = vbQBColor(15)
+                tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
             Next Y
         Next X
     End If

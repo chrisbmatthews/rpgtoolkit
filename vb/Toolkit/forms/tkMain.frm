@@ -6,7 +6,7 @@ Begin VB.MDIForm tkMainForm
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
    ClientHeight    =   8190
    ClientLeft      =   165
-   ClientTop       =   855
+   ClientTop       =   735
    ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
@@ -2464,13 +2464,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "11-8-2004"
+            TextSave        =   "11/08/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   5027
-            TextSave        =   "13:33"
+            Object.Width           =   5054
+            TextSave        =   "3:11 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2478,11 +2478,11 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel5 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   2
+            Enabled         =   0   'False
             TextSave        =   "NUM"
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
-            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -3468,13 +3468,13 @@ Private Sub ReadCommandLine_Timer()
         With Edit
             .tag = "1"
             .mnuNewProject.Visible = False
-            .mnunew.Visible = False
+            .mnuNew.Visible = False
             .mnuNewPRG.Visible = True
             .mnuOpenProject.Visible = False
             .mnuSaveAll.Visible = False
             .closemnu.Visible = False
             .mnuToolkit.Visible = False
-            .mnubuild.Visible = False
+            .mnuBuild.Visible = False
             .mnuWindow.Visible = False
             .Show
             Dim fCaption As String
@@ -3781,7 +3781,7 @@ Public Sub openmnu_Click(): On Error Resume Next
     'dlg.strDefaultExt = "brd"
     dlg.strFileTypes = "Supported Files|*.tbm;*.brd;*.gph;*.tst;*.iso;*.tan;*.prg;*.tem;*.itm;*.ene;*.bkg;*.ste;*.anm;*.rfm|Tile (*.tst;*.tan;*.gph;*.iso)|*.tst;*.tan;*.gph;*.iso|Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|Player (*.tem)|*.tem|Item (*.itm)|*.itm|Enemy (*.ene)|*.ene|Fight Background (*.bkg)|*.bkg|Status Effect (*.ste)|*.ste|Animation (*.anm)|*.anm|Tile Bitmap (*.tbm)|*.tbm|Visual Form (*.rfm)|*.rfm|All files(*.*)|*.*"
     
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
+    If OpenFileDialog(dlg, Me.hwnd) Then   'user pressed cancel
         filename$(1) = dlg.strSelectedFile
         antiPath$ = dlg.strSelectedFileNoPath
     Else

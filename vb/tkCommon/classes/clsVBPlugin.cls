@@ -37,8 +37,8 @@ Public Property Get version() As String: On Error Resume Next
     version = obj.Plugin_Version
 End Property
 
-Public Property Get description() As String: On Error Resume Next
-    'The plugin's version
+Public Property Get description() As String ': On Error Resume Next
+   'The plugin's version
     description = obj.Plugin_Description
 End Property
 
