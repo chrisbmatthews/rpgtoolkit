@@ -15,7 +15,7 @@ End Function
 
 Function toString(ByVal val As Variant) As String
     On Error Resume Next
-    toString = str$(val)
+    toString = str(val)
     toString = removeChar(toString, " ")
 End Function
 
