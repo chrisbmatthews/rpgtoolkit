@@ -1888,7 +1888,7 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: For must have 3 data elements!-- " + Text$)
         res = 0
         theProgram.programPos = increment(theProgram)
-        ForRPG = runBlock(Text$, res, theProgram)
+        ForRPG = runBlock(res, theProgram)
         Exit Function
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -1929,7 +1929,7 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
                 Dim oldLine As Long, newPos As Long, curLine As Long
         
                 oldLine = theProgram.programPos
-                newPos = runBlock(u, res, theProgram)
+                newPos = runBlock(res, theProgram)
                 a = DoSingleCommand(u3, theProgram, retval)
                 curLine = oldLine
                 theProgram.programPos = oldLine
@@ -1956,7 +1956,7 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     End If
 
     'If i'm here, then res=0, and we must run through once more.
-    ForRPG = runBlock(Text$, res, theProgram)
+    ForRPG = runBlock(res, theProgram)
 
     Exit Function
 
@@ -3326,12 +3326,12 @@ Public Function IfThen( _
                 
                 Else
             
-                    IfThen = runBlock(Text, 1, prg)
+                    IfThen = runBlock(1, prg)
                 
                 End If
                 
             Else
-                IfThen = runBlock(Text, 0, prg)
+                IfThen = runBlock(0, prg)
             End If
             'Our work here is done...
             Exit Function
@@ -3364,7 +3364,7 @@ Public Function IfThen( _
     
     End If
 
-    IfThen = runBlock(Text, res, prg)
+    IfThen = runBlock(res, prg)
     
 Exit Function
     
@@ -6899,9 +6899,7 @@ Function SkipMethodRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     'Skip over a method.
     On Error GoTo errorhandler
     
-    ' !FIX! by KSNiloc
-    theProgram.programPos = increment(theProgram)
-    SkipMethodRPG = runBlock(Text, 0, theProgram)
+    SkipMethodRPG = runBlock(0, theProgram)
 
     Exit Function
 
@@ -8442,7 +8440,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
                 End If
                 
                 oldLine = theProgram.programPos
-                newPos = runBlock(u, res, theProgram)
+                newPos = runBlock(res, theProgram)
                 curLine = oldLine
                 theProgram.programPos = oldLine
 
@@ -8450,20 +8448,11 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
             Loop
             
         End If
-
-    Else
-    
-        'If isMultiTasking() Then
-        '
-        '    theProgram.looping = False
-        '    loopEnd(num) = True
-        '
-        'End If
-    
+   
     End If
 
     'If I'm here, then res=0, and we must run through once more.
-    WhileRPG = runBlock(Text$, res, theProgram)
+    WhileRPG = runBlock(res, theProgram)
 
     Exit Function
 
@@ -10984,7 +10973,7 @@ Public Function WithRPG(ByVal cLine As String, ByRef prg As RPGCodeProgram) As L
  ReDim Preserve inWith(UBound(inWith) + 1)
  inWith(UBound(inWith)) = paras(0).lit
  prg.programPos = increment(prg)
- WithRPG = runBlock(cLine, 1, prg)
+ WithRPG = runBlock(1, prg)
  ReDim Preserve inWith(UBound(inWith) - 1)
  
  Exit Function
@@ -11047,7 +11036,7 @@ Public Function SwitchCase( _
                     'Let the main loop take care of this...
                     startThreadLoop prg, TYPE_IF
                 Else
-                    runBlock Text, 1, prg
+                    runBlock 1, prg
                 End If
                 
                 foundSwitch(.count) = False
@@ -11145,7 +11134,7 @@ Public Function SwitchCase( _
                     End If
                 End If
                 
-                prg.programPos = runBlock(Text, booleanToLong(run), prg)
+                prg.programPos = runBlock(booleanToLong(run), prg)
                 SwitchCase = prg.programPos
       
         End Select
@@ -11161,7 +11150,7 @@ Public Function SwitchCase( _
 skipBlock:
     With prg
         .programPos = increment(prg)
-        .programPos = runBlock(Text, 0, prg)
+        .programPos = runBlock(0, prg)
         .programPos = increment(prg)
         SwitchCase = .programPos
     End With
@@ -12098,12 +12087,16 @@ Public Sub renderNowRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     Else
         Call debugger("RenderNow()'s data element must be ON or OFF-- " & Text)
     End If
-    If (elements = 2) And (paras(1).num = 1) Then
-        'Render translucently!
-        renderRenderNowCanvasTranslucent = True
-    Else
-        'Render transparently!
+    If elements <> 2 Then
         renderRenderNowCanvasTranslucent = False
+    Else
+        If (paras(1).num = 1) Then
+            'Render translucently!
+            renderRenderNowCanvasTranslucent = True
+        Else
+            'Render transparently!
+            renderRenderNowCanvasTranslucent = False
+        End If
     End If
 End Sub
 
@@ -12116,7 +12109,7 @@ Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) A
         Call debugger("MultiRun() requires no data elements-- " & Text)
     Else
         disregardLooping = True
-        MultiRunRPG = runBlock("", 1, prg)
+        MultiRunRPG = runBlock(1, prg)
         disregardLooping = False
     End If
 End Function
@@ -12135,7 +12128,7 @@ Public Sub shopColorsRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     Dim idx As Long
     For idx = 0 To UBound(paras)
         If paras(0).dataType <> DT_NUM Then
-            Call debugger("ShopColors() requires numerical data elements--" & Text)
+            Call debugger("ShopColors() requires numerical data elements-- " & Text)
             Exit Sub
         End If
     Next idx

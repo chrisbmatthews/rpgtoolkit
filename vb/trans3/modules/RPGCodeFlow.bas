@@ -253,7 +253,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Dim ogbm As Boolean
         ogbm = isMultiTasking()
         gbMultiTasking = False
-        aa = runBlock(theProgram.program$(foundIt), 1, theProgram)
+        aa = runBlock(1, theProgram)
         gbMultiTasking = ogbm
 
         'Restore error handler
@@ -509,7 +509,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                             yy = -Int(-passPos.y)
                             
                         End Select
-                    
+
                     If tempItems(t).x = xx And tempItems(t).y = yy And tempItems(t).l = pos.l Then
                         If keyWaitState = mainMem.Key Then
                             'yes, we pressed the right key
@@ -521,13 +521,6 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
             End If '(.itmName$(t) <> "")
         End If '(.BoardYN = 1)
     Next t
-
-    'If usingPixelMovement() Then
-    '    'If we're using pixel movement then restore the old item positions
-    '    For t = 0 To MAXITEM
-    '        itmPos(t) = tempitems(t)
-    '    Next t
-    'End If
 
     programTest = toRet
 
@@ -558,50 +551,49 @@ Public Sub moveToStartOfBlock(ByRef prg As RPGCodeProgram)
 End Sub
 
 '=========================================================================
-' Runs a block of code (or skips it if res = 0)
+' Runs a block of code (or skips it)
 '=========================================================================
 Public Function runBlock( _
-                            ByVal Text As String, _
-                            ByVal res As Long, _
+                            ByVal runCommands As Long, _
                             ByRef prg As RPGCodeProgram _
                                                           ) As Long
 
     Dim retval As RPGCODE_RETURN
     Dim done As Boolean
     Dim depth As Long
-    
+
     Call moveToStartOfBlock(prg)
-    
+
     Do Until done
-               
+
         Select Case LCase(GetCommandName(prg.program(prg.programPos)))
 
             Case "openblock"
                 depth = depth + 1
                 prg.programPos = increment(prg)
-                
+
             Case "closeblock"
                 depth = depth - 1
                 prg.programPos = increment(prg)
-                
+
             Case "end"
                 If Not endCausesStop Then
-                    res = 0
+                    runCommands = 0
                     prg.programPos = increment(prg)
                 Else
                     runningProgram = False
                 End If
-                
+
             Case Else
-           
-                If res = 1 Then
+
+                If (runCommands = 1) Then
                     Call DoCommand(prg, retval)
                 Else
                     prg.programPos = increment(prg)
                 End If
-            
+
         End Select
-        
+
         If depth = 0 _
                        Or prg.programPos = -1 _
                        Or prg.programPos = -2 _
@@ -904,9 +896,11 @@ End Function
 ' Do any single command - attached to a program
 '=========================================================================
 Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
+
     'Performs a command, and returns the new line number
     'afterwards.  If it returns -1, then the program is done.
-    On Error GoTo errorhandler
+
+    On Error Resume Next
    
     Dim checkIt As String
     checkIt = replace(replace(replace _
@@ -914,17 +908,17 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
         ), vbTab, ""), "#", "")
 
     If checkIt = "onerrorresumenext" Then ' On Error Resume Next
-        onError "#OnError(Resume Next)", theProgram
+        onError "OnError(Resume Next)", theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
 
     ElseIf checkIt = "resumenext" Then ' Resume Next
-        resumeNextRPG "#ResumeNext()", theProgram
+        resumeNextRPG "ResumeNext()", theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
 
     ElseIf Left(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
-        onError "#OnError(" & Right(checkIt, Len(checkIt) - InStr(1, _
+        onError "OnError(" & Right(checkIt, Len(checkIt) - InStr(1, _
             LCase(rpgcodeCommand), "goto", vbTextCompare) - 1) & ")", theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
@@ -2372,10 +2366,4 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
 
     End Select
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-      
-    Resume Next
 End Function

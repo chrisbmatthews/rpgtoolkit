@@ -153,12 +153,12 @@ Public Const FF_SWISS = 32       'Variable stroke width, sans-serifed.
 '=========================================================================
 ' Determines if a font is a toolkit font
 '=========================================================================
-Public Function isToolkitFont(ByVal filename As String) As Boolean
+Public Function isToolkitFont(ByVal fileName As String) As Boolean
     On Error Resume Next
     Dim num As Long
     num = FreeFile()
-    filename = PakLocate(filename)
-    Open filename For Input As num
+    fileName = PakLocate(fileName)
+    Open fileName For Input As num
         If UCase(fread(num)) = "RPGTLKIT FONT" Then
             isToolkitFont = True
         End If

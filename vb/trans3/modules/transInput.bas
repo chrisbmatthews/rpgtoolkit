@@ -212,7 +212,7 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
     
     'Check the key for common keys.
     If keyWaitState = 13 Then returnVal$ = "ENTER"
-    If keyWaitState = 32 Then returnVal$ = "SPACE"
+    'If keyWaitState = 32 Then returnVal$ = "SPACE"
     If keyWaitState = 38 Then returnVal$ = "UP"
     If keyWaitState = 40 Then returnVal$ = "DOWN"
     If keyWaitState = 37 Then returnVal$ = "LEFT"
@@ -352,7 +352,7 @@ Function WaitForKey() As String
     
     'Check the key for common keys.
     If keyWaitState = 13 Then returnVal$ = "ENTER"
-    If keyWaitState = 32 Then returnVal$ = "SPACE"
+    'If keyWaitState = 32 Then returnVal$ = "SPACE"
     If keyWaitState = 38 Then returnVal$ = "UP"
     If keyWaitState = 40 Then returnVal$ = "DOWN"
     If keyWaitState = 37 Then returnVal$ = "LEFT"

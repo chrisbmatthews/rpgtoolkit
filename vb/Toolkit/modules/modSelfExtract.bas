@@ -8,9 +8,9 @@ Attribute VB_Name = "modSelfExtract"
 Option Explicit
 
 Public Sub addToSelfExtract( _
-                               selfExtract As String, _
-                               WhatFile As String, _
-                               SaveAs As String _
+                               ByVal selfExtract As String, _
+                               ByVal WhatFile As String, _
+                               ByVal SaveAs As String _
                                                   )
 
     On Error Resume Next
@@ -23,14 +23,14 @@ Public Sub addToSelfExtract( _
 
     iFreeFile = FreeFile()
 
-    Open selfExtract For Binary As iFreeFile
+    Open selfExtract For Binary Access Read As iFreeFile
         sBefore = String(LOF(iFreeFile), chr(0))
         Get iFreeFile, , sBefore
     Close iFreeFile
 
-    Open SaveAs For Output As iFreeFile
-        iFreeFile2 = FreeFile
-        Open WhatFile For Binary As iFreeFile2
+    Open SaveAs For Output Access Write As iFreeFile
+        iFreeFile2 = FreeFile()
+        Open WhatFile For Binary Access Read As iFreeFile2
             sBuffer = String(LOF(iFreeFile2), chr(0))
             Get iFreeFile2, , sBuffer
             size = LOF(iFreeFile2)

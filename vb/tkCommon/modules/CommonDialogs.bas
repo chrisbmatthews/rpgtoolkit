@@ -110,25 +110,21 @@ Public Const CC_STYLED = 32             '  Can do styled lines
 Public Const CC_WIDE = 16               '  Can do wide lines
 Public Const CC_WIDESTYLED = 64         '  Can do wide styled lines
 
+'=========================================================================
+' Convert a pointer to a null-terminated string to a VB string
+'=========================================================================
 Private Function APIString2VBString(ByVal str As String) As String
-    'convert a null terminated string into a vb string
     On Error Resume Next
-    
-    Dim toRet As String
-    Dim part As String
-    Dim t As Integer
-    For t = 0 To Len(str)
-        part = Mid$(str, t, 1)
-        If part = chr$(0) Then
+    Dim part As String, stringPos As Integer
+    For stringPos = 0 To Len(str)
+        part = Mid(str, stringPos, 1)
+        If part = Chr(0) Then
             Exit For
         Else
-            toRet = toRet + part
+            APIString2VBString = APIString2VBString & part
         End If
-    Next t
-    
-    APIString2VBString = toRet
+    Next stringPos
 End Function
-
 
 Function ColorDialog(Optional ByVal returnNegOnCancel As Boolean = False) As Long
     'pop up a color dialog
@@ -196,12 +192,12 @@ Function DialogFilterToAPIFilter(ByVal filter As String) As String
     Dim part As String
     For t = 0 To Len(filter)
         part = Mid$(filter, t, 1)
-        If part = "|" Then part = chr$(0)
+        If part = "|" Then part = Chr$(0)
         toRet = toRet + part
     Next t
           
-    toRet = toRet + chr$(0)
-    toRet = toRet + chr$(0)
+    toRet = toRet + Chr$(0)
+    toRet = toRet + Chr$(0)
 
     DialogFilterToAPIFilter = toRet
 End Function

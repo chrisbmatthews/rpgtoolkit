@@ -20,7 +20,6 @@ Public Type RPGCodeProgram           'rpgcode program structure
     programPos As Long               '  current position in program
     included(50) As String           '  included files
     Length As Long                   '  length of program
-    autoCommand As Boolean           '  is autocommand tunred on? (if so, # is not required in statements)
     heapStack() As Long              '  stack of local heaps
     currentHeapFrame As Long         '  current heap frame
     boardNum As Long                 '  the corresponding board index of the program (default to 0)
@@ -77,7 +76,6 @@ End Function
 Public Sub InitRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
     On Error Resume Next
     Call ClearRPGCodeProcess(thePrg)
-    thePrg.autoCommand = True
     thePrg.programPos = 0
     thePrg.Length = 0
     thePrg.currentHeapFrame = -1

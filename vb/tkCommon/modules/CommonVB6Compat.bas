@@ -42,6 +42,7 @@ Public Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As 
 Public Declare Function CreateEllipticRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Public Declare Function PaintRgn Lib "gdi32" (ByVal hdc As Long, ByVal hRgn As Long) As Long
 'Declare Function SetPixel& Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crcolor As Long)
+Public Declare Function GetDesktopWindow Lib "user32" () As Long
 
 Declare Function StretchBlt& Lib "gdi32" _
     (ByVal hdc&, ByVal x&, ByVal y&, ByVal nWidth&, ByVal nHeight&, _
@@ -53,6 +54,7 @@ Public Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Lo
 Public Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
 Public Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Public Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+Public Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hdc As Long) As Long
 
 Public Type POINTAPI
     x As Long

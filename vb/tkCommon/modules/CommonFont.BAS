@@ -183,12 +183,12 @@ Sub fontunderline()
     currentY = currentY + 2
 End Sub
 
-Sub loadFont(ByVal filename As String)
+Sub loadFont(ByVal fileName As String)
     On Error Resume Next
     'loadingfont.Show
     Dim num As Long, f As String, a As String, t As Long, numi As Long
     num = FreeFile
-    f$ = PakLocate(filename$)
+    f$ = PakLocate(fileName$)
     Open f$ For Input As #num
         Input #num, a$
         If UCase$(a$) <> "RPGTLKIT FONT" Then MsgBox "Unrecognised file format!", , "Open Font": Close #num:  Exit Sub
@@ -366,29 +366,21 @@ Sub resize(ByVal charnum As Long, ByVal x As Long, ByVal y As Long)
     'Call antialias
 End Sub
 
-Sub saveFont(filename$)
+Sub saveFont(ByVal fileName As String)
     On Error Resume Next
-    'loadingfont.Show
-    'loadingfont.Caption = "Saving Font..."
     Dim num As Long, t As Long, numi As Long, decnum As Long
     num = FreeFile
-    Open filename$ For Output As #num
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+    Open fileName For Output Access Write As num
         Print #num, "RPGTLKIT FONT"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "2" 'Version
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "0" 'Subver
         For t = 0 To 255
             For numi = 0 To 7
                 decnum = toDecimal(char$(numi, t))
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                 Print #num, decnum
             Next numi
-            'loadingfont.progress.Line (0, 0)-(t, 300), vbqbcolor(9), BF
         Next t
-    Close #num
-    'Unload loadingfont
+    Close num
 End Sub
 
 Function SetDeviceFont(ByVal hdc As Long, ByRef theAttribs As fontAttribs, ByRef hFontNew As Long, Optional ByVal centred As Boolean = False) As Long

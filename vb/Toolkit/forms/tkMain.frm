@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
@@ -7,7 +7,7 @@ Begin VB.MDIForm tkMainForm
    ClientHeight    =   8190
    ClientLeft      =   165
    ClientTop       =   735
-   ClientWidth     =   11880
+   ClientWidth     =   11400
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
    StartUpPosition =   3  'Windows Default
@@ -100,8 +100,8 @@ Begin VB.MDIForm tkMainForm
       Left            =   0
       TabIndex        =   7
       Top             =   0
-      Width           =   11880
-      _ExtentX        =   20955
+      Width           =   11400
+      _ExtentX        =   20108
       _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
@@ -291,11 +291,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1335
       Left            =   0
       ScaleHeight     =   1335
-      ScaleWidth      =   11880
+      ScaleWidth      =   11400
       TabIndex        =   123
       Top             =   6225
       Visible         =   0   'False
-      Width           =   11880
+      Width           =   11400
       Begin VB.Frame tileBmpExtras 
          BorderStyle     =   0  'None
          BeginProperty Font 
@@ -859,7 +859,7 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4200
-      Left            =   465
+      Left            =   -15
       ScaleHeight     =   4200
       ScaleWidth      =   3510
       TabIndex        =   99
@@ -1087,7 +1087,7 @@ Begin VB.MDIForm tkMainForm
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
       Height          =   4200
-      Left            =   -1350
+      Left            =   -1830
       ScaleHeight     =   4200
       ScaleWidth      =   1815
       TabIndex        =   95
@@ -1109,8 +1109,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   98
             Top             =   0
             Width           =   1815
-            _ExtentX        =   3201
-            _ExtentY        =   8070
+            _extentx        =   3201
+            _extenty        =   8070
          End
       End
       Begin Toolkit.TKTopBar_Tools NewBarTop 
@@ -1119,10 +1119,10 @@ Begin VB.MDIForm tkMainForm
          TabIndex        =   96
          Top             =   0
          Width           =   1815
-         _ExtentX        =   3201
-         _ExtentY        =   370
-         Object.Width           =   1815
-         Caption         =   "New"
+         _extentx        =   3201
+         _extenty        =   370
+         Object.width           =   1815
+         caption         =   "New"
       End
    End
    Begin VB.PictureBox leftBarContainer 
@@ -1726,10 +1726,10 @@ Begin VB.MDIForm tkMainForm
          TabIndex        =   94
          Top             =   0
          Width           =   975
-         _ExtentX        =   1720
-         _ExtentY        =   370
-         Object.Width           =   975
-         Caption         =   "Tools"
+         _extentx        =   1720
+         _extenty        =   370
+         Object.width           =   975
+         caption         =   "Tools"
       End
    End
    Begin VB.Timer theBardTimer 
@@ -1743,11 +1743,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   11880
+      ScaleWidth      =   11400
       TabIndex        =   29
       Top             =   4560
       Visible         =   0   'False
-      Width           =   11880
+      Width           =   11400
       Begin VB.CommandButton Command21 
          Appearance      =   0  'Flat
          Caption         =   "Draw All Layers"
@@ -2048,7 +2048,7 @@ Begin VB.MDIForm tkMainForm
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
       Height          =   4200
-      Left            =   11505
+      Left            =   11025
       ScaleHeight     =   4200
       ScaleWidth      =   375
       TabIndex        =   22
@@ -2108,10 +2108,10 @@ Begin VB.MDIForm tkMainForm
       Height          =   375
       Left            =   0
       ScaleHeight     =   375
-      ScaleWidth      =   11880
+      ScaleWidth      =   11400
       TabIndex        =   9
       Top             =   7560
-      Width           =   11880
+      Width           =   11400
       Begin VB.CommandButton openWindowsScrollRight 
          Height          =   255
          Left            =   11760
@@ -2252,7 +2252,7 @@ Begin VB.MDIForm tkMainForm
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
       Height          =   4200
-      Left            =   3975
+      Left            =   3495
       ScaleHeight     =   4200
       ScaleWidth      =   4800
       TabIndex        =   8
@@ -2359,7 +2359,7 @@ Begin VB.MDIForm tkMainForm
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
       Height          =   4200
-      Left            =   8775
+      Left            =   8295
       ScaleHeight     =   4200
       ScaleWidth      =   2730
       TabIndex        =   1
@@ -2456,21 +2456,21 @@ Begin VB.MDIForm tkMainForm
       Left            =   0
       TabIndex        =   0
       Top             =   7935
-      Width           =   11880
-      _ExtentX        =   20955
+      Width           =   11400
+      _ExtentX        =   20108
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "06/09/2003"
+            TextSave        =   "08/09/2003"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   5054
-            TextSave        =   "1:51 PM"
+            Object.Width           =   4207
+            TextSave        =   "8:06 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2756,9 +2756,9 @@ Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On Error Re
     'Calculate the number of tiles that will be in view.
     
     If iMetric = 0 Then
-        tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)
     Else
-        tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
     End If
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
     
@@ -2804,9 +2804,9 @@ Private Sub fillTilesetBar(): On Error Resume Next
     
             'Set the scroller depending on the tileset type.
             If setType = ISOTYPE Then
-                tilesWide = (currentTilesetForm.Width / Screen.TwipsPerPixelY) / 64
+                tilesWide = (currentTilesetForm.width / Screen.TwipsPerPixelY) / 64
             Else
-                tilesWide = (currentTilesetForm.Width / Screen.TwipsPerPixelY) / 32
+                tilesWide = (currentTilesetForm.width / Screen.TwipsPerPixelY) / 32
             End If
             tilesHigh = (currentTilesetForm.height / Screen.TwipsPerPixelY) / 32
             
@@ -3173,11 +3173,11 @@ End Sub
 
 Private Sub Command7_Click(): On Error Resume Next
     
-    If rightbar.Width = 2730 Then
-        rightbar.Width = 400
+    If rightbar.width = 2730 Then
+        rightbar.width = 400
         Command7.Caption = "<"
     Else
-        rightbar.Width = 2730
+        rightbar.width = 2730
         Command7.Caption = ">"
     End If
     
@@ -3229,10 +3229,10 @@ Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, X 
     
     If iMetric = 0 Then
         'Not isometric.
-        tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)   'width of window.
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)   'width of window.
         tileX = Int(X / 32)                                                        'x-tile clicked.
     Else
-        tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
         tileX = Int(X / 64)
     End If
     
@@ -3437,13 +3437,13 @@ Private Sub ProjectListSize_Timer()
     
     If (Not fileTree1.height = rightbar.height - 400) Or _
         (Not TreeView1.height = rightbar.height - 400) Or _
-        (Not TreeView1.Width = 2535) Or (Not fileTree1.Left = 120) Or _
+        (Not TreeView1.width = 2535) Or (Not fileTree1.Left = 120) Or _
         (Not TreeView1.Left = 0) Then
 
         TreeView1.height = rightbar.height - 400
         fileTree1.height = rightbar.height - 400
-        TreeView1.Width = 2535
-        fileTree1.Width = 2535
+        TreeView1.width = 2535
+        fileTree1.width = 2535
         TreeView1.Top = 0
         TreeView1.Left = 0
         fileTree1.Left = 120
@@ -4173,9 +4173,9 @@ Private Sub tilesetScroller_Change(): On Error Resume Next
         Call GFXInitScreen(640, 480)
         
         If iMetric = 0 Then
-            tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)
+            tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)
         Else
-            tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
+            tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
         End If
         tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
                 
@@ -4250,7 +4250,7 @@ Public Sub ShowPic(ByRef file As String): On Error Resume Next
     
     Dim W As Long, h As Long
     
-    W = Me.Width / Screen.TwipsPerPixelX
+    W = Me.width / Screen.TwipsPerPixelX
     h = Me.height / Screen.TwipsPerPixelY
     
     If cnvBkgImage = 0 Then

@@ -430,7 +430,7 @@ Public Sub LoadState(ByVal file As String)
                 tID = CreateThread(f, bPersist)
             End If
             If f <> "" Then
-                threads(tID).thread.programPos = pos
+                Threads(tID).thread.programPos = pos
             End If
             
             If (bSleep) And f <> "" Then
@@ -443,7 +443,7 @@ Public Sub LoadState(ByVal file As String)
             Dim tt As Long
             For tt = 0 To heaps
                 If tt <> 0 Then
-                    Call AddHeapToStack(threads(t).thread)
+                    Call AddHeapToStack(Threads(t).thread)
                 End If
                 'read num vars...
                 nCount = BinReadLong(num)
@@ -453,7 +453,7 @@ Public Sub LoadState(ByVal file As String)
                     varname = BinReadString(num)
                     varValue = BinReadDouble(num)
                     If varname <> "" And f <> "" Then
-                        Call SetNumVar(varname, varValue, threads(t).thread.heapStack(tt))
+                        Call SetNumVar(varname, varValue, Threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
                 
@@ -464,7 +464,7 @@ Public Sub LoadState(ByVal file As String)
                     varname = BinReadString(num)
                     varString = BinReadString(num)
                     If varname <> "" And f <> "" Then
-                        Call SetLitVar(varname, varString, threads(t).thread.heapStack(tt))
+                        Call SetLitVar(varname, varString, Threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
             Next tt
@@ -587,16 +587,16 @@ Public Sub SaveState(ByVal file As String)
         Call BinWriteString(num, newPlyrName)
         
         'save active threads...
-        Call BinWriteLong(num, UBound(threads))
-        For t = 0 To UBound(threads)
-            Call BinWriteString(num, threads(t).filename)
-            If threads(t).bPersistent Then
+        Call BinWriteLong(num, UBound(Threads))
+        For t = 0 To UBound(Threads)
+            Call BinWriteString(num, Threads(t).filename)
+            If Threads(t).bPersistent Then
                 Call BinWriteLong(num, 1)
             Else
                 Call BinWriteLong(num, 0)
             End If
-            Call BinWriteLong(num, threads(t).thread.programPos)
-            If threads(t).bIsSleeping Then
+            Call BinWriteLong(num, Threads(t).thread.programPos)
+            If Threads(t).bIsSleeping Then
                 Call BinWriteLong(num, 1)
             Else
                 Call BinWriteLong(num, 0)
@@ -606,26 +606,26 @@ Public Sub SaveState(ByVal file As String)
             Call BinWriteDouble(num, dDuration)
             
             'write local variables...
-            Call BinWriteLong(num, threads(t).thread.currentHeapFrame)
+            Call BinWriteLong(num, Threads(t).thread.currentHeapFrame)
             Dim tt As Long
-            For tt = 0 To threads(t).thread.currentHeapFrame
+            For tt = 0 To Threads(t).thread.currentHeapFrame
                 'print num vars...
-                nCount = RPGCCountNum(threads(t).thread.heapStack(tt))
+                nCount = RPGCCountNum(Threads(t).thread.heapStack(tt))
                 Call BinWriteLong(num, nCount)
                 
                 Dim ttt As Long
                 For ttt = 1 To nCount
-                    Call BinWriteString(num, GetNumName(ttt - 1, threads(t).thread.heapStack(tt)))
-                    Call BinWriteDouble(num, GetNumVar(GetNumName(ttt - 1, threads(t).thread.heapStack(tt)), threads(t).thread.heapStack(tt)))
+                    Call BinWriteString(num, GetNumName(ttt - 1, Threads(t).thread.heapStack(tt)))
+                    Call BinWriteDouble(num, GetNumVar(GetNumName(ttt - 1, Threads(t).thread.heapStack(tt)), Threads(t).thread.heapStack(tt)))
                 Next ttt
                 
                 'print lit vars...
-                nCount = RPGCCountLit(threads(t).thread.heapStack(tt))
+                nCount = RPGCCountLit(Threads(t).thread.heapStack(tt))
                 Call BinWriteLong(num, nCount)
                 
                 For ttt = 1 To nCount
-                    Call BinWriteString(num, GetLitName(ttt - 1, threads(t).thread.heapStack(tt)))
-                    Call BinWriteString(num, GetLitVar(GetLitName(ttt - 1, threads(t).thread.heapStack(tt)), threads(t).thread.heapStack(tt)))
+                    Call BinWriteString(num, GetLitName(ttt - 1, Threads(t).thread.heapStack(tt)))
+                    Call BinWriteString(num, GetLitVar(GetLitName(ttt - 1, Threads(t).thread.heapStack(tt)), Threads(t).thread.heapStack(tt)))
                 Next ttt
             Next tt
         Next t

@@ -49,7 +49,7 @@ Private m_createY As Long           'y position window should start at
 '=========================================================================
 ' Member declarations
 '=========================================================================
-Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal wndProc As Long, ByVal className As String, ByVal hCursor As Long) As Long
+Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal wndProc As Long, ByVal className As String, ByVal hCursor As Long) As Long
 
 '=========================================================================
 ' Member enumerations
@@ -117,10 +117,10 @@ End Property
 '=========================================================================
 ' Window's width
 '=========================================================================
-Public Property Get Width() As Long
-    Width = m_createWidth
+Public Property Get width() As Long
+    width = m_createWidth
 End Property
-Public Property Let Width(ByVal newVal As Long)
+Public Property Let width(ByVal newVal As Long)
      m_createWidth = newVal
 End Property
 

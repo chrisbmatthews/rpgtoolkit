@@ -130,7 +130,7 @@ Function getPlayerHP(ByRef thePlayer As TKPlayer) As Double
     getPlayerHP = stat
 End Function
 
-Sub giveExperience(amount, thePlayer As TKPlayer)
+Sub giveExperience(ByVal amount As Long, thePlayer As TKPlayer)
     'gives the player experience (amount)
     On Error Resume Next
     Dim expr As Double
@@ -143,11 +143,11 @@ Sub giveExperience(amount, thePlayer As TKPlayer)
     
     Dim nxtLev As Integer
     nxtLev = thePlayer.nextLevel
-    If thePlayer.nextLevel <= 0 Then
+    Do While thePlayer.nextLevel <= 0
         'level up!!!
         Call increaseLevel(thePlayer)
         thePlayer.nextLevel = thePlayer.nextLevel - Abs(nxtLev)
-    End If
+    Loop
 End Sub
 
 Sub increaseLevel(ByRef thePlayer As TKPlayer)

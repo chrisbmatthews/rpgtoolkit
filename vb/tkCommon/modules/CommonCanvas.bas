@@ -17,14 +17,14 @@ Option Explicit
 Private Declare Function IMGBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long) As Long
 Private Declare Function IMGGetWidth Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGGetHeight Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
-Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal filename As String) As Long
+Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal fileName As String) As Long
 
 '=========================================================================
 ' Canvas manipulation
 '=========================================================================
 Private Declare Function CNVInit Lib "actkrt3.dll" () As Long
 Private Declare Function CNVShutdown Lib "actkrt3.dll" () As Long
-Private Declare Function CNVCreate Lib "actkrt3.dll" (ByVal hdcCompatable As Long, ByVal Width As Long, ByVal height As Long, Optional ByVal useDX As Long = 1) As Long
+Private Declare Function CNVCreate Lib "actkrt3.dll" (ByVal hdcCompatable As Long, ByVal width As Long, ByVal height As Long, Optional ByVal useDX As Long = 1) As Long
 Private Declare Function CNVDestroy Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Function CNVOpenHDC Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Function CNVCloseHDC Lib "actkrt3.dll" (ByVal handle As Long, ByVal hdc As Long) As Long
@@ -39,39 +39,34 @@ Private Declare Function CNVBltCanvas Lib "actkrt3.dll" (ByVal sourceHandle As L
 Private Declare Function CNVBltCanvasTransparent Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, Optional ByVal crColor As Long) As Long
 Private Declare Function CNVBltCanvasTranslucent Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 Private Declare Function CNVGetRGBColor Lib "actkrt3.dll" (ByVal handle As Long, ByVal crColor As Long) As Long
-Private Declare Function CNVResize Lib "actkrt3.dll" (ByVal handle As Long, ByVal hdcCompatible As Long, ByVal Width As Long, ByVal height As Long) As Long
+Private Declare Function CNVResize Lib "actkrt3.dll" (ByVal handle As Long, ByVal hdcCompatible As Long, ByVal width As Long, ByVal height As Long) As Long
 Private Declare Function CNVShiftLeft Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftRight Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftUp Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftDown Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
-
-'=========================================================================
-' GDI HDC manipulation
-'=========================================================================
-Public Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Public Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function CNVCreateCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long) As Long
+Private Declare Sub CNVKillCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long, ByVal hCanvasHostDC As Long)
 
 '=========================================================================
 ' Member variables
 '=========================================================================
-Private canvasHost As Long      'The canvasHost is merely a DC. This is all
-                                'the form was used for, so it makes much
-                                'more sense to just store the DC in a
-                                'variable.
+Private canvasHost As Long      'This variable contains a handle to a device
+                                'context (created in initCanvasEngine) which
+                                'all other canvas' dc's are based upon.
 
 '=========================================================================
 ' Draw a background onto a canvas
 '=========================================================================
-Public Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
+Public Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim bkg As TKBackground
         Call openBackground(bkgFile, bkg)
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
-        Call DrawBackground(bkg, x, y, Width, height, hdc)
+        Call DrawBackground(bkg, x, y, width, height, hdc)
         Call CanvasCloseHDC(canvasID, hdc)
     End If
 End Sub
@@ -154,10 +149,10 @@ End Function
 '=========================================================================
 ' Partially copy one canvas onto another one
 '=========================================================================
-Public Function Canvas2CanvasBltPartial(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Public Function Canvas2CanvasBltPartial(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
     On Error Resume Next
     If CanvasOccupied(canvasSource) And CanvasOccupied(canvasDest) Then
-        Canvas2CanvasBltPartial = CNVBltPartCanvas(canvasSource, canvasDest, destX, destY, srcX, srcY, Width, height, rasterOp)
+        Canvas2CanvasBltPartial = CNVBltPartCanvas(canvasSource, canvasDest, destX, destY, srcX, srcY, width, height, rasterOp)
     Else
         Canvas2CanvasBltPartial = -1
     End If
@@ -166,10 +161,10 @@ End Function
 '=========================================================================
 ' Transparently copy part of a canvas onto another one
 '=========================================================================
-Public Function Canvas2CanvasBltTransparentPartial(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Width As Long, ByVal height As Long, Optional ByVal crColor As Long) As Long
+Public Function Canvas2CanvasBltTransparentPartial(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal width As Long, ByVal height As Long, Optional ByVal crColor As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasSource) And CanvasOccupied(canvasDest) Then
-        Canvas2CanvasBltTransparentPartial = CNVBltTransparentPartCanvas(canvasSource, canvasDest, destX, destY, srcX, srcY, Width, height, crColor)
+        Canvas2CanvasBltTransparentPartial = CNVBltTransparentPartCanvas(canvasSource, canvasDest, destX, destY, srcX, srcY, width, height, crColor)
     Else
         Canvas2CanvasBltTransparentPartial = -1
     End If
@@ -423,10 +418,10 @@ End Function
 '=========================================================================
 ' Load a picture onto a canvas
 '=========================================================================
-Public Function CanvasLoadPicture(ByVal canvasID As Long, ByVal filename As String) As Long
+Public Function CanvasLoadPicture(ByVal canvasID As Long, ByVal fileName As String) As Long
     On Error Resume Next
-    If CanvasOccupied(canvasID) And fileExists(filename) Then
-        Call drawImageCNV(filename, 0, 0, canvasID)
+    If CanvasOccupied(canvasID) And fileExists(fileName) Then
+        Call drawImageCNV(fileName, 0, 0, canvasID)
         CanvasLoadPicture = 0
     Else
         CanvasLoadPicture = -1
@@ -565,7 +560,7 @@ End Function
 '=========================================================================
 ' Blt a canvas onto a picture box
 '=========================================================================
-Public Function CanvasBlt2(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal Width As Long, ByVal height As Long, ByVal destPicHdc As Long) As Long
+Public Function CanvasBlt2(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal width As Long, ByVal height As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
@@ -573,7 +568,7 @@ Public Function CanvasBlt2(ByVal canvasID As Long, ByVal destX As Long, ByVal de
         CanvasBlt2 = BitBlt(destPicHdc, _
                            destX, _
                            destY, _
-                           Width, _
+                           width, _
                            height, _
                            hdc, _
                            sourceX, sourceY, _
@@ -714,19 +709,27 @@ End Function
 ' Shut down the canvas engine
 '=========================================================================
 Public Sub CloseCanvasEngine()
+
     On Error Resume Next
-    Call DeleteDC(canvasHost)
+
+    'Kill the canvas host (new sub by KSNiloc!)
+    Call CNVKillCanvasHost(App.hInstance, canvasHost)
+
+    'Shutdown the canvas engine
     Call CNVShutdown
+
+    'Shutdown the FreeImage library
     Call CloseImage
+
 End Sub
 
 '=========================================================================
 ' Create a canvas
 '=========================================================================
-Public Function CreateCanvas(ByVal Width As Long, ByVal height As Long, Optional ByVal bUseDX As Boolean = True) As Long
+Public Function CreateCanvas(ByVal width As Long, ByVal height As Long, Optional ByVal bUseDX As Boolean = True) As Long
     On Error Resume Next
-    If Width <> 0 And height <> 0 Then
-        CreateCanvas = CNVCreate(canvasHost, Width, height, 1)
+    If width <> 0 And height <> 0 Then
+        CreateCanvas = CNVCreate(canvasHost, width, height, 1)
     Else
         CreateCanvas = -1
     End If
@@ -749,10 +752,22 @@ Public Sub initCanvasEngine()
 
     On Error Resume Next
 
-    'Create an HDC for the canvases
-    canvasHost = CreateCompatibleDC(0)
+    'Create an hdc for the canvases to be based upon (new function by KSNiloc!)
+    canvasHost = CNVCreateCanvasHost(App.hInstance)
 
+    'Check if we were successful
+    If (canvasHost = 0) Then
+        Call MsgBox("Failed to initiate the canvas engine! " & _
+                    "Make sure you are using the latest actkrt3.dll file! " & _
+                    "(September 8th, 2004)")
+        'We can't proceed without the canvasHost, so just end
+        End
+    End If
+
+    'Init the canvas engine
     Call CNVInit
+
+    'Init the FreeImage library
     Call InitImage
 
 End Sub
@@ -771,7 +786,7 @@ End Sub
 ' Draw an image onto a canvas
 '=========================================================================
 Public Sub drawImageCNV( _
-                           ByVal filename As String, _
+                           ByVal fileName As String, _
                            ByVal x As Long, _
                            ByVal y As Long, _
                            ByVal cnv As Long _
@@ -782,13 +797,13 @@ Public Sub drawImageCNV( _
     'Get the canvas' HDC
     Dim hdc As Long
     hdc = CanvasOpenHDC(cnv)
-    
+
     'Draw the image onto the canvas
-    Call drawImage(filename, x, y, hdc)
-    
+    Call drawImage(fileName, x, y, hdc)
+
     'Close the canvas' HDC
     Call CanvasCloseHDC(cnv, hdc)
-    
+
 End Sub
 
 '=========================================================================

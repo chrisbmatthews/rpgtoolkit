@@ -915,10 +915,10 @@ Private Sub Form_Resize()
     On Error Resume Next
     'Set a minimum width and height relative to the arena width and height
     If Me.height <= arena.height + 1000 Then Me.height = arena.height + 1000
-    If Me.Width <= arena.Width + 600 Then Me.Width = arena.Width + 600
+    If Me.width <= arena.width + 600 Then Me.width = arena.width + 600
         
     'The position
-    arena.Left = ((Me.Width - arena.Width) / 2) - 55
+    arena.Left = ((Me.width - arena.width) / 2) - 55
     arena.Top = (Me.height - arena.height) / 2 - 250
 End Sub
 '========================================================================
@@ -944,10 +944,10 @@ End Sub
 Private Sub sizeform()
     On Error GoTo ErrorHandler
     'Resize the arena
-    arena.Width = Screen.TwipsPerPixelX * animationList(activeAnimationIndex).theData.animSizeX
+    arena.width = Screen.TwipsPerPixelX * animationList(activeAnimationIndex).theData.animSizeX
     arena.height = Screen.TwipsPerPixelY * animationList(activeAnimationIndex).theData.animSizeY
     'Resize the form
-    Me.Width = arena.Width + 500
+    Me.width = arena.width + 500
     Me.height = arena.height + 500
     'Redraw the frame
     Call DrawFrame(animationList(activeAnimationIndex).theData.animCurrentFrame)
