@@ -3608,10 +3608,10 @@ End Sub
 
 Public Sub CBDrawImageHDC(ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal hdc As Long)
     On Error Resume Next
-    Call drawImage(file, x, y, hdc)
+    Call drawImage(PakLocate(projectPath & bmpPath & file), x, y, hdc)
 End Sub
 
 Public Sub CBDrawSizedImageHDC(ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal hdc As Long)
     On Error Resume Next
-    Call DrawSizedImage(file, x, y, width, height, hdc)
+    Call DrawSizedImage(PakLocate(projectPath & bmpPath & file), x, y, width, height, hdc)
 End Sub

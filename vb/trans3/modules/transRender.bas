@@ -1487,7 +1487,7 @@ End Sub
 ' Init the DirectX window
 '=========================================================================
 Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testingPRG As Boolean)
-    
+
     On Error Resume Next
 
     'Use DirectX
