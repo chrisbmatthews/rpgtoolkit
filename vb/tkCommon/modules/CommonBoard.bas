@@ -196,6 +196,7 @@ Public Sub dimensionItemArrays()
         #If isToolkit = 0 Then
             ReDim Preserve itemMem(ub)
             ReDim Preserve itmPos(ub)
+            ReDim Preserve itemSprites(ub)
         #End If
 
     End With
@@ -607,7 +608,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
     Open filename For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT BOARD")    'Filetype
         Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 3)    'Minor version (ie 2.2 new type, allowing large boards)
+        Call BinWriteInt(num, 2)    'Minor version (ie 2.2 new type, allowing large boards)
         Call BinWriteInt(num, 1)
         Call BinWriteString(num, "NOCODE")            'No reg code
 
@@ -767,7 +768,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                 GoTo ver2oldboard
             End If
         Close num
-    
+
         Open fileOpen For Binary As #num
 
             fileHeader$ = BinReadString(num)      'Filetype
@@ -776,10 +777,9 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
             minorVer = BinReadInt(num)      'Minor version (ie 2.0)
             If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit " + fileOpen, , "Unable to open tile": Exit Function
             If minorVer > 2 Then
-                user = MsgBox("This board was created using Version " & CStr(majorVer) & "." & CStr(minorVer) & ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", 4, "Different Version")
-                If user = 7 Then Close #num: Exit Function 'selected no
+                Call MsgBox("There may be trouble opening this board; save it in the editor to resolve this.")
             End If
-            If minorVer <> 2 Then
+            If minorVer < 2 Then
                 Close #num
                 GoTo ver2oldboard
             End If
