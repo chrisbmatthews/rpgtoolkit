@@ -602,7 +602,7 @@ Public Sub Scroll(ByVal direction As SCROLL_TYPE): On Error Resume Next
                 Next y: Next x
                 'Now Copy the top left corner to the bottom right, missing the cut corner.
                 For x = 1 To 32 + 1: For y = 1 To 16 + 1
-                    If tileMem(x, y) <> -1 Then bufTile(x + 32 - 2, y + 16 - 1) = tileMem(x, y)
+                    If isoMaskBmp(x, y) <> -1 Then bufTile(x + 32 - 2, y + 16 - 1) = tileMem(x, y)
                 Next y: Next x
                 
             Case South 'SouthEast for isometrics.
@@ -611,7 +611,7 @@ Public Sub Scroll(ByVal direction As SCROLL_TYPE): On Error Resume Next
                 Next y: Next x
                 'Bottom right > top left.
                 For x = 32 To 64: For y = 16 - 1 To 32
-                    If tileMem(x, y) <> -1 Then bufTile(x - 32 + 2, y - 16 + 1) = tileMem(x, y)
+                    If isoMaskBmp(x, y) <> -1 Then bufTile(x - 32 + 2, y - 16 + 1) = tileMem(x, y)
                 Next y: Next x
                 
             Case East 'NorthEast for isometrics.
@@ -620,7 +620,7 @@ Public Sub Scroll(ByVal direction As SCROLL_TYPE): On Error Resume Next
                 Next y: Next x
                 'Top right > bottom left.
                 For x = 32 To 64: For y = 1 To 16 + 1
-                    If tileMem(x, y) <> -1 Then bufTile(x - 32 + 2, y + 16 - 1) = tileMem(x, y)
+                    If isoMaskBmp(x, y) <> -1 Then bufTile(x - 32 + 2, y + 16 - 1) = tileMem(x, y)
                 Next y: Next x
                 
             Case West 'SouthWest for isometrics.
@@ -629,7 +629,7 @@ Public Sub Scroll(ByVal direction As SCROLL_TYPE): On Error Resume Next
                 Next y: Next x
                 'Bottom left > top right.
                 For x = 1 To 32 + 1: For y = 16 - 1 To 32
-                    If tileMem(x, y) <> -1 Then bufTile(x + 32 - 2, y - 16 + 1) = tileMem(x, y)
+                    If isoMaskBmp(x, y) <> -1 Then bufTile(x + 32 - 2, y - 16 + 1) = tileMem(x, y)
                 Next y: Next x
                 
         End Select
