@@ -3,7 +3,7 @@ RPG TOOLKIT DEVELOPMENT SYSTEM, 3.0 HISTORY
 ===================================================================================================
 
 ===================================================================================================
-RPGToolkit Development System 3.06
+RPGToolkit Development System 3.0.6
 Grand Bug Fix List
 March 14, 2005
 Copyright 2005, Jonathan Hughes (Delano), Colin James Fitzpatrick, Christopher B. Matthews, et al.
@@ -103,12 +103,12 @@ Miscellaneous Items
 
 Corrected
 
-    * Update quick reference -- OC
+    * Update quick reference
     * Crashes for some people during install
     * Help files rewritten
 
 ===================================================================================================
-- END 3.06
+- END 3.0.6
 ===================================================================================================
 
 RPG Toolkit Development System 3.0.5
