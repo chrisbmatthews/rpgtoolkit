@@ -183,7 +183,7 @@ void APIENTRY RPGCInitParser(int setStringAddress)
 //////////////////////////////////////////////////////////////////////////
 // Return a VB string
 //////////////////////////////////////////////////////////////////////////
-inline void returnVbString(inlineString& theString)
+inline void returnVbString(inlineString theString)
 {
 
 	//First change the char* string to vb string format
