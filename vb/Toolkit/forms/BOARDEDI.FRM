@@ -208,10 +208,6 @@ Begin VB.Form boardedit
       Begin VB.Menu sub2 
          Caption         =   "-"
       End
-      Begin VB.Menu dellay 
-         Caption         =   "Delete Layer"
-         Tag             =   "1282"
-      End
       Begin VB.Menu closeditor 
          Caption         =   "Close"
          Tag             =   "1088"
@@ -235,6 +231,16 @@ Begin VB.Form boardedit
       Begin VB.Menu setplyrmnu 
          Caption         =   "Set Player Position"
          Tag             =   "1286"
+      End
+      Begin VB.Menu separator 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuDeleteLayer 
+         Caption         =   "Delete Layer"
+         Tag             =   "1282"
+      End
+      Begin VB.Menu mnuRecursiveFlooding 
+         Caption         =   "Use Recursive Flooding"
       End
    End
    Begin VB.Menu blight 
@@ -790,9 +796,9 @@ End Sub
 
 '==============================================================================
 ' Fill board with selected tile
-' Depreciated 3.0.6: crashes on large boards (>~ 100 x 100) - use gdi instead!
+' Optional from 3.0.6: crashes on large boards (>~ 100 x 100) - use gdi instead!
+' Menu options in tile / board editor
 '==============================================================================
-#If (CODE_OBSOLETE) Then
 Private Sub fillBoard(ByVal x As Long, ByVal y As Long, ByVal l As Long, ByVal tileFile As String, Optional ByVal lastX As Long = -1, Optional ByVal lastY As Long = -1): On Error Resume Next
     
     ' get old tile
@@ -873,7 +879,6 @@ Private Sub fillBoard(ByVal x As Long, ByVal y As Long, ByVal l As Long, ByVal t
     End If
     
 End Sub
-#End If
 
 '========================================================================
 ' change board state {2d/isometric}
@@ -2681,18 +2686,22 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
             Else
                 ' run fill routine
                 'Use gdi version as recursive routine crashes on large boards (3.0.6)
-                'Call fillBoard(xx, yy, _
-                               boardList(activeBoardIndex).currentLayer, _
-                               boardList(activeBoardIndex).selectedTile)
-                               
-                Call gdiFillBoard(xx, yy, _
-                                  boardList(activeBoardIndex).currentLayer, _
-                                  boardList(activeBoardIndex).selectedTile)
-            End If
-            
-        End If
+                If GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then
+                    'User has enabled recursive flooding - when gdi doesn't work.
+                    Call fillBoard(xx, yy, _
+                                   boardList(activeBoardIndex).currentLayer, _
+                                   boardList(activeBoardIndex).selectedTile)
+                Else
+                    'Use gdi if no setting exists (default).
+                    Call gdiFillBoard(xx, yy, _
+                                   boardList(activeBoardIndex).currentLayer, _
+                                   boardList(activeBoardIndex).selectedTile)
+                End If
+                
+            End If '.autotiler
+        End If 'fill tool
     
-    End If
+    End If 'left click
     
     ' right click {show tile info}
     If Button = 2 Then
@@ -2807,6 +2816,72 @@ Private Sub itmmenu_Click(): On Error Resume Next
 End Sub
 
 '========================================================================
+' Board Settings > Delete the current layer
+'========================================================================
+Private Sub mnuDeleteLayer_Click(): On Error Resume Next
+
+    Dim currentLayer As Long, x As Long, y As Long, t As Long
+    currentLayer = boardList(activeBoardIndex).currentLayer
+
+    If MsgBox("Delete all tiles, items and programs on the current layer (layer " & _
+               CStr(currentLayer) & ", no undo)?", _
+               vbOKCancel + vbQuestion) = vbCancel Then Exit Sub
+    
+    With boardList(activeBoardIndex).theData
+        
+        'Clear tiles and shading info.
+        For x = 0 To .bSizeX
+            For y = 0 To .bSizeY
+                    .board(x, y, currentLayer) = 0
+                    .ambientRed(x, y, currentLayer) = 0
+                    .ambientGreen(x, y, currentLayer) = 0
+                    .ambientBlue(x, y, currentLayer) = 0
+                    .tiletype(x, y, currentLayer) = 0
+            Next y
+        Next x
+        .boardTitle(currentLayer) = vbNullString
+        'Clear programs.
+        For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
+            If .progLayer(t) = currentLayer Then
+                .programName(t) = vbNullString
+                .progX(t) = 0
+                .progY(t) = 0
+                .progLayer(t) = 0
+                .progGraphic(t) = vbNullString
+                .progActivate(t) = 0
+                .progVarActivate(t) = vbNullString
+                .progDoneVarActivate(t) = vbNullString
+                .activateInitNum(t) = vbNullString
+                .activateDoneNum(t) = vbNullString
+                .activationType(t) = 0
+            End If
+        Next t
+        'Clear items.
+        For t = 0 To UBound(.itemMulti)
+            If .itmLayer(t) = currentLayer Then
+                .itmName(t) = vbNullString
+                .itmX(t) = 0
+                .itmY(t) = 0
+                .itmLayer(t) = 0
+                .itmActivate(t) = 0
+                .itmVarActivate(t) = vbNullString
+                .itmDoneVarActivate(t) = vbNullString
+                .itmActivateInitNum(t) = vbNullString
+                .itmActivateDoneNum(t) = vbNullString
+                .itmActivationType(t) = 0
+                .itemProgram(t) = vbNullString
+                .itemMulti(t) = vbNullString
+            End If
+        Next t
+    End With
+    
+    'No checks on animated tiles or LUT entries removed - no mechanism!
+    
+    Call boardRedraw
+
+End Sub
+
+'========================================================================
 ' Erase tile, selected via pop-up menu
 '========================================================================
 Private Sub mnuPop_Erase_Click()
@@ -2865,6 +2940,26 @@ Private Sub mnuPop_Type_T_Click(index As Integer)
     ' update tiletype for that tile only
     viewtiletypes boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY
             
+End Sub
+
+'========================================================================
+' Switch to recursive flood method (if gdi doesn't work)
+' Use same setting in tile and board editors
+'========================================================================
+Private Sub mnuRecursiveFlooding_Click(): On Error Resume Next
+
+    mnuRecursiveFlooding.Checked = Not mnuRecursiveFlooding.Checked
+    'Store a key for this setting.
+    
+    If mnuRecursiveFlooding.Checked Then
+        'Enabled - save setting.
+        Call SaveSetting("RPGToolkit3", "Settings", "Recursive Flooding", "1")
+    
+    ElseIf GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then
+        'Disabled - delete the setting if it exists.
+        Call DeleteSetting("RPGToolkit3", "Settings", "Recursive Flooding")
+        
+    End If
 End Sub
 
 Private Sub mnuThreading_Click(): On Error Resume Next
@@ -3008,6 +3103,10 @@ Private Sub Form_Activate(): On Error Resume Next
     If boardList(activeBoardIndex).drawState = 8 Then boardToolSettings 0, 0, 0, 1
     resetLayerList
     ignore = 0
+    
+    'Tick the flood option if entry made.
+    mnuRecursiveFlooding.Checked = False
+    If GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then mnuRecursiveFlooding.Checked = True
     
     ' if open, refresh board objects bar
     If tkMainForm.popButton(3).value = 1 Then tkMainForm.boardToolbar.Objects.Populate (activeBoardIndex)
