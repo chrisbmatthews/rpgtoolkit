@@ -236,7 +236,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     If foundIt = -1 Then
         'Method doesn't exist!
-        If (Not noMethodNotFound) Then
+        If Not (noMethodNotFound) Then
             Call debugger("Error: Method not found!-- " & Text)
         End If
         Exit Sub
@@ -563,15 +563,7 @@ Public Sub moveToStartOfBlock(ByRef prg As RPGCodeProgram)
     ' prg - the rpgcode program (in & out)
     '=========================================================================
 
-    Dim done As Boolean
-    Do Until done
-        Select Case LCase$(GetCommandName(prg.program(prg.programPos)))
-            
-            Case "openblock"
-                done = True
-                Exit Do
-            
-        End Select
+    Do Until (prg.program(prg.programPos) = "{")
         Call processEvent
         prg.programPos = increment(prg)
     Loop

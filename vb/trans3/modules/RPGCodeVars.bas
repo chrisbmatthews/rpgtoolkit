@@ -720,10 +720,10 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
             ' Preform any special effects
             Select Case equal
-                Case "-=": dRes = destNum - dRes
+                Case "-=": dRes = dRes - destbyn
                 Case "+=": dRes = dRes + destNum
                 Case "*=": dRes = dRes * destNum
-                Case "/=": dRes = destNum / dRes
+                Case "/=": dRes = dRes / destNum
                 Case "|=": dRes = dRes Or destNum
                 Case "&=": dRes = dRes And destNum
                 Case "`=": dRes = dRes Xor destNum
