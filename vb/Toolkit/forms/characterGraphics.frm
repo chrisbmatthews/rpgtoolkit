@@ -183,7 +183,7 @@ Begin VB.Form characterGraphics
       End
       Begin VB.Label lblSecond2 
          BackStyle       =   0  'Transparent
-         Caption         =   "Seconds between each frame:"
+         Caption         =   "Seconds between each step:"
          Height          =   495
          Left            =   2760
          TabIndex        =   21
@@ -243,7 +243,7 @@ Begin VB.Form characterGraphics
       Begin VB.Label lblStanding 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
-         Caption         =   "Standing Animations/Graphics"
+         Caption         =   "Idle Animations"
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3240
