@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form grab 
    Caption         =   "Grab Tile"
    ClientHeight    =   6960
@@ -26,7 +26,7 @@ Begin VB.Form grab
    Begin VB.HScrollBar scrHorizontal 
       Height          =   255
       Left            =   120
-      TabIndex        =   10
+      TabIndex        =   19
       TabStop         =   0   'False
       Top             =   5280
       Width           =   8655
@@ -34,7 +34,7 @@ Begin VB.Form grab
    Begin VB.VScrollBar scrVertical 
       Height          =   5175
       Left            =   8760
-      TabIndex        =   9
+      TabIndex        =   18
       TabStop         =   0   'False
       Top             =   120
       Width           =   255
@@ -42,15 +42,32 @@ Begin VB.Form grab
    Begin VB.Frame grabFrame 
       Height          =   1335
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   16
       Top             =   5520
       Width           =   8895
+      Begin VB.CheckBox chkWelcome 
+         Caption         =   "Welcome note"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Left            =   3600
+         TabIndex        =   11
+         Top             =   480
+         Width           =   1335
+      End
       Begin VB.CheckBox chkTrans 
          Height          =   375
          Left            =   840
          Picture         =   "GRAB.frx":0CCA
          Style           =   1  'Graphical
-         TabIndex        =   21
+         TabIndex        =   4
          ToolTipText     =   "Get transparent color"
          Top             =   240
          Width           =   375
@@ -60,7 +77,7 @@ Begin VB.Form grab
          Left            =   3600
          ScaleHeight     =   135
          ScaleWidth      =   135
-         TabIndex        =   19
+         TabIndex        =   22
          ToolTipText     =   "Click to select color"
          Top             =   750
          Width           =   200
@@ -70,7 +87,7 @@ Begin VB.Form grab
          Left            =   2520
          ScaleHeight     =   135
          ScaleWidth      =   135
-         TabIndex        =   18
+         TabIndex        =   21
          ToolTipText     =   "Click to select color"
          Top             =   750
          Width           =   200
@@ -78,7 +95,7 @@ Begin VB.Form grab
       Begin MSComctlLib.StatusBar grabStatus 
          Height          =   255
          Left            =   120
-         TabIndex        =   17
+         TabIndex        =   20
          Top             =   960
          Width           =   8655
          _ExtentX        =   15266
@@ -114,7 +131,7 @@ Begin VB.Form grab
       Begin MSComctlLib.ProgressBar batchProgress 
          Height          =   255
          Left            =   5520
-         TabIndex        =   16
+         TabIndex        =   0
          ToolTipText     =   "Batch Grab Progress"
          Top             =   720
          Width           =   3255
@@ -125,10 +142,10 @@ Begin VB.Form grab
       End
       Begin VB.CommandButton cmdLoadTileEditor 
          Height          =   375
-         Left            =   4920
+         Left            =   5040
          Picture         =   "GRAB.frx":0FD4
          Style           =   1  'Graphical
-         TabIndex        =   15
+         TabIndex        =   13
          ToolTipText     =   "Edit Selected Tile In Tile Editor"
          Top             =   240
          Visible         =   0   'False
@@ -147,7 +164,7 @@ Begin VB.Form grab
          EndProperty
          Height          =   255
          Left            =   2520
-         TabIndex        =   14
+         TabIndex        =   9
          ToolTipText     =   "Offset the grid vertically by 16 pixels"
          Top             =   480
          Width           =   1095
@@ -166,7 +183,7 @@ Begin VB.Form grab
          EndProperty
          Height          =   255
          Left            =   2520
-         TabIndex        =   13
+         TabIndex        =   8
          ToolTipText     =   "Ignore the edge tiles on isometric grabs"
          Top             =   240
          Value           =   1  'Checked
@@ -177,7 +194,7 @@ Begin VB.Form grab
          Left            =   480
          Picture         =   "GRAB.frx":1C9E
          Style           =   1  'Graphical
-         TabIndex        =   12
+         TabIndex        =   6
          ToolTipText     =   "Set isometric mode"
          Top             =   600
          Width           =   375
@@ -187,7 +204,7 @@ Begin VB.Form grab
          Left            =   120
          Picture         =   "GRAB.frx":2968
          Style           =   1  'Graphical
-         TabIndex        =   11
+         TabIndex        =   5
          ToolTipText     =   "Draw gridlines"
          Top             =   600
          Width           =   375
@@ -205,7 +222,7 @@ Begin VB.Form grab
          EndProperty
          Height          =   375
          Left            =   5520
-         TabIndex        =   7
+         TabIndex        =   14
          Top             =   240
          Width           =   1575
       End
@@ -214,7 +231,8 @@ Begin VB.Form grab
          Left            =   840
          ScaleHeight     =   315
          ScaleWidth      =   315
-         TabIndex        =   6
+         TabIndex        =   7
+         TabStop         =   0   'False
          ToolTipText     =   "Transparent color on the image"
          Top             =   600
          Width           =   375
@@ -233,19 +251,21 @@ Begin VB.Form grab
          Left            =   480
          Picture         =   "GRAB.frx":3632
          Style           =   1  'Graphical
-         TabIndex        =   5
+         TabIndex        =   3
          ToolTipText     =   "Reset grid and selection"
          Top             =   240
          Width           =   375
       End
       Begin VB.PictureBox picGrabbed 
+         AutoRedraw      =   -1  'True
          BackColor       =   &H80000005&
          Height          =   560
          Left            =   1320
          ScaleHeight     =   33
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   33
-         TabIndex        =   4
+         TabIndex        =   17
+         TabStop         =   0   'False
          ToolTipText     =   "Tile preview"
          Top             =   360
          Width           =   560
@@ -264,7 +284,7 @@ Begin VB.Form grab
          Left            =   120
          Picture         =   "GRAB.frx":3EFC
          Style           =   1  'Graphical
-         TabIndex        =   3
+         TabIndex        =   2
          ToolTipText     =   "Open graphic"
          Top             =   240
          Width           =   375
@@ -282,7 +302,7 @@ Begin VB.Form grab
          EndProperty
          Height          =   375
          Left            =   7080
-         TabIndex        =   2
+         TabIndex        =   15
          Top             =   240
          Width           =   1695
       End
@@ -299,7 +319,7 @@ Begin VB.Form grab
          EndProperty
          Height          =   255
          Left            =   3840
-         TabIndex        =   20
+         TabIndex        =   12
          Top             =   750
          Width           =   1215
       End
@@ -316,7 +336,7 @@ Begin VB.Form grab
          EndProperty
          Height          =   255
          Left            =   2800
-         TabIndex        =   8
+         TabIndex        =   10
          Top             =   750
          Width           =   735
       End
@@ -331,7 +351,8 @@ Begin VB.Form grab
       ScaleHeight     =   345
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   577
-      TabIndex        =   0
+      TabIndex        =   1
+      TabStop         =   0   'False
       Top             =   120
       Width           =   8655
    End
@@ -427,7 +448,7 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte)
     Dim tileWidth As Integer, tileHeight As Integer, tileMax As Integer
     Dim xTile As Integer, yTile As Integer
     Dim xPixel As Integer, yPixel As Integer
-    Dim X As Integer, Y As Integer
+    Dim x As Integer, y As Integer
     Dim foundPixel As Boolean
     Dim selection As RECT
     
@@ -483,19 +504,19 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte)
             DoEvents        'Big images can slow down...
            
             'Clear the tile memory.
-            For X = 0 To 64
-                For Y = 0 To 32
-                    tileMem(X, Y) = -1
-                Next Y
-            Next X
+            For x = 0 To 64
+                For y = 0 To 32
+                    tileMem(x, y) = -1
+                Next y
+            Next x
             
             'Calculate the pixel co-ordinates of this tile.
             xPixel = (xTile - 1) * (32 / level) + selection.Left
             yPixel = (yTile - 1) * (32 / level) + selection.Top
             foundPixel = False
             
-            For X = 1 To (32 / level)
-                For Y = 1 To (32 / level)
+            For x = 1 To (32 / level)
+                For y = 1 To (32 / level)
                 
                     'Check the pixel is in the form range.
                     'If xPixel + x - 1 <= selection.Right And xPixel + x - 1 >= selection.Left And _
@@ -503,19 +524,19 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte)
                         
                         'Take the pixel from the canvas.
                         'tilemem(x, y) = vbFrmPoint(grabForm, xPixel + x - 1, yPixel + y - 1)
-                        tileMem(X, Y) = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + X - 1, scrVertical.value * 32 + yPixel + Y - 1)
+                        tileMem(x, y) = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + x - 1, scrVertical.value * 32 + yPixel + y - 1)
                         
                     'End If
                     
                     'Set the transparent colour.
-                    If tileMem(X, Y) = openTileEditorDocs(activeTile.indice).transpcolor Then
-                        tileMem(X, Y) = -1
-                    ElseIf tileMem(X, Y) <> grabForm.BackColor Then
+                    If tileMem(x, y) = openTileEditorDocs(activeTile.indice).transpcolor Then
+                        tileMem(x, y) = -1
+                    ElseIf tileMem(x, y) <> grabForm.BackColor Then
                         'We have a pixel - this tile isn't empty.
                         foundPixel = True
                     End If
-                Next Y
-            Next X
+                Next y
+            Next x
             
             'Saving...
             
@@ -576,7 +597,7 @@ Private Sub BatchIsometric(ByVal filename As String)
     Dim rowOffset As Byte, longRow As Integer, shortRow As Integer
     Dim xTile As Integer, yTile As Integer
     Dim xPixel As Integer, yPixel As Integer
-    Dim X As Integer, Y As Integer
+    Dim x As Integer, y As Integer
     Dim foundPixel As Boolean, grabImage As Boolean
     Dim edges As RECT, selection As RECT
 
@@ -601,7 +622,7 @@ Private Sub BatchIsometric(ByVal filename As String)
         selection.Bottom = openImage.pxHeight
         
         'Increase the size of the form
-        grabForm.Width = openImage.twipWidth
+        grabForm.width = openImage.twipWidth
         grabForm.height = openImage.twipHeight
         Call Form_Resize
         
@@ -652,11 +673,11 @@ Private Sub BatchIsometric(ByVal filename As String)
             DoEvents
             
             'Clear the tile memory.
-            For X = 0 To 64
-                For Y = 0 To 32
-                    tileMem(X, Y) = -1
-                Next Y
-            Next X
+            For x = 0 To 64
+                For y = 0 To 32
+                    tileMem(x, y) = -1
+                Next y
+            Next x
             
             'Calculate the pixel co-ordinates of this tile.
             xPixel = (xTile - 1) * 64 + selection.Left
@@ -669,30 +690,30 @@ Private Sub BatchIsometric(ByVal filename As String)
             
             foundPixel = False
             
-            For X = 1 To 64
-                For Y = 1 To 32
+            For x = 1 To 64
+                For y = 1 To 32
                 
                     'Check the pixel is in the form range.
-                    If xPixel + X - 1 <= edges.Right And xPixel + X - 1 >= edges.Left And _
-                        yPixel + Y - 1 <= edges.Bottom And yPixel + Y - 1 >= edges.Top Then
+                    If xPixel + x - 1 <= edges.Right And xPixel + x - 1 >= edges.Left And _
+                        yPixel + y - 1 <= edges.Bottom And yPixel + y - 1 >= edges.Top Then
                         'Take the pixel from the canvas.
                         'tilemem(x, y) = vbFrmPoint(grabForm, xPixel + x - 1, yPixel + y - 1)
-                        tileMem(X, Y) = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + X - 1, scrVertical.value * 32 + yPixel + Y - 1)
+                        tileMem(x, y) = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + x - 1, scrVertical.value * 32 + yPixel + y - 1)
 
 'Call traceString("tilemem(" & x & ", " & y & ") = vbFrmPoint(grabForm," & (xPixel + x - 1) & ", " & (yPixel + y - 1) & ") xPixel=" & xPixel & " yPixel=" & yPixel)
                         
                     End If
                         
                     'Set the transparent colour.
-                    If tileMem(X, Y) = openTileEditorDocs(activeTile.indice).transpcolor Then
-                        tileMem(X, Y) = -1
-                    ElseIf tileMem(X, Y) <> grabForm.BackColor Then
+                    If tileMem(x, y) = openTileEditorDocs(activeTile.indice).transpcolor Then
+                        tileMem(x, y) = -1
+                    ElseIf tileMem(x, y) <> grabForm.BackColor Then
                         'We have a pixel - this tile isn't empty.
                         foundPixel = True
                     End If
                     
-                Next Y
-            Next X
+                Next y
+            Next x
             
             'Saving...
             
@@ -746,6 +767,7 @@ ErrorHandler:
     
 End Sub
 
+
 Private Sub chkGrid_Click(): On Error Resume Next
     '==========================
     'Grid check button
@@ -770,10 +792,10 @@ Private Sub chkIso_Click(): On Error Resume Next
     
     If chkIso.value = 1 Then
         cmdBatch32.Caption = "Batch Isometric"
-        picGrabbed.Width = 66 * Screen.TwipsPerPixelX       'Tile preview window.
+        picGrabbed.width = 66 * Screen.TwipsPerPixelX       'Tile preview window.
     Else
         cmdBatch32.Caption = "Batch Grab 32x32"
-        picGrabbed.Width = 33 * Screen.TwipsPerPixelX
+        picGrabbed.width = 33 * Screen.TwipsPerPixelX
     End If
     
 End Sub
@@ -795,6 +817,15 @@ Private Sub chkTrans_Click(): On Error Resume Next
     If chkTrans.value = 1 Then
         MsgBox LoadStringLoc(970, "Click on the image to select a color for transparency")
     End If
+
+End Sub
+
+Private Sub chkWelcome_Click(): On Error Resume Next
+    '========================
+    'Enable the welcome form.
+    '========================
+    
+    configFile.grabTips = chkWelcome.value
 
 End Sub
 
@@ -929,10 +960,10 @@ Private Sub cmdOpen_Click(): On Error Resume Next
     
     'Set the image info in the status bar:
     grabStatus.Panels(1).Text = "Image: " & antiPath$ & " = " & openImage.pxWidth & "x" & openImage.pxHeight
-    grab.Caption = "Grab Tiles (" + antiPath$ + ")"
+    grab.Caption = "Grab Tiles (" & antiPath$ & ")"
     
     Call vbPicAutoRedraw(grab.grabForm, True)
-    Call DrawImage(filename$(1), 0, 0, vbPicHDC(grab.grabForm))
+    Call drawImage(filename$(1), 0, 0, vbPicHDC(grab.grabForm))
     Call vbPicRefresh(grab.grabForm)
     ChDir (currentDir$)
     
@@ -1099,7 +1130,7 @@ Private Sub Form_Activate(): On Error GoTo ErrorHandler
 'Adapted from tileedit.
 '=============================
     
-    Dim X As Integer, Y As Integer
+    Dim x As Integer, y As Integer
     
     Set activeForm = Me
     
@@ -1120,14 +1151,14 @@ Private Sub Form_Deactivate(): On Error Resume Next
     'Upon activating another form.
     '============================
 
-    Dim X As Integer, Y As Integer
+    Dim x As Integer, y As Integer
     'theData = openTileEditorDocs(activeTile.indice)
     
-    For X = 0 To 64
-        For Y = 0 To 32
-            openTileEditorDocs(activeTile.indice).tileMem(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    For x = 0 To 64
+        For y = 0 To 32
+            openTileEditorDocs(activeTile.indice).tileMem(x, y) = tileMem(x, y)
+        Next y
+    Next x
     
 End Sub
 
@@ -1139,6 +1170,7 @@ Private Sub Form_Load(): On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     grab.tag = 1608         'Assign a name for the editor bar.
     grab.Caption = "Grab Tile (No image)"
+    chkWelcome.value = configFile.grabTips
     
     gridOffsetX = 0
     gridOffsetY = 0
@@ -1151,7 +1183,7 @@ Private Sub Form_Load(): On Error GoTo ErrorHandler
     picGridColor.BackColor = gridColor
     picSelectColor.BackColor = selectionColor
     
-    grab.Left = (Screen.Width - grab.Width) / 2
+    grab.Left = (Screen.width - grab.width) / 2
     grab.Top = (Screen.height - grab.height) / 2
     
     openImage.loaded = 0              'Set the background image to unloaded.
@@ -1165,30 +1197,35 @@ Private Sub Form_Load(): On Error GoTo ErrorHandler
     openTileEditorDocs(activeTile.indice).grabx1 = -1: openTileEditorDocs(activeTile.indice).grabx2 = -1
     openTileEditorDocs(activeTile.indice).graby1 = -1: openTileEditorDocs(activeTile.indice).graby2 = -1
     
-    grabStatus.Panels(1).Width = grabStatus.Width / 2
-    grabStatus.Panels(2).Width = grabStatus.Width / 2
+    grabStatus.Panels(1).width = grabStatus.width / 2
+    grabStatus.Panels(2).width = grabStatus.width / 2
     
     'Welcome message.
     
-    MsgBox "Welcome to the new look tile grabber, which allows you to grab both 2D and " _
-        & "isometric tiles and save them straight into tilesets." _
-        & chr$(13) & chr$(13) _
-        & "  A left click selects a tile that is aligned to the grid." & chr$(13) _
-        & "  A right click selects a tile at that position and aligns the grid to the tile." & chr$(13) _
-        & "  A left drag creates a selection that is aligned to the grid." & chr$(13) _
-        & "  A right drag creates a selection at that position and aligns the grid to the selection." & chr$(13) _
-        & chr$(13) _
-        & "To grab the whole image, clear the selection and hit the Batch button." _
-        & chr$(13) & chr$(13) _
-        & "To change the color of the grid, selection or transparent color click the corresponding color box and " _
-        & "a color dialog window will appear. You can also click the dropper button and choose a color from the image." _
-        & chr$(13) & chr$(13) _
-        & "The ""Ignore Edge Tiles"" check box ignores the tiles around the edge of a square selection in isometric mode." & chr$(13) _
-        & "The ""Grid Offset"" check box vertically offsets the grid by 16 pixels - this can be useful for isometric grabbing." _
-        & chr$(13) & chr$(13) _
-        & "If you encounter any problems please report them on the forums at http://www.rpgtoolkit.com"
-   
-    Exit Sub
+    If chkWelcome.value = 1 Then
+    
+         MsgBox "Welcome to the new look tile grabber, which allows you to grab both 2D and " _
+             & "isometric tiles and save them straight into tilesets." _
+             & chr$(13) & chr$(13) _
+             & "  A left click selects a tile that is aligned to the grid." & chr$(13) _
+             & "  A right click selects a tile and aligns the grid to the tile." & chr$(13) _
+             & "  A left drag creates a selection that is aligned to the grid." & chr$(13) _
+             & "  A right drag creates a selection and aligns the grid to the selection." & chr$(13) _
+             & chr$(13) _
+             & "To grab the whole image, clear the selection and hit Batch." _
+             & chr$(13) & chr$(13) _
+             & "The Dropper lets you to select the transparent color from the image, which appears in the color box below." & chr$(13) _
+             & "Or, to change the color of the grid, selection or transparent color, click the corresponding color box and " _
+             & "a color dialog window will appear." _
+             & chr$(13) & chr$(13) _
+             & "The ""Ignore Edge Tiles"" check box ignores the tiles around the edge of a square selection in isometric mode." & chr$(13) _
+             & "The ""Grid Offset"" check box vertically offsets the grid by 16 pixels - this can be useful for isometric grabbing." _
+             & chr$(13) & chr$(13) _
+             & "If you encounter any problems please report them on the forums at http://www.rpgtoolkit.com"
+        
+         Exit Sub
+    
+    End If
     
 'Begin error handling code:
 ErrorHandler:
@@ -1204,39 +1241,39 @@ Private Sub Form_Resize(): On Error Resume Next
     Dim tileWidth As Single, tileHeight As Single
 
     'Deactivate the redraw whilst we resize.
-    Call vbPicAutoRedraw(grabForm, False)
+    grabForm.AutoRedraw = False
     grab.AutoRedraw = False
     
     'Set the minimum window size.
-    If grab.Width < 9000 Then grab.Width = 9000
+    If grab.width < 9000 Then grab.width = 9000
     If grab.height < 6400 Then grab.height = 6400
     
     'Size the grabForm picture box.
     'The vertical edges of the grabber are 120 twips. The horizontal edges total 510 twips.
     grabForm.Top = 120         'Aligned to top-left corner always.
     grabForm.Left = 120
-    grabForm.Width = grab.Width - (3 * 120)
+    grabForm.width = grab.width - (3 * 120)
     grabForm.height = grab.height - grabFrame.height - 510 - 120
     
     'Centre the toolFrame, align to the bottom:
     grabFrame.Top = grabForm.height + grabForm.Top
-    grabFrame.Left = (grab.Width - grabFrame.Width) / 2
+    grabFrame.Left = (grab.width - grabFrame.width) / 2
     
     scrVertical.Visible = False
     scrHorizontal.Visible = False
     
-    If openImage.loaded Then
+    If openImage.loaded = 1 Then
         'If an image has been loaded and successfully unloaded (will equal 1).
         
-        If openImage.twipWidth <= grabForm.Width Then
-            grabForm.Width = openImage.twipWidth
+        If openImage.twipWidth <= grabForm.width Then
+            grabForm.width = openImage.twipWidth
         Else
             'Image is wider than grabform.
             'Enable the horziontal scroll.
             scrHorizontal.Visible = True
             grabForm.height = grabForm.height - scrHorizontal.height
             
-            grabForm.Width = (Int(grabForm.Width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
+            grabForm.width = (Int(grabForm.width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
         End If
         
         If openImage.twipHeight <= grabForm.height Then
@@ -1246,41 +1283,43 @@ Private Sub Form_Resize(): On Error Resume Next
             'Image is taller than grabform.
             'Enable the vertical scroll.
             scrVertical.Visible = True
-            grabForm.Width = grabForm.Width - scrVertical.Width
+            grabForm.width = grabForm.width - scrVertical.width
             
-            If openImage.twipWidth > grabForm.Width Then
-                grabForm.Width = (Int(grabForm.Width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
+            If openImage.twipWidth > grabForm.width Then
+                grabForm.width = (Int(grabForm.width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
+                scrHorizontal.Visible = True
+                grabForm.height = grabForm.height - scrHorizontal.height
             End If
             
             grabForm.height = (Int(grabForm.height / (Screen.TwipsPerPixelY * 32))) * 32 * Screen.TwipsPerPixelY
         End If
         
-        grabForm.Left = (grab.Width - grabForm.Width) / 2
+        grabForm.Left = (grab.width - grabForm.width) / 2
     End If
               
     'Align the scroll bars:
     scrVertical.Top = grabForm.Top
-    scrVertical.Left = grabForm.Width + grabForm.Left
+    scrVertical.Left = grabForm.width + grabForm.Left
     scrVertical.height = grabForm.height
     scrHorizontal.Top = grabForm.height + grabForm.Top
     scrHorizontal.Left = grabForm.Left
-    scrHorizontal.Width = grabForm.Width
+    scrHorizontal.width = grabForm.width
     
     'This will scroll in tile units (32x32).
-    scrHorizontal.max = (openImage.twipWidth - grabForm.Width) / (Screen.TwipsPerPixelX * 32)
+    scrHorizontal.max = (openImage.twipWidth - grabForm.width) / (Screen.TwipsPerPixelX * 32)
     scrVertical.max = (openImage.twipHeight - grabForm.height) / (Screen.TwipsPerPixelY * 32)
-    scrHorizontal.LargeChange = grabForm.Width / (Screen.TwipsPerPixelX * 32) - 1
+    scrHorizontal.LargeChange = grabForm.width / (Screen.TwipsPerPixelX * 32) - 1
     scrVertical.LargeChange = grabForm.height / (Screen.TwipsPerPixelY * 32) - 1
     'scrHorizontal.value = 0
     'scrVertical.value = 0
     
-    Call vbPicAutoRedraw(grabForm, True)
+    grabForm.AutoRedraw = False
     grab.AutoRedraw = False
     Call grabRedraw                     'Redraw the image.
 
 End Sub
 
-Private Sub grabform_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub grabform_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
 '========================================
 'MouseDown on the image.
 'Action depends on the settings.
@@ -1301,7 +1340,7 @@ On Error GoTo ErrorHandler
         'label, the eye dropper.
    
         'Get the pixel value at the clicked point.
-        openTileEditorDocs(activeTile.indice).transpcolor = vbFrmPoint(grab.grabForm, X, Y)
+        openTileEditorDocs(activeTile.indice).transpcolor = vbFrmPoint(grab.grabForm, x, y)
         
         'Set the transparent colour in the preview window.
         If openTileEditorDocs(activeTile.indice).transpcolor <> -1 Then
@@ -1317,7 +1356,7 @@ On Error GoTo ErrorHandler
     openTileEditorDocs(activeTile.indice).grabx1 = -1: openTileEditorDocs(activeTile.indice).grabx2 = -1
     openTileEditorDocs(activeTile.indice).graby1 = -1: openTileEditorDocs(activeTile.indice).graby2 = -1
 
-    mouseDownX = X: mouseDownY = Y  'For use in mouseUp.
+    mouseDownX = x: mouseDownY = y  'For use in mouseUp.
     
     If button = 1 Then
         'Left button.
@@ -1327,8 +1366,8 @@ On Error GoTo ErrorHandler
         If chkIso.value = 0 Then
             '2D.
             'This sets x,y to top-left corner of the tile clicked.
-            xTile = Int((X - gridOffsetX) / 32): openTileEditorDocs(activeTile.indice).grabx1 = xTile * 32 + gridOffsetX
-            yTile = Int((Y - gridOffsetY) / 32): openTileEditorDocs(activeTile.indice).graby1 = yTile * 32 + gridOffsetY
+            xTile = Int((x - gridOffsetX) / 32): openTileEditorDocs(activeTile.indice).grabx1 = xTile * 32 + gridOffsetX
+            yTile = Int((y - gridOffsetY) / 32): openTileEditorDocs(activeTile.indice).graby1 = yTile * 32 + gridOffsetY
             
             'openTileEditorDocs(activeTile.indice).grabx1 = x - ((x - gridOffsetX) Mod 32) + gridOffsetX
             'openTileEditorDocs(activeTile.indice).graby1 = y - ((y - gridOffsetY) Mod 32) + gridOffsetY
@@ -1337,16 +1376,16 @@ On Error GoTo ErrorHandler
         Else
             'Isometric.
             
-            xTile = Int((X - 32 - gridOffsetX) / 64)
-            yTile = Int((Y - gridOffsetY) / 32)
+            xTile = Int((x - 32 - gridOffsetX) / 64)
+            yTile = Int((y - gridOffsetY) / 32)
             openTileEditorDocs(activeTile.indice).graby1 = yTile * 32 + gridOffsetY
             openTileEditorDocs(activeTile.indice).grabx1 = xTile * 64 + 32 + gridOffsetX
                         
             'openTileEditorDocs(activeTile.indice).grabx1 = x - ((x - 32 - gridOffsetX) Mod 64) + gridOffsetX + 32
             'openTileEditorDocs(activeTile.indice).graby1 = y - ((y - gridOffsetY) Mod 32) + gridOffsetY
             
-            maskX = X - openTileEditorDocs(activeTile.indice).grabx1
-            maskY = Y - openTileEditorDocs(activeTile.indice).graby1
+            maskX = x - openTileEditorDocs(activeTile.indice).grabx1
+            maskY = y - openTileEditorDocs(activeTile.indice).graby1
             
             'Some initial values for the correction.
             dx = 0: dy = 0
@@ -1376,13 +1415,13 @@ On Error GoTo ErrorHandler
         'Align grid.
         If chkIso.value = 0 Then
             '2D.
-            openTileEditorDocs(activeTile.indice).grabx1 = X: openTileEditorDocs(activeTile.indice).graby1 = Y
-            gridOffsetX = X Mod 32: gridOffsetY = Y Mod 32
+            openTileEditorDocs(activeTile.indice).grabx1 = x: openTileEditorDocs(activeTile.indice).graby1 = y
+            gridOffsetX = x Mod 32: gridOffsetY = y Mod 32
         Else
             'Isometric.
             'Y offset puts the left corner of the tile at the mouse-click.
-            openTileEditorDocs(activeTile.indice).grabx1 = X: openTileEditorDocs(activeTile.indice).graby1 = Y - 16
-            gridOffsetX = X Mod 64: gridOffsetY = Y Mod 32
+            openTileEditorDocs(activeTile.indice).grabx1 = x: openTileEditorDocs(activeTile.indice).graby1 = y - 16
+            gridOffsetX = x Mod 64: gridOffsetY = y Mod 32
         End If
         
     End If 'Button
@@ -1394,7 +1433,7 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub grabform_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub grabform_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
 '================================
 'MouseMove on the image: draws the selection square.
 '================================
@@ -1431,38 +1470,38 @@ Private Sub grabform_MouseMove(button As Integer, Shift As Integer, X As Single,
     
     'Same code for both clicks.
         
-    offsetX = X - dragX
-    offsetY = Y - dragY
+    offsetX = x - dragX
+    offsetY = y - dragY
     
     'Sgn returns the sign of the number. Addition keeps mouse inside selection.
     If chkIso.value = 0 Then
-        X = X - (offsetX Mod 32) + (32 * Sgn(offsetX))
+        x = x - (offsetX Mod 32) + (32 * Sgn(offsetX))
     Else
-        X = X - (offsetX Mod 64) + (64 * Sgn(offsetX))
+        x = x - (offsetX Mod 64) + (64 * Sgn(offsetX))
     End If
-    Y = Y - (offsetY Mod 32) + (32 * Sgn(offsetY))
+    y = y - (offsetY Mod 32) + (32 * Sgn(offsetY))
     
     Call vbPicRefresh(grabForm)
     Call vbPicAutoRedraw(grabForm, False)
-    Call vbPicRect(grabForm, dragX, dragY, X, Y, selectionColor)
-    Call vbPicRect(grabForm, dragX - 1, dragY - 1, X + 1, Y + 1, selectionColor)
+    Call vbPicRect(grabForm, dragX, dragY, x, y, selectionColor)
+    Call vbPicRect(grabForm, dragX - 1, dragY - 1, x + 1, y + 1, selectionColor)
     Call vbPicAutoRedraw(grabForm, True)
     
-    openTileEditorDocs(activeTile.indice).grabx2 = X
-    openTileEditorDocs(activeTile.indice).graby2 = Y
+    openTileEditorDocs(activeTile.indice).grabx2 = x
+    openTileEditorDocs(activeTile.indice).graby2 = y
     
     'Update the status bar.
     If chkIso.value = 0 Then
-        tileX = Abs(X - dragX) / 32
-        tileY = Abs(Y - dragY) / 32
+        tileX = Abs(x - dragX) / 32
+        tileY = Abs(y - dragY) / 32
         tileMax = tileX * tileY
     Else
-        tileX = Abs(X - dragX - 32) / 32
-        tileY = Abs(Y - dragY - 16) / 16
+        tileX = Abs(x - dragX - 32) / 32
+        tileY = Abs(y - dragY - 16) / 16
         tileMax = 0 - Int((tileX * tileY) / -2)
     End If
     
-    grabStatus.Panels(2).Text = "Selection: " & dragX & ", " & dragY & " -> " & X & ", " & Y & " = " _
+    grabStatus.Panels(2).Text = "Selection: " & dragX & ", " & dragY & " -> " & x & ", " & y & " = " _
         & tileX & "x" & tileY & " = " & tileMax & " Tiles"
     
     Exit Sub
@@ -1472,7 +1511,7 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub grabForm_MouseUp(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub grabForm_MouseUp(button As Integer, Shift As Integer, x As Single, y As Single)
 '===========================
 'MouseUp on the image.
 'Sets the end of the grab.
@@ -1503,10 +1542,10 @@ Private Sub grabForm_MouseUp(button As Integer, Shift As Integer, X As Single, Y
     
     'Check the bottom-right corner is below the top-left, if not, invert.
     If openTileEditorDocs(activeTile.indice).grabx1 > openTileEditorDocs(activeTile.indice).grabx2 Then
-        X = openTileEditorDocs(activeTile.indice).grabx1: openTileEditorDocs(activeTile.indice).grabx1 = openTileEditorDocs(activeTile.indice).grabx2: openTileEditorDocs(activeTile.indice).grabx2 = X
+        x = openTileEditorDocs(activeTile.indice).grabx1: openTileEditorDocs(activeTile.indice).grabx1 = openTileEditorDocs(activeTile.indice).grabx2: openTileEditorDocs(activeTile.indice).grabx2 = x
     End If
     If openTileEditorDocs(activeTile.indice).graby1 > openTileEditorDocs(activeTile.indice).graby2 Then
-        Y = openTileEditorDocs(activeTile.indice).graby1: openTileEditorDocs(activeTile.indice).graby1 = openTileEditorDocs(activeTile.indice).graby2: openTileEditorDocs(activeTile.indice).graby2 = Y
+        y = openTileEditorDocs(activeTile.indice).graby1: openTileEditorDocs(activeTile.indice).graby1 = openTileEditorDocs(activeTile.indice).graby2: openTileEditorDocs(activeTile.indice).graby2 = y
     End If
     
     Call grabRedraw
@@ -1593,7 +1632,7 @@ Private Sub grabRedraw(): On Error Resume Next
     
     Call vbPicAutoRedraw(grabForm, True)
     
-    Call DrawImage(openImage.filename$, openImage.pxOffsetX, openImage.pxOffsetY, vbPicHDC(grabForm))
+    Call drawImage(openImage.filename$, openImage.pxOffsetX, openImage.pxOffsetY, vbPicHDC(grabForm))
     Call drawGrid
     
     'Now redraw the selection box, if there is one.
@@ -1650,14 +1689,13 @@ Private Sub grabRedraw(): On Error Resume Next
 
 End Sub
 
-Private Sub drawGrid()
+Private Sub drawGrid(): On Error Resume Next
 '=========================================
 'Draw the grid 2D or isometrically.
 'Taken from boardedit, with modifications.
 '=========================================
 
-    On Error Resume Next
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     Dim tilesX As Integer, tilesY As Integer
     
     Call vbPicAutoRedraw(picGrabbed, False)
@@ -1668,40 +1706,40 @@ Private Sub drawGrid()
         ' if isometric
         If chkIso.value = 1 Then
         
-            tilesX = Int((grabForm.Width / Screen.TwipsPerPixelX) / 64)
+            tilesX = Int((grabForm.width / Screen.TwipsPerPixelX) / 64)
             tilesY = Int((grabForm.height / Screen.TwipsPerPixelY) / 16)
             
             'Draw lines: bottom left to top right.
-            X = 0
-            For Y = 0 To tilesY * 32 * 2 Step 32
+            x = 0
+            For y = 0 To tilesY * 32 * 2 Step 32
                 'Call vbPicLine(grabForm, 0, y + offsetY, x + (offsetY * 2), 0, vbQBColor(col))
-                Call vbPicLine(grabForm, 0, Y + gridOffsetY + (gridOffsetX / 2), X + (gridOffsetY * 2) + gridOffsetX, 0, gridColor)
-                X = X + 64
-            Next Y
+                Call vbPicLine(grabForm, 0, y + gridOffsetY + (gridOffsetX / 2), x + (gridOffsetY * 2) + gridOffsetX, 0, gridColor)
+                x = x + 64
+            Next y
                        
             'Draw lines: top left to bottom right.
-            X = 0
-            For Y = tilesY * 32 To -tilesY * 32 Step -32
+            x = 0
+            For y = tilesY * 32 To -tilesY * 32 Step -32
                 'Call vbPicLine(grabForm, 0, y + offsetY, x, tilesY * 32 + offsetY, vbQBColor(col))
-                Call vbPicLine(grabForm, 0, Y + gridOffsetY - (gridOffsetX / 2), X + gridOffsetX, tilesY * 32 + gridOffsetY, gridColor)
-                X = X + 64
-            Next Y
+                Call vbPicLine(grabForm, 0, y + gridOffsetY - (gridOffsetX / 2), x + gridOffsetX, tilesY * 32 + gridOffsetY, gridColor)
+                x = x + 64
+            Next y
         
         ' if 2d
         Else
         
-            tilesX = Int((grab.Width / Screen.TwipsPerPixelX) / 32)
+            tilesX = Int((grab.width / Screen.TwipsPerPixelX) / 32)
             tilesY = Int((grab.height / Screen.TwipsPerPixelY) / 32)
         
             ' draw 2D grid lines
             'Vertical.
-            For X = 0 To tilesX * 32 Step 32
-                Call vbPicLine(grabForm, X + gridOffsetX, 0, X + gridOffsetX, tilesY * 32, gridColor)
-            Next X
+            For x = 0 To tilesX * 32 Step 32
+                Call vbPicLine(grabForm, x + gridOffsetX, 0, x + gridOffsetX, tilesY * 32, gridColor)
+            Next x
             'Horizontal.
-            For Y = 0 To tilesY * 32 Step 32
-                Call vbPicLine(grabForm, 0, Y + gridOffsetY, tilesX * 32, Y + gridOffsetY, gridColor)
-            Next Y
+            For y = 0 To tilesY * 32 Step 32
+                Call vbPicLine(grabForm, 0, y + gridOffsetY, tilesX * 32, y + gridOffsetY, gridColor)
+            Next y
             
         End If
         
@@ -1711,77 +1749,72 @@ Private Sub drawGrid()
 
 End Sub
 
-Private Sub drawTile(): On Error GoTo ErrorHandler
+Private Sub drawTile(): On Error Resume Next
 '===========================================
 'Draws the selected tile in the preview box.
 'Draws first tile in selection (if more than one).
 '===========================================
 
     
-    Dim X As Integer, Y As Integer, pixel As Long
+    Dim x As Integer, y As Integer, pixel As Long
     
-    Call vbPicAutoRedraw(picGrabbed, True)
+    picGrabbed.AutoRedraw = True
 
     If chkIso.value = 0 Then
         '2D.
         
         
-        For X = 0 To 31
-            For Y = 0 To 31
+        For x = 0 To 31
+            For y = 0 To 31
                 
                 'Get the colour value at the pixel.
                 'pixel = vbFrmPoint(grab.grabForm, openTileEditorDocs(activeTile.indice).grabx1 + x, openTileEditorDocs(activeTile.indice).graby1 + y)
-                pixel = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + openTileEditorDocs(activeTile.indice).grabx1 + X, scrVertical.value * 32 + openTileEditorDocs(activeTile.indice).graby1 + Y)
+                pixel = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + openTileEditorDocs(activeTile.indice).grabx1 + x, scrVertical.value * 32 + openTileEditorDocs(activeTile.indice).graby1 + y)
                 
                 'Set the transparent colour as -1.
                 If pixel = openTileEditorDocs(activeTile.indice).transpcolor Then pixel = -1
                 
                 'Draw the tile into the preview window at the at the top.
                 If pixel <> -1 Then
-                    Call vbPicPSet(picGrabbed, X, Y, pixel)
+                    Call vbPicPSet(picGrabbed, x, y, pixel)
                 End If
                 
                 'Set the pixel in tilemem.
-                tileMem(X + 1, Y + 1) = pixel
+                tileMem(x + 1, y + 1) = pixel
                 
-            Next Y
-        Next X
+            Next y
+        Next x
         
     Else
         'Isometric.
-        For X = 0 To 63
-            For Y = 0 To 31
+        For x = 0 To 63
+            For y = 0 To 31
                 
                 'Get the colour value at the pixel.
                 'pixel = vbFrmPoint(grab.grabForm, openTileEditorDocs(activeTile.indice).grabx1 + x, openTileEditorDocs(activeTile.indice).graby1 + y)
-                pixel = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + openTileEditorDocs(activeTile.indice).grabx1 + X, scrVertical.value * 32 + openTileEditorDocs(activeTile.indice).graby1 + Y)
+                pixel = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + openTileEditorDocs(activeTile.indice).grabx1 + x, scrVertical.value * 32 + openTileEditorDocs(activeTile.indice).graby1 + y)
                 
                 'Set the transparent colour as -1.
                 If pixel = openTileEditorDocs(activeTile.indice).transpcolor Then pixel = -1
                 
                 'Draw the tile into the preview window at the at the top.
                 'Mask off the corners using the mask.
-                If pixel <> -1 And isoMaskBmp(X + 1, Y + 1) = 0 Then
-                    Call vbPicPSet(picGrabbed, X, Y, pixel)
+                If pixel <> -1 And isoMaskBmp(x + 1, y + 1) = 0 Then
+                    Call vbPicPSet(picGrabbed, x, y, pixel)
                 Else
                     'White pixel.
-                    Call vbPicPSet(picGrabbed, X, Y, vbQBColor(15))
+                    Call vbPicPSet(picGrabbed, x, y, vbQBColor(15))
                 End If
                 
-                tileMem(X + 1, Y + 1) = pixel
+                tileMem(x + 1, y + 1) = pixel
                
-            Next Y
-        Next X
+            Next y
+        Next x
         
     End If 'chkIso.value
     
     Call vbPicRefresh(picGrabbed)
-    'Call vbPicAutoRedraw(picGrabbed, True)
+    'picGrabbed.AutoRedraw = True
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
