@@ -49,12 +49,15 @@ Public newPlyrName As String              'what newplyr has done
 ' Restore a character
 '=========================================================================
 Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal restoreLev As Boolean)
-    On Error GoTo errorhandler
+
+    On Error Resume Next
+
     If number < 0 Or number > 4 Then Exit Sub
+
     Call openchar(file$, playerMem(number))
+
     'Initialize this character:
-    playerListAr$(number) = playerMem(number).charname$ 'Save player handle
-    'MsgBox charname$(number)
+    playerListAr$(number) = playerMem(number).charname$
     playerFile$(number) = file$
     
     'change player graphics...
@@ -102,11 +105,6 @@ Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal re
         End If
     End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
 '=========================================================================
