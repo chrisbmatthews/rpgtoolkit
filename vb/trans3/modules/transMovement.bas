@@ -1681,10 +1681,20 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
                 ".loopFrame=" & pPos(pNum).loopFrame & _
                 " topX=" & topX & " topY=" & topY)
     
-                
+    'Change direction now in case we're going to be walking against a wall.
+    Select Case pendingPlayerMovement(pNum).direction
+        Case MV_NORTH: pPos(pNum).stance = "walk_n"
+        Case MV_SOUTH: pPos(pNum).stance = "walk_s"
+        Case MV_EAST: pPos(pNum).stance = "walk_e"
+        Case MV_WEST: pPos(pNum).stance = "walk_w"
+        Case MV_NE: pPos(pNum).stance = "walk_ne"
+        Case MV_NW: pPos(pNum).stance = "walk_nw"
+        Case MV_SE: pPos(pNum).stance = "walk_se"
+        Case MV_SW: pPos(pNum).stance = "walk_sw"
+    End Select
+    
     'Ok, we have to insert the new fractional co-ords into a
     'test pos to see if we can move this frame.
-    
     testPos = pPos(pNum)
     testPend = pendingPlayerMovement(pNum)
     
@@ -1707,20 +1717,14 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
     'Shift the screen drawing co-ords if needed.
     Select Case pendingPlayerMovement(pNum).direction
         Case MV_NORTH
-            testPos.stance = "walk_n"
-            If checkScrollNorth(pNum) Then topY = topY - moveFraction   'Call scrollDown(moveFraction)
+            If checkScrollNorth(pNum) Then topY = topY - moveFraction
         Case MV_SOUTH
-            testPos.stance = "walk_s"
-            If checkScrollSouth(pNum) Then topY = topY + moveFraction   'Call scrollUp(moveFraction)
+            If checkScrollSouth(pNum) Then topY = topY + moveFraction
         Case MV_EAST
-            testPos.stance = "walk_e"
-            If checkScrollEast(pNum) Then topX = topX + moveFraction    'Call scrollLeft(moveFraction)
+            If checkScrollEast(pNum) Then topX = topX + moveFraction
         Case MV_WEST
-            testPos.stance = "walk_w"
-            If checkScrollWest(pNum) Then topX = topX - moveFraction    'Call scrollRight(moveFraction)
+            If checkScrollWest(pNum) Then topX = topX - moveFraction
         Case MV_NE
-            testPos.stance = "walk_ne"
-            'Call scrollDownLeft(moveFraction, checkScrollEast(pNum), checkScrollNorth(pNum))
             If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
                 If checkScrollEast(pNum) Then topX = topX + moveFraction / 2
                 If checkScrollNorth(pNum) Then topY = topY - moveFraction / 2
@@ -1728,10 +1732,7 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
                 If checkScrollEast(pNum) Then topX = topX + moveFraction
                 If checkScrollNorth(pNum) Then topY = topY - moveFraction
             End If
-
         Case MV_NW
-            testPos.stance = "walk_nw"
-            'Call scrollDownRight(moveFraction, checkScrollWest(pNum), checkScrollNorth(pNum))
             If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
                 If checkScrollWest(pNum) Then topX = topX - moveFraction / 2
                 If checkScrollNorth(pNum) Then topY = topY - moveFraction / 2
@@ -1740,8 +1741,6 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
                 If checkScrollNorth(pNum) Then topY = topY - moveFraction
             End If
         Case MV_SE
-            testPos.stance = "walk_se"
-            'Call scrollUpLeft(moveFraction, checkScrollEast(pNum), checkScrollSouth(pNum))
             If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
                 If checkScrollEast(pNum) Then topX = topX + moveFraction / 2
                 If checkScrollSouth(pNum) Then topY = topY + moveFraction / 2
@@ -1750,8 +1749,6 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
                 If checkScrollSouth(pNum) Then topY = topY + moveFraction
             End If
         Case MV_SW
-            testPos.stance = "walk_sw"
-            'Call scrollUpRight(moveFraction, checkScrollWest(pNum), checkScrollSouth(pNum))
             If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
                 If checkScrollWest(pNum) Then topX = topX - moveFraction / 2
                 If checkScrollSouth(pNum) Then topY = topY + moveFraction / 2
