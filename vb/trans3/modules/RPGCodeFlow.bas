@@ -98,8 +98,8 @@ Public Sub debugger(ByVal Text As String)
 
     If (Not checkErrorHandling()) Then
         If (debugYN = 1) Then
-            Call debugwin.Show
-            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
+            Call debugWin.Show
+            debugWin.buglist.Text = debugWin.buglist.Text & Text & vbCrLf
             Call processEvent
         End If
     End If
@@ -350,197 +350,149 @@ End Sub
 '=========================================================================
 ' Tests if a program is to be run and returns whether it was
 '=========================================================================
-Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
+Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
+
+'Called after a movement loop, or during idling when the activation key is pressed.
+'If after movement loop, the passPos is the target co-ords: if movement was blocked,
+'the target co-ords will be different from the pos co-ords.
+'If called during idling, the current pos location is passed in.
 
     On Error Resume Next
 
-    Dim xx As Double
-    Dim yy As Double
-    Dim runIt As Long
-    Dim t As Long
-
-    Dim toRet As Boolean
-
-    'Copy structure as contents may change
-    Dim pos As PLAYER_POSITION
-    pos = passPos
-
-    If usingPixelMovement() Then
-        'If we're using pixel movement then round the coordinates
-        pos = roundCoords(pos, pendingPlayerMovement(selectedPlayer).direction)
-    End If
+    Dim passX As Double, passY As Double            'Isometrically converted passed x,y.
+    Dim roundPos As PLAYER_POSITION                 'Rounded co-ords for pixel checks.
+    Dim actPos As PLAYER_POSITION                   'Co-ords altered for activation checks.
+    Dim objX As Double, objY As Double              'Isometrically converted prg/item x,y.
+    Dim toRet As Boolean, t As Long
+    
+    'Create rounded co-ords for pixel movement.
+    roundPos = roundCoords(passpos, pendingPlayerMovement(selectedPlayer).direction)
+    'Create incremented co-ords for activation checks.
+    actPos = activationCoords(passpos, roundPos)
+    'Create isometrically converted versions of the passed pos.
+    Call isoCoordTransform(passpos.x, passpos.y, passX, passY)
+    
+    'Call traceString("PRGTest: ply.x=" & pPos(selectedPlayer).x & _
+                               " ply.y=" & pPos(selectedPlayer).y & _
+                               " pos.x=" & roundpos.x & " pos.y=" & roundpos.y)
 
     'First, test for programs:
     For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
-        If boardList(activeBoardIndex).theData.programName$(t) <> "" Then
         
-            runIt = 1
+        If LenB(boardList(activeBoardIndex).theData.programName(t)) <> 0 Then
             'OK, how is it activated?
             If boardList(activeBoardIndex).theData.activationType(t) = 0 Then
-            
-                'we step on it.
-                If val(boardList(activeBoardIndex).theData.progX(t)) = pos.x And _
-                    val(boardList(activeBoardIndex).theData.progY(t)) = pos.y And _
-                    val(boardList(activeBoardIndex).theData.progLayer(t)) = pos.l Then
-                    'all right! we stepped on it!
+                'We step on it: check we're on or moving to the tile.
+                'We've rounded roundpos for pixel movement.
+                
+                If _
+                    boardList(activeBoardIndex).theData.progX(t) = roundPos.x And _
+                    boardList(activeBoardIndex).theData.progY(t) = roundPos.y And _
+                    boardList(activeBoardIndex).theData.progLayer(t) = passpos.l Then
+                    
+                    'The locations match - run prg, if its' conditions are right.
+                    
                     toRet = runPrgYN(t)
+                    
                 End If
                 
             ElseIf boardList(activeBoardIndex).theData.activationType(t) = 1 Then
-            
-                'ah! we press the activation key!
-                xx = pos.x
-                yy = pos.y
+                'Activation key.
                 
                 'Check if we're facing in the right direction, and we're one step
                 'away from the tile. For pixel movement, this corresponds to standing
                 'the minimum fraction away, or on.
-                'No cases for diagonals, or isometrics! Use pending.direction?
                 
-                'Edit: now using passPos rather than the pos from RoundCoords()
-                Select Case UCase(pos.stance)
-                    Case "WALK_N"
-                        xx = pos.x
-                        If usingPixelMovement Then
-                            yy = Round(passPos.y)
-                        Else
-                            yy = passPos.y - 1
+                Call isoCoordTransform(boardList(activeBoardIndex).theData.progX(t), _
+                                       boardList(activeBoardIndex).theData.progY(t), _
+                                       objX, objY)
+                                       
+                'Check against the activation-altered co-ords and the converted passed co-ords.
+                
+                If boardIso() Then
+                
+                    If ( _
+                        objX = actPos.x And _
+                        objY = actPos.y And _
+                        boardList(activeBoardIndex).theData.progLayer(t) = passpos.l) _
+                    Or ( _
+                        Abs(objX - passX) <= 1 / 2 And _
+                        Abs(objY - passY) <= 1 / 2 And _
+                        boardList(activeBoardIndex).theData.progLayer(t) = passpos.l) _
+                    Then
+                        'If [Next to] Or [On] tile.
+                            
+                        If (lastKeyPressed() = mainMem.Key) Then
+                            'yes, we pressed the right key
+                            toRet = runPrgYN(t)
                         End If
-                        
-                    Case "WALK_S"
-                        xx = pos.x
-                        yy = Int(passPos.y) + 1
-                        
-                    Case "WALK_E"
-                        xx = Int(passPos.x) + 1
-                        yy = -Int(-passPos.y)
-                        
-                    Case "WALK_W"
-                        xx = -Int(-passPos.x) - 1
-                        yy = -Int(-passPos.y)
-                End Select
-                
-                If ( _
-                        boardList(activeBoardIndex).theData.progX(t) = xx _
-                    And boardList(activeBoardIndex).theData.progY(t) = yy _
-                    And boardList(activeBoardIndex).theData.progLayer(t) = pos.l) _
-                Or ( _
-                        boardList(activeBoardIndex).theData.progX(t) = pos.x _
-                    And boardList(activeBoardIndex).theData.progY(t) = pos.y _
-                    ) Then
-                    
-                    'If [Next to] Or [On] tile.
-                        
-                    If (lastKeyPressed() = mainMem.Key) Then
-                        'yes, we pressed the right key
-                        toRet = runPrgYN(t)
                     End If
-                End If
+                
+                Else
+                    '2D. activation co-ords and rounded co-ords.
+                    If ( _
+                        objX = actPos.x And _
+                        objY = actPos.y And _
+                        boardList(activeBoardIndex).theData.progLayer(t) = passpos.l) _
+                    Or ( _
+                        objX = roundPos.x And _
+                        objY = roundPos.y And _
+                        boardList(activeBoardIndex).theData.progLayer(t) = passpos.l) _
+                    Then
+                        'If [Next to] Or [On] tile.
+                            
+                        If (lastKeyPressed() = mainMem.Key) Then
+                            'yes, we pressed the right key
+                            toRet = runPrgYN(t)
+                        End If
+                    End If
+                
+                End If 'boardIso
                 
             End If '(.activationType(t) = 0)
         End If '(.programName$(t) <> "")
     Next t
 
-    'If usingPixelMovement() Then
-    '    'If we're using pixel movement then round item
-    '    'coordinates and backup the old ones
-    '    ReDim tempItems(maxItem) As PLAYER_POSITION
-    '    For t = 0 To maxItem
-    '        tempItems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
-    '    Next t
-    'End If
-    
-    ReDim tempItems(maxItem) As PLAYER_POSITION
-
     'Ouch.  Now test for items:
     For t = 0 To maxItem
     
-        tempItems(t) = itmPos(t)
-        
-        If usingPixelMovement() Then
-            tempItems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
-        End If
+        Call isoCoordTransform(itmPos(t).x, itmPos(t).y, objX, objY)
     
-        If itemMem(t).BoardYN = 1 Then  'yeah, it's a board item
-            If boardList(activeBoardIndex).theData.itmName$(t) <> "" Then
-                runIt = 1
-                'OK, how is it activated?
+        If itemMem(t).BoardYN = 1 Then  'Board item.
+            If LenB(boardList(activeBoardIndex).theData.itmName(t)) <> 0 Then
+                'The item exists.
+                
                 If boardList(activeBoardIndex).theData.itmActivationType(t) = 0 Then
-                    'we step on it.
+                    'We step on it.
                     
-                    If Not (usingPixelMovement) Then
-                        'If _
-                                itmPos(t).x = Int(passPos.x) _
-                            And itmPos(t).y = Int(passPos.y) _
-                            And itmPos(t).l = passPos.l Then
-                            
+                    If (Not usingPixelMovement) Or boardIso() Then
                         If _
-                                Abs(itmPos(t).x - passPos.x) < 1 _
-                            And Abs(itmPos(t).y - passPos.y) < movementSize _
-                            And itmPos(t).l = passPos.l Then
-                            
+                            Abs(objX - passX) < 1 And _
+                            Abs(objY - passY) < 1 And _
+                            itmPos(t).l = passpos.l Then
                             
                             toRet = runItmYN(t)
                         End If
                     Else
+                        'Pixel 2D movement.
                         If _
-                                Abs(itmPos(t).x - passPos.x) < 1 _
-                            And Abs(itmPos(t).y - passPos.y) <= movementSize _
-                            And itmPos(t).l = passPos.l Then
+                            Abs(objX - passX) < 1 And _
+                            Abs(objY - passY) < movementSize And _
+                            itmPos(t).l = passpos.l Then
                         
                             toRet = runItmYN(t)
                         End If
                     End If
                     
-                    'If _
-                    '        tempitems(t).x = pos.x _
-                    '    And tempitems(t).y = pos.y _
-                    '    And tempitems(t).l = pos.l Then
-                    '
-                    '    'all right! we stepped on it!
-                    '    toRet = runItmYN(t)
-                    '
-                    'End If
-                    
                 ElseIf boardList(activeBoardIndex).theData.itmActivationType(t) = 1 Then
                 
-                    'ah! we press the actiavtion key!
-                    xx = pos.x: yy = pos.y
-                    
-                    'Edit: now using passPos rather than the pos from RoundCoords()
-                    
-                    Select Case UCase(pos.stance)
-                        Case "WALK_N"
-                            xx = pos.x
-                            If usingPixelMovement Then
-                                yy = Round(passPos.y)
-                            Else
-                                yy = passPos.y - 1
-                            End If
-                            
-                        Case "WALK_S"
-                            xx = pos.x
-                            yy = Int(passPos.y) + 1
-                            
-                        Case "WALK_E"
-                            xx = Int(passPos.x) + 1
-                            yy = -Int(-passPos.y)
-                            
-                        Case "WALK_W"
-                            xx = -Int(-passPos.x) - 1
-                            yy = -Int(-passPos.y)
-                            
-                    End Select
-
-                    If tempItems(t).x = xx And tempItems(t).y = yy And tempItems(t).l = pos.l Then
-                    
-                    'If _
-                        Abs(tempItems(t).x - xx) <= 1 And _
-                        Abs(tempItems(t).y - yy) <= 1 And _
-                        tempItems(t).l = pos.l Then
+                    If _
+                        Abs(objX - actPos.x) <= 1 And _
+                        Abs(objY - actPos.y) <= 1 And _
+                        itmPos(t).l = passpos.l Then
                     
                         If (lastKeyPressed() = mainMem.Key) Then
-                            'yes, we pressed the right key
+                            'Yes, we pressed the right key.
                             toRet = runItmYN(t)
                         End If
                     End If
@@ -1956,7 +1908,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "ITEMLOCATION":
-            Call ItemLocationRPG(splice$, theProgram) 'get item location
+            Call ItemLocationRPG(splice$, theProgram)   'get item location
             DoSingleCommand = increment(theProgram)
             Exit Function
     
