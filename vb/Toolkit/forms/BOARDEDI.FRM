@@ -1470,7 +1470,7 @@ End Sub
 Public Sub boardGradient(): On Error Resume Next
 
     ' load board gradient form
-    boardgradientdefine.Show vbModal
+    boardGradientDefine.Show vbModal
     
 End Sub
 
@@ -1642,7 +1642,7 @@ Public Sub boardSelectTile(): On Error Resume Next
         configfile.lastTileset$ = tstFile$
         
         ' open tileset form
-        tilesetform.Show vbModal
+        tilesetForm.Show vbModal
 
         ' if no tile selected
         If setFilename$ = "" Then Exit Sub
@@ -2476,30 +2476,30 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single
         ' make sure all menu items are enabled
         With mnuPop_Type_T
             For i = 0 To 5
-                .Item(i).Enabled = True
+                .item(i).Enabled = True
             Next i
         End With
         With mnuPop_Type_L
             For i = 11 To 18
-                .Item(i).Enabled = True
+                .item(i).Enabled = True
             Next i
         End With
         
         ' disable current tile type
-        If boardList(activeBoardIndex).currentTileType < 11 Then mnuPop_Type_T.Item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
-        If boardList(activeBoardIndex).currentTileType >= 11 Then mnuPop_Type_L.Item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
+        If boardList(activeBoardIndex).currentTileType < 11 Then mnuPop_Type_T.item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
+        If boardList(activeBoardIndex).currentTileType >= 11 Then mnuPop_Type_L.item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
         
         ' setup popup menu
         If boardList(activeBoardIndex).theData.bSizeL = 4 Then
             With mnuPop_Type_L
                 For i = 15 To 18
-                    .Item(i).Visible = False
+                    .item(i).Visible = False
                 Next i
             End With
         Else
             With mnuPop_Type_L
                 For i = 15 To 18
-                    .Item(i).Visible = True
+                    .item(i).Visible = True
                 Next i
             End With
         End If
@@ -2822,7 +2822,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
             tstFile$ = configfile.lastTileset$
             
             ' open tileset form
-            tilesetform.Show vbModal
+            tilesetForm.Show vbModal
             
             ' change selected tile
             Call changeSelectedTile(setFilename$)
@@ -3762,10 +3762,12 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
      
     If autoTileset(currentTileset, True) = -1 Then
         'not an autotileset! set it down to close off surrounding autotiles
-        Call drawTile(boardform.hdc, tilePath$ & tst, _
-                    tileX - boardList(activeBoardIndex).topX, tileY - boardList(activeBoardIndex).topY, _
-                    boardList(activeBoardIndex).ambientR, boardList(activeBoardIndex).ambientG, _
-                    boardList(activeBoardIndex).ambientB, False, False, iso, eo)
+        If tst <> "" Then
+            Call drawTile(boardform.hdc, tilePath$ & tst, _
+                        tileX - boardList(activeBoardIndex).topX, tileY - boardList(activeBoardIndex).topY, _
+                        boardList(activeBoardIndex).ambientR, boardList(activeBoardIndex).ambientG, _
+                        boardList(activeBoardIndex).ambientB, False, False, iso, eo)
+        End If
                    
         Call BoardSetTile(tileX, tileY, boardList(activeBoardIndex).currentLayer, tst, boardList(activeBoardIndex).theData)
     Else
