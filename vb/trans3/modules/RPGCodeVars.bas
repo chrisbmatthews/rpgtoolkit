@@ -639,7 +639,12 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                     ' Get the conjuction here
                     conjunctions(tokenIdx) = MathFunction(Text, tokenIdx)
                     ' Get the value of the token
-                    Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram)
+                    Dim bWasVar As Boolean
+                    bWasVar = False
+                    Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram, , bWasVar)
+                    If (bWasVar) Then
+                        valueList(tokenIdx) = "(" & valueList(tokenIdx) & ")"
+                    End If
                     ' If this isn't the first token
                     If ((tokenIdx <> 2) And (tokenIdx <= (number - 2))) Then
                         ' Find a token
@@ -804,7 +809,7 @@ End Sub
 '=========================================================================
 ' Gets the value of the text passed
 '=========================================================================
-Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True) As RPGC_DT
+Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True, Optional ByRef bWasVar As Boolean) As RPGC_DT
 
     On Error Resume Next
 
@@ -860,6 +865,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                 ' Found one!
                 num = numA
             End If
+            bWasVar = True
             getValue = DT_NUM
 
         Case DT_LIT         'LITERAL VARIABLE
@@ -869,6 +875,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                 ' Found one!
                 lit = litA
             End If
+            bWasVar = True
             getValue = DT_LIT
 
         Case DT_STRING      'STRING
