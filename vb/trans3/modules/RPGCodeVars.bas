@@ -418,7 +418,7 @@ End Sub
 '=========================================================================
 ' Determines type of text passed in
 '=========================================================================
-Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True, Optional ByRef isEquation As Boolean) As RPGC_DT
+Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True, Optional ByRef isEquation As Boolean, Optional ByVal dtFallBack As RPGC_DT = DT_STRING) As RPGC_DT
 
     On Error Resume Next
 
@@ -573,7 +573,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
 
     ' If we're still not free of this nightmare then assume string, for
     ' backwards compatibility
-    dataType = DT_STRING
+    dataType = dtFallBack
 
     ' Fin
     Exit Function
@@ -754,11 +754,8 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Else
                     bIsVar(tokenIdx) = True
                 End If
-                valueList(tokenIdx) = replace(valueList(tokenIdx), "(", vbNullString)
             End If
-
-            valueList(tokenIdx) = replace(valueList(tokenIdx), ")", vbNullString)
-
+        
         End If
 
         ' We need to get the data type
@@ -830,7 +827,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                     ' Get the conjuction here
                     conjunctions(tokenIdx) = MathFunction(Text, tokenIdx)
                     ' Get the value of the token
-                    Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram, , bIsVar(tokenIdx))
+                    Call getValue(replace(replace(valueList(tokenIdx), ")", vbNullString), "(", vbNullString), lit, numberUse(tokenIdx), theProgram, , bIsVar(tokenIdx))
                     ' Add the inverse for subtraction
                     If (conjunctions(tokenIdx - 1) = "-") Then
                         conjunctions(tokenIdx - 1) = "+"

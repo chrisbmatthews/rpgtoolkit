@@ -22,71 +22,109 @@ Public errorBranch As String
 Public errorKeep As RPGCodeProgram
 
 '=========================================================================
+' Determine if two 'RPGCodeMethod' structs are equal
+'=========================================================================
+Public Function methodsAreEqual(ByRef Left As RPGCodeMethod, ByRef Right As RPGCodeMethod) As Boolean
+    If (Left.name = Right.name) Then
+        If (Left.lngParams = Right.lngParams) Then
+            If (Left.lngParams) Then
+                Dim i As Long
+                For i = 0 To Left.lngParams
+                    If (Left.dtParams(i) <> Right.dtParams(i)) Then
+                        Exit Function
+                    End If
+                Next i
+            End If
+            methodsAreEqual = True
+        End If
+    End If
+End Function
+
+'=========================================================================
 ' Get the line a method begins on
 '=========================================================================
-Public Function getMethodLine(ByVal name As String, ByRef prg As RPGCodeProgram)
+Public Function getMethodLine(ByRef theMethod As RPGCodeMethod, ByRef prg As RPGCodeProgram, Optional ByRef lngMethodIdx As Long) As Long
 
     On Error Resume Next
 
-    Dim idx As Long                 ' For for loops
-
-    ' Make name all caps
-    name = Trim$(UCase$(name))
+    Dim i As Long, ub As Long
+    ub = UBound(prg.methods)
 
     ' Cycle through all methods in the program
-    For idx = 0 To UBound(prg.methods)
-        If (prg.methods(idx).name = name) Then
+    For i = 0 To ub
+        If (methodsAreEqual(theMethod, prg.methods(i))) Then
             ' Found it!
-            getMethodLine = prg.methods(idx).line
+            lngMethodIdx = i
+            getMethodLine = prg.methods(i).line
             Exit Function
-        ElseIf (idx = UBound(prg.methods)) Then
+        ElseIf (i = ub) Then
             ' Method not in program
             getMethodLine = -1
+            lngMethodIdx = -1
             Exit Function
         End If
-    Next idx
+    Next i
 
 End Function
 
 '=========================================================================
 ' Add a method to a program
 '=========================================================================
-Public Sub addMethodToPrg(ByVal name As String, ByVal line As Long, ByRef prg As RPGCodeProgram)
+Public Sub addMethodToPrg(ByVal strName As String, ByVal strDeclaration As String, ByVal line As Long, ByRef prg As RPGCodeProgram)
 
     On Error Resume Next
 
-    Dim idx As Long                 ' For for loops
-    Dim space As Long               ' Space for entry
+    Dim i As Long, pos As Long
 
-    ' Make name all caps
-    name = Trim$(UCase$(name))
+    ' Prepare a method struct
+    Dim theMethod As RPGCodeMethod
+    theMethod.line = line
 
-    ' Make space invalid
-    space = -1
+    ' Get the method's name
+    theMethod.name = UCase$(strName)
+
+    ' Parse out params
+    Dim brackets As String
+    brackets = GetBrackets(strDeclaration)
+    theMethod.lngParams = CountData(brackets)
+    ReDim theMethod.dtParams(theMethod.lngParams - 1)
+    ReDim theMethod.paramNames(theMethod.lngParams)
+    For i = 0 To theMethod.lngParams - 1
+        theMethod.paramNames(i + 1) = GetElement(brackets, i + 1)
+        Select Case RightB$(theMethod.paramNames(i + 1), 2)
+            Case "!": theMethod.dtParams(i) = DT_NUM
+            Case "$": theMethod.dtParams(i) = DT_LIT
+            Case Else
+                theMethod.paramNames(i + 1) = theMethod.paramNames(i + 1) & "!"
+                theMethod.dtParams(i) = DT_NUM
+        End Select
+    Next i
+
+    ' Make pos invalid
+    pos = -1
 
     ' Cycle through all methods already in the program
-    For idx = 0 To UBound(prg.methods)
-        If (prg.methods(idx).name = name) Then
+    For i = 0 To UBound(prg.methods)
+        If (methodsAreEqual(prg.methods(i), theMethod)) Then
             ' Already in program
             Exit Sub
-        ElseIf (LenB(prg.methods(idx).name) = 0) Then
+        ElseIf (LenB(prg.methods(i).name) = 0) Then
             ' If we haven't found a space
-            If (space = -1) Then
+            If (pos = -1) Then
                 ' This is an empty space
-                space = idx
+                pos = i
             End If
         End If
-    Next idx
+    Next i
 
-    If (space = -1) Then
+    If (pos = -1) Then
         ' If we get here, then there wasn't an empty space
         ReDim Preserve prg.methods(UBound(prg.methods) + 1)
-        space = UBound(prg.methods)
+        pos = UBound(prg.methods)
     End If
 
-    ' Now record the method
-    prg.methods(space).name = name
-    prg.methods(space).line = line
+    ' Write in the data
+    prg.methods(pos) = theMethod
 
 End Sub
 
@@ -318,14 +356,14 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                         ' There's a line here
                         If (openProgram.program(moveLine) = "{") Then
                             ' Implementation is here
-                            Call addMethodToPrg(strClass & "::" & GetMethodName(openProgram.program(a)), a, openProgram)
+                            Call addMethodToPrg(strClass & "::" & GetMethodName(openProgram.program(a)), openProgram.program(a), a, openProgram)
                         End If
                         ' Either way, exit this loop
                         Exit Do
                     End If
                 Loop
             Else
-                Call addMethodToPrg(GetMethodName(openProgram.program(a)), a, openProgram)
+                Call addMethodToPrg(GetMethodName(openProgram.program(a)), openProgram.program(a), a, openProgram)
             End If
         ElseIf (ucl = "{") Then
             If (StrPtr(strClass)) Then
@@ -403,6 +441,7 @@ Public Sub includeProgram(ByRef prg As RPGCodeProgram, ByRef strFile As String)
         If (LenB(toInclude.methods(idx).name)) Then
             Call addMethodToPrg( _
                                     toInclude.methods(idx).name, _
+                                    toInclude.program(toInclude.methods(idx).line), _
                                     toInclude.methods(idx).line + prg.Length + 2, _
                                     prg)
         End If

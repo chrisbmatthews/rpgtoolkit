@@ -28,10 +28,13 @@ End Type
 '=========================================================================
 ' A method
 '=========================================================================
-Private Type RPGCodeMethod
+Public Type RPGCodeMethod
     name As String                          ' Name of the method
     line As Long                            ' Line method is defined on
     override As String                      ' Name used in inheritance situations
+    dtParams() As RPGC_DT                   ' Types of params
+    lngParams As Long                       ' Count of params
+    paramNames() As String                  ' Names of parameters
 End Type
 
 '=========================================================================
@@ -84,6 +87,18 @@ Public Type RPGCodeProgram
     strict As Boolean                       ' Is the program strict?
     strCommands() As String                 ' Commands found on lines
 End Type
+
+'=========================================================================
+' RPGCode data types
+'=========================================================================
+Public Enum RPGC_DT
+    DT_VOID = -1                            ' Can't tell
+    DT_NUM                                  ' Numerical variable
+    DT_LIT                                  ' Literal variable
+    DT_STRING                               ' String
+    DT_NUMBER                               ' Number
+    DT_REFERENCE                            ' Reference to a var
+End Enum
 
 '=========================================================================
 ' Check a method override name
@@ -674,7 +689,7 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
     If Not (internalClass) Then
 
         ' Get the method's name
-        origName = GetMethodName(removeClassName(Text))
+        origName = GetMethodName(Text)
         If (LenB(overrideName) = 0) Then
             methodName = UCase$(theClass) & "::" & UCase$(origName)
         Else
@@ -682,7 +697,17 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
         End If
 
         ' Get line method starts on
-        theLine = getMethodLine(methodName, prg)
+        Dim theMethod As RPGCodeMethod, params() As parameters, number As Long
+        params = getParameters(Text, prg, number)
+        theMethod.lngParams = number
+        theMethod.name = methodName
+        Dim i As Long
+        For i = 1 To number
+            theMethod.dtParams(i - 1) = params(i - 1).dataType
+        Next i
+        theLine = getMethodLine(theMethod, prg, i)
+        theMethod = prg.methods(i)
+        theMethod.name = removeClassName(theMethod.name)
 
         ' Check if we errored out
         If ((theLine = -1) And (Not (needNotExist))) Then
@@ -705,11 +730,11 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
 
     ' Find an open position
     For idx = 0 To UBound(scope.methods)
-        If (scope.methods(idx).name = UCase$(origName)) Then
+        If (methodsAreEqual(theMethod, scope.methods(idx))) Then
             ' Illegal redifinition
-            If Not (noErrorOnRedefine) Then
-                Call debugger("Illegal redefinition of method " & origName & " -- " & Text)
-            End If
+            ' If Not (noErrorOnRedefine) Then
+            '     Call debugger("Illegal redefinition of method " & origName & " -- " & Text)
+            ' End If
             Exit Sub
 
         ElseIf (LenB(scope.methods(idx).name) = 0) Then
@@ -728,8 +753,7 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
     End If
 
     ' Add in the data
-    scope.methods(pos).line = theLine
-    scope.methods(pos).name = UCase$(origName)
+    scope.methods(pos) = theMethod
     scope.methods(pos).override = overrideName
 
 End Sub
@@ -1431,7 +1455,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
                 Else
 
-                    If (isMethodMember(cLine, hClass, prg, False)) Then
+                    If (isMethodMember(cmdName, hClass, prg, False)) Then
                         Call debugger("Error: Method " & cLine & " is not avaliable from outside " & g_objects(hClass).strInstancedFrom & "; " & Text)
                     Else
                         Call debugger("Error: Method " & cLine & " is not a member of " & g_objects(hClass).strInstancedFrom & "; " & Text)

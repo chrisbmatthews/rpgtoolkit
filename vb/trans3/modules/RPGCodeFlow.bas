@@ -48,15 +48,6 @@ Public Type RPGCODE_RETURN              ' Rpgcode return structure
     usingReturnData As Boolean          '   Is the return data being used? (in)
 End Type
 
-Public Enum RPGC_DT                     ' Rpgcode data type enum
-    DT_VOID = -1                        '   Can't tell
-    DT_NUM                              '   Numerical variable
-    DT_LIT                              '   Literal variable
-    DT_STRING                           '   String
-    DT_NUMBER                           '   Number
-    DT_REFERENCE                        '   Reference to a var
-End Enum
-
 '=========================================================================
 ' Call a method in a class
 '=========================================================================
@@ -148,12 +139,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     On Error Resume Next
 
-    Dim parameterList(100) As String
-    Dim destList(100) As String
-
-    Dim mName As String, includeFile As String, methodName As String, oldPos As Long, foundIt As Long
-    Dim t As Long, test As String, itis As String, canDoIt As Boolean
-
+    Dim mName As String
     If (LenB(commandName) = 0) Then
         mName = GetCommandName(Text)
     Else
@@ -161,7 +147,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     End If
 
     If (QueryPlugins(mName, Text, retval)) Then
-        'Found the command in a plugin, don't waste time checking for a method!
+        ' Found the command in a plugin, don't waste time checking for a method!
         Exit Sub
     End If
 
@@ -177,107 +163,56 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         End If
     End If
 
+    Dim oldPos As Long
     oldPos = theProgram.programPos
 
-    'Now to find that method name
-    foundIt = getMethodLine(mName, theProgram)
+    ' Now to find that method name
+    Dim theMethod As RPGCodeMethod, params() As parameters, number As Long
+    params = getParameters(Text, theProgram, number)
+    theMethod.lngParams = number
+    theMethod.name = UCase$(mName)
+    ReDim theMethod.dtParams(number - 1)
+    Dim i As Long
+    For i = 1 To number
+        theMethod.dtParams(i - 1) = params(i - 1).dataType
+    Next i
+    Dim foundIt As Long
+    foundIt = getMethodLine(theMethod, theProgram, i)
 
-    If foundIt = -1 Then
-        'Method doesn't exist!
+    If (foundIt = -1) Then
+
+        ' Method doesn't exist!
         If Not (noMethodNotFound) Then
             Call debugger("Error: Method not found!-- " & Text)
         End If
+
         Exit Sub
+
     Else
 
-        'Now pass variables.
+        ' Get the 'whole' method
+        theMethod = theProgram.methods(i)
+
+        ' Now pass variables
         theProgram.programPos = foundIt
-
-        Dim dataUse As String, number As Long, pList As Long, number2 As Long
-
-        'Get parameters from calling line
-        dataUse$ = GetBrackets(Text)
-        number = CountData(dataUse)
-        Dim running As Long
-        For pList = 1 To number
-            parameterList$(pList) = GetElement(dataUse$, pList)
-        Next pList
-
-        'Get parameters from method line
-        dataUse$ = GetBrackets(theProgram.program(foundIt))
-        number2 = CountData(dataUse)
-        For pList = 1 To number2
-            destList$(pList) = GetElement(dataUse, pList)
-        Next pList
-
-        ReDim quotes(0) As Long
-        Dim commaNum As Long
-        commaNum = -1
-        For pList = 1 To Len(Text)
-            Dim mtpl As String
-            mtpl = Mid$(Text, pList, 1)
-            If ((mtpl = ",") Or (mtpl = "(")) Then
-                commaNum = commaNum + 1
-                ReDim Preserve quotes(commaNum)
-                Dim adv As Long
-                For adv = pList + 1 To Len(Text)
-                    If (Mid$(Text, adv, 1) <> " ") Then
-                        quotes(commaNum) = adv
-                        Exit For
-                    End If
-                Next adv
-            End If
-        Next pList
 
         ' Create a new local scope for this method
         Call AddHeapToStack(theProgram)
 
-        Dim lit As String, num As Double
-        Dim dataG As RPGC_DT, dUse As String
+        ' Now to correspond the two lists
+        For i = 1 To number
 
-        'Now to correspond the two lists
-        For pList = 1 To number
-            'get the value from the previous stack...
-            theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
-            dataG = getValue(parameterList$(pList), lit$, num, theProgram)
-            'restore stack...
-            theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
-
-            If (dataG = DT_NUM) Then
-                dUse = CStr(num)
-            Else
-                Dim rl As String
-                rl = Right$(lit, 1)
-                If ((Mid$(Text, quotes(pList - 1), 1) <> (""""))) _
-                 And (rl <> "!") And (rl <> "$") Then
-                    If (lit <> parameterList(pList)) Then
-                        dUse = lit
-                    Else
-                        lit = lit & "!"
-                        theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
-                        If (getValue(lit, lit, num, theProgram) = DT_NUM) Then
-                            dUse = CStr(num)
-                        Else
-                            dUse = lit
-                        End If
-                        theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
-                    End If
-                Else
-                    dUse = lit
-                End If
-            End If
-
-            Dim rdl As String
-            rdl = RightB$(destList(pList), 2)
-            If ((rdl <> "!") And (rdl <> "$")) Then
-                destList(pList) = destList(pList) & "!"
-            End If
+            Dim dUse As String
+            Select Case params(i - 1).dataType
+                Case DT_LIT: dUse = params(i - 1).lit
+                Case DT_NUM: dUse = CStr(params(i - 1).num)
+            End Select
 
             ' Declare and set this variable
-            Call declareVariable(destList(pList), theProgram)
-            Call SetVariable(destList(pList), dUse, theProgram)
+            Call declareVariable(theMethod.paramNames(i), theProgram)
+            Call SetVariable(theMethod.paramNames(i), dUse, theProgram)
 
-        Next pList
+        Next i
 
         Dim theOne As Long, se As Long
         'find the spot where the pointer list is first empty...
@@ -289,44 +224,45 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             End If
         Next se
     
-        Dim topList As Long
-        'Put the variables in global pointer list
+        Dim topList As Long, t As Long
+        ' Put the variables in global pointer list
         topList = theOne
         For t = 1 To number
             For se = theOne To 100
                 If (LenB(pointer$(se)) = 0) Then
-                    pointer$(se) = replace(destList$(t), " ", vbNullString)
-                    correspPointer$(se) = replace(parameterList$(t), " ", vbNullString)
+                    pointer$(se) = replace(theMethod.paramNames(t), " ", vbNullString)
+                    correspPointer$(se) = replace(params(t - 1).dat, " ", vbNullString)
                     topList = se
                     Exit For
                 End If
             Next se
         Next t
 
-        'set up method return value...
+        ' Set up method return value
         methodReturn = retval
 
-        'OK- data is passed.  Now run the method:
+        ' OK- data is passed. Now run the method:
         theProgram.programPos = increment(theProgram)
 
-        'Store current error handling thing-a-ma-jigy
+        ' Store current error handling thingy
         Dim oldErrorHandler As String
         oldErrorHandler = errorBranch
 
         Call runBlock(1, theProgram, True)
 
-        'Restore error handler
+        ' Restore error handler
         errorBranch = oldErrorHandler
 
+        ' Return to old program position
         theProgram.programPos = oldPos
 
-        'set up return value...
+        ' Set up return value
         retval = methodReturn
 
-        'Clear our variables from pointer list
+        ' Clear our variables from pointer list
         For t = 1 To number
             For se = theOne To topList
-                If UCase$(pointer(se)) = UCase$(destList(t)) Then
+                If UCase$(pointer(se)) = UCase$(theMethod.paramNames(t)) Then
                     pointer(se) = vbNullString
                     correspPointer(se) = vbNullString
                     se = 100
@@ -334,7 +270,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             Next se
         Next t
 
-        'kill the local scope
+        ' Kill the local scope
         Call RemoveHeapFromStack(theProgram)
 
     End If

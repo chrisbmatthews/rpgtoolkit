@@ -787,16 +787,11 @@ End Function
 '=========================================================================
 ' Count the number of bracket elements in text
 '=========================================================================
-Public Function CountData(ByRef Text As String) As Long
+Public Function CountData(ByVal Text As String) As Long
 
     On Error Resume Next
 
-    '// Passing string(s) ByRef for preformance related reasons
-
-    ' If there is no text, there are no elements
-    Dim gB As String
-    gB = GetBrackets(Text, True)
-    If (LenB(gB) = 0) Then Exit Function
+    If (LenB(Text) = 0) Then Exit Function
 
     ' Setup delimiter array
     Dim c(1) As String
@@ -836,7 +831,7 @@ End Function
 '=========================================================================
 ' Retrieve the text inside the brackets
 '=========================================================================
-Public Function GetBrackets(ByRef Text As String, Optional ByVal doNotCheckForBrackets As Boolean) As String
+Public Function GetBrackets(ByRef Text As String) As String
 
     On Error Resume Next
 
@@ -848,16 +843,10 @@ Public Function GetBrackets(ByRef Text As String, Optional ByVal doNotCheckForBr
     
     use = Text
     location = LocateBrackets(use)
+
+    If (location = 0) Then Exit Function
+
     Length = Len(Text)
-    
-    If Not (doNotCheckForBrackets) Then
-        If (InStrB(Text, "(") = 0) Then
-            If (InStrB(Text, ")") = 0) Then
-                'No (s or )s here!
-                Exit Function
-            End If
-        End If
-    End If
 
     For p = location + 1 To Length
         part$ = Mid$(Text$, p, 1)
@@ -1044,9 +1033,9 @@ Public Function getParameters(ByRef Text As String, ByRef theProgram As RPGCodeP
     Dim i As Long, lit As String, num As Double, dataType As RPGC_DT
 
     ' Get the parameters
-    count = CountData(Text)
-    dataCount = count
     brackets = GetBrackets(Text)
+    count = CountData(brackets)
+    dataCount = count
     For i = 1 To count
         Dim theElem As String
         theElem = Trim$(GetElement(brackets, i))
