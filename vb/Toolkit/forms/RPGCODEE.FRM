@@ -100,7 +100,6 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
-      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -558,16 +557,18 @@ Private Sub mnuCut_Click(): On Error Resume Next
     'Call Clipboard.SetText(codeForm.SelText, vbCFText)
     'codeForm.SelText = vbNullString
     Call SendMessage(codeForm.hwnd, WM_CUT, 0, 0&)
+    Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
 End Sub
 
 Private Sub mnuCopy_Click(): On Error Resume Next
     'Call Clipboard.SetText(codeForm.SelText, vbCFText)
     Call SendMessage(codeForm.hwnd, WM_COPY, 0, 0&)
+    Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
 End Sub
 
 Private Sub mnuPaste_Click(): On Error Resume Next
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
-    'codeForm.SelText = Clipboard.GetText(vbCFText)
+    Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
     Call SendMessage(codeForm.hwnd, WM_PASTE, 0, 0&)
     Call colorPastedCode                'This is crap!
 End Sub

@@ -64,9 +64,6 @@ With activeRPGCode
 End With
 
 currentObject.Visible = False
-If min = -1 Then
-    currentObject.Text = CapitalizeRPGCode(currentObject.Text)
-End If
 linesArray() = Split(currentObject.Text, vbNewLine)
 runningTotal = 0
 
