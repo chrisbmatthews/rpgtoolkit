@@ -931,7 +931,7 @@ Public Sub drawLayers(Optional ByVal buttonClick As Boolean = False): On Error R
     ' fill picture box with board color
     Call vbPicFillRect(boardform, 0, 0, 2000, 2000, boardList(activeBoardIndex).theData.brdColor)
     
-    Dim Temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
+    Dim temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
     
     ' drawbackground
     DrawBackground
@@ -2166,13 +2166,23 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
         Exit Sub
     End If
     
-    Dim xx As Long, yy As Long, redraw As Boolean
+    Dim xx As Long, yy As Long, layer As Long, redraw As Boolean
     
     redraw = True
     
     ' get tile co-ordinates
     xx = pixelToBoardCoordX(x, y)
     yy = pixelToBoardCoordY(x, y)
+    
+    Dim newX As Long, newY As Long, iso As Boolean, eo As Boolean, dx As Long, dy As Long
+    
+    ' get co-ords in relation to board
+    newX = xx - boardList(activeBoardIndex).topX
+    newY = yy - boardList(activeBoardIndex).topY
+    
+    ' set isometric value
+    iso = (boardList(activeBoardIndex).theData.isIsometric = 1)
+    eo = ((boardList(activeBoardIndex).topY Mod 2) = 1)
     
     ' left click
     If Button = 1 Then
@@ -2227,76 +2237,111 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
         If boardList(activeBoardIndex).drawState = 0 Then
         
             ' if a tile has been selected
-            If boardList(activeBoardIndex).selectedTile$ <> "" Then
-            
-                Dim newX As Long, newY As Long, iso As Boolean, eo As Boolean
+            If LenB(boardList(activeBoardIndex).selectedTile) Then
                 
-                ' get co-ords in relation to board
-                newX = xx - boardList(activeBoardIndex).topX
-                newY = yy - boardList(activeBoardIndex).topY
-              
-                ' set isometric value
-                If boardList(activeBoardIndex).theData.isIsometric = 0 Then
-                    iso = False
-                Else
-                    iso = True
-                End If
-                
-                If (boardList(activeBoardIndex).topY Mod 2 = 0) Then
-                    eo = False
-                Else
-                    eo = True
-                End If
-
-                If (commonRoutines.extention(tilePath$ & boardList(activeBoardIndex).selectedTile$) <> "TBM") Then
+                If (commonRoutines.extention(tilePath & boardList(activeBoardIndex).selectedTile) <> "TBM") Then
+                    
+                    'Brute force method: paint a blank tile.
+                    For dx = 1 To 32
+                        For dy = 1 To 32
+                            bufTile(dx, dy) = tileMem(dx, dy)
+                            tileMem(dx, dy) = boardList(activeBoardIndex).theData.brdColor
+                        Next dy
+                    Next dx
+                    
+                    If iso Then
+                        Call tileDrawIso(boardform, _
+                                        (newX - 1 - (((newY - 1 + eo) Mod 2) / 2)) * 64, _
+                                        (newY - 2) * 16, _
+                                        ISODETAIL)
+                    Else
+                        Call vbPicFillRect(activeBoard.boardform, _
+                                           (newX - 1) * 32, (newY - 1) * 32, _
+                                           newX * 32 - 1, newY * 32 - 1, _
+                                           boardList(activeBoardIndex).theData.brdColor)
+                    End If
+                    
+                    'Reset the tileMem.
+                    For dx = 1 To 32
+                        For dy = 1 To 32
+                            tileMem(dx, dy) = bufTile(dx, dy)
+                        Next dy
+                    Next dx
+                    
                     If boardList(activeBoardIndex).autotiler Then
                         ' update autotiles
-                        Call autoTilerPutTile(boardList(activeBoardIndex).selectedTile$, xx, yy, iso, eo, ((Shift And vbShiftMask) = vbShiftMask))
+                        Call autoTilerPutTile(boardList(activeBoardIndex).selectedTile, _
+                                              xx, yy, iso, eo, _
+                                              ((Shift And vbShiftMask) = vbShiftMask))
                     Else
-                        ' draw the tile
-                        Call drawTile(boardform.hdc, _
-                                             tilePath$ & boardList(activeBoardIndex).selectedTile$, _
-                                             xx - boardList(activeBoardIndex).topX, _
-                                             yy - boardList(activeBoardIndex).topY, _
-                                             boardList(activeBoardIndex).ambientR, _
-                                             boardList(activeBoardIndex).ambientG, _
-                                             boardList(activeBoardIndex).ambientB, _
-                                             False, _
-                                             False, _
-                                             iso, _
-                                             eo)
                         'set new tile details
-                        Call BoardSetTile(xx, yy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).selectedTile$, boardList(activeBoardIndex).theData)
+                        Call BoardSetTile(xx, yy, _
+                                          boardList(activeBoardIndex).currentLayer, _
+                                          boardList(activeBoardIndex).selectedTile, _
+                                          boardList(activeBoardIndex).theData)
+                                          
+                        'Draw all tiles up to this layer (for the case of part-transparent tiles), if visible.
+                        For layer = 1 To boardList(activeBoardIndex).currentLayer
+                            If tkMainForm.boardToolbar.Display.Setting(eRedrawAll) = 1 Or layer = boardList(activeBoardIndex).currentLayer Then
+                                Call drawTile(boardform.hdc, _
+                                              boardList(activeBoardIndex).theData.tileIndex(boardList(activeBoardIndex).theData.board(xx, yy, layer)), _
+                                              newX, _
+                                              newY, _
+                                              boardList(activeBoardIndex).ambientR, _
+                                              boardList(activeBoardIndex).ambientG, _
+                                              boardList(activeBoardIndex).ambientB, _
+                                              False, _
+                                              False, _
+                                              iso, _
+                                              eo)
+                            End If
+                        Next layer
                     End If
+                   
                 Else
                     'Tile bitmap!
                     Dim a As Long, b As Long, theTile As TKTileBitmap
                     Dim maxA As Long, maxB As Long
+                    
+                    Call OpenTileBitmap(tilePath & boardList(activeBoardIndex).selectedTile, theTile)
+                    
+                    'Set up the area for drawing.
                     maxA = UBound(theTile.tiles, 1)
                     maxB = UBound(theTile.tiles, 2)
+                    
+                    'Lose any tiles that go off the board.
                     If (boardList(activeBoardIndex).tilesX - 1) < maxA Then maxA = (boardList(activeBoardIndex).tilesX - 1)
                     If (boardList(activeBoardIndex).tilesY - 1) < maxB Then maxB = (boardList(activeBoardIndex).tilesY - 1)
-                    Call OpenTileBitmap(tilePath$ & boardList(activeBoardIndex).selectedTile$, theTile)
+                    
+                    ' Clear the contents of the current area - not done for isometrics (no tbm support).
+                    Call vbPicFillRect(activeBoard.boardform, _
+                                       (newX - 1) * 32, (newY - 1) * 32, _
+                                       (newX - 1 + maxA) * 32 - 1, (newY - 1 + maxB) * 32 - 1, _
+                                       boardList(activeBoardIndex).theData.brdColor)
+                                       
                     For a = 0 To maxA
                         For b = 0 To maxB
-                        Call drawTile(boardform.hdc, _
-                                            theTile.tiles(a, b), _
-                                            xx - boardList(activeBoardIndex).topX + a, _
-                                            yy - boardList(activeBoardIndex).topY + b, _
-                                            boardList(activeBoardIndex).ambientR, _
-                                            boardList(activeBoardIndex).ambientG, _
-                                            boardList(activeBoardIndex).ambientB, _
-                                            False, _
-                                            False, _
-                                            iso, _
-                                            eo)
-                        Call BoardSetTile(xx + a, yy + a, boardList(activeBoardIndex).currentLayer, theTile.tiles(a, b), boardList(activeBoardIndex).theData)
+                            Call drawTile(boardform.hdc, _
+                                          theTile.tiles(a, b), _
+                                          newX + a, _
+                                          newY + b, _
+                                          boardList(activeBoardIndex).ambientR, _
+                                          boardList(activeBoardIndex).ambientG, _
+                                          boardList(activeBoardIndex).ambientB, _
+                                          False, _
+                                          False, _
+                                          iso, _
+                                          eo)
+                            Call BoardSetTile(xx + a, yy + a, _
+                                              boardList(activeBoardIndex).currentLayer, _
+                                              theTile.tiles(a, b), _
+                                              boardList(activeBoardIndex).theData)
                         Next b
                     Next a
-                End If
+                    
+                End If ' .selectedTile <> "TBM"
 
-                ' refresh picture box
-                Call boardform.Refresh
+
 
                 ' set ambient details
                 boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientR
@@ -2370,9 +2415,9 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
                     boardList(activeBoardIndex).theData.ambientGreen(newX + boardList(activeBoardIndex).topX, newY + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientG
                     boardList(activeBoardIndex).theData.ambientBlue(newX + boardList(activeBoardIndex).topX, newY + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientB
                 
-                End If
+                End If ' Spotlight
                 
-            End If
+            End If ' LenB(.SelectedTile)
             
             redraw = False
             
@@ -2505,6 +2550,57 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
             Else
                 Call BoardSetTile(xx, yy, boardList(activeBoardIndex).currentLayer, "", boardList(activeBoardIndex).theData)
             End If
+            
+            'Now, redrawing the whole layer can get quite slow if "Redraw All Layers" is set.
+            'Better solution is to paint a blank tile and redraw only the other layers at this
+            'position.
+            
+            'Brute force method: paint a blank tile.
+            For dx = 1 To 32
+                For dy = 1 To 32
+                    bufTile(dx, dy) = tileMem(dx, dy)
+                    tileMem(dx, dy) = boardList(activeBoardIndex).theData.brdColor
+                Next dy
+            Next dx
+                
+            If iso Then
+                Call tileDrawIso(boardform, _
+                                (newX - 1 - (((newY - 1 + eo) Mod 2) / 2)) * 64, _
+                                (newY - 2) * 16, _
+                                ISODETAIL)
+            Else
+                Call vbPicFillRect(activeBoard.boardform, _
+                                   (newX - 1) * 32, (newY - 1) * 32, _
+                                   newX * 32 - 1, newY * 32 - 1, _
+                                   boardList(activeBoardIndex).theData.brdColor)
+            End If
+            
+            For dx = 1 To 32
+                For dy = 1 To 32
+                    tileMem(dx, dy) = bufTile(dx, dy)
+                Next dy
+            Next dx
+            
+            'Draw any tiles on other layers, if visible.
+            For layer = 1 To 8
+                If tkMainForm.boardToolbar.Display.Setting(eRedrawAll) = 1 Or layer = boardList(activeBoardIndex).currentLayer Then
+                    Call drawTile(boardform.hdc, _
+                                  boardList(activeBoardIndex).theData.tileIndex(boardList(activeBoardIndex).theData.board(xx, yy, layer)), _
+                                  newX, _
+                                  newY, _
+                                  boardList(activeBoardIndex).ambientR, _
+                                  boardList(activeBoardIndex).ambientG, _
+                                  boardList(activeBoardIndex).ambientB, _
+                                  False, _
+                                  False, _
+                                  iso, _
+                                  eo)
+                End If
+            Next layer
+            
+            'Do not redraw the board.
+            redraw = False
+            
         End If
         
         ' set event
