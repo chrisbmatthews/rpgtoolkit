@@ -92,8 +92,12 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
             If bufTile(x, y) <> -1 Then
                 Call vbPicPSet(pic, x + xLoc, y + yLoc, bufTile(x, y))
             Else
-                'White pixel.
-                Call vbPicPSet(pic, x + xLoc, y + yLoc, RGB(255, 255, 255))
+                If isoMaskBmp(x, y) <> RGB(0, 0, 0) Then
+                    'Mask pixel.
+                    Call vbPicPSet(pic, x + xLoc, y + yLoc, activeTile.BackColor)
+                Else
+                    Call vbPicPSet(pic, x + xLoc, y + yLoc, RGB(255, 255, 255))
+                End If
             End If
         Next y
     Next x
