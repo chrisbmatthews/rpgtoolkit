@@ -728,7 +728,7 @@ End Sub
 '=========================================================================
 Public Function CreateCanvas(ByVal width As Long, ByVal height As Long, Optional ByVal bUseDX As Boolean = True) As Long
     On Error Resume Next
-    If width And height Then
+    If ((width <> 0) And (height <> 0)) Then
         CreateCanvas = CNVCreate(canvasHost, width, height, 1)
     Else
         CreateCanvas = -1
