@@ -6243,6 +6243,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     facing = 1              'Facing south
     wentToNewBoard = True
     Call setConstants
+    Call checkMusic(True)
 
     Exit Sub
     
