@@ -1828,6 +1828,9 @@ Public Sub ForceRedrawRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgr
     '==============================================================================
     On Error Resume Next
 
+    ' Colin, 3.0.6: Clear the sprite cache
+    Call clearAnmCache
+
     Call renderNow(cnvRpgCodeScreen, True)                 'Force render.
     Call renderRPGCodeScreen
 
