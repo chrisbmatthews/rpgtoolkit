@@ -14,7 +14,7 @@ Begin VB.Form frmLayerTile
    ScaleWidth      =   3735
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin Toolkit.TKButton butCanel 
+   Begin Toolkit.TKButton butCancel 
       Height          =   495
       Left            =   2520
       TabIndex        =   7
@@ -121,7 +121,7 @@ Option Explicit
 '========================================================================
 ' The Cancel button
 '========================================================================
-Private Sub butCanel_click()
+Private Sub butCancel_click()
     
     'Just unload, the tile will be changed back in Form_Unload
     Unload Me
@@ -284,6 +284,9 @@ Private Sub Form_Load(): On Error Resume Next
     
     'Set this to false at startup
     saveChanges = False
+    
+    'Set the chkTrans checkbox
+    chkTrans.value = openTileEditorDocs(activeTile.indice).transparentLayer = 1
     
     'Make sure the topbar knows which form it is on
     Set TopBar.theForm = Me
