@@ -274,7 +274,10 @@ Public Sub performSetup()
     On Error Resume Next
 
     ' Change to the temp directory
-    Call ChDir(TempDir())
+    Dim strTemp As String
+    strTemp = TempDir()
+    Call ChDrive(Mid$(strTemp, 1, 2))
+    Call ChDir(strTemp)
 
     ' Obtain the destination path
     Dim strPath As String, strExe As String
