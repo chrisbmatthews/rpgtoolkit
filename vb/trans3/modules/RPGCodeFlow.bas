@@ -287,12 +287,8 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
                 If Not (bFromCopyConstructor) Then
 
-                    If (RightB$(params(i - 1).dat, 2) <> "!") Then
-
-                        ' Make a copy of the object
-                        dUse = CStr(copyObject(params(i - 1).num, theProgram))
-
-                    End If
+                    ' Make a copy of the object
+                    dUse = CStr(copyObject(params(i - 1).num, theProgram))
 
                 End If
 
