@@ -1279,6 +1279,7 @@ Public Function isItemIdle(ByVal num As Long, Optional ByVal refresh As Boolean)
     ReDim Preserve lastDir(maxItem)     'Make one spot for each item
 
     Dim skipSecondCheck As Boolean      'Skip the second check?
+    Dim isIdle As Boolean               'Already idle?
 
     If (refresh) Then
         'Update time stamp
@@ -1287,7 +1288,9 @@ Public Function isItemIdle(ByVal num As Long, Optional ByVal refresh As Boolean)
 
     With itmPos(num)
 
-        If (lastDir(num) <> .stance) Then
+        isIdle = (Left(UCase(.stance), 5) = "STAND")
+
+        If (lastDir(num) <> .stance) And (Not isIdle) Then
             'Force time stamp update
             timeStamps(num) = Timer()
         End If
@@ -1295,7 +1298,7 @@ Public Function isItemIdle(ByVal num As Long, Optional ByVal refresh As Boolean)
         'Update lastDir()
         lastDir(num) = .stance
 
-        If (Left(UCase(.stance), 5) = "STAND") Then
+        If (isIdle) Then
             'Skip the second if block
             skipSecondCheck = True
             If ((Timer() - timeStamps(num) >= itemMem(num).speed)) Then
@@ -1346,6 +1349,7 @@ Public Function isPlayerIdle(ByVal num As Long, Optional ByVal refresh As Boolea
     Static timeStamps(4) As Double   'Time stamps of idleness
     Static lastDir(4) As String      'Last direction
     Dim skipSecondCheck As Boolean   'Skip the second check?
+    Dim isIdle As Boolean            'Already idle?
 
     If (refresh) Then
         'Update time stamp
@@ -1354,7 +1358,9 @@ Public Function isPlayerIdle(ByVal num As Long, Optional ByVal refresh As Boolea
 
     With pPos(num)
 
-        If (lastDir(num) <> .stance) Then
+        isIdle = (Left(UCase(.stance), 5) = "STAND")
+
+        If (lastDir(num) <> .stance) And (Not isIdle) Then
             'Force time stamp update
             timeStamps(num) = Timer()
         End If
@@ -1362,7 +1368,7 @@ Public Function isPlayerIdle(ByVal num As Long, Optional ByVal refresh As Boolea
         'Update lastDir()
         lastDir(num) = .stance
 
-        If (Left(UCase(.stance), 5) = "STAND") Then
+        If (isIdle) Then
             'Skip the second if block
             skipSecondCheck = True
             If ((Timer() - timeStamps(num) >= playerMem(num).speed)) Then
