@@ -192,9 +192,3 @@ EXPORTS
 
 	RPGCGetLitVarByteLen @ 246
 
-	; DirectMusic
-	DXInitMusic			@247
-	DXKillMusic			@248
-	DXPlayMidi			@249
-	DXStopMidi			@250
-	DXIsMidiPlaying		@251

@@ -95,11 +95,6 @@ int APIENTRY DXDrawText(int x, int y, char* strText, char* strTypeFace, int size
 int APIENTRY DXDrawCanvasPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long lRasterOp = SRCCOPY);
 int APIENTRY DXDrawCanvasTransparentPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long crTrasparentColor);
 int APIENTRY DXCopyScreenToCanvas(CNV_HANDLE cnv);
-int APIENTRY DXInitMusic(HWND hWnd);
-void APIENTRY DXKillMusic(void);
-void APIENTRY DXPlayMidi(TCHAR* strFileName, VARIANT_BOOL bLoop = VARIANT_FALSE);
-void APIENTRY DXStopMidi(void);
-BOOL APIENTRY DXIsMidiPlaying(void);
 
 //------------------------------------------------------------------------
 // End of the header file

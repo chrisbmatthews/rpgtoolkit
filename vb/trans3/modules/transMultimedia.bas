@@ -24,24 +24,6 @@ Private Declare Sub TKAudiereDestroyHandle Lib "actkrt3.dll" (ByVal handle As Lo
 Private Declare Function TKAudiereCreateHandle Lib "actkrt3.dll" () As Long
 Private Declare Function TKAudiereGetPosition Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Sub TKAudiereSetPosition Lib "actkrt3.dll" (ByVal handle As Long, ByVal pos As Long)
-Private Declare Function DXInitMusic Lib "actkrt3.dll" (ByVal hwnd As Long) As Long
-Private Declare Sub DXKillMusic Lib "actkrt3.dll" ()
-Private Declare Sub DXPlayMidi Lib "actkrt3.dll" (ByVal strFilename As String, Optional ByVal bLoop As Boolean = False)
-Private Declare Sub DXStopMidi Lib "actkrt3.dll" ()
-Private Declare Function DXIsMidiPlaying Lib "actkrt3.dll" () As Long
-Private Declare Function GetVersionExA Lib "kernel32" (ByRef lpVersionInformation As OSVERSIONINFO) As Integer
-
-'=========================================================================
-' Operating system version info
-'=========================================================================
-Public Type OSVERSIONINFO
-   dwOSVersionInfoSize As Long
-   dwMajorVersion As Long
-   dwMinorVersion As Long
-   dwBuildNumber As Long
-   dwPlatformId As Long
-   szCSDVersion As String * 128
-End Type
 
 '=========================================================================
 ' Public variables
@@ -53,7 +35,7 @@ Public fgDevice As Long                  ' Foreground music device
 ' Member variables
 '=========================================================================
 Private bkgDevice As Long                ' Background music device (audiere)
-Private m_bDXMidis As Boolean            ' Play MIDIs through DirectX?
+Private m_dm As CDirectMusic             ' DirectMusic object
 
 '=========================================================================
 ' Member constants
@@ -109,25 +91,7 @@ Public Sub initMedia()
     On Error Resume Next
 
     Call TKAudiereInit
-
-    ' Get the operating system version
-    Dim ver As OSVERSIONINFO
-    Call GetVersionExA(ver)
-    If (ver.dwPlatformId = 1) Then
-
-        ' Running on Win9x: use DX to play MIDIs (doesn't seem to work as well,
-        ' but it's better than nothing!)
-        Dim lngInit As Long
-        lngInit = DXInitMusic(host.hwnd)
-        If (lngInit) Then
-            ' Use DirectMusic to play MIDIs
-            m_bDXMidis = True
-        Else
-            Call MsgBox("Could not initiate DirectMusic - please make sure you have DirectX 8 or higher installed!")
-        End If
-
-    End If
-
+    Set m_dm = New CDirectMusic
     bkgDevice = TKAudiereCreateHandle()
     fgDevice = TKAudiereCreateHandle()
 
@@ -145,7 +109,7 @@ Public Function isMediaPlaying(ByRef file As String) As Boolean
     ext = UCase$(GetExt(file))
 
     If (isPlayedByDX(ext)) Then
-        isMediaPlaying = DXIsMidiPlaying()
+        isMediaPlaying = m_dm.isPlaying()
 
     ElseIf (isPlayedByMCI(ext)) Then
         isMediaPlaying = IsPlayingMCI(MID_DEVICE)
@@ -167,7 +131,7 @@ Public Sub killMedia()
     Call TKAudiereDestroyHandle(bkgDevice)
     Call TKAudiereDestroyHandle(fgDevice)
     Call TKAudiereKill
-    If (m_bDXMidis) Then Call DXKillMusic
+    Set m_dm = Nothing
 
 End Sub
 
@@ -186,8 +150,8 @@ Public Sub playMedia(ByRef file As String)
     ext = UCase$(GetExt(file))
 
     If (isPlayedByDX(ext)) Then
-        Call DXPlayMidi(file)
-        Do Until (DXIsMidiPlaying())
+        Call m_dm.playMidi(file)
+        Do Until (m_dm.isPlaying())
             ' Do not proceed until MIDI has fully loaded
         Loop
 
@@ -216,7 +180,6 @@ End Function
 ' Check if DirectMusic supports a format
 '=========================================================================
 Private Function isPlayedByDX(ByRef ext As String) As Boolean
-    If Not (m_bDXMidis) Then Exit Function
     Select Case ext
         Case "MID", "MIDI", "RMI", "MPL"
             ' DirectMusic plays this
@@ -276,7 +239,7 @@ Public Sub stopMedia()
     Call StopMCI(SFX_DEVICE)
     Call TKAudiereStop(fgDevice)
     Call TKAudiereStop(bkgDevice)
-    Call DXStopMidi
+    Call m_dm.stopMidi
 
 End Sub
 

@@ -6,18 +6,13 @@
 --------------------Configuration: actkrt3 - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP14B.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP792.tmp" with contents
 [
 /nologo /MT /W2 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "actkrt3_EXPORTS" /FR"Release/" /Fp"Release/actkrt3.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\Program Files\GNU\WinCvs 1.3\tk3\vc\actkrt3\tkgfx\CTile.cpp"
-"C:\Program Files\GNU\WinCvs 1.3\tk3\vc\actkrt3\tkgfx\CTileCanvas.cpp"
-"C:\Program Files\GNU\WinCvs 1.3\tk3\vc\actkrt3\tkgfx\Tkgfx.cpp"
-"C:\Program Files\GNU\WinCvs 1.3\tk3\vc\actkrt3\tkCanvas\CCanvasPool.cpp"
-"C:\Program Files\GNU\WinCvs 1.3\tk3\vc\actkrt3\tkCanvas\GDICanvas.cpp"
 "C:\Program Files\GNU\WinCvs 1.3\tk3\vc\actkrt3\tkDirectX\platform.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP14B.tmp" 
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP14C.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP792.tmp" 
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP793.tmp" with contents
 [
 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:no /pdb:"Release/actkrt3.pdb" /machine:I386 /nodefaultlib:"LIBC" /def:".\actkrt3.def" /out:"Release/actkrt3.dll" /implib:"Release/actkrt3.lib" 
 ".\Release\actkrt3.obj"
@@ -42,21 +37,14 @@ ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib 
 ".\tkimage\FreeImage.lib"
 ".\tkzip\zlib.lib"
 ".\audiere\audiere.lib"
-".\Release\dmutil.obj"
-".\Release\dxutil.obj"
 ]
-Creating command line "link.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP14C.tmp"
+Creating command line "link.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP793.tmp"
 <h3>Output Window</h3>
 Compiling...
-CTile.cpp
-CTileCanvas.cpp
-Tkgfx.cpp
-CCanvasPool.cpp
-GDICanvas.cpp
 platform.cpp
 Linking...
    Creating library Release/actkrt3.lib and object Release/actkrt3.exp
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP150.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP797.tmp" with contents
 [
 /nologo /o"Release/actkrt3.bsc" 
 ".\Release\actkrt3.sbr"
@@ -77,10 +65,8 @@ Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP150.tmp" with conten
 ".\Release\tkrpgcode.sbr"
 ".\Release\TKAudiere.sbr"
 ".\Release\transClock.sbr"
-".\Release\transHost.sbr"
-".\Release\dmutil.sbr"
-".\Release\dxutil.sbr"]
-Creating command line "bscmake.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP150.tmp"
+".\Release\transHost.sbr"]
+Creating command line "bscmake.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP797.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 

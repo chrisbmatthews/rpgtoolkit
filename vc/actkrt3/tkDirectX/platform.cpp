@@ -12,8 +12,6 @@
 // Inclusions
 //------------------------------------------------------------------------
 #include "platform.h"							// Symbols for this file
-#include "..\dmutil\include\dmutil.h"			// DirectMusic foundation classes
-#include "..\dmutil\include\dxutil.h"			// DirectX utilities
 
 //------------------------------------------------------------------------
 // Globals
@@ -25,8 +23,6 @@ HDC ghDCLocked = NULL;							// HDC of locked surface
 DXINFO gDXInfo;									// DirectX info structure.
 HRGN g_Clipper = NULL;							// Clipping region
 CGDICanvas* g_pBackBuffer = NULL;				// Non-DirectX backbuffer
-static CMusicManager* g_pMusicManager = NULL;	// DirectMusic manager
-static CMusicSegment* g_pMusicSegment = NULL;	// A DirectMusic segment
 
 //------------------------------------------------------------------------
 // Initiate DirectDraw
@@ -36,116 +32,6 @@ int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDir
 
 	// Initiate the gfx engine
 	return InitGraphicsMode(HWND(hostHwnd), nScreenX, nScreenY, bool(nUseDirectX), nColorDepth, bool(nFullScreen));
-
-}
-
-//------------------------------------------------------------------------
-// Initiate DirectMusic
-//------------------------------------------------------------------------
-int APIENTRY DXInitMusic(HWND hWnd)
-{
-
-	// Create the music manager
-	g_pMusicManager = new CMusicManager();
-
-	// Initialize the music manager
-	return SUCCEEDED(g_pMusicManager->Initialize(hWnd));
-
-}
-
-//------------------------------------------------------------------------
-// Kill DirectMusic
-//------------------------------------------------------------------------
-void APIENTRY DXKillMusic(void)
-{
-
-	// Delete the music manager
-	SAFE_DELETE(g_pMusicManager);
-
-	// Delete the music segment
-	SAFE_DELETE(g_pMusicSegment);
-
-}
-
-//------------------------------------------------------------------------
-// Play a MIDI
-//------------------------------------------------------------------------
-void APIENTRY DXPlayMidi(TCHAR* strFileName, VARIANT_BOOL bLoop)
-{
-
-	// If DirectMusic hasn't been initiated
-	if (!g_pMusicManager)
-	{
-
-		// Cannot play a MIDI
-		return;
-
-	}
-
-	// Stop any current segment
-	DXStopMidi();
-
-	// Create a new segment
-	if (FAILED(g_pMusicManager->CreateSegmentFromFile(&g_pMusicSegment, strFileName, TRUE, TRUE)))
-	{
-
-		// Could not load the file
-		return;
-
-	}
-
-	// Set whether to loop the segment
-	g_pMusicSegment->SetRepeats(bLoop ? DMUS_SEG_REPEAT_INFINITE : 0);
-
-	// Play the segment
-	g_pMusicSegment->Play();
-
-}
-
-//------------------------------------------------------------------------
-// Stop the playing MIDI
-//------------------------------------------------------------------------
-void APIENTRY DXStopMidi(void)
-{
-
-	// If a segment exists
-	if (g_pMusicSegment)
-	{
-
-		// Stop the segment
-		g_pMusicSegment->Stop();
-
-		// Delete the segment
-		SAFE_DELETE(g_pMusicSegment);
-
-		// Collect any garbage
-		g_pMusicManager->CollectGarbage();
-
-	}
-
-}
-
-//------------------------------------------------------------------------
-// Determine if a MIDI is playing
-//------------------------------------------------------------------------
-BOOL APIENTRY DXIsMidiPlaying(void)
-{
-
-	// If a segment exists
-	if (g_pMusicSegment)
-	{
-
-		// Return if the MIDI is playing
-		return g_pMusicSegment->IsPlaying();
-
-	}
-	else
-	{
-
-		// No segment - MIDI cannot be playing
-		return FALSE;
-
-	}
 
 }
 
