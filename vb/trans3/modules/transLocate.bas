@@ -118,51 +118,51 @@ Public Sub incrementPosition( _
 
                 Case MV_NE
                     If pend.yOrig Mod 2 = 0 Then
-                        .X = .X
-                        .Y = .Y - moveFraction
+                        .x = .x
+                        .y = .y - moveFraction
                     Else
-                        .X = .X + moveFraction
-                        .Y = .Y - moveFraction
+                        .x = .x + moveFraction
+                        .y = .y - moveFraction
                     End If
             
                 Case MV_NW
                     If pend.yOrig Mod 2 = 0 Then
-                        .X = .X - moveFraction
-                        .Y = .Y - moveFraction
+                        .x = .x - moveFraction
+                        .y = .y - moveFraction
                     Else
-                        .X = .X
-                        .Y = .Y - moveFraction
+                        .x = .x
+                        .y = .y - moveFraction
                     End If
             
                 Case MV_SE
                     If pend.yOrig Mod 2 = 0 Then
-                        .X = .X
-                        .Y = .Y + moveFraction
+                        .x = .x
+                        .y = .y + moveFraction
                     Else
-                        .X = .X + moveFraction
-                        .Y = .Y + moveFraction
+                        .x = .x + moveFraction
+                        .y = .y + moveFraction
                     End If
             
                 Case MV_SW
                     If pend.yOrig Mod 2 = 0 Then
-                        .X = .X - moveFraction
-                        .Y = .Y + moveFraction
+                        .x = .x - moveFraction
+                        .y = .y + moveFraction
                     Else
-                        .X = .X
-                        .Y = .Y + moveFraction
+                        .x = .x
+                        .y = .y + moveFraction
                     End If
             
                 Case MV_NORTH
-                    .Y = .Y - moveFraction * 2
+                    .y = .y - moveFraction * 2
             
                 Case MV_SOUTH
-                    .Y = .Y + moveFraction * 2
+                    .y = .y + moveFraction * 2
             
                 Case MV_EAST
-                    .X = .X + moveFraction
+                    .x = .x + moveFraction
             
                 Case MV_WEST
-                    .X = .X - moveFraction
+                    .x = .x - moveFraction
             
             End Select
 
@@ -171,33 +171,41 @@ Public Sub incrementPosition( _
             Select Case pend.direction
 
                 Case MV_NE
-                    .X = .X + moveFraction
-                    .Y = .Y - moveFraction
+                    .x = .x + moveFraction
+                    .y = .y - moveFraction
 
                 Case MV_NW
-                    .X = .X - moveFraction
-                    .Y = .Y - moveFraction
+                    .x = .x - moveFraction
+                    .y = .y - moveFraction
 
                 Case MV_SE
-                    .X = .X + moveFraction
-                    .Y = .Y + moveFraction
+                    .x = .x + moveFraction
+                    .y = .y + moveFraction
 
                 Case MV_SW
-                    .X = .X - moveFraction
-                    .Y = .Y + moveFraction
+                    .x = .x - moveFraction
+                    .y = .y + moveFraction
 
                 Case MV_NORTH
-                    .Y = .Y - moveFraction
-
+                    .y = .y - moveFraction
+                    
+                    If .y < pend.yTarg Then .y = pend.yTarg
+            
                 Case MV_SOUTH
-                    .Y = .Y + moveFraction
-
+                    .y = .y + moveFraction
+                    
+                    If .y > pend.yTarg Then .y = pend.yTarg
+            
                 Case MV_EAST
-                    .X = .X + moveFraction
-
+                    .x = .x + moveFraction
+                    
+                    If .x > pend.xTarg Then .x = pend.xTarg
+                
                 Case MV_WEST
-                    .X = .X - moveFraction
-
+                    .x = .x - moveFraction
+                    
+                    If .x < pend.xTarg Then .x = pend.xTarg
+                    
             End Select
 
         End If
@@ -211,8 +219,7 @@ End Sub
 '=========================================================================
 Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
 
-    'Called by scanKeys when movement is initiated, and the RPG commands
-    'PlayerStepRPG, ItemStepRPG, PushItemRPG, PushRPG, WanderRPG.
+    'Called by moveItems and movePlayers only.
     'Called once in a movement cycle.
 
     On Error Resume Next
@@ -354,3 +361,5 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
     End With
 
 End Sub
+
+
