@@ -9230,12 +9230,12 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Exit Sub
         End If
         
-        If Not (canItemEquip(projectPath$ & itmPath$ & inv.fileNames(theOne))) Then
+        If Not (canItemEquip(projectPath$ & itmPath$ & inv.fileNames(theItem))) Then
             Call debugger("Error: Specified Item is Not Equipable!-- " & Text$)
             Exit Sub
         End If
 
-        If Not (CanPlayerUse(theOne, openItem(projectPath$ & itmPath$ & inv.fileNames(theOne)))) Then
+        If Not (CanPlayerUse(theOne, openItem(projectPath$ & itmPath$ & inv.fileNames(theItem)))) Then
             Call debugger("Error: Player cannot use specified item!-- " & Text$)
             Exit Sub
         End If

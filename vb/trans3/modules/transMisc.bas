@@ -361,7 +361,7 @@ End Sub
 '=========================================================================
 ' Calculate level up stuff
 '=========================================================================
-Private Sub calcLevels(ByRef player As TKPlayer)
+Public Sub calcLevels(ByRef player As TKPlayer)
     On Error Resume Next
     With player
         .nextLevel = .levelType
