@@ -1,4 +1,4 @@
-Copyright (c) 2003, 2004, Christopher Matthews
+Copyright (c) 2003, 2004, 2005, Christopher Matthews and the TK3 Dev Team
 All rights reserved.
 
 License name: AC Open License v 1.0
