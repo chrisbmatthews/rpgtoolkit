@@ -41,6 +41,11 @@ Private Sub AnimateAtCanvas( _
 
     On Error Resume Next
 
+    'Save the screen
+    Dim oldScreen As Long
+    oldScreen = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+    Call CanvasGetScreen(oldScreen)
+
     'Create a temp canvas a blt the canvas passed in onto it
     Dim cnvTemp As Long
     cnvTemp = CreateCanvas(pixelsMaxX, pixelsMaxY)
@@ -71,7 +76,16 @@ Private Sub AnimateAtCanvas( _
 
     Next currentFrame
 
+    'Restore screen
+    Call Canvas2CanvasBlt(oldScreen, cnv, 0, 0)
+    If (cnv = cnvRPGCodeScreen) Then
+        Call renderRPGCodeScreen
+    Else
+        Call renderCanvas(cnv)
+    End If
+
     'Destroy the temp canvas
     Call DestroyCanvas(cnvTemp)
+    Call DestroyCanvas(oldScreen)
 
 End Sub

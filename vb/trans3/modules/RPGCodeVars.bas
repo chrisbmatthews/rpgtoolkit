@@ -565,10 +565,10 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         valueList(tokenIdx) = GetVarList(Text, tokenIdx)
 
         'Remove spaces if it's not a literal variable (has quotes)
-        If (Not InStr(valueList(tokenIdx), Chr(34))) Then
+        'If (Not InStr(valueList(tokenIdx), Chr(34))) Then
             'Remove those spaces
-            valueList(tokenIdx) = replace(valueList(tokenIdx), " ", "")
-        End If
+            'valueList(tokenIdx) = replace(valueList(tokenIdx), " ", "")
+        'End If
 
     Next tokenIdx
 
@@ -659,7 +659,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
                 Case "|="      '[Faero] Or
                                 '---------------------
-                    Call debugger("binary or")
+                    'Call debugger("binary or")
                     Call SetVariable(Destination, CStr(numberUse(number) Or CBGetNumerical(Destination)), theProgram)
 
                 Case "&="      '[Faero] And
