@@ -865,8 +865,8 @@ Public Sub runProgram( _
 
     Call hideMsgBox
 
-    If theProgram.programPos = -1 Then
-        Call renderNow
+    If (theProgram.programPos = -1) Then
+        Call renderNow(-1, True)
     End If
 
     Call hideMsgBox

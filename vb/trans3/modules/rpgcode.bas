@@ -8491,7 +8491,7 @@ Public Sub ClearRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     ' Clears a canvas to black
 
     If (LenB(GetBrackets(Text)) = 0) Then
-        Call CanvasFill(cnvRPGCodeScreen, 0)
+        Call DXClearScreen(0)
         Call renderRPGCodeScreen
     Else
         Dim paras() As parameters

@@ -422,7 +422,7 @@ Public Sub gameLogic()
             m_renderCount = m_renderCount + 1
         End If
     End If
-    
+
     'The loop time in the idle state.
     'If IDLErenderOccured Then
     '    irl = Timer() - irl
