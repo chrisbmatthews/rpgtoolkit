@@ -20,6 +20,61 @@
 CBOneParamStr setLastString;	//set the last parser string
 
 //////////////////////////////////////////////////////////////////////////
+// Get the bracket element at elemNum
+//////////////////////////////////////////////////////////////////////////
+void APIENTRY RPGCGetElement(VB_STRING pText, int elemNum)
+{
+
+	inlineString text = initVbString(pText);		//Text we're operating on
+	int t = 0;										//For loop
+	int element = 0;								//Current element
+	bool ignore = false;							//Do we need to ignore?
+	inlineString returnVal;							//What we will return		
+	inlineString part(1);							//Character
+
+	for (t = 1; t <= text.len(); t++)
+	{
+
+		//grab a character
+		part = text.mid(t, 1);
+
+		if (part == QUOTE)
+		{
+			//found a quote
+			ignore = (!ignore);
+			returnVal += part;
+		}
+		else if (part == "," || part == ";" || part == "")
+		{
+			if (!ignore)
+			{
+				//increment element
+				element++;
+				if (element == elemNum)
+				{
+					//return what we found
+					returnVbString(returnVal);
+					return;
+				}
+				else
+					//not the correct element
+					returnVal = "";
+			}
+			else
+				//within quotes-- can't take it
+				returnVal += part;
+		}
+		else
+			//not a special character
+			returnVal += part;
+	}
+
+	//return what we've found
+	returnVbString(returnVal);
+
+}
+
+//////////////////////////////////////////////////////////////////////////
 // Count the number of values in an equation
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY RPGCValueNumber(VB_STRING pText)
@@ -27,9 +82,9 @@ int APIENTRY RPGCValueNumber(VB_STRING pText)
 	inlineString text = initVbString(pText);		//Text we're operating on
 	int length = text.len();						//Text length
 	int t = 0;										//For loop
-	int ele = 1;
+	int ele = 1;									//Current return value
 	inlineString part(1);							//Character
-	bool ignoreNext = false;
+	bool ignoreNext = false;						//Within quotes?
 
 	for (t = 1; t <= length; t++)
 	{
@@ -41,7 +96,7 @@ int APIENTRY RPGCValueNumber(VB_STRING pText)
 		else if ( part == "=" || part == "+" || part == "-" || part == "/" || part == "*" || part == BACKSLASH || part == "^" )
 		{
 			if (!ignoreNext) 
-					ele++;
+				ele++;
 		}
 	}
 	return ele;
@@ -52,6 +107,7 @@ int APIENTRY RPGCValueNumber(VB_STRING pText)
 //////////////////////////////////////////////////////////////////////////
 void APIENTRY RPGCParseWithin(VB_STRING pText, VB_STRING startSymbol, VB_STRING endSymbol)
 {
+
 	inlineString text = initVbString(pText);				//Text we're operating on
 	inlineString symbolStart(initVbString(startSymbol), 1); //Starting symbol
 	inlineString symbolEnd(initVbString(endSymbol), 1);		//Ending symbol
@@ -62,7 +118,7 @@ void APIENTRY RPGCParseWithin(VB_STRING pText, VB_STRING startSymbol, VB_STRING 
 	int ignoreDepth = 0;									//Ignore
 	inlineString part(1);									//Character
 	inlineString toRet;										//The stuff we'll return
-	
+
 	for (t = 1; t <= length; t++)
 	{
 		part = text.mid(t, 1);
@@ -136,22 +192,16 @@ void APIENTRY RPGCGetVarList(VB_STRING pText, int number)
                     return;
 				}
                 else
-				{
 					//not the one we wanted
                     returnVal = "";
-                }
 			}
             else
-			{
 				//inside quotes, can't use it
                 returnVal += part;
-            }
 		}
         else
-		{
 			//save the character
             returnVal += part;
-        }
 
     }
 
@@ -188,9 +238,7 @@ void APIENTRY RPGCParseAfter(VB_STRING pText, VB_STRING startSymbol)
 	if (foundIt)
 	{
 		for (t = startAt + 1; t <= length; t++)
-		{
 			toRet += text.mid(t, 1);
-		}
 	}
 
 	//Return what we found
@@ -224,9 +272,7 @@ void APIENTRY RPGCParseBefore(VB_STRING pText, VB_STRING startSymbol)
 			return;
 		}
 		else
-		{
 			toRet += part;
-		}
 	}
 
 	//return empty string
@@ -302,13 +348,9 @@ void APIENTRY RPGCGetMethodName(VB_STRING pText)
         //Find name  of method
         part = text.mid(t, 1);
 		if ( part == " " || part == "(" )
-		{
             t = length + 1;
-        }
 		else
-		{
             mName += part;
-        }
     }
 
 	//return what we found

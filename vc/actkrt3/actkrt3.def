@@ -1,11 +1,18 @@
-; actkrt2.def : Declares the module parameters for the DLL.
-;All contents copyright 2003, Christopher Matthews
-;All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+;/////////////////////////////////////////////////////////////////////////
+;All contents copyright 2003, 2004, Christopher Matthews or Contributors
+;All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
 ;Read LICENSE.txt for licensing info
+;/////////////////////////////////////////////////////////////////////////
 
+;/////////////////////////////////////////////////////////////////////////
+; Misc settings
+;/////////////////////////////////////////////////////////////////////////
 LIBRARY      "actkrt3"
 DESCRIPTION  'actkrt3 Windows Dynamic Link Library'
 
+;/////////////////////////////////////////////////////////////////////////
+; Exports list
+;/////////////////////////////////////////////////////////////////////////
 EXPORTS
 	TKInit				@1
 	TKClose				@2
@@ -191,3 +198,4 @@ EXPORTS
 	RPGCGetVarList		@238
 	RPGCParseWithin	    @239
 	RPGCValueNumber		@240
+	RPGCGetElement		@241

@@ -61,6 +61,7 @@ void APIENTRY RPGCParseAfter(VB_STRING, VB_STRING);
 void APIENTRY RPGCParseBefore(VB_STRING, VB_STRING);
 void APIENTRY RPGCGetVarList(VB_STRING, int);
 void APIENTRY RPGCParseWithin(VB_STRING, VB_STRING, VB_STRING);
+void APIENTRY RPGCGetElement(VB_STRING, int);
 int APIENTRY RPGCValueNumber(VB_STRING);
 
 //////////////////////////////////////////////////////////////////////////
