@@ -15,14 +15,14 @@ Begin VB.Form frmCommonImages
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
-      Height          =   375
+      Height          =   495
       Left            =   2520
       Picture         =   "frmCommonImages.frx":0000
-      ScaleHeight     =   345
-      ScaleWidth      =   345
+      ScaleHeight     =   465
+      ScaleWidth      =   465
       TabIndex        =   3
       Top             =   120
-      Width           =   375
+      Width           =   495
    End
    Begin VB.PictureBox picNormal 
       Appearance      =   0  'Flat
@@ -30,9 +30,9 @@ Begin VB.Form frmCommonImages
       ForeColor       =   &H80000008&
       Height          =   495
       Left            =   120
-      MouseIcon       =   "frmCommonImages.frx":0F72
+      MouseIcon       =   "frmCommonImages.frx":05E1
       MousePointer    =   99  'Custom
-      Picture         =   "frmCommonImages.frx":127C
+      Picture         =   "frmCommonImages.frx":08EB
       ScaleHeight     =   465
       ScaleWidth      =   465
       TabIndex        =   2
@@ -46,7 +46,7 @@ Begin VB.Form frmCommonImages
       ForeColor       =   &H80000008&
       Height          =   450
       Left            =   1920
-      Picture         =   "frmCommonImages.frx":17D4
+      Picture         =   "frmCommonImages.frx":0E43
       ScaleHeight     =   450
       ScaleWidth      =   450
       TabIndex        =   1
@@ -59,7 +59,7 @@ Begin VB.Form frmCommonImages
       ForeColor       =   &H80000008&
       Height          =   495
       Left            =   720
-      Picture         =   "frmCommonImages.frx":2265
+      Picture         =   "frmCommonImages.frx":18D4
       ScaleHeight     =   465
       ScaleWidth      =   465
       TabIndex        =   0
@@ -71,7 +71,7 @@ Begin VB.Form frmCommonImages
       Height          =   450
       Left            =   1320
       MousePointer    =   99  'Custom
-      Picture         =   "frmCommonImages.frx":27BD
+      Picture         =   "frmCommonImages.frx":1E2C
       ToolTipText     =   "Close"
       Top             =   120
       Width           =   450

@@ -129,15 +129,15 @@ newArray:
     'Redraw all open tiles
     '========================================================================
     Public Sub redrawAllTiles()
-        Dim a As Long, currentTile As tileedit
-        Set currentTile = activeTile
+        Dim a As Long, currenttile As tileedit
+        Set currenttile = activeTile
         For a = 0 To UBound(openTileEditors)
             If Not openTileEditors(a) Is Nothing Then
                 Set activeTile = openTileEditors(a)
                 Call activeTile.tileRedraw
             End If
         Next a
-        Set activeTile = currentTile
+        Set activeTile = currenttile
     End Sub
 
     '========================================================================

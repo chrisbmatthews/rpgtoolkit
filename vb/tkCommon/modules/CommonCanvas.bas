@@ -9,7 +9,7 @@ Attribute VB_Name = "CommonCanvas"
 ' CommonTkCanvas.bas
 Option Explicit
 
-Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal height As Long)
+Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
     'load background, sized
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
@@ -17,7 +17,7 @@ Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal 
         Call openBackground(bkgFile, bkg)
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
-        Call DrawBackground(bkg, X, Y, Width, height, hdc)
+        Call DrawBackground(bkg, x, y, Width, height, hdc)
         Call CanvasCloseHDC(canvasID, hdc)
     End If
 End Sub
@@ -70,7 +70,7 @@ Sub CanvasDrawHand(ByVal canvasID As Long, ByVal pointx As Long, ByVal pointy As
     End If
 End Sub
 
-Sub CanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Double, ByVal Y As Double, ByVal crColor As Long, Optional ByVal Bold As Boolean = False, Optional ByVal Italics As Boolean = False, Optional ByVal Underline As Boolean = False, Optional ByVal centred As Boolean = False, Optional ByVal outlined As Boolean = False)
+Sub CanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, Optional ByVal Bold As Boolean = False, Optional ByVal Italics As Boolean = False, Optional ByVal Underline As Boolean = False, Optional ByVal centred As Boolean = False, Optional ByVal outlined As Boolean = False)
     'draw text to a canvas...
     On Error Resume Next
     
@@ -78,7 +78,7 @@ Sub CanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As S
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
                 
-        Call drawGDIText(Text, X, Y, crColor, size, size, font, Bold, Italics, Underline, hdc, centred, outlined)
+        Call drawGDIText(Text, x, y, crColor, size, size, font, Bold, Italics, Underline, hdc, centred, outlined)
                 
         Call CanvasCloseHDC(canvasID, hdc)
     End If
@@ -146,12 +146,12 @@ Sub CanvasBox(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal 
     'fill a box on the canvas with a color.
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-    Dim rgn As Long, brush As Long, hdc As Long, a As Long
+    Dim rgn As Long, brush As Long, hdc As Long, A As Long
         rgn = CreateRectRgn(x1, y1, x2 + 1, y2 + 1)
         brush = CreateSolidBrush(crColor)
         
         hdc = CanvasOpenHDC(canvasID)
-        a = FrameRgn(hdc, rgn, brush, 1, 1)
+        A = FrameRgn(hdc, rgn, brush, 1, 1)
         Call CanvasCloseHDC(canvasID, hdc)
         
         Call DeleteObject(rgn)
@@ -183,11 +183,11 @@ Sub CanvasDrawEllipse(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long
     'draw an ellipse inside the rectangle defined.
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Dim rgn As Long, brush As Long, hdc As Long, a As Long
+        Dim rgn As Long, brush As Long, hdc As Long, A As Long
         rgn = CreateEllipticRgn(x1, y1, x2 + 1, y2 + 1)
         brush = CreateSolidBrush(crColor)
         hdc = CanvasOpenHDC(canvasID)
-        a = FrameRgn(hdc, rgn, brush, 1, 1)
+        A = FrameRgn(hdc, rgn, brush, 1, 1)
         Call CanvasCloseHDC(canvasID, hdc)
         Call DeleteObject(rgn)
         Call DeleteObject(brush)
@@ -344,12 +344,12 @@ Sub CanvasFill(ByVal canvasID As Long, ByVal crColor As Long)
     Call CanvasFillBox(canvasID, 0, 0, GetCanvasWidth(canvasID), GetCanvasHeight(canvasID), crColor)
 End Sub
 
-Function CanvasGetPixel(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long) As Long
+Function CanvasGetPixel(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) As Long
     'get pixel on the canvas.
     On Error Resume Next
     
     If CanvasOccupied(canvasID) Then
-        CanvasGetPixel = CNVGetPixel(canvasID, X, Y)
+        CanvasGetPixel = CNVGetPixel(canvasID, x, y)
     Else
         CanvasGetPixel = -1
     End If
@@ -397,12 +397,12 @@ Sub CanvasRefresh(ByVal canvasID As Long)
     'End If
 End Sub
 
-Function CanvasSetPixel(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
+Function CanvasSetPixel(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
     'set pixel into the canvas.
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         'CanvasSetPixel = SetPixelV(CanvasHDC(canvasID), x, y, crColor)
-        CanvasSetPixel = CNVSetPixel(canvasID, X, Y, crColor)
+        CanvasSetPixel = CNVSetPixel(canvasID, x, y, crColor)
     Else
         CanvasSetPixel = -1
     End If

@@ -66,19 +66,19 @@ Sub saveBackground(ByVal file As String, ByRef theBkg As TKBackground)
 
     Call Kill(file)
     
-    Open file For Binary As #num
-        Call BinWriteString(num, "RPGTLKIT BKG")    'Filetype
-        Call BinWriteInt(num, major)               'Version
-        Call BinWriteInt(num, 3)                   '2.3 == version 3 background
+    Open file For Binary Access Write As num
+        Call BinWriteString(num, "RPGTLKIT BKG")        'Filetype
+        Call BinWriteInt(num, major)                    'Version
+        Call BinWriteInt(num, 3)                        '2.3 == version 3 background
         Call BinWriteString(num, theBkg.image)
-        Call BinWriteString(num, theBkg.bkgMusic$)        'music to play
-        Call BinWriteString(num, theBkg.bkgSelWav$)      'wav to play when moving on the menu
-        Call BinWriteString(num, theBkg.bkgChooseWav$)   'wav to play when player chooses from menu
-        Call BinWriteString(num, theBkg.bkgReadyWav$)    'wav to play when player is ready
-        Call BinWriteString(num, theBkg.bkgCantDoWav$)   'wav to play when you can't do something
-    Close #num
-End Sub
+        Call BinWriteString(num, theBkg.bkgMusic)       'music to play
+        Call BinWriteString(num, theBkg.bkgSelWav)      'wav to play when moving on the menu
+        Call BinWriteString(num, theBkg.bkgChooseWav)   'wav to play when player chooses from menu
+        Call BinWriteString(num, theBkg.bkgReadyWav)    'wav to play when player is ready
+        Call BinWriteString(num, theBkg.bkgCantDoWav)   'wav to play when you can't do something
+    Close num
 
+End Sub
 
 Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
     'open background

@@ -19,24 +19,24 @@ Declare Function GFXKill Lib "actkrt3.dll" () As Long
 Declare Function GFXAbout Lib "actkrt3.dll" () As Long
 
 Declare Function GFXdrawpixel Lib "actkrt3.dll" (ByVal hdc As Long, _
-                                                                     ByVal X As Long, _
-                                                                     ByVal Y As Long, _
+                                                                     ByVal x As Long, _
+                                                                     ByVal y As Long, _
                                                                      ByVal col As Long) As Long
 Declare Function GFXInitScreen Lib "actkrt3.dll" (ByVal screenX As Long, _
                                                 ByVal screenY As Long) As Long
 
 
 Declare Function GFXdrawtile Lib "actkrt3.dll" (ByVal fName As String, _
-                                                ByVal X As Double, _
-                                                ByVal Y As Double, _
+                                                ByVal x As Double, _
+                                                ByVal y As Double, _
                                                 ByVal rred As Long, _
                                                 ByVal ggreen As Long, _
                                                 ByVal bblue As Long, _
                                                 ByVal hdc As Long, ByVal nIsometric As Long, Optional ByVal isoEvenOdd As Long = 0) As Long
 
 Declare Function GFXdrawtilemask Lib "actkrt3.dll" (ByVal fName As String, _
-                                                ByVal X As Double, _
-                                                ByVal Y As Double, _
+                                                ByVal x As Double, _
+                                                ByVal y As Double, _
                                                 ByVal rred As Long, _
                                                 ByVal ggreen As Long, _
                                                 ByVal bblue As Long, _
@@ -105,16 +105,16 @@ Declare Function TKInit Lib "actkrt3.dll" () As Long
 Declare Function TKClose Lib "actkrt3.dll" () As Long
 
 Declare Function GFXDrawTileCNV Lib "actkrt3.dll" (ByVal fName As String, _
-                                                ByVal X As Double, _
-                                                ByVal Y As Double, _
+                                                ByVal x As Double, _
+                                                ByVal y As Double, _
                                                 ByVal rred As Long, _
                                                 ByVal ggreen As Long, _
                                                 ByVal bblue As Long, _
                                                 ByVal cnvHandle As Long, ByVal nIsometric As Long, Optional ByVal isoEvenOdd As Long = 0) As Long
 
 Declare Function GFXDrawTileMaskCNV Lib "actkrt3.dll" (ByVal fName As String, _
-                                                ByVal X As Double, _
-                                                ByVal Y As Double, _
+                                                ByVal x As Double, _
+                                                ByVal y As Double, _
                                                 ByVal rred As Long, _
                                                 ByVal ggreen As Long, _
                                                 ByVal bblue As Long, _
@@ -135,14 +135,14 @@ Declare Function GFXDrawBoardCNV Lib "actkrt3.dll" (ByVal cnv As Long, _
                                                 ByVal ab As Long, _
                                                 ByVal nIsometric As Long) As Long
 
-Sub drawtile(ByVal dc As Long, ByVal file$, ByVal X As Double, ByVal Y As Double, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal bMask As Boolean, Optional ByVal bNonTransparentMask As Boolean = True, Optional ByVal bIsometric As Boolean = False, Optional ByVal isoEvenOdd As Boolean = False)
+Sub drawtile(ByVal dc As Long, ByVal file$, ByVal x As Double, ByVal y As Double, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal bMask As Boolean, Optional ByVal bNonTransparentMask As Boolean = True, Optional ByVal bIsometric As Boolean = False, Optional ByVal isoEvenOdd As Boolean = False)
     'draw a tile, or optionally its mask...
     'isEvenOdd - of the tile is in board coords at an odd y coord, then this will be flase, else true
     On Error GoTo ErrorHandler
     
     Dim anm As TKTileAnm
     
-    Dim iso As Long, of As String, Temp As String, ex As String, ff As String, a As Long
+    Dim iso As Long, of As String, Temp As String, ex As String, ff As String, A As Long
     If bIsometric Then
         iso = 1
     Else
@@ -178,12 +178,12 @@ Sub drawtile(ByVal dc As Long, ByVal file$, ByVal X As Double, ByVal Y As Double
             ChangeDir (PakTempPath$)
             ff$ = RemovePath(of$)
             If Not (bMask) Then
-                a = GFXdrawtile(ff$, X, Y, r, g, b, dc, iso, isoeo)
+                A = GFXdrawtile(ff$, x, y, r, g, b, dc, iso, isoeo)
             Else
                 If bNonTransparentMask Then
-                    a = GFXdrawtilemask(ff$, X, Y, r, g, b, dc, 1, iso, isoeo)
+                    A = GFXdrawtilemask(ff$, x, y, r, g, b, dc, 1, iso, isoeo)
                 Else
-                    a = GFXdrawtilemask(ff$, X, Y, r, g, b, dc, 0, iso, isoeo)
+                    A = GFXdrawtilemask(ff$, x, y, r, g, b, dc, 0, iso, isoeo)
                 End If
             End If
             ChangeDir (currentDir$)
@@ -200,12 +200,12 @@ Sub drawtile(ByVal dc As Long, ByVal file$, ByVal X As Double, ByVal Y As Double
         ChDir (projectPath$)
         ff$ = RemovePath(file$)
         If Not (bMask) Then
-            a = GFXdrawtile(ff$, X, Y, r, g, b, dc, iso, isoeo)
+            A = GFXdrawtile(ff$, x, y, r, g, b, dc, iso, isoeo)
         Else
             If bNonTransparentMask Then
-                a = GFXdrawtilemask(ff$, X, Y, r, g, b, dc, 1, iso, isoeo)
+                A = GFXdrawtilemask(ff$, x, y, r, g, b, dc, 1, iso, isoeo)
             Else
-                a = GFXdrawtilemask(ff$, X, Y, r, g, b, dc, 0, iso, isoeo)
+                A = GFXdrawtilemask(ff$, x, y, r, g, b, dc, 0, iso, isoeo)
             End If
         End If
         ChDir (currentDir$)
@@ -218,14 +218,14 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Sub drawtileCNV(ByVal cnv As Long, ByVal file$, ByVal X As Double, ByVal Y As Double, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal bMask As Boolean, Optional ByVal bNonTransparentMask As Boolean = True, Optional ByVal bIsometric As Boolean = False, Optional ByVal isoEvenOdd As Boolean = False)
+Sub drawtileCNV(ByVal cnv As Long, ByVal file$, ByVal x As Double, ByVal y As Double, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal bMask As Boolean, Optional ByVal bNonTransparentMask As Boolean = True, Optional ByVal bIsometric As Boolean = False, Optional ByVal isoEvenOdd As Boolean = False)
     'draw a tile, or optionally its mask...
     'isEvenOdd - of the tile is in board coords at an odd y coord, then this will be flase, else true
     On Error GoTo ErrorHandler
     
     Dim anm As TKTileAnm
     
-    Dim iso As Long, of As String, Temp As String, ex As String, ff As String, a As Long
+    Dim iso As Long, of As String, Temp As String, ex As String, ff As String, A As Long
     If bIsometric Then
         iso = 1
     Else
@@ -261,12 +261,12 @@ Sub drawtileCNV(ByVal cnv As Long, ByVal file$, ByVal X As Double, ByVal Y As Do
             ChangeDir (PakTempPath$)
             ff$ = RemovePath(of$)
             If Not (bMask) Then
-                a = GFXDrawTileCNV(ff$, X, Y, r, g, b, cnv, iso, isoeo)
+                A = GFXDrawTileCNV(ff$, x, y, r, g, b, cnv, iso, isoeo)
             Else
                 If bNonTransparentMask Then
-                    a = GFXDrawTileMaskCNV(ff$, X, Y, r, g, b, cnv, 1, iso, isoeo)
+                    A = GFXDrawTileMaskCNV(ff$, x, y, r, g, b, cnv, 1, iso, isoeo)
                 Else
-                    a = GFXDrawTileMaskCNV(ff$, X, Y, r, g, b, cnv, 0, iso, isoeo)
+                    A = GFXDrawTileMaskCNV(ff$, x, y, r, g, b, cnv, 0, iso, isoeo)
                 End If
             End If
             ChangeDir (currentDir$)
@@ -283,12 +283,12 @@ Sub drawtileCNV(ByVal cnv As Long, ByVal file$, ByVal X As Double, ByVal Y As Do
         ChDir (projectPath$)
         ff$ = RemovePath(file$)
         If Not (bMask) Then
-            a = GFXDrawTileCNV(ff$, X, Y, r, g, b, cnv, iso, isoeo)
+            A = GFXDrawTileCNV(ff$, x, y, r, g, b, cnv, iso, isoeo)
         Else
             If bNonTransparentMask Then
-                a = GFXDrawTileMaskCNV(ff$, X, Y, r, g, b, cnv, 1, iso, isoeo)
+                A = GFXDrawTileMaskCNV(ff$, x, y, r, g, b, cnv, 1, iso, isoeo)
             Else
-                a = GFXDrawTileMaskCNV(ff$, X, Y, r, g, b, cnv, 0, iso, isoeo)
+                A = GFXDrawTileMaskCNV(ff$, x, y, r, g, b, cnv, 0, iso, isoeo)
             End If
         End If
         ChDir (currentDir$)
@@ -301,13 +301,13 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Function GFXBoardTile(ByVal X As Long, ByVal Y As Long, ByVal l As Long) As Long
+Function GFXBoardTile(ByVal x As Long, ByVal y As Long, ByVal l As Long) As Long
     'get tile name on the board...
     On Error Resume Next
     Dim res As String
     Dim Length As Long
     
-    res = BoardGetTile(X, Y, l, boardList(activeBoardIndex).theData)
+    res = BoardGetTile(x, y, l, boardList(activeBoardIndex).theData)
     
     If GetExt(UCase$(res)) = "TAN" Then
         'it's an animated tile-- pass back the first frame
@@ -324,30 +324,30 @@ Function GFXBoardTile(ByVal X As Long, ByVal Y As Long, ByVal l As Long) As Long
     GFXBoardTile = Len(res)
 End Function
 
-Function GFXBoardRed(ByVal X As Long, ByVal Y As Long, ByVal l As Long) As Long
+Function GFXBoardRed(ByVal x As Long, ByVal y As Long, ByVal l As Long) As Long
     'get red tile on the board...
     On Error Resume Next
-    GFXBoardRed = boardList(activeBoardIndex).theData.ambientred(X, Y, l)
+    GFXBoardRed = boardList(activeBoardIndex).theData.ambientred(x, y, l)
 End Function
 
-Function GFXBoardGreen(ByVal X As Long, ByVal Y As Long, ByVal l As Long) As Long
+Function GFXBoardGreen(ByVal x As Long, ByVal y As Long, ByVal l As Long) As Long
     'get red tile on the board...
     On Error Resume Next
-    GFXBoardGreen = boardList(activeBoardIndex).theData.ambientgreen(X, Y, l)
+    GFXBoardGreen = boardList(activeBoardIndex).theData.ambientgreen(x, y, l)
 End Function
 
-Function GFXBoardBlue(ByVal X As Long, ByVal Y As Long, ByVal l As Long) As Long
+Function GFXBoardBlue(ByVal x As Long, ByVal y As Long, ByVal l As Long) As Long
     'get blue tile on the board...
     On Error Resume Next
-    GFXBoardBlue = boardList(activeBoardIndex).theData.ambientblue(X, Y, l)
+    GFXBoardBlue = boardList(activeBoardIndex).theData.ambientblue(x, y, l)
 End Function
 
 Function InitRuntime() As Boolean
     'init runtime dll
     On Error GoTo rterr
     
-    Dim a As Long
-    a = TKInit()
+    Dim A As Long
+    A = TKInit()
     InitRuntime = True
     Exit Function
 rterr:

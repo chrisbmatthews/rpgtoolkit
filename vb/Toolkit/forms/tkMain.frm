@@ -908,8 +908,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2464,13 +2464,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "14/08/2004"
+            TextSave        =   "15/08/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "6:53 PM"
+            TextSave        =   "1:42 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2912,7 +2912,7 @@ Public Sub openFile(ByVal fName As String)
             Call frm.Show
             Set activeAnimation = frm
             Call activeAnimation.openFile(fName)
-            
+
         Case "TAN"
             Set frm = New tileanim
             Call frm.Show
@@ -2973,46 +2973,46 @@ Public Sub fillTree(ByVal parentNode As String, ByVal folder As String): On Erro
     
     'first fill with folders...
     
-    Dim a As String
+    Dim A As String
     Dim b As String
     Dim ex As String
     
-    a$ = Dir$(folder + "*.*", vbDirectory)
-    a$ = Dir$()
-    a$ = Dir$()
-    Do While a$ <> ""
-        If (isFolder(folder + a$)) Then
+    A$ = Dir$(folder + "*.*", vbDirectory)
+    A$ = Dir$()
+    A$ = Dir$()
+    Do While A$ <> ""
+        If (isFolder(folder + A$)) Then
             If parentNode <> "" Then
-                Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, a$, a$, 1)
+                Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, A$, A$, 1)
                 'do subtrees...
-                Call fillTree(a$, folder + a$ + "\")
+                Call fillTree(A$, folder + A$ + "\")
                 
                 'reset dir counter
                 b$ = Dir$(folder + "*.*", vbDirectory)
-                Do While b$ <> a$
+                Do While b$ <> A$
                     b$ = Dir$()
                 Loop
             Else
-                Call tkMainForm.TreeView1.Nodes.Add(, , a$, a$, 1)
+                Call tkMainForm.TreeView1.Nodes.Add(, , A$, A$, 1)
                 'do subtrees...
-                Call fillTree(a$, folder + a$ + "\")
+                Call fillTree(A$, folder + A$ + "\")
                 
                 'reset dir counter
                 b$ = Dir$(folder + "*.*", vbDirectory)
-                Do While b$ <> a$
+                Do While b$ <> A$
                     b$ = Dir$()
                 Loop
             End If
         End If
-        a$ = Dir$()
+        A$ = Dir$()
     Loop
     
     'now fill with files...
-    a$ = Dir$(folder + "*.*")
-    Do While a$ <> ""
+    A$ = Dir$(folder + "*.*")
+    Do While A$ <> ""
         Dim gfx As Long
         gfx = 2
-        ex$ = UCase$(GetExt(a$))
+        ex$ = UCase$(GetExt(A$))
         Select Case ex$
             Case "GAM":
                 gfx = 3
@@ -3047,11 +3047,11 @@ Public Sub fillTree(ByVal parentNode As String, ByVal folder As String): On Erro
         End Select
         
         If parentNode <> "" Then
-            Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, a$, a$, gfx)
+            Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, A$, A$, gfx)
         Else
-            Call tkMainForm.TreeView1.Nodes.Add(, , a$, a$, gfx)
+            Call tkMainForm.TreeView1.Nodes.Add(, , A$, A$, gfx)
         End If
-        a$ = Dir$()
+        A$ = Dir$()
     Loop
 
 End Sub
@@ -3209,9 +3209,9 @@ End Sub
 
 Public Sub createpakfilemnu_Click(): On Error GoTo ErrorHandler
     
-    Dim a As Boolean
-    a = PAKTestSystem()
-    If a = False Then Exit Sub
+    Dim A As Boolean
+    A = PAKTestSystem()
+    If A = False Then Exit Sub
     
     pakfile.Show
     
@@ -3223,8 +3223,8 @@ ErrorHandler:
 End Sub
 
 Public Sub createsetupmnu_Click(): On Error Resume Next
-    Dim a As Long
-    a = Shell("setupkit.exe", 1)
+    Dim A As Long
+    A = Shell("setupkit.exe", 1)
     'mainoption.ZOrder 1
     Exit Sub
 End Sub
@@ -3305,10 +3305,10 @@ ErrorHandler:
 End Sub
 
 Public Sub installupgrademnu_Click(): On Error Resume Next
-    Dim aa As Long, a As Long
+    Dim aa As Long, A As Long
     aa = MsgBox(LoadStringLoc(929, "In order to install an upgrade, the Toolkit must be shut down.  You will lose unsaved info.  Do you wish to close the Toolkit now?"), vbYesNo, LoadStringLoc(930, "Install Upgrade"))
     If aa = 6 Then
-        a = Shell("tkupdate.exe")
+        A = Shell("tkupdate.exe")
         Call exitmnu_Click
         End
         Exit Sub
@@ -3500,13 +3500,13 @@ Private Sub ReadCommandLine_Timer()
         With Edit
             .tag = "1"
             .mnuNewProject.Visible = False
-            .mnuNew.Visible = False
+            .mnunew.Visible = False
             .mnuNewPRG.Visible = True
             .mnuOpenProject.Visible = False
             .mnuSaveAll.Visible = False
             .closemnu.Visible = False
             .mnuToolkit.Visible = False
-            .mnuBuild.Visible = False
+            .mnubuild.Visible = False
             .mnuWindow.Visible = False
             .Show
             Dim fCaption As String
@@ -3571,9 +3571,9 @@ End Sub
 
 Public Sub makeexemnu_Click(): On Error GoTo ErrorHandler
 
-    Dim a As Boolean
-    a = PAKTestSystem()
-    If a = False Then Exit Sub
+    Dim A As Boolean
+    A = PAKTestSystem()
+    If A = False Then Exit Sub
 
     makeexe.Show
     
@@ -3613,9 +3613,9 @@ Private Sub MDIForm_Load(): On Error Resume Next
     'check if we have top upgrade...
     upgradeYN = checkForArcPath()
     If upgradeYN = True Then
-        Dim a As Long
-        a = MsgBox("It appears that you have upgraded from version 2.06b or lower.  This version of the Toolkit uses a new filesystem.  Would you like to upgrade your filesystem? (if you have already upgraded it, you still need to delete the old file system.  In this case, goto File/Delete Old File System)", vbYesNo, "Upgrade Your Game")
-        If a = 6 Then
+        Dim A As Long
+        A = MsgBox("It appears that you have upgraded from version 2.06b or lower.  This version of the Toolkit uses a new filesystem.  Would you like to upgrade your filesystem? (if you have already upgraded it, you still need to delete the old file system.  In this case, goto File/Delete Old File System)", vbYesNo, "Upgrade Your Game")
+        If A = 6 Then
             'show as modal form
             upgradeform.Show (1)
             Exit Sub
@@ -4100,7 +4100,7 @@ Public Sub testgamemnu_Click()
 
     On Error GoTo ErrorHandler
     
-    Dim Command As String, a As Long
+    Dim Command As String, A As Long
     
     'Checks to see if there is a .gam file.
     If mainfile$ = "" Then
@@ -4113,7 +4113,7 @@ Public Sub testgamemnu_Click()
         Command$ = "trans3 " + mainfile$
         
         'Run trans3 through the Shell. Fix: Added second argument, to give trans3 the focus.
-        a = Shell(Command$, vbNormalFocus)
+        A = Shell(Command$, vbNormalFocus)
     
     End If
 

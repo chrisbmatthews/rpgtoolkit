@@ -17,7 +17,6 @@ Public Const GS_MOVEMENT = 2    'movement is occurring (players or items)
 Public Const GS_DONEMOVE = 3    'movement is finished
 Public Const GS_PAUSE = 4       'pause game
 
-Private framesDrawn As Long     'frames drawn
 Public movementCounter As Long  'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
 Public loaded As Long           'was the game loaded from start menu? 0-no, 1-yes
 Public runningAsEXE As Boolean  'are we running as an exe file?
@@ -28,7 +27,7 @@ Public Sub closeSystems()
     On Error Resume Next
 
     gShuttingDown = True
-    
+
     Call stopMedia
     Call stopMenuPlugin
     Call stopFightPlugin
@@ -46,7 +45,7 @@ Public Sub closeSystems()
         Call Kill(TempDir & "freeImage.dll")
         Call Kill(TempDir & "temp.tpk")
     End If
-    
+
 End Sub
 
 Public Function getMainFilename() As String
@@ -211,12 +210,16 @@ Public Sub mainLoop()
     'main execution loop
         
     On Error Resume Next
-    
+
     Dim bDone As Boolean
-    Dim a As Long
-    
-    Dim tt As Long
-    tt = Timer
+
+    #Const isRelease = 0
+
+    #If Not isRelease = 1 Then
+        Dim framesDrawn As Long
+        Dim tt As Long
+        tt = Timer()
+    #End If
 
     Dim checkFight As Long
 
@@ -226,30 +229,35 @@ Public Sub mainLoop()
         
             Case GS_IDLE
 
-                checkMusic
-                renderNow
-                MultiTaskNow
-                scanKeys
-                updateGameTime
+                Call checkMusic
+                Call renderNow
+                Call MultiTaskNow
+                Call scanKeys
+                Call updateGameTime
                 DoEvents
-                framesDrawn = framesDrawn + 1
+                
+                #If Not isRelease = 1 Then
+                    framesDrawn = framesDrawn + 1
+                #End If
 
             Case GS_MOVEMENT:
                 'movement has occurred...
 
-                moveItems
-                movePlayers
+                Call moveItems
+                Call movePlayers
 
-                framesDrawn = framesDrawn + 1
+                #If Not isRelease = 1 Then
+                    framesDrawn = framesDrawn + 1
+                #End If
                 
                 'this should be called 4 times (moving 0.25 each time)
                 movementCounter = movementCounter + 1
 
-                renderNow
+                Call renderNow
 
                 If movementCounter < 4 Then
                     gGameState = GS_MOVEMENT
-                    If (Not GS_ANIMATING) And (Not GS_LOOPING) Then delay walkDelay
+                    If (Not GS_ANIMATING) And (Not GS_LOOPING) Then Call delay(walkDelay)
                 Else
                     gGameState = GS_DONEMOVE
                 End If
@@ -264,18 +272,16 @@ Public Sub mainLoop()
                     pendingItemMovement(cnt).direction = MV_IDLE
                     
                     'Isometric fix:
-                    pendingItemMovement(cnt).xOrig = itmPos(cnt).X
+                    pendingItemMovement(cnt).xOrig = itmPos(cnt).x
                     pendingItemMovement(cnt).yOrig = itmPos(cnt).Y
                 Next cnt
                 
                 'The pending movements have to be cleared *before* any programs are run,
                 'whereas the movement direction can only be cleared afterwards.
                 For cnt = 0 To UBound(pendingPlayerMovement)
-                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).X
+                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).x
                     pendingPlayerMovement(cnt).yOrig = ppos(cnt).Y
                 Next cnt
-
-                
                 
                 'check if player moved...
                 If pendingPlayerMovement(selectedPlayer).direction <> MV_IDLE Then
@@ -285,33 +291,31 @@ Public Sub mainLoop()
                     Dim tempPos As PLAYER_POSITION
                     tempPos = ppos(selectedPlayer)
 
-                    ' !MODIFIED BY KSNiloc...
                     tempPos.l = Round(pendingPlayerMovement(selectedPlayer).lTarg)
-                    tempPos.X = Round(pendingPlayerMovement(selectedPlayer).xTarg)
+                    tempPos.x = Round(pendingPlayerMovement(selectedPlayer).xTarg)
                     tempPos.Y = Round(pendingPlayerMovement(selectedPlayer).yTarg)
-                                   
+
                     pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
                     Call programTest(tempPos)
-                    
-                    ' KSNiloc...
+
                     checkFight = checkFight + 1
                     If checkFight = 4 Then
-                        fightTest
+                        Call fightTest
                         checkFight = 0
                     End If
+
                 End If
-                'Call MBox("test", "title", MBT_OK, RGB(255, 255, 255), 0, "")
-                
+
                 'clear player movements
                 For cnt = 0 To UBound(pendingPlayerMovement)
                     pendingPlayerMovement(cnt).direction = MV_IDLE
                 Next cnt
-                
-                If UCase$(ppos(selectedPlayer).stance) = "WALK_S" Then facing = 1
-                If UCase$(ppos(selectedPlayer).stance) = "WALK_W" Then facing = 2
-                If UCase$(ppos(selectedPlayer).stance) = "WALK_N" Then facing = 3
-                If UCase$(ppos(selectedPlayer).stance) = "WALK_E" Then facing = 4
-                
+
+                If UCase(ppos(selectedPlayer).stance) = "WALK_S" Then facing = 1
+                If UCase(ppos(selectedPlayer).stance) = "WALK_W" Then facing = 2
+                If UCase(ppos(selectedPlayer).stance) = "WALK_N" Then facing = 3
+                If UCase(ppos(selectedPlayer).stance) = "WALK_E" Then facing = 4
+
                 gGameState = GS_IDLE
                 
             Case GS_QUIT:
@@ -320,18 +324,19 @@ Public Sub mainLoop()
             Case GS_PAUSE:
                 'do nothing!
                 DoEvents
+
         End Select
         
         If Not gGameState = GS_PAUSE Then
         
             If GS_ANIMATING Then
                 'We're running multi-task animations here!
-                handleMultitaskingAnimations
+                Call handleMultitaskingAnimations
             End If
 
             If GS_LOOPING Then
                 'We're in a loop!
-                handleThreadLooping
+                Call handleThreadLooping
                 movementCounter = 5
             End If
 
@@ -394,7 +399,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 'Called by opensystems only.
 
     On Error GoTo errorhandler
-    
+
     topX = 0
     topY = 0
     debugYN = 1
@@ -443,20 +448,20 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)
         Call openItems
 
-        launchBoardThreads boardList(activeBoardIndex).theData
+        Call launchBoardThreads(boardList(activeBoardIndex).theData)
 
         'Setup player position.
-        ppos(0).X = boardList(activeBoardIndex).theData.playerX
+        ppos(0).x = boardList(activeBoardIndex).theData.playerX
         ppos(0).Y = boardList(activeBoardIndex).theData.playerY
         ppos(0).l = boardList(activeBoardIndex).theData.playerLayer
         ppos(0).stance = "WALK_S"
         ppos(0).frame = 0
         selectedPlayer = 0
 
-        Dim pnum As Long
-        For pnum = 0 To UBound(showPlayer)
-            showPlayer(pnum) = False
-        Next pnum
+        Dim pNum As Long
+        For pNum = 0 To UBound(showPlayer)
+            showPlayer(pNum) = False
+        Next pNum
         showPlayer(selectedPlayer) = True
         facing = 1                      'Facing South.
         

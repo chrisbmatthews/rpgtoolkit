@@ -9,6 +9,19 @@ Begin VB.UserControl TKTopBar
    ScaleHeight     =   405
    ScaleWidth      =   4110
    ToolboxBitmap   =   "ctlTKTopBar.ctx":0000
+   Begin VB.PictureBox CloseX 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Left            =   15
+      ScaleHeight     =   375
+      ScaleWidth      =   375
+      TabIndex        =   1
+      Top             =   15
+      Width           =   375
+   End
    Begin VB.Label Label1 
       BackStyle       =   0  'Transparent
       Caption         =   "Caption"
@@ -26,13 +39,6 @@ Begin VB.UserControl TKTopBar
       TabIndex        =   0
       Top             =   15
       Width           =   7500
-   End
-   Begin VB.Image CloseX 
-      Height          =   255
-      Left            =   18
-      MousePointer    =   99  'Custom
-      Top             =   10
-      Width           =   255
    End
    Begin VB.Image topBar 
       Height          =   375
@@ -111,14 +117,10 @@ Private Sub CloseX_Click()
 End Sub
 
 Private Sub UserControl_Initialize()
-
- 'putOnX CloseX.hdc, frmCommonImages.picNewX.hdc
- On Error Resume Next
- CloseX.Picture = frmCommonImages.picNewX.Picture
+ Call GFXInitScreen(640, 480)
+ Call GFXBitBltTransparent(CloseX.hdc, 0, 0, 10, 10, frmCommonImages.picNewX.hdc, 0, 0, 0, 255, 0)
  CloseX.Width = 310
  CloseX.height = 300
- CloseX.Stretch = True
- 'Corner.Picture = Images.Corner
  TopBar.Picture = Images.Corner
  resizeMe
  CloseX.MouseIcon = Images.MouseLink
@@ -158,67 +160,50 @@ End Sub
 
 'First, make actions that are part of the window drag work...
 
-Private Sub Corner_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Corner_Mouseup(button As Integer, Shift As Integer, x As Single, y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub Label1_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Label1_Mouseup(button As Integer, Shift As Integer, x As Single, y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub TopBar_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TopBar_Mouseup(button As Integer, Shift As Integer, x As Single, y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub Corner_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseDownEvent button, X, Y
+Private Sub Corner_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+ mouseDownEvent button, x, y
 End Sub
 
-Private Sub Label1_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseDownEvent button, X, Y
+Private Sub Label1_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+ mouseDownEvent button, x, y
 End Sub
 
-Private Sub TopBar_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseDownEvent button, X, Y
+Private Sub TopBar_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+ mouseDownEvent button, x, y
 End Sub
 
-Private Sub Corner_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseMoveEvent X, Y
+Private Sub Corner_Mousemove(button As Integer, Shift As Integer, x As Single, y As Single)
+ mouseMoveEvent x, y
 End Sub
 
-Private Sub Label1_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseMoveEvent X, Y
+Private Sub Label1_Mousemove(button As Integer, Shift As Integer, x As Single, y As Single)
+ mouseMoveEvent x, y
 End Sub
 
-Private Sub TopBar_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseMoveEvent X, Y
+Private Sub TopBar_Mousemove(button As Integer, Shift As Integer, x As Single, y As Single)
+ mouseMoveEvent x, y
 End Sub
 
-Private Sub mouseDownEvent(ByVal button As Integer, ByVal X As Single, _
- ByVal Y As Single)
+Private Sub mouseDownEvent(ByVal button As Integer, ByVal x As Single, ByVal y As Single)
 
- 'Only the left button can drag the window...
- 'If Not button = 1 Then Exit Sub
- 
- 'Flag that we're dragging the window...
- 'draggingWindow = True
- 
 End Sub
 
 Private Sub mouseUpEvent()
 
- 'We've stopped dragging the window- flag it!
- 'draggingWindow = False
-
 End Sub
 
-Private Sub mouseMoveEvent(ByVal X As Single, ByVal Y As Single)
-
- 'If we're not dragging the window, we shouldn't be here...
- 'If Not draggingWindow Then Exit Sub
-
- 'Move the window to X,Y...
- 'theForm.Left = X
- 'theForm.Top = Y
+Private Sub mouseMoveEvent(ByVal x As Single, ByVal y As Single)
 
 End Sub

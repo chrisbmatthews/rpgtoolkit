@@ -167,7 +167,7 @@ Attribute VB_Exposed = False
 '========================================================================
 '!NEW! Declared variables
 Option Explicit
-Dim X, Y, t, xx, yy As Integer
+Dim x, y, t, xx, yy As Integer
 
 '========================================================================
 ' The OK button, this was first Command3.
@@ -198,13 +198,13 @@ End Sub
 Private Sub chkPreview_Click()
     'If they uncheck it, we should turn the tile back to how it was at the start
     If chkPreview.value = 0 Then
-        For X = 1 To 32
-            For Y = 1 To 32
-                If tileMem(X, Y) <> -1 Then
-                    tileMem(X, Y) = tilePreview(X, Y)
+        For x = 1 To 32
+            For y = 1 To 32
+                If tileMem(x, y) <> -1 Then
+                    tileMem(x, y) = tilePreview(x, y)
                 End If
-            Next Y
-        Next X
+            Next y
+        Next x
     activeTile.tileRedraw
     'If they check it, preview the tile!
     Else
@@ -215,15 +215,15 @@ End Sub
 '========================================================================
 ' Drawbox
 '========================================================================
-Private Sub drawbox(X, Y)
+Private Sub drawbox(x, y)
     On Error GoTo ErrorHandler
     If detail = 1 Or detail = 3 Or detail = 4 Then
         For t = 1 To 8 Step 2
-            Call vbPicLine(tileform, X + t, Y, X + t, Y + 8, vbQBColor(9))
+            Call vbPicLine(tileform, x + t, y, x + t, y + 8, vbQBColor(9))
         Next t
     Else
         For t = 1 To 16 Step 2
-            Call vbPicLine(tileform, X + t, Y, X + t, Y + 16, vbQBColor(9))
+            Call vbPicLine(tileform, x + t, y, x + t, y + 16, vbQBColor(9))
         Next t
     End If
 
@@ -237,13 +237,13 @@ End Sub
 '========================================================================
 ' Drawright
 '========================================================================
-Private Sub drawright(X, Y, sx, sy)
+Private Sub drawright(x, y, sx, sy)
     On Error GoTo ErrorHandler
     
     '!NEW! Declared variable
     Dim col As Long
     
-    col = tilePreview(X, Y)
+    col = tilePreview(x, y)
     
     If col = -1 Then col = vbQBColor(1)
     If detail = 1 Or detail = 3 Or detail = 4 Then
@@ -270,11 +270,11 @@ Private Sub Form_Load()
     If detail = 1 Or detail = 3 Or detail = 5 Then Call highRedrawLight
     If detail = 2 Or detail = 3 Or detail = 5 Then Call lowRedrawLight
     
-    For X = 1 To 32
-        For Y = 1 To 32
-            bufTile(X, Y) = 0
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            bufTile(x, y) = 0
+        Next y
+    Next x
     
     For t = 1 To 10
         Call vbPicCircle(ldir, 50, 50, 35 + t, RGB(0, 0, 100 + t * 10))
@@ -286,13 +286,13 @@ Private Sub Form_Load()
     Call vbPicLine(ldir, 50, 50, 75, 50, 0)
     
     '!NEW! Used to store the current tile for when the "preview" function is used
-    For X = 1 To 32
-        For Y = 1 To 32
+    For x = 1 To 32
+        For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilePreview(X, Y) = tileMem(X, Y)
+                tilePreview(x, y) = tileMem(x, y)
             'End If
-        Next Y
-    Next X
+        Next y
+    Next x
     
     '!NEW! Set the variable to False at the start...
     saveChanges = False
@@ -312,13 +312,13 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If Not saveChanges Then
     'Use new undo
     Call activeTile.setUndo
-    For X = 1 To 32
-        For Y = 1 To 32
+    For x = 1 To 32
+        For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tileMem(X, Y) = tilePreview(X, Y)
+                tileMem(x, y) = tilePreview(x, y)
             'End If
-        Next Y
-    Next X
+        Next y
+    Next x
     'Redraw
     activeTile.tileRedraw
     End If
@@ -327,25 +327,25 @@ End Sub
 '========================================================================
 ' ldir_MouseDown
 '========================================================================
-Private Sub ldir_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub ldir_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
     'now find openTileEditorDocs(activeTile.indice).angle
     'Hypotenuse length
     '!NEW! Declared variables
-    Dim Length, adj, inv, ang, a As Integer
+    Dim Length, adj, inv, ang, A As Integer
     
     On Error GoTo ErrorHandler
-    If X = 50 Or Y = 50 Then Exit Sub
-    Length = Sqr((X - 50) ^ 2 + (Y - 50) ^ 2)
+    If x = 50 Or y = 50 Then Exit Sub
+    Length = Sqr((x - 50) ^ 2 + (y - 50) ^ 2)
     openTileEditorDocs(activeTile.indice).lightLength = Int(Length)
-    adj = X - 50
+    adj = x - 50
     inv = adj / Length
     'This mess is the arccos:
     ang = Atn(-inv / Sqr(-inv * inv + 1)) + 1.5708
     'convert to degrees
     openTileEditorDocs(activeTile.indice).angle = Int((ang * 180) / 3.14)
-    If Y > 50 Then
-        a = 180 - openTileEditorDocs(activeTile.indice).angle
-        openTileEditorDocs(activeTile.indice).angle = 180 + a
+    If y > 50 Then
+        A = 180 - openTileEditorDocs(activeTile.indice).angle
+        openTileEditorDocs(activeTile.indice).angle = 180 + A
     End If
     angtext.Caption = str$(openTileEditorDocs(activeTile.indice).angle) + "--" + str$(openTileEditorDocs(activeTile.indice).lightLength)
     Call vbPicFillRect(ldir, 0, 0, 1000, 1000, vbQBColor(15))
@@ -353,7 +353,7 @@ Private Sub ldir_MouseDown(button As Integer, Shift As Integer, X As Single, Y A
         Call vbPicCircle(ldir, 50, 50, 35 + t, RGB(0, 0, 100 + t * 10))
     Next t
     Call vbPicCircle(ldir, 50, 50, 3, 0)
-    Call vbPicLine(ldir, 50, 50, X, Y, 0)
+    Call vbPicLine(ldir, 50, 50, x, y, 0)
     
     '!NEW! If preview is checked, preview the tile
     If chkPreview.value = 1 Then Call Preview
@@ -368,13 +368,13 @@ End Sub
 '========================================================================
 ' tileform_MouseDown
 '========================================================================
-Private Sub tileform_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
     On Error GoTo ErrorHandler
     '!NEW! Declared variables
     Dim newX, newY As Integer
     
-    xx = Int(X / 10)
-    yy = Int(Y / 10)
+    xx = Int(x / 10)
+    yy = Int(y / 10)
     If xx > (xRange - 1) Or yy > 31 Then Exit Sub
     newX = (xx * 10) + 1
     newY = (yy * 10) + 1
@@ -398,10 +398,10 @@ End Sub
 '========================================================================
 ' tileform_MouseMove
 '========================================================================
-Private Sub tileform_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
     On Error GoTo ErrorHandler
     If button = 1 Then
-        Call tileform_MouseDown(button, Shift, X, Y)
+        Call tileform_MouseDown(button, Shift, x, y)
     End If
 
     Exit Sub
@@ -414,80 +414,9 @@ End Sub
 '========================================================================
 ' !NEW! tileform_MouseUp
 '========================================================================
-Private Sub tileform_MouseUp(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub tileform_MouseUp(button As Integer, Shift As Integer, x As Single, y As Single)
     'If preview is checked, preview the tile
     If chkPreview.value = 1 Then Call Preview
-End Sub
-
-'========================================================================
-' This sub was first in the "Routines" module.
-'========================================================================
-Sub lowRedrawLight()
-    On Error GoTo ErrorHandler
-    'light.tileform.Line (0, 0)-(1000, 1000), vbqbcolor(1), BF
-    Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
-    For X = 1 To 16
-        For Y = 1 To 16
-            xx = (X * 20) - 19
-            yy = (Y * 20) - 19
-            If tileMem(X, Y) <> -1 Then
-                If detail = 2 Then
-                    'light.tileform.Line (xx, yy)-(xx + 18, yy + 18), tilemem(x, y), BF
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tileMem(X, Y))
-                End If
-                If detail = 4 Or detail = 6 Then
-                    'light.tileform.Line (xx, yy)-(xx + 18, yy + 18), gfxgetdoscolor(tilemem(x, y)), BF
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tileMem(X, Y)))
-                End If
-                Else
-                Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, vbQBColor(1))
-            End If
-        Next Y
-    Next X
-    openTileEditorDocs(activeTile.indice).grid = 0
-    'If openTileEditorDocs(activeTile.indice).grid = 1 Then openTileEditorDocs(activeTile.indice).grid = 0: activetile.gridonoff_click Else openTileEditorDocs(activeTile.indice).grid = 1: activetile.gridonoff_click
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-'========================================================================
-' This sub was first in the "Routines" module.
-'========================================================================
-Sub highRedrawLight()
-    On Error GoTo ErrorHandler
-    'light.tileform.Line (0, 0)-(1000, 1000), vbqbcolor(1), BF
-    Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
-    For X = 1 To 32
-        For Y = 1 To 32
-            xx = (X * 10) - 9
-            yy = (Y * 10) - 9
-            If tileMem(X, Y) <> -1 Then
-                If detail = 1 Then
-                    'light.tileform.Line (xx, yy)-((xx + 8), (yy + 8)), tilemem(x, y), BF
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tileMem(X, Y))
-                End If
-                If detail = 3 Or detail = 5 Then
-                    'light.tileform.Line (xx, yy)-((xx + 8), (yy + 8)), gfxgetdoscolor(tilemem(x, y)), BF
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tileMem(X, Y)))
-                End If
-            Else
-                Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, vbQBColor(1))
-            End If
-            
-        Next Y
-    Next X
-    openTileEditorDocs(activeTile.indice).grid = 0
-    'If openTileEditorDocs(activeTile.indice).grid = 1 Then openTileEditorDocs(activeTile.indice).grid = 0: activetile.gridonoff_click Else openTileEditorDocs(activeTile.indice).grid = 1: activetile.gridonoff_click
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 '========================================================================
@@ -495,33 +424,33 @@ End Sub
 '========================================================================
 Sub Preview()
     '!NEW! Declared variables
-    Dim max, st, rad, a, r, g, b, darken As Long
+    Dim max, st, rad, A, r, g, b, darken As Long
     
     'These 2 variables are giving me problems... whatever variable I change
     'them too, they always give me an error.
     Dim newX, newY As Variant
     
     'First we need to to set the tile back to how it was at the start
-    For X = 1 To 32
-        For Y = 1 To 32
+    For x = 1 To 32
+        For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tileMem(X, Y) = tilePreview(X, Y)
+                tileMem(x, y) = tilePreview(x, y)
             'End If
-        Next Y
-    Next X
+        Next y
+    Next x
 
     'The code which adds the light effects to the tile
-    For X = 1 To 32
-        For Y = 1 To 32
-            If bufTile(X, Y) = 1 Then
+    For x = 1 To 32
+        For y = 1 To 32
+            If bufTile(x, y) = 1 Then
                 max = 0.32 * openTileEditorDocs(activeTile.indice).lightLength
                 st = max
                 For t = 1 To max
                     rad = (openTileEditorDocs(activeTile.indice).angle * 3.14) / 180
                     xx = Cos(rad) * t
                     yy = Sin(rad) * t
-                    newX = X + xx
-                    newY = Y + yy
+                    newX = x + xx
+                    newY = y + yy
                     If newX > xRange Then
                         newX = newX - xRange
                     End If
@@ -529,21 +458,21 @@ Sub Preview()
                         newY = newY - xRange
                     End If
                     'Debug.Print "newX: " & newX & ". newY: " & newY
-                    a = tileMem(newX, newY)
+                    A = tileMem(newX, newY)
                     
                     '!EDIT! Edited these lines here, check the documentation for my reason
-                    If a <> -1 Then
-                        r = red(a)
-                        a = tileMem(newX, newY)
+                    If A <> -1 Then
+                        r = red(A)
+                        A = tileMem(newX, newY)
                     End If
                     
-                    If a <> -1 Then
-                        g = green(a)
-                        a = tileMem(newX, newY)
+                    If A <> -1 Then
+                        g = green(A)
+                        A = tileMem(newX, newY)
                     End If
                     
-                    If a <> -1 Then
-                        b = blue(a)
+                    If A <> -1 Then
+                        b = blue(A)
                         darken = st * 10
                         st = st - 1
                         r = inBounds(r - darken, 0, 255)
@@ -556,8 +485,8 @@ Sub Preview()
                     
                 Next t
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     'Redraw
     activeTile.tileRedraw
 End Sub
