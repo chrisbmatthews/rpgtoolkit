@@ -4,25 +4,298 @@ Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
-   ClientHeight    =   10710
+   ClientHeight    =   8190
    ClientLeft      =   165
-   ClientTop       =   855
-   ClientWidth     =   15240
+   ClientTop       =   -1665
+   ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
    StartUpPosition =   3  'Windows Default
    WindowState     =   2  'Maximized
+   Begin MSComctlLib.ImageList ImageList1 
+      Left            =   6600
+      Top             =   0
+      _ExtentX        =   1005
+      _ExtentY        =   1005
+      BackColor       =   -2147483643
+      ImageWidth      =   16
+      ImageHeight     =   16
+      MaskColor       =   12632256
+      _Version        =   393216
+      BeginProperty Images {2C247F25-8591-11D1-B16A-00C0F0283628} 
+         NumListImages   =   17
+         BeginProperty ListImage1 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":0CCA
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage2 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":1064
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage3 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":13FE
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage4 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":1718
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage5 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":23F2
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage6 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":30CC
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage7 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":3DA6
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage8 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":4A80
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage9 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":575A
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage10 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":6434
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage11 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":710E
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage12 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":7DE8
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage13 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":8AC2
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage14 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":979C
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage15 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":A476
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage16 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":B150
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage17 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+            Picture         =   "tkMain.frx":BE2A
+            Key             =   ""
+         EndProperty
+      EndProperty
+   End
+   Begin MSComctlLib.Toolbar mainToolbar 
+      Align           =   1  'Align Top
+      Height          =   570
+      Left            =   0
+      TabIndex        =   7
+      Top             =   0
+      Width           =   11880
+      _ExtentX        =   20955
+      _ExtentY        =   1005
+      ButtonWidth     =   609
+      ButtonHeight    =   582
+      Appearance      =   1
+      Style           =   1
+      ImageList       =   "mainToolbarImages"
+      _Version        =   393216
+      BeginProperty Buttons {66833FE8-8583-11D1-B16A-00C0F0283628} 
+         NumButtons      =   15
+         BeginProperty Button1 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "new"
+            Object.ToolTipText     =   "New Game"
+            Object.Tag             =   "1193"
+            ImageIndex      =   1
+            Style           =   5
+            BeginProperty ButtonMenus {66833FEC-8583-11D1-B16A-00C0F0283628} 
+               NumButtonMenus  =   12
+               BeginProperty ButtonMenu1 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Tile"
+               EndProperty
+               BeginProperty ButtonMenu2 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Animated Tile"
+               EndProperty
+               BeginProperty ButtonMenu3 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Board"
+               EndProperty
+               BeginProperty ButtonMenu4 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Player"
+               EndProperty
+               BeginProperty ButtonMenu5 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Item"
+               EndProperty
+               BeginProperty ButtonMenu6 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Enemy"
+               EndProperty
+               BeginProperty ButtonMenu7 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "RPGCode Program"
+               EndProperty
+               BeginProperty ButtonMenu8 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Fight Background"
+               EndProperty
+               BeginProperty ButtonMenu9 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Special Move"
+               EndProperty
+               BeginProperty ButtonMenu10 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Status Effect"
+               EndProperty
+               BeginProperty ButtonMenu11 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Animation"
+               EndProperty
+               BeginProperty ButtonMenu12 {66833FEE-8583-11D1-B16A-00C0F0283628} 
+                  Text            =   "Tile Bitmap"
+               EndProperty
+            EndProperty
+         EndProperty
+         BeginProperty Button2 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "properties"
+            Object.ToolTipText     =   "Project Properties"
+            ImageIndex      =   2
+         EndProperty
+         BeginProperty Button3 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Style           =   3
+         EndProperty
+         BeginProperty Button4 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "open"
+            Object.ToolTipText     =   "Open"
+            ImageIndex      =   3
+         EndProperty
+         BeginProperty Button5 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "save"
+            Object.ToolTipText     =   "Save"
+            ImageIndex      =   4
+         EndProperty
+         BeginProperty Button6 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "saveall"
+            Object.ToolTipText     =   "Save All Files"
+            Object.Tag             =   "1400"
+            ImageIndex      =   5
+         EndProperty
+         BeginProperty Button7 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Style           =   3
+         EndProperty
+         BeginProperty Button8 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "bard"
+            Object.ToolTipText     =   "Launch The Bard"
+            Object.Tag             =   "1395"
+            ImageIndex      =   6
+         EndProperty
+         BeginProperty Button9 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "website"
+            Object.ToolTipText     =   "Go To Awesome Computing Website"
+            Object.Tag             =   "1396"
+            ImageIndex      =   7
+         EndProperty
+         BeginProperty Button10 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "chat"
+            Object.ToolTipText     =   "Chat"
+            Object.Tag             =   "2034"
+            ImageIndex      =   8
+         EndProperty
+         BeginProperty Button11 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Style           =   3
+         EndProperty
+         BeginProperty Button12 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Enabled         =   0   'False
+            Key             =   "configTk"
+            Object.ToolTipText     =   "Config"
+            ImageIndex      =   10
+         EndProperty
+         BeginProperty Button13 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "tilesetedit"
+            Object.ToolTipText     =   "Edit Tileset"
+            ImageIndex      =   11
+         EndProperty
+         BeginProperty Button14 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Style           =   3
+         EndProperty
+         BeginProperty Button15 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Key             =   "testrun"
+            Object.ToolTipText     =   "Test Run Your Game"
+            Object.Tag             =   "1397"
+            ImageIndex      =   9
+         EndProperty
+      EndProperty
+      Begin MSComctlLib.ImageList mainToolbarImages 
+         Left            =   6000
+         Top             =   -120
+         _ExtentX        =   1005
+         _ExtentY        =   1005
+         BackColor       =   -2147483643
+         ImageWidth      =   16
+         ImageHeight     =   16
+         MaskColor       =   12632256
+         _Version        =   393216
+         BeginProperty Images {2C247F25-8591-11D1-B16A-00C0F0283628} 
+            NumListImages   =   11
+            BeginProperty ListImage1 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":CB04
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage2 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":D09E
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage3 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":D638
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage4 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":D9D2
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage5 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":DF6C
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage6 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":E306
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage7 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":E6A0
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage8 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":EA3A
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage9 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":EDD4
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage10 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":F16E
+               Key             =   ""
+            EndProperty
+            BeginProperty ListImage11 {2C247F27-8591-11D1-B16A-00C0F0283628} 
+               Picture         =   "tkMain.frx":F508
+               Key             =   ""
+            EndProperty
+         EndProperty
+      End
+   End
    Begin VB.PictureBox bottomFrame 
       Align           =   2  'Align Bottom
       BorderStyle     =   0  'None
       Height          =   1335
       Left            =   0
       ScaleHeight     =   1335
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   123
-      Top             =   8745
+      Top             =   6225
       Visible         =   0   'False
-      Width           =   15240
+      Width           =   11880
       Begin VB.Frame tileBmpExtras 
          BorderStyle     =   0  'None
          BeginProperty Font 
@@ -451,7 +724,7 @@ Begin VB.MDIForm tkMainForm
                ForeColor       =   &H80000008&
                Height          =   495
                Left            =   120
-               Picture         =   "tkMain.frx":0CCA
+               Picture         =   "tkMain.frx":101E2
                ScaleHeight     =   465
                ScaleWidth      =   5865
                TabIndex        =   136
@@ -585,12 +858,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   6720
-      Left            =   3825
-      ScaleHeight     =   6720
+      Height          =   3990
+      Left            =   465
+      ScaleHeight     =   3990
       ScaleWidth      =   3510
       TabIndex        =   99
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -605,7 +878,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          Height          =   220
          Left            =   3240
-         Picture         =   "tkMain.frx":A5AC
+         Picture         =   "tkMain.frx":19AC4
          Style           =   1  'Graphical
          TabIndex        =   100
          Top             =   0
@@ -625,7 +898,7 @@ Begin VB.MDIForm tkMainForm
          TabsPerRow      =   2
          TabHeight       =   520
          TabCaption(0)   =   "Objects"
-         TabPicture(0)   =   "tkMain.frx":A6F6
+         TabPicture(0)   =   "tkMain.frx":19C0E
          Tab(0).ControlEnabled=   -1  'True
          Tab(0).Control(0)=   "bTools_Objects_Tree"
          Tab(0).Control(0).Enabled=   0   'False
@@ -633,7 +906,7 @@ Begin VB.MDIForm tkMainForm
          Tab(0).Control(1).Enabled=   0   'False
          Tab(0).ControlCount=   2
          TabCaption(1)   =   "Display"
-         TabPicture(1)   =   "tkMain.frx":A712
+         TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
          Tab(1).Control(0)=   "Frame5"
          Tab(1).Control(1)=   "Frame4"
@@ -813,25 +1086,25 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   6720
-      Left            =   2010
-      ScaleHeight     =   6720
+      Height          =   3990
+      Left            =   -1350
+      ScaleHeight     =   3990
       ScaleWidth      =   1815
       TabIndex        =   95
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   1815
       Begin VB.PictureBox newBar 
          BorderStyle     =   0  'None
-         Height          =   4815
+         Height          =   5115
          Left            =   0
-         ScaleHeight     =   4815
+         ScaleHeight     =   5115
          ScaleWidth      =   1815
          TabIndex        =   97
          Top             =   240
          Width           =   1815
          Begin Toolkit.ctlNewBar NewBarIn 
-            Height          =   4575
+            Height          =   5115
             Left            =   0
             TabIndex        =   98
             Top             =   0
@@ -858,12 +1131,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   6720
+      Height          =   3990
       Left            =   0
-      ScaleHeight     =   6720
+      ScaleHeight     =   3990
       ScaleWidth      =   975
       TabIndex        =   50
-      Top             =   360
+      Top             =   570
       Width           =   975
       Begin VB.PictureBox leftbar 
          BorderStyle     =   0  'None
@@ -896,7 +1169,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   1560
-               Picture         =   "tkMain.frx":A72E
+               Picture         =   "tkMain.frx":19C46
                Style           =   1  'Graphical
                TabIndex        =   93
                TabStop         =   0   'False
@@ -908,7 +1181,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardDrawLock 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":B3F8
+               Picture         =   "tkMain.frx":1A910
                Style           =   1  'Graphical
                TabIndex        =   92
                TabStop         =   0   'False
@@ -921,7 +1194,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardGrid 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":BCC2
+               Picture         =   "tkMain.frx":1B1DA
                Style           =   1  'Graphical
                TabIndex        =   91
                TabStop         =   0   'False
@@ -943,7 +1216,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":C98C
+               Picture         =   "tkMain.frx":1BEA4
                Style           =   1  'Graphical
                TabIndex        =   90
                TabStop         =   0   'False
@@ -965,7 +1238,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":D256
+               Picture         =   "tkMain.frx":1C76E
                Style           =   1  'Graphical
                TabIndex        =   89
                TabStop         =   0   'False
@@ -986,7 +1259,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":D560
+               Picture         =   "tkMain.frx":1CA78
                Style           =   1  'Graphical
                TabIndex        =   88
                TabStop         =   0   'False
@@ -998,7 +1271,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardTypeLock 
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":E22A
+               Picture         =   "tkMain.frx":1D742
                Style           =   1  'Graphical
                TabIndex        =   87
                TabStop         =   0   'False
@@ -1010,7 +1283,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardEraser 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":EAF4
+               Picture         =   "tkMain.frx":1E00C
                Style           =   1  'Graphical
                TabIndex        =   86
                TabStop         =   0   'False
@@ -1022,7 +1295,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardIso 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":F3BE
+               Picture         =   "tkMain.frx":1E8D6
                Style           =   1  'Graphical
                TabIndex        =   85
                ToolTipText     =   "Isometric View"
@@ -1032,7 +1305,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardFillTool 
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":10088
+               Picture         =   "tkMain.frx":1F5A0
                Style           =   1  'Graphical
                TabIndex        =   84
                TabStop         =   0   'False
@@ -1054,7 +1327,7 @@ Begin VB.MDIForm tkMainForm
                Appearance      =   0  'Flat
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":10952
+               Picture         =   "tkMain.frx":1FE6A
                Style           =   1  'Graphical
                TabIndex        =   82
                TabStop         =   0   'False
@@ -1066,7 +1339,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   8
                Left            =   120
-               Picture         =   "tkMain.frx":1161C
+               Picture         =   "tkMain.frx":20B34
                Style           =   1  'Graphical
                TabIndex        =   81
                TabStop         =   0   'False
@@ -1079,7 +1352,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   7
                Left            =   480
-               Picture         =   "tkMain.frx":11EE6
+               Picture         =   "tkMain.frx":213FE
                Style           =   1  'Graphical
                TabIndex        =   80
                TabStop         =   0   'False
@@ -1092,7 +1365,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   6
                Left            =   120
-               Picture         =   "tkMain.frx":127B0
+               Picture         =   "tkMain.frx":21CC8
                Style           =   1  'Graphical
                TabIndex        =   79
                TabStop         =   0   'False
@@ -1105,7 +1378,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   5
                Left            =   480
-               Picture         =   "tkMain.frx":1307A
+               Picture         =   "tkMain.frx":22592
                Style           =   1  'Graphical
                TabIndex        =   78
                TabStop         =   0   'False
@@ -1118,7 +1391,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   4
                Left            =   120
-               Picture         =   "tkMain.frx":13944
+               Picture         =   "tkMain.frx":22E5C
                Style           =   1  'Graphical
                TabIndex        =   77
                TabStop         =   0   'False
@@ -1131,7 +1404,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   3
                Left            =   480
-               Picture         =   "tkMain.frx":13C4E
+               Picture         =   "tkMain.frx":23166
                Style           =   1  'Graphical
                TabIndex        =   76
                TabStop         =   0   'False
@@ -1144,7 +1417,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   2
                Left            =   120
-               Picture         =   "tkMain.frx":14518
+               Picture         =   "tkMain.frx":23A30
                Style           =   1  'Graphical
                TabIndex        =   75
                TabStop         =   0   'False
@@ -1157,7 +1430,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   1
                Left            =   480
-               Picture         =   "tkMain.frx":14DE2
+               Picture         =   "tkMain.frx":242FA
                Style           =   1  'Graphical
                TabIndex        =   74
                TabStop         =   0   'False
@@ -1170,7 +1443,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   0
                Left            =   120
-               Picture         =   "tkMain.frx":150EC
+               Picture         =   "tkMain.frx":24604
                Style           =   1  'Graphical
                TabIndex        =   73
                TabStop         =   0   'False
@@ -1183,7 +1456,7 @@ Begin VB.MDIForm tkMainForm
                Appearance      =   0  'Flat
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":153F6
+               Picture         =   "tkMain.frx":2490E
                Style           =   1  'Graphical
                TabIndex        =   72
                TabStop         =   0   'False
@@ -1195,7 +1468,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tileGrid 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":15CC0
+               Picture         =   "tkMain.frx":251D8
                Style           =   1  'Graphical
                TabIndex        =   71
                TabStop         =   0   'False
@@ -1217,7 +1490,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   1560
-               Picture         =   "tkMain.frx":1698A
+               Picture         =   "tkMain.frx":25EA2
                Style           =   1  'Graphical
                TabIndex        =   70
                TabStop         =   0   'False
@@ -1229,7 +1502,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tileIsoCheck 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":17654
+               Picture         =   "tkMain.frx":26B6C
                Style           =   1  'Graphical
                TabIndex        =   122
                Top             =   360
@@ -1247,7 +1520,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tilebmpEraser 
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":1831E
+               Picture         =   "tkMain.frx":27836
                Style           =   1  'Graphical
                TabIndex        =   68
                TabStop         =   0   'False
@@ -1269,7 +1542,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":18BE8
+               Picture         =   "tkMain.frx":28100
                Style           =   1  'Graphical
                TabIndex        =   67
                TabStop         =   0   'False
@@ -1291,7 +1564,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":18EF2
+               Picture         =   "tkMain.frx":2840A
                Style           =   1  'Graphical
                TabIndex        =   66
                TabStop         =   0   'False
@@ -1312,7 +1585,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   1560
-               Picture         =   "tkMain.frx":197BC
+               Picture         =   "tkMain.frx":28CD4
                Style           =   1  'Graphical
                TabIndex        =   65
                TabStop         =   0   'False
@@ -1324,7 +1597,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tilebmpDrawLock 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1A486
+               Picture         =   "tkMain.frx":2999E
                Style           =   1  'Graphical
                TabIndex        =   64
                TabStop         =   0   'False
@@ -1337,7 +1610,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tilebmpGrid 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1AD50
+               Picture         =   "tkMain.frx":2A268
                Style           =   1  'Graphical
                TabIndex        =   63
                TabStop         =   0   'False
@@ -1376,7 +1649,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton animationPlay 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":1BA1A
+               Picture         =   "tkMain.frx":2AF32
                Style           =   1  'Graphical
                TabIndex        =   59
                Top             =   360
@@ -1385,7 +1658,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton animationForward 
                Height          =   375
                Left            =   360
-               Picture         =   "tkMain.frx":1C6E4
+               Picture         =   "tkMain.frx":2BBFC
                Style           =   1  'Graphical
                TabIndex        =   58
                Top             =   0
@@ -1394,7 +1667,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton animationBack 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":1D3AE
+               Picture         =   "tkMain.frx":2C8C6
                Style           =   1  'Graphical
                TabIndex        =   57
                Top             =   0
@@ -1412,7 +1685,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton prgEventEdit 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":1E078
+               Picture         =   "tkMain.frx":2D590
                Style           =   1  'Graphical
                TabIndex        =   55
                TabStop         =   0   'False
@@ -1424,7 +1697,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton prgDebug 
                Height          =   375
                Left            =   360
-               Picture         =   "tkMain.frx":1ED42
+               Picture         =   "tkMain.frx":2E25A
                Style           =   1  'Graphical
                TabIndex        =   54
                TabStop         =   0   'False
@@ -1436,7 +1709,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton prgRun 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":1F60C
+               Picture         =   "tkMain.frx":2EB24
                Style           =   1  'Graphical
                TabIndex        =   53
                TabStop         =   0   'False
@@ -1470,11 +1743,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   29
-      Top             =   7080
+      Top             =   4560
       Visible         =   0   'False
-      Width           =   15240
+      Width           =   11880
       Begin VB.CommandButton Command21 
          Appearance      =   0  'Flat
          Caption         =   "Draw All Layers"
@@ -1571,7 +1844,7 @@ Begin VB.MDIForm tkMainForm
             Enabled         =   0   'False
             Height          =   195
             Left            =   720
-            Picture         =   "tkMain.frx":1FED6
+            Picture         =   "tkMain.frx":2F3EE
             Style           =   1  'Graphical
             TabIndex        =   43
             Top             =   1080
@@ -1581,7 +1854,7 @@ Begin VB.MDIForm tkMainForm
             Enabled         =   0   'False
             Height          =   195
             Left            =   720
-            Picture         =   "tkMain.frx":20BA0
+            Picture         =   "tkMain.frx":300B8
             Style           =   1  'Graphical
             TabIndex        =   42
             Top             =   840
@@ -1693,7 +1966,7 @@ Begin VB.MDIForm tkMainForm
             ForeColor       =   &H80000008&
             Height          =   270
             Left            =   150
-            Picture         =   "tkMain.frx":2186A
+            Picture         =   "tkMain.frx":30D82
             ScaleHeight     =   16
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   236
@@ -1774,18 +2047,18 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   6720
-      Left            =   14865
-      ScaleHeight     =   6720
+      Height          =   3990
+      Left            =   11505
+      ScaleHeight     =   3990
       ScaleWidth      =   375
       TabIndex        =   22
-      Top             =   360
+      Top             =   570
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
          Index           =   3
          Left            =   0
-         Picture         =   "tkMain.frx":21AA9
+         Picture         =   "tkMain.frx":30FC1
          Style           =   1  'Graphical
          TabIndex        =   28
          ToolTipText     =   "board data"
@@ -1797,7 +2070,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   2
          Left            =   0
-         Picture         =   "tkMain.frx":21E33
+         Picture         =   "tkMain.frx":3134B
          Style           =   1  'Graphical
          TabIndex        =   26
          Top             =   720
@@ -1807,7 +2080,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   1
          Left            =   0
-         Picture         =   "tkMain.frx":22AFD
+         Picture         =   "tkMain.frx":32015
          Style           =   1  'Graphical
          TabIndex        =   24
          Top             =   360
@@ -1817,7 +2090,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   0
          Left            =   3
-         Picture         =   "tkMain.frx":23087
+         Picture         =   "tkMain.frx":3259F
          Style           =   1  'Graphical
          TabIndex        =   23
          Top             =   0
@@ -1835,14 +2108,14 @@ Begin VB.MDIForm tkMainForm
       Height          =   375
       Left            =   0
       ScaleHeight     =   375
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   9
-      Top             =   10080
-      Width           =   15240
+      Top             =   7560
+      Width           =   11880
       Begin VB.CommandButton openWindowsScrollRight 
          Height          =   255
          Left            =   11760
-         Picture         =   "tkMain.frx":23411
+         Picture         =   "tkMain.frx":32929
          Style           =   1  'Graphical
          TabIndex        =   20
          Top             =   0
@@ -1852,7 +2125,7 @@ Begin VB.MDIForm tkMainForm
       Begin VB.CommandButton openWindowsScrollLeft 
          Height          =   255
          Left            =   11640
-         Picture         =   "tkMain.frx":2371B
+         Picture         =   "tkMain.frx":32C33
          Style           =   1  'Graphical
          TabIndex        =   19
          Top             =   0
@@ -1978,12 +2251,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   6720
-      Left            =   7335
-      ScaleHeight     =   6720
+      Height          =   3990
+      Left            =   3975
+      ScaleHeight     =   3990
       ScaleWidth      =   4800
       TabIndex        =   8
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2055,7 +2328,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          Height          =   220
          Left            =   4560
-         Picture         =   "tkMain.frx":23A25
+         Picture         =   "tkMain.frx":32F3D
          Style           =   1  'Graphical
          TabIndex        =   27
          Top             =   0
@@ -2082,197 +2355,15 @@ Begin VB.MDIForm tkMainForm
          Width           =   4800
       End
    End
-   Begin MSComctlLib.Toolbar mainToolbar 
-      Align           =   1  'Align Top
-      Height          =   360
-      Left            =   0
-      TabIndex        =   7
-      Top             =   0
-      Width           =   15240
-      _ExtentX        =   26882
-      _ExtentY        =   635
-      ButtonWidth     =   609
-      ButtonHeight    =   582
-      Appearance      =   1
-      Style           =   1
-      ImageList       =   "mainToolbarImages"
-      _Version        =   393216
-      BeginProperty Buttons {66833FE8-8583-11D1-B16A-00C0F0283628} 
-         NumButtons      =   14
-         BeginProperty Button1 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Key             =   "new"
-            Object.ToolTipText     =   "New Game"
-            Object.Tag             =   "1193"
-            ImageIndex      =   1
-            Style           =   5
-            BeginProperty ButtonMenus {66833FEC-8583-11D1-B16A-00C0F0283628} 
-               NumButtonMenus  =   12
-               BeginProperty ButtonMenu1 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Tile"
-               EndProperty
-               BeginProperty ButtonMenu2 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Animated Tile"
-               EndProperty
-               BeginProperty ButtonMenu3 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Board"
-               EndProperty
-               BeginProperty ButtonMenu4 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Player"
-               EndProperty
-               BeginProperty ButtonMenu5 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Item"
-               EndProperty
-               BeginProperty ButtonMenu6 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Enemy"
-               EndProperty
-               BeginProperty ButtonMenu7 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "RPGCode Program"
-               EndProperty
-               BeginProperty ButtonMenu8 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Fight Background"
-               EndProperty
-               BeginProperty ButtonMenu9 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Special Move"
-               EndProperty
-               BeginProperty ButtonMenu10 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Status Effect"
-               EndProperty
-               BeginProperty ButtonMenu11 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Animation"
-               EndProperty
-               BeginProperty ButtonMenu12 {66833FEE-8583-11D1-B16A-00C0F0283628} 
-                  Text            =   "Tile Bitmap"
-               EndProperty
-            EndProperty
-         EndProperty
-         BeginProperty Button2 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Key             =   "properties"
-            Object.ToolTipText     =   "Project Properties"
-            ImageIndex      =   2
-         EndProperty
-         BeginProperty Button3 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Style           =   3
-         EndProperty
-         BeginProperty Button4 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Key             =   "open"
-            Object.ToolTipText     =   "Open"
-            ImageIndex      =   3
-         EndProperty
-         BeginProperty Button5 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Key             =   "save"
-            Object.ToolTipText     =   "Save"
-            ImageIndex      =   4
-         EndProperty
-         BeginProperty Button6 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Key             =   "saveall"
-            Object.ToolTipText     =   "Save All Files"
-            Object.Tag             =   "1400"
-            ImageIndex      =   5
-         EndProperty
-         BeginProperty Button7 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Style           =   3
-         EndProperty
-         BeginProperty Button8 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Key             =   "bard"
-            Object.ToolTipText     =   "Launch The Bard"
-            Object.Tag             =   "1395"
-            ImageIndex      =   6
-         EndProperty
-         BeginProperty Button9 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Key             =   "website"
-            Object.ToolTipText     =   "Go To Awesome Computing Website"
-            Object.Tag             =   "1396"
-            ImageIndex      =   7
-         EndProperty
-         BeginProperty Button10 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Key             =   "chat"
-            Object.ToolTipText     =   "Chat"
-            Object.Tag             =   "2034"
-            ImageIndex      =   8
-         EndProperty
-         BeginProperty Button11 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Style           =   3
-         EndProperty
-         BeginProperty Button12 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Enabled         =   0   'False
-            Key             =   "configTk"
-            Object.ToolTipText     =   "Config"
-            ImageIndex      =   10
-         EndProperty
-         BeginProperty Button13 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Style           =   3
-         EndProperty
-         BeginProperty Button14 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Key             =   "testrun"
-            Object.ToolTipText     =   "Test Run Your Game"
-            Object.Tag             =   "1397"
-            ImageIndex      =   9
-         EndProperty
-      EndProperty
-      Begin MSComctlLib.ImageList mainToolbarImages 
-         Left            =   6000
-         Top             =   0
-         _ExtentX        =   1005
-         _ExtentY        =   1005
-         BackColor       =   -2147483643
-         ImageWidth      =   16
-         ImageHeight     =   16
-         MaskColor       =   12632256
-         _Version        =   393216
-         BeginProperty Images {2C247F25-8591-11D1-B16A-00C0F0283628} 
-            NumListImages   =   10
-            BeginProperty ListImage1 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":23B6F
-               Key             =   ""
-            EndProperty
-            BeginProperty ListImage2 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":24109
-               Key             =   ""
-            EndProperty
-            BeginProperty ListImage3 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":246A3
-               Key             =   ""
-            EndProperty
-            BeginProperty ListImage4 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":24A3D
-               Key             =   ""
-            EndProperty
-            BeginProperty ListImage5 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":24FD7
-               Key             =   ""
-            EndProperty
-            BeginProperty ListImage6 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":25371
-               Key             =   ""
-            EndProperty
-            BeginProperty ListImage7 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":2570B
-               Key             =   ""
-            EndProperty
-            BeginProperty ListImage8 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":25AA5
-               Key             =   ""
-            EndProperty
-            BeginProperty ListImage9 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":25E3F
-               Key             =   ""
-            EndProperty
-            BeginProperty ListImage10 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":261D9
-               Key             =   ""
-            EndProperty
-         EndProperty
-      End
-   End
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   6720
-      Left            =   12135
-      ScaleHeight     =   6720
+      Height          =   3990
+      Left            =   8775
+      ScaleHeight     =   3990
       ScaleWidth      =   2730
       TabIndex        =   1
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   2730
       Begin VB.CommandButton exitbutton 
@@ -2287,7 +2378,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          Height          =   220
          Left            =   2400
-         Picture         =   "tkMain.frx":26573
+         Picture         =   "tkMain.frx":33087
          Style           =   1  'Graphical
          TabIndex        =   5
          Top             =   0
@@ -2364,22 +2455,22 @@ Begin VB.MDIForm tkMainForm
       Height          =   255
       Left            =   0
       TabIndex        =   0
-      Top             =   10455
-      Width           =   15240
-      _ExtentX        =   26882
+      Top             =   7935
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "7-8-2004"
+            TextSave        =   "08/08/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   10954
-            TextSave        =   "18:02"
+            Object.Width           =   5027
+            TextSave        =   "00:20"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2398,84 +2489,6 @@ Begin VB.MDIForm tkMainForm
             Style           =   1
             Enabled         =   0   'False
             TextSave        =   "CAPS"
-         EndProperty
-      EndProperty
-   End
-   Begin MSComctlLib.ImageList ImageList1 
-      Left            =   7680
-      Top             =   1920
-      _ExtentX        =   1005
-      _ExtentY        =   1005
-      BackColor       =   -2147483643
-      ImageWidth      =   16
-      ImageHeight     =   16
-      MaskColor       =   12632256
-      _Version        =   393216
-      BeginProperty Images {2C247F25-8591-11D1-B16A-00C0F0283628} 
-         NumListImages   =   16
-         BeginProperty ListImage1 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":266BD
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage2 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":26A57
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage3 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":26DF1
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage4 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2710B
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage5 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":27DE5
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage6 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":28ABF
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage7 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":29799
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage8 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2A473
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage9 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2B14D
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage10 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2BE27
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage11 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2CB01
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage12 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2D7DB
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage13 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2E4B5
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage14 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2F18F
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage15 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2FE69
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage16 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":30B43
-            Key             =   ""
          EndProperty
       EndProperty
    End
@@ -3311,6 +3324,9 @@ Private Sub Label2_DblClick()
 End Sub
 
 Private Sub mainToolbar_ButtonClick(ByVal button As MSComctlLib.button): On Error Resume Next
+'==================================
+'Added: Tilesetedit button - Delano
+
     Select Case button.Key
         Case "new":
         Case "properties":
@@ -3330,6 +3346,8 @@ Private Sub mainToolbar_ButtonClick(ByVal button As MSComctlLib.button): On Erro
             Call BrowseLocation("http://rpgtoolkit.com/chat.html")
         Case "configTk":
             config.Show
+        Case "tilesetedit":                 'Added.
+            tilesetedit.Show 'vbModal
         Case "testrun":
             Call testgamemnu_Click
     End Select
@@ -3386,6 +3404,8 @@ Public Sub MDIForm_Resize()
  ProjectListSize_Timer
 
 End Sub
+
+
 
 Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
 

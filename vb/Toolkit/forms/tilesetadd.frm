@@ -474,18 +474,18 @@ Private Sub chkIso_Click(Index As Integer): On Error Resume Next
     Call vbPicAutoRedraw(picTileset(Index), True)
     
     'picTileset(Index).Cls
-    picTile(Index).Cls
+    picTile(Index).cls
     
     Call drawTileset(Index)
     
     Call vbPicAutoRedraw(picTile(Index), False)
     
     If chkIso(Index).value = 0 Then
-        picTile(Index).width = 36                               'Pixel values!
+        picTile(Index).Width = 36                               'Pixel values!
         'Realign the right-hand box.
         If Index = 1 Then picTile(Index).Left = 320
     Else
-        picTile(Index).width = 68
+        picTile(Index).Width = 68
         'Realign the right-hand box.
         If Index = 1 Then picTile(Index).Left = 288
     End If
@@ -522,7 +522,7 @@ Private Sub cmdDelete_Click(Index As Integer): On Error GoTo ErrorHandler
 'from the original, skipping the selected tile.
 '====================================================
 
-    Dim source As String, destination As String, sourceNum As Integer, destNum As Integer
+    Dim Source As String, Destination As String, sourceNum As Integer, destNum As Integer
     Dim byteOffset As Long, position As Long
     Dim result As VbMsgBoxResult
     
@@ -544,8 +544,8 @@ Private Sub cmdDelete_Click(Index As Integer): On Error GoTo ErrorHandler
             ts(Index).filename$ = "": ts(Index).workingFilename$ = ""
             ts(Index).selectedTileNum = -1: ts(Index).requireSave = False
             
-            lblTileset(Index).caption = "Tileset:": lblContains(Index).caption = "Contains:"
-            lblSelectedTile(Index).caption = "Selected tile:": lblFormat(Index).caption = "Format:"
+            lblTileset(Index).Caption = "Tileset:": lblContains(Index).Caption = "Contains:"
+            lblSelectedTile(Index).Caption = "Selected tile:": lblFormat(Index).Caption = "Format:"
     
             'Clear the picture boxes.
             'picTileset(Index).Cls: picTile(Index).Cls
@@ -563,15 +563,15 @@ Private Sub cmdDelete_Click(Index As Integer): On Error GoTo ErrorHandler
     ts(Index).header.tilesInSet = ts(Index).header.tilesInSet - 1
 
     'Set up the files for writing.
-    source$ = projectPath$ + ts(Index).workingFilename$
-    destination$ = projectPath$ + tempTileset$
+    Source$ = projectPath$ + ts(Index).workingFilename$
+    Destination$ = projectPath$ + tempTileset$
     
     
     sourceNum = FreeFile
-    Open source$ For Binary As #sourceNum
+    Open Source$ For Binary As #sourceNum
     
     destNum = FreeFile
-    Open destination$ For Binary As #destNum
+    Open Destination$ For Binary As #destNum
     
         'Write the new header.
         Put #destNum, 1, ts(Index).header
@@ -609,12 +609,12 @@ Private Sub cmdDelete_Click(Index As Integer): On Error GoTo ErrorHandler
     
     'Overwrite the working file.
     ChDir (currentdir$)
-    Kill source$
-    Name destination$ As source$
+    Kill Source$
+    Name Destination$ As Source$
     
     ts(Index).selectedTileNum = -1
-    lblContains(Index).caption = "Contains: " & ts(Index).header.tilesInSet & " tiles"
-    lblSelectedTile(Index).caption = "Selected tile:"
+    lblContains(Index).Caption = "Contains: " & ts(Index).header.tilesInSet & " tiles"
+    lblSelectedTile(Index).Caption = "Selected tile:"
     Call drawTileset(Index)
     Call drawtile(Index)
 
@@ -758,11 +758,11 @@ Private Sub cmdOpen_Click(Index As Integer): On Error Resume Next
         Case ISOTYPE
             chkIso(Index).value = 1
             chkIso(Index).Enabled = False
-            lblFormat(Index).caption = "Format: Isometric 64x32"
+            lblFormat(Index).Caption = "Format: Isometric 64x32"
         Case TSTTYPE
             chkIso(Index).value = 0
             chkIso(Index).Enabled = True
-            lblFormat(Index).caption = "Format: Standard 32x32"
+            lblFormat(Index).Caption = "Format: Standard 32x32"
         Case Else: Exit Sub
     End Select
     
@@ -773,8 +773,8 @@ Private Sub cmdOpen_Click(Index As Integer): On Error Resume Next
     
     'Update the labels:
     
-    lblTileset(Index).caption = "Tileset: " & ts(Index).filename$
-    lblContains(Index).caption = "Contains: " & ts(Index).header.tilesInSet & " tiles"
+    lblTileset(Index).Caption = "Tileset: " & ts(Index).filename$
+    lblContains(Index).Caption = "Contains: " & ts(Index).header.tilesInSet & " tiles"
     
     'Clear the picture box.
     Call vbPicAutoRedraw(picTileset(Index), False)
@@ -788,7 +788,7 @@ Private Sub cmdOpen_Click(Index As Integer): On Error Resume Next
     'picTileset(Index).Cls
     'picTile(Index).Cls
     
-    lblSelectedTile(Index).caption = "Selected tile:"
+    lblSelectedTile(Index).Caption = "Selected tile:"
     
     'Activate the tool buttons:
     cmdInsert(Index).Enabled = True: cmdInsert(Abs(Index - 1)).Enabled = True
@@ -869,7 +869,7 @@ Private Sub cmdSaveAs_Click(Index As Integer): On Error Resume Next
     ts(Index).filename$ = antiPath$
     ts(Index).workingFilename$ = newName$
     
-    lblTileset(Index).caption = "Tileset: " & antiPath$
+    lblTileset(Index).Caption = "Tileset: " & antiPath$
     
 
 End Sub
@@ -883,24 +883,26 @@ Private Sub Form_Load(): On Error Resume Next
 
     Call LocalizeForm(Me)       'Not done for this form.
     
+    Me.Caption = "Advanced Tileset Editor"
+    
     Call MsgBox("Welcome to the new-look tileset editor, which allows you to easily manage tilesets." _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "You can move tiles around in their set by using the ""Move"" tools, " _
         & "the ""Up"" and ""Down"" cursor arrows, or by dragging tiles around the window." _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "You can delete tiles using the ""Delete"" tool or the ""Del"" button." _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "You can open two sets at once and move tiles between sets using the ""Insert"" tool, " _
         & "the ""Left"" or ""Right"" cursor arrows (the inserted tile appears in front of the selected " _
         & "tile in the other set, or the end if no tile is selected) or you can drag tiles between sets." _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "You can create a new tileset by inserting a tile into a blank set." _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "All changes are temporary until you hit the ""Save"" button or the ""OK"" button (which saves and quits)." _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "Warning! If you have already created boards (or other objects) from sets, rearranging the tiles will alter " _
         & "which tiles appear on the boards! Tiles on boards are referenced by their index in the tileset!" _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "If you have any problems please report them on the forums at http://www.rpgtoolkit.com.", , _
         "RPGToolkit Tileset Editor")
         
@@ -928,6 +930,8 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     For Index = 0 To 1
         If ts(Index).workingFilename$ <> "" Then Kill projectPath$ + ts(Index).workingFilename$
     Next Index
+    
+    tilesetedit.SSTab1.Tab = 0
 
 End Sub
 
@@ -987,9 +991,9 @@ Private Sub drawTileset(ByVal Index As Integer): On Error Resume Next
     If ts(Index).tileFormat = ISOTYPE Then isometric = 2        '2 = draw .iso
     
     'Set up the scrollbar:
-    scrVertical(Index).Max = (-Int(ts(Index).header.tilesInSet / (-tileWidth))) - tileHeight
+    scrVertical(Index).max = (-Int(ts(Index).header.tilesInSet / (-tileWidth))) - tileHeight
     
-    If scrVertical(Index).Max < 1 Then
+    If scrVertical(Index).max < 1 Then
         'If all the tiles are contained in the window.
         scrVertical(Index).Enabled = False
     Else
@@ -1083,7 +1087,7 @@ End Sub
 
 
 
-Private Sub picTileset_DragDrop(Index As Integer, source As Control, x As Single, y As Single): On Error Resume Next
+Private Sub picTileset_DragDrop(Index As Integer, Source As Control, x As Single, y As Single): On Error Resume Next
 '====================================================================
 'Drag-drop on the tileset picture boxes, i.e. mouseUp after movement.
 '====================================================================
@@ -1135,7 +1139,7 @@ Private Sub picTileset_DragDrop(Index As Integer, source As Control, x As Single
 
 End Sub
 
-Private Sub picTileset_DragOver(Index As Integer, source As Control, x As Single, y As Single, State As Integer): On Error Resume Next
+Private Sub picTileset_DragOver(Index As Integer, Source As Control, x As Single, y As Single, State As Integer): On Error Resume Next
 '===========================================================
 'Drag movement on the tileset picture boxes, i.e. mouseMove.
 '===========================================================
@@ -1181,7 +1185,7 @@ Private Sub picTileset_KeyDown(Index As Integer, keyCode As Integer, Shift As In
         Case 27:
             'Escape. Clear the selected tile.
             ts(Index).selectedTileNum = -1
-            lblSelectedTile(Index).caption = "Selected Tile:"
+            lblSelectedTile(Index).Caption = "Selected Tile:"
             Call drawtile(Index)
         Case 37:
             'Left arrow.
@@ -1203,7 +1207,7 @@ Private Sub picTileset_KeyDown(Index As Integer, keyCode As Integer, Shift As In
 End Sub
 
 
-Private Sub picTileset_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub picTileset_MouseDown(Index As Integer, button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '======================================
 'Mouse down on the tileset picture box.
 '======================================
@@ -1232,7 +1236,7 @@ Private Sub picTileset_MouseDown(Index As Integer, Button As Integer, Shift As I
         ts(Index).selectedTileNum = number
     End If
     
-    lblSelectedTile(Index).caption = "Selected tile: " & ts(Index).selectedTileNum
+    lblSelectedTile(Index).Caption = "Selected tile: " & ts(Index).selectedTileNum
     
     'Assign the last clicked tileset to the current index.
     lastMouseDown = Index
@@ -1241,13 +1245,13 @@ Private Sub picTileset_MouseDown(Index As Integer, Button As Integer, Shift As I
     
 End Sub
 
-Private Sub picTileset_MouseMove(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub picTileset_MouseMove(Index As Integer, button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '===========================
 'Mouse move on the tilesets.
 '===========================
 
 'Only initiate drag upon movement (and a button held).
-If Button <> 0 Then picTileset(Index).Drag
+If button <> 0 Then picTileset(Index).Drag
 
 End Sub
 
@@ -1268,7 +1272,7 @@ Private Sub insertTile(ByVal Index As Integer, ByVal position As Integer): On Er
 'For the command button, position is the selected tile in the Index set.
 '============================================================================
 
-    Dim source As String, destination As String, sourceNum As Integer, destNum As Integer
+    Dim Source As String, Destination As String, sourceNum As Integer, destNum As Integer
     Dim byteOffset As Long, tileOffset As Long
     Dim x As Integer, y As Integer
     Dim r As Byte, g As Byte, b As Byte
@@ -1362,20 +1366,20 @@ Private Sub insertTile(ByVal Index As Integer, ByVal position As Integer): On Er
         
     End If 'tst -> iso.
     
-    source$ = projectPath$ + ts(Index).workingFilename$                 'Create the temporary files in the root!
-    destination$ = projectPath$ + tempTileset$
+    Source$ = projectPath$ + ts(Index).workingFilename$                 'Create the temporary files in the root!
+    Destination$ = projectPath$ + tempTileset$
    
     'First, we copy the working tileset into the temporary file.
     ChDir (currentdir$)
-    Call FileCopy(source$, destination$)
+    Call FileCopy(Source$, Destination$)
     
     
     'Open the files for copying.
     sourceNum = FreeFile
-    Open source$ For Binary As #sourceNum
+    Open Source$ For Binary As #sourceNum
     
     destNum = FreeFile
-    Open destination$ For Binary As #destNum
+    Open Destination$ For Binary As #destNum
 
         'Calculate the byte position to insert the tile.
         byteOffset = calcInsertionPoint(ts(Index).header, position)
@@ -1405,12 +1409,12 @@ Private Sub insertTile(ByVal Index As Integer, ByVal position As Integer): On Er
     
     'Overwrite the working file.
     ChDir (currentdir$)
-    Kill source$
-    Name destination$ As source$
+    Kill Source$
+    Name Destination$ As Source$
     
     ts(Index).selectedTileNum = position
-    lblSelectedTile(Index).caption = "Selected tile: " & ts(Index).selectedTileNum
-    lblContains(Index).caption = "Contains: " & ts(Index).header.tilesInSet & " tiles"
+    lblSelectedTile(Index).Caption = "Selected tile: " & ts(Index).selectedTileNum
+    lblContains(Index).Caption = "Contains: " & ts(Index).header.tilesInSet & " tiles"
     
     Call drawTileset(Index)
     Call drawtile(Index)
@@ -1431,25 +1435,25 @@ Private Sub moveTile(ByVal Index As Integer, ByVal position As Integer): On Erro
 'Called by the drag-drop event and the move up / down buttons.
 '=======================================================================
 
-    Dim x As Integer, y As Integer, source As String, destination As String
+    Dim x As Integer, y As Integer, Source As String, Destination As String
     Dim byteOffset As Long, tileOffset As Long, direction As Long
     Dim sourceNum As Integer, destNum As Integer
 
     'If we're trying to move past the end of the set, put it on the end.
     If position > ts(Index).header.tilesInSet Then position = ts(Index).header.tilesInSet
     
-    source$ = projectPath$ + ts(Index).workingFilename$
-    destination$ = projectPath$ + tempTileset$
+    Source$ = projectPath$ + ts(Index).workingFilename$
+    Destination$ = projectPath$ + tempTileset$
     
     'First, we copy the working tileset into the temporary file.
     ChDir (currentdir$)
-    Call FileCopy(source$, destination$)
+    Call FileCopy(Source$, Destination$)
     
     sourceNum = FreeFile
-    Open source$ For Binary As #sourceNum
+    Open Source$ For Binary As #sourceNum
     
     destNum = FreeFile
-    Open destination$ For Binary As #destNum
+    Open Destination$ For Binary As #destNum
     
         'Load the selected tile into the block from the source.
         byteOffset = calcInsertionPoint(ts(Index).header, ts(Index).selectedTileNum)
@@ -1483,11 +1487,11 @@ Private Sub moveTile(ByVal Index As Integer, ByVal position As Integer): On Erro
     
     'Overwrite the working file.
     ChDir (currentdir$)
-    Kill source$
-    Name destination$ As source$
+    Kill Source$
+    Name Destination$ As Source$
     
     ts(Index).selectedTileNum = position
-    lblSelectedTile(Index).caption = "Selected tile: " & ts(Index).selectedTileNum
+    lblSelectedTile(Index).Caption = "Selected tile: " & ts(Index).selectedTileNum
     
     Call drawTileset(Index)
 
@@ -1506,7 +1510,7 @@ Private Sub createSet(ByVal Index As Integer): On Error GoTo ErrorHandler
 'New set takes the information of the origin set.
 '================================================
 
-    Dim source As String, sourceNum As Integer
+    Dim Source As String, sourceNum As Integer
     
     'Set up the information for the set.
     With ts(Index)
@@ -1525,18 +1529,18 @@ Private Sub createSet(ByVal Index As Integer): On Error GoTo ErrorHandler
     
     'Write the header to file.
     ChDir (currentdir$)
-    source$ = projectPath$ + ts(Index).workingFilename$
+    Source$ = projectPath$ + ts(Index).workingFilename$
     
     sourceNum = FreeFile
-    Open source$ For Binary As #sourceNum
+    Open Source$ For Binary As #sourceNum
     
         Put #sourceNum, 1, ts(Index).header
     
     Close #sourceNum
     
     'Captions:
-    lblTileset(Index).caption = "Tileset: New"
-    lblFormat(Index).caption = lblFormat(Abs(Index - 1)).caption
+    lblTileset(Index).Caption = "Tileset: New"
+    lblFormat(Index).Caption = lblFormat(Abs(Index - 1)).Caption
     
     'Buttons:
     cmdMoveUp(Index).Enabled = True

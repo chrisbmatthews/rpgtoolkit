@@ -438,7 +438,7 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte)
         selection.Right = publicTile.grabx2
         selection.Bottom = publicTile.graby2
         
-        grabStatus.Panels(2).text = "Selection: "
+        grabStatus.Panels(2).Text = "Selection: "
         
     Else
         'Grab the whole image.
@@ -453,7 +453,7 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte)
         'grabForm.height = openImage.twipHeight
         'Call Form_Resize
         
-        grabStatus.Panels(2).text = "Selection: Whole image: "
+        grabStatus.Panels(2).Text = "Selection: Whole image: "
         
     End If
     
@@ -473,7 +473,7 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte)
     'Assign the *Global* detail level for saving:
     detail = level
     
-    grabStatus.Panels(2).text = grabStatus.Panels(2).text & tileWidth & " x " & tileHeight & " = " & tileMax & " Tiles"
+    grabStatus.Panels(2).Text = grabStatus.Panels(2).Text & tileWidth & " x " & tileHeight & " = " & tileMax & " Tiles"
     
     For yTile = 1 To tileHeight
         For xTile = 1 To tileWidth
@@ -501,7 +501,7 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte)
                     'If xPixel + x - 1 <= selection.Right And xPixel + x - 1 >= selection.Left And _
                     '    yPixel + y - 1 <= selection.Bottom And yPixel + y - 1 >= selection.Top Then
                         
-                        'Take the pixel from the form.
+                        'Take the pixel from the canvas.
                         'tilemem(x, y) = vbFrmPoint(grabForm, xPixel + x - 1, yPixel + y - 1)
                         tilemem(x, y) = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + x - 1, scrVertical.value * 32 + yPixel + y - 1)
                         
@@ -588,7 +588,7 @@ Private Sub BatchIsometric(ByVal filename As String)
         selection.Right = publicTile.grabx2
         selection.Bottom = publicTile.graby2
         
-        grabStatus.Panels(2).text = "Selection: "
+        grabStatus.Panels(2).Text = "Selection: "
         
         grabImage = False
         
@@ -601,11 +601,11 @@ Private Sub BatchIsometric(ByVal filename As String)
         selection.Bottom = openImage.pxHeight
         
         'Increase the size of the form
-        grabForm.width = openImage.twipWidth
+        grabForm.Width = openImage.twipWidth
         grabForm.height = openImage.twipHeight
         Call Form_Resize
         
-        grabStatus.Panels(2).text = "Selection: Whole image: "
+        grabStatus.Panels(2).Text = "Selection: Whole image: "
         
         grabImage = True
        
@@ -614,8 +614,9 @@ Private Sub BatchIsometric(ByVal filename As String)
     'Use these later:
     edges = selection
     
-    If grabImage Then rowOffset = gridOffsetY / 16    'Take the grid offset into account if grabbing whole image.
-
+    rowOffset = 0
+    If grabImage Then rowOffset = Abs(chkOffset.value - 1)
+    
     If chkIgnore.value = 0 Then
         'Take edges into account: Add two extra tiles in each direction.
         selection.Left = selection.Left - 32
@@ -641,7 +642,7 @@ Private Sub BatchIsometric(ByVal filename As String)
     If tileWidth < 1 Or tileHeight < 1 Then Exit Sub
     
     
-    grabStatus.Panels(2).text = grabStatus.Panels(2).text & tileWidth & " x " & tileHeight & " = " & tileMax & " Tiles"
+    grabStatus.Panels(2).Text = grabStatus.Panels(2).Text & tileWidth & " x " & tileHeight & " = " & tileMax & " Tiles"
     
     For yTile = 1 To tileHeight             'This loops over a single column.
         For xTile = 1 To longRow            'Over a single row.
@@ -659,7 +660,7 @@ Private Sub BatchIsometric(ByVal filename As String)
             
             'Calculate the pixel co-ordinates of this tile.
             xPixel = (xTile - 1) * 64 + selection.Left
-            xPixel = xPixel + (((yTile + rowOffset) Mod 2) * 32)     'Add the row offset.
+            xPixel = xPixel + (((yTile - 1 + rowOffset) Mod 2) * 32)     'Add the row offset.
                       
             'No offset needed for y.
             yPixel = (yTile - 1) * 16 + selection.Top
@@ -674,7 +675,7 @@ Private Sub BatchIsometric(ByVal filename As String)
                     'Check the pixel is in the form range.
                     If xPixel + x - 1 <= edges.Right And xPixel + x - 1 >= edges.Left And _
                         yPixel + y - 1 <= edges.Bottom And yPixel + y - 1 >= edges.Top Then
-                        'Take the pixel from the form.
+                        'Take the pixel from the canvas.
                         'tilemem(x, y) = vbFrmPoint(grabForm, xPixel + x - 1, yPixel + y - 1)
                         tilemem(x, y) = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + x - 1, scrVertical.value * 32 + yPixel + y - 1)
 
@@ -778,11 +779,11 @@ Private Sub chkIso_Click(): On Error Resume Next
     Call cmdReset_Click
     
     If chkIso.value = 1 Then
-        cmdBatch32.caption = "Batch Isometric"
-        picGrabbed.width = 66 * Screen.TwipsPerPixelX       'Tile preview window.
+        cmdBatch32.Caption = "Batch Isometric"
+        picGrabbed.Width = 66 * Screen.TwipsPerPixelX       'Tile preview window.
     Else
-        cmdBatch32.caption = "Batch Grab 32x32"
-        picGrabbed.width = 33 * Screen.TwipsPerPixelX
+        cmdBatch32.Caption = "Batch Grab 32x32"
+        picGrabbed.Width = 33 * Screen.TwipsPerPixelX
     End If
     
 End Sub
@@ -945,8 +946,8 @@ Private Sub cmdOpen_Click(): On Error Resume Next
     End With
     
     'Set the image info in the status bar:
-    grabStatus.Panels(1).text = "Image: " & antiPath$ & " = " & openImage.pxWidth & "x" & openImage.pxHeight
-    grab.caption = "Grab Tiles (" + antiPath$ + ")"
+    grabStatus.Panels(1).Text = "Image: " & antiPath$ & " = " & openImage.pxWidth & "x" & openImage.pxHeight
+    grab.Caption = "Grab Tiles (" + antiPath$ + ")"
     
     Call vbPicAutoRedraw(grab.grabForm, True)
     Call DrawImage(filename$(1), 0, 0, vbPicHDC(grab.grabForm))
@@ -1176,7 +1177,7 @@ Private Sub Form_Load(): On Error GoTo ErrorHandler
     
     Call LocalizeForm(Me)
     grab.tag = 1608         'Assign a name for the editor bar.
-    grab.caption = "Grab Tile (No image)"
+    grab.Caption = "Grab Tile (No image)"
     
     gridOffsetX = 0
     gridOffsetY = 0
@@ -1189,7 +1190,7 @@ Private Sub Form_Load(): On Error GoTo ErrorHandler
     picGridColor.BackColor = gridColor
     picSelectColor.BackColor = selectionColor
     
-    grab.Left = (Screen.width - grab.width) / 2
+    grab.Left = (Screen.Width - grab.Width) / 2
     grab.Top = (Screen.height - grab.height) / 2
     
     openImage.loaded = 0              'Set the background image to unloaded.
@@ -1203,27 +1204,27 @@ Private Sub Form_Load(): On Error GoTo ErrorHandler
     publicTile.grabx1 = -1: publicTile.grabx2 = -1
     publicTile.graby1 = -1: publicTile.graby2 = -1
     
-    grabStatus.Panels(1).width = grabStatus.width / 2
-    grabStatus.Panels(2).width = grabStatus.width / 2
+    grabStatus.Panels(1).Width = grabStatus.Width / 2
+    grabStatus.Panels(2).Width = grabStatus.Width / 2
     
     'Welcome message.
     
     MsgBox "Welcome to the new look tile grabber, which allows you to grab both 2D and " _
         & "isometric tiles and save them straight into tilesets." _
-        & Chr$(13) & Chr$(13) _
-        & "  A left click selects a tile that is aligned to the grid." & Chr$(13) _
-        & "  A right click selects a tile at that position and aligns the grid to the tile." & Chr$(13) _
-        & "  A left drag creates a selection that is aligned to the grid." & Chr$(13) _
-        & "  A right drag creates a selection at that position and aligns the grid to the selection." & Chr$(13) _
-        & Chr$(13) _
+        & chr$(13) & chr$(13) _
+        & "  A left click selects a tile that is aligned to the grid." & chr$(13) _
+        & "  A right click selects a tile at that position and aligns the grid to the tile." & chr$(13) _
+        & "  A left drag creates a selection that is aligned to the grid." & chr$(13) _
+        & "  A right drag creates a selection at that position and aligns the grid to the selection." & chr$(13) _
+        & chr$(13) _
         & "To grab the whole image, clear the selection and hit the Batch button." _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "To change the color of the grid, selection or transparent color click the corresponding color box and " _
         & "a color dialog window will appear. You can also click the dropper button and choose a color from the image." _
-        & Chr$(13) & Chr$(13) _
-        & "The ""Ignore Edge Tiles"" check box ignores the tiles around the edge of a square selection in isometric mode." & Chr$(13) _
+        & chr$(13) & chr$(13) _
+        & "The ""Ignore Edge Tiles"" check box ignores the tiles around the edge of a square selection in isometric mode." & chr$(13) _
         & "The ""Grid Offset"" check box vertically offsets the grid by 16 pixels - this can be useful for isometric grabbing." _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "If you encounter any problems please report them on the forums at http://www.rpgtoolkit.com"
    
     Exit Sub
@@ -1248,19 +1249,19 @@ Private Sub Form_Resize(): On Error Resume Next
     grab.AutoRedraw = False
     
     'Set the minimum window size.
-    If grab.width < 9000 Then grab.width = 9000
+    If grab.Width < 9000 Then grab.Width = 9000
     If grab.height < 6400 Then grab.height = 6400
     
     'Size the grabForm picture box.
     'The vertical edges of the grabber are 120 twips. The horizontal edges total 510 twips.
     grabForm.Top = 120         'Aligned to top-left corner always.
     grabForm.Left = 120
-    grabForm.width = grab.width - (3 * 120)
+    grabForm.Width = grab.Width - (3 * 120)
     grabForm.height = grab.height - grabFrame.height - 510 - 120
     
     'Centre the toolFrame, align to the bottom:
     grabFrame.Top = grabForm.height + grabForm.Top
-    grabFrame.Left = (grab.width - grabFrame.width) / 2
+    grabFrame.Left = (grab.Width - grabFrame.Width) / 2
     
     scrVertical.Visible = False
     scrHorizontal.Visible = False
@@ -1268,15 +1269,15 @@ Private Sub Form_Resize(): On Error Resume Next
     If openImage.loaded Then
         'If an image has been loaded and successfully unloaded (will equal 1).
         
-        If openImage.twipWidth <= grabForm.width Then
-            grabForm.width = openImage.twipWidth
+        If openImage.twipWidth <= grabForm.Width Then
+            grabForm.Width = openImage.twipWidth
         Else
             'Image is wider than grabform.
             'Enable the horziontal scroll.
             scrHorizontal.Visible = True
             grabForm.height = grabForm.height - scrHorizontal.height
             
-            grabForm.width = (Int(grabForm.width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
+            grabForm.Width = (Int(grabForm.Width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
         End If
         
         If openImage.twipHeight <= grabForm.height Then
@@ -1286,30 +1287,30 @@ Private Sub Form_Resize(): On Error Resume Next
             'Image is taller than grabform.
             'Enable the vertical scroll.
             scrVertical.Visible = True
-            grabForm.width = grabForm.width - scrVertical.width
+            grabForm.Width = grabForm.Width - scrVertical.Width
             
-            If openImage.twipWidth > grabForm.width Then
-                grabForm.width = (Int(grabForm.width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
+            If openImage.twipWidth > grabForm.Width Then
+                grabForm.Width = (Int(grabForm.Width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
             End If
             
             grabForm.height = (Int(grabForm.height / (Screen.TwipsPerPixelY * 32))) * 32 * Screen.TwipsPerPixelY
         End If
         
-        grabForm.Left = (grab.width - grabForm.width) / 2
+        grabForm.Left = (grab.Width - grabForm.Width) / 2
     End If
               
     'Align the scroll bars:
     scrVertical.Top = grabForm.Top
-    scrVertical.Left = grabForm.width + grabForm.Left
+    scrVertical.Left = grabForm.Width + grabForm.Left
     scrVertical.height = grabForm.height
     scrHorizontal.Top = grabForm.height + grabForm.Top
     scrHorizontal.Left = grabForm.Left
-    scrHorizontal.width = grabForm.width
+    scrHorizontal.Width = grabForm.Width
     
     'This will scroll in tile units (32x32).
-    scrHorizontal.Max = (openImage.twipWidth - grabForm.width) / (Screen.TwipsPerPixelX * 32)
-    scrVertical.Max = (openImage.twipHeight - grabForm.height) / (Screen.TwipsPerPixelY * 32)
-    scrHorizontal.LargeChange = grabForm.width / (Screen.TwipsPerPixelX * 32) - 1
+    scrHorizontal.max = (openImage.twipWidth - grabForm.Width) / (Screen.TwipsPerPixelX * 32)
+    scrVertical.max = (openImage.twipHeight - grabForm.height) / (Screen.TwipsPerPixelY * 32)
+    scrHorizontal.LargeChange = grabForm.Width / (Screen.TwipsPerPixelX * 32) - 1
     scrVertical.LargeChange = grabForm.height / (Screen.TwipsPerPixelY * 32) - 1
     'scrHorizontal.value = 0
     'scrVertical.value = 0
@@ -1320,7 +1321,7 @@ Private Sub Form_Resize(): On Error Resume Next
 
 End Sub
 
-Private Sub grabform_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub grabform_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
 '========================================
 'MouseDown on the image.
 'Action depends on the settings.
@@ -1359,7 +1360,7 @@ On Error GoTo ErrorHandler
 
     mouseDownX = x: mouseDownY = y  'For use in mouseUp.
     
-    If Button = 1 Then
+    If button = 1 Then
         'Left button.
         'All clicks are aligned to grid:
         'MouseDown selects the start co-ordinates.
@@ -1408,7 +1409,7 @@ On Error GoTo ErrorHandler
             
         End If 'chkIso.value
         
-    ElseIf Button = 2 Then
+    ElseIf button = 2 Then
         'Right button.
         'Clicks are not aligned.
         'Align grid to click.
@@ -1434,7 +1435,7 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub grabform_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub grabform_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
 '================================
 'MouseMove on the image: draws the selection square.
 '================================
@@ -1447,7 +1448,7 @@ Private Sub grabform_MouseMove(Button As Integer, Shift As Integer, x As Single,
     Dim tileX As Integer, tileY As Integer, tileMax As Integer
     
     'Exit if no button is held or we're getting the transparent colour.
-    If chkTrans.value = 1 Or Button = 0 Then Exit Sub
+    If chkTrans.value = 1 Or button = 0 Then Exit Sub
     
     'If we're dragging off-screen, scroll the form. Edit out for the moment.
     'If x * Screen.TwipsPerPixelX > grabForm.width Then: scrHorizontal.value = scrHorizontal.value + 1: Call scrHorizontal_Change
@@ -1455,13 +1456,13 @@ Private Sub grabform_MouseMove(Button As Integer, Shift As Integer, x As Single,
     'If y * Screen.TwipsPerPixelY > grabForm.height Then: scrVertical.value = scrVertical.value + 1: Call scrVertical_Change
     'If y * Screen.TwipsPerPixelY < 0 Then: scrVertical.value = scrVertical.value - 1: Call scrVertical_Change
    
-    If Button = 1 Then
+    If button = 1 Then
         'Left click-drag.
         'Draw a selection aligned to the grid.
         
         dragX = publicTile.grabx1: dragY = publicTile.graby1
         
-    ElseIf Button = 2 Then
+    ElseIf button = 2 Then
         'Right-click drag.
         'Draw a selection at the position.
         
@@ -1502,7 +1503,7 @@ Private Sub grabform_MouseMove(Button As Integer, Shift As Integer, x As Single,
         tileMax = 0 - Int((tileX * tileY) / -2)
     End If
     
-    grabStatus.Panels(2).text = "Selection: " & dragX & ", " & dragY & " -> " & x & ", " & y & " = " _
+    grabStatus.Panels(2).Text = "Selection: " & dragX & ", " & dragY & " -> " & x & ", " & y & " = " _
         & tileX & "x" & tileY & " = " & tileMax & " Tiles"
     
     Exit Sub
@@ -1512,7 +1513,7 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub grabForm_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub grabForm_MouseUp(button As Integer, Shift As Integer, x As Single, y As Single)
 '===========================
 'MouseUp on the image.
 'Sets the end of the grab.
@@ -1562,7 +1563,7 @@ Private Sub grabForm_MouseUp(Button As Integer, Shift As Integer, x As Single, y
         tileMax = 0 - Int((tileX * tileY) / -2)
     End If
                     
-    grabStatus.Panels(2).text = "Selection: " & publicTile.grabx1 & ", " & publicTile.graby1 & " -> " _
+    grabStatus.Panels(2).Text = "Selection: " & publicTile.grabx1 & ", " & publicTile.graby1 & " -> " _
         & publicTile.grabx2 & ", " & publicTile.graby2 & " = " _
         & tileX & "x" & tileY & " = " & tileMax & " Tiles"
 
@@ -1709,7 +1710,7 @@ Private Sub drawGrid()
         ' if isometric
         If chkIso.value = 1 Then
         
-            tilesX = Int((grabForm.width / Screen.TwipsPerPixelX) / 64)
+            tilesX = Int((grabForm.Width / Screen.TwipsPerPixelX) / 64)
             tilesY = Int((grabForm.height / Screen.TwipsPerPixelY) / 16)
             
             'Draw lines: bottom left to top right.
@@ -1731,7 +1732,7 @@ Private Sub drawGrid()
         ' if 2d
         Else
         
-            tilesX = Int((grab.width / Screen.TwipsPerPixelX) / 32)
+            tilesX = Int((grab.Width / Screen.TwipsPerPixelX) / 32)
             tilesY = Int((grab.height / Screen.TwipsPerPixelY) / 32)
         
             ' draw 2D grid lines

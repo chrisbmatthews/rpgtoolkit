@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.Form tilesetedit 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Tile Set Editor"
@@ -43,7 +43,6 @@ Begin VB.Form tilesetedit
       TabPicture(1)   =   "tilesetedit.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "frmVisual"
-      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Advanced"
       TabPicture(2)   =   "tilesetedit.frx":0D02
@@ -259,7 +258,7 @@ Private Sub cmdBrowse_Click()
         'Get the extention
         ex = GetExt(filename$(1))
         If ex = "gph" Then
-            txtGPH.text = RemovePath(filename$(1))
+            txtGPH.Text = RemovePath(filename$(1))
         End If
     End If
 End Sub
@@ -274,7 +273,7 @@ Private Sub cmdAddFiles_Click()
     'The tileset
     Dim file As String
     'Get the text
-    gph = txtGPH.text
+    gph = txtGPH.Text
 
     If gph = "" Then 'If it's empty
         MsgBox LoadStringLoc(979, "Please fill something out in the gpher Box (ie *.gph, etc)")
@@ -472,9 +471,6 @@ Private Sub cmdOK_Click()
     Me.Hide
 End Sub
 
-Private Sub Command1_Click()
-    tilesetadd.Show
-End Sub
 
 '========================================================================
 ' Form_Load
@@ -577,7 +573,7 @@ Private Sub SSTab1_Click(PreviousTab As Integer)
             'Start adding the details to the form
             lstFiles.path = projectPath$ + tilepath$
             lstFiles.Pattern = "*.gph"
-            tilesetadd.caption = LoadStringLoc(2033, "Add to Tileset ") + tstFile$
+            tilesetedit.Caption = LoadStringLoc(2033, "Add to Tileset ") + tstFile$
             a = tilesetInfo(projectPath$ + tilepath$ + tstFile$)
             ts = tileset.tilesInSet
             lstTileset.Clear
@@ -585,7 +581,7 @@ Private Sub SSTab1_Click(PreviousTab As Integer)
                 lstTileset.AddItem ("Tile" + str$(tt))
             Next tt
             'Change the caption name
-            Me.caption = "Tile Set Editor - " & tstFile$
+            Me.Caption = "Tile Set Editor - " & tstFile$
         Else 'If cancel was pressed, return to the "Manually" tab
             SSTab1.Tab = 0
         End If
@@ -594,7 +590,7 @@ Private Sub SSTab1_Click(PreviousTab As Integer)
     End If
 
     'If we go back the the manually editor, change the caption back
-    If PreviousTab = 1 Then Me.caption = "Tile Set Editor"
+    If PreviousTab = 1 Then Me.Caption = "Tile Set Editor"
 End Sub
 '========================================================================
 ' The Remove Duplicates button
@@ -617,7 +613,7 @@ Private Sub cmdRemove_Click()
         'Stop button shouldn't be enabled anymore
         cmdStop.Enabled = False
         'Clear the label
-        lblProgress.caption = ""
+        lblProgress.Caption = ""
     End If
         
     Exit Sub
@@ -701,7 +697,7 @@ Sub createHashTable()
             Close #num2
             
             pdone = Int((cnt / nTiles) * 50)
-            lblProgress.caption = str$(pdone) + "% (Hashing)"
+            lblProgress.Caption = str$(pdone) + "% (Hashing)"
             DoEvents
             a$ = Dir()
         Loop
@@ -754,7 +750,7 @@ Sub compareHash()
             Input #num, fdet
             Input #num, fhash
             cnt = cnt + 1
-            aa = fileExist(projectPath$ + tilepath$ + fn$)
+            aa = FileExist(projectPath$ + tilepath$ + fn$)
             If aa = 1 Then
                 'now check the corresponding hash file
                 hnum$ = toString(fhash) + ".hsd"
@@ -762,7 +758,7 @@ Sub compareHash()
                 Open hashpath$ + hnum$ For Input As #num2
                     Do While Not EOF(num2)
                         Line Input #num2, hn$
-                        Label4.caption = "Checking " + fn$ + " and " + hn$
+                        Label4.Caption = "Checking " + fn$ + " and " + hn$
                         Input #num2, hdet
                         If Not (UCase$(hn$) = UCase$(fn$)) Then
                             If hdet = fdet Then
@@ -777,7 +773,7 @@ Sub compareHash()
                     Loop
                 Close #num2
                 pdone = Int((cnt / nTiles) * 50) + 50
-                lblProgress.caption = str$(pdone) + "% (Comparing)"
+                lblProgress.Caption = str$(pdone) + "% (Comparing)"
                 DoEvents
             End If
         Next l
@@ -790,13 +786,13 @@ End Sub
 Function compareTiles(f1$, f2$) As Boolean
     On Error GoTo ErrorHandler
     ReDim mybuf(32, 32)
-    a = fileExist(projectPath$ + tilepath$ + f1$)
+    a = FileExist(projectPath$ + tilepath$ + f1$)
     If a = 0 Then
         'f1 doesn't exist
         compareTiles = False
         Exit Function
     End If
-    a = fileExist(projectPath$ + tilepath$ + f2$)
+    a = FileExist(projectPath$ + tilepath$ + f2$)
     If a = 0 Then
         'f2 doesn't exist
         compareTiles = False

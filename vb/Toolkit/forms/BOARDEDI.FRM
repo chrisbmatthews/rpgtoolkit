@@ -477,12 +477,7 @@ Option Explicit
 '   boardSelectTile
 '
 ' Isometric board size issues:
-'   boardIso
-'   resizeForm
-'   redrawbrd
-'   Form_Load
-'   refreshGrid
-'   viewTiletype
+'   boardIso,resizeForm,redrawbrd,Form_Load,refreshGrid,viewTiletype
 '   Form boardinformation - size tab alterations.
 '   scroll.bas - scrolling changes
 '====================================================
@@ -653,15 +648,15 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
     End If
     
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     
     ' update current board tile
-    For X = 1 To 32
-        For Y = 1 To 32
-            boardList(activeBoardIndex).BoardTile(X, Y) = tilemem(X, Y)
-            tilemem(X, Y) = buftile(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            boardList(activeBoardIndex).BoardTile(x, y) = tilemem(x, y)
+            tilemem(x, y) = buftile(x, y)
+        Next y
+    Next x
     
     ' update board detail
     boardList(activeBoardIndex).BoardDetail = detail
@@ -697,11 +692,11 @@ End Sub
 '========================================================================
 ' file board with selected tile
 '========================================================================
-Public Sub fillBoard(ByVal X As Long, ByVal Y As Long, ByVal l As Long, ByVal tileFile As String, Optional ByVal lastX As Long = -1, Optional ByVal lastY As Long = -1): On Error Resume Next
+Public Sub fillBoard(ByVal x As Long, ByVal y As Long, ByVal l As Long, ByVal tileFile As String, Optional ByVal lastX As Long = -1, Optional ByVal lastY As Long = -1): On Error Resume Next
     
     ' get old tile
     Dim replaceTile As Long
-    replaceTile = boardList(activeBoardIndex).theData.board(X, Y, l)
+    replaceTile = boardList(activeBoardIndex).theData.board(x, y, l)
     
     ' get new tile
     Dim newTile As Long
@@ -711,8 +706,8 @@ Public Sub fillBoard(ByVal X As Long, ByVal Y As Long, ByVal l As Long, ByVal ti
     If replaceTile = newTile Then Exit Sub
     
     ' set grid reference to new tile
-    boardList(activeBoardIndex).theData.board(X, Y, l) = newTile
-    boardList(activeBoardIndex).theData.tiletype(X, Y, l) = boardList(activeBoardIndex).currentTileType
+    boardList(activeBoardIndex).theData.board(x, y, l) = newTile
+    boardList(activeBoardIndex).theData.tiletype(x, y, l) = boardList(activeBoardIndex).currentTileType
     
     Dim sizex As Long, sizey As Long
     
@@ -723,46 +718,46 @@ Public Sub fillBoard(ByVal X As Long, ByVal Y As Long, ByVal l As Long, ByVal ti
     Dim x2 As Long, y2 As Long
     
     ' get new x and y position
-    x2 = X + 1: y2 = Y
+    x2 = x + 1: y2 = y
     
     ' check against boundries of board
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
     
         ' if old tile is the same as replaced tile
-        If boardList(activeBoardIndex).theData.board(x2, y2, l) = replaceTile Then: Call fillBoard(x2, y2, l, tileFile, X, Y)
+        If boardList(activeBoardIndex).theData.board(x2, y2, l) = replaceTile Then: Call fillBoard(x2, y2, l, tileFile, x, y)
 
     End If
     
     ' get new x and y position
-    x2 = X: y2 = Y - 1
+    x2 = x: y2 = y - 1
     
     ' check against boundries of board
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
     
         ' if old tile is same as replaced tile
-        If boardList(activeBoardIndex).theData.board(x2, y2, l) = replaceTile Then: Call fillBoard(x2, y2, l, tileFile, X, Y)
+        If boardList(activeBoardIndex).theData.board(x2, y2, l) = replaceTile Then: Call fillBoard(x2, y2, l, tileFile, x, y)
     
     End If
     
     ' get new x and y position
-    x2 = X - 1: y2 = Y
+    x2 = x - 1: y2 = y
     
     ' check against boundries of board
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
         
         ' if old tile is same as replaced tile
-        If boardList(activeBoardIndex).theData.board(x2, y2, l) = replaceTile Then: Call fillBoard(x2, y2, l, tileFile, X, Y)
+        If boardList(activeBoardIndex).theData.board(x2, y2, l) = replaceTile Then: Call fillBoard(x2, y2, l, tileFile, x, y)
     
     End If
     
     ' get new x and y position
-    x2 = X: y2 = Y + 1
+    x2 = x: y2 = y + 1
     
     ' check against boundries of board
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
         
         ' if old tile is same as replaced tile
-        If boardList(activeBoardIndex).theData.board(x2, y2, l) = replaceTile Then: Call fillBoard(x2, y2, l, tileFile, X, Y)
+        If boardList(activeBoardIndex).theData.board(x2, y2, l) = replaceTile Then: Call fillBoard(x2, y2, l, tileFile, x, y)
 
     End If
     
@@ -782,7 +777,7 @@ Sub boardIso(ByVal val As Integer): On Error Resume Next
     
     ' if board 2d
     MsgBox "Your board has now changed mode, you may need to change the board size and placement of items/programs as a result." _
-        & Chr$(13) & Chr$(13) _
+        & chr$(13) & chr$(13) _
         & "Isometric boards have minimum dimensions of 10x30, and standard boards 19x11. Smaller boards will be enlarged upon conversion."
     
     'Isometric settings
@@ -846,7 +841,7 @@ Public Sub drawLayers(Optional buttonClick As Boolean = False): On Error Resume 
     ' fill picture box with board color
     Call vbPicFillRect(boardform, 0, 0, 2000, 2000, boardList(activeBoardIndex).theData.brdColor)
     
-    Dim temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, X As Long, Y As Long, xx As Long, yy As Long
+    Dim Temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
     
     ' drawbackground
     DrawBackground
@@ -906,7 +901,7 @@ End Function
 '========================================================================
 ' get current board y co-ord from pixel co-ords
 '========================================================================
-Function pixelToBoardCoordX(ByVal X As Long, ByVal Y As Long) As Long
+Function pixelToBoardCoordX(ByVal x As Long, ByVal y As Long) As Long
 
     Dim xx As Long, yy As Long, oy As Long, ox As Long, ex As Long, ey As Long, pt As Long, offsetX As Long, offsetY As Long
     
@@ -914,10 +909,10 @@ Function pixelToBoardCoordX(ByVal X As Long, ByVal Y As Long) As Long
     If boardList(activeBoardIndex).theData.isIsometric = 0 Then
     
         ' calculate x
-        xx = Int(X / 32) + 1
+        xx = Int(x / 32) + 1
         
         ' calculate y
-        yy = Int(Y / 32) + 1
+        yy = Int(y / 32) + 1
         
     Else
     
@@ -932,15 +927,15 @@ Function pixelToBoardCoordX(ByVal X As Long, ByVal Y As Long) As Long
             
         End If
         
-        xx = Int(X / 64) + 1
-        oy = Int((Y + offsetY) / 32) + 1
+        xx = Int(x / 64) + 1
+        oy = Int((y + offsetY) / 32) + 1
         yy = 2 * oy - 1
         
         ex = (xx - 1) * 64
         ey = (oy - 1) * 32
         
-        ex = X - ex
-        ey = (Y + offsetY) - ey
+        ex = x - ex
+        ey = (y + offsetY) - ey
         
         pt = vbPicPoint(isomask, ex, ey)
         
@@ -978,20 +973,63 @@ End Function
 '========================================================================
 ' get current board y co-ord from pixel co-ords
 '========================================================================
-Function pixelToBoardCoordY(ByVal X As Long, ByVal Y As Long) As Long
+Function pixelToBoardCoordY(ByVal x As Long, ByVal y As Long) As Long
 
-    Dim xx As Long, yy As Long, offsetX As Long, offsetY As Long, ox As Long, oy As Long, ex As Long, ey As Long, pt As Long
+    Dim xTile As Long, yTile As Long, offsetX As Long, offsetY As Long
+    Dim ox As Long, oy As Long, ex As Long, ey As Long, pt As Long
+    Dim maskX As Integer, maskY As Integer, dx As Integer, dy As Integer
     
     ' perform calculartion depending on isometric or not
     If boardList(activeBoardIndex).theData.isIsometric = 0 Then
     
         ' calculate x
-        xx = Int(X / 32) + 1
+        xTile = Int(x / 32) + 1
         
         ' calculate y
-        yy = Int(Y / 32) + 1
+        yTile = Int(y / 32) + 1
         
     Else
+        'Isometric. New!
+    
+        If boardList(activeBoardIndex).topY Mod 2 = 0 Then
+            offsetY = 16
+        Else
+            offsetY = 0
+        End If
+        
+        'Calculate initial tile position.
+        xTile = Int(x / 64) + 1
+        yTile = Int((y + offsetY) / 32) * 2 + 1 + boardList(activeBoardIndex).topY Mod 2
+            
+        'Calculate the position on the mask.
+        maskX = x Mod 64
+        maskY = (y + offsetY) Mod 32
+        
+        'Some initial values for the correction.
+        dx = 0: dy = 0
+            
+        'Compare the click to the mask. (1->64, 1->32)
+        If isoMaskBmp(maskX + 1, maskY + 1) <> 0 Then
+            'This pixel is on the masked off area, and
+            'corresponds to a different tile.
+                
+            'Calculate the tile number corrections.
+            dx = Int(maskX / 32): If dx = 0 Then dx = -1
+            dy = Int(maskY / 16): If dy = 0 Then dy = -1
+                
+        End If
+            
+        'Calculate the new co-ordinates.
+        xTile = xTile + dx
+        yTile = yTile + dy
+    
+    End If
+        
+    pixelToBoardCoordY = yTile + boardList(activeBoardIndex).topY
+    
+    Exit Function
+
+    'Old code.
     
         ' isometric calculation
         If boardList(activeBoardIndex).topY Mod 2 = 0 Then
@@ -1004,15 +1042,15 @@ Function pixelToBoardCoordY(ByVal X As Long, ByVal Y As Long) As Long
             
         End If
         
-        xx = Int(X / 64) + 1
-        oy = Int((Y + offsetY) / 32) + 1
-        yy = 2 * oy - 1
+        xTile = Int(x / 64) + 1
+        oy = Int((y + offsetY) / 32) + 1 + boardList(activeBoardIndex).topY Mod 2
+        yTile = 2 * oy - 1
         
-        ex = (xx - 1) * 64
+        ex = (xTile - 1) * 64
         ey = (oy - 1) * 32
         
-        ex = X - ex
-        ey = (Y + offsetY) - ey
+        ex = x - ex
+        ey = (y + offsetY) - ey
         
         pt = vbPicPoint(isomask, ex, ey)
         
@@ -1020,30 +1058,30 @@ Function pixelToBoardCoordY(ByVal X As Long, ByVal Y As Long) As Long
         
             If (ex >= 32 And ey <= 16) Then
             
-                xx = xx + 1
-                yy = yy - 1
+                xTile = xTile + 1
+                yTile = yTile - 1
                 
             ElseIf (ex >= 32 And ey > 16) Then
             
-                xx = xx + 1
-                yy = yy + 1
+                xTile = xTile + 1
+                yTile = yTile + 1
                 
             ElseIf (ex < 32 And ey <= 16) Then
             
-                yy = yy - 1
+                yTile = yTile - 1
                 
             ElseIf (ex < 32 And ey > 16) Then
             
-                yy = yy + 1
+                yTile = yTile + 1
                 
             End If
             
         End If
         
-    End If
+    'End If
     
     ' return board y co-ord
-    pixelToBoardCoordY = yy + boardList(activeBoardIndex).topY
+    pixelToBoardCoordY = yTile + boardList(activeBoardIndex).topY
     
 End Function
 
@@ -1054,7 +1092,7 @@ Sub refreshGrid(): On Error Resume Next
 '=====================================================
 'Alterations for isometric sizing, for 3.0.4 by Delano
     
-    Dim col As Long, offsetY As Long, yy As Long, xx As Long, X As Long, Y As Long
+    Dim col As Long, offsetY As Long, yy As Long, xx As Long, x As Long, y As Long
     
     ' check grid is on
     If boardList(activeBoardIndex).gridBoard = 1 Then
@@ -1085,17 +1123,17 @@ Sub refreshGrid(): On Error Resume Next
             xx = 0
             
             ' draw grid lines. Top left to bottom right.
-            For Y = boardList(activeBoardIndex).tilesY * 32 To -boardList(activeBoardIndex).tilesY * 32 Step -32
-                Call vbPicLine(boardform, 0, Y + offsetY, xx, boardList(activeBoardIndex).tilesY * 32 + offsetY, vbQBColor(col))
+            For y = boardList(activeBoardIndex).tilesY * 32 To -boardList(activeBoardIndex).tilesY * 32 Step -32
+                Call vbPicLine(boardform, 0, y + offsetY, xx, boardList(activeBoardIndex).tilesY * 32 + offsetY, vbQBColor(col))
                 xx = xx + 64
-            Next Y
+            Next y
         
         ' if 2d
         Else
         
             ' draw grid lines
-            For X = 0 To boardList(activeBoardIndex).tilesX * 32 Step 32: Call vbPicLine(boardform, X, 0, X, boardList(activeBoardIndex).tilesY * 32, vbQBColor(col)): Next X
-            For Y = 0 To boardList(activeBoardIndex).tilesY * 32 Step 32: Call vbPicLine(boardform, 0, Y, boardList(activeBoardIndex).tilesX * 32, Y, vbQBColor(col)): Next Y
+            For x = 0 To boardList(activeBoardIndex).tilesX * 32 Step 32: Call vbPicLine(boardform, x, 0, x, boardList(activeBoardIndex).tilesY * 32, vbQBColor(col)): Next x
+            For y = 0 To boardList(activeBoardIndex).tilesY * 32 Step 32: Call vbPicLine(boardform, 0, y, boardList(activeBoardIndex).tilesX * 32, y, vbQBColor(col)): Next y
             
         End If
         
@@ -1131,15 +1169,15 @@ End Sub
 '========================================================================
 ' select new tile type {from tkMainForm: tiletypes_MouseDown}
 '========================================================================
-Public Sub changeTileType(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Public Sub ChangeTileType(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     
-    Dim ttype As Long, colorCode As Long, levelnum As Long, aPoint As Long, xx As Long, yy As Long
+    Dim tType As Long, colorCode As Long, levelnum As Long, aPoint As Long, xx As Long, yy As Long
     
     ' get tile type number from click x co-ord
-    ttype = Int(X / 18)
+    tType = Int(x / 18)
     
     ' update board tile type
-    boardList(activeBoardIndex).currentTileType = ttype
+    boardList(activeBoardIndex).currentTileType = tType
     
     ' if tile type if five, then set to 11
     If boardList(activeBoardIndex).currentTileType >= 5 Then boardList(activeBoardIndex).currentTileType = boardList(activeBoardIndex).currentTileType + 6
@@ -1167,7 +1205,7 @@ Public Sub changeAmbientLight(): On Error Resume Next
     boardList(activeBoardIndex).ambientB = tkMainForm.ambientlight.value
     
     ' update form caption for ambient value
-    tkMainForm.ambientnumber.text = toString(tkMainForm.ambientlight.value)
+    tkMainForm.ambientnumber.Text = toString(tkMainForm.ambientlight.value)
     
     ' set picture box as ambience
     Call vbPicFillRect(tkMainForm.Picture1, 0, 0, 1000, 1000, RGB(255, 255, 255))
@@ -1180,12 +1218,12 @@ End Sub
 Public Sub changeAmbientNumber(): On Error Resume Next
 
     ' check numeric value entered
-    If tkMainForm.ambientnumber.text = "-" Then Exit Sub
+    If tkMainForm.ambientnumber.Text = "-" Then Exit Sub
     
     Dim level As Long
     
     ' convert text to numeral
-    level = val(tkMainForm.ambientnumber.text)
+    level = val(tkMainForm.ambientnumber.Text)
     
     ' check boundries
     If level > 255 Then level = 255
@@ -1218,7 +1256,7 @@ Public Sub selectAmbientColor(): On Error Resume Next
         Call vbPicFillRect(tkMainForm.Picture1, 0, 0, 1000, 1000, c)
         
         ' update ambient number text box value
-        tkMainForm.ambientnumber.text = "0"
+        tkMainForm.ambientnumber.Text = "0"
         
     End If
     
@@ -1427,22 +1465,22 @@ Public Sub DrawBackground()
 '=====================================================
 'Alterations for isometric sizing, for 3.0.4 by Delano
 
-    Dim temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, X As Long, Y As Long, xx As Long, yy As Long
+    Dim Temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
     
     ' calculate x and y pixel positions
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
-        X = 0 - (boardList(activeBoardIndex).topX * 64)
+        x = 0 - (boardList(activeBoardIndex).topX * 64)
         y = 0 - (boardList(activeBoardIndex).topY * 16)         'Altered - was * 48
     Else
-        X = 0 - (boardList(activeBoardIndex).topX * 32)
-        Y = 0 - (boardList(activeBoardIndex).topY * 32)
+        x = 0 - (boardList(activeBoardIndex).topX * 32)
+        y = 0 - (boardList(activeBoardIndex).topY * 32)
     End If
     
     ' if border has a background image
     If boardList(activeBoardIndex).theData.borderBack$ <> "" Then
     
         ' set string as image filename
-        temp$ = projectPath$ + bmppath$ + boardList(activeBoardIndex).theData.borderBack$
+        Temp$ = projectPath$ + bmppath$ + boardList(activeBoardIndex).theData.borderBack$
         
         ' extract file extension
         ext = extention(boardList(activeBoardIndex).theData.borderBack$)
@@ -1451,7 +1489,7 @@ Public Sub DrawBackground()
         Call vbPicAutoRedraw(boardedit, True)
         
         ' draw image to form
-        Call DrawImage(temp$, X, Y, vbFrmHDC(boardedit))
+        Call DrawImage(Temp$, x, y, vbFrmHDC(boardedit))
         
         ' refresh form
         Call vbFrmRefresh(boardedit)
@@ -1462,13 +1500,13 @@ Public Sub DrawBackground()
     If boardList(activeBoardIndex).theData.brdBack$ <> "" Then
     
         ' set string as image filename
-        temp$ = projectPath$ + bmppath$ + boardList(activeBoardIndex).theData.brdBack$
+        Temp$ = projectPath$ + bmppath$ + boardList(activeBoardIndex).theData.brdBack$
         
         ' extract file extension
         ext = extention(boardList(activeBoardIndex).theData.brdBack$)
         
         ' draw image to picture box
-        Call DrawImage(temp$, X, Y, vbPicHDC(boardform))
+        Call DrawImage(Temp$, x, y, vbPicHDC(boardform))
         
     End If
     
@@ -1487,7 +1525,7 @@ Public Sub boardRedraw(): On Error Resume Next
     ' fill picture box with board color
     Call vbPicFillRect(boardform, 0, 0, 2000, 2000, boardList(activeBoardIndex).theData.brdColor)
     
-    Dim temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, X As Long, Y As Long, xx As Long, yy As Long
+    Dim Temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
     
     Call DrawBackground
     
@@ -1525,7 +1563,7 @@ Public Sub boardSelectTile(): On Error Resume Next
 'Edited by Delano for 3.0.4 new isometric tilesets.
 'Added .iso to available tiles.
     
-    Dim X As Long, Y As Long, antiPath As String, whichType As String
+    Dim x As Long, y As Long, antiPath As String, whichType As String
     
     bCurrentTileIsTransparent = False
     
@@ -1535,11 +1573,11 @@ Public Sub boardSelectTile(): On Error Resume Next
     publicTile.oldDetail = detail
     
     ' get old tile
-    For X = 1 To 32
-        For Y = 1 To 32
-            buftile(X, Y) = tilemem(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            buftile(x, y) = tilemem(x, y)
+        Next y
+    Next x
     
     ' change directory
     ChDir (currentdir$)
@@ -1611,12 +1649,12 @@ Public Sub boardSelectTile(): On Error Resume Next
         End If
         
         ' update current board tile
-        For X = 1 To 32
-            For Y = 1 To 32
-                boardList(activeBoardIndex).BoardTile(X, Y) = tilemem(X, Y)
-                tilemem(X, Y) = buftile(X, Y)
-            Next Y
-        Next X
+        For x = 1 To 32
+            For y = 1 To 32
+                boardList(activeBoardIndex).BoardTile(x, y) = tilemem(x, y)
+                tilemem(x, y) = buftile(x, y)
+            Next y
+        Next x
 
         ' update board detail
         boardList(activeBoardIndex).BoardDetail = detail
@@ -1668,12 +1706,12 @@ Public Sub boardSelectTile(): On Error Resume Next
             Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
             
             ' update current board tile
-            For X = 1 To 32
-                For Y = 1 To 32
-                    boardList(activeBoardIndex).BoardTile(X, Y) = tilemem(X, Y)
-                    tilemem(X, Y) = buftile(X, Y)
-                Next Y
-            Next X
+            For x = 1 To 32
+                For y = 1 To 32
+                    boardList(activeBoardIndex).BoardTile(x, y) = tilemem(x, y)
+                    tilemem(x, y) = buftile(x, y)
+                Next y
+            Next x
 
             ' update board detail
             boardList(activeBoardIndex).BoardDetail = detail
@@ -1717,12 +1755,12 @@ Public Sub boardSelectTile(): On Error Resume Next
             Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
             
             ' update current board tile
-            For X = 1 To 32
-                For Y = 1 To 32
-                    boardList(activeBoardIndex).BoardTile(X, Y) = tilemem(X, Y)
-                    tilemem(X, Y) = buftile(X, Y)
-                Next Y
-            Next X
+            For x = 1 To 32
+                For y = 1 To 32
+                    boardList(activeBoardIndex).BoardTile(x, y) = tilemem(x, y)
+                    tilemem(x, y) = buftile(x, y)
+                Next y
+            Next x
             
             ' update board detail
             boardList(activeBoardIndex).BoardDetail = detail
@@ -1753,13 +1791,13 @@ Public Sub boardSelectTile(): On Error Resume Next
     End If
     
     ' set any pixels to transparent if appropiate
-    For X = 1 To 32
-        For Y = 1 To 32
-            If boardList(activeBoardIndex).BoardTile(X, Y) = -1 Then
+    For x = 1 To 32
+        For y = 1 To 32
+            If boardList(activeBoardIndex).BoardTile(x, y) = -1 Then
                 bCurrentTileIsTransparent = True
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     
     ' refresh current tile picture box
     Call vbPicRefresh(tkMainForm.currenttile)
@@ -1861,7 +1899,7 @@ Public Sub openFile(file$): On Error Resume Next
     boardList(activeBoardIndex).boardName$ = antiPath$
     
     ' update form caption
-    activeBoard.caption = LoadStringLoc(802, "Board Editor (" + antiPath$ + ")")
+    activeBoard.Caption = LoadStringLoc(802, "Board Editor (" + antiPath$ + ")")
     
     ' set picture box auto redraw as true
     Call vbPicAutoRedraw(boardform, True)
@@ -1885,12 +1923,8 @@ Public Sub resizeForm(a As Long, b As Long): On Error Resume Next
     
     
     ' check minimum boundries (and set if needed)
-    W = activeBoard.width
+    W = activeBoard.Width
     h = activeBoard.height
-    
-    'New variables - record the maximum twip dimensions.
-    Dim maxW As Long, maxH As Long
-    maxW = W: maxH = h
     
     'minBoardSizeX,Y assigned in BoardIso.
     If tilesX(W) < minBoardSizeX Then W = TwipsX(minBoardSizeX)
@@ -1920,33 +1954,33 @@ Public Sub resizeForm(a As Long, b As Long): On Error Resume Next
     ' update picture
     boardform.Left = 0
     boardform.Top = 0
-    boardform.width = TwipsX(boardList(activeBoardIndex).tilesX)
+    boardform.Width = TwipsX(boardList(activeBoardIndex).tilesX)
     boardform.height = TwipsY(boardList(activeBoardIndex).tilesY)
     
     'Added: Check we haven't exceeded the maximum size. Reduce the tiles until it's small enough.
-    While boardform.width + VScroll1.width > maxW
-        boardList(activeBoardIndex).tilesX = boardList(activeBoardIndex).tilesX - 1
-        boardform.width = TwipsX(boardList(activeBoardIndex).tilesX)
-    Wend
-    While boardform.height + HScroll1.height > maxH
-        boardList(activeBoardIndex).tilesY = boardList(activeBoardIndex).tilesY - 1
+    If boardform.Width + VScroll1.Width > activeBoard.Width Then
+        boardList(activeBoardIndex).tilesX = tilesX(activeBoard.Width - VScroll1.Width)
+        boardform.Width = TwipsX(boardList(activeBoardIndex).tilesX)
+    End If
+    If boardform.height + HScroll1.height > activeBoard.height Then
+        boardList(activeBoardIndex).tilesY = tilesY(activeBoard.height - HScroll1.height)
         boardform.height = TwipsY(boardList(activeBoardIndex).tilesY)
-    Wend
+    End If
     
     ' calculate scroll bar lengths
     ignore = 1
     If boardList(activeBoardIndex).tilesY = boardList(activeBoardIndex).theData.Bsizey Then
         VScroll1.Visible = False
-        Me.width = boardform.width + 115
+        Me.Width = boardform.Width + 115
     Else
         VScroll1.Visible = True
         VScroll1.Top = 0
-        VScroll1.Left = boardform.width
+        VScroll1.Left = boardform.Width
     VScroll1.height = boardform.height
         VScroll1.value = boardList(activeBoardIndex).topY
     VScroll1.max = boardList(activeBoardIndex).theData.Bsizey - boardList(activeBoardIndex).tilesY + 1
         VScroll1.LargeChange = boardList(activeBoardIndex).tilesY - 1           'Added.
-        Me.width = boardform.width + VScroll1.width + 115
+        Me.Width = boardform.Width + VScroll1.Width + 115
     End If
     If boardList(activeBoardIndex).tilesX = boardList(activeBoardIndex).theData.Bsizex Then
         HScroll1.Visible = False
@@ -1955,7 +1989,7 @@ Public Sub resizeForm(a As Long, b As Long): On Error Resume Next
         HScroll1.Visible = True
         HScroll1.Left = 0
         HScroll1.Top = boardform.height
-        HScroll1.width = boardform.width
+        HScroll1.Width = boardform.Width
         HScroll1.value = boardList(activeBoardIndex).topX
     HScroll1.max = boardList(activeBoardIndex).theData.Bsizex - boardList(activeBoardIndex).tilesX + 1
         HScroll1.LargeChange = boardList(activeBoardIndex).tilesX - 1           'Added.
@@ -2024,7 +2058,7 @@ End Sub
 '========================================================================
 ' when board is clicked
 '========================================================================
-Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub boardform_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     
     ' update board as changed
     boardList(activeBoardIndex).boardNeedUpdate = True
@@ -2039,11 +2073,11 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single
     redraw = True
     
     ' get tile co-ordinates
-    xx = pixelToBoardCoordX(X, Y)
-    yy = pixelToBoardCoordY(X, Y)
+    xx = pixelToBoardCoordX(x, y)
+    yy = pixelToBoardCoordY(x, y)
     
     ' left click
-    If Button = 1 Then
+    If button = 1 Then
     
         ' if gradient is about to be defined
         If boardList(activeBoardIndex).boardAboutToDefineGradient = True Then
@@ -2377,7 +2411,7 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single
     End If
     
     ' right click {show tile info}
-    If Button = 2 Then
+    If button = 2 Then
     
         Dim i As Integer
 
@@ -2432,13 +2466,13 @@ End Sub
 '========================================================================
 ' when mouse moves over board
 '========================================================================
-Private Sub boardform_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub boardform_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     
     Dim xx As Long, yy As Long
     
     ' get x and y co-ords
-    xx = pixelToBoardCoordX(X, Y)
-    yy = pixelToBoardCoordY(X, Y)
+    xx = pixelToBoardCoordX(x, y)
+    yy = pixelToBoardCoordY(x, y)
     
     ' update co-ords caption
     tkMainForm.boardCoords.Caption = str$(xx) + "," + str$(yy)
@@ -2449,8 +2483,8 @@ Private Sub boardform_MouseMove(Button As Integer, Shift As Integer, X As Single
     End If
     
     ' if left mouse button held down
-    If Button = 1 Then
-        Call boardform_MouseDown(Button, Shift, X, Y)
+    If button = 1 Then
+        Call boardform_MouseDown(button, Shift, x, y)
     End If
     
 End Sub
@@ -2594,13 +2628,13 @@ End Sub
 '========================================================================
 Private Sub Command1_Click()
     On Error Resume Next
-    Dim X As Long, Y As Long, a As Long
-    For X = 0 To 64
-        For Y = 0 To 32
-            a = isomask.point(X, Y)
-            Call vbPicPSet(boardform, X, Y, a)
-        Next Y
-    Next X
+    Dim x As Long, y As Long, a As Long
+    For x = 0 To 64
+        For y = 0 To 32
+            a = isomask.point(x, y)
+            Call vbPicPSet(boardform, x, y, a)
+        Next y
+    Next x
     Call vbPicRefresh(boardform)
 End Sub
 
@@ -2609,7 +2643,7 @@ End Sub
 '========================================================================
 Private Sub deleteLayer(): On Error Resume Next
 
-    Dim user As Long, X As Long, Y As Long
+    Dim user As Long, x As Long, y As Long
     
     ' confirm user action
     user = MsgBox(LoadStringLoc(945, "Delete this entire layer.  Are you sure?"), 4)
@@ -2618,20 +2652,20 @@ Private Sub deleteLayer(): On Error Resume Next
     If user = 6 Then
     
         ' loop through tiles
-        For X = 0 To boardList(activeBoardIndex).theData.Bsizex
-            For Y = 0 To boardList(activeBoardIndex).theData.Bsizey
+        For x = 0 To boardList(activeBoardIndex).theData.Bsizex
+            For y = 0 To boardList(activeBoardIndex).theData.Bsizey
 
                 ' get tile data
-                Call BoardSetTile(X, Y, boardList(activeBoardIndex).currentLayer, "", boardList(activeBoardIndex).theData)
+                Call BoardSetTile(x, y, boardList(activeBoardIndex).currentLayer, "", boardList(activeBoardIndex).theData)
                 
                 ' reset tile data
-                boardList(activeBoardIndex).theData.ambientred(X, Y, boardList(activeBoardIndex).currentLayer) = 0
-                boardList(activeBoardIndex).theData.ambientgreen(X, Y, boardList(activeBoardIndex).currentLayer) = 0
-                boardList(activeBoardIndex).theData.ambientblue(X, Y, boardList(activeBoardIndex).currentLayer) = 0
-                boardList(activeBoardIndex).theData.tiletype(X, Y, boardList(activeBoardIndex).currentLayer) = 0
+                boardList(activeBoardIndex).theData.ambientred(x, y, boardList(activeBoardIndex).currentLayer) = 0
+                boardList(activeBoardIndex).theData.ambientgreen(x, y, boardList(activeBoardIndex).currentLayer) = 0
+                boardList(activeBoardIndex).theData.ambientblue(x, y, boardList(activeBoardIndex).currentLayer) = 0
+                boardList(activeBoardIndex).theData.tiletype(x, y, boardList(activeBoardIndex).currentLayer) = 0
             
-            Next Y
-        Next X
+            Next y
+        Next x
         
         ' redraw board
         Call boardRedraw
@@ -2686,7 +2720,7 @@ End Sub
 '========================================================================
 Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
 
-    Dim X As Long, Y As Long, dx As Long, dy As Long, colorDraw As Long
+    Dim x As Long, y As Long, dx As Long, dy As Long, colorDraw As Long
     
     ' Toggle
     If UCase$(chr$(KeyAscii)) = "T" Then tkMainForm.toggle_Click
@@ -2767,7 +2801,7 @@ Private Sub Form_Load(): On Error Resume Next
     boardList(activeBoardIndex).ambient = 0
     tkMainForm.ambientlight.max = 255
     tkMainForm.ambientlight.min = -255
-    tkMainForm.ambientnumber.text = "0"
+    tkMainForm.ambientnumber.Text = "0"
 
     ' set up the layering menu
     boardList(activeBoardIndex).currentLayer = 1
@@ -2934,7 +2968,7 @@ Private Sub lcolor_Click(): On Error Resume Next
         Call vbPicFillRect(tkMainForm.Picture1, 0, 0, 1000, 1000, c)
         
         ' update caption
-        tkMainForm.ambientnumber.text = "0"
+        tkMainForm.ambientnumber.Text = "0"
         
     End If
 
@@ -2960,7 +2994,7 @@ Private Sub mnusetitm_Click(): On Error Resume Next
     Exit Sub
     
     ' begin error handling code:
-errorhandler:
+ErrorHandler:
 
     Call HandleError
     
@@ -3032,14 +3066,14 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
     ' set fill style
     FillStyle = 1
     
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     
     ' get tile data
-    For X = 1 To 32
-        For Y = 1 To 32
-            buftile(X, Y) = tilemem(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            buftile(x, y) = tilemem(x, y)
+        Next y
+    Next x
     
     Dim addonR As Long, addonG As Long, addonB As Long, tX As Long, tY As Long
     
@@ -3094,11 +3128,11 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
     ChDir (currentdir$)
     
     ' restore tile
-    For X = 1 To 32
-        For Y = 1 To 32
-            tilemem(X, Y) = buftile(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            tilemem(x, y) = buftile(x, y)
+        Next y
+    Next x
     
     ' set picture box auto redraw to true
     Call vbPicAutoRedraw(boardform, True)
@@ -3138,7 +3172,7 @@ Private Sub savebrdasmnu_click(): On Error Resume Next
     If filename$(1) = "" Then Exit Sub
     
     ' see if file exists
-    aa = fileExist(filename$(1))
+    aa = FileExist(filename$(1))
     
     ' confirm user wants to overwrite file
     If aa = 1 Then
@@ -3204,7 +3238,7 @@ End Sub
 '========================================================================
 ' display tile types - adapted to allow for individual tile redraw
 '========================================================================
-Public Sub viewtiletypes(Optional X As Long = 0, Optional Y As Long = 0): On Error Resume Next
+Public Sub viewtiletypes(Optional x As Long = 0, Optional y As Long = 0): On Error Resume Next
 '=====================================================
 'Alterations for isometric sizing, for 3.0.4 by Delano
 
@@ -3217,7 +3251,7 @@ Public Sub viewtiletypes(Optional X As Long = 0, Optional Y As Long = 0): On Err
         Dim minX As Long, minY As Long, maxX As Long, maxY As Long
         
         ' !NEW! Apply min and max values
-        If X = 0 Or Y = 0 Then
+        If x = 0 Or y = 0 Then
             minX = boardList(activeBoardIndex).topX + 1
             minY = boardList(activeBoardIndex).topY + 1
             
@@ -3230,10 +3264,10 @@ Public Sub viewtiletypes(Optional X As Long = 0, Optional Y As Long = 0): On Err
                 maxY = (boardList(activeBoardIndex).tilesY) + boardList(activeBoardIndex).topY + 1
             'End If
         Else
-            minX = X
-            minY = Y
-            maxX = X
-            maxY = Y
+            minX = x
+            minY = y
+            maxX = x
+            maxY = y
         End If
         
         ' loop through tiles
