@@ -5803,84 +5803,58 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
-    '========================================
+Public Sub Send(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+    '====================================================================
     '#Send (board$, x!, y!, layer!)
     'If layer is omitted, it is assumed to be 1.
-    '========================================
-    'EDITED: [Isometrics - Delano - 3/05/04]
-    'Added code to update the pendingPlayer movements when the player is placed - prevents jumping.
-    
+    '====================================================================
     On Error Resume Next
     
-    Dim use As String, dataUse As String, number As Long
-    Dim useIt1 As String, useIt2 As String, useIt3 As String, useIt4 As String
-    Dim lit As String, lit1 As String, num1 As Double, num2 As Double, num3 As Double, num4 As Double
+    Dim paras() As parameters, count As Long
     
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)            'Get text inside brackets
-    number = CountData(dataUse$)            'how many data elements are there?
+    paras = getParameters(Text, theProgram)
+    count = UBound(paras)
     
-    If number <> 3 And number <> 4 Then
-        Call debugger("Error: Send must have 3 or 4 data elements!-- " + Text$)
+    If count <> 2 And count <> 3 Then
+        Call debugger("Error: #Send() must have 3 or 4 data elements!-- " & Text)
         Exit Sub
     End If
     
-    useIt1$ = GetElement(dataUse$, 1)
-    useIt2$ = GetElement(dataUse$, 2)
-    useIt3$ = GetElement(dataUse$, 3)
-    
-    'If layer! is included, use that else use Layer 1 as the default.
-    If number = 4 Then
-        useIt4$ = GetElement(dataUse$, 4)
-    Else
-        useIt4$ = "1"
+    If count = 2 Then
+        'Layer was omitted, add to the parameters. Take Layer = 1 as default.
+        ReDim Preserve paras(3)
+        paras(3).num = 1
+        paras(3).dataType = DT_NUM
     End If
     
-    Dim parameter1Type As Long, parameter2Type As Long, parameter3Type As Long, parameter4Type As Long
+    If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_NUM Or _
+        paras(2).dataType <> DT_NUM Or paras(3).dataType <> DT_NUM Then
     
-    'lit$ can be overwritten each time since we don't need it. Could replace with Null?
-    parameter1Type = getValue(useIt1$, lit1$, num1, theProgram)
-    parameter2Type = getValue(useIt2$, lit$, num2, theProgram)
-    parameter3Type = getValue(useIt3$, lit$, num3, theProgram)
-    parameter4Type = getValue(useIt4$, lit$, num4, theProgram)
-    
-    If parameter1Type = 0 Then
-        'Type 0 corresponds to numerical.
-        Call debugger("Error: Send board data type must be literal!-- " + Text$)
+        Call debugger("Error: Send data types must be lit$, num!, num!, num!!-- " & Text)
         Exit Sub
-    End If
-    If parameter2Type = 1 Or parameter3Type = 1 Or parameter4Type = 1 Then
-        'Type 1 corresponds to literal.
-        Call debugger("Error: Send location data type must be numerical!-- " + Text$)
-        Exit Sub
+        
     End If
         
-    Dim targetBoardName As String
-    Dim targetTileType As Long
-    Dim targetBoardWidth As Long, targetBoardHeight As Long
+    Dim targetBoardName As String, targetTileType As Long, targetBoardWidth As Long, targetBoardHeight As Long
     Dim targetX As Long, targetY As Long, targetL As Long
-    Dim topXtemp As Single, topYtemp As Single
+    Dim topXtemp As Double, topYtemp As Double
     
-    'Add an extension if there isn't one:
-    targetBoardName$ = addExt(lit1$, ".brd")
+    'Add an extension if there isn't one.
+    targetBoardName = addExt(paras(0).lit, ".brd")
     
-    'Put the dimensions of the target board into targetBoardWidth, targetBoardHeight
-    Call boardSize(projectPath & brdPath & targetBoardName$, targetBoardWidth, targetBoardHeight)
+    'Put the dimensions of the target board into targetBoardWidth, targetBoardHeight.
+    Call boardSize(projectPath & brdPath & targetBoardName, targetBoardWidth, targetBoardHeight)
     
     'Check the target is valid.
-    targetX = inBounds(num2, 1, targetBoardWidth)
-    targetY = inBounds(num3, 1, targetBoardHeight)
-    targetL = inBounds(num4, 1, 8)
+    targetX = inBounds(paras(1).num, 1, targetBoardWidth)
+    targetY = inBounds(paras(2).num, 1, targetBoardHeight)
+    targetL = inBounds(paras(3).num, 1, 8)
     
     'TestBoard clears the screen co-ords (topX,topY) via openBoard so these need to be held incase sending fails.
     topXtemp = topX
     topYtemp = topY
     
-    'Original test... what's it checking?!
-    'targetTileType = TestBoard(projectPath & brdPath & targetBoardName$, ppos(selectedPlayer).x, 1, ppos(selectedPlayer).l)
-    
-    targetTileType = TestBoard(projectPath & brdPath & targetBoardName$, targetX, targetY, targetL)
+    targetTileType = TestBoard(projectPath & brdPath & targetBoardName, targetX, targetY, targetL)
 
     'If targetTileType = -1 Or targetTileType = SOLID Then
     If targetTileType = -1 Then
@@ -5889,19 +5863,14 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
         'Need to re-insert old topX,topY since TestBoard has cleared them via openBoard.
         topX = topXtemp
         topY = topYtemp
-    
-        'Call debugger("Error: Cannot send to specified board!-- " + text$)
         Exit Sub
     End If
     
-    'aa = Timer 'Measure the time it takes to open a board.
-    
     Call destroyItemSprites
-    Call openBoard(projectPath$ & brdPath$ & targetBoardName$, boardList(activeBoardIndex).theData)
+    Call openBoard(projectPath & brdPath & targetBoardName, boardList(activeBoardIndex).theData)
     
     'Clear non-persistent threads...
     Call ClearNonPersistentThreads
-    
     Call clearAnmCache  'Delano. 3.0.4.
     
     'Clear the player's last frame render, to force a redraw directly on entering.
@@ -5913,8 +5882,6 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
        
     Call alignBoard(targetX, targetY)
     Call openItems
-    
-    launchBoardThreads boardList(activeBoardIndex).theData
     
     With pPos(selectedPlayer)
     
@@ -5936,6 +5903,13 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     wentToNewBoard = True
     Call setConstants
     Call checkMusic(True)
+    
+    Call launchBoardThreads(boardList(activeBoardIndex).theData)
+    
+   'Run the program to run on entering board.
+    If LenB(boardList(activeBoardIndex).theData.enterPrg) Then
+        Call runProgram(projectPath & prgPath & boardList(activeBoardIndex).theData.enterPrg)
+    End If
 
 End Sub
 
