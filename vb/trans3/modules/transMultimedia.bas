@@ -175,7 +175,7 @@ End Function
 Private Function isPlayedByAudiere(ByVal ext As String) As Boolean
     On Error Resume Next
     Select Case ext
-        Case "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "WAV", "MLP", "OOG"
+        Case "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "WAV", "MLP", "OOG", "OGG"
             'Audiere plays this
             isPlayedByAudiere = True
     End Select
