@@ -4800,16 +4800,20 @@ Sub Prompt(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RE
         Dim aa As Long, ans As String
         useIt2$ = GetElement(dataUse$, 2)
         aa = getValue(useIt1$, lit$, num1, theProgram)
-        'ans$ = InputBox$(lit$, LoadStringLoc(871, "Please Enter an Answer"))
-        ans$ = ShowPromptDialog(LoadStringLoc(871, "Please Enter an Answer"), lit$)
+
+        'TEMPORARILY USING INPUT BOX
+        ans = InputBox(lit, LoadStringLoc(871, "Please Enter an Answer"))
+
         Call SetVariable(useIt2$, ans$, theProgram)
         retval.dataType = DT_LIT
         retval.lit = ans$
     Else
         useIt2$ = GetElement(dataUse$, 2)
         aa = getValue(useIt1$, lit$, num1, theProgram)
-        'ans$ = InputBox$(lit$, LoadStringLoc(871, "Please Enter an Answer"))
-        ans$ = ShowPromptDialog(LoadStringLoc(871, "Please Enter an Answer"), lit$)
+        
+        'TEMPORARILY USING INPUT BOX
+        ans = InputBox(lit, LoadStringLoc(871, "Please Enter an Answer"))
+
         retval.dataType = DT_LIT
         retval.lit = ans$
     End If
