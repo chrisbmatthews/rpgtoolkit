@@ -229,4 +229,8 @@ Private Sub CommandDock_Click(Index As Integer)
         End Select
     End With
     
+    'Collapse the bar.
+    tkMainForm.NewBarTop.theForm.Visible = False
+    tkMainForm.popButton(1).value = 0
+    
 End Sub
