@@ -1,15 +1,14 @@
 Attribute VB_Name = "transMovement"
-'=====================================================
+'=======================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
-'=====================================================
+'=======================================================================
 'Movement info for players and items
 
 Option Explicit
 
-'Movement constants for pending movements
-
+'Movement constants.
 Public Const MV_IDLE = 0
 Public Const MV_NORTH = 1
 Public Const MV_SOUTH = 2
@@ -20,20 +19,8 @@ Public Const MV_NW = 6
 Public Const MV_SE = 7
 Public Const MV_SW = 8
 
-'General player movement code
-Public Const LINK_NORTH = 1
-Public Const LINK_SOUTH = 2
-Public Const LINK_EAST = 3
-Public Const LINK_WEST = 4
-Public Const LINK_NE = 5
-Public Const LINK_SE = 6
-Public Const LINK_NW = 7
-Public Const LINK_SW = 8
-
-'====================================
-'Tile type constants. Added by Delano
+'Tile type constants.
 'Note: Stairs in the form "stairs & layer number"; i.e. layer = stairs - 10
-'====================================
 Public Const NORMAL = 0
 Public Const SOLID = 1
 Public Const UNDER = 2
@@ -48,31 +35,38 @@ Public Const STAIRS6 = 16
 Public Const STAIRS7 = 17
 Public Const STAIRS8 = 18
 
-
-
 Public Type PLAYER_POSITION
-    stance As String      'current stance
-    frame As Long       'animation frame
-    x As Double         'current board x positon
-    y As Double         'y pos
-    l As Long
+    stance As String        'Current stance.
+    frame As Long           'Animation frame.
+    x As Double             'Current board x position (fraction of tiles).
+    y As Double             'Current board y position (fraction of tiles).
+    l As Long               'Current layer.
+    
+    '3.0.5
+    loopFrame As Long       'Current frame in a movement loop (different from .frame).
+    idleTime As Double      'Length of time this item has been idle for.
+    
 End Type
 
-Public pPos(4) As PLAYER_POSITION       'player positions of 5 players
-Public selectedPlayer As Long           'number of player graphic
+Public pPos(4) As PLAYER_POSITION       'Player positions of 5 players.
+Public itmPos() As PLAYER_POSITION      'Positions of items on board.
+Public selectedPlayer As Long           'Index of current player.
 
 Public Type PENDING_MOVEMENT
-    direction As Long       'MV_ direction code
-    xOrig As Double         'original board co-ordinates
+    direction As Long       'MV_ direction code.
+    xOrig As Double         'Original board co-ordinates.
     yOrig As Double
-    lOrig As Double
-    xTarg As Double         'target board co-ordinates
+    lOrig As Long           'Integer levels.
+    xTarg As Double         'Target board co-ordinates.
     yTarg As Double
-    lTarg As Double
+    lTarg As Long
+    
+    '3.0.5
+    queue As String         'The pending movements of the player/item.
 End Type
 
-Public pendingPlayerMovement(4) As PENDING_MOVEMENT   'pending player movements
-Public pendingItemMovement() As PENDING_MOVEMENT 'pending movements for the items
+Public pendingPlayerMovement(4) As PENDING_MOVEMENT     'Pending player movements.
+Public pendingItemMovement() As PENDING_MOVEMENT        'Pending item movements.
 
 Public Enum FACING_DIRECTION
     South = 1
@@ -86,13 +80,14 @@ Private Enum PLAYER_OR_ITEM
     POI_ITEM = 2
 End Enum
 
-Public facing As FACING_DIRECTION     'which direction are you facing? 1-s, 2-w, 3-n, 4-e
+Public facing As FACING_DIRECTION       'which direction are you facing? 1-s, 2-w, 3-n, 4-e
 
 Private mVarAnimationDelay As Double
 
-Public itmPos() As PLAYER_POSITION    'positions of items on board
+Public Const FRAMESPERMOVE = 4          'Number of (animation) frames per TILE movement
+                                        'Pixel and tile movement use same number of .frames.
 
-Public Const FRAMESPERMOVE = 4
+Public loopOffset As Long               '3.0.5 main loop offset.
 
 Public Property Get animationDelay() As Double
     animationDelay = mVarAnimationDelay
@@ -103,31 +98,10 @@ Public Property Let animationDelay(ByVal newVal As Double)
     mVarAnimationDelay = newVal
 End Property
 
-Public Function onlyDecimal(ByVal number As Double) As Double
-    '==============================================
-    'Returns the part of a number after the decimal
-    '==============================================
-    'Added by KSNiloc
-
-    onlyDecimal = number - Int(number)
-
-End Function
-
-Public Function decimalToSteps(ByVal dec As Double) As Double
-    '===============================================
-    'Converts a decimal to the number of steps taken
-    '===============================================
-    'Added by KSNiloc
-
-    decimalToSteps = dec / movementSize
-    If decimalToSteps = 0 Then decimalToSteps = 1
-    
-End Function
-
-
-Function checkAbove(ByVal x As Long, ByVal y As Long, ByVal layer As Long) As Long
+Public Function checkAbove(ByVal x As Long, ByVal y As Long, ByVal layer As Long) As Long
     'Checks if there are tiles on any layer above x,y,layer
     '0- no, 1-yes
+    'Called by putSpriteAt
     On Error GoTo errorhandler
     
     If layer = boardList(activeBoardIndex).theData.bSizeL Then checkAbove = 0: Exit Function
@@ -152,84 +126,257 @@ errorhandler:
     Resume Next
 End Function
 
-Function checkObstruction(ByVal x As Double, ByVal y As Double, ByVal l As Long, Optional ByVal activeItem As Long = -1) As Long
-    '=============================================
-    'Checks if an item is blocking x,y,l
-    'returns 0 (NORMAL) for no, 1 (SOLID) for yes.
-    'Edited for 3.0.4 by Delano : pixel movement.
-    '=============================================
-    'Called by EffectiveTileType, PushItem*, and ObtainTileType
+Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PENDING_MOVEMENT, _
+                                  ByVal currentPlayer As Long, ByVal currentItem As Long, _
+                                  Optional ByVal startingMove As Boolean = False) As Long
+'============================================================================================
+'-Checks the current location and target co-ordinates against all player and item locations.
+'If the subject comes within a certain range of the object, the a SOLID tiletype is returned.
+'-This is to be called every 1/4 tile (or less):
+'       - every frame for tile mvt
+'       - only at start for pixel mvt (since distances are so small).
+'-Tile mvt: If beginning move (if .loopFrame = 0) checks against objects that are moving are
+'           ignored since they may vacate the tile during the move. Moving items are detected
+'           on a per-frame basis.
+'-Pixel mvt:This is only called at the start of a move (if .loopFrame = 0), and all items
+'           (both moving / stationary) are considered.
+'============================================================================================
+'Last edited for 3.0.5 by Delano : individual speed movement.
+'Called by EffectiveTileType, MoveItems, MovePlayers, PushItem, PushPlayer*
     
-    On Error GoTo errorhandler
+    On Error Resume Next
 
     Dim i As Long, coordMatch As Boolean
-    Dim variableType As Long, num As Double, lit As String
+    Dim variableType As RPGC_DT, paras As parameters
     
     'Altered for pixel movement: test location.
-
-    For i = 0 To maxItem
-           
-        coordMatch = False
-        If Not (usingPixelMovement) Then
-            If itmPos(i).x = Int(x) And itmPos(i).y = Int(y) And itmPos(i).l = l Then
-                coordMatch = True
-            End If
-        Else
-            If Abs(itmPos(i).x - x) < 1 And Abs(itmPos(i).y - y) <= movementSize And itmPos(i).l = l Then
-                coordMatch = True
-            End If
-        End If
+    
+    'Check players.
+    For i = 0 To UBound(pendingPlayerMovement)
+    
+        If showPlayer(i) And i <> currentPlayer Then
+            'Only if the player is on the board, and is not the player we're checking against.
         
-        'Check we're not testing the active item!
-        If i = activeItem Then coordMatch = False
-        
-        If coordMatch Then
-        
-            'There's an item here, but is it active?
-            If boardList(activeBoardIndex).theData.itmActivate(i) = 1 Then
-            
-                'conditional activation
-                 variableType = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(i), lit$, num)
+    
+            If (Not usingPixelMovement) Then
+                'Tile movement.
                 
-                If variableType = 0 Then
-                    'it's a numerical variable
+                'Current (test!) location against player current location.
+                If _
+                    Abs(pPos(i).y - pos.y) < movementSize And _
+                    Abs(pPos(i).x - pos.x) < 1 And _
+                    pPos(i).l = pos.l Then
                     
-                    If num = val(boardList(activeBoardIndex).theData.itmActivateInitNum$(i)) Then
+                    Call traceString("ChkObs:P:T:1")
+                    
+                    checkObstruction = SOLID
+                    Exit Function
+                    
+                End If
+        
+                'Only test targets if we're beginning movement.
+                'If we're in movement and the target becomes occupied (if it was occupied at start
+                'then movement would be rejected) it must be due to another moving *player*.
+                'In this case, continue movement because we can't stop!
+                If _
+                    Abs(pend.yTarg - pendingPlayerMovement(i).yTarg) < movementSize And _
+                    Abs(pend.xTarg - pendingPlayerMovement(i).xTarg) < 1 And _
+                    pPos(i).l = pos.l And _
+                    startingMove Then
+                    
+                    Call traceString("ChkObs:P:T:2")
+                    
+                    checkObstruction = SOLID
+                    Exit Function
+                    
+                End If
+                    
+        
+            Else
+                'Pixel movement.
+                'Only check this at the start of a move.
+                If startingMove Then
+                
+                    'Current locations: minimum separations. Probably don't even need these.
+                    If _
+                        Abs(pPos(i).y - pos.y) < movementSize And _
+                        Abs(pPos(i).x - pos.x) < 1 And _
+                        pPos(i).l = pos.l Then
+                        
                         checkObstruction = SOLID
                         Exit Function
+                        
+                        Call traceString("ChkObs:P:PX:1 [!]")
+                        
                     End If
+                    
+                    'Target location against player current location.
+                    If _
+                        Abs(pPos(i).y - pend.yTarg) < movementSize And _
+                        Abs(pPos(i).x - pend.xTarg) < 1 And _
+                        pPos(i).l = pos.l Then
+                        
+                        checkObstruction = SOLID
+                        Exit Function
+                        
+                        Call traceString("ChkObs:P:PX:2")
+                        
+                    End If
+            
+                    'Target location against player target location.
+                    If _
+                        Abs(pend.yTarg - pendingPlayerMovement(i).yTarg) < movementSize And _
+                        Abs(pend.xTarg - pendingPlayerMovement(i).xTarg) < 1 And _
+                        pPos(i).l = pos.l Then
+                        
+                        checkObstruction = SOLID
+                        Exit Function
+                        
+                        Call traceString("ChkObs:P:PX:3")
+                       
+                    End If
+                    
+                End If 'startingMove.
+        
+            End If 'usingPixelMovement.
+            
+        End If 'ShowPlayer.
+        
+    Next i
+        
+
+    'Items.
+    For i = 0 To maxItem
+    
+        If LenB(itemMem(i).itemName) <> 0 And i <> currentItem Then
+    
+            If Not (usingPixelMovement) Then
+                'Tile movement.
+            
+                'Current locations.
+                If _
+                    Abs(itmPos(i).y - pos.y) < movementSize And _
+                    Abs(itmPos(i).x - pos.x) < 1 And _
+                    itmPos(i).l = pos.l Then
+                    
+                    coordMatch = True
+                    
+                    'Ignore moving items at the start of movement check.
+                    If startingMove And pendingItemMovement(i).direction <> MV_IDLE Then
+                        coordMatch = False
+                    End If
+                    
+                    Call traceString("ChkObs:I:T:1")
+                    
                 End If
                 
-                If variableType = 1 Then
-                    'it's a literal variable
+                'Only test targets if we're beginning movement.
+                'If we're in movement and the target becomes occupied (if it was occupied at start
+                'then movement would be rejected) it must be due to another moving *player*.
+                'In this case, continue movement because we can't stop!
+                If _
+                    Abs(pend.yTarg - pendingItemMovement(i).yTarg) < movementSize And _
+                    Abs(pend.xTarg - pendingItemMovement(i).xTarg) < 1 And _
+                    itmPos(i).l = pos.l And _
+                    startingMove Then
                     
-                    If lit$ = boardList(activeBoardIndex).theData.itmActivateInitNum$(i) Then
-                        checkObstruction = SOLID
-                        Exit Function
-                    End If
+                    coordMatch = True
+                    
+                    Call traceString("ChkObs:I:T:2")
+                    
                 End If
                 
             Else
-                'Not conditionally activated - permanently active.
-                checkObstruction = SOLID
-                Exit Function
-            End If
-        End If
+                'Pixel movement.
+                'Only check this at the start of a move.
+                If startingMove Then
+                    
+                    'Current locations: minimum separations. Probably don't even need these.
+                    If _
+                        Abs(itmPos(i).y - pos.y) < movementSize And _
+                        Abs(itmPos(i).x - pos.x) < 1 And _
+                        itmPos(i).l = pos.l Then
+                        
+                        coordMatch = True
+                        
+                        Call traceString("ChkObs:I:PX:4 [!]")
+                        
+                    End If
+                
+                    'Target against  item current location.
+                    If _
+                        Abs(itmPos(i).y - pend.yTarg) < movementSize And _
+                        Abs(itmPos(i).x - pend.xTarg) < 1 And _
+                        itmPos(i).l = pos.l Then
+                        
+                        coordMatch = True
+                        
+                        Call traceString("ChkObs:I:PX:5")
+                        
+                    End If
+                
+                    'Target against item target location.
+                    If _
+                        Abs(pend.yTarg - pendingItemMovement(i).yTarg) < movementSize And _
+                        Abs(pend.xTarg - pendingItemMovement(i).xTarg) < 1 And _
+                        itmPos(i).l = pos.l Then
+                        
+                        coordMatch = True
+                        
+                        Call traceString("ChkObs:I:PX:6")
+                        
+                    End If
+                        
+                End If 'startingMove.
+                
+            End If 'usingPixelMovement.
+            
+            If coordMatch Then
+            
+                'There's an item here, but is it active?
+                If boardList(activeBoardIndex).theData.itmActivate(i) = 1 Then
+                
+                    'conditional activation
+                    variableType = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate(i), paras.lit, paras.num)
+                    
+                    If variableType = DT_NUM Then
+                        'it's a numerical variable
+                        
+                        If paras.num = val(boardList(activeBoardIndex).theData.itmActivateInitNum(i)) Then
+                            checkObstruction = SOLID
+                            Exit Function
+                        End If
+                    End If
+                    
+                    If variableType = DT_LIT Then
+                        'it's a literal variable
+                        
+                        If paras.lit = boardList(activeBoardIndex).theData.itmActivateInitNum(i) Then
+                            checkObstruction = SOLID
+                            Exit Function
+                        End If
+                    End If
+                    
+                Else
+                
+                    'Not conditionally activated - permanently active.
+                    checkObstruction = SOLID
+                    Exit Function
+                    
+                End If
+                
+            End If 'coordMatch
+            
+        End If '.itemname <> ""
+        
     Next i
 
     'We've got here and no match has been found.
     checkObstruction = NORMAL
-    Exit Function
 
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
-
-
-Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal layer As Integer, ByVal bAllowDiagonal As Boolean, ByVal bFaster As Boolean) As String
+Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal layer As Integer, ByVal bAllowDiagonal As Boolean, ByVal bFaster As Boolean) As String
     '============================================
     'EDITED: [Delano - 8/05/04]
     'Added commas to the letters as they are added to the return string, for compatibility with
@@ -445,38 +592,31 @@ Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer,
     End If
 End Function
 
-
-Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal l As Integer, ByVal bFast As Boolean) As Integer
+Private Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal l As Integer, ByVal bFast As Boolean) As Integer
     '===============================
     'return the effective tile type, checking for obstructions.
     '===============================
     'Called by PathFind only.
     On Error Resume Next
     
+    Dim typetile As Long
+    typetile = boardList(activeBoardIndex).theData.tiletype(x, y, l)
+    
     If bFast Then
-        EffectiveTileType = boardList(activeBoardIndex).theData.tiletype(x, y, l)
+        EffectiveTileType = typetile
         Exit Function
     End If
     
-    Dim testX As Long
-    Dim testY As Long
-    Dim testLayer As Long
-    testX = x
-    testY = y
-    testLayer = l
+    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
+    testPos.x = x
+    testPos.y = y
+    testPos.l = l
+    testPend.xTarg = x
+    testPend.yTarg = y
        
-    Dim typetile As Long
-    typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testLayer)
     
-    'check if an item is blocking...
-    Dim itemBlocking As Long
-    itemBlocking = checkObstruction(testX, testY, testLayer)
-    
-    Dim didItem As Boolean
-    didItem = False
-    If itemBlocking = 1 Then
+    If checkObstruction(testPos, testPend, -1, -1) = SOLID Then
         'Call programtest(testx, testy, testlayer, keycode, facing)
-        didItem = True
         typetile = SOLID
         'Exit Sub
     End If
@@ -484,7 +624,7 @@ Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal l As In
     
     'check for tiles above...
     Dim underneath As Long
-    underneath = checkAbove(testX, testY, testLayer)
+    underneath = checkAbove(x, y, l)
     
     'if we're sitting on stairs, forget about tiles above.
     If typetile >= STAIRS1 And typetile <= STAIRS8 Then
@@ -499,22 +639,16 @@ Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal l As In
     EffectiveTileType = typetile
 End Function
 
-
-
-Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
+Private Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     '=====================================
-    'EDITED: [Isometrics - Delano 3/05/04]
-    'Renamed variables: tx,ty >> topXTemp,topYTemp [Altered type also; Long >> Double]
-    '                   xx,yy >> targetX,targetY
-    '                   canwego >> targetTile
-    'New variable:      targetBoard$ = boardList(activeBoardIndex).theData.dirLink$(thelink)
-    '=====================================
-    
     'If player walks off the edge, checks to see if a link is present and if it's
     'possible to go there. If so, then player is sent, and True returned, else False.
     'thelink is a number from 1-4  1-North, 2-South, 3-East, 4-West.
     'Code also present to check and run a program instead of a board.
     'Called by CheckEdges only.
+    '=====================================
+    'EDITED: [Isometrics - Delano 3/05/04]
+    
     On Error Resume Next
     
     'Screen co-ords held in temporary varibles in case true variables altered.
@@ -555,7 +689,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     Dim targetX As Long 'Target board dimensions
     Dim targetY As Long
     
-    If thelink = LINK_NORTH Then
+    If thelink = MV_NORTH Then
         'Get dimensions of target board.
         Call boardSize(projectPath & brdPath & targetBoard$, targetX, targetY)
 
@@ -570,7 +704,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
         End If
         
     End If
-    If thelink = LINK_SOUTH Then
+    If thelink = MV_SOUTH Then
         
         testY = 1
         
@@ -585,12 +719,12 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
         End If
         
     End If
-    If thelink = LINK_EAST Then
+    If thelink = MV_EAST Then
     
         testX = 1
     
     End If
-    If thelink = LINK_WEST Then
+    If thelink = MV_WEST Then
     
         'Get the dimensions of the target board.
         Call boardSize(projectPath & brdPath & targetBoard$, targetX, targetY)
@@ -615,9 +749,21 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     'Else targetTile is passable.
 
     'If we can go, then we will
-    pPos(playerNum).x = testX
-    pPos(playerNum).y = testY
-    pPos(playerNum).l = testLayer
+    
+    With pPos(playerNum)
+    
+        .x = testX
+        .y = testY
+        .l = testLayer
+    
+        pendingPlayerMovement(selectedPlayer).xOrig = .x
+        pendingPlayerMovement(selectedPlayer).yOrig = .y
+        pendingPlayerMovement(selectedPlayer).xTarg = .x
+        pendingPlayerMovement(selectedPlayer).yTarg = .y
+        
+        .loopFrame = -1
+        
+    End With
     
     Call ClearNonPersistentThreads
     
@@ -639,14 +785,13 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     
     Call launchBoardThreads(boardList(activeBoardIndex).theData)
     
-    'Set the mainLoop movementCounter to the end of the move.
-    'Goes straight into GS_DONEMOVE state, rather than finishing the last 3 frames (caused pause on moving to new board).
-    movementCounter = FRAMESPERMOVE
+    'Set the state to GS_DONEMOVE, rather than finishing the last frames (caused pause on moving to new board).
+    gGameState = GS_DONEMOVE
     
     TestLink = True
 End Function
 
-Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As Boolean
+Private Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As Boolean
     'check if the player has gone off an edge
     'if he has, we put him on the new board or in a new location and return true
     'else return false
@@ -657,7 +802,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
     
     If pend.yTarg < 1 Then
         'too far north
-        bWentThere = TestLink(playerNum, LINK_NORTH)
+        bWentThere = TestLink(playerNum, MV_NORTH)
         If bWentThere Then
             CheckEdges = True
             Exit Function
@@ -667,7 +812,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
         End If
     ElseIf pend.yTarg > boardList(activeBoardIndex).theData.bSizeY Then
         'too far south!
-        bWentThere = TestLink(playerNum, LINK_SOUTH)
+        bWentThere = TestLink(playerNum, MV_SOUTH)
         If bWentThere Then
             CheckEdges = True
             Exit Function
@@ -677,7 +822,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
         End If
     ElseIf pend.xTarg < 1 Then
         'too far west!
-        bWentThere = TestLink(playerNum, LINK_WEST)
+        bWentThere = TestLink(playerNum, MV_WEST)
         If bWentThere Then
             CheckEdges = True
             Exit Function
@@ -687,7 +832,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
         End If
     ElseIf pend.xTarg > boardList(activeBoardIndex).theData.bSizeX Then
         'too far east!
-        bWentThere = TestLink(playerNum, LINK_EAST)
+        bWentThere = TestLink(playerNum, MV_EAST)
         If bWentThere Then
             CheckEdges = True
             Exit Function
@@ -699,16 +844,12 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
     CheckEdges = False
 End Function
 
-Private Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
-    '======================================
-    'EDITED: [Isometrics - Delano 11/05/04]
-    'Substituted tile type constants.
-    'Moved scroll checking to a new function: NORTH only... problem with East.
-    '======================================
-    
+Private Function pushPlayerNorthEast(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
+    '=================================================================================
     'Push player pnum NorthEast by moveFraction.
     'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    'Calls incrementPosition if movement is possible, and scrollNorthEast if scrolling required.
+    '=================================================================================
+    'EDITED: [Isometrics - Delano 11/05/04]
     
     On Error Resume Next
     
@@ -717,84 +858,92 @@ Private Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double
     
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
-    Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
-    
-    If bWentOffEdge Then
+    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
         pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Sub
+        Exit Function
     End If
-
-    'obtain the tile type at the target...
-    Dim didItem As Boolean
-    Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
-                              pendingPlayerMovement(pNum).yTarg, _
-                              pendingPlayerMovement(pNum).lTarg, _
-                              MV_NE, _
-                              pPos(pNum))
-                              'didItem)
-    
-    'Advance the frame for all tile types (if SOLID, will walk on spot.)
+   
     pPos(pNum).stance = "walk_ne"
-    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
-    Select Case typetile
-        Case NORMAL, UNDER:
-            'see if we need to scroll...
+Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
+                ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
+                ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
+                ".loopFrame=" & pPos(pNum).loopFrame & _
+                ".tt=" & staticTileType)
+    
+    'Ok, we have to insert the new fractional co-ords into a
+    'test pos to see if we can move this frame.
+    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
+    Dim moveFraction As Double
+    
+    testPos = pPos(pNum)
+    testPend = pendingPlayerMovement(pNum)
+    
+    'moveFraction is a fraction of the tile.
+    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
+    
+    'Insert the new fractional co-ords into the test location.
+    Call incrementPosition(testPos, testPend, moveFraction)
+    
+    'Now, check the new co-ords for blocking objects.
+    If _
+        staticTileType = SOLID Or _
+        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
+        'The new co-ords are blocked, or the target is permanently blocked.
+        'All other tiletypes are evaluated to either NORMAL or UNDER, so
+        'we don't need to any other checks.
+        Exit Function
+    End If
+    
+    Dim scrollEast As Boolean, scrollNorth As Boolean
+    scrollEast = True
+    
+    'Scrolling north is handled by the new function checkScrollNorth, but for diagonal
+    'isometrics the conditions are a little different from checkScrollEast. Not sure why...
+    
+    If boardIso() Then
+        'PushEast code. Should be exactly the same as pushSouthEast! Any changes should be copied!
+        
+        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
+            (pPos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
+            (pPos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
+            pNum <> selectedPlayer Then
+            scrollEast = False
             
-            'Introducing new independent direction variables.
-            Dim scrollEast As Boolean, scrollNorth As Boolean
-            scrollEast = True
+        End If
+    Else
+        'Same as pushSouthEast.
+        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
+        
+        If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
+            (pPos(pNum).x < (tilesX / 2) And topX = 0) Or _
+            (pPos(pNum).x - topX < (tilesX / 2)) Or _
+            pNum <> selectedPlayer Then
+            scrollEast = False
+        End If
+    End If
+    
+    scrollNorth = checkScrollNorth(pNum)
+              
+    If scrollEast Or scrollNorth Then
+        Call scrollDownLeft(moveFraction, scrollEast, scrollNorth)
+    End If
+    
+    Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
+    
+    'We can move, put the test location into the true loc.
+    pPos(pNum) = testPos
+    
+    pushPlayerNorthEast = True
             
-            'Scrolling north is handled by the new function checkScrollNorth, but for diagonal
-            'isometrics the conditions are a little different from checkScrollEast. Not sure why...
-            
-            If boardIso() Then
-                'PushEast code. SHOULD BE EXACTLY THE SAME AS FOR pushSouthEast! ANY CHANGES SHOULD BE COPIED!
-                
-                If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
-                    (pPos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
-                    (pPos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
-                    pNum <> selectedPlayer Then
-                    scrollEast = False
-                    
-                End If
-            Else
-                'SAME AS pushSouthEast.
-                'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-                
-                If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
-                    (pPos(pNum).x < (tilesX / 2) And topX = 0) Or _
-                    (pPos(pNum).x - topX < (tilesX / 2)) Or _
-                    pNum <> selectedPlayer Then
-                    scrollEast = False
-                End If
-            End If
-            
-            scrollNorth = checkScrollNorth(pNum) 'New function!
-                      
-            If scrollEast Or scrollNorth Then
-                Call scrollDownLeft(moveFraction, scrollEast, scrollNorth)
-            End If
-            
-            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
-            
-        'Case SOLID:
-            'Advance the frame but don't move.
-    End Select
-End Sub
+End Function
 
-Private Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
-    '======================================
-    'EDITED: [Isometrics - Delano 11/05/04]
-    'Substituted tile type constants.
-    'Moved scroll checking to a new function. NORTH only... need to change West.
-    '======================================
-    
+Private Function pushPlayerNorthWest(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
+    '============================================================================
     'Push player pnum NorthWest by moveFraction.
     'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    'Calls incrementPosition if movement is possible, and scrollNorthWest if scrolling required.
+    '============================================================================
+    'EDITED: [Isometrics - Delano 11/05/04]
     
     On Error Resume Next
     
@@ -803,85 +952,90 @@ Private Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double
     
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
-    Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
-    
-    If bWentOffEdge Then
+    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
         pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Sub
+        Exit Function
     End If
 
-    'obtain the tile type at the target...
-    Dim didItem As Boolean
-    Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
-                              pendingPlayerMovement(pNum).yTarg, _
-                              pendingPlayerMovement(pNum).lTarg, _
-                              MV_NW, _
-                              pPos(pNum))
-                              'didItem)
-    
-    
-    'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_nw"
-    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
-    Select Case typetile
-        Case NORMAL, UNDER:
-            'See if we need to scroll...
-            
-            'Introducing new independent direction variables.
-            Dim scrollWest As Boolean, scrollNorth As Boolean
-            scrollWest = True
+Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
+                ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
+                ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
+                ".loopFrame=" & pPos(pNum).loopFrame & _
+                ".tt=" & staticTileType)
     
-            'Scrolling north is handled by the new function checkScrollNorth, but for diagonal
-            'isometrics the conditions need to be a little different from checkScrollWest. Not sure why...
-            
-            If boardIso() Then
-                'pushWest code. SHOULD BE EXACTLY THE SAME AS FOR pushSouthWest! ANY CHANGES SHOULD BE COPIED
-                If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
-                    topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
-                    (pPos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
-                    ((topX + 1) - 1 < 0) Or _
-                    pNum <> selectedPlayer Then
-                    
-                    scrollWest = False
-                End If
-            Else
-                'This is pushWest standard code.
-                
-                If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
-                    topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
-                    (pPos(pNum).x - topX > (tilesX / 2)) Or _
-                    (topX <= 0) Or _
-                    pNum <> selectedPlayer Then
-                    
-                    scrollWest = False
-                End If
-            End If
-            
-            scrollNorth = checkScrollNorth(pNum) 'New function!
-            
-            If scrollWest Or scrollNorth Then
-                Call scrollDownRight(moveFraction, scrollWest, scrollNorth)
-            End If
-            
-            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
-            
-        'Case SOLID:
-            'Walk on the spot.
-    End Select
-End Sub
+    'Ok, we have to insert the new fractional co-ords into a
+    'test pos to see if we can move this frame.
+    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
+    Dim moveFraction As Double
+    
+    testPos = pPos(pNum)
+    testPend = pendingPlayerMovement(pNum)
+    
+    'moveFraction is a fraction of the tile.
+    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
+    
+    'Insert the new fractional co-ords into the test location.
+    Call incrementPosition(testPos, testPend, moveFraction)
+    
+    'Now, check the new co-ords for blocking objects.
+    If _
+        staticTileType = SOLID Or _
+        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
+        'The new co-ords are blocked, or the target is permanently blocked.
+        'All other tiletypes are evaluated to either NORMAL or UNDER, so
+        'we don't need to any other checks.
+        Exit Function
+    End If
+    
+    Dim scrollWest As Boolean, scrollNorth As Boolean
+    scrollWest = True
 
-Private Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double)
-    '=====================================
-    'EDITED: [Isometrics - Delano 3/05/04]
-    'Substituted tile type constants.
-    '=====================================
+    'Scrolling north is handled by the new function checkScrollNorth, but for diagonal
+    'isometrics the conditions need to be a little different from checkScrollWest. Not sure why...
     
+    If boardIso() Then
+        'pushWest code. Should be exactly the same as pushSouthWest!
+        If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
+            topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
+            (pPos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
+            ((topX + 1) - 1 < 0) Or _
+            pNum <> selectedPlayer Then
+            
+            scrollWest = False
+        End If
+    Else
+        'This is pushWest standard code.
+        
+        If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
+            topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
+            (pPos(pNum).x - topX > (tilesX / 2)) Or _
+            (topX <= 0) Or _
+            pNum <> selectedPlayer Then
+            
+            scrollWest = False
+        End If
+    End If
+    
+    scrollNorth = checkScrollNorth(pNum)
+    
+    If scrollWest Or scrollNorth Then
+        Call scrollDownRight(moveFraction, scrollWest, scrollNorth)
+    End If
+    
+    pPos(pNum) = testPos
+    
+    pushPlayerNorthWest = True
+            
+End Function
+
+Private Function pushPlayerSouthEast(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
+    '============================================================================
     'Push player pnum SouthEast by moveFraction.
     'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    'Calls incrementPosition if movement is possible, and scrollSouthEast if scrolling required.
+    '============================================================================
+    'EDITED: [Isometrics - Delano 3/05/04]
     
     On Error Resume Next
     
@@ -890,93 +1044,100 @@ Private Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double
     
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
-    Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
-    
-    If bWentOffEdge Then
+    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
         pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Sub
+        Exit Function
     End If
 
-    'obtain the tile type at the target...
-    Dim didItem As Boolean
-    Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
-                              pendingPlayerMovement(pNum).yTarg, _
-                              pendingPlayerMovement(pNum).lTarg, _
-                              MV_SE, _
-                              pPos(pNum))
-                              'didItem)
+    pPos(pNum).stance = "walk_se"
+    
+Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
+                ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
+                ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
+                ".loopFrame=" & pPos(pNum).loopFrame & _
+                ".tt=" & staticTileType)
+    
+    'Ok, we have to insert the new fractional co-ords into a
+    'test pos to see if we can move this frame.
+    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
+    Dim moveFraction As Double
+    
+    testPos = pPos(pNum)
+    testPend = pendingPlayerMovement(pNum)
+    
+    'moveFraction is a fraction of the tile.
+    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
+    
+    'Insert the new fractional co-ords into the test location.
+    Call incrementPosition(testPos, testPend, moveFraction)
+    
+    'Now, check the new co-ords for blocking objects.
+    If _
+        staticTileType = SOLID Or _
+        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
+        'The new co-ords are blocked, or the target is permanently blocked.
+        'All other tiletypes are evaluated to either NORMAL or UNDER, so
+        'we don't need to any other checks.
+        Exit Function
+    End If
+    
     
     'Introducing new independent direction variables.
-    Dim scrollEast As Boolean
+    Dim scrollEast As Boolean, scrollsouth As Boolean
     scrollEast = True
-    Dim scrollsouth As Boolean
     scrollsouth = True
     
-    Select Case typetile
-        Case NORMAL, UNDER:
-            'See if we need to scroll...
-            
-            'Accounting for isometrics:
-            If boardIso() Then
-                'This is the PushEast code. + 0.5 modif - does it work?
-                If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
-                    (pPos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
-                    (pPos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
-                    pNum <> selectedPlayer Then
-                    scrollEast = False
-                End If
-                'pushSouth code with topY modification. ANY CHANGES SHOULD BE COPIED TO pushSouthWest
-                If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-                    (pPos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
-                    (pPos(pNum).y - (topY) < (isoTilesY / 2)) Or _
-                    pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
-                    scrollsouth = False
-                End If
-            Else
-                'Original code was incomplete even for standard boards!! FIXED.
-                'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-                If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
-                    (pPos(pNum).x < (tilesX / 2) And topX = 0) Or _
-                    (pPos(pNum).x - topX < (tilesX / 2)) Or _
-                    pNum <> selectedPlayer Then
-                    scrollEast = False
-                End If
-                'TRIAL ADDITION: pushSouth code w/scrollSouth
-                'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-                If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-                    (pPos(pNum).y < (tilesY / 2) And topY = 0) Or _
-                    (pPos(pNum).y - topY < (tilesY / 2)) Or _
-                    pNum <> selectedPlayer Then
-                    scrollsouth = False
-                End If
-            End If
-            
-            If scrollEast Or scrollsouth Then
-                Call scrollUpLeft(moveFraction, scrollEast, scrollsouth)
-            End If
-            
-            pPos(pNum).stance = "walk_se"
-            Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
-            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
-            
-        Case SOLID:
-            'Walk on the spot.
-            pPos(pNum).stance = "walk_se"
-            Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
-    End Select
-End Sub
-
-Private Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double)
-    '=====================================
-    'EDITED: [Isometrics - Delano 3/05/04]
-    'Substituted tile type constants.
-    '=====================================
+    'Accounting for isometrics:
+    If boardIso() Then
+        'This is the PushEast code. + 0.5 modif - does it work?
+        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
+            (pPos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
+            (pPos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
+            pNum <> selectedPlayer Then
+            scrollEast = False
+        End If
+        'pushSouth code with topY modification. ANY CHANGES SHOULD BE COPIED TO pushSouthWest
+        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+            (pPos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
+            (pPos(pNum).y - (topY) < (isoTilesY / 2)) Or _
+            pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
+            scrollsouth = False
+        End If
+    Else
+        'Original code was incomplete even for standard boards!! FIXED.
+        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
+        If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
+            (pPos(pNum).x < (tilesX / 2) And topX = 0) Or _
+            (pPos(pNum).x - topX < (tilesX / 2)) Or _
+            pNum <> selectedPlayer Then
+            scrollEast = False
+        End If
+        'TRIAL ADDITION: pushSouth code w/scrollSouth
+        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
+        If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+            (pPos(pNum).y < (tilesY / 2) And topY = 0) Or _
+            (pPos(pNum).y - topY < (tilesY / 2)) Or _
+            pNum <> selectedPlayer Then
+            scrollsouth = False
+        End If
+    End If
     
+    If scrollEast Or scrollsouth Then
+        Call scrollUpLeft(moveFraction, scrollEast, scrollsouth)
+    End If
+    
+    pPos(pNum) = testPos
+    
+    pushPlayerSouthEast = True
+            
+End Function
+
+Private Function pushPlayerSouthWest(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
+    '============================================================================
     'Push player pNum SouthWest by moveFraction.
     'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    'Calls incrementPosition if movement is possible, and scrollSouthWest if scrolling required.
+    '============================================================================
+    'EDITED: [Isometrics - Delano 3/05/04]
     
     On Error Resume Next
     
@@ -985,87 +1146,95 @@ Private Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double
     
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
-    Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
-    
-    If bWentOffEdge Then
+    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
         pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Sub
+        Exit Function
     End If
-
-    'obtain the tile type at the target...
-    Dim didItem As Boolean
-    Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
-                              pendingPlayerMovement(pNum).yTarg, _
-                              pendingPlayerMovement(pNum).lTarg, _
-                              MV_SW, _
-                              pPos(pNum))
-                              'didItem)
     
-    'Introducing new independent direction variables
-    Dim scrollWest As Boolean
+    pPos(pNum).stance = "walk_sw"
+    
+Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
+                ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
+                ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
+                ".loopFrame=" & pPos(pNum).loopFrame & _
+                ".tt=" & staticTileType)
+    
+    'Ok, we have to insert the new fractional co-ords into a
+    'test pos to see if we can move this frame.
+    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
+    Dim moveFraction As Double
+    
+    testPos = pPos(pNum)
+    testPend = pendingPlayerMovement(pNum)
+    
+    'moveFraction is a fraction of the tile.
+    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
+    
+    'Insert the new fractional co-ords into the test location.
+    Call incrementPosition(testPos, testPend, moveFraction)
+    
+    'Now, check the new co-ords for blocking objects.
+    If _
+        staticTileType = SOLID Or _
+        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
+        'The new co-ords are blocked, or the target is permanently blocked.
+        'All other tiletypes are evaluated to either NORMAL or UNDER, so
+        'we don't need to any other checks.
+        Exit Function
+    End If
+    
+    Dim scrollWest As Boolean, scrollsouth As Boolean
     scrollWest = True
-    Dim scrollsouth As Boolean
     scrollsouth = True
     
-    Select Case typetile
-        Case NORMAL, UNDER:
-            'See if we need to scroll...
-            
-            'Accounting for isometrics:
-            If boardIso() Then
-                'This is the pushWest code. MIGHT NEED TO CHANGE cf. SouthEast 0.5
-                If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
-                    topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
-                    (pPos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
-                    ((topX + 1) - 1 < 0) Or _
-                    pNum <> selectedPlayer Then
-                    scrollWest = False
-                End If
-                'pushSouth code. SHOULD BE EXACTLY THE SAME AS FOR pushSouthEast! ANY CHANGES SHOULD BE COPIED
-                If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-                    (pPos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
-                    (pPos(pNum).y - (topY) < (isoTilesY / 2)) Or _
-                    pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
-                    scrollsouth = False
-                End If
-            Else
-                'Original code was incomplete! This is pushWest standard code.
-                'Swapping " - 1 <" for "<=" (boards do not scroll to edges)
-                If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
-                    topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
-                    (pPos(pNum).x - topX > (tilesX / 2)) Or _
-                    (topX <= 0) Or _
-                    pNum <> selectedPlayer Then
-                    scrollWest = False
-                End If
-                'pushSouth standard board code with topY modification. ANY CHANGES SHOULD BE COPIED TO pushSouthEast
-                'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-                If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-                    (pPos(pNum).y < (tilesY / 2) And topY = 0) Or _
-                    (pPos(pNum).y - topY < (tilesY / 2)) Or _
-                    pNum <> selectedPlayer Then
-                    scrollsouth = False
-                End If
-            End If
-            
-            If scrollWest Or scrollsouth Then
-                Call scrollUpRight(moveFraction, scrollWest, scrollsouth)
-            End If
-            
-            pPos(pNum).stance = "walk_sw"
-            Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
-            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
-            
-        Case SOLID:
-            'Walk on the spot.
-            pPos(pNum).stance = "walk_sw"
-            Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
-    End Select
-End Sub
+    'Accounting for isometrics:
+    If boardIso() Then
+        'This is the pushWest code. Might have to change cf. SouthEast 0.5
+        If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
+            topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
+            (pPos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
+            ((topX + 1) - 1 < 0) Or _
+            pNum <> selectedPlayer Then
+            scrollWest = False
+        End If
+        'pushSouth code. Should be exactly the same as pushSouthEast!
+        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+            (pPos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
+            (pPos(pNum).y - (topY) < (isoTilesY / 2)) Or _
+            pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
+            scrollsouth = False
+        End If
+    Else
+        'Original code was incomplete! This is pushWest standard code.
+        'Swapping " - 1 <" for "<=" (boards do not scroll to edges)
+        If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
+            topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
+            (pPos(pNum).x - topX > (tilesX / 2)) Or _
+            (topX <= 0) Or _
+            pNum <> selectedPlayer Then
+            scrollWest = False
+        End If
+        'pushSouth standard board code with topY modification.
+        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
+        If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+            (pPos(pNum).y < (tilesY / 2) And topY = 0) Or _
+            (pPos(pNum).y - topY < (tilesY / 2)) Or _
+            pNum <> selectedPlayer Then
+            scrollsouth = False
+        End If
+    End If
+    
+    If scrollWest Or scrollsouth Then
+        Call scrollUpRight(moveFraction, scrollWest, scrollsouth)
+    End If
+    
+    pPos(pNum) = testPos
+    
+    pushPlayerSouthWest = True
 
-Private Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
+End Function
+
+Private Function pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double) As Boolean
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1083,48 +1252,44 @@ Private Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
-    Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
-    
-    If bWentOffEdge Then
+    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
         pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Sub
+        Exit Function
     End If
 
     'obtain the tile type at the target...
-    Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
-                              pendingPlayerMovement(pNum).yTarg, _
-                              pendingPlayerMovement(pNum).lTarg, _
-                              MV_NORTH, _
-                              pPos(pNum))
-                              'didItem)
+        
+    'typetile = pendingPlayerMovement(pNum).tiletype
+    'typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+                          pendingPlayerMovement(pNum).yTarg, _
+                          pendingPlayerMovement(pNum).lTarg, _
+                          MV_NORTH, _
+                          pPos(pNum))
+                              
+    'Check if an item is blocking: do this every fraction!
+        
+    If checkObstruction(pPos(pNum), pendingPlayerMovement(pNum), pNum, -1) = SOLID Then typetile = SOLID
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_n"
-    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
+    'Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
         Case NORMAL, UNDER:
-            'See if we need to scroll...
-    
-            Dim scrollNorth As Boolean
-           
-            scrollNorth = checkScrollNorth(pNum) 'New function!
-            
-            If scrollNorth Then Call scrollDown(moveFraction)
-            'shift the screen drawing co-ords down (topY).
+            'Shift the screen drawing co-ords down (topY) if needed.
+            If checkScrollNorth(pNum) Then Call scrollDown(moveFraction)
             
             Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            pushPlayerNorth = True
             
         'Case SOLID:
             'Walk on the spot.
     End Select
     
-End Sub
+End Function
 
-Private Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Function pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double) As Boolean
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1142,47 +1307,42 @@ Private Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
-    Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
-    
-    If bWentOffEdge Then
+    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
         pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Sub
+        Exit Function
     End If
 
     'obtain the 'tile type' at the target...
-    Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+        
+    'typetile = pendingPlayerMovement(pNum).tiletype
+    'typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_SOUTH, _
                               pPos(pNum))
-                              'didItem)
-    
+                          
+    'Check if an item is blocking: do this every fraction!
+    If checkObstruction(pPos(pNum), pendingPlayerMovement(pNum), pNum, -1) = SOLID Then typetile = SOLID
+
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_s"
-    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
+    'Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
         Case NORMAL, UNDER:
-            'see if we need to scroll...
-            
-            Dim scrollsouth As Boolean 'determine if a scroll is required
-                
-            scrollsouth = checkScrollSouth(pNum) 'New function!
-            
-            If scrollsouth Then Call scrollUp(moveFraction)
-            'shift the screen drawing co-ords up (topY).
+            'Shift the screen drawing co-ords up (topY) if needed.
+            If checkScrollSouth(pNum) Then Call scrollUp(moveFraction)
             
             Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            pushPlayerSouth = True
             
         'Case SOLID:
             'Walk on the spot.
     End Select
-End Sub
+End Function
 
-Private Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Function pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double) As Boolean
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1200,48 +1360,45 @@ Private Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
-    Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
-    
-    If bWentOffEdge Then
+    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
         pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Sub
+        Exit Function
     End If
 
     'Obtain the 'tile type' at the target...
-    Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+    
+    'typetile = pendingPlayerMovement(pNum).tiletype
+    'typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_EAST, _
                               pPos(pNum))
-                              'didItem)
+    
+    'Check if an item is blocking: do this every fraction!
+    If checkObstruction(pPos(pNum), pendingPlayerMovement(pNum), pNum, -1) = SOLID Then
+        typetile = SOLID
+    End If
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_e"
-    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
+    'Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
     
         Case NORMAL, UNDER:
-            'See if we need to scroll...
-            
-            Dim scrollEast As Boolean
-
-            scrollEast = checkScrollEast(pNum) 'New function! Cleaned up a bit.
-            
-            If scrollEast Then Call scrollLeft(moveFraction)
-            'shift the screen drawing co-ords left (topX).
+            'Shift the screen drawing co-ords left (topX) if needed.
+            If checkScrollEast(pNum) Then Call scrollLeft(moveFraction)
             
             Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            pushPlayerEast = True
                         
         'Case SOLID:
             'Walk on the spot.
     End Select
-End Sub
+End Function
 
-Private Sub pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double)
+Private Function pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double) As Boolean
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1259,77 +1416,42 @@ Private Sub pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
-    Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
-    
-    If bWentOffEdge Then
+    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
         pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Sub
+        Exit Function
     End If
 
     'obtain the tile type at the target...
-    Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+    
+    'typetile = pendingPlayerMovement(pNum).tiletype
+    'typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_WEST, _
                               pPos(pNum))
-                              'didItem)
     
-    'Advance the frame for all tile types (if SOLID, will walk on spot.)
+    'Check if an item is blocking: do this every fraction!
+    If checkObstruction(pPos(pNum), pendingPlayerMovement(pNum), pNum, -1) = SOLID Then
+        'Uh-oh! We might be in mid-movement but we can't stop indefinitely:
+        'we have to finish moving.
+        typetile = SOLID
+    End If
+   
+   'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_w"
-    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
         Case NORMAL, UNDER:
-            'see if we need to scroll...
-            
-            Dim scrollWest As Boolean
-            
-            scrollWest = checkScrollWest(pNum) 'New function!
-            
-            If scrollWest Then Call scrollRight(moveFraction)
-            'shift the screen drawing co-ords right (topX).
+            'Shift the screen drawing co-ords right (topX) if needed.
+            If checkScrollWest(pNum) Then Call scrollRight(moveFraction)
             
             Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            pushPlayerWest = True
             
         'Case SOLID:
             'Walk on the spot.
     End Select
-End Sub
-
-Public Function roundUp(ByVal number As Double) As Double
-    'ADDED BY KSNiloc...
-
-    If Int(number) = number Then
-        roundUp = number
-        Exit Function
-    End If
-
-    If onlyDecimal(number) < 0.25 Then
-        roundUp = Int(number)
-        Exit Function
-    End If
-    
-    roundUp = Int(number) + 1
-    
-End Function
-
-Public Function roundDown(ByVal number As Double) As Double
-    'ADDED BY KSNiloc...
-
-    If Int(number) = number Then
-        roundDown = number
-        Exit Function
-    End If
-
-    If onlyDecimal(number) < 0.25 Then
-        roundDown = Int(number)
-        Exit Function
-    End If
-    
-    roundDown = Int(number) - 1
     
 End Function
 
@@ -1380,13 +1502,13 @@ Public Function roundCoords( _
             'First, check East-West.
             Case MV_EAST, MV_NE, MV_SE
             
-                If onlyDecimal(pos.x) = movementSize Then
+                If pos.x - Int(pos.x) = movementSize Then
                     dx = -Int(-pos.x)
                 End If
                 
             Case MV_WEST, MV_NW, MV_SW
             
-                If onlyDecimal(pos.x) = 1 - movementSize Then
+                If pos.x - Int(pos.x) = 1 - movementSize Then
                     dx = Int(pos.x)
                 End If
                 
@@ -1403,7 +1525,7 @@ Public Function roundCoords( _
 
             Case MV_SOUTH, MV_SE, MV_SW
 
-                If onlyDecimal(pos.y) = movementSize Then
+                If pos.y - Int(pos.y) = movementSize Then
                     dx = Round(pos.x)
                 End If
 
@@ -1427,14 +1549,12 @@ Public Function roundCoords( _
 
 End Function
 
-Private Function obtainTileType( _
-                                  ByVal testX As Double, _
-                                  ByVal testY As Double, _
-                                  ByVal testL As Double, _
-                                  ByVal direction As Long, _
-                                  ByRef passPos As PLAYER_POSITION, _
-                                  Optional ByVal activeItem As Long = -1 _
-                                                             ) As Byte
+Public Function obtainTileType(ByVal testX As Double, _
+                               ByVal testY As Double, _
+                               ByVal testL As Long, _
+                               ByVal direction As Long, _
+                               ByRef passPos As PLAYER_POSITION, _
+                               Optional ByVal activeItem As Long = -1) As Byte
 
     '========================================================
     'Determines the effective tile type at the test co-ords
@@ -1452,16 +1572,16 @@ Private Function obtainTileType( _
     Dim typetile As Byte, first As Byte, second As Byte
     Dim underneath As Long
     
-    testL = Round(testL)
-    
     'typetile = boardTileType(testX, testY, testL, thelink)
     
+    If testX < 1 Or testY < 1 Then Exit Function
+    
     If Not (usingPixelMovement) Then
-    'If 1 Then
+    'If True Then
     
         'Tiletype at the target.
         typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testL)
-        
+    
     Else
 
         With boardList(activeBoardIndex).theData
@@ -1568,10 +1688,7 @@ Private Function obtainTileType( _
         Next a
     
     End If '(usingPixelMovement)
-
-    'Check if an item is blocking...
-    If checkObstruction(testX, testY, testL, activeItem) = SOLID Then typetile = SOLID
-
+    
     'check for tiles above...
     underneath = checkAbove(testX, testY, testL)
     
@@ -1655,212 +1772,550 @@ Private Function obtainTileType( _
     
 End Function
 
-Public Sub moveItems()
-
-    On Error Resume Next
-
-    'Increase movedThisFrame
-    Call incrementFrame(-1, POI_ITEM)
-
-    Dim moveFraction As Double
-    moveFraction = movementSize / FRAMESPERMOVE
-
+Public Function moveItems() As Boolean: On Error Resume Next
+'===========================================================
+'Loops over items and checks/sets the movement state.
+'Returns whether any movement occured.
+'Called by: gameLogic, runQueuedMovements
+'===========================================================
+   
     Dim itmIdx As Long
+    Static staticTileType() As Byte
+    ReDim Preserve staticTileType(UBound(pendingItemMovement))
+    
     For itmIdx = 0 To UBound(pendingItemMovement)
-        Call isItemIdle(itmIdx, True)
-        If (itemShouldDrawFrame(itmIdx)) Then
-            Select Case pendingItemMovement(itmIdx).direction
-                Case MV_IDLE
-                    'This item isn't moving...
-                Case Else
-                    'Cleaned up into one sub!
-                    Call pushItem(itmIdx, moveFraction)
-            End Select
-        End If
+        'All of these items will be in view.
+        
+        If itmPos(itmIdx).loopFrame <= 0 Then
+            'Parse the queue.
+            pendingItemMovement(itmIdx).direction = getQueuedMovement(pendingItemMovement(itmIdx).queue)
+            
+            If pendingItemMovement(itmIdx).direction <> MV_IDLE Then
+            
+                'Insert the target co-ordinates.
+                Call insertTarget(pendingItemMovement(itmIdx), itmPos(itmIdx), itmIdx)
+                
+                'Get the tiletype once.
+                With pendingItemMovement(itmIdx)
+                
+                    'The board tile isn't going anywhere during the move; get it once.
+                    staticTileType(itmIdx) = obtainTileType(.xTarg, _
+                                               .yTarg, _
+                                               .lTarg, _
+                                               .direction, _
+                                               itmPos(itmIdx), _
+                                               itmIdx)
+                End With
+                
+                'Check for stationary items only (for tile mvt).
+                'Check all items now only (for pixel mvt).
+                If checkObstruction(itmPos(itmIdx), _
+                                    pendingItemMovement(itmIdx), _
+                                    -1, _
+                                    itmIdx, _
+                                    True) _
+                                    = SOLID Then
+                                    
+                    staticTileType(itmIdx) = SOLID
+                    
+                End If
+            
+                'We can start moving.
+                itmPos(itmIdx).loopFrame = 0
+                
+            End If '.direction <> MV_IDLE
+            
+        End If '.loopFrame < 0
+            
+        If pendingItemMovement(itmIdx).direction <> MV_IDLE Then
+        
+            
+             With itemMem(itmIdx)
+                'Normalise the speed to the average mainloop time.
+                '.loopSpeed = CLng(.speed / gAvgTime)
+                
+                .loopSpeed = CLng(.speed)    'If not using decimal delay.
+                
+                'Check divide by zero.
+                If .loopSpeed = 0 Then .loopSpeed = 1
+                
+                
+            End With
+           
+            If pushItem(itmIdx, staticTileType(itmIdx)) Then
+                'Only increment the frames if movement was successful.
+                
+                With itmPos(itmIdx)
+
+                    If .loopFrame Mod ((itemMem(itmIdx).loopSpeed + loopOffset) / movementSize) = 0 Then
+                        'Only increment the frame if we're on a multiple of .speed.
+                        '/ movementSize to handle pixel movement.
+                        .frame = .frame + 1
+                    End If
+                                
+                    .loopFrame = .loopFrame + 1
+                    
+                    If .loopFrame = FRAMESPERMOVE * (itemMem(itmIdx).loopSpeed + loopOffset) Then
+                        'The item has finished moving, update origin, reset the counter.
+                        
+                        With pendingItemMovement(itmIdx)
+                            .direction = MV_IDLE
+                            .xOrig = .xTarg
+                            .yOrig = .yTarg
+                            .lOrig = itmPos(itmIdx).l
+                            itmPos(itmIdx).x = .xTarg
+                            itmPos(itmIdx).y = .yTarg
+                        End With
+                        
+                        'Start the idle timer:
+                        .idleTime = Timer()
+                        
+                        .loopFrame = 0
+                        
+                    End If
+                    
+                End With 'itmPos(itmIdx)
+                
+            End If 'pushItem
+            
+            'Movement occured (or was blocked), return True.
+            moveItems = True
+            
+        End If '.direction <> MV_IDLE
+        
     Next itmIdx
 
-    'Check if we should reset movedThisFrame
-    Call incrementFrame(-2, POI_ITEM)
+End Function
 
-End Sub
-
-Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
-
-    On Error Resume Next
-
-    Dim tiletype As Byte, item As PENDING_MOVEMENT, stance As String
-    'Copy across the pending movements to a local.
-    item = pendingItemMovement(itemNum)
+Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) As Boolean: On Error Resume Next
+'==========================================================
+'Pushes a single item a fraction of a total move.
+'Called by moveItems only.
+'==========================================================
 
     'Check board dimensions.
-    If item.yTarg < 1 _
-        Or item.xTarg < 1 _
-        Or item.yTarg > boardList(activeBoardIndex).theData.bSizeY _
-        Or item.xTarg > boardList(activeBoardIndex).theData.bSizeX Then
-
-        Exit Sub
-
-    End If
-
-    'Check the player's location. Should combine in CheckObstruction.
-    If (Not usingPixelMovement()) Then
-
-        'Tile movement.
-        If (item.yTarg = Int(pPos(selectedPlayer).y) Or _
-            item.yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-           (item.xTarg = Int(pPos(selectedPlayer).x) Or _
-            item.xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
-            'If target is the player's location or their destination.
-            Exit Sub
+    With pendingItemMovement(itemNum)
+        If _
+            .yTarg < 1 Or _
+            .xTarg < 1 Or _
+            .yTarg > boardList(activeBoardIndex).theData.bSizeY Or _
+            .xTarg > boardList(activeBoardIndex).theData.bSizeX Then
+    
+            Exit Function
         End If
-
-    Else
-
-        'Pixel movement. Current and target locations.
-        If Abs(item.yTarg - pPos(selectedPlayer).y) <= movementSize _
-            And Abs(item.xTarg - pPos(selectedPlayer).x) < 1 Then
-            Exit Sub
-        End If
-
-        If Abs(item.yTarg - pendingPlayerMovement(selectedPlayer).yTarg) <= movementSize _
-            And Abs(item.xTarg - pendingPlayerMovement(selectedPlayer).xTarg) < 1 Then
-            Exit Sub
-        End If
-
-    End If
-
-    'CheckObstruction-> done in obtainTileType.
-
-    'Check the tiletype at the target.
-    With item
-        tiletype = obtainTileType(.xTarg, _
-                                  .yTarg, _
-                                  .lTarg, _
-                                  .direction, _
-                                  itmPos(itemNum), _
-                                  itemNum)
     End With
-
+    
     'Select the stance direction - surely .stance shouldn't be a string!!
-    Select Case item.direction
-        Case MV_NORTH: stance = "walk_n"
-        Case MV_SOUTH: stance = "walk_s"
-        Case MV_EAST: stance = "walk_e"
-        Case MV_WEST: stance = "walk_w"
-        Case MV_NE: stance = "walk_ne"
-        Case MV_NW: stance = "walk_nw"
-        Case MV_SE: stance = "walk_se"
-        Case MV_SW: stance = "walk_sw"
-    End Select
-
     With itmPos(itemNum)
-
-        Select Case tiletype
-
-            Case NORMAL, UNDER
-                .stance = stance
-                Call incrementFrame(.frame, POI_ITEM)
-                Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-
-            Case SOLID
-                'Walk on the spot.
-                .stance = stance
-                Call incrementFrame(.frame, POI_ITEM)
-
+        Select Case pendingItemMovement(itemNum).direction
+            Case MV_NORTH: .stance = "walk_n"
+            Case MV_SOUTH: .stance = "walk_s"
+            Case MV_EAST: .stance = "walk_e"
+            Case MV_WEST: .stance = "walk_w"
+            Case MV_NE: .stance = "walk_ne"
+            Case MV_NW: .stance = "walk_nw"
+            Case MV_SE: .stance = "walk_se"
+            Case MV_SW: .stance = "walk_sw"
         End Select
-
     End With
 
-End Sub
+    Call traceString("ITEM.x=" & itmPos(itemNum).x & ".y=" & itmPos(itemNum).y & _
+                ".xTarg=" & pendingItemMovement(itemNum).xTarg & _
+                ".yTarg=" & pendingItemMovement(itemNum).yTarg & _
+                ".loopFrame=" & itmPos(itemNum).loopFrame & _
+                ".tt=" & staticTileType)
+                
+    'Ok, we have to insert the new fractional co-ords into a
+    'test pos to see if we can move this frame.
+    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
+    Dim moveFraction As Double      'From moveItems
+    
+    testPos = itmPos(itemNum)
+    testPend = pendingItemMovement(itemNum)
+    
+    'moveFraction is a fraction of the tile.
+    moveFraction = movementSize / (FRAMESPERMOVE * (itemMem(itemNum).loopSpeed + loopOffset))
+    
+    'Insert the new fractional co-ords into the test location.
+    Call incrementPosition(testPos, testPend, moveFraction)
+    
+    'Now, check the new co-ords for blocking objects.
+    If _
+        staticTileType = SOLID Or _
+        checkObstruction(testPos, testPend, -1, itemNum) = SOLID Then
+        'The new co-ords are blocked, or the target is permanently blocked.
+        'All other tiletypes are evaluated to either NORMAL or UNDER, so
+        'we don't need to any other checks.
+        Exit Function
+    End If
+                
+    'We can move:
+    itmPos(itemNum) = testPos
+    
+    pushItem = True
 
-Public Sub movePlayers()
+End Function
 
-    On Error Resume Next
+Public Function movePlayers() As Boolean: On Error Resume Next
+'======================================================
+'Loops over players and checks/sets the movement state.
+'Returns whether any movement occured.
+'Called by: gameLogic, runQueuedMovements
+'======================================================
 
-    'Distance to move each player
-    Dim moveFraction As Double
-    moveFraction = movementSize / FRAMESPERMOVE
-
-    'Increase movedThisFrame
-    Call incrementFrame(-1, POI_PLAYER)
-
-    'Loop over each player, moving them
-    Dim playerIdx As Long
+    Dim playerIdx As Long, mvOccured As Boolean
+    Static staticTileType() As Byte
+    ReDim Preserve staticTileType(UBound(pendingPlayerMovement))
+    
     For playerIdx = 0 To UBound(pendingPlayerMovement)
-        Call isPlayerIdle(playerIdx, True)
-        If (playerShouldDrawFrame(playerIdx)) Then
-            Select Case pendingPlayerMovement(playerIdx).direction
-                Case MV_NORTH: Call pushPlayerNorth(playerIdx, moveFraction)
-                Case MV_SOUTH: Call pushPlayerSouth(playerIdx, moveFraction)
-                Case MV_EAST: Call pushPlayerEast(playerIdx, moveFraction)
-                Case MV_WEST: Call pushPlayerWest(playerIdx, moveFraction)
-                Case MV_NE: Call pushPlayerNorthEast(playerIdx, moveFraction)
-                Case MV_NW: Call pushPlayerNorthWest(playerIdx, moveFraction)
-                Case MV_SE: Call pushPlayerSouthEast(playerIdx, moveFraction)
-                Case MV_SW: Call pushPlayerSouthWest(playerIdx, moveFraction)
-            End Select
-        End If
+    
+        If showPlayer(playerIdx) Then
+            'If player is visible.
+        
+            If pPos(playerIdx).loopFrame < 0 Then
+                'Negative value indicates idle status.
+                
+                'Parse the queue.
+                pendingPlayerMovement(playerIdx).direction = getQueuedMovement(pendingPlayerMovement(playerIdx).queue)
+                
+                If pendingPlayerMovement(playerIdx).direction <> MV_IDLE Then
+                
+                    'Insert the target co-ordinates.
+                    Call insertTarget(pendingPlayerMovement(playerIdx), pPos(playerIdx))
+                    
+                    'All cases: We only need to get the tiletype once in a move since it's not
+                    '           going to change.
+                    'Tile mv:   Check for stationary items, ignore moving items right now
+                    '           but check for them on a per-frame basis.
+                    'Pixel mv:  Check all items now: no checks during movement. The increments
+                    '           ( <= 1/16th tile) are too small to notice. Moving items block
+                    '           whole movement.
+                    
+                    'Evaluate the tiletype at the target (from tiles only).
+                    With pendingPlayerMovement(playerIdx)
+                    
+                        staticTileType(playerIdx) = obtainTileType(.xTarg, _
+                                                   .yTarg, _
+                                                   .lTarg, _
+                                                   .direction, _
+                                                   pPos(playerIdx))
+                    End With
+                    
+                    'Check for stationary items only (for tile mvt).
+                    'Check all items only now (for pixel mvt).
+                    If checkObstruction(pPos(playerIdx), _
+                                        pendingPlayerMovement(playerIdx), _
+                                        playerIdx, _
+                                        -1, _
+                                        True) _
+                                        = SOLID Then
+                                        
+                        staticTileType(playerIdx) = SOLID
+                        
+                    End If
+                
+                    'We can start movement!
+                    pPos(playerIdx).loopFrame = 0
+                Else
+                    'Get out of the mainloop state.
+                    gGameState = GS_IDLE
+                    
+                End If '.direction <> MV_IDLE
+                
+            End If '.loopFrame = 0
+            
+
+Call traceString("MVPLY.x=" & pPos(playerIdx).x & ".y=" & pPos(playerIdx).y & _
+                ".lpf=" & pPos(playerIdx).loopFrame & _
+                " .dir=" & pendingPlayerMovement(playerIdx).direction)
+                
+                
+            If pendingPlayerMovement(playerIdx).direction <> MV_IDLE Then
+        
+                With playerMem(playerIdx)
+                    'Normalise the speed to the average mainloop time.
+                    '.loopSpeed = CLng(.speed / gAvgTime)
+                    
+                    .loopSpeed = CLng(.speed)    'If not using decimal delay.
+                    
+                    'Check divide by zero.
+                    If .loopSpeed = 0 Then .loopSpeed = 1
+                    
+                    'Set all players to move at the selected player's speed regardless,
+                    '(won't work otherwise!).
+                    .loopSpeed = playerMem(selectedPlayer).loopSpeed
+                End With
+                
+                'Always increment the position as a fraction of the total movement.
+                
+                Select Case pendingPlayerMovement(playerIdx).direction
+                
+                    'Case MV_NORTH: mvOccured = pushPlayerNorth(playerIdx, moveFraction)
+                    'Case MV_SOUTH: mvOccured = pushPlayerSouth(playerIdx, moveFraction)
+                    'Case MV_EAST: mvOccured = pushPlayerEast(playerIdx, moveFraction)
+                    'Case MV_WEST: mvOccured = pushPlayerWest(playerIdx, moveFraction)
+                    Case MV_NE: mvOccured = pushPlayerNorthEast(playerIdx, staticTileType(playerIdx))
+                    Case MV_NW: mvOccured = pushPlayerNorthWest(playerIdx, staticTileType(playerIdx))
+                    Case MV_SE: mvOccured = pushPlayerSouthEast(playerIdx, staticTileType(playerIdx))
+                    Case MV_SW: mvOccured = pushPlayerSouthWest(playerIdx, staticTileType(playerIdx))
+                    Case Else: mvOccured = pushPlayer(playerIdx, staticTileType(playerIdx))
+                    
+                End Select
+                
+                If mvOccured Or staticTileType(playerIdx) = SOLID Then
+                    'Only increment frames if we're moving or are not allowed to move.
+                
+                    With pPos(playerIdx)
+                    
+                        If .loopFrame Mod ((playerMem(playerIdx).loopSpeed + loopOffset) / movementSize) = 0 Then
+                            'Only increment the frame if we're on a multiple of .speed.
+                            '/ movementSize to handle pixel movement.
+                            .frame = .frame + 1
+                        End If
+                                    
+                        .loopFrame = .loopFrame + 1
+                        
+                        If .loopFrame = FRAMESPERMOVE * (playerMem(playerIdx).loopSpeed + loopOffset) Then
+                            'Movement has ended, update origin, reset the counter.
+                            
+                            'Do not set the direction to idle, do it after prg check in main loop.
+                            'Round to deal with irrational fractions.
+                            
+                            With pendingPlayerMovement(playerIdx)
+                                If staticTileType(playerIdx) <> SOLID Then
+                                    'Update origins only if moved.
+                                    .xOrig = .xTarg
+                                    .yOrig = .yTarg
+                                    .lOrig = pPos(playerIdx).l
+                                    pPos(playerIdx).x = .xTarg
+                                    pPos(playerIdx).y = .yTarg
+                                End If
+                            End With
+                            
+                            'Start the idle timer:
+                            .idleTime = Timer()
+                            
+                            'Set -1 temporarily to flag the next loop.
+                            .loopFrame = -1
+                            
+                        End If 'loopFrame
+                        
+                    End With 'pPos(playerIdx)
+                    
+                End If 'mvOccured
+                    
+                'Movement occured, return True.
+                movePlayers = True
+                
+            End If 'mv_idle
+            
+        End If 'showPlayer
+        
     Next playerIdx
 
-    'Check if we should reset movedThisFrame
-    Call incrementFrame(-2, POI_PLAYER)
+End Function
 
-End Sub
+Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean: On Error Resume Next
+'===============================================================================
+'Single push player sub. Tests the fractional position and copies to the player
+'position if movement is possible.
+'Returns whether movement occured.
+'Called by movePlayers only.
+'===============================================================================
 
-Private Sub incrementFrame(ByRef frame As Long, ByVal arrayPos As PLAYER_OR_ITEM)
+    fightInProgress = False
+    stepsTaken = stepsTaken + 1
+    
+    'Before doing anything, let's see if we are going off the board.
+    'Checks for links and will send to new board if a link is possible.
+    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
+        pendingPlayerMovement(pNum).direction = MV_IDLE
+        Exit Function
+    End If
+    
+    'Insert the player stance.
+    Select Case pendingPlayerMovement(pNum).direction
+        Case MV_NORTH: pPos(pNum).stance = "walk_n"
+        Case MV_SOUTH: pPos(pNum).stance = "walk_s"
+        Case MV_EAST: pPos(pNum).stance = "walk_e"
+        Case MV_WEST: pPos(pNum).stance = "walk_w"
+    End Select
+    
+Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
+                ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
+                ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
+                ".loopFrame=" & pPos(pNum).loopFrame & _
+                ".tt=" & staticTileType)
+                
+    'Ok, we have to insert the new fractional co-ords into a
+    'test pos to see if we can move this frame.
+    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
+    Dim moveFraction As Double
+    
+    testPos = pPos(pNum)
+    testPend = pendingPlayerMovement(pNum)
+    
+    'moveFraction is a fraction of the tile.
+    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
+    
+    'Insert the new fractional co-ords into the test location.
+    Call incrementPosition(testPos, testPend, moveFraction)
+    
+    'Now, check the new co-ords for blocking objects.
+    If _
+        staticTileType = SOLID Or _
+        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
+        'The new co-ords are blocked, or the target is permanently blocked.
+        'All other tiletypes are evaluated to either NORMAL or UNDER, so
+        'we don't need to any other checks.
+        Exit Function
+    End If
+    
+    'Shift the screen drawing co-ords if needed.
+    Select Case pendingPlayerMovement(pNum).direction
+        Case MV_NORTH: If checkScrollNorth(pNum) Then Call scrollDown(moveFraction)
+        Case MV_SOUTH: If checkScrollSouth(pNum) Then Call scrollUp(moveFraction)
+        Case MV_EAST: If checkScrollEast(pNum) Then Call scrollLeft(moveFraction)
+        Case MV_WEST: If checkScrollWest(pNum) Then Call scrollRight(moveFraction)
+    End Select
+    
+    'We can move, put the test location into the true loc.
+    pPos(pNum) = testPos
+    
+    pushPlayer = True
 
-    Static movedThisFrame(1 To 2) As Double
+End Function
 
-    Dim fraction As Double
-    fraction = (1 / FRAMESPERMOVE) / movementSize
+Private Function getQueuedMovement(ByRef queue As String) As Long: On Error Resume Next
+'======================================================================
+'Take the next queued movement from the front of a players' queue ByRef
+'and trim the queue down.
+'Returns the direction value, or MV_IDLE if none.
+'Called by: movePlayers, moveItems
+'======================================================================
 
-    If (frame = -2) Then
-        If (movedThisFrame(arrayPos) >= fraction) Then
-            'Reset counter
-            movedThisFrame(arrayPos) = 0
+    Dim i As Long
+        
+    If LenB(queue) <> 0 Then
+        'The queue exists, get the next movement.
+        
+        i = InStr(queue, ",")                   'Check for comma-split moves.
+        
+        If i = 0 Then
+            'Not found, only 1 element.
+            getQueuedMovement = CLng(queue)     'Direction is whole string.
+            queue = vbNullString                'Delete the queue.
+        Else
+            'Found.
+            getQueuedMovement = CLng(Left$(queue, i - 1))
+            queue = Mid$(queue, i + 1)          'Resize the queue, starting after the ",".
         End If
-    ElseIf (frame = -1) Then
-        'Increment movement counter
-        movedThisFrame(arrayPos) = movedThisFrame(arrayPos) + movementSize
     Else
-        If (movedThisFrame(arrayPos) >= fraction) Then
-            'Increment frame
-            frame = frame + 1
-        End If
+        getQueuedMovement = MV_IDLE
     End If
 
-End Sub
+End Function
 
-Sub runQueuedMovements()
-    'run all player and item movements currently pending
-    'without regard for gamestate (like if gamestate is GD_MOVEMENT or not)
-    'won't run programs and stuff when player moves.
-    On Error Resume Next
+Public Sub runQueuedMovements(): On Error Resume Next
+'======================================================================
+'run all player and item movements currently pending
+'without regard for gamestate (like if gamestate is GD_MOVEMENT or not)
+'won't run programs and stuff when player moves.
+'======================================================================
+'Called by ItemStepRPG, PlayerStepRPG, PushItemRPG, PushRPG, WanderRPG.
 
-    'movement has occurred...
-    Dim cnt As Long
-    For cnt = 1 To FRAMESPERMOVE
-        Call moveItems
-        Call movePlayers
+    Do While (movePlayers Or moveItems)
         Call renderNow
-    Next cnt
+        Call processEvent
+    Loop
+    
+    'Update the rpgcode canvas in case we're still in a program.
+    Call CanvasGetScreen(cnvRPGCodeScreen)
+    
+    Select Case UCase$(pPos(selectedPlayer).stance)
+        Case "WALK_S": facing = South
+        Case "WALK_W": facing = West
+        Case "WALK_N": facing = North
+        Case "WALK_E": facing = East
+    End Select
+    
+End Sub
 
-    For cnt = 0 To UBound(pendingPlayerMovement)
-        pendingPlayerMovement(cnt).direction = MV_IDLE
-    Next cnt
+Public Sub setQueuedMovements(ByRef queue As String, ByRef path As String): On Error Resume Next
+'===========================================================================
+'Parse a string of movements for pushing and add them to the objects' queue.
+'Called by PushItemRPG, PushRPG...
+'===========================================================================
 
-    For cnt = 0 To UBound(pendingItemMovement)
-        pendingItemMovement(cnt).direction = MV_IDLE
-    Next cnt
+    Dim element As Long, jString As String
+    Dim largeArray() As String, smallArray() As String, i As Long
+    
+    smallArray = Split(path, ",")
+    
+    For element = 0 To UBound(smallArray)
+    
+        smallArray(element) = UCase$(Trim(smallArray(element)))
+    
+        Select Case smallArray(element)
+    
+            Case "NORTH", "N": smallArray(element) = "1"       'str(MV_NORTH)
+            Case "SOUTH", "S": smallArray(element) = "2"       'str(MV_SOUTH)
+            Case "EAST", "E": smallArray(element) = "3"        'str(MV_EAST)
+            Case "WEST", "W": smallArray(element) = "4"        'str(MV_WEST)
+            Case "NORTHEAST", "NE": smallArray(element) = "5"  'str(MV_NE)
+            Case "NORTHWEST", "NW": smallArray(element) = "6"  'str(MV_NW)
+            Case "SOUTHEAST", "SE": smallArray(element) = "7"  'str(MV_SE)
+            Case "SOUTHWEST", "SW": smallArray(element) = "8"  'str(MV_SW)
+            Case "1", "2", "3", "4", "5", "6", "7", "8":       'No action.
+            Case Else: smallArray(element) = "0"               'str(MV_IDLE)
+                        
+        End Select
+        
+    Next element
+        
+    If usingPixelMovement() Then
+        'We still want to push in tile units, so queue up 1/movementSize entries
+        'per move.
+        ReDim largeArray((UBound(smallArray) + 1) / movementSize - 1)
+        
+        i = -1
+        For element = 0 To UBound(largeArray)
+            'Increment for multiples of 1 / movementSize.
+            If element Mod (1 / movementSize) = 0 Then i = i + 1
+            'Copy across the element.
+            largeArray(element) = smallArray(i)
+        Next element
+        
+        'Done.
+        jString = Join(largeArray, ",")
+        
+    Else
+        'Tile movement.
+        jString = Join(smallArray, ",")
+        
+    End If
+    
+    'Queue the movements: add the elements to the player's queue.
+    If LenB(queue) <> 0 Then
+        queue = queue & "," & jString
+    Else
+        queue = jString
+    End If
+        
+Call traceString("in:setQueuedMovements queue = " & queue)
 
-    If UCase$(pPos(selectedPlayer).stance) = "WALK_S" Then facing = South
-    If UCase$(pPos(selectedPlayer).stance) = "WALK_W" Then facing = West
-    If UCase$(pPos(selectedPlayer).stance) = "WALK_N" Then facing = North
-    If UCase$(pPos(selectedPlayer).stance) = "WALK_E" Then facing = East
+        'Dim qLength As Long, dLength As Long, i As Long
+        'qLength = UBound(pendingPlayerMovement(handleNum).queue)
+        'dLength = UBound(directionArray)
+        'ReDim Preserve pendingPlayerMovement(handleNum).queue(qLength + dLength)
+        'For i = 0 To dLength
+        '    .queue(qLength + i) = directionArray(i)
+        'Next i
+        
 End Sub
 
 
-Public Function checkScrollNorth(ByVal playerNum As Long) As Boolean
+Private Function checkScrollNorth(ByVal playerNum As Long) As Boolean
 '======================================================
 'NEW FUNCTION: [Delano - 9/05/04]
 'Clearing up the pushPlayer subs by placing similar scrolling checks in functions.
@@ -1897,7 +2352,7 @@ On Error Resume Next
 
 End Function
 
-Public Function checkScrollSouth(ByVal playerNum As Long) As Boolean
+Private Function checkScrollSouth(ByVal playerNum As Long) As Boolean
 '======================================================
 'NEW FUNCTION: [Delano - 9/05/04]
 'Clearing up the pushPlayer subs by placing similar scrolling checks in functions.
@@ -1934,7 +2389,7 @@ On Error Resume Next
 
 End Function
 
-Public Function checkScrollEast(ByVal playerNum As Long) As Boolean
+Private Function checkScrollEast(ByVal playerNum As Long) As Boolean
 '======================================================
 'NEW FUNCTION: [Delano - 9/05/04]
 'Clearing up the pushPlayer subs by placing similar scrolling checks in functions.
@@ -1971,7 +2426,7 @@ On Error Resume Next
 End Function
 
 
-Public Function checkScrollWest(ByVal playerNum As Long) As Boolean
+Private Function checkScrollWest(ByVal playerNum As Long) As Boolean
 '======================================================
 'NEW FUNCTION: [Delano - 11/05/04]
 'Clearing up the pushPlayer subs by placing similar scrolling checks in functions.
@@ -2010,12 +2465,9 @@ On Error Resume Next
 End Function
 
 
-Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY As Long, ByVal testL As Long) As Long
+Public Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY As Long, ByVal testL As Long) As Long
 '==========================
 'EDITED: [Delano - 1/05/04]
-'Fixed variant data types.
-'Removed unused code.
-'Renamed variables: XXX,YYY,layer >> testX,testY,testL
 'MOVED from Mod commonBoard to transMovement; was unused in toolkit3.
 '==========================
 'Called by: TestLink and Send only (in trans3).
