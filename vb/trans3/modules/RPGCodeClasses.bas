@@ -51,6 +51,7 @@ Public Type RPGCODE_CLASS
     scopePrivate As RPGCODE_CLASS_SCOPE     ' Private scope
     scopePublic As RPGCODE_CLASS_SCOPE      ' Public scope
     isInterface As Boolean                  ' Is an interface?
+    strDerived() As String                  ' Derives from these classes
 End Type
 
 '=========================================================================
@@ -291,6 +292,21 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                                     Exit For
                                 End If
                             Next idx
+                            ' Add the base to the derivation list
+                            Dim derivationUb As Long, derivationPos As Long
+                            derivationUb = UBound(prg.classes.classes(classIdx).strDerived)
+                            derivationPos = -1
+                            For idx = 0 To derivationUb
+                                If (LenB(prg.classes.classes(classIdx).strDerived(idx)) = 0) Then
+                                    derivationPos = idx
+                                    Exit For
+                                End If
+                            Next idx
+                            If (derivationPos = -1) Then
+                                derivationPos = derivationUb + 1
+                                ReDim Preserve prg.classes.classes(classIdx).strDerived(derivationPos + 5)
+                            End If
+                            prg.classes.classes(classIdx).strDerived(derivationPos) = toInherit
                             ' For each scope
                             Dim scopeIdx As Long
                             For scopeIdx = SCOPE_PUBLIC To SCOPE_PRIVATE
@@ -377,6 +393,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 ReDim prg.classes.classes(classIdx).scopePublic.methods(0)
                 ReDim prg.classes.classes(classIdx).scopePublic.strVars(0)
                 ReDim prg.classes.classes(classIdx).scopePublic.isDynamicArray(0)
+                ReDim prg.classes.classes(classIdx).strDerived(0)
                 prg.classes.classes(classIdx).isInterface = (cmd = "INTERFACE")
                 prg.classes.classes(classIdx).strName = strName
 
@@ -1109,7 +1126,14 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         g_objects(hClass).hClass = hClass
         ' Clear the object
         Call clearObject(g_objects(hClass), prg)
-        ' Call the constructor
+        ' Call the constructor(s)
+        Dim i As Long, cls As RPGCODE_CLASS
+        cls = getClass(hClass, prg)
+        For i = 0 To UBound(cls.strDerived)
+            If (LenB(cls.strDerived(i))) Then
+                Call callObjectMethod(hClass, cls.strDerived(i), prg, retval, cls.strDerived(i))
+            End If
+        Next i
         Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
     End If
 
@@ -1355,7 +1379,14 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             ' Check if we're to release
             If (cmdName = "RELEASE") Then
 
-                ' Call the deconstructor
+                ' Call the deconstructor(s)
+                Dim i As Long, cls As RPGCODE_CLASS
+                cls = getClass(hClass, prg)
+                For i = 0 To UBound(cls.strDerived)
+                    If (LenB(cls.strDerived(i))) Then
+                        Call callObjectMethod(hClass, "~" & cls.strDerived(i), prg, retval, "~" & cls.strDerived(i))
+                    End If
+                Next i
                 Call callObjectMethod(hClass, "~" & g_objects(hClass).strInstancedFrom, prg, retval, "~" & g_objects(hClass).strInstancedFrom)
 
                 ' Kill the object's members
