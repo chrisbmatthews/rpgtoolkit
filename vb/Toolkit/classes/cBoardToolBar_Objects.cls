@@ -67,6 +67,9 @@ End Property
 '========================================================================
 Public Sub Populate(Optional ByVal board As Long = -1)
 
+    ' KSNiloc: need to handle errors
+    On Error Resume Next
+
     ' update local variable
     If board <> -1 Then
         mBoard = board
