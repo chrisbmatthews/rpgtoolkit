@@ -23,7 +23,7 @@ Private Declare Sub RPGCGetVarList Lib "actkrt3.dll" (ByVal Text As Long, ByVal 
 '=========================================================================
 ' Member variables
 '=========================================================================
-Private m_lastStr As String
+Private m_lastStr As String     'string returned from parsing functions
 
 '=========================================================================
 ' Integral strcutures
