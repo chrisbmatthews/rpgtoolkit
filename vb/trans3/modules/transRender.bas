@@ -208,24 +208,6 @@ End Sub
 '=========================================================================
 Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer): On Error Resume Next
 
-    'Call ambienteffect
-
-    'internal engine drawing routines
-    'first, get the shade color of the board...
-    'Dim shadeR As Double, shadeG As Double, shadeB As Double
-    'Dim lightShade As Double
-    'Call ambientRGB(shadeR, shadeG, shadeB)
-    ''now check day and night info...
-    'If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
-    '    lightShade = DetermineLightLevel()
-    '    shadeR = shadeR + lightShade
-    '    shadeG = shadeG + lightShade
-    '    shadeB = shadeB + lightShade
-    'End If
-    '
-    'addOnR = addOnR + shadeR
-    'addOnG = addOnG + shadeG
-    'addOnB = addOnB + shadeB
     
     Dim shadeR As Long, shadeB As Long, shadeG As Long
     Call getAmbientLevel(shadeR, shadeB, shadeG)
@@ -318,27 +300,6 @@ End Sub
 Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
 
     On Error Resume Next
-
-    'Ambient effects
-    'Call ambienteffect
-
-    'Shade of board
-    'Dim shadeR As Double, shadeG As Double, shadeB As Double
-    'Call ambientRGB(shadeR, shadeG, shadeB)
-
-    'Day/night shade
-    'If (mainMem.mainUseDayNight = 1) And (boardList(activeBoardIndex).theData.BoardDayNight = 1) Then
-    '    Dim lightShade As Long
-    '    lightShade = DetermineLightLevel()
-    '    shadeR = shadeR + lightShade
-    '    shadeG = shadeG + lightShade
-    '    shadeB = shadeB + lightShade
-    'End If
-
-    'Final shade
-    'addOnR = addOnR + shadeR
-    'addOnG = addOnG + shadeG
-    'addOnB = addOnB + shadeB
     
     Dim shadeR As Long, shadeB As Long, shadeG As Long
     Call getAmbientLevel(shadeR, shadeB, shadeG)
@@ -592,26 +553,9 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
         For t = 0 To boardList(activeBoardIndex).theData.anmTileInsertIdx - 1
             If TileAnmShouldDrawFrame(boardList(activeBoardIndex).theData.animatedTile(t).theTile) Then
                 toRet = True
-                'Call ambienteffect
-                'internal engine drawing routines
-                'first, get the shade color of the board...
-                'Dim shadeR As Double, shadeG As Double, shadeB As Double
-                'Call ambientRGB(shadeR, shadeG, shadeB)
-                'now check day and night info...
-                'If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
-                '    lightShade = DetermineLightLevel()
-                '    shadeR = shadeR + lightShade
-                '    shadeG = shadeG + lightShade
-                '    shadeB = shadeB + lightShade
-                'End If
-                '
-                'addOnR = addOnR + shadeR
-                'addOnG = addOnG + shadeG
-                'addOnB = addOnB + shadeB
                 
                 Dim shadeR As Long, shadeB As Long, shadeG As Long
                 Call getAmbientLevel(shadeR, shadeB, shadeG)
-
                 
                 'now redraw the layers...
                 x = boardList(activeBoardIndex).theData.animatedTile(t).x
@@ -1006,9 +950,6 @@ Private Function renderItem(ByVal cnvFrameID As Long, ByRef theItem As TKItem, B
 
     'EDITED: [Isometrics - Delano - 11/04/04]
     'Added code to check if the item is in the viewable area for an isometric board.
-    'Renamed variables: ipos >> itemPosition
-    '                   cnv >> cnvFrameID
-    'Removed "toRet" variable - uses renderItem instead.
 
     'theItem is the current item
     'stance is the item animation to use
