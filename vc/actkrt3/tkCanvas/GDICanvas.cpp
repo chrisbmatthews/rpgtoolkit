@@ -815,7 +815,8 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 			{
 
 				// Calculate pixels per row
-				CONST INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+				CONST INT nDestPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+				CONST INT nSrcPixelsPerRow = srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 
 				// Obtain pointers to the surfaces
 				LPDWORD CONST pSurfDest = reinterpret_cast<LPDWORD>(destSurface.lpSurface);
@@ -826,11 +827,11 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 				{
 
 					// Calculate index into destination and source, respectively
-					INT idxd = (yy + y) * nPixelsPerRow + x;
-					INT idx = (yy + ySrc) * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
+					INT idxd = (yy + y) * nDestPixelsPerRow + x;
+					INT idx = (yy + ySrc) * nSrcPixelsPerRow + xSrc;
 
 					// For the x axis
-					for (INT xx = xSrc; xx < width; xx++)
+					for (INT xx = 0; xx < width; xx++)
 					{
 
 						// Obtain a pixel in RGB format
@@ -934,7 +935,8 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 			{
 
 				// Calculate pixels per row
-				CONST INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+				CONST INT nDestPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+				CONST INT nSrcPixelsPerRow = srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 
 				// Obtain pointers to the surfaces
 				LPWORD CONST pSurfDest = reinterpret_cast<LPWORD>(destSurface.lpSurface);
@@ -945,11 +947,11 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 				{
 
 					// Calculate index into destination and source, respectively
-					INT idxd = (yy + y) * nPixelsPerRow + x;
-					INT idx = (yy + ySrc) * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
+					INT idxd = (yy + y) * nDestPixelsPerRow + x;
+					INT idx = (yy + ySrc) * nSrcPixelsPerRow + xSrc;
 
 					// For the x axis
-					for (INT xx = xSrc; xx < width; xx++)
+					for (INT xx = 0; xx < width; xx++)
 					{
 
 						// Obtain a pixel in RGB format
