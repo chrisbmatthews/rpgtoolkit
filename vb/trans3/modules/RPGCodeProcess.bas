@@ -33,7 +33,7 @@ Public errorKeep As RPGCodeProgram
 ' match. This is an indication of how closely Left fits into Right. Zero
 ' means it fits in prefectly - lower means not as well.
 '=========================================================================
-Public Function methodsAreEqual(ByRef Left As RPGCodeMethod, ByRef Right As RPGCodeMethod, ByRef prg As RPGCodeProgram, Optional ByRef pLngPrecision As Long) As Boolean
+Public Function methodsAreEqual(ByRef Left As RPGCodeMethod, ByRef Right As RPGCodeMethod, ByRef prg As RPGCodeProgram, Optional ByRef pLngPrecision As Long, Optional ByVal bDirectCheck As Boolean) As Boolean
     pLngPrecision = 0
     If (Left.name = Right.name) Then
         If (Left.lngParams = Right.lngParams) Then
@@ -108,10 +108,11 @@ Public Function getMethodLine(ByRef theMethod As RPGCodeMethod, ByRef prg As RPG
 
     ' Cycle through all methods in the program
     For i = 0 To ub
-        If (methodsAreEqual(theMethod, prg.methods(i), prg, lngPrecison(j))) Then
+        If (methodsAreEqual(theMethod, prg.methods(i), prg, lngPrecison(j), True)) Then
             ' Move on to next position
             lngPosistions(j) = i
             j = j + 1
+            If (lngPrecison(j) = 0) Then Exit For
         Else
             ' Not a match
             lngPrecison(j) = 1

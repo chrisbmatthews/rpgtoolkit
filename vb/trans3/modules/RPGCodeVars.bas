@@ -951,20 +951,34 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 End If
             End If
 
+            Dim bSetObject As Boolean
+
             If (isObject(dRes)) Then
 
-                If (isObject(destNum)) Then
+                If (equal = "=") Then
 
-                    If (equal = "=") Then
+                    If (hClass) Then
 
-                        ' Copy the object over
-                        Call copyObject(dRes, theProgram, destNum)
+                        If (objectType(dRes) = objectType(destNum)) Then
+
+                            ' Copy the object over
+                            Call copyObject(dRes, theProgram, destNum)
+                            bSetObject = True
+
+                        End If
+
+                    Else
+
+                        ' Create a new copy
+                        dRes = copyObject(dRes, theProgram)
 
                     End If
 
                 End If
 
-            Else
+            End If
+
+            If Not (bSetObject) Then
 
                 If Not (noVar) Then
                     ' Set destination to the result
