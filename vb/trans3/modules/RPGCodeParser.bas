@@ -19,7 +19,6 @@ Private Declare Sub RPGCGetMethodName Lib "actkrt3.dll" (ByVal Text As Long)
 Private Declare Sub RPGCParseAfter Lib "actkrt3.dll" (ByVal Text As Long, ByVal startSymbol As Long)
 Private Declare Sub RPGCParseBefore Lib "actkrt3.dll" (ByVal Text As Long, ByVal endSymbol As Long)
 Private Declare Sub RPGCGetVarList Lib "actkrt3.dll" (ByVal Text As Long, ByVal number As Long)
-Private Declare Function RPGCStringContains Lib "actkrt3.dll" (ByVal theString As Long, ByVal theChar As Long) As Long
 Private Declare Sub RPGCParseWithin Lib "actkrt3.dll" (ByVal Text As Long, ByVal startSymbol As Long, ByVal endSymbol As Long)
 
 '=========================================================================
@@ -341,13 +340,6 @@ Public Function ParseWithin(ByVal Text As String, ByVal startSymbol As String, B
 End Function
 
 '=========================================================================
-' Determine if a string contains a substring
-'=========================================================================
-Public Function stringContains(ByVal theString As String, ByVal theChar As String) As Boolean
-    stringContains = RPGCStringContains(StrPtr(theString), StrPtr(theChar))
-End Function
-
-'=========================================================================
 ' Count the number of values in an equation
 '=========================================================================
 Public Function ValueNumber(ByVal Text As String) As Long
@@ -519,8 +511,8 @@ Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBr
     Length = Len(Text)
     
     If Not doNotCheckForBrackets Then
-        If Not stringContains(Text, "(") Then
-            If Not stringContains(Text, ")") Then
+        If Not InStr(1, Text, "(") Then
+            If Not InStr(1, Text, ")") Then
                 'No (s or )s here!
                 Exit Function
             End If
