@@ -1489,20 +1489,31 @@ Public Sub renderRPGCodeScreen()
 
     On Error Resume Next
 
-    'Render the rpgcode canvas
-    Call DXClearScreen(0)
-    Call DXDrawCanvas(cnvRPGCodeScreen, 0, 0)
+    ' Create a var to hold a pointer to a canvas
+    Dim cnv As Long
 
-    'Render the message box if it's being shown
-    If bShowMsgBox Then
-        Call DXDrawCanvasTranslucent(cnvMsgBox, (tilesX * 32 - GetCanvasWidth(cnvMsgBox)) / 2, 0, 0.75, fontColor, -1)
+    ' Create a canvas
+    cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+
+    ' Copy the screen to that canvas
+    Call CanvasGetScreen(cnv)
+
+    ' Draw the mouse cursor
+    Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpColor)
+
+    ' Draw the message box if it's being shown
+    If (bShowMsgBox) Then
+        Call DXDrawCanvasTranslucent(cnvMsgBox, (tilesX * 32 - 600) * 0.5, 0, 0.75, fontColor, -1)
     End If
 
-    'Refresh the screen
-    Call DXRefresh
+    ' Actually make the flip
+    Call DXFlip
 
-    'Don't starve the system
-    Call processEvent
+    ' Render the screen sans mouse cursor to the back buffer
+    Call DXDrawCanvas(cnv, 0, 0)
+
+    ' Destroy the said canvas
+    Call DestroyCanvas(cnv)
 
 End Sub
 

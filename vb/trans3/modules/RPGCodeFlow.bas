@@ -118,8 +118,8 @@ Public Sub debugger(ByVal Text As String)
 
     If (Not checkErrorHandling()) Then
         If (debugYN = 1) Then
-            Call debugwin.Show
-            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbNewLine
+            Call debugWin.Show
+            debugWin.buglist.Text = debugWin.buglist.Text & Text & vbNewLine
             Call processEvent
         End If
     End If
@@ -791,12 +791,6 @@ Public Sub runProgram( _
 
     Call FlushKB
     Dim retval As RPGCODE_RETURN
-
-    If startupProgram Then
-        Call CanvasFill(cnvRPGCodeScreen, 0)
-    Else
-        Call CanvasGetScreen(cnvRPGCodeScreen)
-    End If
 
     Call renderRPGCodeScreen
 

@@ -12,9 +12,11 @@ Public fontMem(8, 8) As Long
 Public currentFont(100, 100) As Long
 Public currentX As Long, currentY As Long
 Public whichChar As Long
-Public Bold As Long
-Public Italics As Long
-Public Underline As Long
+
+Public Bold As Boolean
+Public Italics As Boolean
+Public Underline As Boolean
+
 Public fName As String
 
 
@@ -283,25 +285,15 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
     '        pic.AutoRedraw = False
     '    End If
     'End If
-    
-    Dim useTTFont As Boolean
-    If UCase$(GetExt(fontName$)) = "FNT" Then
-        useTTFont = False
-    Else
-        useTTFont = True
-    End If
-    If useTTFont Then
+
+    If (UCase$(GetExt(fontName$)) <> "FNT") Then
         'using a true type font!
         'pic.AutoRedraw = True
-        Dim Bold As Boolean, italic As Boolean, Underline As Boolean
-        If Bold = 1 Then Bold = True
-        If Italics = 1 Then italic = True
-        If Underline = 1 Then Underline = True
         
         Dim theAttrib As fontAttribs
         theAttrib.name = fontName$
         theAttrib.size = sizey
-        theAttrib.Italics = italic
+        theAttrib.Italics = Italics
         theAttrib.Bold = Bold
         theAttrib.Underline = Underline
         

@@ -55,11 +55,7 @@ End Sub
 ' Allows actkrt3.dll to force a render
 '=========================================================================
 Private Sub forceRender()
-    If (Not runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
-        Call renderNow(-1, True)
-    ElseIf (runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
-        Call renderRPGCodeScreen
-    End If
+    Call DXRefresh
 End Sub
 
 '=========================================================================
@@ -96,7 +92,7 @@ Public Sub showEndForm(Optional ByVal endProgram As Boolean = True)
                               endFormBackgroundHDC, _
                               ((Screen.width - (340 * Screen.TwipsPerPixelX)) / 2) / Screen.TwipsPerPixelX, _
                               ((Screen.height - (140 * Screen.TwipsPerPixelY)) / 2) / Screen.TwipsPerPixelY, _
-                              statusbar.Icon.handle, _
+                              statusBar.Icon.handle, _
                               App.hInstance _
                                               )
     End If
