@@ -101,19 +101,24 @@ Private Sub initBoardAndTileEditor()
     'Initiate the board and tile editors
     '=======================================================
     On Error Resume Next
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     boardList(activeBoardIndex).spotLightRadius = 2
     boardList(activeBoardIndex).percentFade = 100
     detail = 1
-    For X = 1 To 19
-        For Y = 1 To 11
-            boardList(activeBoardIndex).BoardTile(X, Y) = -1
-        Next Y
-    Next X
+    For x = 1 To 19
+        For y = 1 To 11
+            boardList(activeBoardIndex).BoardTile(x, y) = -1
+        Next y
+    Next x
     boardList(activeBoardIndex).theData.brdColor = vbQBColor(15)
     boardList(activeBoardIndex).theData.bSizeX = 19
     boardList(activeBoardIndex).theData.bSizeY = 11
     Call setupAutoTiler 'initialize autotiler tilemorphs
+    
+    'Initiate a first tile editor doc (for tilemem use elsewhere - bug fix).
+    tileedit.indice = newTileEditIndice()
+    Call clearTileDoc(openTileEditorDocs(tileedit.indice))
+    
 End Sub
 
 Private Sub initLocalization()
