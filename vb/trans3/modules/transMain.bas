@@ -280,6 +280,10 @@ Public Sub gameLogic()
             'Make sure this is run four times
             If movementCounter < framesPerMove Then
                 gGameState = GS_MOVEMENT
+                'GameSpeed delay
+                If (Not GS_ANIMATING) And (Not GS_LOOPING) Then
+                    Call delay(walkDelay / ((framesPerMove * movementSize) / 2))
+                End If
             Else
                 'We're done movement
                 gGameState = GS_DONEMOVE
@@ -403,7 +407,7 @@ Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
         startTime = Timer()
 
         'Do events ten times
-        For a = 1 To 10
+        For a = 1 To 1000
             Call processEvent
         Next a
 
@@ -412,7 +416,7 @@ Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
         endTime = Timer()
 
         'Calculate the slack
-        slackTime = ((endTime - startTime) / 5) + 1
+        slackTime = (((endTime - startTime) / 5) / 100) + 1
 
     End If
 
