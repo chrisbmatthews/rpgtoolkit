@@ -130,7 +130,8 @@ Public Sub LoadState(ByVal file As String)
     For t = 0 To 4
         showPlayer(t) = False           'Hide the players. Individually shown in restorePlayer
         pPos(t).loopFrame = -1
-        pendingPlayerMovement(t).queue = vbNullString
+        pendingPlayerMovement(t).queue.lngSize = 0
+        ReDim pendingPlayerMovement(t).queue.lngMovements(16)
     Next t
     
     Open file For Input Access Read As #num
@@ -310,34 +311,34 @@ Public Sub LoadState(ByVal file As String)
         'get num vars...
         nCount = BinReadLong(num)
         
-        Dim varName As String
+        Dim varname As String
         Dim varValue As Double
         Dim varString As String
         
         For t = 1 To nCount
-            varName = BinReadString(num)
+            varname = BinReadString(num)
             varValue = BinReadDouble(num)
-            If LenB(varName) Then
-                Call SetNumVar(varName, varValue, globalHeap)
+            If LenB(varname) Then
+                Call SetNumVar(varname, varValue, globalHeap)
             End If
         Next t
         
         nCount = BinReadLong(num)
         For t = 1 To nCount
-            varName = BinReadString(num)
+            varname = BinReadString(num)
             varString = BinReadString(num)
-            If LenB(varName) Then
-                Call SetLitVar(varName, varString, globalHeap)
+            If LenB(varname) Then
+                Call SetLitVar(varname, varString, globalHeap)
             End If
         Next t
         
         'get redirects...
         nCount = BinReadLong(num)
         For t = 1 To nCount
-            varName = BinReadString(num)
+            varname = BinReadString(num)
             varString = BinReadString(num)
-            If LenB(varName) Then
-                Call SetRedirect(varName, varString)
+            If LenB(varname) Then
+                Call SetRedirect(varname, varString)
             End If
         Next t
         
@@ -442,7 +443,7 @@ Public Sub LoadState(ByVal file As String)
             
             Dim tID As Long
             If (LenB(f)) Then
-                tID = CreateThread(f, bPersist)
+                tID = createThread(f, bPersist)
                 Threads(tID).thread.programPos = pos
                 If (bSleep) Then
                     Call ThreadSleep(tID, dSleepDuration)
@@ -462,10 +463,10 @@ Public Sub LoadState(ByVal file As String)
 
                 Dim ttt As Long
                 For ttt = 1 To nCount
-                    varName = BinReadString(num)
+                    varname = BinReadString(num)
                     varValue = BinReadDouble(num)
-                    If ((LenB(varName) <> 0) And (LenB(f)) <> 0) Then
-                        Call SetNumVar(varName, varValue, Threads(t).thread.heapStack(tt))
+                    If ((LenB(varname) <> 0) And (LenB(f)) <> 0) Then
+                        Call SetNumVar(varname, varValue, Threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
 
@@ -473,10 +474,10 @@ Public Sub LoadState(ByVal file As String)
                 nCount = BinReadLong(num)
 
                 For ttt = 1 To nCount
-                    varName = BinReadString(num)
+                    varname = BinReadString(num)
                     varString = BinReadString(num)
-                    If ((LenB(varName) <> 0) And (LenB(f)) <> 0) Then
-                        Call SetLitVar(varName, varString, Threads(t).thread.heapStack(tt))
+                    If ((LenB(varname) <> 0) And (LenB(f)) <> 0) Then
+                        Call SetLitVar(varname, varString, Threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
             Next tt

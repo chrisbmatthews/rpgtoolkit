@@ -317,7 +317,7 @@ Public Sub gameLogic()
             gameTime = (Timer() - initTime) + addTime
 
             ' Check the player's queue to see if movement is about to start.
-            If (LenB(pendingPlayerMovement(selectedPlayer).queue)) Then
+            If (pendingPlayerMovement(selectedPlayer).queue.lngSize) Then
                 ' There is a queue.
                 gGameState = GS_MOVEMENT
             End If

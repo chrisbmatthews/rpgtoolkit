@@ -73,6 +73,14 @@ Public pPos(4) As PLAYER_POSITION       'Player positions of 5 players.
 Public itmPos() As PLAYER_POSITION      'Positions of items on board.
 Public selectedPlayer As Long           'Index of current player.
 
+'=========================================================================
+' A movement queue
+'=========================================================================
+Private Type MOVEMENT_QUEUE
+    lngSize As Long         ' Size of the queue
+    lngMovements() As Long  ' Movements in the queue
+End Type
+
 Public Type PENDING_MOVEMENT
     direction As Long       'MV_ direction code.
     xOrig As Double         'Original board co-ordinates.
@@ -83,7 +91,7 @@ Public Type PENDING_MOVEMENT
     lTarg As Long
     
     '3.0.5
-    queue As String         'The pending movements of the player/item.
+    queue As MOVEMENT_QUEUE 'The pending movements of the player/item.
 End Type
 
 Public pendingPlayerMovement(4) As PENDING_MOVEMENT     'Pending player movements.
@@ -1703,33 +1711,23 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
 
 End Function
 
-Private Function getQueuedMovement(ByRef queue As String) As Long: On Error Resume Next
-'======================================================================
-'Take the next queued movement from the front of a players' queue ByRef
-'and trim the queue down.
-'Returns the direction value, or MV_IDLE if none.
-'Called by: movePlayers, moveItems
-'======================================================================
-'By Delano for 3.0.5
+'=========================================================================
+' Get a queued movement (and remove it from the queue)
+'=========================================================================
+Public Function getQueuedMovement(ByRef queue As MOVEMENT_QUEUE) As Long
 
-    Dim i As Long
-        
-    If LenB(queue) Then
-        'The queue exists, get the next movement.
-        
-        i = InStr(queue, ",")                   'Check for comma-split moves.
-        
-        If i = 0 Then
-            'Not found, only 1 element.
-            getQueuedMovement = CLng(queue)     'Direction is whole string.
-            queue = vbNullString                'Delete the queue.
-        Else
-            'Found.
-            getQueuedMovement = CLng(Left$(queue, i - 1))
-            queue = Mid$(queue, i + 1)          'Resize the queue, starting after the ",".
-        End If
-    Else
-        getQueuedMovement = MV_IDLE
+    ' If there's a queue
+    If (queue.lngSize) Then
+
+        ' Obtain the queued movement
+        getQueuedMovement = queue.lngMovements(1)
+
+        ' Remove the movement
+        Call CopyMemory(queue.lngMovements(0), queue.lngMovements(1), 4 * queue.lngSize)
+
+        ' Decrease the number of movements in the queue
+        queue.lngSize = queue.lngSize - 1
+
     End If
 
 End Function
@@ -1757,67 +1755,76 @@ Public Sub runQueuedMovements(): On Error Resume Next
 
 End Sub
 
-Public Sub setQueuedMovements(ByRef queue As String, ByRef path As String): On Error Resume Next
-    '===========================================================================
-    'Parse a string of movements for pushing and add them to the objects' queue.
-    'Called by PushItemRPG, PushRPG...
-    '===========================================================================
-    'By Delano for 3.0.5
+'=========================================================================
+' Queue up a movement
+'=========================================================================
+Public Sub setQueuedMovements(ByRef queue As MOVEMENT_QUEUE, ByRef strPath As String)
 
-    Dim element As Long, jString As String
-    Dim largeArray() As String, smallArray() As String, i As Long
+    On Error GoTo arrayError
 
-    smallArray = Split(path, ",")
+    ' First, split at comma delimed directions
+    Dim strMovements() As String
+    strMovements = Split(strPath, ",")
 
-    For element = 0 To UBound(smallArray)
+    ' Count the number of movements
+    Dim ub As Long
+    ub = UBound(strMovements)
 
-        smallArray(element) = UCase$(Trim$(smallArray(element)))
+    ' Number of movements to add to queue will be larger
+    ' if in pixel movement
+    Dim lngQueueSize As Long
+    lngQueueSize = 1 / movementSize
 
-        Select Case smallArray(element)
+    ' Check current size of the queue
+    Dim lngQueueOffset As Long
+    lngQueueOffset = queue.lngSize + 1
 
-            Case "NORTH", "N": smallArray(element) = MVQ_NORTH
-            Case "SOUTH", "S": smallArray(element) = MVQ_SOUTH
-            Case "EAST", "E": smallArray(element) = MVQ_EAST
-            Case "WEST", "W": smallArray(element) = MVQ_WEST
-            Case "NORTHEAST", "NE": smallArray(element) = MVQ_NE
-            Case "NORTHWEST", "NW": smallArray(element) = MVQ_NW
-            Case "SOUTHEAST", "SE": smallArray(element) = MVQ_SE
-            Case "SOUTHWEST", "SW": smallArray(element) = MVQ_SE
-            Case MVQ_NORTH, MVQ_SOUTH, MVQ_EAST, MVQ_WEST, MVQ_NE, MVQ_NW, MVQ_SE, MVQ_SE
-            Case Else: smallArray(element) = MVQ_IDLE
+    ' Enlarge the queue
+    queue.lngSize = queue.lngSize + lngQueueSize * (ub + 1)
+
+    ' For each movement
+    Dim i As Long
+    For i = 0 To ub
+
+        ' Switch on the movement
+        Dim lngMovement As Long
+        Select Case UCase$(Trim$(strMovements(i)))
+
+            ' Fill in correct movement code
+            Case "NORTH", "N": lngMovement = MV_NORTH
+            Case "SOUTH", "S": lngMovement = MV_SOUTH
+            Case "EAST", "E": lngMovement = MV_EAST
+            Case "WEST", "W": lngMovement = MV_WEST
+            Case "NORTHEAST", "NE": lngMovement = MV_NE
+            Case "NORTHWEST", "NW": lngMovement = MV_NW
+            Case "SOUTHEAST", "SE": lngMovement = MV_SE
+            Case "SOUTHWEST", "SW": lngMovement = MV_SE
+            Case MVQ_NORTH, MVQ_SOUTH, MVQ_EAST, MVQ_WEST, MVQ_NE, MVQ_NW, MVQ_SE, MVQ_SE:
+                ' Cast the number to a long
+                lngMovement = CLng(strMovements(i))
+            Case Else: lngMovement = MV_IDLE
 
         End Select
 
-    Next element
-        
-    If (movementSize <> 1) Then
-        'We still want to push in tile units, so queue up 1/movementSize entries
-        'per move.
-        ReDim largeArray((UBound(smallArray) + 1) / movementSize - 1)
-        
-        i = -1
-        For element = 0 To UBound(largeArray)
-            'Increment for multiples of 1 / movementSize.
-            If element Mod (1 / movementSize) = 0 Then i = i + 1
-            'Copy across the element.
-            largeArray(element) = smallArray(i)
-        Next element
-        
-        'Done.
-        jString = Join(largeArray, ",")
-        
-    Else
-        'Tile movement.
-        jString = Join(smallArray, ",")
-        
-    End If
-    
-    'Queue the movements: add the elements to the player's queue.
-    If LenB(queue) Then
-        queue = queue & "," & jString
-    Else
-        queue = jString
-    End If
+        ' For the queue size
+        Dim j As Long, lngOffset As Long
+        lngOffset = i * lngQueueSize
+        For j = lngOffset To lngOffset + lngQueueSize - 1
+
+            ' Write in this movement
+            queue.lngMovements(lngQueueOffset + j) = lngMovement
+
+        Next j
+
+    Next i
+
+    Exit Sub
+
+arrayError:
+
+    ' Enlarge the queue array
+    ReDim Preserve queue.lngMovements(queue.lngSize + 16)
+    Resume
 
 End Sub
 

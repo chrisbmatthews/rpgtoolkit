@@ -256,7 +256,8 @@ Public Sub openItems()
                 .yTarg = .yOrig
                 .lOrig = itmPos(itemNum).l
                 .lTarg = .lOrig
-                .queue = vbNullString
+                .queue.lngSize = 0
+                ReDim .queue.lngMovements(16)
             End With
 
             ' Check if we should open this item

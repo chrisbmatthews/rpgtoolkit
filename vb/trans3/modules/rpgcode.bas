@@ -3467,7 +3467,7 @@ Public Function ItemLocationRPG(ByVal Text As String, ByRef theProgram As RPGCod
     'Bound the item number in the valid range.
     itemNum = inBounds(paras(0).num, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
 
-    If LenB(pendingItemMovement(itemNum).queue) And isMultiTasking() Then
+    If LenB(pendingItemMovement(itemNum).queue) <> 0 And isMultiTasking() Then
         'We're still moving. Hold the line until movement finishes,
         'but only for multitasking otherwise movement will never finish.
         ItemLocationRPG = False
@@ -4564,7 +4564,7 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 'Call traceString("PUSHITEM: path=" & paras(1).lit & " Len=" & Len(pendingItemMovement(itemNum).queue))
     
     'Make sure the queue isn't too long.
-    If Len(pendingItemMovement(itemNum).queue) > 32 Then Exit Sub
+    If pendingItemMovement(itemNum).queue.lngSize > 16 Then Exit Sub
         'We have more than 16 movements queued up.
     
     Call setQueuedMovements(pendingItemMovement(itemNum).queue, paras(1).lit)
@@ -4686,7 +4686,7 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     paras(0).lit = formatDirectionString(paras(0).lit)
 
     'Make sure the queue isn't too long.
-    If (Len(pendingPlayerMovement(playerNum).queue) > 32) Then Exit Sub
+    If (pendingPlayerMovement(playerNum).queue.lngSize > 16) Then Exit Sub
         'We have more than 16 movements queued up.
 
     Call setQueuedMovements(pendingPlayerMovement(playerNum).queue, paras(0).lit)
@@ -7675,7 +7675,7 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     End If
     
     'Make sure there's no more than one move stored up.
-    If Len(pendingItemMovement(itemNum).queue) > 1 Then Exit Sub
+    If pendingItemMovement(itemNum).queue.lngSize > 1 Then Exit Sub
 
     restrict = inBounds(restrict, 0, 3)
        
@@ -11475,10 +11475,12 @@ Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) A
         If Not isMultiTasking() Then
             Dim i As Long
             For i = 0 To UBound(pendingPlayerMovement)
-                pendingPlayerMovement(i).queue = vbNullString
+                pendingPlayerMovement(i).queue.lngSize = 0
+                ReDim pendingPlayerMovement(i).queue.lngMovements(16)
             Next i
             For i = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
-                pendingItemMovement(i).queue = vbNullString
+                pendingItemMovement(i).queue.lngSize = 0
+                ReDim pendingItemMovement(i).queue.lngMovements(16)
             Next i
         End If
 

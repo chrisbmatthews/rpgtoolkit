@@ -67,7 +67,7 @@ Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long,
 Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 
 ' Move memory around
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
+Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 
 ' Open a canvas' HDC
 Private Declare Function CNVOpenHDC Lib "actkrt3.dll" (ByVal handle As Long) As Long
