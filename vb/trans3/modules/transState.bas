@@ -54,7 +54,7 @@ Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal re
 
     If number < 0 Or number > 4 Then Exit Sub
 
-    Call openchar(file$, playerMem(number))
+    Call openChar(file$, playerMem(number))
 
     'Initialize this character:
     playerListAr$(number) = playerMem(number).charname$
@@ -123,7 +123,8 @@ Public Sub LoadState(ByVal file As String)
     Dim nCount As Long
     Dim t As Long, z As Long
     Dim fn As String
-    
+    Dim minorVer As Integer
+
     'Clear some aesthetic settings:
     facing = South
     For t = 0 To 4
@@ -139,7 +140,6 @@ Public Sub LoadState(ByVal file As String)
             Dim Temp As String
             
             Dim majorVer As Variant
-            Dim minorVer As Variant
             Input #num, majorVer
             Input #num, minorVer
             Call clearVars(globalHeap)
@@ -254,8 +254,8 @@ Public Sub LoadState(ByVal file As String)
             currentBoard$ = projectPath & brdPath & fn$
             'Current x, y and layer:
             For t = 0 To 4
-                pPos(t).x = fread(num)
-                pPos(t).y = fread(num)
+                pPos(t).X = fread(num)
+                pPos(t).Y = fread(num)
                 pPos(t).l = fread(num)
             Next t
             For t = 0 To 4
@@ -298,7 +298,7 @@ Public Sub LoadState(ByVal file As String)
             Exit Sub
         End If
         Call BinReadInt(num)    'majorver 3
-        Call BinReadInt(num)    'minorver 0
+        minorVer = BinReadInt(num)   'minorver 0
         Call clearVars(globalHeap)
         
         'get num vars...
@@ -387,8 +387,8 @@ Public Sub LoadState(ByVal file As String)
         
         'Current x, y and layer:
         For t = 0 To 4
-            pPos(t).x = BinReadDouble(num)
-            pPos(t).y = BinReadDouble(num)
+            pPos(t).X = BinReadDouble(num)
+            pPos(t).Y = BinReadDouble(num)
             pPos(t).l = BinReadLong(num)
         Next t
         For t = 0 To 4
@@ -479,6 +479,23 @@ Public Sub LoadState(ByVal file As String)
         'Movement size...
         transLocate.movementSize = BinReadDouble(num)
         
+        'Read rpgcode object stuffs
+        If (minorVer >= 1) Then
+            ReDim classes(BinReadLong(num))
+            For t = 0 To UBound(classes)
+                classes(t).hClass = BinReadLong(num)
+                classes(t).strInstancedFrom = BinReadString(num)
+            Next t
+            ReDim objHandleUsed(BinReadLong(num))
+            For t = 0 To UBound(objHandleUsed)
+                If (BinReadByte(num) = 1) Then
+                    objHandleUsed(t) = True
+                Else
+                    objHandleUsed(t) = False
+                End If
+            Next t
+        End If
+        
         showPlayer(selectedPlayer) = True
     Close num
     initTime = Timer()
@@ -495,7 +512,7 @@ Public Sub SaveState(ByVal file As String)
     Open file$ For Binary As #num
         Call BinWriteString(num, "RPGTLKIT SAVE")
         Call BinWriteInt(num, 3)    'majorver
-        Call BinWriteInt(num, 0)    'minorver
+        Call BinWriteInt(num, 1)    'minorver
                    
         'print num vars...
         Dim nCount As Long
@@ -577,8 +594,8 @@ Public Sub SaveState(ByVal file As String)
         Call BinWriteString(num, currentBoard$)
         'Current x, y and layer:
         For t = 0 To 4
-            Call BinWriteDouble(num, pPos(t).x)
-            Call BinWriteDouble(num, pPos(t).y)
+            Call BinWriteDouble(num, pPos(t).X)
+            Call BinWriteDouble(num, pPos(t).Y)
             Call BinWriteLong(num, pPos(t).l)
         Next t
         For t = 0 To 4
@@ -640,6 +657,22 @@ Public Sub SaveState(ByVal file As String)
         
         'Movement size...
         Call BinWriteDouble(num, transLocate.movementSize)
+        
+        'Write rpgcode object stuffs
+        Call BinWriteLong(num, UBound(classes))
+        For t = 0 To UBound(classes)
+            Call BinWriteLong(num, classes(t).hClass)
+            Call BinWriteString(num, classes(t).strInstancedFrom)
+        Next t
+        Call BinWriteLong(num, UBound(objHandleUsed))
+        For t = 0 To UBound(objHandleUsed)
+            If (objHandleUsed(t)) Then
+                Call BinWriteByte(num, 1)
+            Else
+                Call BinWriteByte(num, 0)
+            End If
+        Next t
+
     Close #num
 End Sub
 

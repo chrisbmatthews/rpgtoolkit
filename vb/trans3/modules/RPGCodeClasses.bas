@@ -19,7 +19,7 @@ Public classes() As RPGCODE_CLASS_INSTANCE  'All classes
 '=========================================================================
 ' Array of used handles
 '=========================================================================
-Private m_handleUsed() As Boolean           'This handle used?
+Public objHandleUsed() As Boolean           'This handle used?
 
 '=========================================================================
 ' An instance of a class
@@ -318,7 +318,7 @@ End Function
 ' Initiate the class system
 '=========================================================================
 Public Sub initRPGCodeClasses()
-    ReDim m_handleUsed(0)
+    ReDim objHandleUsed(0)
     ReDim classes(0)
     Call newHandle
 End Sub
@@ -330,9 +330,9 @@ Private Sub killHandle(ByVal hClass As Long)
 
     On Error Resume Next
 
-    If (Not UBound(m_handleUsed) < hClass) Then
+    If (Not UBound(objHandleUsed) < hClass) Then
         'Write in the data
-        m_handleUsed(hClass) = False
+        objHandleUsed(hClass) = False
     End If
 
 End Sub
@@ -351,8 +351,8 @@ Private Function newHandle() As Long
     pos = -1
 
     'Loop over each handle
-    For idx = 0 To UBound(m_handleUsed)
-        If (Not m_handleUsed(idx)) Then
+    For idx = 0 To UBound(objHandleUsed)
+        If (Not objHandleUsed(idx)) Then
             'Free position
             pos = idx
             Exit For
@@ -361,12 +361,12 @@ Private Function newHandle() As Long
 
     If (pos = -1) Then
         'Didn't find a spot
-        ReDim Preserve m_handleUsed(UBound(m_handleUsed) + 1)
-        pos = UBound(m_handleUsed)
+        ReDim Preserve objHandleUsed(UBound(objHandleUsed) + 1)
+        pos = UBound(objHandleUsed)
     End If
 
     'Write in the data
-    m_handleUsed(pos) = True
+    objHandleUsed(pos) = True
     newHandle = pos
 
 End Function
