@@ -674,7 +674,6 @@ Public Function formType() As Long
     formType = FT_ENEMY
 End Function
 
-
 Public Sub saveAsFile()
     'saves the file.
     On Error GoTo ErrorHandler
@@ -689,8 +688,6 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
-
-
 
 Public Sub checkSave()
     'check if the file has changed an it needs to be saved...
@@ -710,7 +707,6 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
-
 
 Public Sub saveFile()
     'saves the file.
@@ -1267,12 +1263,10 @@ Private Sub mnurpgcodereference_Click()
     Call tkMainForm.rpgcodereferencemnu_Click
 End Sub
 
-
 Private Sub mnusaveall_Click()
     On Error Resume Next
     Call tkMainForm.saveallmnu_Click
 End Sub
-
 
 Private Sub mnuselectlanguage_Click()
     On Error Resume Next
@@ -1293,7 +1287,6 @@ Private Sub mnutestgame_Click()
     On Error Resume Next
     tkMainForm.testgamemnu_Click
 End Sub
-
 
 Private Sub mnuOpenProject_Click()
     On Error Resume Next

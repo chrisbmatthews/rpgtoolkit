@@ -65,13 +65,6 @@ Public Function BinWriteLong(ByVal fileNo As Integer, ByVal longToWrite As Long)
     Put fileNo, , longToWrite
 End Function
 
-Public Function BinWriteDouble(ByVal fileNo As Integer, ByVal doubleToWrite As Double) As Integer
-    'write a double to the file
-    On Error Resume Next
-    
-    Put fileNo, , doubleToWrite
-End Function
-
 Public Function BinWriteByte(ByVal fileNo As Integer, ByVal byteToWrite As Byte) As Integer
     'write a byte to the file
     On Error Resume Next
@@ -97,15 +90,6 @@ Public Function BinReadLong(ByVal fileNo As Integer) As Long
     BinReadLong = ret
 End Function
 
-Public Function BinReadDouble(ByVal fileNo As Integer) As Double
-    'read a double from the file
-    On Error Resume Next
-    
-    Dim ret As Double
-    Get fileNo, , ret
-    BinReadDouble = ret
-End Function
-
 Public Function BinReadByte(ByVal fileNo As Integer) As Byte
     'read an byte to the file
     On Error Resume Next
@@ -114,6 +98,23 @@ Public Function BinReadByte(ByVal fileNo As Integer) As Byte
     Get fileNo, , ret
     BinReadByte = ret
 End Function
+
+#If isToolkit = 0 Then
+
+    Public Function BinReadDouble(ByVal fileNo As Integer) As Double
+        'write a long to the file
+        On Error Resume Next
+
+        Get fileNo, , BinReadDouble
+    End Function
+
+    Public Sub BinWriteDouble(ByVal fileNo As Integer, ByVal doubleToWrite As Long)
+        'write a long to the file
+        On Error Resume Next
+        Put fileNo, , doubleToWrite
+    End Sub
+
+#End If
 
 Public Function BinWriteString(ByVal fileNum As Integer, ByVal theString As String) As Long
     'writes a string to a binary file...

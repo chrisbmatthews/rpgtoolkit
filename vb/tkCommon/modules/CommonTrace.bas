@@ -5,58 +5,52 @@ Attribute VB_Name = "CommonTrace"
 
 'trace routines for tracing flow of program for debugging
 'dumps results into trace.txt
+
 Option Explicit
 
-Private traceFile As String   'trace file id
-Private isTracing As Boolean
+#Const enableTracer = 0
 
-Private Const enableTracer As Boolean = False
+#If enableTracer = 1 Then
+    Private traceFile As String
+    Private isTracing As Boolean
+#End If
 
-Sub StartTracing(ByVal file As String)
+Public Sub StartTracing(ByVal file As String)
+
     On Error Resume Next
     
-    If enableTracer Then
+    #If enableTracer = 1 Then
         traceFile = file
         isTracing = True
-        
-        Kill traceFile
-        
+        Call Kill(traceFile)
         Dim tf As Long
-        tf = FreeFile
+        tf = FreeFile()
         Open traceFile For Append As #tf
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #tf, "Tracing..."
         Close #tf
-    End If
+    #End If
+
 End Sub
 
-
-Sub StopTracing()
+Public Sub StopTracing()
     On Error Resume Next
-    If enableTracer Then
+    #If enableTracer = 1 Then
         If isTracing Then
-            'Close #traceFile
             isTracing = False
         End If
-    End If
+    #End If
 End Sub
 
-
-Sub traceString(ByVal Text As String)
+Public Sub traceString(ByVal Text As String)
     'write text to the trace file
     On Error Resume Next
-    If enableTracer Then
+    #If enableTracer = 1 Then
         If isTracing Then
-            'Print #traceFile, text
-        
             Dim tf As Long
-            tf = FreeFile
+            tf = FreeFile()
             Open traceFile For Append As #tf
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #tf, Text
             Close #tf
         End If
-    End If
+    #End If
 End Sub
-
-

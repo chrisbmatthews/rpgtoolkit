@@ -46,6 +46,8 @@ End Property
 'Class methods
 '============================================================
 
+#If isToolkit = 0 Then
+
 Public Sub Initialize(): On Error Resume Next
     'Calls Plugin_Initialize
     obj.Plugin_Initialize
@@ -631,3 +633,5 @@ End Sub
 Public Sub CBFighterRemoveStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
     transPlugin.CBFighterRemoveStatusEffect partyIdx, fightIdx, statusFile
 End Sub
+
+#End If

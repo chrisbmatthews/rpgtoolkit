@@ -19,7 +19,6 @@ Type TKTileAnm
     currentAnmFrame As Long 'currently animating frame
 End Type
 
-
 Type tileAnmDoc
     animTileFile As String
     animTileNeedUpdate As Boolean
@@ -98,7 +97,6 @@ Sub saveTileAnm(ByVal file As String, ByRef theAnm As TKTileAnm)
     Close #num
 End Sub
 
-
 Sub openTileAnm(ByVal file As String, ByRef theAnm As TKTileAnm)
     'save animated tile
     On Error Resume Next
@@ -120,7 +118,7 @@ Sub openTileAnm(ByVal file As String, ByRef theAnm As TKTileAnm)
         If fileHeader$ <> "RPGTLKIT TILEANIM" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Animated Tile": Exit Sub
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Move was created with an unrecognised version of the Toolkit", , "Unable to open Animated Tile": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Move was created with an unrecognised version of the Toolkit", , "Unable to open Animated Tile": Close #num: Exit Sub
         
         theAnm.animTilePause = BinReadLong(num)
         cnt = BinReadLong(num)     'number of frames
@@ -148,7 +146,6 @@ Function TileAnmFrameCount(ByRef theAnm As TKTileAnm) As Long
     
 End Function
 
-
 Sub TileAnmClear(ByRef theAnm As TKTileAnm)
     On Error Resume Next
 
@@ -160,18 +157,17 @@ Sub TileAnmClear(ByRef theAnm As TKTileAnm)
     theAnm.currentAnmFrame = 0
 End Sub
 
-
-Sub TileAnmDrawNextFrame(ByRef theAnm As TKTileAnm, ByVal hdc As Long, ByVal x As Double, ByVal y As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long, Optional ByVal advanceFrame As Boolean = True, Optional ByVal DrawFrame As Boolean = True, Optional ByVal drawMask As Boolean = False, Optional ByVal hdcIso As Long = -1)
+Sub TileAnmDrawNextFrame(ByRef theAnm As TKTileAnm, ByVal hdc As Long, ByVal X As Double, ByVal Y As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long, Optional ByVal advanceFrame As Boolean = True, Optional ByVal DrawFrame As Boolean = True, Optional ByVal drawMask As Boolean = False, Optional ByVal hdcIso As Long = -1)
     'draw next frame
     'if drawFrame is false, it will not draw it, but it will advance the counter
     'if hdcIso <> -1 then we also draw it isometricall to the isoHdc
     
     On Error Resume Next
     If DrawFrame Then
-        Call drawtile(hdc, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y, r, g, b, drawMask, False)
+        Call drawtile(hdc, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y, r, g, b, drawMask, False)
         
         If hdcIso <> -1 Then
-            Call drawtile(hdcIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y + 1, r, g, b, drawMask, False, True, True)
+            Call drawtile(hdcIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y + 1, r, g, b, drawMask, False, True, True)
         End If
     End If
     
@@ -183,17 +179,17 @@ Sub TileAnmDrawNextFrame(ByRef theAnm As TKTileAnm, ByVal hdc As Long, ByVal x A
     End If
 End Sub
 
-Sub TileAnmDrawNextFrameCNV(ByRef theAnm As TKTileAnm, ByVal cnv As Long, ByVal x As Double, ByVal y As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long, Optional ByVal advanceFrame As Boolean = True, Optional ByVal DrawFrame As Boolean = True, Optional ByVal drawMask As Boolean = False, Optional ByVal cnvIso As Long = -1)
+Sub TileAnmDrawNextFrameCNV(ByRef theAnm As TKTileAnm, ByVal cnv As Long, ByVal X As Double, ByVal Y As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long, Optional ByVal advanceFrame As Boolean = True, Optional ByVal DrawFrame As Boolean = True, Optional ByVal drawMask As Boolean = False, Optional ByVal cnvIso As Long = -1)
     'draw next frame
     'if drawFrame is false, it will not draw it, but it will advance the counter
     'if cnvIso <> -1 then we also draw it isometricall to the isoCnv
     
     On Error Resume Next
     If DrawFrame Then
-        Call drawtileCNV(cnv, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y, r, g, b, drawMask, False)
+        Call drawtileCNV(cnv, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y, r, g, b, drawMask, False)
         
         If cnvIso <> -1 Then
-            Call drawtileCNV(cnvIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y + 1, r, g, b, drawMask, False, True, True)
+            Call drawtileCNV(cnvIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y + 1, r, g, b, drawMask, False, True, True)
         End If
     End If
     
@@ -204,7 +200,6 @@ Sub TileAnmDrawNextFrameCNV(ByRef theAnm As TKTileAnm, ByVal cnv As Long, ByVal 
         End If
     End If
 End Sub
-
 
 Function TileAnmGet(ByRef theAnm As TKTileAnm, ByVal nFrameNum As Long) As String
     'get the filename of a tile at frame number nFrameNum
@@ -238,20 +233,21 @@ Sub TileAnmInsert(ByVal theFile As String, ByRef theAnm As TKTileAnm, ByVal nFra
         theAnm.animTileFrames = nFrameNum + 1
     End If
     
-    
-    If theFile <> "" And PakFileRunning Then
-        'do check for pakfile system
-        Dim ex As String
-        Dim temp As String
-        temp = theFile
-        ex$ = GetExt(temp$)
-        If Left(UCase$(ex$), 3) = "TST" Then
-            temp$ = tilesetFilename(temp$)
+    #If isToolkit = 0 Then
+        If theFile <> "" And pakFileRunning Then
+            'do check for pakfile system
+            Dim ex As String
+            Dim Temp As String
+            Temp = theFile
+            ex$ = GetExt(Temp$)
+            If Left(UCase$(ex$), 3) = "TST" Then
+                Temp$ = tilesetFilename(Temp$)
+            End If
+            Call PakLocate(tilePath$ + Temp$)
         End If
-        Call PakLocate(tilePath$ + temp$)
-    End If
-End Sub
+    #End If
 
+End Sub
 
 Function TileAnmShouldDrawFrame(ByRef theAnm As TKTileAnm) As Boolean
     'this routine assumes it will be called by a timer every 5 ms (that's 200 times per second (200 fps))
@@ -277,5 +273,3 @@ Function TileAnmShouldDrawFrame(ByRef theAnm As TKTileAnm) As Boolean
     
     TileAnmShouldDrawFrame = toRet
 End Function
-
-

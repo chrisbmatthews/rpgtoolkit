@@ -81,9 +81,9 @@ Private Sub Form_Load()
 
     imgLoading.Width = 0
 
-    If isToolkit Then
+    #If isToolkit = 1 Then
         Call SetParent(Me.hwnd, tkMainForm.hwnd)
-    End If
+    #End If
 
     DoEvents
 

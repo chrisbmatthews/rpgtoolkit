@@ -4,43 +4,54 @@ Attribute VB_Name = "CommonTileDoc"
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '=======================================================================
-Option Explicit
-'========================================================================
-' Definition of a tile editor document
-'========================================================================
-Public Type tileDoc
-    tileName As String              'Filename
-    tileneedupdate As Boolean       'Needs to be updated?
-    tilemode As Integer             'Current drawing mode in tile editor
-    transparentLayer As Integer     'Is layering done transparently
-    angle As Integer                'The angle in the "light" form
-    lightLength As Integer          'publictile.angle of the "light" form
-    grabx1 As Integer
-    graby1 As Integer
-    grabx2 As Integer
-    graby2 As Integer
-    currentColor As Long            'Currently selected tile color
-    oldDetail As Integer            'Detail before color conversion
-    grid As Integer                 'Grid on/off (tile)
 
-    undoTile() As Long              'Tile undo
+Option Explicit
+
+#If isToolkit = 1 Then
+
+    '========================================================================
+    ' Definition of a tile editor document
+    '========================================================================
+    Public Type tileDoc
+        tileName As String              'Filename
+        tileneedupdate As Boolean       'Needs to be updated?
+        tilemode As Integer             'Current drawing mode in tile editor
+        transparentLayer As Integer     'Is layering done transparently
+        angle As Integer                'The angle in the "light" form
+        lightLength As Integer          'publictile.angle of the "light" form
+        grabx1 As Integer
+        graby1 As Integer
+        grabx2 As Integer
+        graby2 As Integer
+        currentColor As Long            'Currently selected tile color
+        oldDetail As Integer            'Detail before color conversion
+        grid As Integer                 'Grid on/off (tile)
+
+        undoTile() As Long              'Tile undo
     
-    captureColor As Long            'Capture color on/off
-    transpcolor As Long             'Transparent color in tile grabber
-    getTransp As Long               'GetTranp on/off (grabber)
-    bAllowExtraTst As Boolean       'Allow selecting one past the end in tileset editor? Y/N
-    changeColor As Long             'Used for changecolor function
+        captureColor As Long            'Capture color on/off
+        transpcolor As Long             'Transparent color in tile grabber
+        getTransp As Long               'GetTranp on/off (grabber)
+        bAllowExtraTst As Boolean       'Allow selecting one past the end in tileset editor? Y/N
+        changeColor As Long             'Used for changecolor function
     
-    'Data
-    detail As Byte                  'Detail level of tile
-    tileMem(64, 32) As Long         'The tile (EDIT for 3.0.4 by Delano - increased to 64x32)
-    isometric As Boolean            'Isometric? (NEW for 3.0.4 by Delano)
-End Type
+        'Data
+        detail As Byte                  'Detail level of tile
+        tileMem(64, 32) As Long         'The tile (EDIT for 3.0.4 by Delano - increased to 64x32)
+        isometric As Boolean            'Isometric? (NEW for 3.0.4 by Delano)
+    End Type
+
+    Public publicTile As tileDoc        'Main data
+
+#Else
+
+    Public publicTile As Object
+
+#End If
 
 '========================================================================
 ' Other variables
 '========================================================================
-Public publicTile As tileDoc        'Main data
 Public detail As Byte               'Detail level of tile
 Public tileMem(64, 32) As Long      'The tile (EDIT for 3.0.4 by Delano - increased to 64x32)
 
@@ -119,8 +130,8 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
     
     For X = 0 To 64
         For Y = 0 To 32
-            If buftile(X, Y) <> -1 Then
-                Call vbPicPSet(pic, X + xLoc, Y + yLoc, buftile(X, Y))
+            If bufTile(X, Y) <> -1 Then
+                Call vbPicPSet(pic, X + xLoc, Y + yLoc, bufTile(X, Y))
             End If
         Next Y
     Next X
@@ -168,51 +179,52 @@ Function getIsoY(ByVal X As Long, ByVal Y As Long) As Long
     getIsoY = toRet
 End Function
 
-
-Public Sub createIsoMask(): On Error Resume Next
-'================================================
-'New function: Added for 3.0.4 by Delano
-'Creates the isoMaskBmp mask from the rotation code.
-'Called in tkMainForm Form_Load only!
-'Only needs to be called once!
-'================================================
+#If isToolkit = 1 Then
+    Public Sub createIsoMask(): On Error Resume Next
+    '================================================
+    'New function: Added for 3.0.4 by Delano
+    'Creates the isoMaskBmp mask from the rotation code.
+    'Called in tkMainForm Form_Load only!
+    'Only needs to be called once!
+    '================================================
     
-    'First, we make tilemem a black tile:
-    Dim X As Long, Y As Long
+        'First, we make tilemem a black tile:
+        Dim X As Long, Y As Long
     
-    For X = 0 To 64
-        For Y = 0 To 32
-            tileMem(X, Y) = RGB(0, 0, 0)
-            isoMaskBmp(X, Y) = RGB(255, 255, 255)   'Initialize the mask.
-        Next Y
-    Next X
+        For X = 0 To 64
+            For Y = 0 To 32
+                tileMem(X, Y) = RGB(0, 0, 0)
+                isoMaskBmp(X, Y) = RGB(255, 255, 255)   'Initialize the mask.
+            Next Y
+        Next X
     
-    'Now, pass it through the tst to iso conversion - this operates on tilemem and
-    'creates an isometric tile in the buffer tile.
+        'Now, pass it through the tst to iso conversion - this operates on tilemem and
+        'creates an isometric tile in the buffer tile.
     
-    Call tstToIsometric
+        Call tstToIsometric
     
-    'Now we create the mask from the tile. The tile is offset and is slightly too wide
-    'so we copy in halves. And erase tilemem while we're at it.
+        'Now we create the mask from the tile. The tile is offset and is slightly too wide
+        'so we copy in halves. And erase tilemem while we're at it.
     
-    For X = 0 To 32
-        For Y = 0 To 32
-            isoMaskBmp(X + 1, Y + 1) = buftile(X, Y)
-            tileMem(X, Y) = -1
-        Next Y
-    Next X
+        For X = 0 To 32
+            For Y = 0 To 32
+                isoMaskBmp(X + 1, Y + 1) = bufTile(X, Y)
+                tileMem(X, Y) = -1
+            Next Y
+        Next X
     
-    '2nd half. Note x-index!
+        '2nd half. Note x-index!
     
-    For X = 33 To 64
-        For Y = 0 To 32
-            'Insert into x, not x + 1!
-            isoMaskBmp(X, Y + 1) = buftile(X, Y)
-            tileMem(X, Y) = -1
-        Next Y
-    Next X
+        For X = 33 To 64
+            For Y = 0 To 32
+                'Insert into x, not x + 1!
+                isoMaskBmp(X, Y + 1) = bufTile(X, Y)
+                tileMem(X, Y) = -1
+            Next Y
+        Next X
     
-End Sub
+    End Sub
+#End If
 
 Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resume Next
 '====================================================
@@ -273,7 +285,6 @@ Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resum
             End If
         Next tY
     Next tX
-    
     
     'now scale down to 64x32 tile...
     Dim c1 As Long, c2 As Long, rr As Long, gg As Long, bb As Long
@@ -355,13 +366,12 @@ Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resum
     'Store it in the buffer.
     For X = 0 To 64
         For Y = 0 To 32
-            buftile(X, Y) = smalltile(X, Y)
+            bufTile(X, Y) = smalltile(X, Y)
         Next Y
     Next X
 
     'We now have a 63x32 isometric tile, buftile, which we can either draw or use for the
     'mask.
-    
 
 End Sub
 

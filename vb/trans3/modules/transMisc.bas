@@ -115,43 +115,6 @@ Function determineSpecialMoves(ByVal handle As String, ByRef fileList() As Strin
     determineSpecialMoves = cnt
 End Function
 
-Function blue(ByVal longColor As Long) As Long
-    On Error Resume Next
-    Dim jj As Long, bluecomp As Long
-    jj = longColor
-    bluecomp = Int(jj / 65536)
-    blue = bluecomp
-End Function
-
-Function red(ByVal longColor As Long) As Long
-    On Error Resume Next
-    Dim jj As Long, bluecomp As Long, takeaway As Long, greencomp As Long, redcomp As Long
-    jj = longColor
-    bluecomp = Int(jj / 65536)
-    takeaway = bluecomp * 256 * 256
-    jj = jj - takeaway
-    
-    greencomp = Int(jj / 256)
-    takeaway = greencomp * 256
-    
-    redcomp = jj - takeaway
-    red = redcomp
-End Function
-
-
-Function green(ByVal longColor As Long) As Long
-    On Error Resume Next
-    Dim jj As Long, takeaway As Long, bluecomp As Long, greencomp As Long
-    jj = longColor
-    bluecomp = Int(jj / 65536)
-    takeaway = bluecomp * 256 * 256
-    jj = jj - takeaway
-    
-    greencomp = Int(jj / 256)
-    green = greencomp
-
-End Function
-
 Function within(ByVal num As Double, ByVal low As Double, ByVal high As Double) As Long
     'tests if a num is within the range low-high.
     'returns 0- false, 1-true
@@ -159,7 +122,6 @@ Function within(ByVal num As Double, ByVal low As Double, ByVal high As Double) 
     If num <= high And num >= low Then within = 1: Exit Function
     within = 0
 End Function
-
 
 Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
     '===========================================================
@@ -256,7 +218,6 @@ Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
     End If
 End Sub
 
-
 Sub openItems()
     'EDITED: [Isometrics - Delano 11/04/04]
     'Added code to clear the pending movements of the items (caused items to jump when moving to new boards).
@@ -282,15 +243,15 @@ Sub openItems()
 
     For itemNum = 0 To MAXITEM '? If the item has a position?
         itmPos(itemNum).frame = 0
-        itmPos(itemNum).X = boardList(activeBoardIndex).theData.itmX(itemNum)
+        itmPos(itemNum).x = boardList(activeBoardIndex).theData.itmX(itemNum)
         itmPos(itemNum).Y = boardList(activeBoardIndex).theData.itmY(itemNum)
         itmPos(itemNum).l = boardList(activeBoardIndex).theData.itmLayer(itemNum)
         itmPos(itemNum).stance = "REST"
         lastItemRender(itemNum).canvas = -1
         
         'Isometric addition: jumping fix for moving to new boards
-        pendingItemMovement(itemNum).xOrig = itmPos(itemNum).X
-        pendingItemMovement(itemNum).xTarg = itmPos(itemNum).X
+        pendingItemMovement(itemNum).xOrig = itmPos(itemNum).x
+        pendingItemMovement(itemNum).xTarg = itmPos(itemNum).x
         pendingItemMovement(itemNum).yOrig = itmPos(itemNum).Y
         pendingItemMovement(itemNum).yTarg = itmPos(itemNum).Y
 

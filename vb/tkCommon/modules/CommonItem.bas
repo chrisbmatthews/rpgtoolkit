@@ -19,7 +19,6 @@ Public Const ITEM_WALK_SW = 6
 Public Const ITEM_WALK_SE = 7
 Public Const ITEM_REST = 8
 
-
 Type TKItem
     itemName As String            'Item name (handle)
     ITMDescription As String     'description of item (one-line string)
@@ -62,23 +61,22 @@ Type TKItem
     customGfx() As String   'customized animations
     customGfxNames() As String   'customized animations (handles)
 
-'Not in file-- used by trans
-    bIsActive As Boolean    'is item active?
+    #If isToolkit = 0 Then
+        'Not in file-- used by trans
+        bIsActive As Boolean    'is item active?
+    #End If
 End Type
-
 
 Type itemDoc
     itemFile As String        'filename
     itemNeedUpdate As Boolean
     itmLayTile As Boolean   'about to lay a tile?
-    
     theData As TKItem
 End Type
 
 'array of enemies used in the MDI children
 Public itemList() As itemDoc
 Public itemListOccupied() As Boolean
-
 
 Function canItemEquip(ByVal file As String) As Boolean
     'sees if an item is equippable
@@ -94,8 +92,6 @@ Function canItemEquip(ByVal file As String) As Boolean
         canItemEquip = True
     End If
 End Function
-
-
 
 Public Function itemGetStanceAnm(ByVal stance As String, ByRef theItem As TKItem) As String
     'obtain the animation filename of a specific stance
@@ -158,7 +154,6 @@ Public Function itemGetStanceAnm(ByVal stance As String, ByRef theItem As TKItem
     itemGetStanceAnm = toRet
 End Function
 
-
 Function itemGetCustomHandleIdx(ByRef theItem As TKItem, ByVal idx As Long) As Long
     'return the handle of the idx-th custom gfx (not counting ones with "" as their handles)
     On Error Resume Next
@@ -176,9 +171,6 @@ Function itemGetCustomHandleIdx(ByRef theItem As TKItem, ByVal idx As Long) As L
         End If
     Next t
 End Function
-
-
-
 
 Sub itemAddCustomGfx(ByRef theItem As TKItem, ByVal handle As String, ByVal anim As String)
     'add a custom animation to the item
@@ -204,8 +196,6 @@ Sub itemAddCustomGfx(ByRef theItem As TKItem, ByVal handle As String, ByVal anim
     theItem.customGfx(tt + 1) = anim
     theItem.customGfxNames(tt + 1) = handle
 End Sub
-
-
 
 Sub VectItemKillSlot(ByVal idx As Long)
     On Error Resume Next
@@ -314,7 +304,6 @@ Sub ItemClear(ByRef theItem As TKItem)
     ReDim theItem.customGfxNames(5)
 End Sub
 
-
 Public Function openItem(ByVal file As String) As TKItem
 
     'opens item file
@@ -340,16 +329,16 @@ Public Function openItem(ByVal file As String) As TKItem
     'set us up for conversion of old-style embedded tiles
     'we'll take embedded tiles and spit them out as a tileset.
     'thus making them external...
-    Dim x As Long, y As Long
-    For x = 0 To 32
-        For y = 0 To 32
-            buftile(x, y) = tilemem(x, y)
-        Next y
-    Next x
+    Dim X As Long, Y As Long
+    For X = 0 To 32
+        For Y = 0 To 32
+            bufTile(X, Y) = tileMem(X, Y)
+        Next Y
+    Next X
     publicTile.oldDetail = detail
     detail = 1
     Dim tstName As String
-    tstName$ = replace(RemovePath(file$), ".", "_") + ".tst"
+    tstName$ = Replace(RemovePath(file$), ".", "_") + ".tst"
     tstName$ = projectPath$ + tilePath$ + tstName$
     
     
@@ -371,7 +360,7 @@ Public Function openItem(ByVal file As String) As TKItem
         If fileHeader$ <> "RPGTLKIT ITEM" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Item": Exit Function
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Function
+        If majorVer <> major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Function
         
         theItem.itemName = BinReadString(num)
         theItem.ITMDescription = BinReadString(num)
@@ -451,14 +440,14 @@ Public Function openItem(ByVal file As String) As TKItem
             Next t
         Else
             'old version 2 item (convert the gfx to animations and tile bitmaps)
-            For x = 0 To 15
-                For y = 0 To 1
-                    itmwalkGfx(x, y) = BinReadString(num)
-                Next y
-            Next x
-            For y = 0 To 1
-                itmrestGfx(y) = BinReadString(num)
-            Next y
+            For X = 0 To 15
+                For Y = 0 To 1
+                    itmwalkGfx(X, Y) = BinReadString(num)
+                Next Y
+            Next X
+            For Y = 0 To 1
+                itmrestGfx(Y) = BinReadString(num)
+            Next Y
             
             Call AnimationClear(anm)
             anm.animSizeX = 32
@@ -467,63 +456,63 @@ Public Function openItem(ByVal file As String) As TKItem
             Dim xx As Long, walkFix As String
             xx = 0
             walkFix$ = "S"
-            For x = 0 To 15
+            For X = 0 To 15
                 Dim anmName As String, tbmName As String
-                anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
+                anmName$ = Replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
                 anmName$ = projectPath$ + miscPath$ + anmName$
                 
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
+                tbmName$ = Replace(RemovePath(file$), ".", "_") + "_walk_" + toString(X) + ".tbm"
                 tbmName$ = projectPath$ + bmpPath$ + tbmName$
                 
                 Call TileBitmapClear(tbm)
                 Call TileBitmapResize(tbm, 1, 2)
-                For y = 0 To 1
-                    tbm.tiles(0, y) = itmwalkGfx(x, y)
-                Next y
+                For Y = 0 To 1
+                    tbm.tiles(0, Y) = itmwalkGfx(X, Y)
+                Next Y
                 Call SaveTileBitmap(tbmName$, tbm)
                 anm.animFrame(xx) = RemovePath(tbmName$)
             
-                If x = 3 Then
+                If X = 3 Then
                     walkFix$ = "E"
                     Call saveAnimation(anmName$, anm)
                     theItem.gfx(ITEM_WALK_S) = RemovePath(anmName$)
                     xx = -1
                 End If
-                If x = 7 Then
+                If X = 7 Then
                     walkFix$ = "N"
                     Call saveAnimation(anmName$, anm)
                     theItem.gfx(ITEM_WALK_E) = RemovePath(anmName$)
                     xx = -1
                 End If
-                If x = 11 Then
+                If X = 11 Then
                     walkFix$ = "W"
                     Call saveAnimation(anmName$, anm)
                     theItem.gfx(ITEM_WALK_N) = RemovePath(anmName$)
                     xx = -1
                 End If
-                If x = 15 Then
+                If X = 15 Then
                     Call saveAnimation(anmName$, anm)
                     theItem.gfx(ITEM_WALK_W) = RemovePath(anmName$)
                     xx = -1
                 End If
                 xx = xx + 1
-            Next x
+            Next X
             
             Call AnimationClear(anm)
             anm.animSizeX = 32
             anm.animSizeY = 64
             anm.animPause = 0.167
             
-            anmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
+            anmName$ = Replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
             anmName$ = projectPath$ + miscPath$ + anmName$
             
-            tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
+            tbmName$ = Replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
             tbmName$ = projectPath$ + bmpPath$ + tbmName$
             Call TileBitmapClear(tbm)
             Call TileBitmapResize(tbm, 1, 2)
-            For y = 0 To 1
-                tbm.tiles(0, y) = itmrestGfx(y)
-            Next y
+            For Y = 0 To 1
+                tbm.tiles(0, Y) = itmrestGfx(Y)
+            Next Y
             Call SaveTileBitmap(tbmName$, tbm)
             anm.animFrame(0) = RemovePath(tbmName$)
             Call saveAnimation(anmName$, anm)
@@ -541,7 +530,7 @@ ver2olditem:
         If fileHeader$ <> "RPGTLKIT ITEM" Then Close #num: MsgBox "Unrecognised File Format!", , "Open Item": Exit Function
         Input #num, majorVer           'Version
         Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Function
+        If majorVer <> major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Function
         theItem.itemName = fread(num)  'Item name (handle)
         theItem.EquipYN = fread(num)      'Equipable item? 0- No, 1- yes
         theItem.MenuYN = fread(num)       'Menu item? 0-No, 1-Y
@@ -586,15 +575,15 @@ ver2olditem:
                     itmwalkGfx$(t - 1, 0) = ""
                     itmwalkGfx$(t - 1, 1) = ""
                 Else
-                    For x = 1 To 32
-                        For y = 1 To 32
-                            If x = 1 And y = 1 Then
-                                tilemem(x, y) = test
+                    For X = 1 To 32
+                        For Y = 1 To 32
+                            If X = 1 And Y = 1 Then
+                                tileMem(X, Y) = test
                             Else
-                                Input #num, tilemem(x, y) '16 walking graphics
+                                Input #num, tileMem(X, Y) '16 walking graphics
                             End If
-                        Next y
-                    Next x
+                        Next Y
+                    Next X
                     If Not (bCreated) Then
                         Call createNewTileSet(tstName$)
                         itmwalkGfx$(t - 1, 0) = ""
@@ -616,15 +605,15 @@ ver2olditem:
                 itmrestGfx$(0) = ""
                 itmrestGfx$(1) = ""
             Else
-                For x = 1 To 32
-                    For y = 1 To 32
-                        If x = 1 And y = 1 Then
-                            tilemem(x, y) = test
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        If X = 1 And Y = 1 Then
+                            tileMem(X, Y) = test
                         Else
-                            Input #num, tilemem(x, y)  'Item rest graphic
+                            Input #num, tileMem(X, Y)  'Item rest graphic
                         End If
-                    Next y
-                Next x
+                    Next Y
+                Next X
                 If Not (bCreated) Then
                     Call createNewTileSet(tstName$)
                     itmrestGfx$(0) = ""
@@ -666,62 +655,62 @@ ver2olditem:
         anm.animPause = 0.167
         xx = 0
         walkFix$ = "S"
-        For x = 0 To 15
-            anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
+        For X = 0 To 15
+            anmName$ = Replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
             anmName$ = projectPath$ + miscPath$ + anmName$
             
-            tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
+            tbmName$ = Replace(RemovePath(file$), ".", "_") + "_walk_" + toString(X) + ".tbm"
             tbmName$ = projectPath$ + bmpPath$ + tbmName$
             
             Call TileBitmapClear(tbm)
             Call TileBitmapResize(tbm, 1, 2)
-            For y = 0 To 1
-                tbm.tiles(0, y) = itmwalkGfx(x, y)
-            Next y
+            For Y = 0 To 1
+                tbm.tiles(0, Y) = itmwalkGfx(X, Y)
+            Next Y
             Call SaveTileBitmap(tbmName$, tbm)
             anm.animFrame(xx) = RemovePath(tbmName$)
         
-            If x = 3 Then
+            If X = 3 Then
                 walkFix$ = "E"
                 Call saveAnimation(anmName$, anm)
                 theItem.gfx(ITEM_WALK_S) = RemovePath(anmName$)
                 xx = -1
             End If
-            If x = 7 Then
+            If X = 7 Then
                 walkFix$ = "N"
                 Call saveAnimation(anmName$, anm)
                 theItem.gfx(ITEM_WALK_E) = RemovePath(anmName$)
                 xx = -1
             End If
-            If x = 11 Then
+            If X = 11 Then
                 walkFix$ = "W"
                 Call saveAnimation(anmName$, anm)
                 theItem.gfx(ITEM_WALK_N) = RemovePath(anmName$)
                 xx = -1
             End If
-            If x = 15 Then
+            If X = 15 Then
                 Call saveAnimation(anmName$, anm)
                 theItem.gfx(ITEM_WALK_W) = RemovePath(anmName$)
                 xx = -1
             End If
             xx = xx + 1
-        Next x
+        Next X
         
         Call AnimationClear(anm)
         anm.animSizeX = 32
         anm.animSizeY = 64
         anm.animPause = 0.167
         
-        anmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
+        anmName$ = Replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
         anmName$ = projectPath$ + miscPath$ + anmName$
         
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
+        tbmName$ = Replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
         tbmName$ = projectPath$ + bmpPath$ + tbmName$
         Call TileBitmapClear(tbm)
         Call TileBitmapResize(tbm, 1, 2)
-        For y = 0 To 1
-            tbm.tiles(0, y) = itmrestGfx(y)
-        Next y
+        For Y = 0 To 1
+            tbm.tiles(0, Y) = itmrestGfx(Y)
+        Next Y
         Call SaveTileBitmap(tbmName$, tbm)
         anm.animFrame(0) = RemovePath(tbmName$)
         Call saveAnimation(anmName$, anm)
@@ -731,15 +720,14 @@ ver2olditem:
         openItem = theItem
     
     Close #num
-    For x = 0 To 32
-        For y = 0 To 32
-            tilemem(x, y) = buftile(x, y)
-        Next y
-    Next x
+    For X = 0 To 32
+        For Y = 0 To 32
+            tileMem(X, Y) = bufTile(X, Y)
+        Next Y
+    Next X
     detail = publicTile.oldDetail
 
 End Function
-
 
 Sub saveitem(ByVal file As String, ByRef theItem As TKItem)
     'saves item file
@@ -753,7 +741,7 @@ Sub saveitem(ByVal file As String, ByRef theItem As TKItem)
     
     Open file$ For Binary As #num
         Call BinWriteString(num, "RPGTLKIT ITEM")    'Filetype
-        Call BinWriteInt(num, Major)
+        Call BinWriteInt(num, major)
         Call BinWriteInt(num, 4)    'Minor version (1= ie 2.1 = 64x32 cgfx allowed 2= binary, 3=longs used instead of ints, 4=Version 3 item-- use animations for gfx)
         
         Call BinWriteString(num, theItem.itemName)
@@ -810,5 +798,3 @@ Sub saveitem(ByVal file As String, ByRef theItem As TKItem)
     Close #num
 
 End Sub
-
-

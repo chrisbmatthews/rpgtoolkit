@@ -957,7 +957,7 @@ Sub aiRPG(Text$, ByRef theProgram As RPGCodeProgram)
         If targetType = 0 Then
             'players targeted.
             Dim theOne As Long, tohit As Long
-            num = inbounds(num, 0, 3)
+            num = inBounds(num, 0, 3)
             theOne = target
             tohit = chooseHit(theOne)
             If num = 0 Then
@@ -1208,7 +1208,7 @@ Sub GameSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: GameSpeed data type must be numerical!-- " + Text$)
     Else
         'Parameter is numerical.
-        speed = inbounds(speed, 0, 3)
+        speed = inBounds(speed, 0, 3)
         Select Case speed
             Case 0:
                 walkDelay = 0.09
@@ -1856,7 +1856,7 @@ Sub FontSizeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 1 Then
         Call debugger("Error: FontSize data type must be numerical!-- " + Text$)
     Else
-        num = inbounds(num, 0, 255)
+        num = inBounds(num, 0, 255)
         fontSize = num
     End If
 
@@ -2007,9 +2007,9 @@ Sub GetBoardTileRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     Else
         Dim f As String
         
-        num1 = inbounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-        num2 = inbounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-        num3 = inbounds(num3, 1, boardList(activeBoardIndex).theData.Bsizel)
+        num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
+        num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
+        num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.Bsizel)
         f$ = BoardGetTile(num1, num2, num3, boardList(activeBoardIndex).theData)
         If number = 4 Then
             Call SetVariable(useIt4$, f$, theProgram)
@@ -2049,9 +2049,9 @@ Sub GetBoardTileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval 
     If ax = 1 Or ay = 1 Or al = 1 Then
         Call debugger("Error: GetBoardTileType data must be numeric, numeric, numeric, literal!-- " + Text$)
     Else
-        num1 = inbounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-        num2 = inbounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-        num3 = inbounds(num3, 1, boardList(activeBoardIndex).theData.Bsizel)
+        num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
+        num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
+        num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.Bsizel)
         ll = boardList(activeBoardIndex).theData.tiletype(num1, num2, num3)
         Select Case ll
             Case 0:
@@ -3400,14 +3400,14 @@ enlargeDoneIf:
 
 End Function
 
-Function inbounds(ByVal value As Long, ByVal low As Long, ByVal up As Long) As Long
+Function inBounds(ByVal value As Long, ByVal low As Long, ByVal up As Long) As Long
     On Error GoTo errorhandler
     Dim ret As Long
     
     ret = value
     If value < low Then ret = low
     If value > up Then ret = up
-    inbounds = ret
+    inBounds = ret
 
     Exit Function
 
@@ -3475,7 +3475,7 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim count As Long
              
         'Get a location for the tricky file...
-        If Not PakFileRunning Then
+        If Not pakFileRunning Then
             filen = projectPath & prgPath & lit
         Else
             filen = PakLocate(prgPath & lit)
@@ -3716,7 +3716,7 @@ Sub ItemLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'numeral
         theOne = X
     End If
-    theOne = inbounds(theOne, 0, MAXITEM)
+    theOne = inBounds(theOne, 0, MAXITEM)
     Call SetVariable(useIt2$, str$(boardList(activeBoardIndex).theData.itmX(theOne)), theProgram)
     Call SetVariable(useIt3$, str$(boardList(activeBoardIndex).theData.itmY(theOne)), theProgram)
     Call SetVariable(useIt4$, str$(boardList(activeBoardIndex).theData.itmLayer(theOne)), theProgram)
@@ -3889,9 +3889,9 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'now redraw the layers...
         Dim file As String
         file$ = lit1$
-        num1 = inbounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-        num2 = inbounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-        num3 = inbounds(num3, 1, boardList(activeBoardIndex).theData.Bsizel)
+        num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
+        num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
+        num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.Bsizel)
         Call BoardSetTile(num1, num2, num3, file$, boardList(activeBoardIndex).theData)
         Dim xx As Double, yy As Double, lll As Long, hdc As Long, hdcMask As Long
         xx = num1 - scTopX
@@ -4032,7 +4032,7 @@ Sub MainFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 program(num).program$(t) = ""
             Next t
         Next num
-        Call setupmain
+        Call setupMain
     End If
 
     Exit Sub
@@ -4172,7 +4172,7 @@ Sub MemRPG(Text$, ByRef theProgram As RPGCodeProgram)
         X = num1
         Y = num2
         memLoc = num3
-        memLoc = inbounds(memLoc, 0, UBound(cnvRPGCodeBuffers))
+        memLoc = inBounds(memLoc, 0, UBound(cnvRPGCodeBuffers))
         Call Canvas2CanvasBltPartial(cnvRPGCodeBuffers(memLoc), cnvRPGCodeScreen, _
                                     X * 32 - 32, Y * 32 - 32, _
                                     0, 0, _
@@ -4544,7 +4544,7 @@ Sub MWinSizeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 1 Then
         Call debugger("Error: CharacterSpeed data type must be numerical!-- " + Text$)
     Else
-        num = inbounds(num, 10, 100)
+        num = inBounds(num, 10, 100)
         MWinSize = num
         
     End If
@@ -4679,11 +4679,11 @@ Sub PathFindRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
         Exit Sub
     End If
     
-    num1 = inbounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-    num2 = inbounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-    num3 = inbounds(num3, 1, boardList(activeBoardIndex).theData.Bsizex)
-    num4 = inbounds(num4, 1, boardList(activeBoardIndex).theData.Bsizey)
-    num6 = inbounds(num6, 1, boardList(activeBoardIndex).theData.Bsizel)
+    num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
+    num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
+    num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.Bsizex)
+    num4 = inBounds(num4, 1, boardList(activeBoardIndex).theData.Bsizey)
+    num6 = inBounds(num6, 1, boardList(activeBoardIndex).theData.Bsizel)
 
     Dim p As String
     p$ = PathFind(num1, num2, num3, num4, num6, False, True)
@@ -4808,7 +4808,7 @@ Sub PostureRPG(Text$, ByRef theProgram As RPGCodeProgram)
         If theOne = -1 Then Exit Sub 'Player handle not found
         'MsgBox Str$(theone)
         'MsgBox Str$(num) + text$
-        num = inbounds(num, 0, 9)
+        num = inBounds(num, 0, 9)
         ppos(theOne).stance = "Custom " + toString(num)
         Call renderNow
         Call CanvasGetScreen(cnvRPGCodeScreen)
@@ -5614,7 +5614,7 @@ Sub RemoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
         'OK, theone is the player to equip to.
-        num2 = inbounds(num2, 1, 16)
+        num2 = inBounds(num2, 1, 16)
         
         'Let's remove equip!
         Call removeEquip(num2, theOne)
@@ -5727,7 +5727,7 @@ Sub ResetRPG(ByRef theProgram As RPGCodeProgram)
     fightInProgress = False
     runningProgram = False
     'Call openMainFile(loadedMainFile$)
-    Call setupmain
+    Call setupMain
     Call runProgram(projectPath$ + prgPath$ + mainMem.startupPrg)
 
     Exit Sub
@@ -6319,7 +6319,7 @@ Sub ScanRPG(Text$, ByRef theProgram As RPGCodeProgram)
         X = num1
         Y = num2
         memLoc = num3
-        memLoc = inbounds(memLoc, 0, UBound(cnvRPGCodeBuffers))
+        memLoc = inBounds(memLoc, 0, UBound(cnvRPGCodeBuffers))
         Call Canvas2CanvasBltPartial(cnvRPGCodeScreen, cnvRPGCodeBuffers(memLoc), _
                                     0, 0, _
                                     X * 32 - 32, Y * 32 - 32, _
@@ -6403,12 +6403,12 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     targetBoardName$ = addext(lit1$, ".brd")
     
     'Put the dimensions of the target board into targetBoardWidth, targetBoardHeight
-    Call boardsize(projectPath$ + brdPath$ + targetBoardName$, targetBoardWidth, targetBoardHeight)
+    Call boardSize(projectPath$ + brdPath$ + targetBoardName$, targetBoardWidth, targetBoardHeight)
     
     'Check the target is valid.
-    targetX = inbounds(num2, 1, targetBoardWidth)
-    targetY = inbounds(num3, 1, targetBoardHeight)
-    targetL = inbounds(num4, 1, 8)
+    targetX = inBounds(num2, 1, targetBoardWidth)
+    targetY = inBounds(num3, 1, targetBoardHeight)
+    targetL = inBounds(num4, 1, 8)
     
     'TestBoard clears the screen co-ords (topX,topY) via openBoard so these need to be held incase sending fails.
     topXtemp = topX
@@ -6511,9 +6511,9 @@ Sub setbuttonRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If butTo = 1 Or x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Then
         Call debugger("Error: SetButton coords must be numerical!-- " + Text$)
     Else
-        destBut = inbounds(destBut, 0, 50)
-        x1 = inbounds(x1, 0, tilesX * 32)
-        y1 = inbounds(y1, 0, tilesY * 32)
+        destBut = inBounds(destBut, 0, 50)
+        x1 = inBounds(x1, 0, tilesX * 32)
+        y1 = inBounds(y1, 0, tilesY * 32)
         
         ' ! MODIFIED BY KSNiloc...
         
@@ -6530,7 +6530,7 @@ Sub setbuttonRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         Dim bLoaded As Boolean, f As String
         bLoaded = False
-        If PakFileRunning Then
+        If pakFileRunning Then
             f$ = PakLocate(fface$)
             If fileExists(f$) Then
                 bLoaded = True
@@ -6650,8 +6650,8 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Or pp = 1 Then
         Call debugger("Error: SetImageAdditive coords must be numerical!-- " + Text$)
     Else
-        x1 = inbounds(x1, 0, tilesX * 32)
-        y1 = inbounds(y1, 0, tilesY * 32)
+        x1 = inBounds(x1, 0, tilesX * 32)
+        y1 = inBounds(y1, 0, tilesY * 32)
         
         fface$ = projectPath$ & bmpPath$ & fface$
         
@@ -6659,7 +6659,7 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
         cnv = CreateCanvas(dx, dy)
         
         Dim f As String
-        If PakFileRunning Then
+        If pakFileRunning Then
             f$ = PakLocate(fface$)
             Call CanvasLoadSizedPicture(cnv, f$)
         Else
@@ -6737,8 +6737,8 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Then
         Call debugger("Error: SetImage coords must be numerical!-- " + Text$)
     Else
-        x1 = inbounds(x1, 0, tilesX * 32)
-        y1 = inbounds(y1, 0, tilesY * 32)
+        x1 = inBounds(x1, 0, tilesX * 32)
+        y1 = inBounds(y1, 0, tilesY * 32)
         
         fface$ = projectPath$ & bmpPath$ & fface$
 
@@ -6746,7 +6746,7 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
         cnv = CreateCanvas(dx, dy)
         
         Dim f As String
-        If PakFileRunning Then
+        If pakFileRunning Then
             f$ = PakLocate(fface$)
             Call CanvasLoadSizedPicture(cnv, f$)
         Else
@@ -6810,8 +6810,8 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Then
         Call debugger("Error: SetImageTranslucent coords must be numerical!-- " + Text$)
     Else
-        x1 = inbounds(x1, 0, tilesX * 32)
-        y1 = inbounds(y1, 0, tilesY * 32)
+        x1 = inBounds(x1, 0, tilesX * 32)
+        y1 = inBounds(y1, 0, tilesY * 32)
         
         fface$ = projectPath$ & bmpPath$ & fface$
         
@@ -6819,7 +6819,7 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
         cnv = CreateCanvas(dx, dy)
         
         Dim f As String
-        If PakFileRunning Then
+        If pakFileRunning Then
             f$ = PakLocate(fface$)
             Call CanvasLoadSizedPicture(cnv, f$)
         Else
@@ -6889,8 +6889,8 @@ Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Or rt = 1 Or gt = 1 Or bT = 1 Then
         Call debugger("Error: SetImageTransparent coords must be numerical!-- " + Text$)
     Else
-        x1 = inbounds(x1, 0, tilesX * 32)
-        y1 = inbounds(y1, 0, tilesY * 32)
+        x1 = inBounds(x1, 0, tilesX * 32)
+        y1 = inBounds(y1, 0, tilesY * 32)
         
         fface$ = projectPath$ & bmpPath$ & fface$
         
@@ -6898,7 +6898,7 @@ Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
         cnv = CreateCanvas(dx, dy)
         
         Dim f As String
-        If PakFileRunning Then
+        If pakFileRunning Then
             f$ = PakLocate(fface$)
             Call CanvasLoadSizedPicture(cnv, f$)
         Else
@@ -7329,7 +7329,7 @@ Sub StanceRPG(Text$, ByRef theProgram As RPGCodeProgram)
         If theOne = -1 Then Exit Sub 'Player handle not found
         'MsgBox Str$(theone)
         'MsgBox Str$(num) + text$
-        num = inbounds(num, 1, 43)
+        num = inBounds(num, 1, 43)
         
         If within(num, 1, 4) = 1 Then
             'facing south
@@ -7815,9 +7815,9 @@ Sub TileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If xx = 1 Or yy = 1 Or lay = 1 Or typea = 0 Then
         Call debugger("Error: TileType data type must be num, num, lit, num!-- " + Text$)
     Else
-        theX = inbounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-        theY = inbounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-        theLay = inbounds(num4, 1, boardList(activeBoardIndex).theData.Bsizel)
+        theX = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
+        theY = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
+        theLay = inBounds(num4, 1, boardList(activeBoardIndex).theData.Bsizel)
         Select Case UCase$(lit1$)
             Case "NORMAL":
                 boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 0
@@ -8100,7 +8100,7 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
         Call openboard(projectPath$ + brdPath$ + brd$, boardList(activeBoardIndex).theData)
         lastRender.canvas = -1
         ChDir (projectPath$)
-        If PakFileRunning Then
+        If pakFileRunning Then
             Call ChangeDir(PakTempPath$)
             a = GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, 0, 0, 0, 0)
             Call ChangeDir(currentDir$)
@@ -8553,7 +8553,7 @@ Sub WanderRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
         
     'Make sure restrict is in the required range: inbounds will put it in range.
-    restrict = inbounds(restrict, 0, 3)
+    restrict = inBounds(restrict, 0, 3)
        
     Select Case restrict
         Case 0:
@@ -9148,9 +9148,9 @@ Sub ColorRGB(Text$, ByRef theProgram As RPGCodeProgram)
     If redc = 1 Or greenc = 1 Or bluec = 1 Then
         Call debugger("Error: Color data type must be numerical!-- " + Text$)
     Else
-        num1 = inbounds(num1, 0, 255)
-        num2 = inbounds(num2, 0, 255)
-        num3 = inbounds(num3, 0, 255)
+        num1 = inBounds(num1, 0, 255)
+        num2 = inBounds(num2, 0, 255)
+        num3 = inBounds(num3, 0, 255)
         fontColor = RGB(num1, num2, num3)
     End If
 
@@ -9177,7 +9177,7 @@ Sub ColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 1 Then
         Call debugger("Error: Color data type must be numerical!-- " + Text$)
     Else
-        num = inbounds(num, 0, 255)
+        num = inBounds(num, 0, 255)
         fontColor = GFXGetDOSColor(num)
     End If
 
@@ -9615,7 +9615,7 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Exit Sub
         End If
         
-        num2 = inbounds(num2, 1, 16)
+        num2 = inBounds(num2, 1, 16)
         
         'Let's equip!
         Call removeEquip(num2, theOne)
@@ -9985,9 +9985,9 @@ Sub WinColorRGB(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: WinColor data type must be numerical!-- " + Text$)
     Else
         MWinPic$ = ""
-        num1 = inbounds(num1, 0, 255)
-        num2 = inbounds(num2, 0, 255)
-        num3 = inbounds(num3, 0, 255)
+        num1 = inBounds(num1, 0, 255)
+        num2 = inBounds(num2, 0, 255)
+        num3 = inBounds(num3, 0, 255)
         MWinBkg = RGB(num1, num2, num3)
     End If
 
@@ -10015,7 +10015,7 @@ Sub WinColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: WinColor data type must be numerical!-- " + Text$)
     Else
         MWinPic$ = ""
-        num = inbounds(num, 0, 255)
+        num = inBounds(num, 0, 255)
         MWinBkg = GFXGetDOSColor(num)
     End If
 
@@ -10125,7 +10125,7 @@ Sub AddToMsgBox(Text$, ByRef theProgram As RPGCodeProgram)
             Call CanvasFill(cnvMsgBox, MWinBkg)
         Else
             pPic$ = projectPath$ & bmpPath$ & MWinPic$
-            If PakFileRunning Then
+            If pakFileRunning Then
                 f$ = PakLocate(bmpPath$ + MWinPic$)
                 Call CanvasLoadSizedPicture(cnvMsgBox, f$)
             Else
@@ -10196,7 +10196,7 @@ Sub AddToMsgBox(Text$, ByRef theProgram As RPGCodeProgram)
             Call CanvasFill(cnvMsgBox, MWinBkg)
         Else
             pPic$ = projectPath$ & bmpPath$ & MWinPic$
-            If PakFileRunning Then
+            If pakFileRunning Then
                 f$ = PakLocate(bmpPath$ + MWinPic$)
                 Call CanvasLoadSizedPicture(cnvMsgBox, f$)
             Else
@@ -10306,7 +10306,7 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim cnv As Long
         cnv = CreateCanvas(tilesX * 32, tilesY * 32)
         
-        If PakFileRunning Then
+        If pakFileRunning Then
             file$ = PakLocate(file$)
         End If
         
@@ -11465,7 +11465,7 @@ Public Function SwitchCase( _
                     End If
                 End If
                 
-                prg.programPos = runBlock(Text, BooleanToLong(run), prg)
+                prg.programPos = runBlock(Text, booleanToLong(run), prg)
                 SwitchCase = prg.programPos
       
         End Select

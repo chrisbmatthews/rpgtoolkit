@@ -22,7 +22,7 @@ Declare Function PLUGMenu Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal
 Declare Function PLUGFight Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal enemyCount As Long, ByVal skilllevel As Long, ByVal backgroundFile As String, ByVal canrun As Long) As Long
 Declare Function PLUGFightInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal sourceHPLost As Long, ByVal sourceSMPLost As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal strMessage As String, ByVal attackCode As Long) As Long
 Declare Function PLUGInputRequested Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal inputCode As Long) As Long
-Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal x As Long, ByVal Y As Long, ByVal button As Long, ByVal Shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
+Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal X As Long, ByVal Y As Long, ByVal button As Long, ByVal Shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
 
 Public Declare Function CreateProcessA Lib "kernel32" (ByVal _
    lpApplicationName As Long, ByVal lpCommandLine As String, ByVal _
@@ -215,10 +215,10 @@ Private Function getObjectFromFile(ByVal filename As String) As String
 
     On Error Resume Next
 
-    If isToolkit Then
+    #If isToolkit = 1 Then
         'First (try to) register the file
         Call ExecCmd("regsvr32 /s " & filename)
-    End If
+    #End If
 
     'Remove the path from the file
     filename = RemovePath(filename)

@@ -408,7 +408,6 @@ Function CanvasSetPixel(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long
     End If
 End Function
 
-
 Sub CanvasShow(ByVal canvasID As Long)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
@@ -428,13 +427,6 @@ Function CanvasTransBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, B
     If CanvasOccupied(canvasID) Then
         Dim cHdc As Long
         cHdc = CanvasOpenHDC(canvasID)
-        'CanvasTransBltInto = TransparentBlt(chdc, _
-                                        canvasDestX, canvasDestY, _
-                                        newWidth, newHeight, _
-                                        sourceHDC, _
-                                        sourceX, sourceY, _
-                                        sourceWidth, sourceHeight, _
-                                        crTranscolor)
         CanvasTransBltInto = GFXBitBltTransparent(cHdc, _
                                 canvasDestX, _
                                 canvasDestY, _

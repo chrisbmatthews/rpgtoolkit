@@ -4,14 +4,11 @@ Attribute VB_Name = "Commonboard"
 'Read LICENSE.txt for licensing info
 
 'Requires CommonBinaryIO.bas
-'requires CommonTileAnm.bas
+'Requires CommonTileAnm.bas
 
 Option Explicit
 
 'Gobals and routines for the board editor.
-
-
-'Board Editor
 
 'to store animated tile data for the board
 Public Type TKBoardAnimTile
@@ -20,12 +17,13 @@ Public Type TKBoardAnimTile
     Y As Long
     layer As Long
 End Type
+
 Private lastAnm As TKTileAnm    'last opened anm file
 Private lastAnmFile As String   'last opened anm file name
 
 ''''''''''''''''''''''board data'''''''''''''''''''''''''
 
-Type TKBoard
+Public Type TKBoard
     Bsizex As Integer            'board size x
     Bsizey As Integer            'board size y
     Bsizel As Integer            'board size layer
@@ -66,7 +64,6 @@ Type TKBoard
     enterPrg As String           'program to run on entrance''''''''''''''''''
     bgPrg As String              'background program
     
-    ' ! MODIFIED BY KSNiloc...
     itmName() As String        'filenames of items
     itmX() As Double          'x coord
     itmY() As Double          'y coord
@@ -86,7 +83,6 @@ Type TKBoard
     brdSavingYN As Integer       'can player save on board? 0-yes, 1-no
     isIsometric As Byte         'is it an isometric board? (0- no, 1-yes)
 
-    ' ADDED BY KSNiloc...
     Threads() As String
     
     'volatile (not in the file or anything)
@@ -96,7 +92,6 @@ Type TKBoard
     anmTileLUTIndices() As Long     'indices into LUT of animated tiles
     anmTileLUTInsertIdx As Long    'index of LUT table insertion
 End Type
-
 
 'document type for board editor
 Public Type boardDoc
@@ -141,24 +136,15 @@ End Type
 Public boardList() As boardDoc
 Public boardListOccupied() As Boolean
 
-
-'Global boardlist(activeboardindex).thedata As TKBoard
-
-
 Public currentBoard As String    'current board
 
-' ! MODIFIED BY KSNiloc...
-Global multilist() As String      'list of 10 multitask programs
-Global multiopen() As Integer        'are the multitask programs open? 0-n, 1-y
-
+Public multilist() As String      'list of 10 multitask programs
+Public multiopen() As Integer        'are the multitask programs open? 0-n, 1-y
 
 Public tilesX As Double, tilesY As Double
 
-
 Public Sub dimensionItemArrays()
-
-    ' ! ADDED BY KSNiloc...
-    
+   
     With boardList(activeBoardIndex).theData
     
         On Error GoTo needsDim
@@ -180,8 +166,11 @@ Public Sub dimensionItemArrays()
         ReDim Preserve .itemProgram(ub)
         ReDim Preserve multilist(ub)
         ReDim Preserve multiopen(ub)
-        ReDim Preserve itemMem(ub)
-        ReDim Preserve itmPos(ub)
+
+        #If isToolkit = 0 Then
+            ReDim Preserve itemMem(ub)
+            ReDim Preserve itmPos(ub)
+        #End If
 
     End With
 
@@ -217,7 +206,6 @@ Sub BoardAddTileAnmRef(ByRef theBoard As TKBoard, ByVal file As String, ByVal X 
     theBoard.anmTileInsertIdx = theBoard.anmTileInsertIdx + 1
 End Sub
 
-
 Sub BoardAddTileAnmLUTRef(ByRef theBoard As TKBoard, ByVal idx As Long)
     On Error Resume Next
     'add a reference to an animated tile to this board
@@ -235,8 +223,6 @@ Sub BoardAddTileAnmLUTRef(ByRef theBoard As TKBoard, ByVal idx As Long)
     
     theBoard.anmTileLUTInsertIdx = theBoard.anmTileLUTInsertIdx + 1
 End Sub
-
-
 
 Function BoardFindConsecutive(ByRef X As Integer, ByRef Y As Integer, ByRef l As Integer, ByRef theBoard As TKBoard) As Long
     'find the number of consecutive identical tiles there are
@@ -295,7 +281,6 @@ Function BoardFindConsecutive(ByRef X As Integer, ByRef Y As Integer, ByRef l As
     l = ll
     BoardFindConsecutive = count
 End Function
-
 
 Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLayer As Integer, ByRef theBoard As TKBoard)
     'resize the board-- retain the current tiles
@@ -357,7 +342,6 @@ Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLayer As 
     theBoard.Bsizey = sizey
     theBoard.Bsizel = sizeLayer
 End Sub
-
 
 Function BoardTileInLUT(ByVal filename As String, ByRef theBoard As TKBoard) As Long
     'return the index in the LUT where filename exists
@@ -444,9 +428,9 @@ vecterr:
     
 End Function
 
-Sub boardsize(ByVal fName As String, ByRef X As Long, ByRef Y As Long)
+Sub boardSize(ByVal fName As String, ByRef X As Long, ByRef Y As Long)
     'give board x, y size
-On Error Resume Next
+    On Error Resume Next
     Dim fileOpen As String, xx As Long, yy As Long, num As Long
     
     fileOpen$ = fName$
@@ -516,9 +500,7 @@ Sub BoardClear(ByRef theBoard As TKBoard)
     'clear a board's contents...
     On Error Resume Next
     ReDim theBoard.tileIndex(5)
-    
-    ' ! MODIFIED BY KSNiloc...
-    
+
     Dim X As Long, Y As Long, layer As Long, t As Long
     
     Call dimensionItemArrays
@@ -609,12 +591,9 @@ Sub BoardClear(ByRef theBoard As TKBoard)
     Next t
 End Sub
 
-
-
 Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
-'Update 7/3/04: Boards can now be opened with TK2-CE (by Compugeek)
 
-'Saves board currently in memory
+    'Saves board currently in memory
     On Error Resume Next
     Dim num As Long, t As Long, l As Long, X As Long, Y As Long
     
@@ -725,8 +704,7 @@ Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
         Call BinWriteString(num, theBoard.enterPrg)     'program to run on entrance''''''''''''''''''
         Call BinWriteString(num, theBoard.bgPrg)       'background program
 
-        ' ! MODIFIED BY KSNiloc...
-        dimensionItemArrays
+        Call dimensionItemArrays
         Call BinWriteInt(num, UBound(theBoard.itmName))   'number of items on the board...
         For t = 0 To UBound(theBoard.itmName)
             Call BinWriteString(num, theBoard.itmName(t))   'filenames of items
@@ -745,7 +723,6 @@ Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
         
         Call BinWriteByte(num, theBoard.isIsometric)
 
-        ' ! ADDED BY KSNiloc...
         For t = 0 To UBound(theBoard.Threads)
             If Not theBoard.Threads(t) = "" Then
                 BinWriteString num, theBoard.Threads(t)
@@ -754,7 +731,6 @@ Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
         
     Close #num
 End Sub
-
 
 Sub openboard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
     On Error GoTo loadbrderr
@@ -833,7 +809,11 @@ Sub openboard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                 End If
             End If
             
-            If Temp$ <> "" And PakFileRunning Then
+            #If isToolkit = 1 Then
+                Dim pakFileRunning As Boolean
+            #End If
+            
+            If Temp$ <> "" And pakFileRunning Then
                 'do check for pakfile system
                 'ex$ = GetExt(temp$)
                 'ex$ = Left$(ex$, 3)
@@ -960,7 +940,6 @@ exitTheFor:
 
         On Error Resume Next
 
-        ' ! MODIFIED BY KSNiloc...
         Dim numItm As Long
         numItm = BinReadInt(num)    'ubound on number of items...
         t = 0
@@ -1078,9 +1057,8 @@ ver2oldboard:
             theBoard.activationType(tt) = fread(num) 'activation type- 0-step on, 1- conditional (activation key)
         Next tt
         For tt = 0 To 10
-        
-            ' ! MODIFIED BY KSNiloc
-            dimensionItemArrays
+
+            Call dimensionItemArrays
         
             theBoard.itmName$(tt) = fread(num)   'filenames of items
             theBoard.itmX(tt) = fread(num)        'x coord
@@ -1125,10 +1103,6 @@ Ver1Board:
         MsgBox "Unable to open selected filename", "Board editor"
         Exit Sub
     End If
-'    'test if it's registered.
-'    Line Input #num, a$
-'    temp$ = a$
-'    If a$ = "REGD" Then Input #num, b$: temp$ = a$
 
     For Y = 1 To 11
         For X = 1 To 19
@@ -1136,8 +1110,7 @@ Ver1Board:
         Next X
     Next Y
     
-    Dim a As String
-    Input #num, a$                    ' DUMMY
+    Call fread(num)                    ' DUMMY
 
     For Y = 1 To 11
         For X = 1 To 19
@@ -1149,13 +1122,13 @@ Ver1Board:
         Next X
     Next Y
     
-    a$ = fread(num)                  ' DUMMY
+    Call fread(num)                  ' DUMMY
 
     theBoard.playerX = fread(num)             ' PULL IN PLAYER X POSITION (unsupported)
     theBoard.playerY = fread(num)             ' PULL IN PLAYER Y POSITION (unsuppt)
     
     theBoard.boardTitle$(1) = fread(num) ' PULL IN TITLE (filename)
-    a$ = fread(num)                  ' DUMMY
+    Call fread(num)                  ' DUMMY
 
     For ll = 1 To 4
         theBoard.dirLink$(ll) = fread(num)       ' PULL IN DIRECTION LINKS
@@ -1163,9 +1136,9 @@ Ver1Board:
 
     theBoard.brdColor = fread(num)              ' PULL IN BOARD COLOR
 
-    a$ = fread(num)                   ' dummy
+    Call fread(num)                   ' dummy
 
-    a$ = fread(num)             ' PULL IN PLAYER GRAPHIC (unsuppt)
+    Call fread(num)             ' PULL IN PLAYER GRAPHIC (unsuppt)
 
     Dim llll As Long
     For llll = 0 To 9
@@ -1174,15 +1147,13 @@ Ver1Board:
         theBoard.progY(llll) = fread(num)         ' PULL IN PROG Y POS (NEXT 30 ARE THESE 3)
         theBoard.progLayer(llll) = 1
     Next llll
-
     Dim fgtBrd As String
     fgtBrd$ = fread(num)             ' FIGHTING ON BOARD (Y/N)
     If UCase$(fgtBrd$) = "Y" Then theBoard.fightingYN = 1 Else theBoard.fightingYN = 0
     theBoard.boardskill = fread(num)            ' BOARD FIGHTING SKILL
     theBoard.boardBackground$ = fread(num)             ' BACKGROUND
     theBoard.brdConst(1) = fread(num)                ' BOARD CONSTANT
-
-    a$ = fread(num)                  'Space for clarity
+    Call fread(num)                  'Space for clarity
     theBoard.boardMusic$ = fread(num)             'Background Midi File
     theBoard.enterPrg$ = fread(num)           'Board entrance program
     theBoard.bgPrg$ = fread(num)              'Background program
@@ -1197,14 +1168,12 @@ errorsA = 1
 Resume Next
 End Sub
 
-
 Function BoardGetTile(ByVal X As Integer, ByVal Y As Integer, ByVal layer As Integer, ByRef theBoard As TKBoard) As String
     'get the board's tile filename at x, y, layer
     On Error Resume Next
     
     BoardGetTile = theBoard.tileIndex(theBoard.board(X, Y, layer))
 End Function
-
 
 Sub BoardInit(ByRef theBoard As TKBoard)
     'set initial array sizes...
@@ -1229,7 +1198,6 @@ Sub BoardSetSize(ByVal sizex As Integer, ByVal sizey As Integer, ByVal sizeLayer
     theBoard.Bsizey = sizey
     theBoard.Bsizel = sizeLayer
 End Sub
-
 
 Sub BoardSetTileRGB(ByVal X As Integer, ByVal Y As Integer, ByVal layer As Integer, ByVal filename As String, ByVal ttype As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef theBoard As TKBoard)
     'set a tile on the board at x, y, layer
@@ -1283,7 +1251,6 @@ Sub BoardSetTileRGB(ByVal X As Integer, ByVal Y As Integer, ByVal layer As Integ
     theBoard.ambientblue(X - 1, Y - 1, layer - 1) = b
 End Sub
 
-
 Sub BoardSetTile(ByVal X As Integer, ByVal Y As Integer, ByVal layer As Integer, ByVal filename As String, ByRef theBoard As TKBoard)
     'set a tile on the board at x, y, layer
     'with a specified tile type and r,g,b shade
@@ -1328,6 +1295,3 @@ Sub BoardSetTile(ByVal X As Integer, ByVal Y As Integer, ByVal layer As Integer,
         End If
     End If
 End Sub
-
-
-

@@ -175,7 +175,7 @@ Public Sub upgradeBattleSystem()
                 Call Kill(fullPath)
                 Call FileCopy(newDLL, fullPath)
 
-                If Not isToolkit Then
+                #If isToolkit = 0 Then
 
                     'It's trans3 and the DLL is supposed to already be registered
                     'but it's not-- make it happen
@@ -184,7 +184,7 @@ Public Sub upgradeBattleSystem()
                     'Now setup the plugin for usage
                     Call setupVBPlugin(fullPath)
 
-                End If
+                #End If
 
             End If
 

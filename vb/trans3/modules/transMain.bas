@@ -4,20 +4,21 @@ Attribute VB_Name = "transMain"
 'Read LICENSE.txt for licensing info
 
 'mainForm entry point for trans3
+
 Option Explicit
 
 Public gGameState As Long
 Public gPrevGameState As Long
 
 'Game states...
-Public Const GS_IDLE = 0    'just re-renders the screen
-Public Const GS_QUIT = 1    'shutdown sequence
+Public Const GS_IDLE = 0        'just re-renders the screen
+Public Const GS_QUIT = 1        'shutdown sequence
 Public Const GS_MOVEMENT = 2    'movement is occurring (players or items)
 Public Const GS_DONEMOVE = 3    'movement is finished
-Public Const GS_PAUSE = 4   'pause game
+Public Const GS_PAUSE = 4       'pause game
 
-Private framesDrawn As Long
-Public movementCounter As Long 'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
+Private framesDrawn As Long     'frames drawn
+Public movementCounter As Long  'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
 Public loaded As Long           'was the game loaded from start menu? 0-no, 1-yes
 Public runningAsEXE As Boolean  'are we running as an exe file?
 Public gShuttingDown As Boolean 'Has the shutdown process been initiated?
@@ -25,8 +26,7 @@ Public gShuttingDown As Boolean 'Has the shutdown process been initiated?
 Public Sub closeSystems()
 
     On Error Resume Next
-   
-    'This flag added by cbm for 3.0.4
+
     gShuttingDown = True
     
     Call stopMedia
@@ -41,125 +41,110 @@ Public Sub closeSystems()
     Call killMedia
     Call DeletePakTemp
 
-    Kill TempDir & "actkrt3.dll"
-    Kill TempDir & "freeImage.dll"
-    Kill TempDir & "temp.tpk"
+    If runningAsEXE Then
+        Call Kill(TempDir & "actkrt3.dll")
+        Call Kill(TempDir & "freeImage.dll")
+        Call Kill(TempDir & "temp.tpk")
+    End If
     
 End Sub
 
 Public Function getMainFilename() As String
     'prompt user for a main file, or get one off the command line
     On Error Resume Next
+
     Dim toRet As String
-    Dim exeFile As String
     Dim antiPath As String
     
-    'before we do *anything*, let's see if we are a standalone exe file!
-    exeFile = currentDir & "\" & App.EXEName & ".exe"
-    'MsgBox exefile$
-    If IsAPakFile(exeFile$) Then
-        Call setupPakSystem(exeFile$)
-        'load 'mainForm' from the pakfile...
-        'call tracestring("Loading mainForm.gam")
-
-        ' KSNiloc says: no gamPath$ required
-        toRet = "main.gam"
-        'toRet = gamPath$ + "main.gam"
-        
-        runningAsEXE = True
-        getMainFilename = toRet
-        Exit Function
-    Else
-        'do nothing--proceed as usual!
-    End If
-
     Dim ex As String
-    If Command$ <> "" Then
+    If Command <> "" Then
+
         Dim args() As String
-
         args() = Split(Command, " ", , vbTextCompare)
-        
-        If UBound(args) = 0 Then
-            'run game
-            'Call traceString("Loading " + gamPath$ + Command$)
 
-            ' ! MODIFIED BY KSNiloc...
+        If UBound(args) = 0 Then
+
             If LCase(GetExt(Command)) = "tpk" Then
-                setupPakSystem TempDir & Command
+
+                Call setupPakSystem(TempDir & Command)
+                Call Kill(PakFileMounted)
                 ChDir (currentDir)
                 toRet = "main.gam"
                 projectPath = ""
                 getMainFilename = toRet
-                Kill PakFileMounted
                 errorBranch = "Resume Next"
-                savPath = GetSetting("TK3 EXE HOST", "Settings", _
-                    "Save Path", "Saved")
+                savPath = GetSetting("TK3 EXE HOST", "Settings", "Save Path", "")
+                Call SaveSetting("TK3 EXE HOST", "Settings", "Save Path", "")
+                If savPath = "" Then
+                    savPath = "Saved\"
+                Else
+                    runningAsEXE = True
+                End If
 
             Else
-            
-                toRet = gamPath$ + Command$
+
+                toRet = gamPath & Command
                 getMainFilename = toRet
-                
+
             End If
-            
-            Exit Function
 
         ElseIf UBound(args) = 1 Then
+
             'run program
-            mainfile = gamPath$ + args(0)
+            mainfile = gamPath & args(0)
             Call openMain(mainfile, mainMem)
             Call openSystems(True)
-
-            ' ! MODIFIED BY KSNiloc...
-            runProgram App.path & "\" & projectPath & prgPath & args(1)
+            Call runProgram(projectPath & prgPath & args(1))
             Call closeSystems
             gGameState = GS_QUIT
-            End
-            Exit Function
+
         End If
-    End If
-    Dim aa As Long
-    If fileExists(gamPath$ + "main.gam") Then
-        'mainForm.gam exists.
-        toRet = gamPath$ + "main.gam"
-        getMainFilename = toRet
-        Exit Function
-    End If
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gamPath$
-    dlg.strSelectedFile = ""
-    dlg.strTitle = "Open Main File"
-    dlg.strDefaultExt = "gam"
-    dlg.strFileTypes = "Supported Files|*.gam;*.tpk|RPG Toolkit Main File (*.gam)|*.gam|RPG Toolkit PakFile (*.tpk)|*.tpk|All files(*.*)|*.*"
-    If Not (OpenFileDialog(dlg)) Then 'user pressed cancel
-        'uncomment!!!!!!!!!!!!!!!
-        End
-        getMainFilename = toRet
-        Exit Function
-    End If
-    loadedMainFile$ = dlg.strSelectedFile
-    antiPath$ = dlg.strSelectedFileNoPath
-    'currentdir$ = CurDir$
-    ChDir (currentDir$)
-    If loadedMainFile$ = "" Then Exit Function: End
-    
-    Dim whichType As String
-    whichType$ = GetExt(loadedMainFile$)
-    If UCase$(whichType$) = "TPK" Then      'Yipes! we've selected a pakfile!
-        'setup the pakfile system
-        'call tracestring("Loading " + loadedMainFile$)
-        Call setupPakSystem(loadedMainFile$)
-        'toRet = gamPath$ + "main.gam"
-        toRet = "main.gam"
-        'load 'mainForm' from the pakfile...
-        projectPath$ = ""
+
     Else
-        'call tracestring("Loading " + loadedMainFile$)
-        toRet = loadedMainFile$
+
+        If fileExists(gamPath & "main.gam") Then
+
+            'mainForm.gam exists.
+            toRet = gamPath & "main.gam"
+            getMainFilename = toRet
+
+        Else
+
+            Call ChDir(currentDir)
+
+            Dim dlg As FileDialogInfo
+            With dlg
+                .strDefaultFolder = gamPath$
+                .strSelectedFile = ""
+                .strTitle = "Open Main File"
+                .strDefaultExt = "gam"
+                .strFileTypes = "Supported Files|*.gam;*.tpk|RPG Toolkit Main File (*.gam)|*.gam|RPG Toolkit PakFile (*.tpk)|*.tpk|All files(*.*)|*.*"
+                If Not (OpenFileDialog(dlg)) Then 'user pressed cancel
+                    Exit Function
+                End If
+                loadedMainFile = .strSelectedFile
+                antiPath = .strSelectedFileNoPath
+            End With
+
+            Call ChDir(currentDir)
+
+            Dim whichType As String
+            whichType = GetExt(loadedMainFile)
+
+            If UCase(whichType) = "TPK" Then
+                Call setupPakSystem(loadedMainFile)
+                toRet = "main.gam"
+                projectPath = ""
+            Else
+                toRet = loadedMainFile
+            End If
+
+            getMainFilename = toRet
+
+        End If
+
     End If
-    
-    getMainFilename = toRet
+
 End Function
 
 Private Sub initgame()
@@ -172,11 +157,8 @@ Private Sub initgame()
     menuColor = RGB(0, 0, 0)
     MWinSize = 90
     mainMem.mainScreenType = 2
-    filename(2) = ""
-    projectPath = ""
     savPath = "Saved\"
-    MkDir Mid(savPath$, 1, Len(savPath) - 1)
-    'init data...
+    Call MkDir(Mid(savPath, 1, Len(savPath) - 1))
     activeBoardIndex = VectBoardNewSlot()
     Call InitLocalizeSystem
 End Sub
@@ -187,60 +169,44 @@ Sub initDefaults()
     initTime = Timer()
     Call StartTracing("trace.txt")
     If Not (InitRuntime()) Then
-        MsgBox "Could not initialize actkrt3.dll.  Do you have actkrt3.dll and freeimage.dll in the working directory?"
+        Call MsgBox("Could not initialize actkrt3.dll.  Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
         End
     End If
     Call initgame
 End Sub
 
 Public Sub Main()
+
     On Error Resume Next
-    'main entry point for trans
-       
-    Dim mainfile As String
+
     Call initDefaults
-    
+
+    Dim mainfile As String
     mainfile = getMainFilename()
+
     If mainfile <> "" Then
+
         Call openMain(mainfile, mainMem)
-        If runningAsEXE Or PakFileRunning Then
-            projectPath$ = ""
+
+        If runningAsEXE Or pakFileRunning Then
+            projectPath = ""
         End If
         
+        'Startup
         Call openSystems
-        'renderNow
-        
-        'run start program...
-        'Dim oldMusic As String
-        'oldMusic = boardList(activeBoardIndex).theData.boardMusic
-        'Call runProgram(projectPath$ + prgPath$ + mainMem.startupPrg)
-        'boardList(activeBoardIndex).theData.boardMusic = oldMusic
-        
-        Dim tt As Long
-        tt = Timer
-        
-        gGameState = GS_IDLE
+
+        'Run game
         Call mainLoop
-        
-        tt = Timer - tt
-        
+
+        'Shut down
         Call closeSystems
-        'MsgBox str$(framesDrawn)
-        'MsgBox str$(framesDrawn / tt)
-        
-        endform.Show 1
-        End
+        Call endform.Show(vbModal)
+
     End If
-    
-    'End
+
 End Sub
 
 Public Sub mainLoop()
-
-    ' ! MODIFIED BY KSNiloc...
-
-    'EDITED: [Isometrics - Delano 28/04/04]
-    'Code added to fix diagonal "jumping". No alterations.
 
     'main execution loop
         
@@ -298,14 +264,14 @@ Public Sub mainLoop()
                     pendingItemMovement(cnt).direction = MV_IDLE
                     
                     'Isometric fix:
-                    pendingItemMovement(cnt).xOrig = itmPos(cnt).x
+                    pendingItemMovement(cnt).xOrig = itmPos(cnt).X
                     pendingItemMovement(cnt).yOrig = itmPos(cnt).Y
                 Next cnt
                 
                 'The pending movements have to be cleared *before* any programs are run,
                 'whereas the movement direction can only be cleared afterwards.
                 For cnt = 0 To UBound(pendingPlayerMovement)
-                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).x
+                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).X
                     pendingPlayerMovement(cnt).yOrig = ppos(cnt).Y
                 Next cnt
 
@@ -321,7 +287,7 @@ Public Sub mainLoop()
 
                     ' !MODIFIED BY KSNiloc...
                     tempPos.l = Round(pendingPlayerMovement(selectedPlayer).lTarg)
-                    tempPos.x = Round(pendingPlayerMovement(selectedPlayer).xTarg)
+                    tempPos.X = Round(pendingPlayerMovement(selectedPlayer).xTarg)
                     tempPos.Y = Round(pendingPlayerMovement(selectedPlayer).yTarg)
                                    
                     pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
@@ -388,7 +354,6 @@ Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call BeginPlugins
     Call startMenuPlugin
     Call startFightPlugin
-    Call AnimationInit
     Call initMedia
     
     Call setupMain(testingPRG)
@@ -481,7 +446,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         launchBoardThreads boardList(activeBoardIndex).theData
 
         'Setup player position.
-        ppos(0).x = boardList(activeBoardIndex).theData.playerX
+        ppos(0).X = boardList(activeBoardIndex).theData.playerX
         ppos(0).Y = boardList(activeBoardIndex).theData.playerY
         ppos(0).l = boardList(activeBoardIndex).theData.playerLayer
         ppos(0).stance = "WALK_S"
