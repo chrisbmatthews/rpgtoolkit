@@ -4460,14 +4460,11 @@ Sub NewPlyr(Text$, ByRef theProgram As RPGCodeProgram)
                 anm.animFrame(0) = tbmName$
                 anmName$ = replace(RemovePath(file$), ".", "_") + "_newplyr" + ".anm"
                 Call saveAnimation(projectPath & miscPath & anmName$, anm)
-                playerMem(selectedPlayer).gfx(PLYR_WALK_N) = anmName$
-                playerMem(selectedPlayer).gfx(PLYR_WALK_S) = anmName$
-                playerMem(selectedPlayer).gfx(PLYR_WALK_E) = anmName$
-                playerMem(selectedPlayer).gfx(PLYR_WALK_W) = anmName$
-                playerMem(selectedPlayer).gfx(PLYR_WALK_NE) = anmName$
-                playerMem(selectedPlayer).gfx(PLYR_WALK_NW) = anmName$
-                playerMem(selectedPlayer).gfx(PLYR_WALK_SE) = anmName$
-                playerMem(selectedPlayer).gfx(PLYR_WALK_SW) = anmName$
+                
+                Dim idx As Long
+                For idx = 0 To 7
+                    playerMem(selectedPlayer).gfx(idx) = anmName$
+                Next idx
             
             Case "TEM":
                 'Get graphics from TEM file

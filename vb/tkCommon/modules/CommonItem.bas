@@ -65,7 +65,8 @@ Public Type TKItem
                                 'STAND_ graphics
     speed As Double             'Speed of this item
     #If isToolkit = 0 Then
-        bIsActive As Boolean    'is item active?
+        bIsActive As Boolean     'is item active?
+        hasIdleGfx(7) As Boolean 'do we have idling graphics?
     #End If
 End Type
 
@@ -88,6 +89,26 @@ Public Function canItemEquip(ByVal file As String) As Boolean
         canItemEquip = True
     End If
 End Function
+
+'=========================================================================
+' Check if we have idling graphics
+'=========================================================================
+#If (isToolkit = 0) Then
+Public Function itemHasIdlingGfx(ByRef item As TKItem, ByVal theGfx As String) As Boolean
+    With item
+        Select Case UCase(theGfx)
+            Case "STAND_N": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_N)
+            Case "STAND_S": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_S)
+            Case "STAND_W": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_W)
+            Case "STAND_E": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_E)
+            Case "STAND_NW": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_NW)
+            Case "STAND_NE": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_NE)
+            Case "STAND_SW": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_SW)
+            Case "STAND_SE": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_SE)
+        End Select
+    End With
+End Function
+#End If
 
 '=========================================================================
 ' Get an item stance
@@ -290,6 +311,9 @@ Public Sub ItemClear(ByRef theItem As TKItem)
         For t = 0 To UBound(.gfx)
             .gfx(t) = ""
         Next t
+        For t = 0 To UBound(.standingGfx)
+            .standingGfx(t) = ""
+        Next t
         For t = 0 To UBound(.customGfx)
             .customGfx(t) = ""
         Next t
@@ -434,6 +458,15 @@ Public Function openItem(ByVal file As String) As TKItem
                 theItem.speed = BinReadDouble(num)
                 theItem.idleTime = BinReadDouble(num)
             End If
+            #If (isToolkit = 0) Then
+                For t = 0 To UBound(theItem.standingGfx)
+                    If (theItem.standingGfx(t) <> "") Then
+                        theItem.hasIdleGfx(t) = True
+                    Else
+                        theItem.hasIdleGfx(t) = False
+                    End If
+                Next t
+            #End If
             Dim cnt As Long
             cnt = BinReadLong(num)
             For t = 0 To cnt

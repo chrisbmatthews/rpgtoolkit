@@ -1068,17 +1068,7 @@ End Sub
 ' Determine if the board needs to be rendered
 '=========================================================================
 Private Function renderBoard() As Boolean
-
-    '=========================================================================
-    'EDITED [KSNiloc] [September 2, 2004]
-    '------------------------------------
-    ' + Remove unused code
-    ' + Now correctly returns if board needs rendering (previously always
-    '   returned true!!!)
-    '=========================================================================
-    
-    'Called by renderNow only.
-    
+   
     On Error Resume Next
     
     'check if scroll cache already contains the area we want...
@@ -1147,10 +1137,22 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
 
     'Check if we need to render the player sprites
     For t = 0 To UBound(cnvPlayer)
-        If showPlayer(t) Then
-            Call isPlayerIdle(t)
-            If playerShouldDrawFrame(t) Then
-                If renderPlayer(cnvPlayer(t), playerMem(t), pPos(t).stance, pPos(t).frame, t) Then
+        If (showPlayer(t)) Then
+            Call isPlayerIdle(t)    'We don't really care if the player is idle,
+                                    'but call into this function to update the
+                                    'time stamps and switch to idling graphics
+                                    'if required.
+            If (playerShouldDrawFrame(t)) Then  'Check if we should draw a
+                                                'frame. Really a frame will
+                                                'be drawn either way, but if
+                                                'this comes up false then
+                                                'the rendering won't be
+                                                'updated and we won't see the
+                                                'next frame. Acts as a way to
+                                                'control the speed of players.
+                If (renderPlayer(cnvPlayer(t), playerMem(t), pPos(t).stance, pPos(t).frame, t)) Then
+                    'If we get here, something has changed since the last
+                    'render and we have to re-render the player sprites.
                     newSprites = True
                 End If
             End If
@@ -1159,10 +1161,22 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
 
     'Check if we need to render the item sprites
     For t = 0 To maxItem
-        If itemMem(t).bIsActive Then
-            Call isItemIdle(t)
-            If itemShouldDrawFrame(t) Then
-                If renderItem(cnvSprites(t), itemMem(t), itmPos(t), t) Then
+        If (itemMem(t).bIsActive) Then
+            Call isItemIdle(t)      'We don't really care if the item is idle,
+                                    'but call into this function to update the
+                                    'time stamps and switch to idling graphics
+                                    'if required.
+            If (itemShouldDrawFrame(t)) Then    'Check if we should draw a
+                                                'frame. Really a frame will
+                                                'be drawn either way, but if
+                                                'this comes up false then
+                                                'the rendering won't be
+                                                'updated and we won't see the
+                                                'next frame. Acts as a way to
+                                                'control the speed of items.
+                If (renderItem(cnvSprites(t), itemMem(t), itmPos(t), t)) Then
+                    'If we get here, something has changed since the last
+                    'render and we have to re-render the item sprites.
                     newItem = True
                 End If
             End If
@@ -1174,10 +1188,10 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
     newTileAnm = renderAnimatedTiles(cnvScrollCache, cnvScrollCacheMask)
 
     'If *anything* is new, render it all
-    If newBoard Or newSprites Or newTileAnm Or newItem Or newMultiAnim Or renderRenderNowCanvas Or forceRender Then
+    If (newBoard Or newSprites Or newTileAnm Or newItem Or newMultiAnim Or renderRenderNowCanvas Or forceRender) Then
 
         'Fill the target with the board's color
-        If cnvTarget = -1 Then
+        If (cnvTarget = -1) Then
             'To the screen
             Call DXClearScreen(boardList(activeBoardIndex).theData.brdColor)
         Else
@@ -1198,17 +1212,17 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
         Call DXDrawAnimations(cnvTarget)
 
         'Render the rpgcode renderNow canvas
-        If renderRenderNowCanvas Then
-            If cnvTarget = -1 Then
+        If (renderRenderNowCanvas) Then
+            If (cnvTarget = -1) Then
                 'To the screen
-                If Not renderRenderNowCanvasTranslucent Then
+                If (Not renderRenderNowCanvasTranslucent) Then
                     Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, 0)
                 Else
                     Call DXDrawCanvasTranslucent(cnvRenderNow, 0, 0)
                 End If
             Else
                 'To a canvas
-                If Not renderRenderNowCanvasTranslucent Then
+                If (Not renderRenderNowCanvasTranslucent) Then
                     Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, 0)
                 Else
                     Call Canvas2CanvasBltTranslucent(cnvRenderNow, cnvTarget, 0, 0)
@@ -1216,8 +1230,9 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
             End If
         End If
 
-        'Refresh the screen if we're rendering to it
-        If cnvTarget = -1 Then
+        If (cnvTarget = -1) Then
+            'Call into to DirectX and have it flip the back buffer (what we've
+            'been rendering to) onto the screen so it can be seen.
             Call DXRefresh
         End If
 
@@ -1243,8 +1258,10 @@ Private Function isItemIdle(ByVal num As Long) As Boolean
             'Skip the second if block
             skipSecondCheck = True
             If ((Timer() - timeStamps(num) >= itemMem(num).speed)) Then
-                'Increment the frame
-                .frame = .frame + 1
+                If (itemHasIdlingGfx(itemMem(num), .stance)) Then
+                    'Increment the frame
+                    .frame = .frame + 1
+                End If
                 'Flag we're idle
                 isItemIdle = True
             End If
@@ -1292,8 +1309,10 @@ Private Function isPlayerIdle(ByVal num As Long) As Boolean
             'Skip the second if block
             skipSecondCheck = True
             If ((Timer() - timeStamps(num) >= playerMem(num).speed)) Then
-                'Increment the frame
-                .frame = .frame + 1
+                If (playerHasIdlingGfx(playerMem(num), .stance)) Then
+                    'Increment the frame
+                    .frame = .frame + 1
+                End If
                 'Flag we're idle
                 isPlayerIdle = True
             End If
@@ -1320,6 +1339,63 @@ Private Function isPlayerIdle(ByVal num As Long) As Boolean
 
     If (isPlayerIdle) Then
         'Player was idle, update the time stamp
+        timeStamps(num) = Timer()
+    End If
+
+End Function
+
+'=========================================================================
+' Should we draw the next player frame?
+'=========================================================================
+Public Function playerShouldDrawFrame(ByVal num As Long) As Boolean
+
+    Static timeStamps(4) As Double      'Time stamps of movement
+    Static lastDir(4) As String         'Last direction
+
+    Dim forceIncrement As Boolean       'Force the incrementation?
+
+    If (lastDir(num) <> pPos(num).stance) Then
+        'We've changed directions!
+        forceIncrement = True
+    End If
+
+    'Grab current direction
+    lastDir(num) = pPos(num).stance
+
+    If ((Timer() - timeStamps(num) >= playerMem(num).speed) Or (forceIncrement)) Then
+        'Draw next frame
+        playerShouldDrawFrame = True
+        'Update time stamp
+        timeStamps(num) = Timer()
+    End If
+
+End Function
+
+'=========================================================================
+' Should we draw the next item frame?
+'=========================================================================
+Public Function itemShouldDrawFrame(ByVal num As Long) As Boolean
+
+    Static timeStamps() As Double       'Time stamps of movement
+    ReDim Preserve timeStamps(maxItem)  'Make one spot for each item
+
+    Static lastDir() As String          'Last direction
+    ReDim Preserve lastDir(maxItem)     'Make one spot for each item
+
+    Dim forceIncrement As Boolean       'Force the incrementation?
+
+    If (lastDir(num) <> itmPos(num).stance) Then
+        'We've changed directions!
+        forceIncrement = True
+    End If
+
+    'Grab current direction
+    lastDir(num) = itmPos(num).stance
+
+    If ((Timer() - timeStamps(num) >= itemMem(num).speed) Or (forceIncrement)) Then
+        'Draw next frame
+        itemShouldDrawFrame = True
+        'Update time stamp
         timeStamps(num) = Timer()
     End If
 

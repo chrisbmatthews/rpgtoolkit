@@ -1655,63 +1655,6 @@ Private Function obtainTileType( _
     
 End Function
 
-'=========================================================================
-' Should we draw the next player frame?
-'=========================================================================
-Public Function playerShouldDrawFrame(ByVal num As Long) As Boolean
-
-    Static timeStamps(4) As Double      'Time stamps of movement
-    Static lastDir(4) As String         'Last direction
-
-    Dim forceIncrement As Boolean       'Force the incrementation?
-
-    If (lastDir(num) <> pPos(num).stance) Then
-        'We've changed directions!
-        forceIncrement = True
-    End If
-
-    'Grab current direction
-    lastDir(num) = pPos(num).stance
-
-    If ((Timer() - timeStamps(num) >= playerMem(num).speed) Or (forceIncrement)) Then
-        'Draw next frame
-        playerShouldDrawFrame = True
-        'Update time stamp
-        timeStamps(num) = Timer()
-    End If
-
-End Function
-
-'=========================================================================
-' Should we draw the next item frame?
-'=========================================================================
-Public Function itemShouldDrawFrame(ByVal num As Long) As Boolean
-
-    Static timeStamps() As Double       'Time stamps of movement
-    ReDim Preserve timeStamps(maxItem)  'Make one spot for each item
-
-    Static lastDir() As String          'Last direction
-    ReDim Preserve lastDir(maxItem)     'Make one spot for each character
-
-    Dim forceIncrement As Boolean       'Force the incrementation?
-
-    If (lastDir(num) <> itmPos(num).stance) Then
-        'We've changed directions!
-        forceIncrement = True
-    End If
-
-    'Grab current direction
-    lastDir(num) = itmPos(num).stance
-
-    If ((Timer() - timeStamps(num) >= itemMem(num).speed) Or (forceIncrement)) Then
-        'Draw next frame
-        itemShouldDrawFrame = True
-        'Update time stamp
-        timeStamps(num) = Timer()
-    End If
-
-End Function
-
 Public Sub moveItems()
 
     On Error Resume Next

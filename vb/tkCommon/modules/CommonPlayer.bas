@@ -5,97 +5,107 @@ Attribute VB_Name = "CommonPlayer"
 'Read LICENSE.txt for licensing info
 '=========================================================================
 
+'=========================================================================
+' RPGToolkit character file format (*.tem)
+'=========================================================================
+
 Option Explicit
 
-'Indices of char gfx
-Public Const PLYR_WALK_S = 0
-Public Const PLYR_WALK_N = 1
-Public Const PLYR_WALK_E = 2
-Public Const PLYR_WALK_W = 3
-Public Const PLYR_WALK_NW = 4
-Public Const PLYR_WALK_NE = 5
-Public Const PLYR_WALK_SW = 6
-Public Const PLYR_WALK_SE = 7
-Public Const PLYR_FIGHT = 8
-Public Const PLYR_DEFEND = 9
-Public Const PLYR_SPC = 10
-Public Const PLYR_DIE = 11
-Public Const PLYR_REST = 12
+'=========================================================================
+' Indices of built in GFX
+'=========================================================================
+Private Const PLYR_WALK_S = 0
+Private Const PLYR_WALK_N = 1
+Private Const PLYR_WALK_E = 2
+Private Const PLYR_WALK_W = 3
+Private Const PLYR_WALK_NW = 4
+Private Const PLYR_WALK_NE = 5
+Private Const PLYR_WALK_SW = 6
+Private Const PLYR_WALK_SE = 7
+Private Const PLYR_FIGHT = 8
+Private Const PLYR_DEFEND = 9
+Private Const PLYR_SPC = 10
+Private Const PLYR_DIE = 11
+Private Const PLYR_REST = 12
 
+'=========================================================================
+' An RPGToolkit player
+'=========================================================================
+Public Type TKPlayer
+    charname As String              'Character name
+    experienceVar As String         'Experience variable
+    defenseVar As String            'DP variable
+    fightVar As String              'FP variable
+    healthVar As String             'HP variable
+    maxHealthVar As String          'Max HP var
+    nameVar As String               'Character name variable
+    smVar As String                 'Special Move power variable
+    smMaxVar As String              'Special Move maximum variable.
+    leVar As String                 'Level variable
+    initExperience As Long          'Initial Experience Level
+    initHealth As Long              'Initial health level
+    initMaxHealth As Long           'Initial maximum health level
+    initDefense As Long             'Initial DP
+    initFight As Long               'Initial FP
+    initSm As Long                  'Initial SM power
+    initSmMax As Long               'Initial Max SM power.
+    initLevel As Long               'Initial level
+    profilePic As String            'Profile picture
+    smlist(200) As String           'Special Move list (200 in total!)
+    spcMinExp(200) As Long          'Minimum experience for each move
+    spcMinLevel(200) As Long        'Min level for each move
+    spcVar(200) As String           'Conditional variable for each special move
+    spcEquals(200) As String        'Condition of variable for each special move.
+    specialMoveName As String       'Name of special move
+    smYN As Byte                    'Does he do special moves? 0-Y, 1-N
+    accessoryName(10) As String     'Names of 10 accessories.
+    armorType(6) As Byte            'Is ARMOURTYPE used (0-N,1-Y).  Armour types are:
+                                    '1-head,2-neck,3-lh,4-rh,5-body,6-legs
+    levelType As Long               'Initial Level progression
+    experienceIncrease As Integer   'Experience increase Factor
+    maxLevel As Long                'Maximum level.
+    levelHp As Integer              'HP incrase by % when level increaes
+    levelDp As Integer              'DP incrase by % when level increaes
+    levelFp As Integer              'FP incrase by % when level increaes
+    levelSm As Integer              'SMP incrase by % when level increaes
+    charLevelUpRPGCode As String    'Rpgcode program to run on level up
+    charLevelUpType As Byte         'Level up type 0- exponential, 1-linear
+    charSizeType As Byte            'Size type: 0- 32x32, 1 - 64x32
+    gfx(13) As String               'Filenames of standard animations for graphics
+    customGfx() As String           'Customized animations
+    customGfxNames() As String      'Customized animations (handles)
+    standingGfx(7) As String        'Filenames of the standing animations/graphics
+    idleTime As Double              'Seconds to wait proir to switching to
+                                    'STAND_ graphics
+    speed As Double                 'Seconds between each frame increase
 
-Type TKPlayer
-    charname As String            'Charactername
-    experienceVar As String       'Experience variable
-    defenseVar As String          'DP variable
-    fightVar As String            'FP variable
-    healthVar As String           'HP variable
-    maxHealthVar As String        'Max HP var
-    nameVar As String             'Character name variable
-    smVar As String               'Special Move power variable
-    smMaxVar As String            'Sp'l Move maximum variable.
-    leVar As String               'Level variable
-    initExperience As Long        'Initial Experience Level
-    initHealth As Long            'Initial health level
-    initMaxHealth As Long         'Initial maximum health level
-    initDefense As Long           'Initial DP
-    initFight As Long             'Initial FP
-    initSm As Long                'Initial SM power
-    initSmMax As Long             'Initial Max SM power.
-    initLevel As Long             'Initial level
-    profilePic As String          'Profilepicture
-    smlist(200) As String         'Special Move list (200 in total!)
-    spcMinExp(200) As Long        'Minimum experience for each move
-    spcMinLevel(200) As Long      'Min level for each move
-    spcVar(200) As String         'Conditional variable for each special move
-    spcEquals(200) As String      'Condition of variable for each special move.
-    specialMoveName As String     'Name of special move
-    smYN As Byte                  'Does he do special moves? 0-Y, 1-N
-    accessoryName(10) As String   'Names of 10 accessories.
-    armorType(6) As Byte          'Is ARMOURTYPE used (0-N,1-Y).  Armour types are:
-                                  '1-head,2-neck,3-lh,4-rh,5-body,6-legs
-    levelType As Long             'Initial Level progression
-    experienceIncrease As Integer 'Experience increase Factor
+    #If (isToolkit = 0) Then        '--Trans3 only
+        status(10) As FighterStatus '  status effects applied to player
+        nextLevel As Integer        '  exp value at which level up occurs
+        levelProgression As Integer '  exp required until level up
+        levelStarts() As Double     '  exp values at which all levels start
+        hasIdleGfx(7) As Boolean    '  do we have idling graphics?
+    #End If
 
-    maxLevel As Long              'Maximum level.
-    levelHp As Integer            'HP incrase by % when level increaes
-    levelDp As Integer            'DP incrase by % when level increaes
-    levelFp As Integer            'FP incrase by % when level increaes
-    levelSm As Integer            'SMP incrase by % when level increaes
-    charLevelUpRPGCode As String  'Rpgcode program to run on level up
-    charLevelUpType As Byte       'Level up type 0- exponential, 1-linear
-    charSizeType As Byte          'Size type: 0- 32x32, 1 - 64x32
-    
-    gfx(13) As String             'Filenames of standard animations for graphics
-    customGfx() As String         'Customized animations
-    customGfxNames() As String    'Customized animations (handles)
-    standingGfx(7) As String      'Filenames of the standing animations/graphics
-
-    idleTime As Double            'Seconds to wait proir to switching to
-                                  'STAND_ graphics
-
-    speed As Double               'Seconds between each frame increase
-
-    'volatile -- used by trans only
-    status(10) As FighterStatus
-    nextLevel As Integer
-    levelProgression As Integer
-    levelStarts() As Double
 End Type
 
-
-Type playerDoc
-    charFile As String            'Filename
-    charNeedUpdate As Boolean
-    specialMoveNumber As Long    'which spc move is selected?
-    charLayTile As Boolean   'about to lay a tile?
-    
-    theData As TKPlayer
+'=========================================================================
+' An RPGToolkit player document
+'=========================================================================
+Public Type playerDoc
+    charFile As String              'Filename
+    theData As TKPlayer             'Main data
+    #If (isToolkit = 1) Then        '--Toolkit3 only
+        charNeedUpdate As Boolean   '  Changes made?
+        specialMoveNumber As Long   '  which spc move is selected?
+    #End If
 End Type
 
-Sub playerAddCustomGfx(ByRef thePlayer As TKPlayer, ByVal handle As String, ByVal anim As String)
-    'add a custom animation to the player
+'=========================================================================
+' Add a custom graphic to a player
+'=========================================================================
+Public Sub playerAddCustomGfx(ByRef thePlayer As TKPlayer, ByVal handle As String, ByVal anim As String)
     On Error Resume Next
-    
     'search for empty slot...
     Dim t As Long, tt As Long
     For t = 0 To UBound(thePlayer.customGfxNames)
@@ -105,20 +115,39 @@ Sub playerAddCustomGfx(ByRef thePlayer As TKPlayer, ByVal handle As String, ByVa
             Exit Sub
         End If
     Next t
-    
     'didn't find an empty slot...
     'resize the arrays...
     tt = UBound(thePlayer.customGfxNames)
     ReDim Preserve thePlayer.customGfx(tt * 2)
     ReDim Preserve thePlayer.customGfxNames(tt * 2)
-    
     thePlayer.customGfx(tt + 1) = anim
     thePlayer.customGfxNames(tt + 1) = handle
 End Sub
 
+#If (isToolkit = 0) Then
 
-Sub PlayerClearAllStatus(ByRef thePlayer As TKPlayer)
-    'clear all status effect
+'=========================================================================
+' Check if we have idling graphics
+'=========================================================================
+Public Function playerHasIdlingGfx(ByRef player As TKPlayer, ByVal theGfx As String) As Boolean
+    With player
+        Select Case UCase(theGfx)
+            Case "STAND_N": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_N)
+            Case "STAND_S": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_S)
+            Case "STAND_W": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_W)
+            Case "STAND_E": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_E)
+            Case "STAND_NW": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_NW)
+            Case "STAND_NE": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_NE)
+            Case "STAND_SW": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_SW)
+            Case "STAND_SE": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_SE)
+        End Select
+    End With
+End Function
+
+'=========================================================================
+' Clear all status effects applied to a player
+'=========================================================================
+Public Sub PlayerClearAllStatus(ByRef thePlayer As TKPlayer)
     On Error Resume Next
     Dim t As Long
     For t = 0 To UBound(thePlayer.status)
@@ -127,8 +156,11 @@ Sub PlayerClearAllStatus(ByRef thePlayer As TKPlayer)
     Next t
 End Sub
 
-Sub PlayerAddStatus(ByVal statusFile As String, ByRef thePlayer As TKPlayer)
-    'add a status effect to a fighter
+'=========================================================================
+' Apply a status effect to a player
+'=========================================================================
+Public Sub PlayerAddStatus(ByVal statusFile As String, ByRef thePlayer As TKPlayer)
+
     On Error Resume Next
     
     'open the status effect...
@@ -161,9 +193,11 @@ Sub PlayerAddStatus(ByVal statusFile As String, ByRef thePlayer As TKPlayer)
     End If
 End Sub
 
+'=========================================================================
+' Remove a status effect from a player
+'=========================================================================
+Public Sub PlayerRemoveStatus(ByVal statusFile As String, ByRef thePlayer As TKPlayer)
 
-Sub PlayerRemoveStatus(ByVal statusFile As String, ByRef thePlayer As TKPlayer)
-    'remove status effect
     On Error Resume Next
     
     Dim t As Long
@@ -178,10 +212,13 @@ Sub PlayerRemoveStatus(ByVal statusFile As String, ByRef thePlayer As TKPlayer)
     Next t
 End Sub
 
+#End If
 
+'=========================================================================
+' Get the idx-th custom graphic's handle
+'=========================================================================
+Public Function playerGetCustomHandleIdx(ByRef thePlayer As TKPlayer, ByVal idx As Long) As Long
 
-Function playerGetCustomHandleIdx(ByRef thePlayer As TKPlayer, ByVal idx As Long) As Long
-    'return the handle of the idx-th custom gfx (not counting ones with "" as their handles)
     On Error Resume Next
     
     Dim cnt As Long
@@ -199,30 +236,18 @@ Function playerGetCustomHandleIdx(ByRef thePlayer As TKPlayer, ByVal idx As Long
     Next t
 End Function
 
-
-
+'=========================================================================
+' Get a stance animation
+'=========================================================================
 Public Function playerGetStanceAnm(ByVal stance As String, ByRef thePlayer As TKPlayer) As String
-    'obtain the animation filename of a specific stance
-    'built-in stances:
-    'WALK_S
-    'WALK_N
-    'WALK_E
-    'WALK_W
-    'WALK_NW
-    'WALK_NE
-    'WALK_SW
-    'WALK_SE
-    'FIGHT
-    'DEFEND
-    'SPC
-    'DIE
-    'REST
-    'Also searches custom stances
+
     On Error Resume Next
+
     Dim toRet As String
-    
-    stance = UCase$(stance)
+
+    stance = UCase(stance)
     If stance = "" Then stance = "WALK_S"
+
     Select Case stance
     
         Case "STAND_S":
@@ -294,11 +319,11 @@ Public Function playerGetStanceAnm(ByVal stance As String, ByRef thePlayer As TK
             If toRet = "" Then
                 toRet = thePlayer.gfx(PLYR_WALK_E)
             End If
-        Case "FIGHT":
+        Case "FIGHT", "ATTACK":
             toRet = thePlayer.gfx(PLYR_FIGHT)
         Case "DEFEND":
             toRet = thePlayer.gfx(PLYR_DEFEND)
-        Case "SPC":
+        Case "SPC", "SPECIAL MOVE":
             toRet = thePlayer.gfx(PLYR_SPC)
         Case "DIE":
             toRet = thePlayer.gfx(PLYR_DIE)
@@ -317,15 +342,12 @@ Public Function playerGetStanceAnm(ByVal stance As String, ByRef thePlayer As TK
     playerGetStanceAnm = toRet
 End Function
 
-Function FindPlayerHandle(ByVal file As String) As String
+'=========================================================================
+' Get the handle of a player
+'=========================================================================
+Public Function FindPlayerHandle(ByVal file As String) As String
     On Error Resume Next
-    'determine the handle of a player
-    'if a file (with a .tem extension) is specified, the
-    'file is opened and we get the handle
-    'if no extension is specified, the file will be
-    'passed back as if it is the handle
-    
-    If UCase$(GetExt(file)) = "TEM" Then
+    If UCase(GetExt(file)) = "TEM" Then
         Dim plyr As TKPlayer
         Call openChar(projectPath & temPath & file, plyr)
         FindPlayerHandle = plyr.charname
@@ -335,14 +357,16 @@ Function FindPlayerHandle(ByVal file As String) As String
     End If
 End Function
 
+'=========================================================================
+' Save a character to file
+'=========================================================================
+Public Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
 
-Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
-    'saves character file
     On Error Resume Next
+
     Dim num As Long, t As Long
-    num = FreeFile
     If file = "" Then Exit Sub
-    
+    num = FreeFile()
     Call Kill(file)
     
     Open file For Binary Access Write As num
@@ -398,12 +422,10 @@ Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             Call BinWriteString(num, thePlayer.gfx(t))
         Next t
         
-        'MINOR VERSION 6: WRITE STANDING GRAPHICS
         For t = 0 To UBound(thePlayer.standingGfx)
             Call BinWriteString(num, thePlayer.standingGfx(t))
         Next t
 
-        'MINOR VERSION 7: WRITE IDLE TIME
         Call BinWriteDouble(num, thePlayer.idleTime)
         Call BinWriteDouble(num, thePlayer.speed)
 
@@ -417,19 +439,17 @@ Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
     Close num
 End Sub
 
-
+'=========================================================================
+' Open a character from a file
+'=========================================================================
 Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
-
-    'opens character file
 
     On Error Resume Next
 
-    'minor ver 4-- version 2.20b character
-    'minor ver 5-- 3.0 char
     Dim num As Long, tstName As String
     num = FreeFile
     If file$ = "" Then Exit Sub
-    #If isToolkit = 1 Then
+    #If (isToolkit = 1) Then
         playerList(activePlayerIndex).charNeedUpdate = False
     #End If
     thePlayer.charLevelUpType = 0
@@ -560,6 +580,16 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                     thePlayer.standingGfx(t) = BinReadString(num)
                 Next t
             End If
+            
+            #If (isToolkit = 0) Then
+                For t = 0 To UBound(thePlayer.standingGfx)
+                    If (thePlayer.standingGfx(t) <> "") Then
+                        thePlayer.hasIdleGfx(t) = True
+                    Else
+                        thePlayer.hasIdleGfx(t) = False
+                    End If
+                Next t
+            #End If
 
             'MINOR VERSION 7: READ IDLE TIME
             If (minorVer >= 7) Then
@@ -1170,9 +1200,11 @@ Close #num
 
 End Sub
 
-Sub PlayerClear(ByRef thePlayer As TKPlayer)
+'=========================================================================
+' Clear a player
+'=========================================================================
+Public Sub PlayerClear(ByRef thePlayer As TKPlayer)
     On Error Resume Next
-
     thePlayer.speed = 0.01
     thePlayer.idleTime = 3
     thePlayer.charname = ""
@@ -1236,7 +1268,10 @@ Sub PlayerClear(ByRef thePlayer As TKPlayer)
     ReDim thePlayer.customGfx(5)
     ReDim thePlayer.customGfxNames(5)
 
-    Call PlayerClearAllStatus(thePlayer)
+    #If (isToolkit = 0) Then
+        'Clear status effects if in engine
+        Call PlayerClearAllStatus(thePlayer)
+    #End If
 End Sub
 
 

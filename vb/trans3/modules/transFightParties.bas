@@ -471,7 +471,7 @@ End Sub
 '=========================================================================
 ' Get a fighter's HP
 '=========================================================================
-Public Function getPartyMemberHP(ByVal partyIdx, ByVal fighterIdx) As Long
+Public Function getPartyMemberHP(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
     On Error Resume Next
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
@@ -484,7 +484,7 @@ End Function
 '=========================================================================
 ' Get a fighter's max HP
 '=========================================================================
-Public Function getPartyMemberMaxHP(ByVal partyIdx, ByVal fighterIdx) As Long
+Public Function getPartyMemberMaxHP(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
     On Error Resume Next
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
@@ -497,7 +497,7 @@ End Function
 '=========================================================================
 ' Get a fighter's SMP
 '=========================================================================
-Public Function getPartyMemberSMP(ByVal partyIdx, ByVal fighterIdx) As Long
+Public Function getPartyMemberSMP(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
     On Error Resume Next
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
@@ -510,7 +510,7 @@ End Function
 '=========================================================================
 ' Get a fighter's max SMP
 '=========================================================================
-Public Function getPartyMemberMaxSMP(ByVal partyIdx, ByVal fighterIdx) As Long
+Public Function getPartyMemberMaxSMP(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
     On Error Resume Next
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
@@ -523,7 +523,7 @@ End Function
 '=========================================================================
 ' Get a fighter's FP
 '=========================================================================
-Public Function getPartyMemberFP(ByVal partyIdx, ByVal fighterIdx) As Long
+Public Function getPartyMemberFP(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
     On Error Resume Next
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
@@ -536,7 +536,7 @@ End Function
 '=========================================================================
 ' Get a fighter's DP
 '=========================================================================
-Public Function getPartyMemberDP(ByVal partyIdx, ByVal fighterIdx) As Long
+Public Function getPartyMemberDP(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
     On Error Resume Next
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
@@ -549,7 +549,7 @@ End Function
 '=========================================================================
 ' Get a fighter's name
 '=========================================================================
-Public Function getPartyMemberName(ByVal partyIdx, ByVal fighterIdx) As String
+Public Function getPartyMemberName(ByVal partyIdx As Long, ByVal fighterIdx As Long) As String
     On Error Resume Next
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
@@ -562,43 +562,14 @@ End Function
 '=========================================================================
 ' Get a fighter's animation
 '=========================================================================
-Public Function getPartyMemberAnimation(ByVal partyIdx, ByVal fighterIdx, ByVal animationName) As String
-
+Public Function getPartyMemberAnimation(ByVal partyIdx As Long, ByVal fighterIdx As Long, ByVal animationName As String) As String
     On Error Resume Next
-
-    animationName = UCase(animationName)
-        
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
-        'hitting a player...
-        Select Case animationName
-            Case "REST":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).player.gfx(PLYR_REST)
-            Case "ATTACK":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).player.gfx(PLYR_FIGHT)
-            Case "DEFEND":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).player.gfx(PLYR_DEFEND)
-            Case "SPECIAL MOVE":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).player.gfx(PLYR_SPC)
-            Case "DIE":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).player.gfx(PLYR_DIE)
-            Case Else:
-                getPartyMemberAnimation = playerGetStanceAnm(animationName, parties(partyIdx).fighterList(fighterIdx).player)
-        End Select
+        'hitting a player
+        getPartyMemberAnimation = playerGetStanceAnm(animationName, parties(partyIdx).fighterList(fighterIdx).player)
     Else
-        Select Case animationName
-            Case "REST":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).enemy.gfx(ENE_REST)
-            Case "ATTACK":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).enemy.gfx(ENE_FIGHT)
-            Case "DEFEND":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).enemy.gfx(ENE_DEFEND)
-            Case "SPECIAL MOVE":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).enemy.gfx(ENE_SPC)
-            Case "DIE":
-                getPartyMemberAnimation = parties(partyIdx).fighterList(fighterIdx).enemy.gfx(ENE_DIE)
-            Case Else:
-                getPartyMemberAnimation = enemyGetStanceAnm(animationName, parties(partyIdx).fighterList(fighterIdx).enemy)
-        End Select
+        'hitting an enemy
+        getPartyMemberAnimation = enemyGetStanceAnm(animationName, parties(partyIdx).fighterList(fighterIdx).enemy)
     End If
 End Function
 

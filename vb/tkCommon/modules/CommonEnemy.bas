@@ -65,8 +65,8 @@ Public Type TKEnemy
     eneMaxSMP As Long              'max smp
     eneFileName As String          'filename
     status(10) As FighterStatus    'status effects on this enemy
-    x As Long                      'x pos of enemy in a fight
-    y As Long                      'y pos of enemy in a fight
+    X As Long                      'x pos of enemy in a fight
+    Y As Long                      'y pos of enemy in a fight
 End Type
 
 '=========================================================================
@@ -160,11 +160,11 @@ Public Function enemyGetStanceAnm(ByVal stance As String, ByRef theEnemy As TKEn
     If stance = "" Then stance = "REST"
 
     Select Case stance
-        Case "FIGHT":
+        Case "FIGHT", "ATTACK":
             toRet = theEnemy.gfx(ENE_FIGHT)
         Case "DEFEND":
             toRet = theEnemy.gfx(ENE_DEFEND)
-        Case "SPC":
+        Case "SPC", "SPECIAL MOVE":
             toRet = theEnemy.gfx(ENE_SPC)
         Case "DIE":
             toRet = theEnemy.gfx(ENE_DIE)
@@ -239,7 +239,7 @@ Public Sub saveEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
 
     On Error Resume Next
     
-    Dim num As Long, x As Long, y As Long, t As Long
+    Dim num As Long, X As Long, Y As Long, t As Long
     num = FreeFile()
     If file = "" Then Exit Sub
     
@@ -295,7 +295,7 @@ Public Function openEnemy(ByVal file As String) As TKEnemy
 
     On Error Resume Next
 
-    Dim num As Long, x As Long, y As Long, t As Long, user As Long
+    Dim num As Long, X As Long, Y As Long, t As Long, user As Long
     Dim fileHeader As String, majorVer As Long, minorVer As Long
 
     Dim theEnemy As TKEnemy
@@ -421,11 +421,11 @@ ver2oldEnemy:
             Dim eneSizeX As Long, eneSizeY As Long
             eneSizeX = fread(num)       'size horizontally
             eneSizeY = fread(num)       'size vertically
-            For x = 1 To 19
-                For y = 1 To 7
-                    enemyGraphic$(x, y) = fread(num) 'Enemy graphics filenames
-                Next y
-            Next x
+            For X = 1 To 19
+                For Y = 1 To 7
+                    enemyGraphic$(X, Y) = fread(num) 'Enemy graphics filenames
+                Next Y
+            Next X
             'create tile bitmap...
             Dim tbmName As String, anmName As String
             tbmName$ = replace(RemovePath(file$), ".", "_") & "_rest" & ".tbm"
@@ -433,11 +433,11 @@ ver2oldEnemy:
             Dim tbm As TKTileBitmap
             Call TileBitmapClear(tbm)
             Call TileBitmapResize(tbm, eneSizeX, eneSizeY)
-            For x = 1 To eneSizeX
-                For y = 1 To eneSizeY
-                    tbm.tiles(x - 1, y - 1) = enemyGraphic(x, y)
-                Next y
-            Next x
+            For X = 1 To eneSizeX
+                For Y = 1 To eneSizeY
+                    tbm.tiles(X - 1, Y - 1) = enemyGraphic(X, Y)
+                Next Y
+            Next X
             Call SaveTileBitmap(tbmName$, tbm)
             anmName = replace(RemovePath(file), ".", "_") & "_rest" & ".anm"
             anmName = projectPath & miscPath & anmName
@@ -497,20 +497,20 @@ Public Sub EnemyClear(ByRef theEnemy As TKEnemy)
     theEnemy.eneSneakUp = 0
     theEnemy.eneSizeX = 1
     theEnemy.eneSizeY = 1
-    Dim x As Long, y As Long
-    For x = 0 To 19
-        For y = 0 To 7
-            theEnemy.enemyGraphic(x, y) = ""
-        Next y
-    Next x
+    Dim X As Long, Y As Long
+    For X = 0 To 19
+        For Y = 0 To 7
+            theEnemy.enemyGraphic(X, Y) = ""
+        Next Y
+    Next X
     ReDim theEnemy.eneSpecialMove(100)
     ReDim theEnemy.eneWeakness(100)
     ReDim theEnemy.eneStrength(100)
-    For x = 0 To 100
-        theEnemy.eneSpecialMove(x) = ""
-        theEnemy.eneWeakness(x) = ""
-        theEnemy.eneStrength(x) = ""
-    Next x
+    For X = 0 To 100
+        theEnemy.eneSpecialMove(X) = ""
+        theEnemy.eneWeakness(X) = ""
+        theEnemy.eneStrength(X) = ""
+    Next X
     theEnemy.eneAI = 0
     theEnemy.eneUseRPGCode = 0
     theEnemy.eneRPGCode = ""
