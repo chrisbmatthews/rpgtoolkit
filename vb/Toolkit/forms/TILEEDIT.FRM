@@ -1727,8 +1727,6 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         activeTile.isoChange (False)
     End If
     
-    MsgBox "openTileEditorDocs(indice).iso=" & openTileEditorDocs(indice).isometric
-    
     If UCase(whichType) = "TST" Or UCase(whichType) = "ISO" Then
         'Yipes! we've selected an archive!
     
