@@ -184,7 +184,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     'return selected file, or "" if cancelled
     On Error Resume Next
     
-    If 1 = 1 Then
+    #If (True) Then
     
         'Use the Windows dialog since the canvas version is buggy now.
         
@@ -206,7 +206,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         
         Exit Function
         
-    End If
+    #End If
     
     Call haltKeyDownScanning
     

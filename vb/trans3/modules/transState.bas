@@ -59,10 +59,7 @@ Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal re
     'Initialize this character:
     playerListAr$(number) = playerMem(number).charname$
     playerFile$(number) = file$
-    
-    'Make this player visible!
-    showPlayer(number) = True
-    
+
     'change player graphics...
     Dim aProgram As RPGCodeProgram
     ReDim aProgram.program(10)
@@ -283,7 +280,7 @@ Public Sub LoadState(ByVal file As String)
             Input #num, newPlyrName
             initTime = Timer()
             addTime = gameTime
-
+            showPlayer(selectedPlayer) = True
             Exit Sub
         
         End If
@@ -481,6 +478,8 @@ Public Sub LoadState(ByVal file As String)
     
         'Movement size...
         transLocate.movementSize = BinReadDouble(num)
+        
+        showPlayer(selectedPlayer) = True
     Close num
     initTime = Timer()
     addTime = gameTime

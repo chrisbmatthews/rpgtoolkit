@@ -537,10 +537,8 @@ Public Sub gameSpeed(ByVal speed As Integer)
         Case 3: walkDelay = 0.01
         Case 4: walkDelay = 0
     End Select
-    
     'Adjust for pixel movement.
     walkDelay = walkDelay * movementSize
-    
 End Sub
 
 '=========================================================================
