@@ -14,7 +14,7 @@ Option Explicit
 '=========================================================================
 ' Member declarations
 '=========================================================================
-Private Declare Sub RPGCInitParser Lib "actkrt3.dll" (ByVal setLastParseStringAddress As Long)
+Private Declare Sub RPGCInitParser Lib "actkrt3.dll" (ByVal stringFunction As Long)
 Private Declare Sub RPGCGetMethodName Lib "actkrt3.dll" (ByVal Text As Long)
 Private Declare Sub RPGCParseAfter Lib "actkrt3.dll" (ByVal Text As Long, ByVal startSymbol As Long)
 Private Declare Sub RPGCParseBefore Lib "actkrt3.dll" (ByVal Text As Long, ByVal endSymbol As Long)
