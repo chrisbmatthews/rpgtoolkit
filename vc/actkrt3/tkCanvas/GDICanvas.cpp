@@ -143,7 +143,7 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 {
 
 	// If using DirectX
-	if (m_bUseDX = (!(bDX && gDXInfo.lpdd)))
+	if (!(m_bUseDX = (bDX && gDXInfo.lpdd)))
 	{
 
 		// Destroy existing canvas
