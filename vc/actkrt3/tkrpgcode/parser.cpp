@@ -191,7 +191,11 @@ void APIENTRY RPGCInitParser(int setStringAddress)
 //////////////////////////////////////////////////////////////////////////
 inline void returnVbString(inlineString theString)
 {
-	setLastString(Char2BSTR((char*)theString));
+	BSTR theBString = Char2BSTR((char*)theString);
+	BSTR theBSTR = SysAllocString(theBString);
+	MessageBox(NULL, theBSTR, NULL, NULL);
+	setLastString(theBSTR);
+	SysFreeString(theBSTR);
 }
 
 //////////////////////////////////////////////////////////////////////////

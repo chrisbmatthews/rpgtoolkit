@@ -15,6 +15,7 @@
 #include <windows.h>						//include windows API
 #include "..\inlineString\inlineString.h"	//for strings
 #include <wtypes.h>							//for VB strings
+#include <oleauto.h>						//for BSTR API
 
 //////////////////////////////////////////////////////////////////////////
 // Definitions
