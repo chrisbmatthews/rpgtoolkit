@@ -684,6 +684,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                     If Not (bIsVar(tokenIdx)) Then
                         If (conjunctions(tokenIdx - 1) = "-") Then
                             numberUse(tokenIdx) = -numberUse(tokenIdx)
+                            nulled(tokenIdx - 1) = True
                         End If
                     End If
                     ' If this isn't the first token
