@@ -94,20 +94,8 @@ void APIENTRY DXPlayMidi(TCHAR* strFileName, VARIANT_BOOL bLoop)
 
 	}
 
-	if (bLoop)
-	{
-
-		// Loop the segment
-		g_pMusicSegment->SetRepeats(DMUS_SEG_REPEAT_INFINITE);
-
-	}
-	else
-	{
-
-		// Do not loop the segment
-		g_pMusicSegment->SetRepeats(0);
-
-	}
+	// Set whether to loop the segment
+	g_pMusicSegment->SetRepeats(bLoop ? DMUS_SEG_REPEAT_INFINITE : 0);
 
 	// Play the segment
 	g_pMusicSegment->Play();
