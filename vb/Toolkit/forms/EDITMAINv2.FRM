@@ -2402,7 +2402,7 @@ End Sub
 ' Unload form
 '=========================================================================
 Private Sub Form_Unload(Cancel As Integer)
-    On Error Resume Next
+    On Error GoTo skip
     Dim a As Long
     For a = 0 To UBound(vbPlugins)
         If (vbPlugins(a).filename <> "") Then
@@ -2411,6 +2411,7 @@ Private Sub Form_Unload(Cancel As Integer)
         End If
     Next a
     ReDim vbPlugins(0)
+skip:
     Call hideAllTools
 End Sub
 
