@@ -10,12 +10,11 @@ Global debugging As Boolean     'currently debugging?
 Global DBbreakpoints(50) As Integer   'breakpoints
 Global DBcurBP As Integer             'current breakpoint array index.
 Global DBCallDepth As Integer   'number of method calls currently on the stack
-'FIXIT: Declare 'DBOldCallDepth' with an early-bound data type                             FixIT90210ae-R1672-R1B8ZE
-Global DBOldCallDepth           'call depth before 'stepping over'
+Global DBOldCallDepth As Long          'call depth before 'stepping over'
 Global DBWinFilled As Boolean   'was the code filled in the window?
 Global DBWinLength As Integer   'number of lines of code in db window
 Global DBMethodStep As Boolean  'step into methods Y/N
-Global DBWatchVars$(100)        '101 vars we are watching
+Global DBWatchVars(100) As String        '101 vars we are watching
 Sub DBAddWatch(watch$)
     'adds a variable to the watch...
     On Error GoTo errorhandler
@@ -45,12 +44,12 @@ Sub DBFillCodeWindow()
     'fills the window with code
     On Error GoTo errorhandler
     Dim prognum As Long, t As Long
-    If DBWinFilled = False Or program(prognum).length <> DBWinLength Then
+    If DBWinFilled = False Or program(prognum).Length <> DBWinLength Then
         dbwin.codewin.Clear
-        For t = 0 To program(prognum).length
+        For t = 0 To program(prognum).Length
             dbwin.codewin.AddItem (program(prognum).program$(t))
         Next t
-        DBWinLength = program(prognum).length
+        DBWinLength = program(prognum).Length
         DBWinFilled = True
     End If
 
@@ -98,14 +97,14 @@ Sub DBInsertLine(ByVal lnum As Long, ByVal prognum As Long)
     On Error GoTo errorhandler
     
     Dim abc As Long, t As Long
-    If program(prognum).length >= UBound(program(prognum).program) Then
+    If program(prognum).Length >= UBound(program(prognum).program) Then
         abc = MBox(LoadStringLoc(868, "Cannot add more lines to this program."), LoadStringLoc(869, "Program size limit reached"), 0, menuColor, projectPath$ + bmpPath$ + mainMem.skinWindow$, projectPath$ + bmpPath$ + mainMem.skinButton$)
         'MsgBox "Cannot add more lines to this program.", , "Program size limit reached"
     Else
-        For t = program(prognum).length To lnum Step -1
+        For t = program(prognum).Length To lnum Step -1
             program(prognum).program$(t + 1) = program(prognum).program$(t)
         Next t
-        program(prognum).length = program(prognum).length + 1
+        program(prognum).Length = program(prognum).Length + 1
         program(prognum).program$(lnum) = ""
     End If
 
@@ -116,11 +115,11 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub DBInsertPrgLine(ByVal text As String, ByVal lnum As Long, ByVal prognum As Long)
+Sub DBInsertPrgLine(ByVal Text As String, ByVal lnum As Long, ByVal prognum As Long)
     'inserts a line of code into the program.
     On Error GoTo errorhandler
     Call DBInsertLine(lnum, prognum)
-    program(prognum).program$(lnum) = text$
+    program(prognum).program$(lnum) = Text$
 
     Exit Sub
 'Begin error handling code:
@@ -133,14 +132,14 @@ Sub DBRemoveLine(ByVal lnum As Long, ByVal prognum As Long)
     'removes a line of code from the program at lnum
     On Error GoTo errorhandler
     Dim abc As Long, t As Long
-    If program(prognum).length <= 0 Then
+    If program(prognum).Length <= 0 Then
         abc = MBox(LoadStringLoc(870, "Cannot delete more lines from this program."), LoadStringLoc(869, "Size limit reached"), 0, menuColor, projectPath$ + bmpPath$ + mainMem.skinWindow$, projectPath$ + bmpPath$ + mainMem.skinButton$)
         'MsgBox "Cannot delete more lines from this program.", , "Program size limit reached"
     Else
-        For t = lnum To program(prognum).length
+        For t = lnum To program(prognum).Length
             program(prognum).program$(t) = program(prognum).program$(t + 1)
         Next t
-        program(prognum).length = program(prognum).length - 1
+        program(prognum).Length = program(prognum).Length - 1
         'program$(lnum, prognum) = ""
     End If
 
@@ -157,7 +156,7 @@ Sub DBSaveProgram(ByVal file As String, ByVal pnum As Long)
     Dim num As Long, t As Long
     num = FreeFile
     Open file$ For Output As #num
-        For t = 0 To program(pnum).length
+        For t = 0 To program(pnum).Length
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, program(pnum).program$(t)
         Next t

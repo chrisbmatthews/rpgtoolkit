@@ -87,7 +87,7 @@ Type TKBoard
     isIsometric As Byte         'is it an isometric board? (0- no, 1-yes)
 
     ' ADDED BY KSNiloc...
-    Threads() As String
+    threads() As String
     
     'volatile (not in the file or anything)
     hasAnmTiles As Boolean  'does board have anim tiles?
@@ -450,7 +450,6 @@ On Error Resume Next
     Dim fileOpen As String, xx As Long, yy As Long, num As Long
     
     fileOpen$ = fName$
-    'fileOpen$ = FindFile(fileOpen$)
     fileOpen$ = PakLocate(fileOpen$)
     xx = 19: yy = 11
     num = FreeFile
@@ -496,7 +495,7 @@ ver2oldboard:
         End If
         Input #num, majorVer           'Version
         Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit", , "Unable to open tile": Exit Sub
+        If majorVer <> Major Then MsgBox "This board was created with an unrecognised version of the Toolkit", , "Unable to open tile": Exit Sub
         Input #num, isRegistered$         'Is it registered?
         Input #num, regCode$              'reg code
         'Next up0 is the board data.  It goes: tilename, boardList(activeBoardIndex).ambientr, ag, ab, tiletype fopr each tile y's then x's, layer by layer
@@ -629,7 +628,7 @@ Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
     
     Open filen$ For Binary As #num
         Call BinWriteString(num, "RPGTLKIT BOARD")    'Filetype
-        Call BinWriteInt(num, major)
+        Call BinWriteInt(num, Major)
         Call BinWriteInt(num, 2)    'Minor version (ie 2.2 new type, allowing large boards)
         Call BinWriteInt(num, 0)         'registered yn (0 allowing boards to be read by TK2-CE)
         Call BinWriteString(num, "NOCODE")            'No reg code
@@ -747,9 +746,9 @@ Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
         Call BinWriteByte(num, theBoard.isIsometric)
 
         ' ! ADDED BY KSNiloc...
-        For t = 0 To UBound(theBoard.Threads)
-            If Not theBoard.Threads(t) = "" Then
-                BinWriteString num, theBoard.Threads(t)
+        For t = 0 To UBound(theBoard.threads)
+            If Not theBoard.threads(t) = "" Then
+                BinWriteString num, theBoard.threads(t)
             End If
         Next t
         
@@ -789,9 +788,9 @@ Sub openboard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
         If fileHeader$ <> "RPGTLKIT BOARD" Then Close #num: GoTo Ver1Board
         majorVer = BinReadInt(num)       'Version
         minorVer = BinReadInt(num)      'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit " + fileOpen, , "Unable to open tile": Exit Sub
+        If majorVer <> Major Then MsgBox "This board was created with an unrecognised version of the Toolkit " + fileOpen, , "Unable to open tile": Exit Sub
         If minorVer > 2 Then
-            user = MsgBox("This board was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
+            user = MsgBox("This board was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + CurrentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
         If minorVer <> 2 Then
@@ -998,8 +997,8 @@ exitTheFor:
         Dim tCount As Long
         Dim thread As String
         Do Until EOF(num)
-            ReDim Preserve theBoard.Threads(tCount)
-            theBoard.Threads(tCount) = BinReadString(num)
+            ReDim Preserve theBoard.threads(tCount)
+            theBoard.threads(tCount) = BinReadString(num)
             tCount = tCount + 1
         Loop
 
@@ -1012,9 +1011,9 @@ ver2oldboard:
         If fileHeader$ <> "RPGTLKIT BOARD" Then Close #num: GoTo Ver1Board
         Input #num, majorVer       'Version
         Input #num, minorVer       'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit", , "Unable to open tile": Close #num: Exit Sub
+        If majorVer <> Major Then MsgBox "This board was created with an unrecognised version of the Toolkit", , "Unable to open tile": Close #num: Exit Sub
         If minorVer > 2 Then
-            user = MsgBox("This board was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
+            user = MsgBox("This board was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + CurrentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
         
@@ -1232,7 +1231,7 @@ Sub BoardSetSize(ByVal sizex As Integer, ByVal sizey As Integer, ByVal sizeLayer
 End Sub
 
 
-Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByVal ttype As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef theBoard As TKBoard)
+Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByVal tType As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef theBoard As TKBoard)
     'set a tile on the board at x, y, layer
     'with a specified tile type and r,g,b shade
     On Error Resume Next
@@ -1278,7 +1277,7 @@ Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integ
     End If
     
     'now set the other info...
-    theBoard.tiletype(x - 1, y - 1, layer - 1) = ttype
+    theBoard.tiletype(x - 1, y - 1, layer - 1) = tType
     theBoard.ambientred(x - 1, y - 1, layer - 1) = r
     theBoard.ambientgreen(x - 1, y - 1, layer - 1) = g
     theBoard.ambientblue(x - 1, y - 1, layer - 1) = b

@@ -421,7 +421,7 @@ Private Sub loadForm(ByVal filename As String)
     On Error Resume Next
     Dim a As String
     Dim num As Integer
-    Dim x As Integer
+    Dim X As Integer
     Dim bDone As Boolean
     
     num = FreeFile()
@@ -445,52 +445,52 @@ Private Sub loadForm(ByVal filename As String)
         Line Input #num, sCanvasFilename     'canvas background image
         
         'buttons...
-        For x = 0 To 50
-            Line Input #num, theButtons(x).filename
-            Input #num, theButtons(x).x1
-            Input #num, theButtons(x).y1
-            Input #num, theButtons(x).x2
-            Input #num, theButtons(x).y2
+        For X = 0 To 50
+            Line Input #num, theButtons(X).filename
+            Input #num, theButtons(X).x1
+            Input #num, theButtons(X).y1
+            Input #num, theButtons(X).x2
+            Input #num, theButtons(X).y2
             Line Input #num, a  '*CODE
             'following is code...
             bDone = False
-            theButtons(x).rpgcode = ""
+            theButtons(X).rpgcode = ""
             Do While (Not bDone)
                 Line Input #num, a
                 If UCase$(a) = "*ENDCODE" Then
                     bDone = True
                 Else
-                    theButtons(x).rpgcode = theButtons(x).rpgcode + a + chr$(13) + chr$(10)
+                    theButtons(X).rpgcode = theButtons(X).rpgcode + a + chr$(13) + chr$(10)
                 End If
             Loop
-        Next x
+        Next X
     
         'images...
-        For x = 0 To 50
-            Line Input #num, theImages(x).filename
-            Input #num, theImages(x).x1
-            Input #num, theImages(x).y1
-            Input #num, theImages(x).x2
-            Input #num, theImages(x).y2
-        Next x
+        For X = 0 To 50
+            Line Input #num, theImages(X).filename
+            Input #num, theImages(X).x1
+            Input #num, theImages(X).y1
+            Input #num, theImages(X).x2
+            Input #num, theImages(X).y2
+        Next X
         
         'lines...
-        For x = 0 To 50
-            Input #num, theLines(x).x1
-            Input #num, theLines(x).y1
-            Input #num, theLines(x).x2
-            Input #num, theLines(x).y2
-            Input #num, theLines(x).col
-        Next x
+        For X = 0 To 50
+            Input #num, theLines(X).x1
+            Input #num, theLines(X).y1
+            Input #num, theLines(X).x2
+            Input #num, theLines(X).y2
+            Input #num, theLines(X).col
+        Next X
     
         'rects...
-        For x = 0 To 50
-            Input #num, theRects(x).x1
-            Input #num, theRects(x).y1
-            Input #num, theRects(x).x2
-            Input #num, theRects(x).y2
-            Input #num, theRects(x).col
-        Next x
+        For X = 0 To 50
+            Input #num, theRects(X).x1
+            Input #num, theRects(X).y1
+            Input #num, theRects(X).x2
+            Input #num, theRects(X).y2
+            Input #num, theRects(X).col
+        Next X
     
         'following is code...
         Line Input #num, a  '*CODE
@@ -569,7 +569,7 @@ Sub saveForm(filename As String)
     'save this form
     On Error Resume Next
     Dim num As Integer
-    Dim x As Integer
+    Dim X As Integer
     
     num = FreeFile
     
@@ -580,41 +580,41 @@ Sub saveForm(filename As String)
         Print #num, "1" 'resgieterd- yes
         Print #num, sCanvasFilename     'canvas background image
         'buttons...
-        For x = 0 To 50
-            Print #num, theButtons(x).filename
-            Print #num, theButtons(x).x1
-            Print #num, theButtons(x).y1
-            Print #num, theButtons(x).x2
-            Print #num, theButtons(x).y2
+        For X = 0 To 50
+            Print #num, theButtons(X).filename
+            Print #num, theButtons(X).x1
+            Print #num, theButtons(X).y1
+            Print #num, theButtons(X).x2
+            Print #num, theButtons(X).y2
             Print #num, "*CODE"
-            Print #num, theButtons(x).rpgcode
+            Print #num, theButtons(X).rpgcode
             Print #num, "*ENDCODE"
-        Next x
+        Next X
         'images...
-        For x = 0 To 50
-            Print #num, theImages(x).filename
-            Print #num, theImages(x).x1
-            Print #num, theImages(x).y1
-            Print #num, theImages(x).x2
-            Print #num, theImages(x).y2
-        Next x
+        For X = 0 To 50
+            Print #num, theImages(X).filename
+            Print #num, theImages(X).x1
+            Print #num, theImages(X).y1
+            Print #num, theImages(X).x2
+            Print #num, theImages(X).y2
+        Next X
         'lines...
-        For x = 0 To 50
-            Print #num, theLines(x).x1
-            Print #num, theLines(x).y1
-            Print #num, theLines(x).x2
-            Print #num, theLines(x).y2
-            Print #num, theLines(x).col
-        Next x
+        For X = 0 To 50
+            Print #num, theLines(X).x1
+            Print #num, theLines(X).y1
+            Print #num, theLines(X).x2
+            Print #num, theLines(X).y2
+            Print #num, theLines(X).col
+        Next X
     
         'rects...
-        For x = 0 To 50
-            Print #num, theRects(x).x1
-            Print #num, theRects(x).y1
-            Print #num, theRects(x).x2
-            Print #num, theRects(x).y2
-            Print #num, theRects(x).col
-        Next x
+        For X = 0 To 50
+            Print #num, theRects(X).x1
+            Print #num, theRects(X).y1
+            Print #num, theRects(X).x2
+            Print #num, theRects(X).y2
+            Print #num, theRects(X).col
+        Next X
         'user load code...
         Print #num, "*CODE"
         Print #num, formLoadRpgCode
@@ -680,7 +680,7 @@ Private Sub BuildToRPGCode(filename As String)
     If filename = "" Then Exit Sub
     
     Dim num As Integer
-    Dim x As Integer
+    Dim X As Integer
     Dim numLines As Integer
     Dim c As Integer
     num = FreeFile
@@ -751,64 +751,64 @@ Private Sub BuildToRPGCode(filename As String)
             
             'now render images...
             Print #num, chr$(9) + "* Render images (if any exist)..."
-            For x = 0 To 50
-                If theImages(x).filename <> "" Then
-                    Print #num, chr(9) + "SetImage(" & chr(34) & theImages(x).filename & chr(34) & _
-                                                "," & str(theImages(x).x1) & _
-                                                "," & str(theImages(x).y1) & _
-                                                "," & str(theImages(x).x2 - theImages(x).x1) & _
-                                                "," & str(theImages(x).y2 - theImages(x).y1) & _
+            For X = 0 To 50
+                If theImages(X).filename <> "" Then
+                    Print #num, chr(9) + "SetImage(" & chr(34) & theImages(X).filename & chr(34) & _
+                                                "," & str(theImages(X).x1) & _
+                                                "," & str(theImages(X).y1) & _
+                                                "," & str(theImages(X).x2 - theImages(X).x1) & _
+                                                "," & str(theImages(X).y2 - theImages(X).y1) & _
                                                 ")"
                 End If
-            Next x
+            Next X
             Print #num, ""
         
             'now render buttons...
             Print #num, chr(9) & "* Render buttons (if any exist)..."
             Print #num, chr(9) + "ClearButtons()"
-            For x = 0 To 50
-                If theButtons(x).filename <> "" Then
-                    Print #num, chr(9) + "SetButton(" & chr(34) & theButtons(x).filename & chr(34) + _
-                                                "," & str(x) & _
-                                                "," & str(theButtons(x).x1) + _
-                                                "," & str(theButtons(x).y1) + _
-                                                "," & str(theButtons(x).x2 - theButtons(x).x1) & _
-                                                "," & str(theButtons(x).y2 - theButtons(x).y1) & _
+            For X = 0 To 50
+                If theButtons(X).filename <> "" Then
+                    Print #num, chr(9) + "SetButton(" & chr(34) & theButtons(X).filename & chr(34) + _
+                                                "," & str(X) & _
+                                                "," & str(theButtons(X).x1) + _
+                                                "," & str(theButtons(X).y1) + _
+                                                "," & str(theButtons(X).x2 - theButtons(X).x1) & _
+                                                "," & str(theButtons(X).y2 - theButtons(X).y1) & _
                                                 ")"
                 End If
-            Next x
+            Next X
             Print #num, ""
 
             'now render lines...
             Print #num, chr(9) & "* Render lines (if any exist)..."
-            For x = 0 To 50
-                If Not (theLines(x).x1 = 0 And theLines(x).y1 = 0 And theLines(x).x2 = 0 And theLines(x).y2 = 0) Then
+            For X = 0 To 50
+                If Not (theLines(X).x1 = 0 And theLines(X).y1 = 0 And theLines(X).x2 = 0 And theLines(X).y2 = 0) Then
                     Print #num, chr(9) & "ColorRGB(" & _
-                                                        str(red(theLines(x).col)) & "," & _
-                                                        str(green(theLines(x).col)) & "," & _
-                                                        str(blue(theLines(x).col)) & ")"
-                    Print #num, chr(9) & "#DrawLine(" & str(theLines(x).x1) & _
-                                            "," & str(theLines(x).y1) & _
-                                            "," & str(theLines(x).x2) & _
-                                            "," & str(theLines(x).y2) & ")"
+                                                        str(red(theLines(X).col)) & "," & _
+                                                        str(green(theLines(X).col)) & "," & _
+                                                        str(blue(theLines(X).col)) & ")"
+                    Print #num, chr(9) & "#DrawLine(" & str(theLines(X).x1) & _
+                                            "," & str(theLines(X).y1) & _
+                                            "," & str(theLines(X).x2) & _
+                                            "," & str(theLines(X).y2) & ")"
                 End If
-            Next x
+            Next X
             Print #num, ""
             
             'now render rects...
             Print #num, chr(9) & "* Render rectangles (if any exist)..."
-            For x = 0 To 50
-                If Not (theRects(x).x1 = 0 And theRects(x).y1 = 0 And theRects(x).x2 = 0 And theRects(x).y2 = 0) Then
+            For X = 0 To 50
+                If Not (theRects(X).x1 = 0 And theRects(X).y1 = 0 And theRects(X).x2 = 0 And theRects(X).y2 = 0) Then
                     Print #num, chr(9) + "ColorRGB(" + _
-                                                        str(red(theRects(x).col)) & "," & _
-                                                        str(green(theRects(x).col)) & "," & _
-                                                        str(blue(theRects(x).col)) & ")"
-                    Print #num, chr(9) & "DrawRect(" & str(theRects(x).x1) & _
-                                            "," & str(theRects(x).y1) & _
-                                            "," & str(theRects(x).x2) & _
-                                            "," & str(theRects(x).y2) & ")"
+                                                        str(red(theRects(X).col)) & "," & _
+                                                        str(green(theRects(X).col)) & "," & _
+                                                        str(blue(theRects(X).col)) & ")"
+                    Print #num, chr(9) & "DrawRect(" & str(theRects(X).x1) & _
+                                            "," & str(theRects(X).y1) & _
+                                            "," & str(theRects(X).x2) & _
+                                            "," & str(theRects(X).y2) & ")"
                 End If
-            Next x
+            Next X
             Print #num, ""
         Print #num, "}"
         Print #num, ""
@@ -844,21 +844,21 @@ Private Sub BuildToRPGCode(filename As String)
                     Print #num, chr(9) & chr(9) & "* Check which button was pressed..."
                     Print #num, ""
                     
-                    For x = 0 To 50
-                        If theButtons(x).filename <> "" Then
-                            Print #num, chr(9) & chr(9) & "if (m_button! ==" & str(x) & ")"
+                    For X = 0 To 50
+                        If theButtons(X).filename <> "" Then
+                            Print #num, chr(9) & chr(9) & "if (m_button! ==" & str(X) & ")"
                             Print #num, chr(9) & chr(9) & "{"
-                                theButtons(x).rpgcode = theButtons(x).rpgcode & chr(13) & chr(10)
-                                numLines = countTextLines(theButtons(x).rpgcode)
+                                theButtons(X).rpgcode = theButtons(X).rpgcode & chr(13) & chr(10)
+                                numLines = countTextLines(theButtons(X).rpgcode)
                                 If numLines > 0 Then
                                     For c = 0 To numLines - 1
-                                        Print #num, chr(9) & chr(9) & chr(9) & getTextLineNumber(theButtons(x).rpgcode, c)
+                                        Print #num, chr(9) & chr(9) & chr(9) & getTextLineNumber(theButtons(X).rpgcode, c)
                                     Next c
                                 End If
                             Print #num, chr$(9) + chr$(9) + "}"
                             Print #num, ""
                         End If
-                    Next x
+                    Next X
                     
                 Print #num, chr(9) & "}"
                 Print #num, ""
@@ -879,7 +879,7 @@ Private Sub BuildToRPGCode(filename As String)
     Close #num
 End Sub
 
-Private Function checkButtonClicked(x As Integer, y As Integer, ByRef theNum As Integer) As Boolean
+Private Function checkButtonClicked(X As Integer, Y As Integer, ByRef theNum As Integer) As Boolean
     'checks all buttons to see if x,y is within the click area.
     'if it it, the button that was clicked is placed in theNum and this function returns true
     On Error Resume Next
@@ -887,10 +887,10 @@ Private Function checkButtonClicked(x As Integer, y As Integer, ByRef theNum As 
     
     For nCount = 0 To 50
         If theButtons(nCount).filename <> "" Then
-            If theButtons(nCount).x1 <= x And _
-                theButtons(nCount).x2 >= x And _
-                theButtons(nCount).y1 <= y And _
-                theButtons(nCount).y2 >= y Then
+            If theButtons(nCount).x1 <= X And _
+                theButtons(nCount).x2 >= X And _
+                theButtons(nCount).y1 <= Y And _
+                theButtons(nCount).y2 >= Y Then
                 theNum = nCount
                 checkButtonClicked = True
                 Exit Function
@@ -908,7 +908,7 @@ Private Function getImageFilename() As String
     
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmppath$
+    dlg.strDefaultFolder = projectPath$ + bmpPath$
     
     dlg.strTitle = "Select Filename"
     dlg.strDefaultExt = "jpg"
@@ -923,7 +923,7 @@ Private Function getImageFilename() As String
     End If
     ChDir (currentDir$)
     'If filename$(1) = "" Then Exit Sub
-    FileCopy filename$, projectPath$ + bmppath$ + antiPath$
+    FileCopy filename$, projectPath$ + bmpPath$ + antiPath$
     getImageFilename = antiPath
 End Function
 
@@ -935,7 +935,7 @@ Function GetPrgFilename() As String
     
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Filename"
     dlg.strDefaultExt = "prg"
@@ -950,11 +950,11 @@ Function GetPrgFilename() As String
     End If
     ChDir (currentDir$)
     'If filename$(1) = "" Then Exit Sub
-    FileCopy filename$, projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$, projectPath$ + prgPath$ + antiPath$
     GetPrgFilename = filename
 End Function
 
-Function getTrueCoordX(x As Integer) As Integer
+Function getTrueCoordX(X As Integer) As Integer
     'returns the true pixel of an x coordinate
     'originally defined within the boardform bounds (ie 608 x 352)
     On Error GoTo ErrorHandler
@@ -965,7 +965,7 @@ Function getTrueCoordX(x As Integer) As Integer
     nWidth = tkvisual.boardform.Width / Screen.TwipsPerPixelX
     dRatio = nWidth / (19 * 32)
         
-    nRet = x * dRatio
+    nRet = X * dRatio
     getTrueCoordX = nRet
 
     Exit Function
@@ -976,7 +976,7 @@ ErrorHandler:
     Resume Next
 End Function
 
-Function getTrueCoordY(y As Integer) As Integer
+Function getTrueCoordY(Y As Integer) As Integer
     'returns the true pixel of a y coordinate
     'originally defined within the boardform bounds (ie 608 x 352)
     On Error GoTo ErrorHandler
@@ -987,7 +987,7 @@ Function getTrueCoordY(y As Integer) As Integer
     nHeight = tkvisual.boardform.height / Screen.TwipsPerPixelY
     dRatio = nHeight / (11 * 32)
         
-    nRet = y * dRatio
+    nRet = Y * dRatio
     getTrueCoordY = nRet
 
     Exit Function
@@ -1003,14 +1003,14 @@ Function ifButtons() As Boolean
     'checks to see if any buttons are set.
     'If the are, then we return true, else false
     On Error GoTo ErrorHandler
-    Dim x As Integer
+    Dim X As Integer
     
-    For x = 0 To 50
-        If theButtons(x).filename <> "" Then
+    For X = 0 To 50
+        If theButtons(X).filename <> "" Then
             ifButtons = True
             Exit Function
         End If
-    Next x
+    Next X
     ifButtons = False
 
     Exit Function
@@ -1044,7 +1044,7 @@ Sub loadSizedPicture(filename As String, x1 As Integer, y1 As Integer, x2 As Int
     
      'tkvisual.buffer.Picture = tkvisual.PicClip1.Clip
      Call vbPicAutoRedraw(tkvisual.buffer, True)
-     Call DrawSizedImage(projectPath + bmppath + filename, 0, 0, getTrueCoordX(x2 - x1), getTrueCoordY(y2 - y1), vbPicHDC(tkvisual.buffer))
+     Call DrawSizedImage(projectPath + bmpPath + filename, 0, 0, getTrueCoordX(x2 - x1), getTrueCoordY(y2 - y1), vbPicHDC(tkvisual.buffer))
         
      Call vbPicAutoRedraw(tkvisual.buffer, True)
      Call vbPicAutoRedraw(tkvisual.boardform, True)
@@ -1077,8 +1077,8 @@ Sub redraw()
     
     Call vbPicCls(tkvisual.boardform)
     
-    Dim x As Integer
-    Dim y As Integer
+    Dim X As Integer
+    Dim Y As Integer
     Dim xx As Integer
     Dim yy As Integer
       
@@ -1088,13 +1088,13 @@ Sub redraw()
     
     'draw publictile.grid...
     If bGridOnOff Then
-        For x = 0 To 19 * 32 Step 10
-            For y = 0 To 11 * 32 Step 10
-                xx = getTrueCoordX(x) - 1
-                yy = getTrueCoordY(y) - 1
+        For X = 0 To 19 * 32 Step 10
+            For Y = 0 To 11 * 32 Step 10
+                xx = getTrueCoordX(X) - 1
+                yy = getTrueCoordY(Y) - 1
                 Call vbPicPSet(tkvisual.boardform, xx, yy, vbQBColor(8))
-            Next y
-        Next x
+            Next Y
+        Next X
     End If
     
     'draw images...
@@ -1363,13 +1363,13 @@ ErrorHandler:
 End Sub
 
 
-Private Sub boardform_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error GoTo ErrorHandler
     Dim xx As Integer
     Dim yy As Integer
       
-    xx = x * (19 * 32) / (boardform.Width / Screen.TwipsPerPixelX)
-    yy = y * (11 * 32) / (boardform.height / Screen.TwipsPerPixelY)
+    xx = X * (19 * 32) / (boardform.Width / Screen.TwipsPerPixelX)
+    yy = Y * (11 * 32) / (boardform.height / Screen.TwipsPerPixelY)
       
     If bGridOnOff Then
         xx = Int(xx / 10) * 10
@@ -1404,7 +1404,7 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub boardform_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub boardform_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error GoTo ErrorHandler
     Dim xx As Integer
     Dim yy As Integer
@@ -1415,12 +1415,12 @@ Private Sub boardform_MouseMove(button As Integer, Shift As Integer, x As Single
         Exit Sub
     End If
       
-    xx = x * (19 * 32) / (boardform.Width / Screen.TwipsPerPixelX)
-    yy = y * (11 * 32) / (boardform.height / Screen.TwipsPerPixelY)
+    xx = X * (19 * 32) / (boardform.Width / Screen.TwipsPerPixelX)
+    yy = Y * (11 * 32) / (boardform.height / Screen.TwipsPerPixelY)
       
     If bGridOnOff Then
-        xx = roundOff(xx / 10) * 10
-        yy = roundOff(yy / 10) * 10
+        xx = round(xx / 10) * 10
+        yy = round(yy / 10) * 10
     End If
       
     coords.Caption = str$(xx) + "," + str$(yy)
@@ -1539,8 +1539,8 @@ End Sub
 
 Private Sub gridbutton_Click()
     On Error GoTo ErrorHandler
-    Dim x As Integer
-    Dim y As Integer
+    Dim X As Integer
+    Dim Y As Integer
     Dim xx As Integer
     Dim yy As Integer
     
@@ -1630,7 +1630,7 @@ Private Sub mnuopen_Click()
     
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Filename"
     dlg.strDefaultExt = "rfm"
@@ -1670,7 +1670,7 @@ Public Sub mnusaveas_Click()
     
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Filename"
     dlg.strDefaultExt = "rfm"
@@ -1695,5 +1695,5 @@ End Sub
 
 Private Sub tocmnu_Click()
     On Error Resume Next
-    Call BrowseFile(helppath & ObtainCaptionFromTag(DB_Help1, resourcePath & m_LangFile))
+    Call BrowseFile(helpPath & ObtainCaptionFromTag(DB_Help1, resourcePath & m_LangFile))
 End Sub

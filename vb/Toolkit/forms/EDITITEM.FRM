@@ -781,7 +781,7 @@ Public Sub saveFile()
             Call saveasmnu_Click
             Exit Sub
         End If
-        Call saveitem(projectPath$ + itmpath$ + filename$(2), itemList(activeItemIndex).theData)
+        Call saveitem(projectPath$ + itmPath$ + filename$(2), itemList(activeItemIndex).theData)
     'End If
 
     Exit Sub
@@ -796,7 +796,7 @@ Public Sub openFile(file$)
     activeItem.Show
     filename$(1) = file$
     antiPath$ = absNoPath(file$)
-    FileCopy filename$(1), projectPath$ + itmpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + itmPath$ + antiPath$
     itemList(activeItemIndex).theData = openItem(filename$(1))
     itemList(activeItemIndex).itemFile$ = antiPath$
     activeItem.Caption = LoadStringLoc(805, "Item Editor") + "  (" + antiPath$ + ")"
@@ -1128,7 +1128,7 @@ Private Sub saveasmnu_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + itmpath$
+    dlg.strDefaultFolder = projectPath$ + itmPath$
     
     dlg.strTitle = "Save Item As"
     dlg.strDefaultExt = "itm"
@@ -1143,8 +1143,7 @@ Private Sub saveasmnu_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    aa = FileExist(filename$(1))
-    If aa = 1 Then
+    If fileExists(filename(1)) Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
         If bb = 7 Then Exit Sub
     End If
@@ -1160,7 +1159,7 @@ Private Sub savemnu_Click()
     On Error GoTo ErrorHandler
     filename$(2) = itemList(activeItemIndex).itemFile$
     If filename$(2) = "" Then saveasmnu_Click: Exit Sub
-    Call saveitem(projectPath$ + itmpath$ + filename$(2), itemList(activeItemIndex).theData)
+    Call saveitem(projectPath$ + itmPath$ + filename$(2), itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemNeedUpdate = False
 
 
@@ -1209,7 +1208,7 @@ End Sub
 
 Private Sub toc_Click()
     On Error GoTo ErrorHandler
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:

@@ -142,22 +142,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'KSNiloc says: No evil variants, please
-Private x As Integer, y As Integer
-'========================================================================
-' ??? I'm not sure when this is called for...
-' To cbm: was this first a cancel button or so? If so, you can delete this
-' since I added a new one =).
-'========================================================================
-Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
-    layertile.Hide
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
+Private X As Integer, Y As Integer
 
 '========================================================================
 ' !NEW! The preview checkbox
@@ -165,13 +150,13 @@ End Sub
 Private Sub chkPreview_Click()
     'If they uncheck it, we should turn the tile back to how it was at the start
     If chkPreview.value = 0 Then
-        For x = 1 To 32
-            For y = 1 To 32
+        For X = 1 To 32
+            For Y = 1 To 32
                 'If tilemem(x, y) <> -1 Then
-                    tilemem(x, y) = tilepreview(x, y)
+                    tilemem(X, Y) = tilepreview(X, Y)
                 'End If
-            Next y
-        Next x
+            Next Y
+        Next X
     activeTile.tileRedraw
     'If they check it, preview the tile!
     Else
@@ -217,20 +202,20 @@ Private Sub cmdOpenTile_Click()
 
     ReDim buffer(32, 32)
     
-    For x = 1 To 32
-        For y = 1 To 32
-            buftile(x, y) = tilemem(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            buftile(X, Y) = tilemem(X, Y)
+        Next Y
+    Next X
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     
     '!NEW! Declared these variables, first there was a $ behind each of them, I
     'removed those.
     Dim antiPath, whichType, txtFile As String
     
-    dlg.strDefaultFolder = projectPath$ + tilepath$
+    dlg.strDefaultFolder = projectPath$ + tilePath$
     
     dlg.strTitle = "Open Tile For Layering"
     dlg.strDefaultExt = "gph"
@@ -247,32 +232,32 @@ Private Sub cmdOpenTile_Click()
     whichType = extention(filename(1))
     If UCase$(whichType) = "TST" Then      'Yipes! we've selected an archive!
         tstnum = 0
-        ChDir (currentdir$)
+        ChDir (currentDir$)
         tstFile = antiPath
         tilesetform.Show 1
         'MsgBox setFilename$
         If setFilename$ = "" Then Exit Sub
-        Call openwintile(projectPath$ + tilepath$ + setFilename$)
+        Call openWinTile(projectPath$ + tilePath$ + setFilename$)
     Else
-        Call openwintile(filename(1))
+        Call openWinTile(filename(1))
     End If
 
     Call vbPicFillRect(layerpic, 0, 0, 100, 100, vbQBColor(15))
-    For x = 1 To 32
-        For y = 1 To 32
-            If tilemem(x, y) <> -1 Then
-                Call vbPicPSet(layerpic, x - 1, y - 1, tilemem(x, y))
+    For X = 1 To 32
+        For Y = 1 To 32
+            If tilemem(X, Y) <> -1 Then
+                Call vbPicPSet(layerpic, X - 1, Y - 1, tilemem(X, Y))
             End If
-        Next y
-    Next x
-    For x = 1 To 32
-        For y = 1 To 32
-            buffer(x, y) = tilemem(x, y)
-            tilemem(x, y) = buftile(x, y)
-            buftile(x, y) = buffer(x, y)
-        Next y
-    Next x
-    ChDir (currentdir$)
+        Next Y
+    Next X
+    For X = 1 To 32
+        For Y = 1 To 32
+            buffer(X, Y) = tilemem(X, Y)
+            tilemem(X, Y) = buftile(X, Y)
+            buftile(X, Y) = buffer(X, Y)
+        Next Y
+    Next X
+    ChDir (currentDir$)
     
     '!NEW! If the preview checkbox is checked, preview the tile.
     If chkPreview.value = 1 Then Call Preview
@@ -292,13 +277,13 @@ Private Sub Form_Activate()
     If publicTile.transparentLayer = 1 Then transp.value = 1 Else transp.value = 0
     
     '!NEW! Used to store the current tile for when the "preview" function is used
-    For x = 1 To 32
-        For y = 1 To 32
+    For X = 1 To 32
+        For Y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilepreview(x, y) = tilemem(x, y)
+                tilepreview(X, Y) = tilemem(X, Y)
             'End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
     '!NEW! Set the variable to False at the start...
     SaveChanges = False
@@ -326,13 +311,13 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Use new undo
     Call activeTile.SetUndo
-    For x = 1 To 32
-        For y = 1 To 32
-            If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+    For X = 1 To 32
+        For Y = 1 To 32
+            If tilemem(X, Y) <> -1 Then
+                tilemem(X, Y) = tilepreview(X, Y)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     'Redraw
     activeTile.tileRedraw
 
@@ -363,37 +348,37 @@ Private Sub Preview()
     Dim rrbuf, ggbuf, bbbuf, rrtile, ggtile, bbtile As String
     
     'First we need to to set the tile back to how it was at the start
-    For x = 1 To 32
-        For y = 1 To 32
-            If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+    For X = 1 To 32
+        For Y = 1 To 32
+            If tilemem(X, Y) <> -1 Then
+                tilemem(X, Y) = tilepreview(X, Y)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
-    For x = 1 To 32
-        For y = 1 To 32
+    For X = 1 To 32
+        For Y = 1 To 32
             If publicTile.transparentLayer = 0 Then
-                If buftile(x, y) = -1 Then buftile(x, y) = tilemem(x, y)
-                tilemem(x, y) = buftile(x, y)
+                If buftile(X, Y) = -1 Then buftile(X, Y) = tilemem(X, Y)
+                tilemem(X, Y) = buftile(X, Y)
             Else
-                If buftile(x, y) = -1 Then
-                    buftile(x, y) = tilemem(x, y)
+                If buftile(X, Y) = -1 Then
+                    buftile(X, Y) = tilemem(X, Y)
                 Else
-                    rrbuf = red(buftile(x, y))
-                    ggbuf = green(buftile(x, y))
-                    bbbuf = blue(buftile(x, y))
-                    rrtile = red(tilemem(x, y))
-                    ggtile = green(tilemem(x, y))
-                    bbtile = green(tilemem(x, y))
+                    rrbuf = red(buftile(X, Y))
+                    ggbuf = green(buftile(X, Y))
+                    bbbuf = blue(buftile(X, Y))
+                    rrtile = red(tilemem(X, Y))
+                    ggtile = green(tilemem(X, Y))
+                    bbtile = green(tilemem(X, Y))
                     rrtile = rrtile + rrbuf: If rrtile > 255 Then rrtile = 255
                     ggtile = ggtile + ggbuf: If ggtile > 255 Then ggtile = 255
                     bbtile = bbtile + bbbuf: If bbtile > 255 Then bbtile = 255
-                    tilemem(x, y) = RGB(rrtile, ggtile, bbtile)
+                    tilemem(X, Y) = RGB(rrtile, ggtile, bbtile)
                 End If
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     'Redraw
     activeTile.tileRedraw
 End Sub

@@ -12,10 +12,6 @@ Option Explicit
 ' + Option Explicit added
 ' + &s used rather than +s for strings
 '
-' ---What needs to be done
-' + Remove all calls to handleError and remove the file
-'   from the project
-'
 '=======================================================
 
 Public Sub HandleError()

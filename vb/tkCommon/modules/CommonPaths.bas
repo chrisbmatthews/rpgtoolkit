@@ -8,7 +8,6 @@ Option Explicit
 Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
 Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
 Declare Function GetWindowsDirectory Lib "kernel32" Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
-'Declare Function GetShortPathName Lib "kernel32" (ByVal lpszLongPath As String, ByVal lpszShortPath As String, ByVal cchBuffer As Long) As Long
 Declare Function GetShortPathName Lib "kernel32" _
     Alias "GetShortPathNameA" (ByVal lpszLongPath As String, _
     ByVal lpszShortPath As String, ByVal cchBuffer As Long) As Long
@@ -19,37 +18,20 @@ Sub ChangeDir(newdir As String)
     'changes current diirectory (and drive) if it has to.
     Dim p As String
     Dim dr As String
-    p$ = GetPath(newdir)
+    p = GetPath(newdir)
     'now get first few chars to see if we need to change drive...
-    dr$ = Mid$(p$, 1, 2)
-    
-    If Mid$(dr$, 2, 1) = ":" Then
+    dr = Mid(p, 1, 2)
+
+    If Mid(dr, 2, 1) = ":" Then
         'yup-- the dirive is there.  let's change the drive!
-        dr$ = Mid$(p$, 1, 3)
-        ChDrive (dr$)
+        dr = Mid(p, 1, 3)
+        Call ChDrive(dr$)
     End If
     
     ChDir (newdir)
-    Exit Sub
 
 End Sub
 
-
-Function GetShortName(file As String) As String
-    GetShortName = getshortername(file)
-End Function
-
-Function isShortName(ByVal file$) As Boolean
-    'determines if a filename is the short filename
-    On Error Resume Next
-    Dim f As String
-    f$ = getshortername(file$)
-    If UCase$(f$) = UCase$(file$) Then
-        isShortName = True
-    Else
-        isShortName = False
-    End If
-End Function
 Public Function SystemDir() As String
     'returns path of windows\system dir
     ''returns path with the ending '\' on it
@@ -81,21 +63,6 @@ Public Function TempDir() As String
     Dim le As Long
     le = GetTempPath(400, ret)
     TempDir = Mid$(ret, 1, le)
-
-End Function
-
-
-Public Function getshortername(inFile As String) As String
-    'returns filename in old dos 8.3 format
-    On Error GoTo errsn
-    Dim ret As String * 400
-    Dim le As Long
-    le = GetShortPathName(inFile, ret, 400)
-    getshortername = Mid$(ret, 1, le)
-    Exit Function
-    
-errsn:
-    Resume Next
 End Function
 
 Public Function GetExt(inFile As String) As String
@@ -103,7 +70,7 @@ Public Function GetExt(inFile As String) As String
     On Error Resume Next
     Dim theloc As Long, t As Long, part As String, theext As String
     theloc = 0
-    
+
     'step 1: search backwars for '.'
     For t = Len(inFile) To 1 Step -1
         part$ = Mid$(inFile, t, 1)
@@ -235,8 +202,7 @@ Public Function RemovePath(inFile As String) As String
     RemovePath = thefn$
 End Function
 
-
-Public Function FileExists(inFile As String) As Boolean
+Public Function fileExists(ByVal inFile As String) As Boolean
     'checks if a file exists.
     'returns t/f
     On Error GoTo feerr
@@ -245,7 +211,7 @@ Public Function FileExists(inFile As String) As Boolean
     retval = True
     Open inFile For Input As #num
     Close #num
-    FileExists = retval
+    fileExists = retval
     Exit Function
     
 feerr:

@@ -619,7 +619,7 @@ Public Sub saveFile()
             Call mnusaveas_Click
             Exit Sub
         End If
-        Call saveBackground(projectPath$ + enepath$ + filename$(2), bkgList(activeBkgIndex).theData)
+        Call saveBackground(projectPath$ + enePath$ + filename$(2), bkgList(activeBkgIndex).theData)
     'End If
 
     Exit Sub
@@ -696,7 +696,7 @@ Private Sub Command1_Click()
     ChDir (currentDir$)
     Dim antiPath As String
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmppath$
+    dlg.strDefaultFolder = projectPath$ + bmpPath$
     dlg.strTitle = "Open Bitmap"
     dlg.strDefaultExt = "bmp"
     dlg.strFileTypes = strFileDialogFilterGfx
@@ -709,7 +709,7 @@ Private Sub Command1_Click()
     bkgList(activeBkgIndex).needUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmppath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
     bkgList(activeBkgIndex).theData.image = antiPath$
     Text2.Text = antiPath$
 End Sub
@@ -719,7 +719,7 @@ Private Sub Command2_Click()
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
     dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
@@ -732,7 +732,7 @@ Private Sub Command2_Click()
     bkgList(activeBkgIndex).needUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgSelWav$ = antiPath$
     clickbox.Text = antiPath$
 End Sub
@@ -742,7 +742,7 @@ Private Sub Command3_Click()
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
     dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
@@ -755,7 +755,7 @@ Private Sub Command3_Click()
     bkgList(activeBkgIndex).needUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgChooseWav$ = antiPath$
     selectbox.Text = antiPath$
 End Sub
@@ -765,7 +765,7 @@ Private Sub Command4_Click()
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
     dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
@@ -778,7 +778,7 @@ Private Sub Command4_Click()
     bkgList(activeBkgIndex).needUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgCantDoWav$ = antiPath$
     illegalbox.Text = antiPath$
 End Sub
@@ -788,7 +788,7 @@ Private Sub Command5_Click()
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
     dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
@@ -801,7 +801,7 @@ Private Sub Command5_Click()
     bkgList(activeBkgIndex).needUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgReadyWav$ = antiPath$
     readybox.Text = antiPath$
 End Sub
@@ -811,7 +811,7 @@ Private Sub Command6_Click()
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     dlg.strTitle = "Select Background Battle Music"
     dlg.strDefaultExt = "mid"
     dlg.strFileTypes = strFileDialogFilterMedia
@@ -824,7 +824,7 @@ Private Sub Command6_Click()
     bkgList(activeBkgIndex).needUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgMusic$ = antiPath$
     Text1.Text = antiPath$
 End Sub
@@ -983,7 +983,7 @@ Private Sub mnusave_Click()
     Dim file As String
     file = bkgList(activeBkgIndex).filename
     If file = "" Then Call mnusaveas_Click: Exit Sub
-    Call saveBackground(projectPath$ + bkgpath$ + file, bkgList(activeBkgIndex).theData)
+    Call saveBackground(projectPath$ + bkgPath$ + file, bkgList(activeBkgIndex).theData)
     bkgList(activeBkgIndex).needUpdate = False
 
     Exit Sub
@@ -999,7 +999,7 @@ Private Sub mnusaveas_Click()
     Dim dlg As FileDialogInfo
     Dim antiPath As String, aa As Long, bb As Long
     
-    dlg.strDefaultFolder = projectPath$ + bkgpath$
+    dlg.strDefaultFolder = projectPath$ + bkgPath$
     
     dlg.strTitle = "Save Background As"
     dlg.strDefaultExt = "bkg"
@@ -1014,8 +1014,7 @@ Private Sub mnusaveas_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    aa = fileExist(filename$(1))
-    If aa = 1 Then
+    If fileExists(filename(1)) Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
         If bb = 7 Then Exit Sub
     End If
@@ -1029,7 +1028,7 @@ End Sub
 
 Private Sub toc_Click()
     On Error GoTo ErrorHandler
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:

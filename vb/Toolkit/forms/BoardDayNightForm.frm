@@ -185,21 +185,22 @@ Attribute VB_Exposed = False
 'Read LICENSE.txt for licensing info
 
 Option Explicit
-Sub infofill()
+
+Sub infoFill()
     On Error GoTo ErrorHandler
 
     fyes.value = boardList(activeBoardIndex).theData.BoardNightBattleOverride
     If boardList(activeBoardIndex).theData.BoardNightBattleOverride = 0 Then
         'fyes.Value = 0
         Label3(0).Enabled = 0
-        command5.Enabled = 0
+        Command5.Enabled = 0
         skillbox.Enabled = 0
         Label1.Enabled = False
         Text1.Enabled = False
     Else
         'fyes.Value = 1
         Label3(0).Enabled = 1
-        command5.Enabled = 1
+        Command5.Enabled = 1
         skillbox.Enabled = 1
         Label1.Enabled = True
         Text1.Enabled = True
@@ -224,10 +225,10 @@ End Sub
 
 Private Sub Command5_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + bkgpath$
+    dlg.strDefaultFolder = projectPath$ + bkgPath$
     dlg.strTitle = "Board Background"
     dlg.strDefaultExt = "bkg"
     dlg.strFileTypes = "Supported Files|*.bkg|RPG Toolkit Background (*.bkg)|*.bkg|All files(*.*)|*.*"
@@ -237,18 +238,18 @@ Private Sub Command5_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bkgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + bkgPath$ + antiPath$
     boardList(activeBoardIndex).theData.BoardBackgroundNight$ = antiPath$
     Text1.Text = antiPath$
 End Sub
 
 Private Sub Form_Load()
     Call LocalizeForm(Me)
-    Call infofill
-    command5.MousePointer = 99
-    command5.MouseIcon = Images.MouseLink
+    Call infoFill
+    Command5.MousePointer = 99
+    Command5.MouseIcon = Images.MouseLink
     Set TopBar.theForm = Me
 End Sub
 
@@ -258,14 +259,14 @@ Private Sub fyes_Click()
     If boardList(activeBoardIndex).theData.BoardNightBattleOverride = 0 Then
         'fyes.Value = 0
         Label3(0).Enabled = 0
-        command5.Enabled = 0
+        Command5.Enabled = 0
         skillbox.Enabled = 0
         Label1.Enabled = False
         Text1.Enabled = False
     Else
         'fyes.Value = 1
         Label3(0).Enabled = 1
-        command5.Enabled = 1
+        Command5.Enabled = 1
         skillbox.Enabled = 1
         Label1.Enabled = True
         Text1.Enabled = True

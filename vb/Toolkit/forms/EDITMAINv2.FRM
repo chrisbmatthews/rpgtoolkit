@@ -79,8 +79,8 @@ Begin VB.Form editmainfile
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "actionframe"
-      Tab(2).Control(1)=   "prgframe"
+      Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(1)=   "actionframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -95,9 +95,9 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Frame3"
+      Tab(5).Control(0)=   "Label24"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Label24"
+      Tab(5).Control(2)=   "Frame3"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
@@ -1835,7 +1835,7 @@ Public Sub saveFile()
             Call mnusaveas_Click
             Exit Sub
         End If
-        Call saveMain(gampath$ + filename$(2), mainMem)
+        Call saveMain(gamPath$ + filename$(2), mainMem)
     'End If
 
     Exit Sub
@@ -1946,7 +1946,7 @@ Private Sub Command14_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + brdpath$
+    dlg.strDefaultFolder = projectPath$ + brdPath$
     
     dlg.strTitle = "Select Board"
     dlg.strDefaultExt = "brd"
@@ -1961,7 +1961,7 @@ Private Sub Command14_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + brdpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
     initboardbox.Text = antiPath$
     mainMem.initBoard$ = antiPath$
 End Sub
@@ -1970,7 +1970,7 @@ Private Sub Command15_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tempath$
+    dlg.strDefaultFolder = projectPath$ + temPath$
     
     dlg.strTitle = "Select Character"
     dlg.strDefaultExt = "tem"
@@ -1985,7 +1985,7 @@ Private Sub Command15_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + tempath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + temPath$ + antiPath$
     initcharbox.Text = antiPath$
     mainMem.initChar$ = antiPath$
 End Sub
@@ -1994,7 +1994,7 @@ Private Sub Command16_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -2009,7 +2009,7 @@ Private Sub Command16_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     runtimebox.Text = antiPath$
     mainMem.runTime$ = antiPath$
 End Sub
@@ -2018,7 +2018,7 @@ Private Sub Command17_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -2033,7 +2033,7 @@ Private Sub Command17_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     startupbox.Text = antiPath$
     mainMem.startupPrg$ = antiPath$
 End Sub
@@ -2042,7 +2042,7 @@ Private Sub Command18_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -2058,7 +2058,7 @@ Private Sub Command18_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     whichType$ = extention(filename$(1))
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     Text1.Text = antiPath$
     mainMem.gameOverPrg$ = antiPath$
 End Sub
@@ -2160,7 +2160,7 @@ Private Sub Command7_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
@@ -2175,7 +2175,7 @@ Private Sub Command7_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
     cursormove.Text = antiPath$
     mainMem.cursorMoveSound = antiPath$
 End Sub
@@ -2185,7 +2185,7 @@ Private Sub Command8_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
@@ -2200,7 +2200,7 @@ Private Sub Command8_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
     cursorselect.Text = antiPath$
     mainMem.cursorSelectSound = antiPath$
 End Sub
@@ -2209,7 +2209,7 @@ Private Sub Command9_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
@@ -2224,7 +2224,7 @@ Private Sub Command9_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
     cursorcancel.Text = antiPath$
     mainMem.cursorCancelSound = antiPath$
 End Sub
@@ -2682,7 +2682,7 @@ Private Sub openmnu_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gampath$
+    dlg.strDefaultFolder = gamPath$
     
     dlg.strTitle = "Open Main File"
     dlg.strDefaultExt = "gam"
@@ -2696,7 +2696,7 @@ Private Sub openmnu_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), gampath$ + antiPath$
+    FileCopy filename$(1), gamPath$ + antiPath$
     Call openMainFile(filename$(1))
     mainfile$ = antiPath$
     editmainfile.Caption = LoadStringLoc(800, "Project Properties") + "  (" + antiPath$ + ")"
@@ -2715,7 +2715,7 @@ Private Sub mnusaveas_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gampath$
+    dlg.strDefaultFolder = gamPath$
     
     dlg.strTitle = "Save Main File As"
     dlg.strDefaultExt = "gam"
@@ -2730,8 +2730,7 @@ Private Sub mnusaveas_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    aa = FileExist(filename$(1))
-    If aa = 1 Then
+    If fileExists(filename(1)) Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
         If bb = 7 Then Exit Sub
     End If
@@ -2812,7 +2811,7 @@ Private Sub savemnu_Click()
     On Error GoTo ErrorHandler
     filename$(2) = mainfile$
     If filename$(2) = "" Then mnusaveas_Click: Exit Sub
-    Call saveMain(gampath$ + filename$(2), mainMem)
+    Call saveMain(gamPath$ + filename$(2), mainMem)
     mainNeedUpdate = False
 
     Exit Sub
@@ -2921,7 +2920,7 @@ End Sub
 
 Private Sub toc_Click()
     On Error GoTo ErrorHandler
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:

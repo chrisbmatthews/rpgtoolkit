@@ -92,16 +92,13 @@ Private Sub Command1_Click()
     On Error Resume Next
     Dim cmp As Boolean
     
-    filename$(1) = Text1.text
+    filename$(1) = Text1.Text
     
     If filename$(1) = "" Then Exit Sub
     
-    aa = fileExist(filename$(1))
-    If aa = 1 Then
+    If fileExists(filename(1)) Then
         MsgBox "Cannot overwrite an existing file!"
         Exit Sub
-        'bb = MsgBox("That file exists.  Are you sure you want to overwrite it?", vbYesNo, "Save")
-        'If bb = 7 Then Exit Sub
     End If
     
     Call CreatePakFile(filename$(1))
@@ -112,9 +109,9 @@ Private Sub Command2_Click()
     On Error Resume Next
     Dim cmp As Boolean
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gampath$
+    dlg.strDefaultFolder = gamPath$
     
     dlg.strTitle = "Save PakFile As"
     dlg.strDefaultExt = "tpk"
@@ -126,16 +123,16 @@ Private Sub Command2_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
     
-    Text1.text = filename$(1)
+    Text1.Text = filename$(1)
 End Sub
 
 
 Private Sub Command3_Click()
-    Unload PakFile
+    Unload pakfile
 End Sub
 
 Private Sub Form_Load()
@@ -144,7 +141,7 @@ End Sub
 
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
     a = PAKTestSystem()
     If a = False Then Exit Sub
@@ -153,7 +150,7 @@ Private Sub link1_Click()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

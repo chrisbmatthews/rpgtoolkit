@@ -649,7 +649,7 @@ Public Sub saveFile()
             Call saveasmnu_Click
             Exit Sub
         End If
-        Call saveSpecialMove(projectPath$ + spcpath$ + filename$(2), specialMoveList(activeSpecialMoveIndex).theData)
+        Call saveSpecialMove(projectPath$ + spcPath$ + filename$(2), specialMoveList(activeSpecialMoveIndex).theData)
     'End If
 
     Exit Sub
@@ -664,7 +664,7 @@ Public Sub openFile(file$)
     activeSpecialMove.Show
     filename$(1) = file$
     antiPath$ = absNoPath(file$)
-    FileCopy filename$(1), projectPath$ + spcpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + spcPath$ + antiPath$
     Call openSpecialMove(filename$(1), specialMoveList(activeSpecialMoveIndex).theData)
     spfile$ = antiPath$
     activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") + "  (" + antiPath$ + ")"
@@ -713,7 +713,7 @@ Private Sub Command1_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + statuspath$
+    dlg.strDefaultFolder = projectPath$ + statusPath$
     
     dlg.strTitle = "Select Status Effect"
     dlg.strDefaultExt = "ste"
@@ -728,7 +728,7 @@ Private Sub Command1_Click()
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + statuspath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + statusPath$ + antiPath$
     statuse.Text = antiPath$
     specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect$ = antiPath$
 End Sub
@@ -737,7 +737,7 @@ Private Sub Command14_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -752,7 +752,7 @@ Private Sub Command14_Click()
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     rpgcodebox.Text = antiPath$
     specialMoveList(activeSpecialMoveIndex).theData.smPrg$ = antiPath$
 End Sub
@@ -936,7 +936,7 @@ Private Sub saveasmnu_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + spcpath$
+    dlg.strDefaultFolder = projectPath$ + spcPath$
     
     dlg.strTitle = "Save Special Move As"
     dlg.strDefaultExt = "spc"
@@ -951,8 +951,7 @@ Private Sub saveasmnu_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    aa = fileExist(filename$(1))
-    If aa = 1 Then
+    If fileExists(filename(1)) Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
         If bb = 7 Then Exit Sub
     End If
@@ -967,7 +966,7 @@ Private Sub savemnu_Click()
     On Error GoTo ErrorHandler
     filename$(2) = specialMoveList(activeSpecialMoveIndex).smFile$
     If filename$(2) = "" Then saveasmnu_Click: Exit Sub
-    Call saveSpecialMove(projectPath$ + spcpath$ + filename$(2), specialMoveList(activeSpecialMoveIndex).theData)
+    Call saveSpecialMove(projectPath$ + spcPath$ + filename$(2), specialMoveList(activeSpecialMoveIndex).theData)
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
 
     Exit Sub
@@ -1008,7 +1007,7 @@ End Sub
 
 Private Sub toc_Click()
     On Error GoTo ErrorHandler
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:

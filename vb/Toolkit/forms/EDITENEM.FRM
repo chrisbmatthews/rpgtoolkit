@@ -723,7 +723,7 @@ Public Sub saveFile()
             Call mnusaveas_Click
             Exit Sub
         End If
-        Call saveEnemy(projectPath$ + enepath$ + filename$(2), enemylist(activeEnemyIndex).theData)
+        Call saveEnemy(projectPath$ + enePath$ + filename$(2), enemylist(activeEnemyIndex).theData)
     'End If
 
     Exit Sub
@@ -740,7 +740,7 @@ Public Sub openFile(file$)
     filename$(1) = file$
     Dim antiPath As String
     antiPath$ = absNoPath(file$)
-    FileCopy filename$(1), projectPath$ + enepath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + enePath$ + antiPath$
     Call openEnemy(filename$(1), enemylist(activeEnemyIndex).theData)
     enemylist(activeEnemyIndex).eneFile$ = antiPath$
     activeEnemy.Caption = LoadStringLoc(806, "Edit Enemy") + " (" + antiPath$ + ")"
@@ -838,7 +838,7 @@ Private Sub Command7_Click()
     ChDir (currentDir$)
     Dim antiPath As String
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
     dlg.strFileTypes = "Supported Files|*.prg|RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
@@ -851,7 +851,7 @@ Private Sub Command7_Click()
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     rprg.Text = antiPath$
     enemylist(activeEnemyIndex).theData.eneRunPrg$ = antiPath$
 End Sub
@@ -1048,7 +1048,7 @@ Private Sub mnusave_Click()
     On Error GoTo ErrorHandler
     filename$(2) = enemylist(activeEnemyIndex).eneFile$
     If filename$(2) = "" Then Call mnusaveas_Click: Exit Sub
-    Call saveEnemy(projectPath$ + enepath$ + filename$(2), enemylist(activeEnemyIndex).theData)
+    Call saveEnemy(projectPath$ + enePath$ + filename$(2), enemylist(activeEnemyIndex).theData)
     enemylist(activeEnemyIndex).eneNeedUpdate = False
 
     Exit Sub
@@ -1064,7 +1064,7 @@ Private Sub mnusaveas_Click()
     Dim dlg As FileDialogInfo
     Dim antiPath As String, aa As Long, bb As Long
     
-    dlg.strDefaultFolder = projectPath$ + enepath$
+    dlg.strDefaultFolder = projectPath$ + enePath$
     
     dlg.strTitle = "Save Enemy As"
     dlg.strDefaultExt = "ene"
@@ -1079,8 +1079,7 @@ Private Sub mnusaveas_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    aa = fileExist(filename$(1))
-    If aa = 1 Then
+    If fileExists(filename(1)) Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
         If bb = 7 Then Exit Sub
     End If
@@ -1107,7 +1106,7 @@ End Sub
 
 Private Sub toc_Click()
     On Error GoTo ErrorHandler
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:

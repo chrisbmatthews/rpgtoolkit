@@ -446,7 +446,7 @@ On Error Resume Next
     Next x
     publicTile.oldDetail = detail
     detail = 1
-    tstName$ = replaceChar(RemovePath(file$), ".", "_") + ".tst"
+    tstName$ = replace(RemovePath(file$), ".", "_") + ".tst"
     tstName$ = projectPath$ + tilePath$ + tstName$
     
     file$ = PakLocate(file$)
@@ -563,10 +563,10 @@ On Error Resume Next
             xx = 0
             walkFix$ = "S"
             For x = 0 To 15
-                anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
+                anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
                 anmName$ = projectPath$ + miscPath$ + anmName$
                 
-                tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
                 tbmName$ = projectPath$ + bmpPath$ + tbmName$
                 
                 Call TileBitmapClear(tbm)
@@ -640,39 +640,39 @@ On Error Resume Next
                 Next y
                 
                 'now save those tile bitmaps...
-                tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_fight_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + toString(x) + ".tbm"
                 Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbmFight)
                 anmFight.animFrame(x) = tbmName$
             
-                tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_defense_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + toString(x) + ".tbm"
                 Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbmDef)
                 anmDef.animFrame(x) = tbmName$
             
-                tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_spc_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + toString(x) + ".tbm"
                 Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbmSPC)
                 anmSPC.animFrame(x) = tbmName$
             
-                tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_death_" + toString(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" + toString(x) + ".tbm"
                 Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbmDead)
                 anmDead.animFrame(x) = tbmName$
             Next x
             'now save the animations...
-            anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_fight" + ".anm"
+            anmName$ = replace(RemovePath(file$), ".", "_") + "_fight" + ".anm"
             anmFight.animSound(0) = swipeWav
             Call saveAnimation(projectPath$ + miscPath$ + anmName$, anmFight)
             thePlayer.gfx(PLYR_FIGHT) = anmName$
             
-            anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_defense" + ".anm"
+            anmName$ = replace(RemovePath(file$), ".", "_") + "_defense" + ".anm"
             anmDef.animSound(0) = defendWav
             Call saveAnimation(projectPath$ + miscPath$ + anmName$, anmDef)
             thePlayer.gfx(PLYR_DEFEND) = anmName$
             
-            anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_spc" + ".anm"
+            anmName$ = replace(RemovePath(file$), ".", "_") + "_spc" + ".anm"
             anmSPC.animSound(0) = smWav
             Call saveAnimation(projectPath$ + miscPath$ + anmName$, anmSPC)
             thePlayer.gfx(PLYR_SPC) = anmName$
             
-            anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_death" + ".anm"
+            anmName$ = replace(RemovePath(file$), ".", "_") + "_death" + ".anm"
             anmDead.animSound(0) = deadWav
             Call saveAnimation(projectPath$ + miscPath$ + anmName$, anmDead)
             thePlayer.gfx(PLYR_DIE) = anmName$
@@ -688,10 +688,10 @@ On Error Resume Next
                     tbm.tiles(x, y) = fightRestGfx(x, y)
                 Next y
             Next x
-            tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
+            tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
             Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbm)
             anm.animFrame(0) = tbmName$
-            anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_rest" + ".anm"
+            anmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
             Call saveAnimation(projectPath$ + miscPath$ + anmName$, anm)
             thePlayer.gfx(PLYR_REST) = anmName$
             
@@ -708,10 +708,10 @@ On Error Resume Next
                 If tbm.tiles(0, 0) = "" And tbm.tiles(0, 1) = "" Then
                     'nothing there
                 Else
-                    tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".tbm"
+                    tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".tbm"
                     Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbm)
                     anm.animFrame(0) = tbmName$
-                    anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".anm"
+                    anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".anm"
                     Call saveAnimation(projectPath$ + miscPath$ + anmName$, anm)
                     'thePlayer.customgfx(x) = anmname$
                     Call playerAddCustomGfx(thePlayer, "Custom " + toString(x), anmName$)
@@ -974,10 +974,10 @@ ver2oldchar:
     xx = 0
     walkFix$ = "S"
     For x = 0 To 15
-        anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
+        anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
         anmName$ = projectPath$ + miscPath$ + anmName$
         
-        tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
         tbmName$ = projectPath$ + bmpPath$ + tbmName$
         
         Call TileBitmapClear(tbm)
@@ -1042,39 +1042,39 @@ ver2oldchar:
         Next y
         
         'now save those tile bitmaps...
-        tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_fight_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + toString(x) + ".tbm"
         Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbmFight)
         anmFight.animFrame(x) = tbmName$
     
-        tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_defense_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + toString(x) + ".tbm"
         Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbmDef)
         anmDef.animFrame(x) = tbmName$
     
-        tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_spc_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + toString(x) + ".tbm"
         Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbmSPC)
         anmSPC.animFrame(x) = tbmName$
     
-        tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_death_" + toString(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" + toString(x) + ".tbm"
         Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbmDead)
         anmDead.animFrame(x) = tbmName$
     Next x
     'now save the animations...
-    anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_fight" + ".anm"
+    anmName$ = replace(RemovePath(file$), ".", "_") + "_fight" + ".anm"
     anmFight.animSound(0) = swipeWav
     Call saveAnimation(projectPath$ + miscPath$ + anmName$, anmFight)
     thePlayer.gfx(PLYR_FIGHT) = anmName$
     
-    anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_defense" + ".anm"
+    anmName$ = replace(RemovePath(file$), ".", "_") + "_defense" + ".anm"
     anmDef.animSound(0) = defendWav
     Call saveAnimation(projectPath$ + miscPath$ + anmName$, anmDef)
     thePlayer.gfx(PLYR_DEFEND) = anmName$
     
-    anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_spc" + ".anm"
+    anmName$ = replace(RemovePath(file$), ".", "_") + "_spc" + ".anm"
     anmSPC.animSound(0) = smWav
     Call saveAnimation(projectPath$ + miscPath$ + anmName$, anmSPC)
     thePlayer.gfx(PLYR_SPC) = anmName$
     
-    anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_death" + ".anm"
+    anmName$ = replace(RemovePath(file$), ".", "_") + "_death" + ".anm"
     anmDead.animSound(0) = deadWav
     Call saveAnimation(projectPath$ + miscPath$ + anmName$, anmDead)
     thePlayer.gfx(PLYR_DIE) = anmName$
@@ -1089,10 +1089,10 @@ ver2oldchar:
             tbm.tiles(x, y) = fightRestGfx(x, y)
         Next y
     Next x
-    tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
+    tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
     Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbm)
     anm.animFrame(0) = tbmName$
-    anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_rest" + ".anm"
+    anmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
     Call saveAnimation(projectPath$ + miscPath$ + anmName$, anm)
     thePlayer.gfx(PLYR_REST) = anmName$
     
@@ -1109,10 +1109,10 @@ ver2oldchar:
             'nothing there
             thePlayer.customGfx(x) = ""
         Else
-            tbmName$ = replaceChar(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".tbm"
+            tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".tbm"
             Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbm)
             anm.animFrame(0) = tbmName$
-            anmName$ = replaceChar(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".anm"
+            anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + toString(x) + ".anm"
             Call saveAnimation(projectPath$ + miscPath$ + anmName$, anm)
             Call playerAddCustomGfx(thePlayer, "Custom " + toString(x), anmName$)
         End If

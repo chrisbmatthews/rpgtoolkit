@@ -1,10 +1,10 @@
-Attribute VB_Name = "GLOBAL"
+Attribute VB_Name = "Globals"
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
 '=======================================================
-' Global
+' Globals
 '
 ' Contains various misc globals and constants.
 '=======================================================
@@ -26,13 +26,12 @@ Option Explicit
 'Misc Variables
 Public currentDir As String                    'Current directory
 Public oldValue As Long                        'oldValue for RGB
-Public filename(30) As String                  'Filename array
+Public filename(1 To 5) As String              'filename array
 Public projectPath As String                   'path of current project
 Public mp3Path As String                       'starting path for mp3 files (the bard)
 
 'Misc Constants
 Public Const compression = 1                   'use compression where avaliable
-Public Const currentVersion = 2.1              '[now] arbitrary value
 Public Const major = 2                         '[now] arbitrary value
 Public Const minor = 0                         '[now] arbitrary value
 Public Const gamePath = "Game\"                'game dir
@@ -199,3 +198,8 @@ Public Images As New clsImages
 'Required for commonboard
 Public itemMem() As Boolean
 Public itmPos() As Boolean
+
+'Currently running version
+Public Property Get currentVersion() As String
+    currentVersion = App.major & "." & App.minor & "." & App.Revision
+End Property

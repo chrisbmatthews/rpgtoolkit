@@ -68,7 +68,7 @@ Sub saveBackground(ByVal file As String, ByRef theBkg As TKBackground)
     
     Open file For Binary As #num
         Call BinWriteString(num, "RPGTLKIT BKG")    'Filetype
-        Call BinWriteInt(num, major)               'Version
+        Call BinWriteInt(num, Major)               'Version
         Call BinWriteInt(num, 3)                   '2.3 == version 3 background
         Call BinWriteString(num, theBkg.image)
         Call BinWriteString(num, theBkg.bkgMusic$)        'music to play
@@ -109,7 +109,7 @@ Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
         If fileHeader$ <> "RPGTLKIT BKG" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Background": Exit Sub
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.3 == 3.0 background)
-        If majorVer <> major Then MsgBox "This Background was created with an unrecognised version of the Toolkit", , "Unable to open Background": Close #num: Exit Sub
+        If majorVer <> Major Then MsgBox "This Background was created with an unrecognised version of the Toolkit", , "Unable to open Background": Close #num: Exit Sub
     
         theBkg.image = BinReadString(num)
         theBkg.bkgMusic = BinReadString(num)
@@ -136,9 +136,9 @@ ver2bkg:
         If fileHeader$ <> "RPGTLKIT BKG" Then Close #num: Exit Sub
         majorVer = fread(num)
         minorVer = fread(num)
-        If majorVer <> major Then MsgBox "This Background was created with an unrecognised version of the Toolkit", , "Unable to open Background": Close #num: Exit Sub
-        If minorVer <> minor Then
-            user = MsgBox("This Background was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
+        If majorVer <> Major Then MsgBox "This Background was created with an unrecognised version of the Toolkit", , "Unable to open Background": Close #num: Exit Sub
+        If minorVer <> Minor Then
+            user = MsgBox("This Background was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + CurrentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
         For x = 1 To 19
@@ -162,7 +162,7 @@ ver2bkg:
         Next x
     
         Dim tbmName As String
-        tbmName$ = replaceChar(RemovePath(file$), ".", "_") + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + ".tbm"
         theBkg.image = tbmName
         tbmName$ = projectPath$ + bmpPath$ + tbmName$
         Call SaveTileBitmap(tbmName, tbm)

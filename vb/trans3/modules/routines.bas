@@ -9,12 +9,10 @@ Public Sub openMainFile(ByVal file As String)
     'opens mainForm file
     On Error Resume Next
 
-    Dim a As Byte
-
     projectPath = ""
     mainMem.mainResolution = 0
 
-    a = openMain(file, mainMem)
+    Call openMain(file, mainMem)
     Call ChangeLanguage(resourcePath & m_LangFile)
     If mainMem.mainDisableProtectReg = 1 Then
         nocodeYN = False
@@ -28,15 +26,7 @@ Public Sub openMainFile(ByVal file As String)
 
 End Sub
 
-Public Function FindFile(ByVal Text As String) As String
-    FindFile = Text
-End Function
-
-Function replaceChar(ByVal Text As String, ByVal src As String, ByVal dest As String) As String
-    replaceChar = replace(Text, src, dest)
-End Function
-
-Function toString(ByVal val As Variant) As String
+Function toString(ByVal val As String) As String
     On Error Resume Next
     toString = str(val)
     toString = removeChar(toString, " ")

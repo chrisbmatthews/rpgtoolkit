@@ -17,19 +17,15 @@ Public Const GS_DONEMOVE = 3    'movement is finished
 Public Const GS_PAUSE = 4   'pause game
 
 Private framesDrawn As Long
-
 Public movementCounter As Long 'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
-
 Public loaded As Long           'was the game loaded from start menu? 0-no, 1-yes
-
 Public runningAsEXE As Boolean  'are we running as an exe file?
-
 Public gShuttingDown As Boolean 'Has the shutdown process been initiated?
-Sub closeSystems()
-    On Error Resume Next
 
-    ' ! MODIFIED BY KSNiloc...
-    
+Public Sub closeSystems()
+
+    On Error Resume Next
+   
     'This flag added by cbm for 3.0.4
     gShuttingDown = True
     
@@ -40,7 +36,7 @@ Sub closeSystems()
     Call ShutdownVarSystem
     Call AnimationShutdown
     Call destroyGraphics
-    Call UnLoadFontsFromFolder(projectPath$ + fontPath$)
+    Call UnLoadFontsFromFolder(projectPath & fontPath)
     Call ClearAllThreads
     Call KillMedia
     Call DeletePakTemp
@@ -51,8 +47,7 @@ Sub closeSystems()
     
 End Sub
 
-
-Function getMainFilename() As String
+Public Function getMainFilename() As String
     'prompt user for a main file, or get one off the command line
     On Error Resume Next
     Dim toRet As String
@@ -60,7 +55,7 @@ Function getMainFilename() As String
     Dim antiPath As String
     
     'before we do *anything*, let's see if we are a standalone exe file!
-    exeFile$ = currentdir$ + "\" + App.EXEName + ".exe"
+    exeFile = currentDir & "\" & App.EXEName & ".exe"
     'MsgBox exefile$
     If IsAPakFile(exeFile$) Then
         Call setupPakSystem(exeFile$)
@@ -91,7 +86,7 @@ Function getMainFilename() As String
             ' ! MODIFIED BY KSNiloc...
             If LCase(GetExt(Command)) = "tpk" Then
                 setupPakSystem TempDir & Command
-                ChDir (currentdir)
+                ChDir (currentDir)
                 toRet = "main.gam"
                 projectPath = ""
                 getMainFilename = toRet
@@ -124,13 +119,13 @@ Function getMainFilename() As String
         End If
     End If
     Dim aa As Long
-    If FileExists(gamPath$ + "main.gam") Then
+    If fileExists(gamPath$ + "main.gam") Then
         'mainForm.gam exists.
         toRet = gamPath$ + "main.gam"
         getMainFilename = toRet
         Exit Function
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = gamPath$
     dlg.strSelectedFile = ""
@@ -146,7 +141,7 @@ Function getMainFilename() As String
     loadedMainFile$ = dlg.strSelectedFile
     antiPath$ = dlg.strSelectedFileNoPath
     'currentdir$ = CurDir$
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If loadedMainFile$ = "" Then Exit Function: End
     
     Dim whichType As String
@@ -167,96 +162,35 @@ Function getMainFilename() As String
     getMainFilename = toRet
 End Function
 
-
 Private Sub initgame()
     On Error Resume Next
-    Randomize Timer
-    
-    currentdir$ = CurDir$
-    
+    Call Randomize(Timer)
+    currentDir = CurDir()
     Call InitThreads
     Call InitVarSystem
     Call InitInventory(inv)
-    
-    'menucolor = RGB(75, 75, 75)
     menuColor = RGB(0, 0, 0)
-    'menucolor = RGB(50, 100, 150)
-    
     MWinSize = 90
-    
-    mainMem.mainScreenType = 2      'default to windowed
-    
-    
-    Major = 2   'Version 2
-    Minor = 0   ' version 2.0
-    CurrentVersion$ = "2.0"
-    compression = 1 'compression is used
-    filename$(2) = ""
-    projectPath$ = ""              'project path
-    tilePath$ = "Tiles\"          'Tile dir path
-    'MkDir Mid$(tilepath$, 1, Len(tilepath$) - 1)
-    brdPath$ = "Boards\"           'board dir path
-    'MkDir Mid$(brdpath$, 1, Len(brdpath$) - 1)
-    temPath$ = "Chrs\"           'character dir path
-    'MkDir Mid$(tempath$, 1, Len(tempath$) - 1)
-    arcPath$ = "Archives\"           'archive dir path
-    'MkDir Mid$(arcpath$, 1, Len(arcpath$) - 1)
-    spcPath$ = "SpcMove\"       'spc move path
-    'MkDir Mid$(spcpath$, 1, Len(spcpath$) - 1)
-    bkgPath$ = "Bkrounds\"       'bkg path
-    'MkDir Mid$(bkgpath$, 1, Len(bkgpath$) - 1)
-    mediaPath$ = "Media\"       'media path
-    'MkDir Mid$(mediapath$, 1, Len(mediapath$) - 1)
-    prgPath$ = "Prg\"       'prg path
-    'MkDir Mid$(prgpath$, 1, Len(prgpath$) - 1)
-    fontPath$ = "Font\"     'Font path
-    'MkDir Mid$(fontpath$, 1, Len(fontpath$) - 1)
-    itmPath$ = "Item\"     'Item path
-    'MkDir Mid$(itmpath$, 1, Len(itmpath$) - 1)
-    enePath$ = "Enemy\"     'enemy path
-    'MkDir Mid$(enepath$, 1, Len(enepath$) - 1)
-    gamPath$ = "Main\"     'mainForm file path
-    'MkDir Mid$(gampath$, 1, Len(gampath$) - 1)
-    bmpPath$ = "Bitmap\"
-    statusPath$ = "StatusE\"
-    miscPath$ = "Misc\"
-    pluginPath$ = "Plugin\"
-    savPath$ = "Saved\"     'saved games
-    MkDir Mid$(savPath$, 1, Len(savPath$) - 1)
-    resourcePath$ = "Resources\"
-    
-    Call InitLocalizeSystem
-    
+    mainMem.mainScreenType = 2
+    filename(2) = ""
+    projectPath = ""
+    savPath = "Saved\"
+    MkDir Mid(savPath$, 1, Len(savPath) - 1)
     'init data...
     activeBoardIndex = VectBoardNewSlot()
-    
-    
-    Exit Sub
-    
+    Call InitLocalizeSystem
 End Sub
-
 
 Sub initDefaults()
     'initialise defaults
     On Error Resume Next
-    
-    initTime = Timer
-    
+    initTime = Timer()
     Call StartTracing("trace.txt")
-    
-    'ChDir App.path & "\"
-    
     If Not (InitRuntime()) Then
         MsgBox "Could not initialize actkrt3.dll.  Do you have actkrt3.dll and freeimage.dll in the working directory?"
         End
     End If
-    
-    'call tracestring("About to init game")
-    
     Call initgame
-    
-    'call tracestring("Done init game")
-    'call tracestring("About to load mainForm")
 End Sub
 
 Public Sub Main()
@@ -364,15 +298,15 @@ Public Sub mainLoop()
                     pendingItemMovement(cnt).direction = MV_IDLE
                     
                     'Isometric fix:
-                    pendingItemMovement(cnt).xOrig = itmPos(cnt).x
-                    pendingItemMovement(cnt).yOrig = itmPos(cnt).y
+                    pendingItemMovement(cnt).xOrig = itmPos(cnt).X
+                    pendingItemMovement(cnt).yOrig = itmPos(cnt).Y
                 Next cnt
                 
                 'The pending movements have to be cleared *before* any programs are run,
                 'whereas the movement direction can only be cleared afterwards.
                 For cnt = 0 To UBound(pendingPlayerMovement)
-                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).x
-                    pendingPlayerMovement(cnt).yOrig = ppos(cnt).y
+                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).X
+                    pendingPlayerMovement(cnt).yOrig = ppos(cnt).Y
                 Next cnt
 
                 
@@ -387,8 +321,8 @@ Public Sub mainLoop()
 
                     ' !MODIFIED BY KSNiloc...
                     tempPos.l = Round(pendingPlayerMovement(selectedPlayer).lTarg)
-                    tempPos.x = Round(pendingPlayerMovement(selectedPlayer).xTarg)
-                    tempPos.y = Round(pendingPlayerMovement(selectedPlayer).yTarg)
+                    tempPos.X = Round(pendingPlayerMovement(selectedPlayer).xTarg)
+                    tempPos.Y = Round(pendingPlayerMovement(selectedPlayer).yTarg)
                                    
                     pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
                     Call programTest(tempPos)
@@ -486,14 +420,14 @@ Sub setupmain(Optional ByVal testingPRG As Boolean)
     texty = 1
     
     loaded = 0
-    
-    'Setting an initial value for #Gamespeed, = 2.
+
+    'Setting an initial value for GameSpeed(), = 2.
     walkDelay = 0.06
     
-    Call LoadFontsFromFolder(projectPath$ + fontPath$)
+    Call LoadFontsFromFolder(projectPath & fontPath)
     
     If mainMem.gameTitle$ <> "" Then
-        host.caption = mainMem.gameTitle$
+        host.Caption = mainMem.gameTitle$
     End If
     
     'OK, deal with the character first:
@@ -536,8 +470,8 @@ Sub setupmain(Optional ByVal testingPRG As Boolean)
         launchBoardThreads boardList(activeBoardIndex).theData
 
         'Setup player position.
-        ppos(0).x = boardList(activeBoardIndex).theData.playerX
-        ppos(0).y = boardList(activeBoardIndex).theData.playerY
+        ppos(0).X = boardList(activeBoardIndex).theData.playerX
+        ppos(0).Y = boardList(activeBoardIndex).theData.playerY
         ppos(0).l = boardList(activeBoardIndex).theData.playerLayer
         ppos(0).stance = "WALK_S"
         ppos(0).frame = 0

@@ -29,7 +29,7 @@ Attribute VB_Name = "tkvisuals"
 'Global Const WHITENESS = &HFF0062       ' (DWORD) dest = WHITE
 
 
-'Function roundoff(v As Double) As Integer
+'Function round(v As Double) As Integer
 '    'rounds the number off.
 '    Dim dec As Double
 '    Dim inte As Integer
@@ -37,9 +37,9 @@ Attribute VB_Name = "tkvisuals"
 '    inte = Int(v)
 '    dec = v - inte
 '    If dec < 0.5 Then
-'        roundoff = inte
+'        round = inte
 '    Else
-'        roundoff = inte + 1
+'        round = inte + 1
 '    End If
 'End Function
 

@@ -22,10 +22,10 @@ Begin VB.Form makeexe
       TabIndex        =   6
       Top             =   0
       Width           =   4815
-      _extentx        =   8493
-      _extenty        =   847
-      Object.width           =   4815
-      caption         =   "Make EXE"
+      _ExtentX        =   8493
+      _ExtentY        =   847
+      Object.Width           =   4815
+      Caption         =   "Make EXE"
    End
    Begin VB.Frame Frame2 
       Appearance      =   0  'Flat
@@ -61,10 +61,10 @@ Begin VB.Form makeexe
       TabIndex        =   3
       Top             =   600
       Width           =   1335
-      _extentx        =   820
-      _extenty        =   873
-      Object.width           =   450
-      caption         =   "Compile"
+      _ExtentX        =   820
+      _ExtentY        =   873
+      Object.Width           =   450
+      Caption         =   "Compile"
    End
    Begin Toolkit.TKButton Command3 
       Height          =   495
@@ -72,10 +72,10 @@ Begin VB.Form makeexe
       TabIndex        =   2
       Top             =   1200
       Width           =   1215
-      _extentx        =   820
-      _extenty        =   661
-      Object.width           =   450
-      caption         =   "Cancel"
+      _ExtentX        =   820
+      _ExtentY        =   661
+      Object.Width           =   450
+      Caption         =   "Cancel"
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
@@ -128,11 +128,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-' ! MODIFIED BY KSNiloc
-
 Private iconPath As String
-
-' ! MODIFIED BY KSNiloc...
 
 Public Sub CreateEXE(ByVal file As String)
 
@@ -198,9 +194,9 @@ Private Sub cmdChange_Click()
     Dim cmp As Boolean
     Dim antiPath As String
 
-    ChDir (currentdir)
+    ChDir (currentDir)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gampath
+    dlg.strDefaultFolder = gamPath
     dlg.strTitle = "Change EXE Icon"
     dlg.strFileTypes = "Icons (*.ico / *.exe)|*.ico;*.exe"
     If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
@@ -209,7 +205,7 @@ Private Sub cmdChange_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
     
@@ -243,8 +239,7 @@ Private Sub Command1_Click()
     filename(1) = Text1.Text
     If filename(1) = "" Then Exit Sub
 
-    aa = FileExist(filename(1))
-    If aa = 1 Then
+    If fileExists(filename(1)) Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
         If bb = 7 Then Exit Sub
     End If
@@ -268,9 +263,9 @@ Private Sub Command2_Click()
     Dim cmp As Boolean
     Dim antiPath As String
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gampath$
+    dlg.strDefaultFolder = gamPath$
     
     dlg.strTitle = "Make EXE"
     dlg.strDefaultExt = "exe"
@@ -282,7 +277,7 @@ Private Sub Command2_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
     

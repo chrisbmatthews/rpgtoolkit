@@ -465,7 +465,7 @@ Public Sub saveFile()
             statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
             Exit Sub
         End If
-        Call saveStatus(projectPath$ + statuspath$ + statusEffectList(activeStatusEffectIndex).statusFile$, statusEffectList(activeStatusEffectIndex).theData)
+        Call saveStatus(projectPath$ + statusPath$ + statusEffectList(activeStatusEffectIndex).statusFile$, statusEffectList(activeStatusEffectIndex).theData)
         activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
         statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     'End If
@@ -518,7 +518,7 @@ Private Sub Command14_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -533,7 +533,7 @@ Private Sub Command14_Click()
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     rpgcodebox.Text = antiPath$
     statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode$ = antiPath$
 End Sub
@@ -701,7 +701,7 @@ Private Sub saveasmnu_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + statuspath$
+    dlg.strDefaultFolder = projectPath$ + statusPath$
     
     dlg.strTitle = "Save Effect As"
     dlg.strDefaultExt = "ste"
@@ -717,8 +717,7 @@ Private Sub saveasmnu_Click()
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     
     If filename$(1) = "" Then Exit Sub
-    aa = fileExist(filename$(1))
-    If aa = 1 Then
+    If fileExists(filename(1)) Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
         If bb = 7 Then Exit Sub
     End If
@@ -737,7 +736,7 @@ Private Sub savemnu_Click()
         saveasmnu_Click
         Exit Sub
     End If
-    Call saveStatus(projectPath$ + statuspath$ + statusEffectList(activeStatusEffectIndex).statusFile$, statusEffectList(activeStatusEffectIndex).theData)
+    Call saveStatus(projectPath$ + statusPath$ + statusEffectList(activeStatusEffectIndex).statusFile$, statusEffectList(activeStatusEffectIndex).theData)
     activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
 
     Exit Sub

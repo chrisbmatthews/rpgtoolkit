@@ -1338,7 +1338,7 @@ Public Sub saveFile()
             Call scharasmnu_Click
             Exit Sub
         End If
-        Call savechar(projectPath$ + tempath$ + filename$(2), playerList(activePlayerIndex).theData)
+        Call savechar(projectPath$ + temPath$ + filename$(2), playerList(activePlayerIndex).theData)
     'End If
 
     Exit Sub
@@ -1354,7 +1354,7 @@ Public Sub openFile(file$)
     activePlayer.Show
     filename$(1) = file$
     antiPath$ = absNoPath(file$)
-    FileCopy filename$(1), projectPath$ + tempath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + temPath$ + antiPath$
     Call clearchar
     Call openchar(filename$(1), playerList(activePlayerIndex).theData)
     activePlayer.Caption = LoadStringLoc(804, "Character Editor") + "  (" + antiPath$ + ")"
@@ -1407,7 +1407,7 @@ Private Sub Command1_Click()
 On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmppath$
+    dlg.strDefaultFolder = projectPath$ + bmpPath$
     dlg.strTitle = "Open Profile"
     dlg.strDefaultExt = "bmp"
     dlg.strFileTypes = strFileDialogFilterWithTiles
@@ -1421,10 +1421,10 @@ On Error Resume Next
     Call vbPicFillRect(profile, 0, 0, 1000, 1000, vbQBColor(15))
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmppath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
     
     picname$ = antiPath$
-    Call drawprofile(projectPath$ + bmppath$ + picname$)
+    Call drawprofile(projectPath$ + bmpPath$ + picname$)
     playerList(activePlayerIndex).theData.profilePic$ = picname$
 End Sub
 
@@ -1548,17 +1548,17 @@ ReDim supertile(64, 64)
         If detail = 2 Then Call increaseDetail
         'Resize to 64x64
         xx = 1: yy = 1
-        For x = 1 To 32
-            For y = 1 To 32
-                supertile(xx, yy) = tilemem(x, y)
-                supertile(xx, yy + 1) = tilemem(x, y)
-                supertile(xx + 1, yy) = tilemem(x, y)
-                supertile(xx + 1, yy + 1) = tilemem(x, y)
+        For X = 1 To 32
+            For Y = 1 To 32
+                supertile(xx, yy) = tilemem(X, Y)
+                supertile(xx, yy + 1) = tilemem(X, Y)
+                supertile(xx + 1, yy) = tilemem(X, Y)
+                supertile(xx + 1, yy + 1) = tilemem(X, Y)
                 yy = yy + 2
-            Next y
+            Next Y
             yy = 1
             xx = xx + 2
-        Next x
+        Next X
         For xx = 1 To 32
             For yy = 1 To 32
                 tilemem(xx, yy) = buftile(xx, yy)
@@ -1567,13 +1567,13 @@ ReDim supertile(64, 64)
         detail = publicTile.oldDetail
         
         'Now that we've properly resized the GPH, draw it:
-        For x = 1 To 64
-            For y = 1 To 64
-                If supertile(x, y) <> -1 Then
-                    Call vbPicPSet(profile, x - 1, y - 1, supertile(x, y))
+        For X = 1 To 64
+            For Y = 1 To 64
+                If supertile(X, Y) <> -1 Then
+                    Call vbPicPSet(profile, X - 1, Y - 1, supertile(X, Y))
                 End If
-            Next y
-        Next x
+            Next Y
+        Next X
         picname$ = filename$(1)
     Else
         'PicClip1.Picture = LoadPicture(file$)
@@ -1671,12 +1671,12 @@ Private Sub Form_Load()
     activePlayerIndex = dataIndex
     Call PlayerClear(playerList(dataIndex).theData)
        
-    y = Screen.height
-    x = Screen.height * (1 / 0.75)
+    Y = Screen.height
+    X = Screen.height * (1 / 0.75)
     mainX = activePlayer.Width
     mainY = activePlayer.height
-    dx = (x - mainX) / 2
-    dy = (y - mainY) / 2
+    dx = (X - mainX) / 2
+    dy = (Y - mainY) / 2
     activePlayer.Top = dy
     activePlayer.Left = dx
     
@@ -1717,7 +1717,7 @@ End Sub
 
 Private Sub infofill()
     On Error GoTo ErrorHandler
-    Call drawprofile(projectPath$ + bmppath$ + playerList(activePlayerIndex).theData.profilePic$)
+    Call drawprofile(projectPath$ + bmpPath$ + playerList(activePlayerIndex).theData.profilePic$)
     If playerList(activePlayerIndex).theData.charname$ <> "" Then namebox.Text = playerList(activePlayerIndex).theData.charname$ Else namebox.Text = "Undefined"
     If playerList(activePlayerIndex).theData.experienceVar$ <> "" Then expbox.Text = playerList(activePlayerIndex).theData.experienceVar$ Else expbox.Text = "Undefined$"
     If playerList(activePlayerIndex).theData.healthVar$ <> "" Then healthbox.Text = playerList(activePlayerIndex).theData.healthVar$ Else healthbox.Text = "Undefined!"
@@ -1866,7 +1866,7 @@ Private Sub savecharmenu_Click()
     On Error GoTo ErrorHandler
     filename$(2) = playerList(activePlayerIndex).charFile$
     If filename$(2) = "" Then Call scharasmnu_Click: Exit Sub
-    Call savechar(projectPath$ + tempath$ + filename$(2), playerList(activePlayerIndex).theData)
+    Call savechar(projectPath$ + temPath$ + filename$(2), playerList(activePlayerIndex).theData)
     playerList(activePlayerIndex).charNeedUpdate = False
 
     Exit Sub
@@ -1880,7 +1880,7 @@ Private Sub scharasmnu_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tempath$
+    dlg.strDefaultFolder = projectPath$ + temPath$
     dlg.strTitle = "Save Character As (Archives cannot be used with characters!)"
     dlg.strDefaultExt = "tem"
     dlg.strFileTypes = "RPG Toolkit Character (*.tem)|*.tem|All files(*.*)|*.*"
@@ -1893,8 +1893,7 @@ Private Sub scharasmnu_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    aa = fileExist(filename$(1))
-    If aa = 1 Then
+    If fileExists(filename(1)) Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
         If bb = 7 Then Exit Sub
     End If
@@ -1983,7 +1982,7 @@ End Sub
 
 Private Sub toc_Click()
     On Error GoTo ErrorHandler
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:

@@ -85,8 +85,7 @@ Public Function absNoPath(ByVal file As String) As String
     On Error Resume Next
     Dim withoutPath As String
     withoutPath = noPath(file)
-    withoutPath = Mid(withoutPath, 2, Len(withoutPath) - 1)
-    absNoPath = withoutPath
+    absNoPath = Mid(withoutPath, 2, Len(withoutPath) - 1)
 End Function
 
 Public Sub clearGame()
@@ -96,7 +95,7 @@ Public Sub clearGame()
     On Error Resume Next
     projectPath = ""
     editmainfile.clearAll
-    Unload editmainfile
+    Call Unload(editmainfile)
 End Sub
 
 Public Sub makeFolders(ByVal theProjectPath As String)
@@ -136,26 +135,26 @@ Public Function addUnderscore(ByVal Text As String) As String
     'Replaces spaces with underscores
     '=======================================================
     On Error Resume Next
-    addUnderscore = Replace(Text, " ", "_")
+    addUnderscore = replace(Text, " ", "_")
 End Function
 
-Public Function all(ByVal longcolor As Long, ByVal requestedColor As Integer) As Long
+Public Function all(ByVal longColor As Long, ByVal requestedColor As Integer) As Long
     '=======================================================
     'Returns red, green, or blue from the color passed in
     '=======================================================
     Select Case requestedColor
-        Case 1: all = red(longcolor)
-        Case 2: all = green(longcolor)
-        Case 3: all = blue(longcolor)
+        Case 1: all = red(longColor)
+        Case 2: all = green(longColor)
+        Case 3: all = blue(longColor)
     End Select
 End Function
 
-Public Function blue(ByVal longcolor As Long) As Long
+Public Function blue(ByVal longColor As Long) As Long
     '=======================================================
     'Returns blue from the color passed in
     '=======================================================
     On Error Resume Next
-    blue = Int(longcolor / 65536)
+    blue = Int(longColor / 65536)
 End Function
 
 Public Sub color_16million()
@@ -166,54 +165,44 @@ Public Sub color_16million()
 
     On Error Resume Next
 
-    Dim x As Single, y As Single
+    Dim X As Single, Y As Single
 
     If detail = 2 Or detail = 4 Or detail = 6 Then
-        For x = 1 To 16
-            For y = 1 To 16
-                If tilemem(x, y) = -1 Then
-                    tilemem(x, y) = -1
+        For X = 1 To 16
+            For Y = 1 To 16
+                If tilemem(X, Y) = -1 Then
+                    tilemem(X, Y) = -1
                 Else
-                    tilemem(x, y) = GFXGetDOSColor(tilemem(x, y))
+                    tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
                 End If
-            Next y
-        Next x
+            Next Y
+        Next X
     End If
     If detail = 3 Or detail = 5 Then
-        For x = 1 To 32
-            For y = 1 To 32
-                If tilemem(x, y) = -1 Then
-                    tilemem(x, y) = -1
+        For X = 1 To 32
+            For Y = 1 To 32
+                If tilemem(X, Y) = -1 Then
+                    tilemem(X, Y) = -1
                 Else
-                    tilemem(x, y) = GFXGetDOSColor(tilemem(x, y))
+                    tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
                 End If
-            Next y
-            Call vbPicFillRect(colorDepth.status, 0, 0, (x / 32) * 100, 10, vbQBColor(9))
-        Next x
+            Next Y
+            Call vbPicFillRect(colorDepth.status, 0, 0, (X / 32) * 100, 10, vbQBColor(9))
+        Next X
         detail = 1
     End If
 
 End Sub
 
 Public Function extention(ByVal file As String) As String: On Error Resume Next
-
     '=======================================================
     'Returns only the extension of a file
     '=======================================================
-
     Dim strArray() As String
     'Split the file.
     strArray() = Split(file, ".")
     'Last element will be the extension. Take the first 3 letters.
     extention = Left(strArray(UBound(strArray)), 3)
-
-End Function
-
-Public Function FileExist(ByVal theFile As String) As Byte
-    '=======================================================
-    'Returns whether a file exists as 1/0
-    '=======================================================
-    If FileExists(theFile) Then FileExist = 1
 End Function
 
 Public Function getTipCount(ByVal file As String) As Long
@@ -247,37 +236,37 @@ Public Function getTipNum(ByVal file As String, ByVal tipNum As Long) As String
     Close ff
 End Function
 
-Public Function green(ByVal longcolor As Long) As Long
+Public Function green(ByVal longColor As Long) As Long
     '=======================================================
     'Returns green from the color passed in
     '=======================================================
     On Error Resume Next
-    green = Int(longcolor - blue(longcolor) / 256)
+    green = Int(longColor - blue(longColor) / 256)
 End Function
 
-Public Sub highredrawLIGHT()
+Public Sub highRedrawLight()
     '=======================================================
     'Redraws a tile's light source (high-quality)
     '=======================================================
 
     On Error Resume Next
 
-    Dim x As Long, y As Long, xx As Long, yy As Long
+    Dim X As Long, Y As Long, xx As Long, yy As Long
     Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
-    For x = 1 To 32
-        For y = 1 To 32
-            xx = (x * 10) - 9
-            yy = (y * 10) - 9
-            If tilemem(x, y) <> -1 Then
+    For X = 1 To 32
+        For Y = 1 To 32
+            xx = (X * 10) - 9
+            yy = (Y * 10) - 9
+            If tilemem(X, Y) <> -1 Then
                 If detail = 1 Then
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tilemem(x, y))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tilemem(X, Y))
                 End If
                 If detail = 3 Or detail = 5 Then
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tilemem(x, y)))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tilemem(X, Y)))
                 End If
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     publicTile.grid = 0
 
 End Sub
@@ -303,76 +292,76 @@ Public Sub increaseDetail()
     If detail = 4 Then detail = 3
     If detail = 6 Then detail = 5
 
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     Dim xx As Long, yy As Long
 
-    For x = 1 To 16
-        For y = 1 To 16
-            bufferTile(x, y) = tilemem(x, y)
-            tilemem(x, y) = -1
-        Next y
-    Next x
+    For X = 1 To 16
+        For Y = 1 To 16
+            bufferTile(X, Y) = tilemem(X, Y)
+            tilemem(X, Y) = -1
+        Next Y
+    Next X
 
     'Increase detail
     xx = 1: yy = 1
-    For x = 1 To 16
-        For y = 1 To 16
-            tilemem(xx, yy) = bufferTile(x, y)
-            tilemem(xx, yy + 1) = bufferTile(x, y)
-            tilemem(xx + 1, yy) = bufferTile(x, y)
-            tilemem(xx + 1, yy + 1) = bufferTile(x, y)
+    For X = 1 To 16
+        For Y = 1 To 16
+            tilemem(xx, yy) = bufferTile(X, Y)
+            tilemem(xx, yy + 1) = bufferTile(X, Y)
+            tilemem(xx + 1, yy) = bufferTile(X, Y)
+            tilemem(xx + 1, yy + 1) = bufferTile(X, Y)
             yy = yy + 2
-        Next y
+        Next Y
         yy = 1
         xx = xx + 2
-    Next x
+    Next X
 
 End Sub
 
-Public Sub lowredrawLIGHT()
+Public Sub lowRedrawLight()
     '=======================================================
     'Redraws a tile's light source (low-quality)
     '=======================================================
 
     On Error Resume Next
 
-    Dim x As Long, y As Long, xx As Long, yy As Long
+    Dim X As Long, Y As Long, xx As Long, yy As Long
     
     Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
-    For x = 1 To 16
-        For y = 1 To 16
-            xx = (x * 20) - 19
-            yy = (y * 20) - 19
-            If tilemem(x, y) <> -1 Then
+    For X = 1 To 16
+        For Y = 1 To 16
+            xx = (X * 20) - 19
+            yy = (Y * 20) - 19
+            If tilemem(X, Y) <> -1 Then
                 If detail = 2 Then
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tilemem(x, y))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tilemem(X, Y))
                 End If
                 If detail = 4 Or detail = 6 Then
-                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tilemem(x, y)))
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tilemem(X, Y)))
                 End If
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     publicTile.grid = 0
 
 End Sub
 
-Public Function NoExtention(ByVal file As String) As String
+Public Function noExtention(ByVal file As String) As String
     '=======================================================
     'Returns the file passed in without its extension
     '=======================================================
     On Error Resume Next
-    Dim workOn As String, running As String, col As Long, length As Long, part As String
+    Dim workOn As String, running As String, col As Long, Length As Long, part As String
     workOn = file
     running = ""
     col = 1
-    length = Len(file)
-    Do While part <> "." And col <= length + 1
+    Length = Len(file)
+    Do While part <> "." And col <= Length + 1
         running = running & part
         part = Mid(workOn, col, 1)
         col = col + 1
     Loop
-    NoExtention = running
+    noExtention = running
 End Function
 
 Public Function noPath(ByVal Text As String) As String
@@ -383,30 +372,30 @@ Public Function noPath(ByVal Text As String) As String
 
     On Error Resume Next
 
-    Dim a As String, t As Long, length As Long, aPath As Long, ll As Long, part _
+    Dim a As String, t As Long, Length As Long, aPath As Long, ll As Long, part _
     As String, pathUse As String, path As String, term As String, lastOne As Long
 
     a = Text
-    length = Len(a)
+    Length = Len(a)
     'first, see if there IS a path:
-    For t = 1 To length
+    For t = 1 To Length
         part = Mid(a, t, 1)
         If part = ":" Or part = "\" Then aPath = 1
     Next t
     If aPath = 0 Then noPath = a$: Exit Function
     'Now see if the path terminates with a \ or a :
-    For t = 1 To length
+    For t = 1 To Length
         part = Mid(a, t, 1)
         If part = ":" Or part = "\" Then term = part
     Next t
     If term = ":" Then
         'if it terminates with a :, then the filename is right after :
-        For t = 1 To length
+        For t = 1 To Length
             part = Mid(a, t, 1)
             pathUse = pathUse & part
             If part = ":" Then
                 path = ""
-                For ll = t To length
+                For ll = t To Length
                     part = Mid(a, ll, 1)
                     path = path & part
                 Next ll
@@ -417,13 +406,13 @@ Public Function noPath(ByVal Text As String) As String
     ElseIf term = "\" Then
         lastOne = 1
         'If it terminates with a "\" then we've got problems.  where is the last one at?
-        For t = 1 To length
+        For t = 1 To Length
             part = Mid(a, t, 1)
             If part = "\" Then lastOne = t
         Next t
         'Now let's scoop out the path"
         pathUse = ""
-        For t = lastOne To length
+        For t = lastOne To Length
             part = Mid(a, t, 1)
             pathUse = pathUse & part
         Next t
@@ -437,7 +426,7 @@ Public Function noSpaces(ByVal Text As String) As String
     'Remove spaces from the text passed in
     '=======================================================
     On Error Resume Next
-    noSpaces = Replace(Text, " ", "")
+    noSpaces = replace(Text, " ", "")
 End Function
 
 Public Sub openConfig(ByVal file As String)
@@ -483,7 +472,7 @@ Public Sub openMainFile(ByVal file As String)
     On Error Resume Next
     projectPath = ""
     If file = "" Then Exit Sub
-    openMain file, mainMem
+    Call openMain(file, mainMem)
     oldpath = currentDir & "\" & projectPath
     Call tkMainForm.fillTree("", projectPath)
     tkMainForm.Caption = "RPG Toolkit Development System, Version 2.2 (" + absNoPath(file) + ")"
@@ -505,7 +494,7 @@ Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
     
     If ex = "TST" Or ex = "ISO" Then
 
-        Call openFromTileSet(tilesetFilename(filenm$), getTileNum(filenm$))
+        Call openFromTileSet(tilesetFilename(filenm), getTileNum(filenm))
         
         If detail = 2 Or detail = 4 Or detail = 6 Then
             'only 32x32 tiles allowed
@@ -519,7 +508,7 @@ Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
         Exit Sub
     End If
     
-    Dim x As Long, y As Long, xx As Long, yy As Long
+    Dim X As Long, Y As Long, xx As Long, yy As Long
     Dim loopIt As Long, times As Long, tileerror As Integer
 
     Dim num As Long
@@ -535,26 +524,28 @@ Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
         If majorVer <> major Then MsgBox "This tile was created with an unrecognised version of the Toolkit", , "Unable to open tile": Exit Sub
         If minorVer <> minor Then
             Dim user As VbMsgBoxResult
-            user = MsgBox("This tile was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
-            If user = vbNo Then Close num: Exit Sub     'selected no
+            user = MsgBox("This tile was created using Version " & str(majorVer) & "." & str(minorVer) & ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", vbYesNo, "Different Version")
+            If user = vbNo Then
+                Close num
+                Exit Sub
+            End If
         End If
         Input #num, detail             'Detail level- 1 is 32x32, 2 is 16x16
         Dim comp As Byte
         Input #num, comp              'Compression used? 1- yes, 0-no
         If comp = 0 Then     'If compression was not used, the tile is stored with each value representing a pixel.
             If detail = 1 Or detail = 3 Or detail = 5 Then
-                For x = 1 To 32
-                    For y = 1 To 32
-                        Input #num, tilemem(x, y) 'Pixel by pixel
-                    Next y
-                Next x
-            End If
-            If detail = 2 Or detail = 4 Or detail = 6 Then
-                For x = 1 To 16
-                    For y = 1 To 16
-                        Input #num, tilemem(x, y)
-                    Next y
-                Next x
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        Input #num, tilemem(X, Y) 'Pixel by pixel
+                    Next Y
+                Next X
+            ElseIf detail = 2 Or detail = 4 Or detail = 6 Then
+                For X = 1 To 16
+                    For Y = 1 To 16
+                        Input #num, tilemem(X, Y)
+                    Next Y
+                Next X
             End If
         ElseIf comp = 1 Then    'If compression is used, pixel 'bundles' come in pairs of two.
                                 'The first number is how many times in a row that pixel appears, and the second number
@@ -630,23 +621,23 @@ Version1Tile:
     Exit Sub
 
 loadtileerr:
-tileerror = 1
-Resume Next
+    tileerror = 1
+    Resume Next
 
 End Sub
 
-Public Sub openTile2(ByVal filenm As String)
+Public Sub openTile2(ByVal file As String)
     '=======================================================
     'Opens a tile in 16-million color mode
     '=======================================================
-    doOpenTile filenm, False
+    Call doOpenTile(file, False)
 End Sub
 
-Public Sub openWinTile(ByVal filenm As String)
+Public Sub openWinTile(ByVal file As String)
     '=======================================================
     'Opens a file in win-color mode
     '=======================================================
-    doOpenTile filenm, True
+    Call doOpenTile(file, True)
 End Sub
 
 Public Function pathOf(ByVal Text As String) As String
@@ -657,25 +648,25 @@ Public Function pathOf(ByVal Text As String) As String
 
     On Error Resume Next
 
-    Dim length As Long, aPath As Byte, part As String, t As Long
+    Dim Length As Long, aPath As Byte, part As String, t As Long
     Dim pathUse As String, term As String, lastOne As Long, path As String
 
-    length = Len(Text)
+    Length = Len(Text)
     'first, see if there IS a path:
-    For t = 1 To length
+    For t = 1 To Length
         part = Mid(Text, t, 1)
         If part = ":" Or part = "\" Then aPath = 1
     Next t
     If aPath = 0 Then pathOf = ""
     'Now see if the path terminates with a \ or a :
-    For t = 1 To length
+    For t = 1 To Length
         part = Mid(Text, t, 1)
         If part = ":" Or part = "\" Then term = part
     Next t
     pathUse = ""
     If term = ":" Then
         'if it terminates with a :, then the filename is right after :
-        For t = 1 To length
+        For t = 1 To Length
             part = Mid(Text, t, 1)
             pathUse = pathUse & part
             If part = ":" Then pathOf = pathUse
@@ -683,7 +674,7 @@ Public Function pathOf(ByVal Text As String) As String
     ElseIf term = "\" Then
         lastOne = 1
         'If it terminates with a "\" then we've got problems.  where is the last one at?
-        For t = 1 To length
+        For t = 1 To Length
             part = Mid(Text, t, 1)
             If part = "\" Then lastOne = t
         Next t
@@ -698,30 +689,16 @@ Public Function pathOf(ByVal Text As String) As String
 
 End Function
 
-Public Function red(ByVal longcolor As Long) As Long
+Public Function red(ByVal longColor As Long) As Long
     '=======================================================
     'Returns red from the color passed in
     '=======================================================
     On Error Resume Next
-    Dim takeaway As Long
-    takeaway = blue(longcolor) * 256 * 256
-    longcolor = longcolor - takeaway
-    takeaway = green(longcolor) * 256
-    red = longcolor - takeaway
-End Function
-
-Public Function replaceChar(ByVal Text As String, ByVal find As String, ByVal replaceWith As String) As String
-    '=======================================================
-    'Replaces instances of find with replaceWith in text
-    '=======================================================
-    replaceChar = Replace(Text, find, replaceWith)
-End Function
-
-Public Function roundOff(ByVal number As Double) As Long
-    '=======================================================
-    'Returns the number passed in rounded
-    '=======================================================
-    roundOff = Round(number)
+    Dim takeAway As Long
+    takeAway = blue(longColor) * 256 * 256
+    longColor = longColor - takeAway
+    takeAway = green(longColor) * 256
+    red = longColor - takeAway
 End Function
 
 Public Sub saveConfig(ByVal file As String)
@@ -798,63 +775,63 @@ Public Sub saveTile(ByVal filenm As String): On Error Resume Next
         Print #num, detail             'Detail level- 1 is 32x32, 2 is 16x16
         Print #num, compression        'Compression 1-on, 0-off
 
-        Dim x As Integer, y As Integer
+        Dim X As Integer, Y As Integer
         Dim occurances As Long, older As Long
         Dim starting As Byte
 
         If compression = 0 Then         'If no compression was usd, save it normally, pixel by pixel.
             If detail = 1 Or detail = 3 Or detail = 5 Then
-                For x = 1 To 32
-                    For y = 1 To 32
-                        Print #num, tilemem(x, y) 'Pixel by pixel
-                    Next y
-                Next x
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        Print #num, tilemem(X, Y) 'Pixel by pixel
+                    Next Y
+                Next X
             End If
             If detail = 2 Or detail = 4 Or detail = 6 Then
-                For x = 1 To 16
-                    For y = 1 To 16
-                        Print #num, tilemem(x, y)
-                    Next y
-                Next x
+                For X = 1 To 16
+                    For Y = 1 To 16
+                        Print #num, tilemem(X, Y)
+                    Next Y
+                Next X
             End If
 
         ElseIf compression = 1 Then         'If there is compression, save it in bundles, count how many times pixels occur together, and write #of times, color of pixel
             occurances = 1
             older = tilemem(1, 1)
             If detail = 1 Or detail = 3 Or detail = 5 Then
-                For x = 1 To 32
-                    For y = 1 To 32
-                        If Not (x = 1 And y = 1) Then
-                            If tilemem(x, y) = older Then
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        If Not (X = 1 And Y = 1) Then
+                            If tilemem(X, Y) = older Then
                                 occurances = occurances + 1
                             Else
                                 Print #num, occurances    'how many times it occurred.
                                 Print #num, older         'what color it is
-                                older = tilemem(x, y)
+                                older = tilemem(X, Y)
                                 occurances = 1
                             End If
                         End If
-                    Next y
-                Next x
+                    Next Y
+                Next X
                 Print #num, occurances
                 Print #num, older
             End If
             If detail = 2 Or detail = 4 Or detail = 6 Then
-                For x = 1 To 16
-                    For y = 1 To 16
-                        If Not (x = 1 And y = 1) Then
-                            If tilemem(x, y) = older Then
+                For X = 1 To 16
+                    For Y = 1 To 16
+                        If Not (X = 1 And Y = 1) Then
+                            If tilemem(X, Y) = older Then
                                 occurances = occurances + 1
                             Else
                                 Print #num, occurances    'how many times it occurred.
                                 Print #num, older         'what color it is
-                                older = tilemem(x, y)
+                                older = tilemem(X, Y)
                                 occurances = 1
                                 starting = 0
                             End If
                         End If
-                    Next y
-                Next x
+                    Next Y
+                Next X
                 Print #num, occurances
                 Print #num, older
             End If
@@ -883,11 +860,10 @@ Public Function toString(ByVal val As String) As String
     toString = str(noSpaces(val))
 End Function
 
-Public Function toColor(ByVal longcolor As Long, ByVal level As Long) As Long
+Public Function toColor(ByVal longColor As Long, ByVal level As Long) As Long
 
     '=======================================================
-    'Returns the color passed in in either in a specific
-    'detail level
+    'Returns the color passed in in a specific detail level
     '=======================================================
 
     On Error Resume Next
@@ -899,7 +875,7 @@ Public Function toColor(ByVal longcolor As Long, ByVal level As Long) As Long
     If level = 256 Then loops = 255
 
     Dim getIt As Long
-    getIt = longcolor
+    getIt = longColor
 
     Dim redcomp As Long, greencomp As Long, bluecomp As Long
     redcomp = all(getIt, 1)
@@ -949,24 +925,24 @@ Public Sub winColor()
 
     On Error Resume Next
 
-    Dim x As Integer, y As Integer
+    Dim X As Integer, Y As Integer
     
     If publicTile.oldDetail = 4 Or publicTile.oldDetail = 6 Then
-        For x = 1 To 16
-            For y = 1 To 16
-                If tilemem(x, y) = -1 Then tilemem(x, y) = vbQBColor(15)
-                tilemem(x, y) = GFXGetDOSColor(tilemem(x, y))
-            Next y
-        Next x
+        For X = 1 To 16
+            For Y = 1 To 16
+                If tilemem(X, Y) = -1 Then tilemem(X, Y) = vbQBColor(15)
+                tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
+            Next Y
+        Next X
     End If
 
     If publicTile.oldDetail = 3 Or publicTile.oldDetail = 5 Then
-        For x = 1 To 32
-            For y = 1 To 32
-                If tilemem(x, y) = -1 Then tilemem(x, y) = vbQBColor(15)
-                tilemem(x, y) = GFXGetDOSColor(tilemem(x, y))
-            Next y
-        Next x
+        For X = 1 To 32
+            For Y = 1 To 32
+                If tilemem(X, Y) = -1 Then tilemem(X, Y) = vbQBColor(15)
+                tilemem(X, Y) = GFXGetDOSColor(tilemem(X, Y))
+            Next Y
+        Next X
     End If
 
 End Sub

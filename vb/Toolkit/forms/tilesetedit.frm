@@ -246,8 +246,8 @@ Private Sub cmdBrowse_Click()
     Dim ex As String 'Extension of the opened file
     
     'Info of the Dialog Box we will open
-    ChDir (currentdir$)
-    dlg.strDefaultFolder = projectPath$ + tilepath$
+    ChDir (currentDir$)
+    dlg.strDefaultFolder = projectPath$ + tilePath$
     dlg.strTitle = "Select GPH files"
     dlg.strDefaultExt = "gph"
     dlg.strFileTypes = "RPG Toolkit Tile (*.gph)|*.gph|All files(*.*)|*.*"
@@ -280,14 +280,14 @@ Private Sub cmdAddFiles_Click()
         Exit Sub
     End If
     
-    If GetExt(gph) <> "gph" Then 'If the extension of the file is other then .gph
+    If GetExt(gph) <> "gph" Then  'If the extension of the file is other then .gph
         MsgBox "Wrong filetype. You can only use *.gph files!", vbOKOnly + vbInformation
         Exit Sub
     End If
     
     'Info of the Dialog Box we will open
-    ChDir (currentdir$)
-    dlg.strDefaultFolder = projectPath$ + tilepath$
+    ChDir (currentDir$)
+    dlg.strDefaultFolder = projectPath$ + tilePath$
     dlg.strTitle = "Save Tileset As"
     dlg.strDefaultExt = "tst"
     dlg.strFileTypes = "RPG Toolkit TileSet (*.tst)|*.tst|All files(*.*)|*.*"
@@ -299,7 +299,7 @@ Private Sub cmdAddFiles_Click()
         'The filename without path
         Dim antiPath As String
         antiPath = dlg.strSelectedFileNoPath
-        ChDir (currentdir$)
+        ChDir (currentDir$)
         file = filename$(1)
         
         'If file is empty, exit sub
@@ -307,7 +307,7 @@ Private Sub cmdAddFiles_Click()
         
         'Textbox text with the full path
         Dim fullgph As String
-        fullgph = Dir$(App.path$ + "\" + projectPath$ + tilepath$ + gph)
+        fullgph = Dir$(App.path$ + "\" + projectPath$ + tilePath$ + gph)
         
         'Variable for the progress bar, which we will use later on
         Dim dcount As Integer
@@ -320,14 +320,14 @@ Private Sub cmdAddFiles_Click()
 
         Dim a As Integer
         'Get the tileset info
-        Call opentile2(file)
+        Call openTile2(file)
         a = tilesetInfo(file)
 
         If Not (a = 0) Then
             Call createNewTileSet(file)
         End If
         
-        fullgph = Dir$(App.path$ + "\" + projectPath$ + tilepath$ + gph)
+        fullgph = Dir$(App.path$ + "\" + projectPath$ + tilePath$ + gph)
         
         'Variable for the progress bar, which we will use later on
         Dim vcount As Integer
@@ -336,7 +336,7 @@ Private Sub cmdAddFiles_Click()
         Dim perc As Integer
         
         Do While fullgph <> ""
-            Call opentile2(App.path$ + "\" + projectPath$ + tilepath$ + fullgph)
+            Call openTile2(App.path$ + "\" + projectPath$ + tilePath$ + fullgph)
             a = addToTileSet(file)
             fullgph = Dir$
             vcount = vcount + 1
@@ -374,20 +374,20 @@ Private Sub cmdAdd_Click()
     
     'The gph file without the path
     Dim gphfilenp As String
-    gphfilenp = nopath(gphfile)
+    gphfilenp = noPath(gphfile)
 
-    Call openwintile(projectPath$ + tilepath$ + gphfile)
+    Call openWinTile(projectPath$ + tilePath$ + gphfile)
     Dim a, aa As Byte
-    a = tilesetInfo(projectPath$ + tilepath$ + tstFile$)
+    a = tilesetInfo(projectPath$ + tilePath$ + tstFile$)
     
     If a = 0 Then 'If the tileset exists
-        aa = addToTileSet(projectPath$ & tilepath$ & tstFile$)
+        aa = addToTileSet(projectPath$ & tilePath$ & tstFile$)
     Else 'If it doesn't exists, create a new one
-        Call createNewTileSet(projectPath$ & tilepath$ & tstFile$)
+        Call createNewTileSet(projectPath$ & tilePath$ & tstFile$)
     End If
     
     If chkDelete.value = 1 Then 'If the "Delete file when moved" checkbox is checked
-        Kill projectPath$ & tilepath$ & lstFiles.filename
+        Kill projectPath$ & tilePath$ & lstFiles.filename
     End If
     
     'Refresh the .gph list
@@ -395,7 +395,7 @@ Private Sub cmdAdd_Click()
     'For the loop
     Dim tt, ts As Integer
     
-    a = tilesetInfo(projectPath$ & tilepath$ & tstFile$)
+    a = tilesetInfo(projectPath$ & tilePath$ & tstFile$)
     ts = tileset.tilesInSet
     'Add the new stuff to the Tileset list
     lstTileset.Clear
@@ -416,9 +416,9 @@ Private Sub cmdCopy_Click()
     idx = lstTileset.ListIndex + 1
     
     'Info of the Dialog Box we will open
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tilepath$
+    dlg.strDefaultFolder = projectPath$ + tilePath$
     dlg.strTitle = "Save as"
     dlg.strDefaultExt = "gph"
     dlg.strFileTypes = "RPG Toolkit Tile (*.gph)|*.gph|All files(*.*)|*.*"
@@ -427,7 +427,7 @@ Private Sub cmdCopy_Click()
         filename$(1) = dlg.strSelectedFile
         Dim antiPath As String
         antiPath = dlg.strSelectedFileNoPath
-        ChDir (currentdir$)
+        ChDir (currentDir$)
         If filename$(1) = "" Then Exit Sub
         
         'For the loop
@@ -439,8 +439,8 @@ Private Sub cmdCopy_Click()
             Next Y
         Next X
         
-        Call openFromTileSet(projectPath$ + tilepath$ + tstFile$, idx)
-        Call savetile(filename$(1))
+        Call openFromTileSet(projectPath$ + tilePath$ + tstFile$, idx)
+        Call saveTile(filename$(1))
         lstFiles.Refresh
         For X = 1 To 32
             For Y = 1 To 32
@@ -461,7 +461,7 @@ Private Sub cmdDelete_Click()
     Dim gphfile As String
     gphfile = lstFiles.filename
     
-    Kill projectPath$ + tilepath$ + gphfile
+    Kill projectPath$ + tilePath$ + gphfile
     lstFiles.Refresh
 End Sub
 '========================================================================
@@ -486,7 +486,7 @@ Private Sub lstFiles_Click()
     If lstFiles.ListIndex = -1 Then Exit Sub
     lstTileset.ListIndex = -1
     f$ = lstFiles.filename
-    t$ = nopath(f$)
+    t$ = noPath(f$)
     
     For X = 1 To 32
         For Y = 1 To 32
@@ -494,7 +494,7 @@ Private Sub lstFiles_Click()
         Next Y
     Next X
     
-    Call opentile2(projectPath$ + tilepath$ + f$)
+    Call openTile2(projectPath$ + tilePath$ + f$)
     Call vbPicFillRect(pcbBrowse, 0, 0, 100, 100, vbQBColor(15))
     For X = 0 To 31
         For Y = 0 To 31
@@ -525,7 +525,7 @@ Private Sub lstTileset_Click()
         Next Y
     Next X
 
-    Call openFromTileSet(projectPath$ + tilepath$ + tstFile$, idx)
+    Call openFromTileSet(projectPath$ + tilePath$ + tstFile$, idx)
     Call vbPicFillRect(pcbBrowse, 0, 0, 100, 100, vbQBColor(15))
     For X = 0 To 31
         For Y = 0 To 31
@@ -549,8 +549,8 @@ Private Sub SSTab1_Click(PreviousTab As Integer)
         Dim dlg As FileDialogInfo
         On Error Resume Next
         'Info of the Dialog Box we will open
-        ChDir (currentdir$)
-        dlg.strDefaultFolder = projectPath$ + tilepath$
+        ChDir (currentDir$)
+        dlg.strDefaultFolder = projectPath$ + tilePath$
         dlg.strTitle = "Tileset To Save To"
         dlg.strDefaultExt = "tst"
         dlg.strFileTypes = "RPG Toolkit TileSet (*.tst)|*.tst|All files(*.*)|*.*"
@@ -561,20 +561,20 @@ Private Sub SSTab1_Click(PreviousTab As Integer)
             Dim antiPath As String
             antiPath = dlg.strSelectedFileNoPath
             
-            ChDir (currentdir$)
+            ChDir (currentDir$)
             
             'If, filename is empty, exit sub
             If filename$(1) = "" Then Exit Sub
             
             'Copy the file
-            FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
+            FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
             tstFile$ = antiPath$
             
             'Start adding the details to the form
-            lstFiles.path = projectPath$ + tilepath$
+            lstFiles.path = projectPath$ + tilePath$
             lstFiles.Pattern = "*.gph"
             tilesetedit.Caption = LoadStringLoc(2033, "Add to Tileset ") + tstFile$
-            a = tilesetInfo(projectPath$ + tilepath$ + tstFile$)
+            a = tilesetInfo(projectPath$ + tilePath$ + tstFile$)
             ts = tileset.tilesInSet
             lstTileset.Clear
             For tt = 1 To ts
@@ -604,11 +604,11 @@ Private Sub cmdRemove_Click()
     a = MsgBox("This will DELETE all duplicated tiles (originals will be kept), continue?", vbOKCancel + vbExclamation)
     
     If a = vbOK Then 'If user pressed OK, start the deleting
-        MkDir Mid$(hashpath$, 1, Len(hashpath$) - 1)
+        MkDir Mid$(hashPath$, 1, Len(hashPath$) - 1)
         'Enable the stop button
         cmdStop.Enabled = True
         Call removeDuplicates
-        RmDir Mid$(hashpath$, 1, Len(hashpath$) - 1)
+        RmDir Mid$(hashPath$, 1, Len(hashPath$) - 1)
         MsgBox "Done!", vbOKOnly + vbInformation
         'Refresh files list, since duplicates are now gone
         lstFiles.Refresh
@@ -646,10 +646,10 @@ End Sub
 '========================================================================
 Sub removeHash()
     On Error GoTo ErrorHandler
-    a$ = Dir(hashpath$ + "*.hsd")
+    a$ = Dir(hashPath$ + "*.hsd")
     'Go through the files, and delete them
     Do While Not (a$ = "")
-        Kill hashpath$ + a$
+        Kill hashPath$ + a$
         a$ = Dir()
     Loop
 
@@ -672,12 +672,12 @@ Sub createHashTable()
     If nTiles = 0 Then Exit Sub
     
     num = FreeFile
-    Open hashpath$ + "hashed.hsd" For Output As #num
-        a$ = Dir(projectPath$ + tilepath$ + "*.gph")
+    Open hashPath$ + "hashed.hsd" For Output As #num
+        a$ = Dir(projectPath$ + tilePath$ + "*.gph")
         Do While Not (a$ = "")
             cnt = cnt + 1
             total = 0
-            Call opentile2(projectPath$ + tilepath$ + a$)
+            Call openTile2(projectPath$ + tilePath$ + a$)
             For t = 1 To 16
                 hv = tilemem(t, t) Mod 11
                 total = total + hv
@@ -691,7 +691,7 @@ Sub createHashTable()
             Print #num, total
             
             num2 = FreeFile
-            Open hashpath$ + toString(total) + ".hsd" For Append As #num2
+            Open hashPath$ + toString(total) + ".hsd" For Append As #num2
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
                 Print #num2, a$
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
@@ -743,7 +743,7 @@ Sub compareHash()
     
     num = FreeFile
     cnt = 0
-    Open hashpath$ + "hashed.hsd" For Input As #num
+    Open hashPath$ + "hashed.hsd" For Input As #num
         For l = 1 To nTiles
             If tstStop = 1 Then
                 Exit For
@@ -752,12 +752,11 @@ Sub compareHash()
             Input #num, fdet
             Input #num, fhash
             cnt = cnt + 1
-            aa = FileExist(projectPath$ + tilepath$ + fn$)
-            If aa = 1 Then
+            If fileExists(projectPath & tilePath & fn) Then
                 'now check the corresponding hash file
-                hnum$ = toString(fhash) + ".hsd"
+                hnum$ = toString(fhash) & ".hsd"
                 num2 = FreeFile
-                Open hashpath$ + hnum$ For Input As #num2
+                Open hashPath$ + hnum$ For Input As #num2
                     Do While Not EOF(num2)
                         Line Input #num2, hn$
                         Label4.Caption = "Checking " + fn$ + " and " + hn$
@@ -768,7 +767,7 @@ Sub compareHash()
                                 If (compareTiles(fn$, hn$)) Then
                                     'they are the same, delete other
                                     'MsgBox fn$ + " " + hn$
-                                    Kill projectPath$ + tilepath$ + hn$
+                                    Kill projectPath$ + tilePath$ + hn$
                                 End If
                             End If
                         End If
@@ -785,53 +784,43 @@ End Sub
 '========================================================================
 ' Compares 2 tiles, returns True/False
 '========================================================================
-Function compareTiles(f1$, f2$) As Boolean
-    On Error GoTo ErrorHandler
-    ReDim mybuf(32, 32)
-    a = FileExist(projectPath$ + tilepath$ + f1$)
-    If a = 0 Then
+Function compareTiles(ByVal f1 As String, ByVal f2 As String) As Boolean
+    On Error Resume Next
+    
+    Dim myBuf(32, 32) As Long
+    If Not fileExists(projectPath & tilePath & f1) Then
         'f1 doesn't exist
-        compareTiles = False
         Exit Function
     End If
-    a = FileExist(projectPath$ + tilepath$ + f2$)
-    If a = 0 Then
+    If Not fileExists(projectPath & tilePath & f2) Then
         'f2 doesn't exist
-        compareTiles = False
         Exit Function
     End If
     'both files exist.  now compare them
-    opentile2 (projectPath$ + tilepath$ + f1$)
+    Call openTile2(projectPath & tilePath & f1)
     For X = 1 To 32
         For Y = 1 To 32
-            mybuf(X, Y) = tilemem(X, Y)
+            myBuf(X, Y) = tilemem(X, Y)
         Next Y
     Next X
-    opentile2 (projectPath$ + tilepath$ + f2$)
+    Call openTile2(projectPath & tilePath & f2$)
     For X = 1 To 32
         For Y = 1 To 32
-            If Not (mybuf(X, Y) = tilemem(X, Y)) Then
+            If Not (myBuf(X, Y) = tilemem(X, Y)) Then
                 'found difference
-                compareTiles = False
                 Exit Function
             End If
         Next Y
     Next X
     compareTiles = True
 
-    Exit Function
-
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Function
 '========================================================================
 ' Count the tiles
 '========================================================================                             FixIT90210ae-R1672-R1B8ZE
 Function countTiles() As Integer
     On Error GoTo ErrorHandler
-    a$ = Dir(projectPath$ + tilepath$ + "*.gph")
+    a$ = Dir(projectPath$ + tilePath$ + "*.gph")
     Do While Not (a$ = "")
         cnt = cnt + 1
         a$ = Dir()
@@ -845,6 +834,3 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Function
-
-
-

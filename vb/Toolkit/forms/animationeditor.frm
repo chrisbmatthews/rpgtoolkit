@@ -391,7 +391,7 @@ Public Sub soundeffect_Click()
     Dim antiPath As String
     'Info of the Dialog Box we will open
     ChDir (currentDir$)
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     dlg.strTitle = "Select ISound"
     dlg.strDefaultExt = "wav"
     dlg.strFileTypes = "Wav Digital (*.wav)|*.wav|All files (*.*)|*.*"
@@ -408,7 +408,7 @@ Public Sub soundeffect_Click()
         'If filename is empty, exit sub
         If filename$(1) = "" Then Exit Sub
         'Copy the file to the media folder of the current project
-        FileCopy filename$(1), projectPath$ + mediapath$ + antiPath
+        FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath
         'Set the current sound
         animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame) = antiPath
         'Put the filename in the textbox
@@ -501,7 +501,7 @@ End Sub
 '========================================================================
 ' When you click in the animation picturebox
 '========================================================================
-Private Sub arena_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub arena_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
     Dim antiPath As String, col As Long
     'If the user wants to set the transparent color
@@ -511,7 +511,7 @@ Private Sub arena_MouseDown(button As Integer, Shift As Integer, x As Single, y 
         'Set the variable to false - a transparent color is selected
         animationList(activeAnimationIndex).theData.animGetTransp = False
         'Get the color of the pixel
-        col = vbFrmPoint(arena, x, y)
+        col = vbFrmPoint(arena, X, Y)
         'Set the transparent color
         animationList(activeAnimationIndex).theData.animTransp(animationList(activeAnimationIndex).theData.animCurrentFrame) = col
         'If the next frame is empty, set the transparent color there too
@@ -524,7 +524,7 @@ Private Sub arena_MouseDown(button As Integer, Shift As Integer, x As Single, y 
         Dim dlg As FileDialogInfo
         'Info of the Dialog Box we will open
         ChDir (currentDir$)
-        dlg.strDefaultFolder = projectPath$ + bmppath$
+        dlg.strDefaultFolder = projectPath$ + bmpPath$
         dlg.strTitle = "Select Image"
         dlg.strDefaultExt = "bmp"
         dlg.strFileTypes = strFileDialogFilterWithTiles
@@ -546,7 +546,7 @@ Private Sub arena_MouseDown(button As Integer, Shift As Integer, x As Single, y 
             ex = GetExt(filename$(1))
             If UCase(ex) = "TST" Or UCase(ex) = "GPH" Then 'If it's a tile(set)
                 'Copy the file to the tile folder of the current project
-                FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
+                FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
                 
                 If UCase(ex) = "TST" Then 'If it's a tileset, open the tileset browser
                     tstnum = 0
@@ -564,7 +564,7 @@ Private Sub arena_MouseDown(button As Integer, Shift As Integer, x As Single, y 
                 End If
             Else 'If it's not a tile(set), it's probably a picture, so...
                 '...copy the file to the bitmap folder of the current project
-                FileCopy filename$(1), projectPath$ + bmppath$ + antiPath$
+                FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
                 'Update the frame
                 animationList(activeAnimationIndex).theData.animFrame(animationList(activeAnimationIndex).theData.animCurrentFrame) = antiPath
             End If
@@ -702,11 +702,8 @@ Private Sub saveasanimmnu_Click()
         animationList(activeAnimationIndex).animNeedUpdate = False
         'If the file is empty, exit sub
         If filename$(1) = "" Then Exit Sub
-    
-        'Does the file exists?
-        aa = fileExist(filename$(1))
-        
-        If aa = 1 Then 'File excists
+
+        If fileExists(filename(1)) Then 'File exists
             bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
             If bb = vbNo Then Exit Sub 'If no, exit sub
         End If

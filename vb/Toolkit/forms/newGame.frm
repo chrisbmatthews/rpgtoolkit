@@ -131,30 +131,30 @@ Sub copyDefaults(thepath$)
     'copies basic files into new project...
     On Error Resume Next
     basicdir$ = gamePath$ + "Basic\"
-    Call CopyDir(basicdir$ + tilepath$, thepath$ + tilepath$)
-    Call CopyDir(basicdir$ + brdpath$, thepath$ + brdpath$)
-    Call CopyDir(basicdir$ + tempath$, thepath$ + tempath$)
-    Call CopyDir(basicdir$ + spcpath$, thepath$ + spcpath$)
-    Call CopyDir(basicdir$ + bkgpath$, thepath$ + bkgpath$)
-    Call CopyDir(basicdir$ + mediapath$, thepath$ + mediapath$)
-    Call CopyDir(basicdir$ + prgpath$, thepath$ + prgpath$)
-    Call CopyDir(basicdir$ + fontpath$, thepath$ + fontpath$)
-    Call CopyDir(basicdir$ + itmpath$, thepath$ + itmpath$)
-    Call CopyDir(basicdir$ + enepath$, thepath$ + enepath$)
-    Call CopyDir(basicdir$ + bmppath$, thepath$ + bmppath$)
-    Call CopyDir(basicdir$ + statuspath$, thepath$ + statuspath$)
+    Call CopyDir(basicdir$ + tilePath$, thepath$ + tilePath$)
+    Call CopyDir(basicdir$ + brdPath$, thepath$ + brdPath$)
+    Call CopyDir(basicdir$ + temPath$, thepath$ + temPath$)
+    Call CopyDir(basicdir$ + spcPath$, thepath$ + spcPath$)
+    Call CopyDir(basicdir$ + bkgPath$, thepath$ + bkgPath$)
+    Call CopyDir(basicdir$ + mediaPath$, thepath$ + mediaPath$)
+    Call CopyDir(basicdir$ + prgPath$, thepath$ + prgPath$)
+    Call CopyDir(basicdir$ + fontPath$, thepath$ + fontPath$)
+    Call CopyDir(basicdir$ + itmPath$, thepath$ + itmPath$)
+    Call CopyDir(basicdir$ + enePath$, thepath$ + enePath$)
+    Call CopyDir(basicdir$ + bmpPath$, thepath$ + bmpPath$)
+    Call CopyDir(basicdir$ + statusPath$, thepath$ + statusPath$)
     Call CopyDir(basicdir$ + miscPath$, thepath$ + miscPath$)
     Call CopyDir(basicdir$ + pluginPath$, thepath$ + pluginPath$)
 End Sub
 
 
 Private Sub Label2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -165,37 +165,37 @@ Private Sub Command1_Click()
     'a = MsgBox("Creating a new game will delete all data currently in memory.  Are you sure?", vbYesNo, "New game")
     a = 6
     If a = 6 Then
-        If gamett.text = "Enter a title here." Or gamett.text = "" Then
+        If gamett.Text = "Enter a title here." Or gamett.Text = "" Then
             MsgBox LoadStringLoc(985, "Please give your game a title!")
             Exit Sub
         End If
         Call clearGame    'clear all data
-        pt$ = resolve(folder.text)
+        pt$ = resolve(folder.Text)
         MkDir pt$
         projectPath$ = pt$
         Call makeFolders(projectPath$)
         'mainoption.fileTree1.setPath (projectPath$)
         'mainoption.fileTree1.pathRefresh
         
-        oldpath$ = currentdir$ + "\" + projectPath$
+        oldpath$ = currentDir$ + "\" + projectPath$
         'mainoption.Dir1.path = currentdir$ + "\" + projectPath$
         Call mainoption.TreeView1.Nodes.Clear
         Call tkMainForm.fillTree("", projectPath$)
         
-        mainMem.gameTitle$ = gamett.text             'title of game
-        mainoption.Caption = "RPG Toolkit Development System, Version 2.2 (" + gamett.text + ")"
-        tt$ = gamett.text
-        tt$ = replaceChar(tt$, "\", "")
-        tt$ = replaceChar(tt$, "/", "")
-        tt$ = replaceChar(tt$, ":", "")
-        tt$ = replaceChar(tt$, " ", "")
-        tt$ = replaceChar(tt$, ".", "")
+        mainMem.gameTitle$ = gamett.Text             'title of game
+        mainoption.Caption = "RPG Toolkit Development System, Version 2.2 (" + gamett.Text + ")"
+        tt$ = gamett.Text
+        tt$ = replace(tt$, "\", "")
+        tt$ = replace(tt$, "/", "")
+        tt$ = replace(tt$, ":", "")
+        tt$ = replace(tt$, " ", "")
+        tt$ = replace(tt$, ".", "")
         tt$ = tt$ + ".gam"
         mainMem.mainScreenType = 1
-        Call saveMain(gampath$ + tt$, mainMem)
+        Call saveMain(gamPath$ + tt$, mainMem)
         mainfile$ = tt$
         lastProject$ = mainfile$
-        Call CopyDir(gamePath$ + "Basic\" + fontpath$, projectPath$ + fontpath$)
+        Call CopyDir(gamePath$ + "Basic\" + fontPath$, projectPath$ + fontPath$)
         If Check1.value = 1 Then
             'copy default files
             Call copyDefaults(projectPath$)
@@ -207,7 +207,7 @@ Private Sub Command1_Click()
             mainMem.initBoard$ = "start.brd"             'initial board
             mainMem.initChar$ = "start.tem"                'initial character
             mainMem.mainScreenType = 1
-            saveMain gampath$ + tt$, mainMem
+            saveMain gamPath$ + tt$, mainMem
         End If
         editmainfile.Show
         Unload newGame
@@ -224,12 +224,12 @@ End Sub
 
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload newGame
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -240,18 +240,18 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub gamett_Change()
-    On Error GoTo errorhandler
-    tt$ = gamett.text
-    tt$ = replaceChar(tt$, "\", "")
-    tt$ = replaceChar(tt$, "/", "")
-    tt$ = replaceChar(tt$, ":", "")
-    tt$ = replaceChar(tt$, " ", "")
-    tt$ = replaceChar(tt$, ".", "")
-    folder.text = gamePath$ + tt$ + "\"
+    On Error GoTo ErrorHandler
+    tt$ = gamett.Text
+    tt$ = replace(tt$, "\", "")
+    tt$ = replace(tt$, "/", "")
+    tt$ = replace(tt$, ":", "")
+    tt$ = replace(tt$, " ", "")
+    tt$ = replace(tt$, ".", "")
+    folder.Text = gamePath$ + tt$ + "\"
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

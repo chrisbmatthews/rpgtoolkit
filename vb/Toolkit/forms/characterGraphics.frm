@@ -145,7 +145,8 @@ Attribute VB_Exposed = False
 'Read LICENSE.txt for licensing info
 
 Option Explicit
-Sub infofill()
+
+Sub infoFill()
     'fill in the info...
     On Error Resume Next
     
@@ -188,14 +189,14 @@ Private Sub Command1_Click()
     newName$ = InputBox(LoadStringLoc(2063, "Enter the handle for a new animation"))
     If newName$ <> "" Then
         Call playerAddCustomGfx(playerList(activePlayerIndex).theData, newName$, "")
-        Call infofill
+        Call infoFill
         spriteList.ListIndex = idx
     End If
 End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String, idx As Long, dx As Long
     
@@ -211,7 +212,7 @@ Private Sub Command14_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + miscPath$ + antiPath$
     Text1.Text = antiPath$
@@ -241,7 +242,7 @@ Private Sub Command2_Click()
         dx = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, idx - UBound(playerList(activePlayerIndex).theData.gfx))
         playerList(activePlayerIndex).theData.customGfx(dx) = ""
         playerList(activePlayerIndex).theData.customGfxNames(dx) = ""
-        Call infofill
+        Call infoFill
         spriteList.ListIndex = idx
     End If
 End Sub
@@ -281,7 +282,7 @@ Private Sub Form_Load()
     On Error Resume Next
     Call LocalizeForm(Me)
     Set TopBar.theForm = Me
-    Call infofill
+    Call infoFill
     Command8.MouseIcon = Images.MouseLink
     Command14.MouseIcon = Images.MouseLink
 End Sub

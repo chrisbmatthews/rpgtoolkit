@@ -41,10 +41,10 @@ Global tileset As tilesetHeader    'current tileset file
 '==============================================
 'New variables for isometric tile system; 3.0.4
 'GetTileInfo constants.
+
 Public Const TSTTYPE As Byte = 0        'Should be 1!
 Public Const ISOTYPE As Byte = 2
 Public Const ISODETAIL As Byte = 150    'Arbitrary value!
-
 
 Function addToTileSet(ByVal file As String) As Integer: On Error GoTo errorhandler
 '==================================================

@@ -11,6 +11,8 @@ Attribute VB_Name = "CommonBinaryIO"
 ' ---What is done
 ' + Swapped +s for &s where appropriate
 ' + Removed obsolete code
+' + Removed variants
+'
 '=======================================================
 
 Option Explicit

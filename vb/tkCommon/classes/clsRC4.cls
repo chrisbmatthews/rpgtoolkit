@@ -36,12 +36,12 @@ Private hiByte As Long
 Private hiBound As Long
 
 Public Function EncryptFile(InFile As String, OutFile As String, Overwrite As Boolean, Optional Key As String) As Boolean
-    On Error GoTo errorhandler
-    If FileExist(InFile) = False Then
+    On Error GoTo ErrorHandler
+    If fileExists(InFile) = False Then
         EncryptFile = False
         Exit Function
     End If
-    If FileExist(OutFile) = True And Overwrite = False Then
+    If fileExists(OutFile) = True And Overwrite = False Then
         EncryptFile = False
         Exit Function
     End If
@@ -52,7 +52,7 @@ Public Function EncryptFile(InFile As String, OutFile As String, Overwrite As Bo
         Get #FileO, , buffer()
     Close #FileO
     Call EncryptByte(buffer(), Key)
-    If FileExist(OutFile) = True Then Kill OutFile
+    If fileExists(OutFile) = True Then Kill OutFile
     FileO = FreeFile
     Open OutFile For Binary As #FileO
         Put #FileO, , buffer()
@@ -60,17 +60,17 @@ Public Function EncryptFile(InFile As String, OutFile As String, Overwrite As Bo
     EncryptFile = True
     Exit Function
 
-errorhandler:
+ErrorHandler:
     EncryptFile = False
 End Function
 
 Public Function DecryptFile(InFile As String, OutFile As String, Overwrite As Boolean, Optional Key As String) As Boolean
-    On Error GoTo errorhandler
-    If FileExist(InFile) = False Then
+    On Error GoTo ErrorHandler
+    If fileExists(InFile) = False Then
         DecryptFile = False
         Exit Function
     End If
-    If FileExist(OutFile) = True Then
+    If fileExists(OutFile) = True Then
         DecryptFile = False
         Exit Function
     End If
@@ -81,7 +81,7 @@ Public Function DecryptFile(InFile As String, OutFile As String, Overwrite As Bo
         Get #FileO, , buffer()
     Close #FileO
     Call DecryptByte(buffer(), Key)
-    If FileExist(OutFile) = True Then Kill OutFile
+    If fileExists(OutFile) = True Then Kill OutFile
     FileO = FreeFile
     Open OutFile For Binary As #FileO
         Put #FileO, , buffer()
@@ -89,7 +89,7 @@ Public Function DecryptFile(InFile As String, OutFile As String, Overwrite As Bo
     DecryptFile = True
     Exit Function
 
-errorhandler:
+ErrorHandler:
     DecryptFile = False
 End Function
 
@@ -174,16 +174,6 @@ Private Function EnHex(Data As String) As String
     Next
     EnHex = GData
     Reset
-End Function
-
-Private Function FileExist(filename As String) As Boolean
-    On Error GoTo errorhandler
-    Call FileLen(filename)
-    FileExist = True
-    Exit Function
-
-errorhandler:
-    FileExist = False
 End Function
 
 Private Property Get GData() As String

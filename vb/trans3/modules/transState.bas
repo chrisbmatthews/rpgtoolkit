@@ -164,7 +164,7 @@ Sub LoadState(ByVal file As String)
                     vName$ = vName$ + "!"
                     Line Input #num, Temp$
                     'internationalisation-- convert ',' to '.'
-                    Temp$ = replaceChar(Temp$, ",", ".")
+                    Temp$ = replace(Temp$, ",", ".")
                     If vName$ <> "" Then
                         Call SetNumVar(vName$, val(Temp$), globalHeap)
                     End If
@@ -186,7 +186,7 @@ Sub LoadState(ByVal file As String)
                     Line Input #num, vName$
                     Line Input #num, Temp$
                     'internationalisation-- convert ',' to '.'
-                    Temp$ = replaceChar(Temp$, ",", ".")
+                    Temp$ = replace(Temp$, ",", ".")
                     If vName$ <> "" Then
                         Call SetNumVar(vName$, val(Temp$), globalHeap)
                     End If
@@ -258,7 +258,7 @@ Sub LoadState(ByVal file As String)
             Input #num, italicsYN 'ital on/off 0-off 1-on
             Line Input #num, Temp$
             'internationalisation-- convert ',' to '.'
-            Temp$ = replaceChar(Temp$, ",", ".")
+            Temp$ = replace(Temp$, ",", ".")
             gameTime = val(Temp$)  'length of game, in seconds
             Input #num, stepsTaken  'number of steps taken
             'Filename of main file:
