@@ -104,11 +104,14 @@ Public Sub stopMidi()
     If Not (m_segment Is Nothing) Then
 
         ' Stop the segment
-        Call m_segment.SetRepeats(0)
         Call m_performance.Stop(m_segment, m_segmentState, 0, 0)
 
+        Do While (m_performance.isPlaying(m_segment, m_segmentState))
+            ' Do not proceed until segment has fully stopped
+        Loop
+
         ' Kill the segment
-        Set m_segment = Nothing
+        Call m_segment.Unload(m_performance)
 
     End If
 
