@@ -1271,8 +1271,7 @@ Private Function isPlayerIdle(ByVal num As Long) As Boolean
 
     On Error Resume Next
 
-    Static timeStamps() As Double   'Time stamps of idleness
-    ReDim Preserve timeStamps(4)    'Make one spot for each character
+    Static timeStamps(4) As Double   'Time stamps of idleness
 
     If (Right(UCase(pPos(num).frame), 5) = "STAND") Then
         'Player is already marked as idle
