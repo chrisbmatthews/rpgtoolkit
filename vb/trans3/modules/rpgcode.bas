@@ -3627,7 +3627,7 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '#LayerPut(x!, y!, layer!, "tile.gph")
     'put a tile on a specific position
     'coords are actual board coords (ie, not screen coords)
-    On Error GoTo errorhandler
+    On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -3669,54 +3669,21 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
         yy = num2 - scTopY
         For lll = 1 To 8
             If (LenB(BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData))) Then
-                'If Not (usingDX()) Then
-                '
-                '    Call drawTileCNV(cnvScrollCache, _
-                '                  projectPath & tilePath & BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
-                '                  xx, _
-                '                  yy, _
-                '                  boardList(activeBoardIndex).theData.ambientRed(num1, num2, lll) + addOnR, _
-                '                  boardList(activeBoardIndex).theData.ambientGreen(num1, num2, lll) + addOnG, _
-                '                  boardList(activeBoardIndex).theData.ambientBlue(num1, num2, lll) + addOnB, False)
-                '    Call drawTileCNV(cnvScrollCacheMask, _
-                '                  projectPath & tilePath & BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
-                '                  xx, _
-                '                  yy, _
-                '                  boardList(activeBoardIndex).theData.ambientRed(num1, num2, lll) + addOnR, _
-                '                  boardList(activeBoardIndex).theData.ambientGreen(num1, num2, lll) + addOnG, _
-                '                  boardList(activeBoardIndex).theData.ambientBlue(num1, num2, lll) + addOnB, True)
-                'Else
-                    Call drawTileCNV(cnvScrollCache, _
-                                  projectPath & tilePath & BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
-                                  xx, _
-                                  yy, _
-                                  boardList(activeBoardIndex).theData.ambientRed(num1, num2, lll) + addOnR, _
-                                  boardList(activeBoardIndex).theData.ambientGreen(num1, num2, lll) + addOnG, _
-                                  boardList(activeBoardIndex).theData.ambientBlue(num1, num2, lll) + addOnB, False)
-                'End If
+                Call drawTileCNV(cnvScrollCache, _
+                                projectPath & tilePath & BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
+                                xx, _
+                                yy, _
+                                boardList(activeBoardIndex).theData.ambientRed(num1, num2, lll) + addOnR, _
+                                boardList(activeBoardIndex).theData.ambientGreen(num1, num2, lll) + addOnG, _
+                                boardList(activeBoardIndex).theData.ambientBlue(num1, num2, lll) + addOnB, False)
             End If
         Next lll
-        Call renderNow
-        
-        'Call renderNow(cnvRPGCodeScreen)
 
-        ' ! MODIFIED BY KSNiloc...
-        
-        Dim x As Long: x = num1
-        Dim y As Long: y = num2
-        DXDrawCanvasPartial cnvRPGCodeScreen, _
-                            x * 32 - 32, y * 32 - 32, _
-                            x * 32 - 32, y * 32 - 32, _
-                            32, 32
-        DXRefresh
-        
+        Call renderNow(cnvRPGCodeScreen, True)
+        Call renderRPGCodeScreen
+
     End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
 Public Sub LoadRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
@@ -3725,31 +3692,32 @@ Public Sub LoadRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 'This sub is also called for loading through the default menu.
 '===========================================================================
     On Error Resume Next
-    
+
     Dim paras() As parameters, t As Long
-    paras = getParameters(Text, theProgram)
-    
-    If UBound(paras) <> 0 Then
+    paras = getParameters(Text, theProgram, t)
+
+    If t <> 1 Then
         Call debugger("Warning: #Load() requires 1 data element!-- " + Text)
         Exit Sub
     End If
+
     If paras(0).dataType <> DT_LIT Then
         Call debugger("Warning: #Load() data type must be literal!-- " + Text)
         Exit Sub
     End If
-    
+
     paras(0).lit = addExt(paras(0).lit, ".sav")
     'Load the .sav file.
     Call LoadState(savPath & paras(0).lit)
-    
+
     'Create characters.
     For t = 0 To 4
         If (LenB(playerFile(t))) Then Call RestoreCharacter(playerFile(t), t, False)
     Next t
-    
+
     'Load board data.
     Call openBoard(currentBoard, boardList(activeBoardIndex).theData)
-    
+
     Call ClearNonPersistentThreads
     Call clearAnmCache
     'lastRender.canvas = -1
@@ -3760,7 +3728,7 @@ Public Sub LoadRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     Call renderNow
     Call renderNow(cnvRPGCodeScreen)
     Call launchBoardThreads(boardList(activeBoardIndex).theData)
-    
+
     saveFileLoaded = True           'Used to prevent new game loading after start menu Load.
 
 End Sub
@@ -4993,7 +4961,7 @@ End Sub
 
 Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '#Put(x!,y!,"graphic.gph")
-    On Error GoTo errorhandler
+    On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -5025,24 +4993,9 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
         file$ = addExt(lit1$, ".gph")
         file$ = projectPath$ & tilePath$ & file$
         Call drawTileCNV(cnvRPGCodeScreen, file$, num1, num2, addOnR, addOnG, addOnB, False)
-        'Call renderRPGCodeScreen
-        
-        ' ! MODIFIED BY KSNiloc...
-        
-        Dim x As Long: x = num1
-        Dim y As Long: y = num2
-        DXDrawCanvasPartial cnvRPGCodeScreen, _
-                            x * 32 - 32, y * 32 - 32, _
-                            x * 32 - 32, y * 32 - 32, _
-                            32, 32
-        DXRefresh
+        Call renderRPGCodeScreen
     End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
 Sub RandomRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
