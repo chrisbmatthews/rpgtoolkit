@@ -147,7 +147,7 @@ void APIENTRY createEventCallbacks(
 	::setAsciiKeyState = (CBOneParam)setAsciiKeyState;
 	::keyDownEvent = (CBTwoParams)keyDownEvent;
 	::mouseMoveEvent = (CBTwoParams)mouseMoveEvent;
-	::mouseDownEvent = (CBTwoParams)mouseDownEvent;
+	::mouseDownEvent = (CBFourParams)mouseDownEvent;
 	::isShuttingDown = (CBNoParamsRet)isShuttingDown;
 	::getGameState = (CBNoParamsRet)getGameState;
 	::setGameState = (CBOneParam)setGameState;
@@ -249,7 +249,7 @@ LRESULT CALLBACK eventProcessor(
 		case(WM_LBUTTONDOWN):
 		{
 			//Handle the event
-			mouseDownEvent(LOWORD(lParam),HIWORD(lParam));
+			mouseDownEvent(LOWORD(lParam),HIWORD(lParam),0,1);
 		} break;
 
 		//Window activated/deactivated

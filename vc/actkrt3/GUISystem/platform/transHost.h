@@ -28,6 +28,7 @@ typedef void (__stdcall* CBNoParams)();
 typedef int (__stdcall* CBNoParamsRet)();
 typedef void (__stdcall* CBOneParam)(int);
 typedef void (__stdcall* CBTwoParams)(int,int);
+typedef void (__stdcall* CBFourParams)(int,int,int,int);
 
 //////////////////////////////////////////////////////////////////////////
 // Game states
@@ -66,7 +67,9 @@ CBOneParam setGameState;			//Sets the current gameState (use GS_ constant)
 //Two parameters
 CBTwoParams keyDownEvent;			//Event on key down
 CBTwoParams mouseMoveEvent;			//Event on mouse move
-CBTwoParams mouseDownEvent;			//Event on mouse down
+
+//Four params
+CBFourParams mouseDownEvent;		//Event on mouse down
 
 /////////////////////////////////////////////////////////////////////////
 // Prototypes
