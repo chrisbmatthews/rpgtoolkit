@@ -264,7 +264,7 @@ Private Sub fillInfo(Optional ByVal list As ListBox, Optional ByVal index As Int
         Call .AddItem("East (Right View)")
         Call .AddItem("West (Left View)")
         Call .AddItem("North-West")
-        Call .AddItem("North-West")
+        Call .AddItem("North-East")
         Call .AddItem("South-West")
         Call .AddItem("South-East")
     
