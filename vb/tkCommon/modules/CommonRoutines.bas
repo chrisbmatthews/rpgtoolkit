@@ -48,7 +48,7 @@ Option Explicit
         '=======================================================
         With tkMainForm
                 .animationExtras.Visible = False
-                .bottomFrame.Visible = False
+                '.bottomFrame.Visible = False
                 .tileExtras.Visible = False
                 .bBar.Visible = False
                 .tileBmpExtras.Visible = False
@@ -69,7 +69,7 @@ Option Explicit
         Dim t As Long
         Do Until done
             t = t + 1
-            TabStrip1.Tabs.Item(t).Caption = LoadStringLoc(TabStrip1.Tabs.Item(t).tag, TabStrip1.Tabs.Item(t).Caption)
+            TabStrip1.Tabs.item(t).Caption = LoadStringLoc(TabStrip1.Tabs.item(t).tag, TabStrip1.Tabs.item(t).Caption)
         Loop
         Exit Sub
 tabErr:
