@@ -200,7 +200,6 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     Dim foundIt As Long, t As Long
     theMethod.name = mName
-    Debug.Assert mName <> "DELIMENUMBER"
     foundIt = getMethodLine(theMethod, theProgram, i)
 
     If (foundIt = -1) Then
