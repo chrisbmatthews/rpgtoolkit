@@ -97,18 +97,20 @@ Corrected
     * Isometric scrolling of tiles
     * White trails on isometric tile blurs
     * Background image unavailable
+    * No way to view rgb colours in tile and animation editors
+    * Lacking a "real" blur in the tile editor
 
 Miscellaneous Items
 ===================
 
 Corrected
 
-    * Update quick reference
+    * Update quick reference -- OC
     * Crashes for some people during install
     * Help files rewritten
 
 ===================================================================================================
-- END 3.0.6
+- END 3.06
 ===================================================================================================
 
 RPG Toolkit Development System 3.0.5
