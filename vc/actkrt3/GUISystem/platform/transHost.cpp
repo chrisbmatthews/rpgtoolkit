@@ -49,7 +49,7 @@ int APIENTRY createHostWindow(
 	wnd.lpfnWndProc = eventProcessor;
 	wnd.lpszClassName = className; //name of this class
 	wnd.lpszMenuName = NULL;
-	wnd.style = CS_DBLCLKS | CS_OWNDC | CS_VREDRAW | CS_HREDRAW; //style of window
+	wnd.style = /* CS_DBLCLKS | */ CS_OWNDC /* | CS_VREDRAW | CS_HREDRAW */; //style of window
 
     //Register the class so windows knows of its existence
     RegisterClassEx(&wnd);
