@@ -20,6 +20,25 @@ Option Explicit
 ' Structure definitions
 '=========================================================================
 
+Public Enum BLOCK_TYPE
+    BT_NORMAL
+    BT_WHILE
+    BT_UNTIL
+    BT_FOR
+End Enum
+
+Private Type BLOCK_STACK_ITEM
+    btType As BLOCK_TYPE
+    lngLineBegin As Long
+    strCondition As String
+    strIncrement As String
+End Type
+
+Private Type BLOCK_STACK
+    bsiStack() As BLOCK_STACK_ITEM
+    lngIndex As Long
+End Type
+
 Private Type RPGCODE_THREAD                        'RPGCode thread data structure
     filename As String                             '  Name of program
     bPersistent As Boolean                         '  True if this thread should persist after leaving this board
@@ -28,29 +47,7 @@ Private Type RPGCODE_THREAD                        'RPGCode thread data structur
     sleepStartTime As Long                         '  Time when thread was put to sleep
     sleepDuration As Double                        '  Duration of sleep
     itemNum As Long                                '  Item number (-1 if not an item)
-End Type
-
-Public Enum THREAD_LOOP_TYPE                       'Thread loop enumeration
-    TYPE_IF = 1                                    '  If()
-    TYPE_WHILE = 2                                 '  While()
-    TYPE_UNTIL = 3                                 '  Until()
-    TYPE_FOR = 4                                   '  For()
-End Enum
-
-Private Type threadLoop                            'Thread loop structure
-    start As Long                                  '  Line loop starts on
-    depth As Long                                  '  Depth in loop
-    Over As Boolean                                '  Loop over?
-    condition As String                            '  Condition to end loop
-    increment As String                            '  Incrementation equation
-    type As THREAD_LOOP_TYPE                       '  Type of thread loop
-    prg As RPGCodeProgram                          '  PRG hosting the loop
-    end As Boolean                                 '  Loop ended?
-End Type
-
-Private Type THREAD_STACK                          'Thread stack structure
-    stack() As threadLoop                          '  Stack of thread loops
-    pos As Long                                    '  Position in stack
+    blockStack As BLOCK_STACK
 End Type
 
 Private Type threadAnimation                       'Thread animation structure
@@ -62,11 +59,6 @@ Private Type threadAnimation                       'Thread animation structure
 End Type
 
 '=========================================================================
-' Thread looping declarations
-'=========================================================================
-Private threadLoops() As THREAD_STACK               'All thread loops
-
-'=========================================================================
 ' Animation declarations
 '=========================================================================
 Private threadAnimations() As threadAnimation      'All thread animations
@@ -76,7 +68,6 @@ Private lastAnimRender As Long                     'Last animation render
 '=========================================================================
 ' Thread action declarations
 '=========================================================================
-Private threadLooping As Boolean                   'Are we looping?
 Private threadAnimating As Boolean                 'Are we animating?
 
 '=========================================================================
@@ -96,6 +87,36 @@ Public Property Let isMultiTasking(ByVal newVal As Boolean)
 End Property
 
 '=========================================================================
+' Enter a block from a thread
+'=========================================================================
+Public Sub enterBlock( _
+    ByVal btType As BLOCK_TYPE, _
+    ByRef prg As RPGCodeProgram, _
+    Optional ByRef strCondition As String, _
+    Optional ByRef strIncrement As String _
+)
+
+    With Threads(prg.threadID).blockStack
+
+        .lngIndex = .lngIndex + 1
+        If (.lngIndex > UBound(.bsiStack)) Then
+            ReDim Preserve .bsiStack(.lngIndex + 10)
+        End If
+
+        With .bsiStack(.lngIndex)
+
+            .btType = btType
+            .lngLineBegin = prg.programPos + 1
+            .strCondition = strCondition
+            .strIncrement = strIncrement
+
+        End With
+
+    End With
+
+End Sub
+
+'=========================================================================
 ' Run a line from threads
 '=========================================================================
 Public Sub multiTaskNow()
@@ -107,7 +128,7 @@ Public Sub multiTaskNow()
 
     If Not (runningProgram) Then
         ' Update the RPGCode canvas if not in a prg
-        Call canvasGetScreen(cnvRPGCodeScreen)
+        Call canvasGetScreen(cnvRpgCodeScreen)
     End If
 
     ' Run all threads
@@ -135,6 +156,7 @@ Public Sub ClearNonPersistentThreads()
             Threads(c).thread.programPos = -1
             Threads(c).thread.threadID = -1
             ReDim Threads(c).thread.program(10)
+            ReDim Threads(c).blockStack.bsiStack(10)
             Threads(c).bIsSleeping = False
             Call ClearRPGCodeProcess(Threads(c).thread)
         End If
@@ -143,12 +165,6 @@ Public Sub ClearNonPersistentThreads()
     For c = 0 To UBound(threadAnimations)
         If Not threadAnimations(c).persistent Then
             Call ceaseMultitaskAnimation(c)
-        End If
-    Next c
-
-    For c = 0 To UBound(threadLoops)
-        If Not Threads(threadLoops(c).stack(threadLoops(c).pos).prg.threadID).bPersistent Then
-            Call endThreadLoop(c, False)
         End If
     Next c
 
@@ -170,6 +186,7 @@ Public Sub ClearAllThreads()
         Threads(c).thread.programPos = -1
         Threads(c).thread.threadID = -1
         ReDim Threads(c).thread.program(0)
+        ReDim Threads(c).blockStack.bsiStack(0)
         Threads(c).bIsSleeping = False
         Call ClearRPGCodeProcess(Threads(c).thread)
     Next c
@@ -177,7 +194,6 @@ Public Sub ClearAllThreads()
     ReDim Threads(0)
 
     Call ceaseAllMultitaskingAnimations
-    Call endAllThreadLoops
 
 End Sub
 
@@ -200,6 +216,7 @@ Public Function createThread(ByVal file As String, ByVal bPersistent As Boolean,
                 .thread.threadID = c
                 .bIsSleeping = False
                 .itemNum = itemNum
+                ReDim .blockStack.bsiStack(10)
                 createThread = c
                 Exit Function
             End If
@@ -216,6 +233,7 @@ Public Function createThread(ByVal file As String, ByVal bPersistent As Boolean,
         .thread.threadID = c
         .bIsSleeping = False
         .itemNum = itemNum
+        ReDim .blockStack.bsiStack(10)
     End With
     createThread = size
 
@@ -228,27 +246,33 @@ Private Sub ExecuteAllThreads()
 
     On Error Resume Next
 
-    'Run threads without loops (maybe using Branch)
-    Dim c As Long
-    For c = 0 To UBound(Threads)
-        If (LenB(Threads(c).filename)) Then
-            If Threads(c).bIsSleeping Then
-                'thread is asleep
-                'time to wake up?
-                If Threads(c).sleepStartTime + Threads(c).sleepDuration <= Timer() Then
-                    'wake up!
-                    Threads(c).bIsSleeping = False
-                    Call ExecuteThread(Threads(c).thread)
-                End If
-            Else
-                Call ExecuteThread(Threads(c).thread)
-            End If
-        End If
-        Call processEvent
-    Next c
+    Dim i As Long
+    For i = 0 To UBound(Threads)
 
-    'Run threads that use loops (like While)
-    Call handleThreadLooping
+        If (LenB(Threads(i).filename)) Then
+
+            If (Threads(i).bIsSleeping) Then
+
+                If (Threads(i).sleepStartTime + Threads(i).sleepDuration <= Timer()) Then
+
+                    ' Wake up
+                    Threads(i).bIsSleeping = False
+                    Call ExecuteThread(Threads(i).thread)
+
+                End If
+
+            Else
+
+                ' Execute
+                Call ExecuteThread(Threads(i).thread)
+
+            End If
+
+        End If
+
+        Call processEvent
+
+    Next i
 
 End Sub
 
@@ -256,30 +280,119 @@ End Sub
 ' Execute a thread
 '=========================================================================
 Private Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
+
+    On Error GoTo error
+
     If (Not ((theProgram.programPos = -1) Or (theProgram.programPos = -2))) Then
+
         Dim itemNum As Long
         itemNum = Threads(theProgram.threadID).itemNum
         If (itemNum <> -1) Then
-            If (Not itemMem(itemNum).bIsActive) Then
-                'Item is not active
+
+            If Not (itemMem(itemNum).bIsActive) Then
+                ' Item is not active
                 Exit Function
             End If
-            'Since it's an item program, set target and source
+
+            ' Since it's an item program, set target and source
             target = itemNum
             Source = itemNum
             targetType = TYPE_ITEM
             sourceType = TYPE_ITEM
+
         End If
-        Dim retval As RPGCODE_RETURN
+
+        Dim retval As RPGCODE_RETURN, bRunPrg As Boolean
+        bRunPrg = runningProgram
+        runningProgram = True
+
+        With Threads(theProgram.threadID).blockStack
+
+            If (.lngIndex) Then
+
+                If (theProgram.strCommands(theProgram.programPos) = "CLOSEBLOCK") Then
+
+                    Select Case .bsiStack(.lngIndex).btType
+
+                        Case BT_NORMAL
+
+                            ' End of this block
+                            .lngIndex = .lngIndex - 1
+
+                        Case BT_WHILE
+
+                            If (evaluate(.bsiStack(.lngIndex).strCondition, theProgram) <> 0) Then
+
+                                ' Not the end
+                                theProgram.programPos = .bsiStack(.lngIndex).lngLineBegin
+
+                            Else
+
+                                ' The end
+                                .lngIndex = .lngIndex - 1
+
+                            End If
+
+                        Case BT_UNTIL
+
+                            If (evaluate(.bsiStack(.lngIndex).strCondition, theProgram) = 0) Then
+
+                                ' Not the end
+                                theProgram.programPos = .bsiStack(.lngIndex).lngLineBegin
+
+                            Else
+
+                                ' The end
+                                .lngIndex = .lngIndex - 1
+
+                            End If
+
+                        Case BT_FOR
+
+                            ' Increment
+                            Dim lngLine As Long
+                            lngLine = theProgram.programPos
+                            Call DoSingleCommand(.bsiStack(.lngIndex).strIncrement, theProgram, retval)
+
+                            If (evaluate(.bsiStack(.lngIndex).strCondition, theProgram) <> 0) Then
+
+                                ' Not the end
+                                theProgram.programPos = .bsiStack(.lngIndex).lngLineBegin
+
+                            Else
+
+                                ' The end
+                                .lngIndex = .lngIndex - 1
+                                theProgram.programPos = lngLine
+
+                            End If
+
+                    End Select
+
+                End If
+
+            End If
+
+        End With
+
         theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval)
-        If (theProgram.programPos = -1) Or (theProgram.programPos = -2) Then
-            'clear the program
+        runningProgram = bRunPrg
+
+        If ((theProgram.programPos = -1) Or (theProgram.programPos = -2)) Then
+
+            ' Clear the program
             Call ClearRPGCodeProcess(theProgram)
+
         Else
-            'Complete success!
+
+            ' Complete success!
             ExecuteThread = True
+
         End If
+
     End If
+
+error:
 End Function
 
 '=========================================================================
@@ -374,283 +487,6 @@ Public Sub launchBoardThreads(ByRef board As TKBoard)
             Call CBSetNumerical("Threads[" & CStr(a) & "]!", id)
         End If
     Next a
-End Sub
-
-'=========================================================================
-' End all thread loops
-'=========================================================================
-Private Sub endAllThreadLoops()
-    ReDim threadLoops(0)
-    threadLooping = False
-End Sub
-
-'=========================================================================
-' Enter a loop from within a thread
-'=========================================================================
-Public Sub startThreadLoop( _
-                              ByRef prg As RPGCodeProgram, _
-                              ByVal ttype As THREAD_LOOP_TYPE, _
-                              Optional ByVal condition As String, _
-                              Optional ByVal increment As String _
-                                                                   )
-
-    ' Make sure our array is dimensioned
-    On Error GoTo error
-    Dim ub As Long
-    ub = UBound(threadLoops)
-
-    ' If the program is already looping
-    If (prg.looping) Then
-
-        ' Find a thread loop with its ID
-        On Error GoTo tidError
-        Dim i As Long
-        For i = 0 To ub
-            Dim tid As Long
-            tid = threadLoops(i).stack(threadLoops(i).pos).prg.threadID
-            If (tid = prg.threadID) Then
-                ' Here it is!
-                ub = i
-                Exit For
-            End If
-        Next i
-
-    Else
-
-        ' Enlarge the array
-        ub = ub + 1
-        ReDim Preserve threadLoops(ub)
-
-    End If
-
-    On Error Resume Next
-
-    ' Setup the loop
-    Call moveToStartOfBlock(prg)
-    threadLoops(ub).pos = threadLoops(ub).pos + 1
-    ReDim Preserve threadLoops(ub).stack(threadLoops(ub).pos + 50)
-    With threadLoops(ub).stack(threadLoops(ub).pos)
-        .start = prg.programPos
-        .type = ttype
-        .prg = prg
-        .condition = condition
-        .increment = increment
-        .prg.looping = True
-    End With
-
-    ' Flag we're looping
-    threadLooping = True
-
-    Exit Sub
-
-error:
-    ReDim threadLoops(0)
-    Resume
-
-tidError:
-    tid = -1
-    Resume Next
-
-End Sub
-
-'=========================================================================
-' End a thread loop
-'=========================================================================
-Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
-
-    With threadLoops(num).stack(threadLoops(num).pos)
-
-        'Flag we've reached the end
-        .end = True
-
-        'If the loop is over or we should force its end
-        If (.Over) Or (force) Then
-            If (threadLoops(num).pos = 1) Then
-                .prg.looping = False
-            End If
-            threadLoops(num).pos = threadLoops(num).pos - 1
-            Exit Sub
-        End If
-
-        'Check if it's an item program
-        Dim itmNum As Long
-        itmNum = Threads(.prg.threadID).itemNum
-        If (itmNum <> -1) Then
-            Source = itmNum
-            target = itmNum
-            sourceType = TYPE_ITEM
-            targetType = TYPE_ITEM
-        End If
-
-        'Switch on the type of loop
-        Select Case .type
-
-            Case TYPE_IF                'IF STATEMENT
-                                        '------------
-                .prg.looping = False
-
-            Case TYPE_WHILE             'WHILE LOOP
-                                        '----------
-                If evaluate(.condition, .prg) Then
-                    .prg.programPos = .start
-                    .end = False
-                Else
-                    If (threadLoops(num).pos = 1) Then
-                        .prg.looping = False
-                    End If
-                    threadLoops(num).pos = threadLoops(num).pos - 1
-                End If
-
-            Case TYPE_UNTIL             'UNTIL LOOP
-                                        '----------
-                If evaluate(.condition, .prg) = 0 Then
-                    .prg.programPos = .start
-                    .end = False
-                Else
-                    If (threadLoops(num).pos = 1) Then
-                        .prg.looping = False
-                    End If
-                    threadLoops(num).pos = threadLoops(num).pos - 1
-                End If
-
-            Case TYPE_FOR               'FOR LOOP
-                                        '--------
-                Dim oPP As Long
-                Dim rV As RPGCODE_RETURN
-                oPP = .prg.programPos
-                .prg.programPos = DoSingleCommand(.increment, .prg, rV)
-                .prg.programPos = oPP
-                If evaluate(.condition, .prg) Then
-                    .prg.programPos = .start
-                    .end = False
-                Else
-                    If (threadLoops(num).pos = 1) Then
-                        .prg.looping = False
-                    End If
-                    threadLoops(num).pos = threadLoops(num).pos - 1
-                End If
-
-        End Select '(.type)
-
-    End With '(threadLoops(num))
-
-End Sub
-
-'=========================================================================
-' Handle thread looping
-'=========================================================================
-Private Sub handleThreadLooping(Optional ByVal runAll As Boolean = True)
-
-    On Error Resume Next
-
-    Dim threadIdx As Long               'Thread index
-    Static currentlyLooping As Long     'Last run thread
-
-    If (Not threadLooping) Then
-        'Blah, there aren't even any looping threads!
-        Exit Sub
-    End If
-
-    If (runAll) Then
-        'Run all the threads
-        For threadIdx = 1 To UBound(threadLoops)
-            Call handleThreadLooping(False)
-            Call processEvent
-        Next threadIdx
-        Exit Sub
-    End If
-
-    'See if there are threads to run
-    For threadIdx = 1 To UBound(threadLoops)
-        If Not (threadLoops(threadIdx).stack(threadLoops(threadIdx).pos).end) Then
-            'This thread is alive and kicking!
-            Exit For
-        End If
-        If (threadIdx = UBound(threadLoops)) Then
-            'No running threads!
-            threadLooping = False
-            Exit Sub
-        End If
-    Next threadIdx
-
-    'Find a thread to run
-    Do
-        currentlyLooping = currentlyLooping + 1
-        If Not (currentlyLooping > UBound(threadLoops)) Then
-            If Not (threadLoops(currentlyLooping).stack(threadLoops(currentlyLooping).pos).end) Then
-                'Found a thread to run
-                Exit Do
-            End If
-        Else
-            currentlyLooping = 0
-        End If
-    Loop
-
-    If Not (Threads(threadLoops(currentlyLooping).stack(threadLoops(currentlyLooping).pos).prg.threadID).bIsSleeping) Then
-        'This thread is awake, execute it
-        Call incrementThreadLoop(currentlyLooping)
-    End If
-
-End Sub
-
-'=========================================================================
-' Increment a thread loop
-'=========================================================================
-Private Sub incrementThreadLoop(ByVal num As Long)
-
-    Dim bExec As Boolean
-    bExec = True
-
-    With threadLoops(num).stack(threadLoops(num).pos)
-
-        Dim prg As RPGCodeProgram
-        prg = .prg
-
-        Select Case prg.strCommands(prg.programPos)
-
-            Case "OPENBLOCK"
-                .depth = .depth + 1
-                prg.programPos = increment(prg)
-
-            Case "CLOSEBLOCK"
-                .depth = .depth - 1
-                prg.programPos = increment(prg)
-
-            Case "END"
-                .Over = True
-                prg.programPos = increment(prg)
-
-            Case Else
-
-                If Not (.Over) Then
-                    Dim bRunning As Boolean
-                    bRunning = runningProgram
-                    runningProgram = True
-                    bExec = ExecuteThread(prg)
-                    runningProgram = bRunning
-                Else
-                    prg.programPos = increment(prg)
-                End If
-
-        End Select
-
-        'Don't let us lock up
-        Call processEvent
-
-        .prg = prg
-
-        If (.depth = 0) Then
-            'We're at the end of the loop
-            Call endThreadLoop(num, False)
-        End If
-
-        If (prg.programPos = -1) Or (prg.programPos = -2) Or (Not (bExec)) Then
-            'We're at the end of the program
-            Call endThreadLoop(num, True)
-        End If
-
-    End With
-
 End Sub
 
 '=========================================================================

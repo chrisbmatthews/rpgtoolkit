@@ -87,12 +87,12 @@ Public Type RPGCodeProgram
     threadID As Long                        ' The thread id (-1 if not a thread)
     compilerStack() As String               ' Stack used by 'compiled' programs
     currentCompileStackIdx As Long          ' Current index of compilerStack
-    looping As Boolean                      ' Is a multitask program looping?
     autoLocal As Boolean                    ' Force implicitly created variables to the local scope?
     classes As RPGCODE_CLASS_MAIN_DATA      ' Class stuff
     strict As Boolean                       ' Is the program strict?
     strCommands() As String                 ' Commands found on lines
     bRunBlock() As Boolean                  ' Did this block run?
+    strSwitchVar() As String                ' Switch var here
 End Type
 
 '=========================================================================

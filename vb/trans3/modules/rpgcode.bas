@@ -1223,7 +1223,7 @@ Sub checkButtonRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     theOne = -1
     For t = 0 To 50
         a = within(x, g_buttons(t).Left, g_buttons(t).Right)
-        b = within(y, g_buttons(t).top, g_buttons(t).Bottom)
+        b = within(y, g_buttons(t).Top, g_buttons(t).Bottom)
         If a = 1 And b = 1 Then
             theOne = t
             Exit For
@@ -1264,7 +1264,7 @@ Private Sub createButton(ByVal pos As Long, ByVal x1 As Long, ByVal y1 As Long, 
 
     ' Set in the button
     g_buttons(pos).Left = x1
-    g_buttons(pos).top = y1
+    g_buttons(pos).Top = y1
     g_buttons(pos).Right = x2
     g_buttons(pos).Bottom = y2
 
@@ -1833,94 +1833,70 @@ Public Sub ForceRedrawRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgr
 
 End Sub
 
-Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
+Public Function ForRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram) As Long
 
-    On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
-    dataUse$ = GetBrackets(theProgram.program(theProgram.programPos))    'Get text inside brackets
-    number = CountData(GetBrackets(Text))        'how many data elements are there?
-    Dim res As Long
-    If number <> 3 Then
-        Call debugger("Error: For must have 3 data elements!-- " + Text$)
-        res = 0
-        theProgram.programPos = increment(theProgram)
-        ForRPG = runBlock(res, theProgram)
-        Exit Function
-    End If
-    useIt1$ = GetElement(dataUse$, 1)
-    useIt2$ = GetElement(dataUse$, 2)
-    useIt3$ = GetElement(dataUse$, 3)
-    'Perform command 1:
-    'useIt1$ = "#" + useIt1$
-    'useIt3$ = "#" + useIt3$
-    
-    Dim oldPos As Long
-    oldPos = theProgram.programPos
-    
+    Dim strBrackets As String, strCondition As String, strIncrement As String
+    strBrackets = GetBrackets(theProgram.program(theProgram.programPos))
+    strCondition = GetElement(strBrackets, 2)
+    strIncrement = GetElement(strBrackets, 3)
+
+    ' Save current position
+    Dim lngPosition As Long
+    lngPosition = theProgram.programPos
+
+    ' Run initial statement
     Dim retval As RPGCODE_RETURN
+    Call DoSingleCommand(GetElement(strBrackets, 1), theProgram, retval)
 
-    ' ! MODIFIED BY KSNiloc...
-    DoSingleCommand useIt1, theProgram, retval
-    'a = DoIndependentCommand(useIt1$, retval)
-    theProgram.programPos = oldPos
-    
-    'Now evaluate condition:
-    Dim u As String
-    Dim u2 As String
-    Dim u3 As String
-    
-    u = use
-    u2 = useIt2
-    u3 = useIt3
-    
-    ' theProgram.programPos = increment(theProgram)
-    res = evaluate(u2, theProgram)
-    
-    If (res) Then
+    ' If multitasking
+    If (isMultiTasking()) Then
 
-        If Not (isMultiTasking() And (Not theProgram.looping)) Then
-    
-            Do While (res)
-                res = evaluate(u2, theProgram)
-                Dim oldLine As Long, newPos As Long, curLine As Long
-        
-                oldLine = theProgram.programPos
-                newPos = runBlock(res, theProgram)
-                a = DoSingleCommand(u3, theProgram, retval)
-                curLine = oldLine
-                theProgram.programPos = oldLine
-            Loop
+        ' If it's good to go
+        If (evaluate(strCondition, theProgram)) Then
+
+            ' Enter the block
+            Call enterBlock(BT_FOR, theProgram, strCondition, strIncrement)
+            ForRPG = increment(theProgram)
 
         Else
 
-            'We're multitasking- let the main loop handle this...
-            startThreadLoop theProgram, TYPE_FOR, u2, u3
-            ForRPG = theProgram.programPos
-            Exit Function
+            ' Skip the block
+            ForRPG = runBlock(0, theProgram)
 
         End If
-        
-    'Else
-    
-        'If isMultiTasking() Then
-        '
-        '    theProgram.looping = False
-        '    loopEnd(num) = True
-        '
-        'End If
-    
+
+        Exit Function
+
     End If
 
-    'If i'm here, then res=0, and we must run through once more.
-    ForRPG = runBlock(res, theProgram)
+    ' Do while the loop is non-zero
+    Dim bRun As Boolean
+    Do
 
-    Exit Function
+        ' Evaluate the brackets
+        Dim lngEval As Long
+        lngEval = evaluate(strCondition, theProgram)
+        bRun = CBool(lngEval)
 
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+        ' Run the block
+        theProgram.programPos = lngPosition
+        ForRPG = runBlock(lngEval, theProgram)
+
+        ' Increment, if required
+        If (bRun) Then
+
+            ' Run incrementation statement
+            Call DoSingleCommand(strIncrement, theProgram, retval)
+
+        Else
+
+            ' Fin
+            Exit Do
+
+        End If
+
+    Loop
+
 End Function
 
 Sub GetBoardTileRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
@@ -3218,7 +3194,12 @@ Public Function IfThen(ByVal Text As String, ByRef prg As RPGCodeProgram) As Lon
             prg.bRunBlock(prg.programPos) = CBool(lngEval)
 
             ' Run the block
-            IfThen = runBlock(lngEval, prg)
+            If ((Not (isMultiTasking())) Or (lngEval = 0)) Then
+                IfThen = runBlock(lngEval, prg)
+            Else
+                Call enterBlock(BT_NORMAL, prg)
+                IfThen = increment(prg)
+            End If
 
         Case "ELSE", "ELSEIF"
 
@@ -3284,7 +3265,12 @@ Public Function IfThen(ByVal Text As String, ByRef prg As RPGCodeProgram) As Lon
             End If
 
             ' Exit by running the block
-            IfThen = runBlock(lngRunBlock, prg)
+            If ((Not (isMultiTasking())) Or (lngRunBlock = 0)) Then
+                IfThen = runBlock(lngRunBlock, prg)
+            Else
+                Call enterBlock(BT_NORMAL, prg)
+                IfThen = increment(prg)
+            End If
 
     End Select
 
@@ -5025,9 +5011,9 @@ Sub RandomRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     End If
     useIt1$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
-    Dim ceiling As Double, top As Long, aa As Long
-    top = getValue(useIt1$, lit$, ceiling, theProgram)
-    If top = 1 Then
+    Dim ceiling As Double, Top As Long, aa As Long
+    Top = getValue(useIt1$, lit$, ceiling, theProgram)
+    If Top = 1 Then
         Call debugger("Error: Random data type must be numerical!-- " + Text$)
     Else
 
@@ -5673,17 +5659,17 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         Call debugger("Error: Thread data type must be literal, num!-- " + Text$)
     Else
         
-        Dim tid As Long
+        Dim tID As Long
         lit1$ = addExt(lit1$, ".prg")
-        tid = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
+        tID = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
         
         If number = 3 Then
             'save value in destination var...
-            Call SetVariable(useIt3$, CStr(tid), theProgram)
+            Call SetVariable(useIt3$, CStr(tID), theProgram)
         End If
         
         retval.dataType = DT_NUM
-        retval.num = tid
+        retval.num = tID
         Exit Sub
     End If
 End Sub
@@ -7845,99 +7831,53 @@ errorhandler:
     Resume Next
 End Sub
 
-Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
-'While(condition)
-'{
-'   ...
-'   ...
-'}
-'While loop
+Public Function WhileRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram) As Long
 
-    On Error GoTo errorhandler
-    
-     ' ! MODIFIED BY KSNiloc...
-    
-    Dim use As String
-    use$ = Text$
-    Dim dataUseWhile As String
-    dataUseWhile$ = GetBrackets(theProgram.program(theProgram.programPos))
-    'Now evaluate condition:
-    
-    Dim res As Long
-    Dim oldLine As Long
-    Dim newPos As Long
-    Dim u As String
-    Dim curLine As Long
-    u = use
-    
-    ' theProgram.programPos = increment(theProgram)
-    res = evaluate(dataUseWhile$, theProgram)
-    
-    Dim isUntil As Boolean
-    isUntil = (LCase$(GetCommandName(Text)) = "until")
-    
-    Dim okToRun As Boolean
-    If isUntil Then
-        okToRun = (res = 0)
-    Else
-        okToRun = (res)
-    End If
+    Dim strBrackets As String
+    strBrackets = GetBrackets(theProgram.program(theProgram.programPos))
 
-    If okToRun Then
-    
-        If isMultiTasking() And (Not theProgram.looping) Then
+    ' Save current position
+    Dim lngPosition As Long
+    lngPosition = theProgram.programPos
 
-            'Let the main loop handle this...
-            If Not isUntil Then
-                startThreadLoop theProgram, TYPE_WHILE, dataUseWhile
-            Else
-                startThreadLoop theProgram, TYPE_UNTIL, dataUseWhile
-            End If
-            WhileRPG = theProgram.programPos
-            Exit Function
+    Dim bUntil As Boolean, lngEval As Long
+    bUntil = (theProgram.strCommands(theProgram.programPos) = "UNTIL")
+
+    ' If multitasking
+    If (isMultiTasking()) Then
+
+        lngEval = evaluate(strBrackets, theProgram)
+        If (IIf(bUntil, lngEval = 0, lngEval)) Then
+
+            ' Enter the block
+            Call enterBlock(IIf(bUntil, BT_UNTIL, BT_WHILE), theProgram, strBrackets)
+            WhileRPG = increment(theProgram)
 
         Else
 
-            Dim done As Boolean
-            Do Until done
-                res = evaluate(dataUseWhile$, theProgram)
-                
-                If (isUntil) Then
-                    If (res = 0) Then
-                        res = 1
-                    ElseIf (res) Then
-                        done = True
-                        res = 0
-                    End If
-                Else
-                    done = (res = 0)
-                End If
-                
-                oldLine = theProgram.programPos
-                newPos = runBlock(res, theProgram)
-                curLine = oldLine
-                theProgram.programPos = oldLine
+            ' Skip this block
+            WhileRPG = runBlock(0, theProgram)
 
-                Call processEvent 'Let windows do events so we don't lock up.
-            Loop
-            
         End If
-   
+
+        Exit Function
+
     End If
 
-    'If I'm here, then res=0, and we must run through once more.
-    Dim bRunningPrg As Boolean
-    bRunningPrg = runningProgram
-    runningProgram = True
-    WhileRPG = runBlock(res, theProgram)
-    runningProgram = bRunningPrg
+    ' Do while the loop is non-zero
+    Dim bRun As Boolean
+    Do
 
-    Exit Function
+        ' Evaluate the brackets
+        lngEval = evaluate(strBrackets, theProgram)
+        bRun = CBool(IIf(bUntil, lngEval = 0, lngEval))
 
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+        ' Run the block
+        theProgram.programPos = lngPosition
+        WhileRPG = runBlock(bRun, theProgram)
+
+    Loop While (bRun)
+
 End Function
 
 Sub BitmapRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -10460,170 +10400,81 @@ arrayError:
     Resume Next
 End Function
 
-Public Function switchCase( _
-                              ByVal Text As String, _
-                              ByRef prg As RPGCodeProgram _
-                                                            ) As Long
+Public Function switchCase(ByRef Text As String, ByRef prg As RPGCodeProgram) As Long
 
-    'Switch(var!)
-    '{
-    '   Case(1,2,etc.)
-    '   {
-    '       *var! = 1 or 2, etc
-    '   }
-    '   Case(var2!)
-    '   {
-    '       *var! = var2!
-    '   }
-    '}
+    Select Case prg.strCommands(prg.programPos)
 
-    'Static variables
-    Static RPGCodeSwitchCase As New Collection
-    Static foundSwitch() As Boolean
+        Case "SWITCH"
+            Dim lit As String, num As Double
+            If (getValue(GetBrackets(Text), lit, num, prg) <> DT_NUM) Then
+                prg.strSwitchVar(prg.programPos) = lit
+            Else
+                prg.strSwitchVar(prg.programPos) = CStr(num)
+            End If
+            prg.bRunBlock(prg.programPos) = False
+            switchCase = increment(prg)
 
-    'Make sure the foundSwitch() array is dimensioned...
-    On Error GoTo dimensionFoundSwitch
-    Dim testArray As Long
-    testArray = UBound(foundSwitch)
+        Case "CASE"
 
-    'Error handling
-    On Error Resume Next
+            ' Look for a switch above and at the same depth
+            Dim lngDepth As Long, i As Long, lngLine As Long
+            lngLine = -1
+            For i = (prg.programPos - 1) To 0 Step -1
 
-    With RPGCodeSwitchCase
-        
-        'Get our parameters...
-        Dim paras() As parameters
-        paras() = getParameters(Text, prg)
+                Select Case prg.strCommands(i)
 
-        Select Case LCase$(GetCommandName(Text))
+                    Case "OPENBLOCK"
+                        lngDepth = lngDepth - 1
 
-            Case "switch"
-                If Not CountData(Text) = 1 Then
-                    debugger "Switch() can only have one data element-- " & Text
-                    On Error GoTo skipBlock: Err.Raise 0
-                End If
-                Select Case paras(0).dataType
-                    Case DT_LIT: .Add """" & paras(0).lit & """", CStr(.count + 1)
-                    Case DT_NUM: .Add CStr(paras(0).num), CStr(.count + 1)
+                    Case "CLOSEBLOCK"
+                        lngDepth = lngDepth + 1
+
+                    Case "SWITCH"
+                        If (lngDepth = -1) Then
+
+                            ' Here it is
+                            lngLine = i
+                            Exit For
+
+                        End If
+
                 End Select
 
-                If isMultiTasking() Then
-                    'Let the main loop take care of this...
-                    startThreadLoop prg, TYPE_IF
-                Else
-                    runBlock 1, prg
-                End If
-                
-                foundSwitch(.count) = False
-                .Remove CStr(.count)
+            Next i
 
-            Case "case"
-            
-                If (LenB(GetBrackets(Text)) = 0) Then
-                    debugger "Case() needs at least one data element-- " & Text
-                    On Error GoTo skipBlock: Err.Raise 0
-                End If
-                
-                Dim run As Boolean
-                
-                If .count > UBound(foundSwitch) Then
-                    ReDim Preserve foundSwitch(.count)
-                End If
-                
-                On Error Resume Next
-                
-                If LCase$(paras(0).lit) <> "else" Then
-            
-                    Dim vtype As Long
-                    Dim a As Long
+            Dim lngRun As Long
 
-                    'For each of the variables...
-                    Dim u As String
-                    Dim eval As Long
-                    Dim useMath As Boolean
-                    For a = 0 To UBound(paras)
-                        On Error Resume Next
-                        If paras(a).dataType = DT_LIT Then u = """" & paras(a).lit & """"
-                        If paras(a).dataType = DT_NUM Then u = CStr(paras(a).num)
+            If (lngLine <> -1) Then
 
-                        'See if the they're trying to use their own comparison
-                        'operator...
-                        Select Case MathFunction(u, 1, True)
-                            Case "=", "~=", "<", ">": useMath = True
-                            Case Else: useMath = False
-                        End Select
+                If Not (prg.bRunBlock(lngLine)) Then
 
-                        If Not useMath Then
-                            eval = evaluate(.item(.count) & " == " & u, prg)
-                        Else
-                            eval = evaluate(.item(.count) & u, prg)
-                        End If
+                    Dim strBrackets As String
+                    strBrackets = GetBrackets(Text)
 
-                        If eval = 1 Then
-                                                           
-                            If Not foundSwitch(.count) Then
-                                run = True
-                                foundSwitch(.count) = True
-                                Exit For
-                            End If
-                                
-                        End If
-                    Next a
-                    
-                Else
-                    
-                    'Use of 'else' keyword...
-                    If Not foundSwitch(.count) Then
-                        run = True
-                        foundSwitch(.count) = True
+                    If (UCase$(strBrackets) <> "ELSE") Then
+
+                        lngRun = evaluate(prg.strSwitchVar(lngLine) & " == " & strBrackets, prg)
+                        prg.bRunBlock(lngLine) = CBool(lngRun)
+
+                    Else
+
+                        lngRun = 1
+                        prg.bRunBlock(lngLine) = True
+
                     End If
 
                 End If
-                
-                If run = 1 Then
-                    If isMultiTasking() Then
 
-                        'Let the main loop take care of this...
-                        startThreadLoop prg, TYPE_IF
-                        switchCase = prg.programPos
-                        Exit Function
-                    
-                    End If
-                End If
+            End If
 
-                Dim bRunningPrg As Boolean
-                bRunningPrg = runningProgram
-                runningProgram = True
-                prg.programPos = runBlock(CLng(run), prg)
-                runningProgram = bRunningPrg
-                switchCase = prg.programPos
-      
-        End Select
-    
-    End With
+            If (Not (isMultiTasking()) Or (lngRun = 0)) Then
+                switchCase = runBlock(lngRun, prg)
+            Else
+                Call enterBlock(BT_NORMAL, prg)
+                switchCase = increment(prg)
+            End If
 
-    Exit Function
-
-    '=============================================================================
-    'Error handling
-    '=============================================================================
-
-skipBlock:
-    With prg
-        .programPos = increment(prg)
-        .programPos = runBlock(0, prg)
-        .programPos = increment(prg)
-        switchCase = .programPos
-    End With
-    Exit Function
-    
-dimensionFoundSwitch:
-    ReDim foundSwitch(0)
-    Resume Next
-    
-enlargeFoundSwitch:
-    ReDim Preserve foundSwitch(UBound(foundSwitch) + 1)
-    Resume
+    End Select
 
 End Function
 
@@ -10638,7 +10489,7 @@ Public Sub spliceVariables( _
     '=========================================================================
     'splice$ = spliceVariables("Var: <var!>")
     
-    If Not CountData(Text) = 1 Then
+    If CountData(Text) <> 1 Then
         debugger "SpliceVariables() requires one data element-- " & Text
         Exit Sub
     End If

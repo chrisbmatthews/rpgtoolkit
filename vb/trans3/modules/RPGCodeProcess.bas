@@ -527,6 +527,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
     ' Redim the block array
     ReDim openProgram.bRunBlock(UBound(openProgram.program))
+    ReDim openProgram.strSwitchVar(UBound(openProgram.program))
 
     Exit Function
 
