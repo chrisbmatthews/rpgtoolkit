@@ -77,6 +77,10 @@ Private Type PlayerRender
     canvas As Long
     stance As String
     frame As Long
+    
+    x As Double             'The location of the sprite.
+    y As Double
+    
 End Type
 
 Public lastPlayerRender(4) As PlayerRender 'stats for last player render
@@ -104,6 +108,7 @@ Public cnvMousePointer As Long  'Mouse pointer canvas
 ' Flip the back buffer onto the screen
 '=========================================================================
 Public Sub DXRefresh()
+
     Dim cnv As Long
     cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
     Call CanvasGetScreen(cnv)
@@ -113,9 +118,11 @@ Public Sub DXRefresh()
                                     getMouseY() - host.cursorHotSpotY, _
                                     mainMem.transpColor _
                                                           )
+                                                          
     Call DXFlip
     Call DXDrawCanvas(cnv, 0, 0)
     Call DestroyCanvas(cnv)
+
 End Sub
 
 '=========================================================================
@@ -676,18 +683,6 @@ Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX
 End Sub
 
 '=========================================================================
-' Determine if two PlayerRender structures are equal
-'=========================================================================
-Private Function PlayerRenderEqual(ByRef rend1 As PlayerRender, ByRef rend2 As PlayerRender) As Boolean
-    On Error Resume Next
-    If rend1.canvas = rend2.canvas And _
-        rend1.stance = rend2.stance And _
-        rend1.frame = rend2.frame Then
-        PlayerRenderEqual = True
-    End If
-End Function
-
-'=========================================================================
 ' Draw a sprite
 '=========================================================================
 Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal boardY As Double, ByVal boardL As Long, _
@@ -891,127 +886,215 @@ End Sub
 '=========================================================================
 ' Render a plyer (remove string stances!!!!)
 '=========================================================================
-Private Function renderPlayer(ByVal cnv As Long, ByRef thePlayer As TKPlayer, ByVal stance As String, ByVal frame As Long, ByVal idx As Long) As Boolean
-
-    'thePlayer is the player
-    'stance is the player animation to use
-    'frame is the frame of the stance to use
-    
-    'built-in stances:
-    'WALK_S
-    'WALK_N
-    'WALK_E
-    'WALK_W
-    'WALK_NW
-    'WALK_NE
-    'WALK_SW
-    'WALK_SE
-    'FIGHT
-    'DEFEND
-    'SPC
-    'DIE
-    'REST
+Private Function renderPlayer(ByVal cnv As Long, _
+                              ByRef thePlayer As TKPlayer, _
+                              ByRef playerPosition As PLAYER_POSITION, _
+                              ByVal idx As Long) As Boolean
     On Error Resume Next
     
-    Dim toRet As Boolean
-    toRet = True
+    'Directional standing graphics for 3.0.5
+    '===========================================
+    With playerPosition
     
-    'set up render...
-    Dim currentRender As PlayerRender
-    currentRender.canvas = cnv
-    currentRender.stance = stance
-    currentRender.frame = frame
+        'Check idleness.
+        If pendingPlayerMovement(idx).direction = MV_IDLE And gGameState <> GS_MOVEMENT Then
+            'We're idle, and we're not about to start moving.
+            
+            If Timer() - .idleTime >= thePlayer.idleTime And Left$(UCase$(.stance), 5) <> "STAND" Then
+                'Push into idle graphics if not already.
+                
+                'Check that a standing graphic for this direction exists.
+                
+                Dim direction As Long
+                Select Case UCase$(.stance)
+                    Case "WALK_N": direction = 1        'See CommonPlayer
+                    Case "WALK_S": direction = 0
+                    Case "WALK_E": direction = 3
+                    Case "WALK_W": direction = 2
+                    Case "WALK_NW": direction = 4
+                    Case "WALK_NE": direction = 5
+                    Case "WALK_SW": direction = 6
+                    Case "WALK_SE": direction = 7
+                    Case Else: direction = -1
+                End Select
+                
+                If direction <> -1 Then
+                    If LenB(thePlayer.standingGfx(direction)) <> 0 Then
+                        'If so, change the stance to STANDing.
+                        .stance = "stand" & Right$(.stance, Len(.stance) - 4)
     
-    If PlayerRenderEqual(currentRender, lastPlayerRender(idx)) Then
-        'don't have to re-render!
-        toRet = False
-        renderPlayer = toRet
-        Exit Function
-    End If
+                        'Start the loop counter for idleness.
+                        .loopFrame = -1
+                    
+                    End If
+                End If
+                
+            End If
+            
+            If Left$(UCase$(.stance), 5) = "STAND" Then
+                'We're standing!
+                
+                If .loopFrame Mod (((thePlayer.loopSpeed + loopOffset) * 8) / movementSize) = 0 Then
+                    'Only increment the frame if we're on a multiple of .speed.
+                    'Include a scaling factor (8) to slow down this animation.
+                    '/ movementSize to handle pixel movement.
+                    .frame = .frame + 1
+                    .loopFrame = 0
+                End If
+                
+                'Let's make use of those negative numbers.
+                .loopFrame = .loopFrame - 1
+                
+                'Force a draw even though there's nothing new.
+                'renderPlayer = True
+                    
+            End If
+            
+        End If '.direction <> MV_IDLE
+            
+    End With
     
-    lastPlayerRender(idx) = currentRender
-   
-    Dim stanceAnm As String
-    stanceAnm = playerGetStanceAnm(stance, thePlayer)
+    '===============================
     
-    Call renderSpriteFrame(cnv, stanceAnm, frame)
-    renderPlayer = toRet
+    With lastPlayerRender(idx)
+    
+        If .canvas = cnv And _
+           .frame = playerPosition.frame And _
+           .stance = playerPosition.stance And _
+           .x = playerPosition.x And _
+           .y = playerPosition.y Then
+           'We've just rendered this frame so we don't need to again.
+            Exit Function
+        End If
+        
+        'lastPlayerRender(idx) = currentRender
+        .canvas = cnv
+        .frame = playerPosition.frame
+        .stance = playerPosition.stance
+        .x = playerPosition.x
+        .y = playerPosition.y
+        
+        Call renderAnimationFrame(cnv, playerGetStanceAnm(.stance, thePlayer), .frame, 0, 0)
+        
+    End With
+    
+    renderPlayer = True
 
 End Function
 
 '=========================================================================
 ' Render an item
 '=========================================================================
-Private Function renderItem(ByVal cnvFrameID As Long, ByRef theItem As TKItem, ByRef itemPosition As PLAYER_POSITION, ByVal idx As Long) As Boolean
-
-    'EDITED: [Isometrics - Delano - 11/04/04]
-    'Added code to check if the item is in the viewable area for an isometric board.
-
-    'theItem is the current item
-    'stance is the item animation to use
-    'frame is the frame of the stance to use
-    
-    'Called by RenderNow only.
-    
-    'built-in stances:
-    'WALK_S
-    'WALK_N
-    'WALK_E
-    'WALK_W
-    'WALK_NW
-    'WALK_NE
-    'WALK_SW
-    'WALK_SE
-    'FIGHT
-    'DEFEND
-    'SPC
-    'DIE
-    'REST
+Private Function renderItem(ByVal cnv As Long, _
+                            ByRef theItem As TKItem, _
+                            ByRef itemPosition As PLAYER_POSITION, _
+                            ByVal idx As Long) As Boolean
     
     On Error Resume Next
     
+    With itemPosition
+    
+        'check if item is in viewable area...
+        If boardIso() Then
+            'Substituting for isoTopY = topY * 2 + 1
+            'might need to substitute topx for topx + 1
+            If .x < topX - 1 Or _
+                .x > topX + isoTilesX + 1 Or _
+                .y < (topY * 2 + 1) - 1 Or _
+                .y > (topY * 2 + 1) + isoTilesY + 1 Then
+                Exit Function
+            End If
+        Else
+            If .x < topX - 1 Or _
+                .x > topX + tilesX + 1 Or _
+                .y < topY - 1 Or _
+                .y > topY + tilesY + 1 Then
+                Exit Function
+            End If
+        End If
+        
+        'Directional standing graphics for 3.0.5
+        '===========================================
+        'Check idleness.
+        If pendingItemMovement(idx).direction = MV_IDLE Then
+            'We're idle.
+            
+            If Timer() - .idleTime >= theItem.idleTime And Left$(UCase$(.stance), 5) <> "STAND" Then
+                'Push into idle graphics if not already.
+                
+                Dim direction As Long
+                Select Case UCase$(.stance)
+                    Case "WALK_N": direction = 1        'See CommonItem
+                    Case "WALK_S": direction = 0
+                    Case "WALK_E": direction = 3
+                    Case "WALK_W": direction = 2
+                    Case "WALK_NW": direction = 4
+                    Case "WALK_NE": direction = 5
+                    Case "WALK_SW": direction = 6
+                    Case "WALK_SE": direction = 7
+                    Case Else: direction = -1
+                End Select
+                
+                'Check that a standing graphic for this direction exists.
+                If direction <> -1 Then
+                    If LenB(theItem.standingGfx(direction)) <> 0 Then
+                        'If so, change the stance to STANDing.
+                        .stance = "stand" & Right$(.stance, Len(.stance) - 4)
+                        
+                        'Start the loop counter for idleness.
+                        .loopFrame = -1
+                    End If
+                End If
+                
+            End If
+            
+            If Left$(UCase$(.stance), 5) = "STAND" Then
+                'We're standing!
+                
+                If .loopFrame Mod (((theItem.loopSpeed + loopOffset) * 8) / movementSize) = 0 Then
+                    'Only increment the frame if we're on a multiple of .speed.
+                    'Include a scaling factor (8) to slow down this animation.
+                    '/ movementSize to handle pixel movement.
+                    .frame = .frame + 1
+                    .loopFrame = 0
+                End If
+                
+                'Let's make use of those negative numbers.
+                .loopFrame = .loopFrame - 1
+                
+                'Force a draw even though there's nothing new.
+                'renderItem = True
+                    
+            End If
+            
+        End If '.direction <> MV_IDLE
+        '===============================
+        
+        With lastItemRender(idx)
+        
+            If .canvas = cnv And _
+               .frame = itemPosition.frame And _
+               .stance = itemPosition.stance And _
+               .x = itemPosition.x And _
+               .y = itemPosition.y Then
+               'We've just rendered this frame so we don't need to again.
+               Exit Function
+            End If
+               
+            'lastItemRender(idx) = currentRender
+            .canvas = cnv
+            .frame = itemPosition.frame
+            .stance = itemPosition.stance
+            .x = itemPosition.x
+            .y = itemPosition.y
+                
+        End With
+        
+        Call renderAnimationFrame(cnv, itemGetStanceAnm(.stance, theItem), .frame, 0, 0)
+        
+    End With
+    
     renderItem = True
-    
-    'check if item is in viewable area...
-    'Isometric addition:
-    If boardIso() Then
-        'Substituting for isoTopY = topY * 2 + 1
-        'might need to substitute topx for topx + 1
-        If itmPos(idx).x < topX - 1 Or _
-            itmPos(idx).x > topX + isoTilesX + 1 Or _
-            itmPos(idx).y < (topY * 2 + 1) - 1 Or _
-            itmPos(idx).y > (topY * 2 + 1) + isoTilesY + 1 Then
-            renderItem = False
-            Exit Function
-        End If
-    Else
-        If itmPos(idx).x < topX - 1 Or _
-            itmPos(idx).x > topX + tilesX + 1 Or _
-            itmPos(idx).y < topY - 1 Or _
-            itmPos(idx).y > topY + tilesY + 1 Then
-            renderItem = False
-            Exit Function
-        End If
-    End If
-    
-    'set up render...
-    Dim currentRender As PlayerRender
-    currentRender.canvas = cnvFrameID
-    currentRender.stance = itemPosition.stance
-    currentRender.frame = itemPosition.frame
-    
-    If PlayerRenderEqual(currentRender, lastItemRender(idx)) Then
-        'don't have to re-render!
-        renderItem = False
-        Exit Function
-    End If
-    
-    lastItemRender(idx) = currentRender
-    
-    Dim stanceAnm As String
-    stanceAnm = itemGetStanceAnm(itemPosition.stance, theItem)
-    
-    Call renderSpriteFrame(cnvFrameID, stanceAnm, itemPosition.frame)
 
 End Function
 
@@ -1130,13 +1213,18 @@ Private Function renderBoard() As Boolean
         (topX + tilesXTemp) <= (scTopX + scTilesXTemp) And _
         (topY + tilesY) <= (scTopY + scTilesY - 1) And _
         (scTopX <> -1 And scTopY <> -1)) Then
+        
         scTopX = Int(topX - (tilesXTemp / 2))
         scTopY = Int(topY - (tilesY / 2))
         If scTopX < 0 And topX >= 0 Then scTopX = 0
         If scTopY < 0 And topY >= 0 Then scTopY = 0
+        
         Call renderScrollCache(cnvScrollCache, cnvScrollCacheMask, scTopX, scTopY)
+        
         Call drawPrograms(1, cnvScrollCache, cnvScrollCacheMask)
+        
         renderBoard = True  'Board needs to be rendered!
+        
     End If
 
 End Function
@@ -1155,7 +1243,7 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
     Dim newBackground As Boolean    'update background?
     Dim newMultiAnim As Boolean     'update multitasking animations?
     Dim t As Long                   'for loop control variable
-
+    
     'Check if we need to render the background
     newBackground = renderBackground()
 
@@ -1168,11 +1256,11 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
     'Check if we need to render the player sprites
     For t = 0 To UBound(cnvPlayer)
         If (showPlayer(t)) Then
-            Call isPlayerIdle(t)    'We don't really care if the player is idle,
+            'Call isPlayerIdle(t)    'We don't really care if the player is idle,
                                     'but call into this function to update the
                                     'time stamps and switch to idling graphics
                                     'if required.
-            If (playerShouldDrawFrame(t)) Then  'Check if we should draw a
+            'If (playerShouldDrawFrame(t)) Then  'Check if we should draw a
                                                 'frame. Really a frame will
                                                 'be drawn either way, but if
                                                 'this comes up false then
@@ -1180,23 +1268,23 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
                                                 'updated and we won't see the
                                                 'next frame. Acts as a way to
                                                 'control the speed of players.
-                If (renderPlayer(cnvPlayer(t), playerMem(t), pPos(t).stance, pPos(t).frame, t)) Then
+                If (renderPlayer(cnvPlayer(t), playerMem(t), pPos(t), t)) Then
                     'If we get here, something has changed since the last
                     'render and we have to re-render the player sprites.
                     newSprites = True
                 End If
-            End If
+            'End If
         End If
     Next t
 
     'Check if we need to render the item sprites
     For t = 0 To maxItem
         If (itemMem(t).bIsActive) Then
-            Call isItemIdle(t)      'We don't really care if the item is idle,
+            'Call isItemIdle(t)      'We don't really care if the item is idle,
                                     'but call into this function to update the
                                     'time stamps and switch to idling graphics
                                     'if required.
-            If (itemShouldDrawFrame(t)) Then    'Check if we should draw a
+            'If (itemShouldDrawFrame(t)) Then    'Check if we should draw a
                                                 'frame. Really a frame will
                                                 'be drawn either way, but if
                                                 'this comes up false then
@@ -1209,12 +1297,13 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
                     'render and we have to re-render the item sprites.
                     newItem = True
                 End If
-            End If
+            'End If
         End If
     Next t
 
     'Check if we need to render animated tiles
     newTileAnm = renderAnimatedTiles(cnvScrollCache, cnvScrollCacheMask)
+    
 
     'If *anything* is new, render it all
     If (newBoard Or newSprites Or newTileAnm Or newItem Or newMultiAnim Or renderRenderNowCanvas Or forceRender) Then
@@ -1233,13 +1322,15 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
 
         'Render board
         Call DXDrawBoard(cnvTarget)
+        
 
         'Render sprites
         Call DXDrawSprites(cnvTarget)
+        
 
         'Render multitasking animations
         Call DXDrawAnimations(cnvTarget)
-
+        
         'Render the rpgcode renderNow canvas
         If (renderRenderNowCanvas) Then
             If (cnvTarget = -1) Then
@@ -1264,7 +1355,7 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
             'been rendering to) onto the screen so it can be seen.
             Call DXRefresh
         End If
-
+        
     End If
 
 fin:
@@ -1497,13 +1588,6 @@ Public Sub renderRPGCodeScreen()
     'Don't starve the system
     Call processEvent
 
-End Sub
-
-'=========================================================================
-' Render a sprite
-'=========================================================================
-Private Sub renderSpriteFrame(ByVal cnv As Long, ByVal stanceAnm As String, ByVal frame As Long)
-    Call renderAnimationFrame(cnv, stanceAnm, frame, 0, 0)
 End Sub
 
 '=========================================================================
