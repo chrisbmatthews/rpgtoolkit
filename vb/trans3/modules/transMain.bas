@@ -504,8 +504,28 @@ Public Sub setupMain(): On Error Resume Next
     Call gameSpeed(getGameSpeed(mainMem.gameSpeed))
 
     ' Get the last gAvgTime from the registry
+    Select Case mainMem.extendToFullScreen
+        Case 0  'Windowed
+            Select Case mainMem.mainResolution
+                Case 0  '640x480
+                    m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime_640_Win", -1))
+                Case 2  '1024x768
+                    m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime_1024_Win", -1))
+                Case Else  'Custom - use 800x600
+                    m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime_800_Win", -1))
+            End Select
+        Case Else 'Full
+            Select Case mainMem.mainResolution
+                Case 0  '640x480
+                    m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime_640_Full", -1))
+                Case 2  '1024x768
+                    m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime_1024_Full", -1))
+                Case Else  'Custom - use 800x600
+                    m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime_800_Full", -1))
+            End Select
+    End Select
     m_renderCount = 100
-    m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime", -1)) * m_renderCount
+    m_renderTime = m_renderTime * m_renderCount
 
     If (m_renderTime <= 0) Then
         ' Do a bad estimate of the fps.
@@ -594,7 +614,26 @@ Private Sub saveSettings(): On Error Resume Next
 
     ' The average GS_MOVEMENT gamestate loop time
     If ((Not (m_testingPRG)) And (gAvgTime > 0)) Then
-        Call SaveSetting("RPGToolkit3", "Trans3", "gAvgTime", CStr(Round(gAvgTime, 5)))
+        Select Case mainMem.extendToFullScreen
+            Case 0  'Windowed
+                Select Case mainMem.mainResolution
+                    Case 0  '640x480
+                        Call SaveSetting("RPGToolkit3", "Trans3", "gAvgTime_640_Win", CStr(Round(gAvgTime, 5)))
+                    Case 2  '1024x768
+                        Call SaveSetting("RPGToolkit3", "Trans3", "gAvgTime_1024_Win", CStr(Round(gAvgTime, 5)))
+                    Case Else  'Custom - use 800x600
+                        Call SaveSetting("RPGToolkit3", "Trans3", "gAvgTime_800_Win", CStr(Round(gAvgTime, 5)))
+                End Select
+            Case Else 'Full
+                Select Case mainMem.mainResolution
+                    Case 0  '640x480
+                        Call SaveSetting("RPGToolkit3", "Trans3", "gAvgTime_640_Full", CStr(Round(gAvgTime, 5)))
+                    Case 2  '1024x768
+                        Call SaveSetting("RPGToolkit3", "Trans3", "gAvgTime_1024_Full", CStr(Round(gAvgTime, 5)))
+                    Case Else  'Custom - use 800x600
+                        Call SaveSetting("RPGToolkit3", "Trans3", "gAvgTime_800_Full", CStr(Round(gAvgTime, 5)))
+                End Select
+        End Select
     End If
 
 End Sub
