@@ -578,6 +578,8 @@ Private Sub picPlay_Click(): On Error Resume Next
         'Open the animation
         Dim anm As TKAnimation
         Call openAnimation(projectPath & miscPath & anmFile, anm)
+        'Change the animation's speed to the item's speed for walking animations (only).
+        If lstMove.SelCount Then anm.animPause = itemList(activeItemIndex).theData.speed
         
         If anm.animSizeX > (2000 / Screen.TwipsPerPixelX) Or anm.animSizeY > (1600 / Screen.TwipsPerPixelY) Then
 
@@ -608,7 +610,6 @@ Private Sub picPlay_Click(): On Error Resume Next
             Dim repeat As Long
             For repeat = 1 To 3
                Call AnimateAt(anm, 0, 0, anm.animSizeX, anm.animSizeY, picAnim)
-               Call animDelay(CDbl(txtFrameTime.Text))
                DoEvents
             Next repeat
             
