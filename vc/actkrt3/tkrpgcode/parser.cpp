@@ -20,14 +20,31 @@
 CBOneParamStr setLastString;	//set the last parser string
 
 //////////////////////////////////////////////////////////////////////////
-// Check if a string contains a sub-string
+// Count the number of values in an equation
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY RPGCStringContains(VB_STRING pText, VB_STRING theChar)
+int APIENTRY RPGCValueNumber(VB_STRING pText)
 {
-	inlineString text = initVbString(pText);				//Text we're operating on
-	inlineString symbol(initVbString(theChar));				//Symbol we need
-	symbol.resize(symbol.len());
-	return (int)(strstr(text,symbol) != NULL);
+	inlineString text = initVbString(pText);		//Text we're operating on
+	int length = text.len();						//Text length
+	int t = 0;										//For loop
+	int ele = 1;
+	inlineString part(1);							//Character
+	bool ignoreNext = false;
+
+	for (t = 1; t <= length; t++)
+	{
+		part = text.mid(t, 1);
+		if (part == QUOTE)
+		{
+			ignoreNext = (!ignoreNext);
+		}
+		else if ( part == "=" || part == "+" || part == "-" || part == "/" || part == "*" || part == BACKSLASH || part == "^" )
+		{
+			if (!ignoreNext) 
+					ele++;
+		}
+	}
+	return ele;
 }
 
 //////////////////////////////////////////////////////////////////////////

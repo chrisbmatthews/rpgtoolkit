@@ -60,8 +60,8 @@ void APIENTRY RPGCGetMethodName(VB_STRING);
 void APIENTRY RPGCParseAfter(VB_STRING, VB_STRING);
 void APIENTRY RPGCParseBefore(VB_STRING, VB_STRING);
 void APIENTRY RPGCGetVarList(VB_STRING, int);
-int APIENTRY RPGCStringContains(VB_STRING, VB_STRING);
 void APIENTRY RPGCParseWithin(VB_STRING, VB_STRING, VB_STRING);
+int APIENTRY RPGCValueNumber(VB_STRING);
 
 //////////////////////////////////////////////////////////////////////////
 // End of the file
