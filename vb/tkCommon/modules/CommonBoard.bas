@@ -567,9 +567,9 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
             .itemProgram(t) = vbNullString
             .itemMulti(t) = vbNullString
         Next t
-        .playerX = 0
-        .playerY = 0
-        .playerLayer = 0
+        .playerX = 1                'Set an initial location in case people neglect to.
+        .playerY = 1
+        .playerLayer = 1
         .brdSavingYN = 0
         .bSizeX = UBound(.board, 1)
         .bSizeY = UBound(.board, 2)
