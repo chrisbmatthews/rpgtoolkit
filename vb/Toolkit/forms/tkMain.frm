@@ -1,6 +1,6 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
@@ -1365,7 +1365,6 @@ Begin VB.MDIForm tkMainForm
       Width           =   11880
       Begin VB.Frame frmBoardExtras 
          BorderStyle     =   0  'None
-         Caption         =   "Frame8"
          Height          =   1455
          Left            =   960
          TabIndex        =   160
@@ -1401,6 +1400,16 @@ Begin VB.MDIForm tkMainForm
             End
          End
          Begin VB.Frame bFrame 
+            Caption         =   "Tile Shading                                                       "
+            BeginProperty Font 
+               Name            =   "Arial"
+               Size            =   9
+               Charset         =   0
+               Weight          =   700
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   1065
             Index           =   0
             Left            =   0
@@ -1469,7 +1478,7 @@ Begin VB.MDIForm tkMainForm
             End
          End
          Begin VB.Frame bFrame 
-            Caption         =   "Tile Type - Normal                     "
+            Caption         =   "Tile Type - Normal                                            "
             BeginProperty Font 
                Name            =   "Arial"
                Size            =   9
@@ -1563,7 +1572,7 @@ Begin VB.MDIForm tkMainForm
             End
          End
          Begin VB.Frame bFrame 
-            Caption         =   "Current Tile - None              "
+            Caption         =   "Current Tile - None                 "
             BeginProperty Font 
                Name            =   "Arial"
                Size            =   9
@@ -2590,13 +2599,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "12/21/2004"
+            TextSave        =   "23/12/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "10:59 AM"
+            TextSave        =   "21:23"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2604,7 +2613,6 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel5 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   2
-            Enabled         =   0   'False
             TextSave        =   "NUM"
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
