@@ -89,28 +89,17 @@ Public Function checkAbove(ByVal x As Long, ByVal y As Long, ByVal layer As Long
     'Checks if there are tiles on any layer above x,y,layer
     '0- no, 1-yes
     'Called by putSpriteAt
-    On Error GoTo errorhandler
-    
-    If layer = boardList(activeBoardIndex).theData.bSizeL Then checkAbove = 0: Exit Function
+    On Error Resume Next
+    If (layer = boardList(activeBoardIndex).theData.bSizeL) Then Exit Function
     Dim lay As Long
     Dim uptile As String
     For lay = layer + 1 To boardList(activeBoardIndex).theData.bSizeL
         uptile$ = BoardGetTile(x, y, lay, boardList(activeBoardIndex).theData)
-        If (LenB(uptile$)) Then
-        
+        If (LenB(uptile)) Then
             checkAbove = 1
             Exit Function
-            
         End If
     Next lay
-    checkAbove = 0
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PENDING_MOVEMENT, _
@@ -130,56 +119,56 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
 '============================================================================================
 'Last edited for 3.0.5 by Delano : individual speed movement.
 'Called by EffectiveTileType, MoveItems, MovePlayers, PushItem, PushPlayer
-    
+
     On Error Resume Next
 
     Dim i As Long, coordMatch As Boolean
     Dim variableType As RPGC_DT, paras As parameters
-    
+
     'Altered for pixel movement: test location.
-    
+
     'Transform pixel isometrics.
     Dim posX As Double, posY As Double, xTarg As Double, yTarg As Double
     Dim tPosX As Double, tPosY As Double, txTarg As Double, tyTarg As Double
     Dim pMovementSize As Double
-    
+
     Call isoCoordTransform(pos.x, pos.y, posX, posY)
     Call isoCoordTransform(pend.xTarg, pend.yTarg, xTarg, yTarg)
-    
+
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         pMovementSize = 1       '"Sprite depth"
     Else
         pMovementSize = movementSize
     End If
-    
+
     'Check players.
     For i = 0 To UBound(pendingPlayerMovement)
-    
+
         If showPlayer(i) And i <> currentPlayer Then
             'Only if the player is on the board, and is not the player we're checking against.
-        
+
             Call isoCoordTransform(pPos(i).x, pPos(i).y, tPosX, tPosY)
             Call isoCoordTransform(pendingPlayerMovement(i).xTarg, _
                                    pendingPlayerMovement(i).yTarg, _
                                    txTarg, _
                                    tyTarg)
-        
+
             If Not (movementSize <> 1) Then
                 'Tile movement.
-                
+
                 'Current (test!) location against player current location.
                 If _
                     Abs(posY - tPosY) < pMovementSize And _
                     Abs(posX - tPosX) < 1 And _
                     pPos(i).l = pos.l Then
-                    
+
                     'Call traceString("ChkObs:P:T:1")
-                    
+
                     checkObstruction = SOLID
                     Exit Function
-                    
+
                 End If
-        
+
                 'Only test targets if we're beginning movement.
                 'If we're in movement and the target becomes occupied (if it was occupied at start
                 'then movement would be rejected) it must be due to another moving *player*.
@@ -189,98 +178,90 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     Abs(xTarg - txTarg) < 1 And _
                     pPos(i).l = pos.l And _
                     startingMove Then
-                    
+
                     'Call traceString("ChkObs:P:T:2")
-                    
+
                     checkObstruction = SOLID
                     Exit Function
-                    
+
                 End If
-        
+
             Else
                 'Pixel movement.
                 'Only check this at the start of a move.
                 If startingMove Then
-                
+
                     'Current locations: minimum separations. Probably don't even need these.
                     If _
                         Abs(posY - tPosY) < pMovementSize And _
                         Abs(posX - tPosX) < 1 And _
                         pPos(i).l = pos.l Then
-                        
+
                         'Call traceString("ChkObs:P:PX:1 [!]")
-                        
+
                         checkObstruction = SOLID
                         Exit Function
-                        
+
                     End If
-                    
+
                     'Target location against player current location.
                     If _
                         Abs(tPosY - yTarg) < pMovementSize And _
                         Abs(tPosX - xTarg) < 1 And _
                         pPos(i).l = pos.l Then
-                        
+
                         'Call traceString("ChkObs:P:PX:2")
-                        
+
                         checkObstruction = SOLID
                         Exit Function
-                        
+
                     End If
-            
+
                     'Target location against player target location.
                     If _
                         Abs(yTarg - tyTarg) < pMovementSize And _
                         Abs(xTarg - txTarg) < 1 And _
                         pPos(i).l = pos.l Then
-                        
+
                         'Call traceString("ChkObs:P:PX:3")
-                        
+
                         checkObstruction = SOLID
                         Exit Function
-                       
+
                     End If
-                    
+
                 End If 'startingMove.
-        
+
             End If 'usingPixelMovement.
-            
+
         End If 'ShowPlayer.
-        
+
     Next i
-        
 
     'Items.
     For i = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
-    
-        If LenB(itemMem(i).itemName) And i <> currentItem Then
-    
+
+        If (LenB(itemMem(i).itemName) <> 0) And i <> currentItem Then
+
             Call isoCoordTransform(itmPos(i).x, itmPos(i).y, tPosX, tPosY)
             Call isoCoordTransform(pendingItemMovement(i).xTarg, _
                                    pendingItemMovement(i).yTarg, _
                                    txTarg, _
                                    tyTarg)
-                                   
+
             If Not ((movementSize <> 1)) Then
                 'Tile movement.
-            
+
                 'Current locations.
                 If _
                     Abs(tPosY - posY) < pMovementSize And _
                     Abs(tPosX - posX) < 1 And _
                     itmPos(i).l = pos.l Then
-                    
-                    coordMatch = True
-                    
-                    'Ignore moving items at the start of movement check.
-                    If startingMove And pendingItemMovement(i).direction <> MV_IDLE Then
-                        coordMatch = False
-                    End If
-                    
-                    'Call traceString("ChkObs:I:T:1")
-                    
+
+                    coordMatch = Not (startingMove And pendingItemMovement(i).direction <> MV_IDLE)
+                 
                 End If
-                
+
                 'Only test targets if we're beginning movement.
                 'If we're in movement and the target becomes occupied (if it was occupied at start
                 'then movement would be rejected) it must be due to another moving *player*.
@@ -290,96 +271,93 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     Abs(xTarg - txTarg) < 1 And _
                     itmPos(i).l = pos.l And _
                     startingMove Then
-                    
                     coordMatch = True
-                    
-                    'Call traceString("ChkObs:I:T:2")
-                    
+
                 End If
-                
+
             Else
                 'Pixel movement.
                 'Only check this at the start of a move.
                 If startingMove Then
-                    
+
                     'Current locations: minimum separations. Probably don't even need these.
                     If _
                         Abs(tPosY - posY) < pMovementSize And _
                         Abs(tPosX - posX) < 1 And _
                         itmPos(i).l = pos.l Then
-                        
+
                         coordMatch = True
-                        
+
                         'Call traceString("ChkObs:I:PX:4 [!]")
-                        
+
                     End If
-                
+
                     'Target against  item current location.
                     If _
                         Abs(tPosY - yTarg) < pMovementSize And _
                         Abs(tPosX - xTarg) < 1 And _
                         itmPos(i).l = pos.l Then
-                        
+
                         coordMatch = True
-                        
+
                         'Call traceString("ChkObs:I:PX:5")
-                        
+
                     End If
-                
+
                     'Target against item target location.
                     If _
                         Abs(yTarg - tyTarg) < pMovementSize And _
                         Abs(xTarg - txTarg) < 1 And _
                         itmPos(i).l = pos.l Then
-                        
+
                         coordMatch = True
-                        
+
                         'Call traceString("ChkObs:I:PX:6")
-                        
+
                     End If
-                        
+
                 End If 'startingMove.
-                
+
             End If 'usingPixelMovement.
-            
+
             If coordMatch Then
-            
+
                 'There's an item here, but is it active?
                 If boardList(activeBoardIndex).theData.itmActivate(i) = 1 Then
-                
+
                     'conditional activation
                     variableType = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate(i), paras.lit, paras.num)
-                    
+
                     If variableType = DT_NUM Then
                         'it's a numerical variable
-                        
+
                         If paras.num = val(boardList(activeBoardIndex).theData.itmActivateInitNum(i)) Then
                             checkObstruction = SOLID
                             Exit Function
                         End If
                     End If
-                    
+
                     If variableType = DT_LIT Then
                         'it's a literal variable
-                        
+
                         If paras.lit = boardList(activeBoardIndex).theData.itmActivateInitNum(i) Then
                             checkObstruction = SOLID
                             Exit Function
                         End If
                     End If
-                    
+
                 Else
-                
+
                     'Not conditionally activated - permanently active.
                     checkObstruction = SOLID
                     Exit Function
-                    
+
                 End If
-                
+
             End If 'coordMatch
-            
+
         End If
-        
+
     Next i
 
     'We've got here and no match has been found.
