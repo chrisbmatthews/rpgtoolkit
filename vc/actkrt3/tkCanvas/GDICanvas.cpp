@@ -390,6 +390,10 @@ INT FAST_CALL CGDICanvas::BltPart(
 
 }
 
+#if FALSE
+//--------------------------------------------------------------------------
+// Get a DirectDraw error's string
+//--------------------------------------------------------------------------
 #include <string>
 std::string getDirectDrawErrorString(CONST HRESULT hr)
 {
@@ -498,6 +502,7 @@ std::string getDirectDrawErrorString(CONST HRESULT hr)
 	}
 	return "Unknown";
 }
+#endif
 
 //
 // Surface target
