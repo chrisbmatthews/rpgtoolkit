@@ -2292,6 +2292,11 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
             Call PlayerSpeedRPG(splice, theProgram)
             DoSingleCommand = increment(theProgram)
             Exit Function
+            
+        Case "MOUSECURSOR"
+            Call MouseCursorRPG(splice, theProgram)
+            DoSingleCommand = increment(theProgram)
+            Exit Function
 
         Case Else
             'If we got this far, it's an unrecognised command and

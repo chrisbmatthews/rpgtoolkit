@@ -12033,3 +12033,36 @@ Public Sub PlayerSpeedRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     End If
     playerMem(inBounds(paras(0).num, 0, 4)).speed = paras(1).num
 End Sub
+
+'=========================================================================
+' MouseCursor(file$, x!, y!, r!, g!, b!)
+'=========================================================================
+Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+    On Error Resume Next
+    If (CountData(Text) <> 6) Then
+        Call debugger("MouseCursor() requires six data elements-- " & Text)
+        Exit Sub
+    End If
+    Dim paras() As parameters
+    paras() = GetParameters(Text, prg)
+    If (paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_NUM Or paras(2).dataType <> DT_NUM Or paras(3).dataType <> DT_NUM Or paras(4).dataType <> DT_NUM Or paras(5).dataType <> DT_NUM) Then
+        Call debugger("MouseCursor() takes lit, num, num, num, num, num-- " & Text)
+        Exit Sub
+    End If
+    host.cursorHotSpotX = paras(1).num
+    host.cursorHotSpotY = paras(2).num
+    mainMem.transpColor = RGB(paras(3).num, paras(4).num, paras(5).num)
+    Dim ext As String
+    ext = UCase(commonRoutines.extention(paras(0).lit))
+    If (ext = "TST" Or ext = "GPH") Then
+        'It's a tile
+        Dim tbm As TKTileBitmap
+        Const theFile = "mouse_cursor_tile_temp_bitmap_cursor_.tbm"
+        Call TileBitmapClear(tbm)
+        Call TileBitmapSize(tbm, 1, 1)
+        tbm.tiles(0, 0) = paras(0).lit
+        Call SaveTileBitmap(projectPath & bmpPath & theFile, tbm)
+        paras(1).lit = theFile
+    End If
+    host.mousePointer = paras(1).lit
+End Sub
