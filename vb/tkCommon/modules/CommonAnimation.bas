@@ -305,7 +305,7 @@ Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, B
             #If isToolkit = 0 Then
                 If pakFileRunning Then
                     f$ = PakLocate(bmpPath & theAnim.animFrame(framenum))
-                    Call canvasLoadSizedPicture(allPurposeCanvas, f$)
+                    Call canvasLoadSizedPicture(cnvAllPurpose, f$)
             #Else
                 If 1 = 0 Then
             #End If

@@ -96,8 +96,8 @@ Public Sub Show()
     On Error Resume Next
 
     'Save pre-shop view
-    m_oldView = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
-    Call CanvasGetScreen(m_oldView)
+    m_oldView = createCanvas(resX, resY)
+    Call canvasGetScreen(m_oldView)
 
     'Make sure we have color!
     If shopColors(0) = -1 Then
@@ -112,8 +112,8 @@ Public Sub Show()
     Call renderCanvas(m_oldView)
 
     'Clean up
-    Call DestroyCanvas(m_oldView)
-    Call DestroyCanvas(m_commonDisplay)
+    Call destroyCanvas(m_oldView)
+    Call destroyCanvas(m_commonDisplay)
 
 End Sub
 
@@ -122,23 +122,23 @@ End Sub
 '=========================================================================
 Private Sub createCommonDisplay(ByVal theCanvas As Long)
     Dim cnv As Long
-    cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+    cnv = createCanvas(resX, resY)
     If m_commonDisplay = 0 Then
         Dim cnv2 As Long
-        cnv2 = CreateCanvas(globalCanvasWidth - 20, globalCanvasHeight - 60)
-        Call Canvas2CanvasBlt(m_oldView, cnv, 0, 0)
-        Call CanvasDrawText(cnv, "Shop", fontName, 30, 1.4, 1.3, RGB(255, 255, 255), True, False, True, False, False)
-        Call CanvasFill(cnv2, 0)
-        Call CanvasFillBox(cnv2, 0, 0, globalCanvasWidth - 10, globalCanvasHeight - 10, shopColors(0))
-        Call Canvas2CanvasBltTranslucent(cnv2, cnv, 10, 50)
-        Call DestroyCanvas(cnv2)
-        m_commonDisplay = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
-        Call Canvas2CanvasBlt(cnv, m_commonDisplay, 0, 0)
+        cnv2 = createCanvas(resX - 20, resY - 60)
+        Call canvas2CanvasBlt(m_oldView, cnv, 0, 0)
+        Call canvasDrawText(cnv, "Shop", fontName, 30, 1.4, 1.3, RGB(255, 255, 255), True, False, True, False, False)
+        Call canvasFill(cnv2, 0)
+        Call canvasFillBox(cnv2, 0, 0, resX - 10, resY - 10, shopColors(0))
+        Call canvas2CanvasBltTranslucent(cnv2, cnv, 10, 50)
+        Call destroyCanvas(cnv2)
+        m_commonDisplay = createCanvas(resX, resY)
+        Call canvas2CanvasBlt(cnv, m_commonDisplay, 0, 0)
     Else
-        Call Canvas2CanvasBlt(m_commonDisplay, cnv, 0, 0)
+        Call canvas2CanvasBlt(m_commonDisplay, cnv, 0, 0)
     End If
-    Call Canvas2CanvasBlt(cnv, theCanvas, 0, 0)
-    Call DestroyCanvas(cnv)
+    Call canvas2CanvasBlt(cnv, theCanvas, 0, 0)
+    Call destroyCanvas(cnv)
 End Sub
 
 '=========================================================================
@@ -147,17 +147,17 @@ End Sub
 Private Sub createMainMenuDisplay(ByVal theCanvas As Long, Optional ByVal cursorY As Double = -1)
     On Error Resume Next
     Dim cnv As Long
-    cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+    cnv = createCanvas(resX, resY)
     Call createCommonDisplay(cnv)
-    Call CanvasDrawText(cnv, "Buy", fontName, 25, 2.7, 3.4, RGB(255, 255, 255))
-    Call CanvasDrawText(cnv, "Sell", fontName, 25, 2.7, 4.4, RGB(255, 255, 255))
-    Call CanvasDrawText(cnv, "Exit", fontName, 25, 2.7, 6.4, RGB(255, 255, 255))
-    Call CanvasDrawText(cnv, money & " GP", fontName, 25, 2, (globalCanvasHeight - 40) / 25 + 1, RGB(255, 255, 255))
+    Call canvasDrawText(cnv, "Buy", fontName, 25, 2.7, 3.4, RGB(255, 255, 255))
+    Call canvasDrawText(cnv, "Sell", fontName, 25, 2.7, 4.4, RGB(255, 255, 255))
+    Call canvasDrawText(cnv, "Exit", fontName, 25, 2.7, 6.4, RGB(255, 255, 255))
+    Call canvasDrawText(cnv, money & " GP", fontName, 25, 2, (resY - 40) / 25 + 1, RGB(255, 255, 255))
     If cursorY <> -1 Then
         Call CBCanvasDrawHand(cnv, 2.7 * 25 - 25, cursorY * 25 - 17)
     End If
-    Call Canvas2CanvasBlt(cnv, theCanvas, 0, 0)
-    Call DestroyCanvas(cnv)
+    Call canvas2CanvasBlt(cnv, theCanvas, 0, 0)
+    Call destroyCanvas(cnv)
 End Sub
 
 '=========================================================================
@@ -168,8 +168,8 @@ Private Sub mainMenuScanKeys()
     On Error Resume Next
 
     Dim cnv As Long, cnv2 As Long
-    cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
-    cnv2 = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+    cnv = createCanvas(resX, resY)
+    cnv2 = createCanvas(resX, resY)
 
     Call createMainMenuDisplay(cnv)
 
@@ -197,7 +197,7 @@ Private Sub mainMenuScanKeys()
         ElseIf isPressed("ESC") Or isPressed("LEFT") Then
             Exit Do
         ElseIf isPressed("ENTER") Or isPressed("SPACE") Or isPressed("RIGHT") Then
-            Call CanvasGetScreen(cnv2)
+            Call canvasGetScreen(cnv2)
             Select Case cursorY
                 Case OPTION1: Call shopMenuScanKeys(cnv2, Buy)
                 Case OPTION2: Call shopMenuScanKeys(cnv2, Sell)
@@ -211,8 +211,8 @@ Private Sub mainMenuScanKeys()
     Loop
 
     'Clean up
-    Call DestroyCanvas(cnv)
-    Call DestroyCanvas(cnv2)
+    Call destroyCanvas(cnv)
+    Call destroyCanvas(cnv2)
 
 End Sub
 
@@ -226,17 +226,17 @@ Private Sub createShopMenuDisplay( _
                                                                   )
     On Error Resume Next
     Dim cnv As Long, cnv2 As Long
-    cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
-    cnv2 = CreateCanvas(172, 399)
-    Call Canvas2CanvasBlt(baseCanvas, cnv, 0, 0)
-    Call CanvasFill(cnv2, 0)
-    Call CanvasFillBox(cnv2, 0, 0, 172, 399, shopColors(1))
-    Call Canvas2CanvasBltTranslucent(cnv2, cnv, 200, 60)
+    cnv = createCanvas(resX, resY)
+    cnv2 = createCanvas(172, 399)
+    Call canvas2CanvasBlt(baseCanvas, cnv, 0, 0)
+    Call canvasFill(cnv2, 0)
+    Call canvasFillBox(cnv2, 0, 0, 172, 399, shopColors(1))
+    Call canvas2CanvasBltTranslucent(cnv2, cnv, 200, 60)
     Call createItemDisplay(cnv2, theType)
-    Call Canvas2CanvasBltTranslucent(cnv2, cnv, 410, 60)
-    Call Canvas2CanvasBlt(cnv, destCanvas, 0, 0)
-    Call DestroyCanvas(cnv)
-    Call DestroyCanvas(cnv2)
+    Call canvas2CanvasBltTranslucent(cnv2, cnv, 410, 60)
+    Call canvas2CanvasBlt(cnv, destCanvas, 0, 0)
+    Call destroyCanvas(cnv)
+    Call destroyCanvas(cnv2)
 End Sub
 
 '=========================================================================
@@ -262,7 +262,7 @@ Private Sub createItemDisplay(ByVal theCanvas As Long, ByVal theType As SHOP_TYP
                     Text = Text & item(curLine - 1).sellPrice
                 End If
                 Text = Text & " GP"
-                Call CanvasDrawText(theCanvas, Text, fontName, 25, 1.1, curLine + 0.1, 0)
+                Call canvasDrawText(theCanvas, Text, fontName, 25, 1.1, curLine + 0.1, 0)
             End If
         Next itmNum
     End With
@@ -315,47 +315,47 @@ End Property
 '=========================================================================
 Private Sub updateItemInfo(ByVal pos As Long)
     Dim cnv As Long
-    cnv = CreateCanvas(172, 399)
-    Call CanvasFill(cnv, TRANSP_COLOR)
+    cnv = createCanvas(172, 399)
+    Call canvasFill(cnv, TRANSP_COLOR)
     With item(pos)
         If (LenB(.itemName)) Then
-            Call CanvasDrawText(cnv, .itemName, fontName, 25, 1, 1, 0, , , True)
-            Call CanvasDrawText(cnv, .itmDescription, fontName, 20, 1, (3 * 25 - 25) / 20, 0)
+            Call canvasDrawText(cnv, .itemName, fontName, 25, 1, 1, 0, , , True)
+            Call canvasDrawText(cnv, .itmDescription, fontName, 20, 1, (3 * 25 - 25) / 20, 0)
             If .MenuYN = 1 Then
-                Call CanvasDrawText(cnv, "Item can be used", fontName, 25, 1, 4 - 0.5, 0)
-                Call CanvasDrawText(cnv, "from the menu", fontName, 25, 1, 5 - 0.5, 0)
+                Call canvasDrawText(cnv, "Item can be used", fontName, 25, 1, 4 - 0.5, 0)
+                Call canvasDrawText(cnv, "from the menu", fontName, 25, 1, 5 - 0.5, 0)
                 If .mnuHPup > 0 Then
-                    Call CanvasDrawText(cnv, "Restores " & .mnuHPup & " HP", fontName, 25, 1, 7 - 0.5, 0)
+                    Call canvasDrawText(cnv, "Restores " & .mnuHPup & " HP", fontName, 25, 1, 7 - 0.5, 0)
                 End If
                 If .mnuSMup > 0 Then
-                    Call CanvasDrawText(cnv, "Restores " & .mnuSMup & " SMP", fontName, 25, 1, 8 - 0.5, 0)
+                    Call canvasDrawText(cnv, "Restores " & .mnuSMup & " SMP", fontName, 25, 1, 8 - 0.5, 0)
                 End If
             Else
-                Call CanvasDrawText(cnv, "Item cannot be", fontName, 25, 1, 4 - 0.5, 0)
-                Call CanvasDrawText(cnv, "used from the menu", fontName, 25, 1, 5 - 0.5, 0)
+                Call canvasDrawText(cnv, "Item cannot be", fontName, 25, 1, 4 - 0.5, 0)
+                Call canvasDrawText(cnv, "used from the menu", fontName, 25, 1, 5 - 0.5, 0)
             End If
             If .FightYN = 1 Then
-                Call CanvasDrawText(cnv, "Item can be used", fontName, 25, 1, 10 - 0.5, 0)
-                Call CanvasDrawText(cnv, "in a fight", fontName, 25, 1, 11 - 0.5, 0)
+                Call canvasDrawText(cnv, "Item can be used", fontName, 25, 1, 10 - 0.5, 0)
+                Call canvasDrawText(cnv, "in a fight", fontName, 25, 1, 11 - 0.5, 0)
                 If .mnuHPup > 0 Then
-                    Call CanvasDrawText(cnv, "Restores " & .mnuHPup & " HP", fontName, 25, 1, 13 - 0.5, 0)
+                    Call canvasDrawText(cnv, "Restores " & .mnuHPup & " HP", fontName, 25, 1, 13 - 0.5, 0)
                 End If
                 If .mnuSMup > 0 Then
-                    Call CanvasDrawText(cnv, "Restores " & .mnuSMup & " SMP", fontName, 25, 1, 14 - 0.5, 0)
+                    Call canvasDrawText(cnv, "Restores " & .mnuSMup & " SMP", fontName, 25, 1, 14 - 0.5, 0)
                 End If
             Else
-                Call CanvasDrawText(cnv, "Item cannot be", fontName, 25, 1, 10 - 0.5, 0)
-                Call CanvasDrawText(cnv, "used in a fight", fontName, 25, 1, 11 - 0.5, 0)
+                Call canvasDrawText(cnv, "Item cannot be", fontName, 25, 1, 10 - 0.5, 0)
+                Call canvasDrawText(cnv, "used in a fight", fontName, 25, 1, 11 - 0.5, 0)
             End If
             If .EquipYN = 1 Then
-                Call CanvasDrawText(cnv, "Item can be equip", fontName, 25, 1, 16 - 0.5, 0)
+                Call canvasDrawText(cnv, "Item can be equip", fontName, 25, 1, 16 - 0.5, 0)
             Else
-                Call CanvasDrawText(cnv, "Not equippable", fontName, 25, 1, 16 - 0.5, 0)
+                Call canvasDrawText(cnv, "Not equippable", fontName, 25, 1, 16 - 0.5, 0)
             End If
         End If
     End With
-    Call Canvas2CanvasBlt(cnv, m_itemInfo, 0, 0)
-    Call DestroyCanvas(cnv)
+    Call canvas2CanvasBlt(cnv, m_itemInfo, 0, 0)
+    Call destroyCanvas(cnv)
 End Sub
 
 '=========================================================================
@@ -402,10 +402,10 @@ Private Sub shopMenuScanKeys(ByVal baseCanvas As Long, ByVal theType As SHOP_TYP
 
     Const MAX_ITEMS = 14
 
-    cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+    cnv = createCanvas(resX, resY)
     Call createShopMenuDisplay(baseCanvas, cnv, theType)
 
-    m_itemInfo = CreateCanvas(172, 399)
+    m_itemInfo = createCanvas(172, 399)
     Call updateItemInfo(pos)
 
     Do
@@ -435,7 +435,7 @@ Private Sub shopMenuScanKeys(ByVal baseCanvas As Long, ByVal theType As SHOP_TYP
         ElseIf isPressed("ENTER") Or isPressed("SPACE") Or isPressed("RIGHT") Then
             If (LenB(Trim$(handles(pos)))) Then
                 If processTransaction(pos, theType) Then
-                    Call CanvasFill(cnv, 0)
+                    Call canvasFill(cnv, 0)
                     If theType = Buy Then
                         Call createMainMenuDisplay(baseCanvas, OPTION1)
                     Else
@@ -452,7 +452,7 @@ Private Sub shopMenuScanKeys(ByVal baseCanvas As Long, ByVal theType As SHOP_TYP
     Loop
 
     'Clean up
-    Call DestroyCanvas(cnv)
-    Call DestroyCanvas(m_itemInfo)
+    Call destroyCanvas(cnv)
+    Call destroyCanvas(m_itemInfo)
 
 End Sub

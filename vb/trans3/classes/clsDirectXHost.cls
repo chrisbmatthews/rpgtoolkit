@@ -12,48 +12,42 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '=========================================================================
-'All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
 '=========================================================================
 
 '=========================================================================
-' Interface with actkrt3.dll :: host window
-' Status: A-
+' Host window
 '=========================================================================
 
 Option Explicit
 
 '=========================================================================
-' Member variables
+' Members
 '=========================================================================
-Private m_created As Boolean        'window created?
-Private m_createHeight As Long      'height to create window with
-Private m_createWidth As Long       'width to create window with
-Private m_createCaption As String   'caption to create window with
-Private m_createStyle As Long       'style to create window with
-Private m_createX As Long           'x position window should start at
-Private m_createY As Long           'y position window should start at
-Private m_class As String           'the windows class
+Private m_created As Boolean        ' Window created?
+Private m_createHeight As Long      ' Height to create window with
+Private m_createWidth As Long       ' Width to create window with
+Private m_createCaption As String   ' Caption to create window with
+Private m_createStyle As Long       ' Style to create window with
+Private m_createX As Long           ' X position window should start at
+Private m_createY As Long           ' Y position window should start at
+Private m_class As String           ' The windows class
+Private m_hCursor As Long           ' The window's cursor
 
 '=========================================================================
-' Public variables
-'=========================================================================
-Public cursorHotSpotX As Long       'x hot spot of cursor
-Public cursorHotSpotY As Long       'y hot spot of cursor
-
-'=========================================================================
-' Member declarations
+' Declarations
 '=========================================================================
 Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal className As String, ByVal hCursor As Long) As Long
 Private Declare Sub killHostWindow Lib "actkrt3.dll" (ByVal className As String, ByVal hInstance As Long)
+Private Declare Sub IMGCreateIcon Lib "actkrt3.dll" (ByVal cnv As Long, ByVal strFilename As String)
 Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String) As Long
-
-'=========================================================================
-' Member Win32 APIs
-'=========================================================================
 Private Declare Function ShowWindow Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Long) As Long
 Private Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function LoadCursorFromFile Lib "user32" Alias "LoadCursorFromFileA" (ByVal lpFileName As String) As Long
+Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
+Private Declare Function SetClassWord Lib "user32" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal wNewWord As Long) As Long
 
 '=========================================================================
 ' Member enumerations
@@ -61,7 +55,6 @@ Private Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
 Public Enum STYLE_ENUM
     FullScreenMode
     windowed
-    nullStyle
 End Enum
 
 '=========================================================================
@@ -92,8 +85,6 @@ Public Property Let style(ByVal newValue As STYLE_ENUM)
         m_createStyle = &H80000000
     ElseIf (newValue = windowed) Then
         m_createStyle = &H0& Or &HC00000 Or &H80000 Or &H20000
-    ElseIf (newValue = nullStyle) Then
-        m_createStyle = 0
     End If
 End Property
 
@@ -112,21 +103,66 @@ End Property
 ' Window's mouse pointer
 '=========================================================================
 Public Property Let mousePointer(ByVal newValue As String)
+
     On Error Resume Next
-    Dim hdc As Long, theFile As String
-    Call canvasFill(cnvMousePointer, mainMem.transpcolor)
-    If (newValue = "TK DEFAULT") Then
-        theFile = TempDir() & "pointer"
-        Call Kill(theFile)
-        Call SavePicture(LoadResPicture(103, vbResBitmap), theFile)
-        newValue = theFile
-    ElseIf (LenB(newValue) = 0) Then
-        Exit Property
-    Else
-        newValue = projectPath & bmpPath & newValue
+
+    ' Destroy any existing cursor
+    If (m_hCursor) Then
+        Call DestroyCursor(m_hCursor)
+        m_hCursor = 0
     End If
-    Call drawSizedImageCNV(newValue, 0, 0, 32, 32, cnvMousePointer)
-    If (LenB(theFile)) Then Call Kill(theFile)
+
+    ' Create a canvas
+    Dim cnv As Long
+    cnv = createCanvas(32, 32)
+
+    ' Fill with transp color
+    Call canvasFill(cnv, mainMem.transpcolor)
+
+    ' Save the cursor path
+    Dim strCursorFileName As String
+    strCursorFileName = TempDir() & "tkCur.cur"
+
+    ' If it's the default cursor
+    If (newValue = "TK DEFAULT") Then
+
+        ' Save from resource file
+        Call Kill(strCursorFileName)
+        Call SavePicture(LoadResPicture(103, vbResBitmap), strCursorFileName)
+        newValue = strCursorFileName
+
+    ElseIf (LenB(newValue) = 0) Then
+
+        ' No image passed in
+        Exit Property
+
+    Else
+
+        ' Alter the path
+        newValue = projectPath & bmpPath & newValue
+
+    End If
+
+    ' Draw to a canvas
+    Call drawSizedImageCNV(newValue, 0, 0, 32, 32, cnv)
+
+    ' Draw to a *.ico file
+    Call IMGCreateIcon(cnv, strCursorFileName)
+
+    ' Destroy the canvas
+    Call destroyCanvas(cnv)
+
+    ' Load the cursor
+    m_hCursor = LoadCursorFromFile(strCursorFileName)
+
+    ' If the window is open
+    If (hwnd) Then
+
+        ' Switch in this new cursor
+        Call SetClassWord(hwnd, -12, m_hCursor)
+
+    End If
+
 End Property
 
 '=========================================================================
@@ -191,21 +227,31 @@ Public Sub Create(ByRef strClass As String)
     On Error Resume Next
 
     hwnd = createHostWindow( _
-                               m_createX \ Screen.TwipsPerPixelX, _
-                               m_createY \ Screen.TwipsPerPixelY, _
-                               m_createWidth \ Screen.TwipsPerPixelX, _
-                               m_createHeight \ Screen.TwipsPerPixelY, _
-                               m_createStyle, _
-                               m_createCaption, _
-                               App.hInstance, _
-                               strClass, _
-                               LoadResPicture(101, vbResCursor).handle _
-                                                                         )
+        m_createX \ Screen.TwipsPerPixelX, _
+        m_createY \ Screen.TwipsPerPixelY, _
+        m_createWidth \ Screen.TwipsPerPixelX, _
+        m_createHeight \ Screen.TwipsPerPixelY, _
+        m_createStyle, _
+        m_createCaption, _
+        App.hInstance, _
+        strClass, _
+        IIf(m_hCursor, m_hCursor, LoadResPicture(101, vbResCursor).handle) _
+    )
 
-    'Flag the window has been created
+    ' Flag the window has been created
     m_created = True
 
     ' Record the class
     m_class = strClass
+
+End Sub
+
+'========================================================================='
+' Deconstructor
+'=========================================================================
+Private Sub Class_Terminate()
+
+    ' Kill any loaded cursor
+    Call DestroyCursor(m_hCursor)
 
 End Sub

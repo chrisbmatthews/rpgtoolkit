@@ -263,7 +263,7 @@ Private Sub initDefaults()
     If Not (initRuntime()) Then
         Call ChDir("C:\Program Files\Toolkit3\")
         currentDir = CurDir$()
-        If Not initRuntime() Then
+        If Not (initRuntime()) Then
             Call MsgBox("Could not initialize actkrt3.dll. Do you have actkrt3.dll, " & _
                         "freeimage.dll, and audiere.dll in the working directory, " & _
                         "and do you have DirectX version 8 or above installed?")
@@ -401,8 +401,6 @@ End Sub
 Public Sub setupMain(): On Error Resume Next
 
     ' Setup the cursor
-    host.cursorHotSpotX = mainMem.hotSpotX
-    host.cursorHotSpotY = mainMem.hotSpotY
     host.mousePointer = mainMem.mouseCursor
 
     ' Set default shop colors
@@ -464,7 +462,7 @@ Public Sub setupMain(): On Error Resume Next
         m_renderTime = Timer()
         Dim i As Long
         For i = 0 To 50
-            Call DXFlip
+            Call DXRefresh
         Next i
         m_renderTime = Timer() - m_renderTime
         m_renderCount = 35     ' Account for extra routine time in the movement loop

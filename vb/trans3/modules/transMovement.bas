@@ -8,7 +8,7 @@ Attribute VB_Name = "transMovement"
 
 Option Explicit
 
-'Movement constants
+' Movement constants
 Public Const MV_IDLE = 0
 Public Const MV_NORTH = 1
 Public Const MV_SOUTH = 2
@@ -77,6 +77,8 @@ End Type
 Public pPos(4) As PLAYER_POSITION       'Player positions of 5 players.
 Public itmPos() As PLAYER_POSITION      'Positions of items on board.
 Public selectedPlayer As Long           'Index of current player.
+
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpVoidDest As Any, ByRef lpVoidSource As Any, ByVal lngByteLength As Long)
 
 '=========================================================================
 ' A movement queue
@@ -775,7 +777,7 @@ Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boo
     Call alignBoard(pPos(selectedPlayer).x, pPos(selectedPlayer).y)
     Call openItems
     Call renderNow(-1, True)
-    Call canvasGetScreen(cnvRPGCodeScreen)
+    Call canvasGetScreen(cnvRpgCodeScreen)
     
     Call launchBoardThreads(boardList(activeBoardIndex).theData)
     
@@ -1795,13 +1797,13 @@ Public Sub runQueuedMovements(): On Error Resume Next
 'Called by ItemStepRPG, PlayerStepRPG, PushItemRPG, PushRPG, WanderRPG.
 
     Do While (movePlayers() Or moveItems())
-        Call renderNow(cnvRPGCodeScreen, True)
+        Call renderNow(cnvRpgCodeScreen, True)
         Call renderRPGCodeScreen
         Call processEvent
     Loop
 
     'Update the rpgcode canvas in case we're still in a program.
-    Call canvasGetScreen(cnvRPGCodeScreen)
+    Call canvasGetScreen(cnvRpgCodeScreen)
 
     Select Case UCase$(pPos(selectedPlayer).stance)
         Case "WALK_S": facing = SOUTH

@@ -12,416 +12,90 @@ Attribute VB_Name = "transRender"
 Option Explicit
 
 '=========================================================================
-' Constants
-'=========================================================================
-
-' Use a canvas as a back buffer?
-#Const USE_BACK_CANVAS = True ' [ Leave this true ]
-
-'=========================================================================
 ' Declarations
 '=========================================================================
-
-' Initiate DirectX
 Public Declare Function DXInitGfxMode Lib "actkrt3.dll" (ByVal hwnd As Long, ByVal nScreenX As Long, ByVal nScreenY As Long, ByVal nUseDirectX As Long, ByVal nColorDepth As Long, ByVal nFullScreen As Long) As Long
-
-' Deinitiate DirectX
 Public Declare Function DXKillGfxMode Lib "actkrt3.dll" () As Long
-
-' Flip the back buffer onto the screen
-Public Declare Function DXFlip Lib "actkrt3.dll" Alias "DXRefresh" (Optional ByVal cnv As Long) As Long
-
-' Lock the screen, obtaining its HDC
+Public Declare Function DXRefresh Lib "actkrt3.dll" (Optional ByVal cnv As Long) As Long
 Public Declare Function DXLockScreen Lib "actkrt3.dll" () As Long
-
-' Unlock the screen, releasing its DC
 Public Declare Function DXUnlockScreen Lib "actkrt3.dll" () As Long
-
-#If Not (USE_BACK_CANVAS) Then
-
-' Plot a pixel on the screen
 Public Declare Function DXDrawPixel Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
-
-' Black out the screen
 Public Declare Function DXClearScreen Lib "actkrt3.dll" (ByVal crColor As Long) As Long
-
-' Draw text onto the screen
 Public Declare Function DXDrawText Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
-
-' Render a canvas to the screen
 Public Declare Function DXDrawCanvas Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-
-' Draw a canavs transparently onto the screen
 Public Declare Function DXDrawCanvasTransparent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
-
-' Draw a canavs translucently onto the screen
 Public Declare Function DXDrawCanvasTranslucent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
-
-' Draw part of a canvas on the screen
 Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-
-' Draw part of a canvas onto the screen using transparency
 Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
-
-' Copy the screen to a canvas
 Public Declare Function DXCopyScreenToCanvas Lib "actkrt3.dll" (ByVal canvasID As Long) As Long
-
-' Draw part of a canvas, using translucency
 Public Declare Function DXDrawCanvasTranslucentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
-#Else
-
-' Render a canvas to the screen
-Private Declare Function DXRenderCanvas Lib "actkrt3.dll" Alias "DXDrawCanvas" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-
-' Draw a canavs transparently onto the screen
-Private Declare Function DXRenderCanvasTransparent Lib "actkrt3.dll" Alias "DXDrawCanvasTransparent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
-
-' Draw a canavs translucently onto the screen
-Private Declare Function DXRenderCanvasTranslucent Lib "actkrt3.dll" Alias "DXDrawCanvasTranslucent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
-
-#End If
-
-' Convert a client window's coords to the screen coords
-Private Declare Function ClientToScreen Lib "user32" (ByVal hwnd As Long, lpPoint As POINTAPI) As Long
-
-' Set a rect
-Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-
-' Offset a rect
-Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
-
-' Move memory around
-Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
-
-' Open a canvas' HDC
-Private Declare Function CNVOpenHDC Lib "actkrt3.dll" (ByVal handle As Long) As Long
-
-' Close a canvas' HDC
-Private Declare Function CNVCloseHDC Lib "actkrt3.dll" (ByVal handle As Long, ByVal hdc As Long) As Long
+'=========================================================================
+' Constants
+'=========================================================================
+Public Const HAND_RESOURCE_ID = 101         ' Cursor hand resource ID
+Public Const ENDFORM_RESOURCE_ID = 102      ' End form resource ID
+Public Const DEFAULT_MOUSE_ID = 103         ' Default mouse resource ID
+Public Const TRANSP_COLOR = 16711935        ' Transparent color (magic pink)
+Public Const TRANSP_COLOR_ALT = 0           ' Alternate transparent color (black)
+Public Const POPUP_NOFX = 0                 ' Popup without an effect
+Public Const POPUP_VERTICAL = 1             ' Popup vertically
+Public Const POPUP_HORIZONTAL = 2           ' Popup horizontally
 
 '=========================================================================
 ' Globals
 '=========================================================================
+Public screenWidth As Integer               ' Screen width, in twips
+Public screenHeight As Integer              ' Screen height, in twips
+Public resX As Long                         ' Screen width, in pixels
+Public resY As Long                         ' Screen height, in pixels
+Public handHdc As Long                      ' HDC of a cursor hand
+Public handBackupHdc As Long                ' HDC of a backup cursor hand
+Public endFormBackgroundHdc As Long         ' HDC of the end form
+Public isoTilesX As Double                  ' Number of iso tiles on width
+Public isoTilesY As Double                  ' Number of iso tiles on height
+Public topX As Double                       ' Horizontal offset of a scrolled board
+Public topY As Double                       ' Vertical offset of a scrolled board
+Public scTopX As Double                     ' Horizonal offset of the scroll cache
+Public scTopY As Double                     ' Vertical offset of the scroll cache
+Public scTilesX As Long                     ' Maximum scroll cache capacity, on width
+Public scTilesY As Long                     ' Maximum scroll cache capacity, on height
+Public cnvBackground As Long                ' Canvas holding background image
+Public cnvScrollCache As Long               ' Canvas holding the scroll cache
+Public cnvPlayer(4) As Long                 ' Canvases for player sprites
+Public showPlayer(4) As Boolean             ' Show this player?
+Public cnvSprites() As Long                 ' Canvases for item sprites
+Public cnvAllPurpose As Long                ' An all purpose canvas
+Public cnvRpgCodeScreen As Long             ' Canvas used for RPGCode drawing
+Public cnvMsgBox As Long                    ' Canvas for the message box
+Public cnvRPGCodeBuffers(10) As Long        ' Canvases for scan() and mem()
+Public cnvRPGCodeAccess As Long             ' saveScreen() / restoreScreen() canvas
+Public cnvRPGCode() As Long                 ' Canvases for multiple save screens
+Public lastPlayerRender(4) As PlayerRender  ' Last player renders
+Public lastItemRender() As PlayerRender     ' Last item renders
+Public lastRenderedBackground As String     ' Last rendered background image
+Public addOnR As Long                       ' Red to add on
+Public addOnG As Long                       ' Green to add on
+Public addOnB As Long                       ' Blue to add on
+Public cnvRenderNow As Long                 ' RPGCode renderNow() canvas
+Public renderRenderNowCanvas As Boolean     ' Render said canvas?
 
-' Screen width and height in twips
-Public screenWidth As Integer, screenHeight As Integer
-
-' Screen width and height in pixels
-Public resX As Long, resY As Long
-
-' Location of cursor hand
-Private Const HAND_RESOURCE_ID = 101
-
-' Location of end form background
-Private Const ENDFORM_RESOURCE_ID = 102
-
-' Location of default mouse pointer
-Private Const DEFAULT_MOUSE_ID = 103
-
-' HDC to the cursor hand
-Public handHDC As Long
-
-' HDC to an unaltered cursor hand
-Public handBackupHDC As Long
-
-' HDC to end form background
-Public endFormBackgroundHDC As Long
-
-' Height and width of global canvases
-Public globalCanvasHeight As Long, globalCanvasWidth As Long
-
-' Number of isometric tiles the screen can hold
-Public isoTilesX As Double, isoTilesY As Double
-
-' Offset of a scrolled board
-Public topX As Double, topY As Double
-
-' Top x, y of the scroll cache
-Public scTopX As Double, scTopY As Double
-
-' Size of the scroll cache in tiles
-Public scTilesX As Long, scTilesY As Long
-
-' Canvas holding background image
-Public cnvBackground As Long
-
-' Canvas holding scroll cache
-Public cnvScrollCache As Long
-
-' Mask for the scroll cache
-Public cnvScrollCacheMask As Long
-
-' Five canvases for player sprites
-Public cnvPlayer(4) As Long
-
-' Show this player?
-Public showPlayer(4) As Boolean
-
-' Canvases for item sprites
-Public cnvSprites() As Long
-
-' The all-purpose canvas
-Public cnvAllPurpose As Long, allPurposeCanvas As Long
-
-' Canvas used for rpgcode
-Public cnvRPGCodeScreen As Long
-
-' Canvas for message box
-Public cnvMsgBox As Long
-
-' Show the message box?
-Private bShowMsgBox As Boolean
-
-' Canvases for Mem() / Scan()
-Public cnvRPGCodeBuffers(10) As Long
-
-' Canvas used in version 2 for SaveScreen() / RestoreScreen()
-Public cnvRPGCodeAccess As Long
-
-' Canvases for the said purpose in version 3
-Public cnvRPGCode() As Long
-
-' Transparent color
-Public Const TRANSP_COLOR = 16711935
-
-' Alternate transparent color
-Public Const TRANSP_COLOR_ALT = 0
-
-' In DirectX mode? (yes, always :P)
-Private Const inDXMode As Boolean = True
-
-' In full-screen mode?
-Private inFullScreenMode As Boolean
-
-' Last board rendered
-Public lastRender As CBoardRender
-
-' Last player renders
-Public lastPlayerRender(4) As PlayerRender
-
-' Last item renders
-Public lastItemRender() As PlayerRender
-
-' Filename of last background image rendered
-Public lastRenderedBackground As String
-
-' Types CBCanvasPopup() can popup a canvas
-Public Const POPUP_NOFX = 0, POPUP_VERTICAL = 1, POPUP_HORIZONTAL = 2
-
-' Silly variables which shouldn't exist
-Public addOnR As Long, addOnG As Long, addOnB As Long
-
-' RPGCode 'render now' canvas
-Public cnvRenderNow As Long
-
-' Should we render cnvRenderNow?
-Public renderRenderNowCanvas As Boolean
-
-' Should it be rendered translucently?
-Public renderRenderNowCanvasTranslucent As Boolean
-
-' Canvas used for the mouse pointer
-Public cnvMousePointer As Long
-
-#If (USE_BACK_CANVAS) Then
-
-' Back canvas
-Private m_cnvBack As Long
-
-#End If
+'=========================================================================
+' Members
+'=========================================================================
+Private bShowMsgBox As Boolean              ' Show the message box?
+Private inFullScreenMode As Boolean         ' Using full screen?
 
 '=========================================================================
 ' A player render
 '=========================================================================
 Private Type PlayerRender
-    canvas As Long              ' Canvas used for this render
-    stance As String            ' Stance player was rendered in
-    frame As Long               ' Frame of this stance
-    x As Double                 ' X position the render occured in
-    y As Double                 ' Y position the render occured in
+    canvas As Long                          ' Canvas used for this render
+    stance As String                        ' Stance player was rendered in
+    frame As Long                           ' Frame of this stance
+    x As Double                             ' X position the render occured in
+    y As Double                             ' Y position the render occured in
 End Type
-
-'=========================================================================
-' A rectangle
-'=========================================================================
-Private Type RECT
-    Left As Long                ' Left coord
-    Top As Long                 ' Top coord
-    Right As Long               ' Right coord
-    Bottom As Long              ' Bottom coord
-End Type
-
-'=========================================================================
-' A point
-'=========================================================================
-Private Type POINTAPI
-    x As Long                   ' X coord
-    y As Long                   ' Y coord
-End Type
-
-#If (USE_BACK_CANVAS) Then
-
-'=========================================================================
-' Copy the back buffer onto a canvas
-'=========================================================================
-Public Function DXCopyScreenToCanvas(ByVal canvasID As Long) As Long
-    If (runningProgram) Then
-        Call canvas2CanvasBlt(cnvRPGCodeScreen, canvasID, 0, 0)
-    Else
-        Call canvas2CanvasBlt(m_cnvBack, canvasID, 0, 0)
-    End If
-End Function
-
-'=========================================================================
-' Plot a pixel on the screen
-'=========================================================================
-Public Function DXDrawPixel(ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
-
-    ' Draw to the back buffer
-    Call canvasSetPixel(m_cnvBack, x, y, crColor)
-
-End Function
-
-'=========================================================================
-' Black out the screen
-'=========================================================================
-Public Function DXClearScreen(ByVal crColor As Long) As Long
-
-    ' Draw to the back buffer
-    Call canvasFill(m_cnvBack, crColor)
-
-End Function
-
-'=========================================================================
-' Draw text onto the screen
-'=========================================================================
-Public Function DXDrawText(ByVal x As Long, ByVal y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
-
-    ' Draw to the back buffer
-    Call canvasDrawText(m_cnvBack, strText, strTypeFace, size, x, y, clr, Bold, Italics, Underline, centred, outlined)
-
-End Function
-
-'=========================================================================
-' Render a canvas to the screen
-'=========================================================================
-Public Function DXDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-
-    ' Draw to the back buffer
-    Call canvas2CanvasBlt(canvasID, m_cnvBack, x, y, rasterOp)
-
-End Function
-
-'=========================================================================
-' Draw part of a canvas, using translucency
-'=========================================================================
-Public Function DXDrawCanvasTranslucentPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
-
-    ' Draw to the back buffer
-    Call canvas2canvasBltTranslucentPartial(canvasID, m_cnvBack, x, y, xsrc, ysrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor)
-
-End Function
-
-'=========================================================================
-' Draw a canavs transparently onto the screen
-'=========================================================================
-Public Function DXDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
-
-    ' Draw to the back buffer
-    Call canvas2CanvasBltTransparent(canvasID, m_cnvBack, x, y, crTranspColor)
-
-End Function
-
-'=========================================================================
-' Draw a canavs translucently onto the screen
-'=========================================================================
-Public Function DXDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
-
-    ' Draw to the back buffer
-    Call canvas2CanvasBltTranslucent(canvasID, m_cnvBack, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
-
-End Function
-
-'=========================================================================
-' Draw part of a canvas on the screen
-'=========================================================================
-Public Function DXDrawCanvasPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-
-    ' Draw to the back buffer
-    Call canvas2CanvasBltPartial(canvasID, m_cnvBack, x, y, xsrc, ysrc, width, height, rasterOp)
-
-End Function
-
-'=========================================================================
-' Draw part of a canvas onto the screen using transparency
-'=========================================================================
-Public Function DXDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
-
-    ' Draw to the back buffer
-    Call canvas2CanvasBltTransparentPartial(canvasID, m_cnvBack, x, y, xsrc, ysrc, width, height, crTranspColor)
-
-End Function
-
-#End If
-
-'=========================================================================
-' Flip the back buffer onto the screen
-'=========================================================================
-Public Sub DXRefresh()
-
-    ' Check if this is the correct function
-    If (runningProgram) Then
-
-        ' Use the rpgcode version
-        Call renderRPGCodeScreen
-        Exit Sub
-
-    End If
-
-#If Not (USE_BACK_CANVAS) Then
-
-    ' Make the flip
-    Call DXFlip
-
-    ' Declare some variables
-    Dim hdc As Long, xdc As Long, x As Long, y As Long
-
-    ' Compute mouse x position
-    x = mouseMoveX - host.cursorHotSpotX
-
-    ' Compute mouse y position
-    y = mouseMoveY - host.cursorHotSpotY
-
-    ' Get the window's HDC
-    xdc = GetDC(host.hwnd)
-
-    ' Get the mouse pointer canvas' HDC
-    hdc = CNVOpenHDC(cnvMousePointer)
-
-    ' Blt the mouse onto the window
-    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
-
-    ' Close the canvas' HDC
-    Call CNVCloseHDC(cnvMousePointer, hdc)
-
-    ' Release the window's DC
-    Call ReleaseDC(host.hwnd, xdc)
-
-#Else
-
-    ' Draw the back buffer
-    Call DXRenderCanvas(m_cnvBack, 0, 0)
-
-    ' Draw the cursor
-    Call DXRenderCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
-
-    ' Flip the back buffer onto the screen
-    Call DXFlip
-
-#End If
-
-End Sub
 
 '=========================================================================
 ' Check if board can scroll
@@ -434,22 +108,26 @@ Private Sub checkScrollBounds()
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
 
         ' Check topX
-        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Then _
+        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Then
             topX = boardList(activeBoardIndex).theData.bSizeX - isoTilesX - 0.5
+        End If
 
         ' Check topY
-        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Then _
+        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Then
             topY = (boardList(activeBoardIndex).theData.bSizeY - isoTilesY - 1) / 2
+        End If
 
     Else
 
         ' Check topX
-        If (topX + tilesX > boardList(activeBoardIndex).theData.bSizeX) Then _
+        If (topX + tilesX > boardList(activeBoardIndex).theData.bSizeX) Then
             topX = boardList(activeBoardIndex).theData.bSizeX - tilesX
+        End If
 
         ' Check topY
-        If (topY + tilesY > boardList(activeBoardIndex).theData.bSizeY) Then _
+        If (topY + tilesY > boardList(activeBoardIndex).theData.bSizeY) Then
             topY = boardList(activeBoardIndex).theData.bSizeY - tilesY
+        End If
 
     End If
 
@@ -572,20 +250,20 @@ End Sub
 ' Load pictures from resources
 '=========================================================================
 Private Sub loadResPictures()
-    handHDC = CreateCompatibleDC(0)
-    handBackupHDC = CreateCompatibleDC(0)
-    endFormBackgroundHDC = CreateCompatibleDC(0)
-    Call SelectObject(handHDC, LoadResPicture(HAND_RESOURCE_ID, vbResBitmap).handle)
-    Call SelectObject(handBackupHDC, LoadResPicture(HAND_RESOURCE_ID, vbResBitmap).handle)
-    Call SelectObject(endFormBackgroundHDC, LoadResPicture(ENDFORM_RESOURCE_ID, vbResBitmap).handle)
+    handHdc = CreateCompatibleDC(0)
+    handBackupHdc = CreateCompatibleDC(0)
+    endFormBackgroundHdc = CreateCompatibleDC(0)
+    Call SelectObject(handHdc, LoadResPicture(HAND_RESOURCE_ID, vbResBitmap).handle)
+    Call SelectObject(handBackupHdc, LoadResPicture(HAND_RESOURCE_ID, vbResBitmap).handle)
+    Call SelectObject(endFormBackgroundHdc, LoadResPicture(ENDFORM_RESOURCE_ID, vbResBitmap).handle)
 End Sub
 
 '=========================================================================
 ' Kill pictures that were loaded from resources
 '=========================================================================
 Private Sub killResPictures()
-    Call DeleteDC(handHDC)
-    Call DeleteDC(handBackupHDC)
+    Call DeleteDC(handHdc)
+    Call DeleteDC(handBackupHdc)
 End Sub
 
 '=========================================================================
@@ -966,25 +644,35 @@ End Sub
 ' Render the board's scroll cache
 '=========================================================================
 Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long, ByVal tY As Long)
+
     On Error Resume Next
-    ' Create a new CBoardRender object
-    Dim currentRender As CBoardRender
-    Set currentRender = New CBoardRender
-    ' With that object
-    With currentRender
-        ' Set in the canvas
-        .canvas = cnv
-        ' Set in the mask (should be -1)
-        .canvasMask = cnvMask
-        ' Set in topX
-        .topX = tX
-        ' Set in topY
-        .topY = tY
-        ' Render the board
-        Call .Render
-    End With
-    ' Update the last render
-    Set lastRender = currentRender
+
+    ' First, get the shade color of the board
+    Dim r As Long, g As Long, b As Long
+    Call getAmbientLevel(r, b, g)
+
+    ' Fill with transparent color
+    Call canvasFill(cnv, TRANSP_COLOR)
+
+    ' Change directory
+    Call ChangeDir(IIf(pakFileRunning, PakTempPath, projectPath))
+
+    ' Draw the board
+    Call GFXDrawBoardCNV( _
+        VarPtr(boardList(activeBoardIndex).theData), _
+        cnv, cnvMask, _
+        0, topX, IIf(boardList(activeBoardIndex).theData.isIsometric = 1, topY * 2, topY), _
+        scTilesX, IIf(boardList(activeBoardIndex).theData.isIsometric = 1, scTilesY * 2, scTilesY), _
+        boardList(activeBoardIndex).theData.bSizeX, _
+        boardList(activeBoardIndex).theData.bSizeY, _
+        boardList(activeBoardIndex).theData.bSizeL, _
+        r, g, b, _
+        boardList(activeBoardIndex).theData.isIsometric _
+    )
+
+    ' Return to old directory
+    Call ChangeDir(currentDir)
+
 End Sub
 
 '=========================================================================
@@ -1454,7 +1142,7 @@ Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     'If Not usingDX() Then
     '    cnvScrollCacheMask = CreateCanvas(width * 2, height * 2)
     'Else
-        cnvScrollCacheMask = -1
+    ' cnvScrollCacheMask = -1
     'End If
     scTopX = -1
     scTopY = -1
@@ -1463,21 +1151,16 @@ Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
         cnvPlayer(t) = createCanvas(32, 32)
     Next t
     cnvBackground = createCanvas(width, height)
-    cnvRPGCodeScreen = createCanvas(width, height)
+    cnvRpgCodeScreen = createCanvas(width, height)
     cnvAllPurpose = createCanvas(width, height)
-    allPurposeCanvas = cnvAllPurpose
     cnvMsgBox = createCanvas(600, 100)
     For t = 0 To UBound(cnvRPGCodeBuffers)
         cnvRPGCodeBuffers(t) = createCanvas(32, 32)
     Next t
     cnvRPGCodeAccess = createCanvas(width, height)
     cnvRenderNow = createCanvas(width, height)
-    Call canvasFill(cnvRPGCodeScreen, 0)
+    Call canvasFill(cnvRpgCodeScreen, 0)
     Call canvasFill(cnvRenderNow, TRANSP_COLOR_ALT)
-    cnvMousePointer = createCanvas(32, 32)
-    Call canvasFill(cnvMousePointer, mainMem.transpcolor)
-    globalCanvasHeight = height
-    globalCanvasWidth = width
 End Sub
 
 '=========================================================================
@@ -1494,7 +1177,7 @@ Private Sub destroyCanvases()
     For t = 0 To UBound(cnvPlayer)
         Call destroyCanvas(cnvPlayer(t))
     Next t
-    Call destroyCanvas(cnvRPGCodeScreen)
+    Call destroyCanvas(cnvRpgCodeScreen)
     Call destroyCanvas(cnvMsgBox)
     For t = 0 To UBound(cnvSprites)
         Call destroyCanvas(cnvSprites(t))
@@ -1508,7 +1191,6 @@ Private Sub destroyCanvases()
         Call destroyCanvas(cnvRPGCode(t))
     Next t
     Call destroyCanvas(cnvRenderNow)
-    Call destroyCanvas(cnvMousePointer)
 End Sub
 
 '========================================================================='
@@ -1567,9 +1249,11 @@ Private Function renderBoard() As Boolean
         If scTopX < 0 And topX >= 0 Then scTopX = 0
         If scTopY < 0 And topY >= 0 Then scTopY = 0
 
-        Call renderScrollCache(cnvScrollCache, cnvScrollCacheMask, scTopX, scTopY)
+        ' Call renderScrollCache(cnvScrollCache, cnvScrollCacheMask, scTopX, scTopY)
+        Call renderScrollCache(cnvScrollCache, -1, scTopX, scTopY)
 
-        Call drawPrograms(1, cnvScrollCache, cnvScrollCacheMask)
+        ' Call drawPrograms(1, cnvScrollCache, cnvScrollCacheMask)
+        Call drawPrograms(1, cnvScrollCache, -1)
 
         renderBoard = True
 
@@ -1625,7 +1309,8 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
     Next t
 
     ' Check if we need to render animated tiles
-    newTileAnm = renderAnimatedTiles(cnvScrollCache, cnvScrollCacheMask)
+    ' newTileAnm = renderAnimatedTiles(cnvScrollCache, cnvScrollCacheMask)
+    newTileAnm = renderAnimatedTiles(cnvScrollCache, -1)
 
     ' If *anything* is new, render it all
     If (newBoard Or newSprites Or newTileAnm Or newItem Or newMultiAnim Or renderRenderNowCanvas Or forceRender) Then
@@ -1655,18 +1340,10 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
         If (renderRenderNowCanvas) Then
             If (cnvTarget = -1) Then
                 ' To the screen
-                If Not (renderRenderNowCanvasTranslucent) Then
-                    Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, TRANSP_COLOR_ALT)
-                Else
-                    Call DXDrawCanvasTranslucent(cnvRenderNow, 0, 0)
-                End If
+                Call DXDrawCanvasTranslucent(cnvRenderNow, 0, 0)
             Else
                 ' To a canvas
-                If Not (renderRenderNowCanvasTranslucent) Then
-                    Call canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, TRANSP_COLOR_ALT)
-                Else
-                    Call canvas2CanvasBltTranslucent(cnvRenderNow, cnvTarget, 0, 0)
-                End If
+                Call canvas2CanvasBltTranslucent(cnvRenderNow, cnvTarget, 0, 0)
             End If
         End If
 
@@ -1688,10 +1365,8 @@ End Function
 '=========================================================================
 Public Sub renderRPGCodeScreen()
 
-#If Not (USE_BACK_CANVAS) Then
-
     ' Lay down the RPGCode screen
-    Call DXDrawCanvas(cnvRPGCodeScreen, 0, 0)
+    Call DXDrawCanvas(cnvRpgCodeScreen, 0, 0)
 
     ' Draw the message box if it's being shown
     If (bShowMsgBox) Then
@@ -1700,50 +1375,7 @@ Public Sub renderRPGCodeScreen()
     End If
 
     ' Make the flip
-    Call DXFlip
-
-    ' Declare some variables
-    Dim hdc As Long, xdc As Long, x As Long, y As Long
-
-    ' Compute mouse x position
-    x = mouseMoveX - host.cursorHotSpotX
-
-    ' Compute mouse y position
-    y = mouseMoveY - host.cursorHotSpotY
-
-    ' Get the window's HDC
-    xdc = GetDC(host.hwnd)
-
-    ' Get the mouse pointer canvas' HDC
-    hdc = CNVOpenHDC(cnvMousePointer)
-
-    ' Blt the mouse onto the window
-    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
-
-    ' Close the canvas' HDC
-    Call CNVCloseHDC(cnvMousePointer, hdc)
-
-    ' Release the window's DC
-    Call ReleaseDC(host.hwnd, xdc)
-
-#Else
-
-    ' Lay down the RPGCode screen
-    Call DXRenderCanvas(cnvRPGCodeScreen, 0, 0)
-
-    ' Draw the message box if it's being shown
-    If (bShowMsgBox) Then
-        ' Draw the messsage window
-        Call DXRenderCanvasTranslucent(cnvMsgBox, (tilesX * 32 - 600) * 0.5, 0, , fontColor)
-    End If
-
-    ' Draw the cursor
-    Call DXRenderCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
-
-    ' Flip the back buffer onto the screen
-    Call DXFlip
-
-#End If
+    Call DXRefresh
 
 End Sub
 

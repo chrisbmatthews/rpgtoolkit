@@ -821,7 +821,7 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         ' If not running concurrently, run the queued movements now
 
         Do While movePlayers(playerNum)
-            Call renderNow(cnvRPGCodeScreen)
+            Call renderNow(cnvRpgCodeScreen)
             Call renderRPGCodeScreen
             Call processEvent
         Loop
@@ -899,7 +899,7 @@ Public Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         ' If not running concurrently, run the queued movements now
 
         Do While moveItems(paras(0).num)
-            Call renderNow(cnvRPGCodeScreen)
+            Call renderNow(cnvRpgCodeScreen)
             Call renderRPGCodeScreen
             Call processEvent
         Loop
@@ -1520,7 +1520,7 @@ Sub DrawCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
     startangle = st * 3.14159 / 180     'conv to radians
     endangle = en * 3.14159 / 180     'conv to radians
     If number <> 6 Then
-        Call canvasDrawEllipse(cnvRPGCodeScreen, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
+        Call canvasDrawEllipse(cnvRpgCodeScreen, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
         Call renderRPGCodeScreen
     Else
         Call canvasDrawEllipse(cnv, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
@@ -1557,7 +1557,7 @@ Sub DrawEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim cnv As Double
     getValue useIt4, lit, cnv, theProgram
     
-    If cnv = 0 Then cnv = cnvRPGCodeScreen
+    If cnv = 0 Then cnv = cnvRpgCodeScreen
     
     If a = 0 Or b = 1 Or c = 1 Then
         Call debugger("Error: DrawEnemy data type must be literal, num, num!-- " + Text$)
@@ -1578,7 +1578,7 @@ Sub DrawEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'a = GFXdrawEnemy(fn$, x, y, 0, 0, 0, hdc)
         Call canvasCloseHDC(cnv, hdc)
         ChDir (currentDir$)
-        If cnv = cnvRPGCodeScreen Then Call renderRPGCodeScreen
+        If cnv = cnvRpgCodeScreen Then Call renderRPGCodeScreen
     End If
 
     Exit Sub
@@ -1612,7 +1612,7 @@ Public Sub EraseItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram
     ' De-activate the item, but don't erase its data
     itemMem(paras(0).num).bIsActive = False
 
-    Call renderNow(cnvRPGCodeScreen, True)  ' Force a render
+    Call renderNow(cnvRpgCodeScreen, True)  ' Force a render
     Call renderRPGCodeScreen
 
 End Sub
@@ -1696,7 +1696,7 @@ Sub FillCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Call getValue(useIt4, lit, cnv, theProgram)
 
     If (number = 3) Then
-        Call canvasDrawFilledEllipse(cnvRPGCodeScreen, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
+        Call canvasDrawFilledEllipse(cnvRpgCodeScreen, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
         Call renderRPGCodeScreen
     Else
         Call canvasDrawFilledEllipse(cnv, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
@@ -1740,7 +1740,7 @@ Sub FillRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '    Call debugger("Error: FillRect data type must be numerical!-- " + text$)
     'Else
         If number = 4 Then
-            Call canvasFillBox(cnvRPGCodeScreen, x1, y1, x2, y2, fontColor)
+            Call canvasFillBox(cnvRpgCodeScreen, x1, y1, x2, y2, fontColor)
             Call renderRPGCodeScreen
             'DXDrawCanvasPartial cnvRPGCodeScreen, _
                                 x1, y1, x1, y1, _
@@ -1828,7 +1828,7 @@ Public Sub ForceRedrawRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgr
     '==============================================================================
     On Error Resume Next
 
-    Call renderNow(cnvRPGCodeScreen, True)                 'Force render.
+    Call renderNow(cnvRpgCodeScreen, True)                 'Force render.
     Call renderRPGCodeScreen
 
 End Sub
@@ -2692,7 +2692,7 @@ Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim cnv As Double
     getValue useIt6, lit, cnv, theProgram
     
-    If cnv = 0 Then cnv = cnvRPGCodeScreen
+    If cnv = 0 Then cnv = cnvRpgCodeScreen
     
     If xx = 1 Or yy = 1 Then
         Call debugger("Error: GetPixel data type must be numerical!-- " + Text$)
@@ -3740,7 +3740,7 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
         Next lll
 
-        Call renderNow(cnvRPGCodeScreen, True)
+        Call renderNow(cnvRpgCodeScreen, True)
         Call renderRPGCodeScreen
 
     End If
@@ -3788,7 +3788,7 @@ Public Sub LoadRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     Call alignBoard(pPos(selectedPlayer).x, pPos(selectedPlayer).y)
     Call openItems
     'Re-render with new board and items.
-    Call renderNow(cnvRPGCodeScreen)
+    Call renderNow(cnvRpgCodeScreen)
     Call renderRPGCodeScreen
     Call launchBoardThreads(boardList(activeBoardIndex).theData)
 
@@ -4506,7 +4506,7 @@ Sub PostureRPG(Text$, ByRef theProgram As RPGCodeProgram)
         If theOne = -1 Then Exit Sub 'Player handle not found
         num = inBounds(num, 0, 9)
         pPos(theOne).stance = "Custom " & CStr(num)
-        Call renderNow(cnvRPGCodeScreen)
+        Call renderNow(cnvRpgCodeScreen)
         Call renderRPGCodeScreen
     End If
 
@@ -4593,9 +4593,9 @@ Sub PrintRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'replace <> w/vars
     lit$ = MWinPrepare(lit$, theProgram)
     Dim hdc As Long
-    hdc = canvasOpenHDC(cnvRPGCodeScreen)
+    hdc = canvasOpenHDC(cnvRpgCodeScreen)
     Call putText(lit$, textX, textY, fontColor, fontSize, fontSize, hdc)
-    Call canvasCloseHDC(cnvRPGCodeScreen, hdc)
+    Call canvasCloseHDC(cnvRpgCodeScreen, hdc)
     Call renderRPGCodeScreen
     textY = textY + 1
 
@@ -4717,7 +4717,7 @@ Public Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         'If not running concurrently, run the queued movements now.
 
         Do While moveItems(paras(0).num)
-            Call renderNow(cnvRPGCodeScreen)
+            Call renderNow(cnvRpgCodeScreen)
             Call renderRPGCodeScreen
             Call processEvent
         Loop
@@ -4836,7 +4836,7 @@ Public Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         'If not running concurrently, run these queued movements now.
 
         Do While movePlayers(playerNum)
-            Call renderNow(cnvRPGCodeScreen, True)
+            Call renderNow(cnvRpgCodeScreen, True)
             Call renderRPGCodeScreen
         Loop
 
@@ -4902,7 +4902,7 @@ Sub PutItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     pendingItemMovement(theOne).xTarg = itmPos(theOne).x
     pendingItemMovement(theOne).yTarg = itmPos(theOne).y
     
-    Call renderNow(cnvRPGCodeScreen)
+    Call renderNow(cnvRpgCodeScreen)
     Call renderRPGCodeScreen
 
     Exit Sub
@@ -5003,7 +5003,7 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     pendingPlayerMovement(theOne).yTarg = pPos(theOne).y
     
     Call alignBoard(targetX, targetY)
-    Call renderNow(cnvRPGCodeScreen)
+    Call renderNow(cnvRpgCodeScreen)
     Call renderRPGCodeScreen
 
 
@@ -5048,7 +5048,7 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim file As String, hdc As Long
         file$ = addExt(lit1$, ".gph")
         file$ = projectPath$ & tilePath$ & file$
-        Call drawTileCnv(cnvRPGCodeScreen, file$, num1, num2, addOnR, addOnG, addOnB, False)
+        Call drawTileCnv(cnvRpgCodeScreen, file$, num1, num2, addOnR, addOnG, addOnB, False)
         Call renderRPGCodeScreen
     End If
 
@@ -5464,7 +5464,7 @@ Sub RestoreScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Exit Sub
     End If
         
-    Call canvas2CanvasBltPartial(cnvRPGCodeAccess, cnvRPGCodeScreen, _
+    Call canvas2CanvasBltPartial(cnvRPGCodeAccess, cnvRpgCodeScreen, _
                                 xd, yd, _
                                 x1, y1, _
                                 (x2 - x1), (y2 - y1))
@@ -5563,7 +5563,7 @@ Sub ReturnRPG(ByRef theProgram As RPGCodeProgram)
     '#Return()
     'Refresh screen
     On Error GoTo errorhandler
-    Call renderNow(cnvRPGCodeScreen, True)
+    Call renderNow(cnvRpgCodeScreen, True)
     Call renderRPGCodeScreen
 
     Exit Sub
@@ -5716,17 +5716,17 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         Call debugger("Error: Thread data type must be literal, num!-- " + Text$)
     Else
         
-        Dim tID As Long
+        Dim tid As Long
         lit1$ = addExt(lit1$, ".prg")
-        tID = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
+        tid = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
         
         If number = 3 Then
             'save value in destination var...
-            Call SetVariable(useIt3$, CStr(tID), theProgram)
+            Call SetVariable(useIt3$, CStr(tid), theProgram)
         End If
         
         retval.dataType = DT_NUM
-        retval.num = tID
+        retval.num = tid
         Exit Sub
     End If
 End Sub
@@ -5779,7 +5779,7 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
         Case 0
             ' Call CanvasGetScreen(cnvRPGCodeAccess)
-            canvas2CanvasBlt cnvRPGCodeScreen, cnvRPGCodeAccess, 0, 0
+            canvas2CanvasBlt cnvRpgCodeScreen, cnvRPGCodeAccess, 0, 0
             
         Case 1
             Dim paras() As parameters
@@ -5797,12 +5797,12 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 testArray = cnvRPGCode(paras(0).num)
 
                 If Not (canvasOccupied(cnvRPGCode(paras(0).num))) Then
-                    cnvRPGCode(paras(0).num) = createCanvas(globalCanvasWidth, globalCanvasHeight)
+                    cnvRPGCode(paras(0).num) = createCanvas(resX, resY)
                 End If
 
                 'Save the screen!
                 ' CanvasGetScreen cnvRPGCode(paras(0).num)
-                Call canvas2CanvasBlt(cnvRPGCodeScreen, cnvRPGCode(paras(0).num), 0, 0)
+                Call canvas2CanvasBlt(cnvRpgCodeScreen, cnvRPGCode(paras(0).num), 0, 0)
 
             Else
                 debugger "SaveScreen() requires either no data elements or" _
@@ -5822,12 +5822,12 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
 createArray:
     ReDim cnvRPGCode(0)
-    cnvRPGCode(0) = createCanvas(globalCanvasWidth, globalCanvasHeight)
+    cnvRPGCode(0) = createCanvas(resX, resY)
     Resume
     
 enlargeArray:
     ReDim Preserve cnvRPGCode(UBound(cnvRPGCode) + 1)
-    ' cnvRPGCode(UBound(cnvRPGCode)) = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+    ' cnvRPGCode(UBound(cnvRPGCode)) = CreateCanvas(resX, resY)
     Resume
     
 End Sub
@@ -5859,8 +5859,8 @@ Sub ScanRPG(Text$, ByRef theProgram As RPGCodeProgram)
         y = num2
         memLoc = num3
         memLoc = inBounds(memLoc, 0, UBound(cnvRPGCodeBuffers))
-        Call canvasGetScreen(cnvRPGCodeScreen)
-        Call canvas2CanvasBltPartial(cnvRPGCodeScreen, cnvRPGCodeBuffers(memLoc), _
+        Call canvasGetScreen(cnvRpgCodeScreen)
+        Call canvas2CanvasBltPartial(cnvRpgCodeScreen, cnvRPGCodeBuffers(memLoc), _
                                     0, 0, _
                                     x * 32 - 32, y * 32 - 32, _
                                     32, 32, SRCCOPY)
@@ -5967,7 +5967,7 @@ Public Sub Send(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
     End With
 
-    Call renderNow(cnvRPGCodeScreen, True)
+    Call renderNow(cnvRpgCodeScreen, True)
     Call renderRPGCodeScreen
 
     facing = SOUTH              ' Facing south
@@ -6048,7 +6048,7 @@ Sub SetButtonRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
 
         If (bLoaded) Then
-            Call canvas2CanvasBlt(cnv, cnvRPGCodeScreen, x1, y1)
+            Call canvas2CanvasBlt(cnv, cnvRpgCodeScreen, x1, y1)
         End If
 
         Call destroyCanvas(cnv)
@@ -6139,7 +6139,7 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     pp = getValue(useIt6$, lit$, perc, theProgram)
     Dim cnvToUse As Double
     getValue useIt7, lit, cnvToUse, theProgram
-    If cnvToUse = 0 Then cnvToUse = cnvRPGCodeScreen
+    If cnvToUse = 0 Then cnvToUse = cnvRpgCodeScreen
     
     If theFace = 0 Then
         Call debugger("Error: SetImageAdditive face data type must be literal!-- " + Text$)
@@ -6182,7 +6182,7 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call canvasCloseHDC(cnvToUse, hdc)
         Call canvasCloseHDC(cnv, hdc2)
         Call destroyCanvas(cnv)
-        If cnvToUse = cnvRPGCodeScreen Then
+        If cnvToUse = cnvRpgCodeScreen Then
             Call renderRPGCodeScreen
         End If
     End If
@@ -6222,7 +6222,7 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim cnv2 As Double
     getValue useIt6, lit, cnv2, theProgram
 
-    If cnv2 = 0 Then cnv2 = cnvRPGCodeScreen
+    If cnv2 = 0 Then cnv2 = cnvRpgCodeScreen
     
     If theFace = 0 Then
         Call debugger("Error: SetImage face data type must be literal!-- " + Text$)
@@ -6248,7 +6248,7 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         
         Call canvas2CanvasBlt(cnv, cnv2, x1, y1)
-        If cnv2 = cnvRPGCodeScreen Then
+        If cnv2 = cnvRpgCodeScreen Then
             Call renderRPGCodeScreen
         End If
 
@@ -6291,7 +6291,7 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim cnv2 As Double
     getValue useIt6, lit, cnv2, theProgram
     
-    If cnv2 = 0 Then cnv2 = cnvRPGCodeScreen
+    If cnv2 = 0 Then cnv2 = cnvRpgCodeScreen
     
     If theFace = 0 Then
         Call debugger("Error: SetImageTranslucent face data type must be literal!-- " + Text$)
@@ -6319,7 +6319,7 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call canvas2CanvasBltTranslucent(cnv, cnv2, _
                                     x1, y1)
         Call destroyCanvas(cnv)
-        If cnv2 = cnvRPGCodeScreen Then
+        If cnv2 = cnvRpgCodeScreen Then
             Call renderRPGCodeScreen
         End If
     End If
@@ -6366,7 +6366,7 @@ Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim cnv2 As Double
     getValue useIt9, lit, cnv2, theProgram
     
-    If cnv2 = 0 Then cnv2 = cnvRPGCodeScreen
+    If cnv2 = 0 Then cnv2 = cnvRpgCodeScreen
     
     If theFace = 0 Then
         Call debugger("Error: SetImageTransparent face data type must be literal!-- " + Text$)
@@ -6394,7 +6394,7 @@ Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call canvas2CanvasBltTransparent(cnv, cnv2, _
                                     x1, y1, RGB(rr, gg, bb))
         Call destroyCanvas(cnv)
-        If cnv2 = cnvRPGCodeScreen Then
+        If cnv2 = cnvRpgCodeScreen Then
             Call renderRPGCodeScreen
         End If
     End If
@@ -6426,13 +6426,13 @@ Sub SetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim cnv As Double
     getValue useIt3, lit, cnv, theProgram
     
-    If cnv = 0 Then cnv = cnvRPGCodeScreen
+    If cnv = 0 Then cnv = cnvRpgCodeScreen
     
     If xx = 1 Or yy = 1 Then
         Call debugger("Error: SetPixel data type must be numerical!-- " + Text$)
     Else
         Call canvasSetPixel(cnv, x, y, fontColor)
-        If cnv = cnvRPGCodeScreen Then
+        If cnv = cnvRpgCodeScreen Then
             Call renderRPGCodeScreen
         End If
     End If
@@ -6860,7 +6860,7 @@ Sub StanceRPG(Text$, ByRef theProgram As RPGCodeProgram)
             pPos(theOne).stance = "REST"
         End If
         
-        Call renderNow(cnvRPGCodeScreen, True)
+        Call renderNow(cnvRpgCodeScreen, True)
         Call renderRPGCodeScreen
         
     End If
@@ -7166,7 +7166,7 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim cnv As Double
     getValue useIt4, lit, cnv, theProgram
 
-    If cnv = 0 Then cnv = cnvRPGCodeScreen
+    If cnv = 0 Then cnv = cnvRpgCodeScreen
     
     If txtto = 0 Then
         lit1$ = CStr(num3)
@@ -7190,7 +7190,7 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End Select
 
         Call canvasCloseHDC(cnv, hdc)
-        If cnv = cnvRPGCodeScreen Then
+        If cnv = cnvRpgCodeScreen Then
             Call renderRPGCodeScreen
             'If LCase$(GetCommandName(Text, theProgram)) = "text" Then
             '    DXDrawCanvasPartial cnvRPGCodeScreen, _
@@ -7390,10 +7390,10 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
         ChDir (projectPath$)
         If pakFileRunning Then
             Call ChangeDir(PakTempPath$)
-            Call GFXDrawBoardCNV(VarPtr(boardList(activeBoardIndex).theData), cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
+            Call GFXDrawBoardCNV(VarPtr(boardList(activeBoardIndex).theData), cnvRpgCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
             Call ChangeDir(currentDir$)
         Else
-            Call GFXDrawBoardCNV(VarPtr(boardList(activeBoardIndex).theData), cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
+            Call GFXDrawBoardCNV(VarPtr(boardList(activeBoardIndex).theData), cnvRpgCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
             'a = GFXdrawboard(brdpath & brd$, 0, num2 - 1, num3 - 1, 0, 0, 0, tilesX, tilesY, vbpichdc(mainForm.boardform))
         End If
         'boardList(activeBoardIndex).theData = boardTemp
@@ -7624,12 +7624,12 @@ Sub DrawCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPG
             cnv = num1
             If number = 3 Then
                 'straight blt
-                Call canvas2CanvasBlt(cnv, cnvRPGCodeScreen, num2, num3)
+                Call canvas2CanvasBlt(cnv, cnvRpgCodeScreen, num2, num3)
                 Call renderRPGCodeScreen
             Else
                 'resize blt
                 Dim cnvDest As Long
-                cnvDest = cnvRPGCodeScreen
+                cnvDest = cnvRpgCodeScreen
                 If number = 6 Then
                     cnvDest = num6
                 End If
@@ -7842,7 +7842,7 @@ Public Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         'If not running concurrently, run the queued movements now.
 
         Do While moveItems(paras(0).num)
-            Call renderNow(cnvRPGCodeScreen)
+            Call renderNow(cnvRpgCodeScreen)
             Call renderRPGCodeScreen
             Call processEvent
         Loop
@@ -8019,7 +8019,7 @@ Sub BitmapRPG(Text$, ByRef theProgram As RPGCodeProgram)
         lit1$ = projectPath$ & bmpPath$ & lit1$
         
         Dim cnvDest As Long
-        cnvDest = cnvRPGCodeScreen
+        cnvDest = cnvRpgCodeScreen
         
         If number = 2 Then
             cnvDest = num2
@@ -8399,7 +8399,7 @@ Public Sub ClearRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     ' Clears a canvas to black
 
     If (LenB(GetBrackets(Text)) = 0) Then
-        Call canvasFill(cnvRPGCodeScreen, 0)
+        Call canvasFill(cnvRpgCodeScreen, 0)
         Call renderRPGCodeScreen
     Else
         Dim paras() As parameters
@@ -8725,7 +8725,7 @@ Sub DrawLineRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '    Call debugger("Error: DrawLine data type must be numerical!-- " + text$)
     'Else
         If number = 4 Then
-            Call canvasDrawLine(cnvRPGCodeScreen, x1, y1, x2, y2, fontColor)
+            Call canvasDrawLine(cnvRpgCodeScreen, x1, y1, x2, y2, fontColor)
             Call renderRPGCodeScreen
             'DXDrawCanvasPartial cnvRPGCodeScreen, _
                                 x1 - 10, y1 - 10, x1 - 10, y1 - 10, _
@@ -8779,7 +8779,7 @@ Sub DrawRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '    Call debugger("Error: DrawRect data type must be numerical!-- " + Text$)
     'Else
         If number = 4 Then
-            Call canvasBox(cnvRPGCodeScreen, x1, y1, x2, y2, fontColor)
+            Call canvasBox(cnvRpgCodeScreen, x1, y1, x2, y2, fontColor)
             Call renderRPGCodeScreen
         Else
             Call canvasBox(cnv, x1, y1, x2, y2, fontColor)
@@ -8936,7 +8936,7 @@ Sub ErasePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
         showPlayer(theOne) = False
-        Call renderNow(cnvRPGCodeScreen, True)            'Force a render.
+        Call renderNow(cnvRpgCodeScreen, True)            'Force a render.
         Call renderRPGCodeScreen
 
     Exit Sub
@@ -8969,7 +8969,7 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     
-    Call canvasGetScreen(cnvRPGCodeScreen)
+    Call canvasGetScreen(cnvRpgCodeScreen)
     
     Dim stepSize As Long
     
@@ -8986,8 +8986,8 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                 yy2 = yy1
                 'Call CanvasLock(cnvRPGCodeScreen)
                 For size = 0 To (tilesX * 32) / 2 Step stepSize
-                    Call canvasFillBox(cnvRPGCodeScreen, xx1, yy1, xx2, yy2, fontColor)
-                    DXDrawCanvasPartial cnvRPGCodeScreen, _
+                    Call canvasFillBox(cnvRpgCodeScreen, xx1, yy1, xx2, yy2, fontColor)
+                    DXDrawCanvasPartial cnvRpgCodeScreen, _
                                         xx1, yy1, xx1, yy1, _
                                         xx2, yy2
                     DXRefresh
@@ -8997,10 +8997,10 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                     yy2 = yy2 + stepSize
                 Next size
                 For size = 0 To (tilesX * 32) / 2 Step stepSize
-                    Call canvasFill(cnvRPGCodeScreen, 0)
-                    Call canvasFillBox(cnvRPGCodeScreen, xx1, yy1, xx2, yy2, fontColor)
+                    Call canvasFill(cnvRpgCodeScreen, 0)
+                    Call canvasFillBox(cnvRpgCodeScreen, xx1, yy1, xx2, yy2, fontColor)
                     'Call renderRPGCodeScreen
-                    DXDrawCanvasPartial cnvRPGCodeScreen, _
+                    DXDrawCanvasPartial cnvRpgCodeScreen, _
                                         xx1, yy1, xx1, yy1, _
                                         xx2, yy2
                     DXRefresh
@@ -9009,49 +9009,49 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                     xx2 = xx2 - stepSize
                     yy2 = yy2 - stepSize
                 Next size
-                Call canvasFill(cnvRPGCodeScreen, 0)
+                Call canvasFill(cnvRpgCodeScreen, 0)
                 'Call CanvasUnlock(cnvRPGCodeScreen)
                 Call renderRPGCodeScreen
             Case 1:
                 stepSize = 5
                 For size = 0 To (tilesX * 32) / 2 Step stepSize * 2
-                    Call canvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, fontColor)
-                    Call canvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, fontColor)
+                    Call canvasFillBox(cnvRpgCodeScreen, size, 0, size + stepSize, 2000, fontColor)
+                    Call canvasFillBox(cnvRpgCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, fontColor)
                     Call renderRPGCodeScreen
                 Next size
                 For size = stepSize To (tilesX * 32) / 2 Step stepSize * 2
-                    Call canvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, fontColor)
-                    Call canvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, fontColor)
+                    Call canvasFillBox(cnvRpgCodeScreen, size, 0, size + stepSize, 2000, fontColor)
+                    Call canvasFillBox(cnvRpgCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, fontColor)
                     Call renderRPGCodeScreen
                 Next size
-                Call canvasFill(cnvRPGCodeScreen, fontColor)
+                Call canvasFill(cnvRpgCodeScreen, fontColor)
                 For size = 0 To (tilesX * 32) / 2 Step stepSize * 2
-                    Call canvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, 0)
-                    Call canvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, 0)
+                    Call canvasFillBox(cnvRpgCodeScreen, size, 0, size + stepSize, 2000, 0)
+                    Call canvasFillBox(cnvRpgCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, 0)
                     Call renderRPGCodeScreen
                 Next size
                 For size = stepSize To (tilesX * 32) / 2 Step stepSize * 2
-                    Call canvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, 0)
-                    Call canvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, 0)
+                    Call canvasFillBox(cnvRpgCodeScreen, size, 0, size + stepSize, 2000, 0)
+                    Call canvasFillBox(cnvRpgCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, 0)
                     Call renderRPGCodeScreen
                 Next size
-                Call canvasFill(cnvRPGCodeScreen, fontColor)
+                Call canvasFill(cnvRpgCodeScreen, fontColor)
                 Call renderRPGCodeScreen
             Case 2:
                 stepSize = -5
                 Dim col As Long
                 For col = 125 To 0 Step stepSize
-                    Call canvasFill(cnvRPGCodeScreen, RGB(col, col, col))
+                    Call canvasFill(cnvRpgCodeScreen, RGB(col, col, col))
                     Call renderRPGCodeScreen
                 Next col
             Case 3:
                 stepSize = 4
                 Dim x As Long, skip As Long
                 For x = 0 To (tilesX * 32) + 125 Step stepSize
-                    Call canvasFillBox(cnvRPGCodeScreen, 0, 0, x, tilesY * 32, 0)
+                    Call canvasFillBox(cnvRpgCodeScreen, 0, 0, x, tilesY * 32, 0)
                     skip = 0
                     For col = 125 To 0 Step stepSize * -2
-                        Call canvasFillBox(cnvRPGCodeScreen, x - skip, 0, x - skip + stepSize, tilesY * 32, RGB(col, col, col))
+                        Call canvasFillBox(cnvRpgCodeScreen, x - skip, 0, x - skip + stepSize, tilesY * 32, RGB(col, col, col))
                         'Call CanvasDrawLine(cnvRPGCodeScreen, x - skip, 0, x - skip, 2000, RGB(col, col, col))
                         skip = skip + stepSize
                     Next col
@@ -9068,21 +9068,21 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
 
                 For radius = wi To 0 Step stepSize
                     'mainForm.boardform.Circle (px * ddx, py * ddy), radius, 0
-                    Call canvasDrawEllipse(cnvRPGCodeScreen, pX - radius \ 2, pY - radius \ 2, pX + radius \ 2, pY + radius \ 2, 0)
+                    Call canvasDrawEllipse(cnvRpgCodeScreen, pX - radius \ 2, pY - radius \ 2, pX + radius \ 2, pY + radius \ 2, 0)
                     Call renderRPGCodeScreen
                 Next radius
             Case 5:
                 'fade to black...
                 Call canvasFill(cnvAllPurpose, 0)
                 Dim cnvTemp As Long
-                cnvTemp = createCanvas(getCanvasWidth(cnvRPGCodeScreen), getCanvasHeight(cnvRPGCodeScreen))
-                Call canvas2CanvasBlt(cnvRPGCodeScreen, cnvTemp, 0, 0)
+                cnvTemp = createCanvas(getCanvasWidth(cnvRpgCodeScreen), getCanvasHeight(cnvRpgCodeScreen))
+                Call canvas2CanvasBlt(cnvRpgCodeScreen, cnvTemp, 0, 0)
                 stepSize = 25
                 Dim t As Long, perc As Double
                 For t = 0 To 100 Step stepSize
                     perc = t / 100
-                    Call canvas2CanvasBlt(cnvTemp, cnvRPGCodeScreen, 0, 0)
-                    Call canvas2CanvasBltTranslucent(cnvAllPurpose, cnvRPGCodeScreen, 0, 0, perc, -1, -1)
+                    Call canvas2CanvasBlt(cnvTemp, cnvRpgCodeScreen, 0, 0)
+                    Call canvas2CanvasBltTranslucent(cnvAllPurpose, cnvRpgCodeScreen, 0, 0, perc, -1, -1)
                     Call renderRPGCodeScreen
                 Next t
                 Call destroyCanvas(cnvTemp)
@@ -9514,7 +9514,7 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'copy current screen into other buffer...
         Dim allPurposeC2 As Long
         allPurposeC2 = createCanvas(tilesX * 32, tilesY * 32)
-        Call canvas2CanvasBlt(cnvRPGCodeScreen, allPurposeC2, 0, 0)
+        Call canvas2CanvasBlt(cnvRpgCodeScreen, allPurposeC2, 0, 0)
         
         Dim cv1 As Long, cv2 As Long
         cv1 = cnv
@@ -9529,10 +9529,10 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 'wipe right...
                 For xx = 0 To 32 * tilesX Step speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, 0)
                     
                     'bitblt old gfx onto screen...
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, xx, 0)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, xx, 0)
                     Call renderRPGCodeScreen
                 Next xx
         
@@ -9540,10 +9540,10 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 'wipe left...
                 For xx = 0 To -32 * tilesX Step -speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, 0)
                     
                     'bitblt old gfx onto screen...
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, xx, 0)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, xx, 0)
                     Call renderRPGCodeScreen
                 Next xx
         
@@ -9551,10 +9551,10 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 'wipe down...
                 For yy = 0 To 32 * tilesY Step speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, 0)
                     
                     'bitblt old gfx onto screen...
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, 0, yy)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, 0, yy)
                     Call renderRPGCodeScreen
                 Next yy
         
@@ -9562,10 +9562,10 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 'wipe up...
                 For yy = 0 To -32 * tilesY Step -speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, 0)
                     
                     'bitblt old gfx onto screen...
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, 0, yy)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, 0, yy)
                     Call renderRPGCodeScreen
                 Next yy
         
@@ -9573,14 +9573,14 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 '5- wipe from nw to se
                 For yy = 0 To 702 Step speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, 0)
                     
                     'bitblt old gfx onto screen...
                     Dim nx As Long, ny As Long
                     nx = Int(0.866 * yy)
                     ny = Int(0.5 * yy)
                     
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, nx, ny)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, nx, ny)
                     Call renderRPGCodeScreen
                 Next yy
             
@@ -9588,13 +9588,13 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 '6- wipe from ne to sw
                 For yy = 0 To 702 Step speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, 0)
                     
                     'bitblt old gfx onto screen...
                     nx = -Int(0.866 * yy)
                     ny = Int(0.5 * yy)
                     
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, nx, ny)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, nx, ny)
                     Call renderRPGCodeScreen
                 Next yy
             
@@ -9602,13 +9602,13 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 '7- wipe from sw to ne
                 For yy = 0 To 702 Step speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, 0)
                     
                     'bitblt old gfx onto screen...
                     nx = Int(0.866 * yy)
                     ny = -Int(0.5 * yy)
                     
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, nx, ny)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, nx, ny)
                     Call renderRPGCodeScreen
                 Next yy
                         
@@ -9616,13 +9616,13 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 '8- wipe from se to nw
                 For yy = 0 To -702 Step -speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, 0)
                     
                     'bitblt old gfx onto screen...
                     nx = Int(0.866 * yy)
                     ny = Int(0.5 * yy)
                     
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, nx, ny)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, nx, ny)
                     Call renderRPGCodeScreen
                 Next yy
         
@@ -9630,10 +9630,10 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 '9- wipe right, zelda style
                 For xx = 0 To 32 * tilesX Step speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, -32 * tilesX + xx, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, -32 * tilesX + xx, 0)
                     
                     'bitblt old gfx onto screen...
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, xx, 0)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, xx, 0)
                     Call renderRPGCodeScreen
                 Next xx
         
@@ -9641,10 +9641,10 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 '10- wipe left, zelda style
                 For xx = 0 To -32 * tilesX Step -speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 32 * tilesX + xx, 0)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 32 * tilesX + xx, 0)
                     
                     'bitblt old gfx onto screen...
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, xx, 0)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, xx, 0)
                     Call renderRPGCodeScreen
                 Next xx
         
@@ -9652,10 +9652,10 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 'wipe down, zelda style...
                 For yy = 0 To 32 * tilesY Step speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, -32 * tilesY + yy)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, -32 * tilesY + yy)
                     
                     'bitblt old gfx onto screen...
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, 0, yy)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, 0, yy)
                     Call renderRPGCodeScreen
                 Next yy
         
@@ -9663,10 +9663,10 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 'wipe up, zelda style...
                 For yy = 0 To -32 * tilesY Step -speed
                     'bitblt new gfx onto screen...
-                    Call canvas2CanvasBlt(cv1, cnvRPGCodeScreen, 0, 32 * tilesY + yy)
+                    Call canvas2CanvasBlt(cv1, cnvRpgCodeScreen, 0, 32 * tilesY + yy)
                     
                     'bitblt old gfx onto screen...
-                    Call canvas2CanvasBlt(cv2, cnvRPGCodeScreen, 0, yy)
+                    Call canvas2CanvasBlt(cv2, cnvRpgCodeScreen, 0, yy)
                     Call renderRPGCodeScreen
                 Next yy
         
@@ -9704,7 +9704,7 @@ Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
         zoomPerc = num
         Dim cnv As Long
         cnv = createCanvas(tilesX * 32, tilesY * 32)
-        Call canvas2CanvasBlt(cnvRPGCodeScreen, cnv, 0, 0)
+        Call canvas2CanvasBlt(cnvRpgCodeScreen, cnv, 0, 0)
         For tt = 1 To zoomPerc
             'tt = zoomperc
             newWidth = Int(32 * tilesX)
@@ -9717,14 +9717,14 @@ Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
             offx = -1 * Int((newWidth - (32 * tilesX)) / 2)
             offy = -1 * Int((newHeight - (32 * tilesY)) / 2)
             
-            hdc = canvasOpenHDC(cnvRPGCodeScreen)
+            hdc = canvasOpenHDC(cnvRpgCodeScreen)
             hdc2 = canvasOpenHDC(cnv)
             
             Call StretchBlt(hdc, offx, offy, _
                 newWidth, newHeight, hdc2, _
                 0, 0, Int(tilesX * 32), Int(tilesY * 32), &HCC0020)
             
-            Call canvasCloseHDC(cnvRPGCodeScreen, hdc)
+            Call canvasCloseHDC(cnvRpgCodeScreen, hdc)
             Call canvasCloseHDC(cnv, hdc2)
             Call renderRPGCodeScreen
             Call delay(MISC_DELAY)
@@ -9757,14 +9757,14 @@ Sub earthquakeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: Earthquake data type must be numerical!-- " + Text$)
     Else
         'copy current view to cache...
-        'allPurposeCanvas = CreateCanvas(tilesX * 32, tilesY * 32)
+        'cnvAllPurpose = CreateCanvas(tilesX * 32, tilesY * 32)
         Dim zoomPerc As Double, tt As Long, newWidth As Long, newHeight As Long, zz As Double
         Dim offx As Long, offy As Long
         zoomPerc = num
         
         Dim cnv As Long
         cnv = createCanvas(tilesX * 32, tilesY * 32)
-        Call canvas2CanvasBlt(cnvRPGCodeScreen, cnv, 0, 0)
+        Call canvas2CanvasBlt(cnvRpgCodeScreen, cnv, 0, 0)
         For tt = 1 To num
             newWidth = Int(32 * tilesX)
             newHeight = Int(32 * tilesY)
@@ -9779,27 +9779,27 @@ Sub earthquakeRPG(Text$, ByRef theProgram As RPGCodeProgram)
             offx = num
             offy = num
             
-            Call canvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
-            Call canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, 0, 0, offx, offy, tilesX * 32 - offx, tilesY * 32 - offy)
+            Call canvasFill(cnvRpgCodeScreen, boardList(activeBoardIndex).theData.brdColor)
+            Call canvas2CanvasBltPartial(cnv, cnvRpgCodeScreen, 0, 0, offx, offy, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
             Call delay(MISC_DELAY)
         
-            Call canvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
-            Call canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, offx, 0, 0, offy, tilesX * 32 - offx, tilesY * 32 - offy)
+            Call canvasFill(cnvRpgCodeScreen, boardList(activeBoardIndex).theData.brdColor)
+            Call canvas2CanvasBltPartial(cnv, cnvRpgCodeScreen, offx, 0, 0, offy, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
             Call delay(MISC_DELAY)
         
-            Call canvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
-            Call canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, 0, offy, offx, 0, tilesX * 32 - offx, tilesY * 32 - offy)
+            Call canvasFill(cnvRpgCodeScreen, boardList(activeBoardIndex).theData.brdColor)
+            Call canvas2CanvasBltPartial(cnv, cnvRpgCodeScreen, 0, offy, offx, 0, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
             Call delay(MISC_DELAY)
         
-            Call canvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
-            Call canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, offx, offy, 0, 0, tilesX * 32 - offx, tilesY * 32 - offy)
+            Call canvasFill(cnvRpgCodeScreen, boardList(activeBoardIndex).theData.brdColor)
+            Call canvas2CanvasBltPartial(cnv, cnvRpgCodeScreen, offx, offy, 0, 0, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
             Call delay(MISC_DELAY)
         Next tt
-        Call canvas2CanvasBlt(cnv, cnvRPGCodeScreen, 0, 0)
+        Call canvas2CanvasBlt(cnv, cnvRpgCodeScreen, 0, 0)
         Call destroyCanvas(cnv)
         Call renderRPGCodeScreen
     End If
@@ -10881,7 +10881,7 @@ Public Sub cursorMapHand( _
     End If
 
     If cd = 0 Then
-        Call BitBlt(handHDC, 0, 0, 32, 32, handBackupHDC, 0, 0, SRCPAINT)
+        Call BitBlt(handHdc, 0, 0, 32, 32, handBackupHdc, 0, 0, SRCPAINT)
         Exit Sub
     End If
 
@@ -10901,7 +10901,7 @@ Public Sub cursorMapHand( _
     End If
 
     If LCase$(paras(0).lit) = "default" Then
-        Call BitBlt(handHDC, 0, 0, 32, 32, handBackupHDC, 0, 0, SRCPAINT)
+        Call BitBlt(handHdc, 0, 0, 32, 32, handBackupHdc, 0, 0, SRCPAINT)
         Exit Sub
     End If
 
@@ -10911,14 +10911,14 @@ Public Sub cursorMapHand( _
 
     If cd = 2 Then
         If paras(1).num = 1 Then
-            DrawSizedImage fface, 0, 0, 32, 32, handHDC
+            DrawSizedImage fface, 0, 0, 32, 32, handHdc
         ElseIf paras(1).num = 0 Then
-            drawImage fface, 0, 0, handHDC
+            drawImage fface, 0, 0, handHdc
         Else
             debugger "CursorMapHand()'s second data element must be 1 or 0-- " & Text
         End If
     Else
-        DrawSizedImage fface, 0, 0, 32, 32, handHDC
+        DrawSizedImage fface, 0, 0, 32, 32, handHdc
     End If
 
 End Sub
@@ -11498,17 +11498,6 @@ Public Sub renderNowRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     Else
         Call debugger("RenderNow()'s data element must be ON or OFF-- " & Text)
     End If
-    If elements <> 2 Then
-        renderRenderNowCanvasTranslucent = False
-    Else
-        If (paras(1).num = 1) Then
-            'Render translucently!
-            renderRenderNowCanvasTranslucent = True
-        Else
-            'Render transparently!
-            renderRenderNowCanvasTranslucent = False
-        End If
-    End If
 End Sub
 
 '=========================================================================
@@ -11692,8 +11681,8 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Call debugger("MouseCursor() takes lit, num, num, num, num, num-- " & Text)
         Exit Sub
     End If
-    host.cursorHotSpotX = paras(1).num
-    host.cursorHotSpotY = paras(2).num
+    ' host.cursorHotSpotX = paras(1).num
+    ' host.cursorHotSpotY = paras(2).num
     mainMem.transpcolor = RGB(paras(3).num, paras(4).num, paras(5).num)
     Dim ext As String, theFile As String
     ext = UCase$(commonRoutines.extention(paras(0).lit))
@@ -11751,14 +11740,14 @@ Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, By
         theAttrib.Bold = Bold
         theAttrib.Underline = Underline
         Dim hFontNew As Long, hFontOld As Long, textRectSize As size
-        hdc = canvasOpenHDC(cnvRPGCodeScreen)
+        hdc = canvasOpenHDC(cnvRpgCodeScreen)
         hFontOld = SetDeviceFont(hdc, theAttrib, hFontNew)
         textRectSize.cx = 0: textRectSize.cy = 0
         Call GetTextExtentPoint32(hdc, stringin, Len(stringin), textRectSize)
         textWidth = textRectSize.cx: textHeight = textRectSize.cy
         Call SelectObject(hdc, hFontOld)
         Call DeleteObject(hFontNew)
-        Call canvasCloseHDC(cnvRPGCodeScreen, hdc)
+        Call canvasCloseHDC(cnvRpgCodeScreen, hdc)
     End If
 
     retval.dataType = DT_NUM
@@ -11853,7 +11842,7 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     If (UBound(paras) = 5) Then
 
         ' Draw the canvas
-        Call canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpcolor)
+        Call canvas2CanvasBltTransparent(cnvSource, cnvRpgCodeScreen, x, y, transpcolor)
         Call renderRPGCodeScreen
 
         ' Bail
@@ -11884,7 +11873,7 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     If (UBound(paras) = 7) Then
 
         ' Blt to the screen
-        Call canvas2CanvasBltTransparent(cnv, cnvRPGCodeScreen, x, y, transpcolor)
+        Call canvas2CanvasBltTransparent(cnv, cnvRpgCodeScreen, x, y, transpcolor)
         Call renderRPGCodeScreen
 
     Else
