@@ -1,8 +1,8 @@
 Attribute VB_Name = "RPGCodeProcess"
 '=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
 '=========================================================================
 
 '=========================================================================
@@ -22,22 +22,60 @@ Public errorBranch As String
 Public errorKeep As RPGCodeProgram
 
 '=========================================================================
-' Determine if two 'RPGCodeMethod' structs are equal
+' methodsAreEqual
 '=========================================================================
-Public Function methodsAreEqual(ByRef Left As RPGCodeMethod, ByRef Right As RPGCodeMethod, ByRef prg As RPGCodeProgram, Optional ByRef pLngPrecison As Long) As Boolean
-    pLngPrecison = 0
+' Determine if two 'RPGCodeMethod' structs are equal. Left method will
+' be matched to Right method. If Left has a param that's a class that
+' derives from Right's param type then this returns true. The other way
+' around retuns false. If Right's param type has a constructor that takes
+' the type of Left's param then it's true. Similarly, the other way
+' around is false. Also, optionally, passes out the 'precision' of the
+' match. This is an indication of how closely Left fits into Right. Zero
+' means it fits in prefectly - lower means not as well.
+'=========================================================================
+Public Function methodsAreEqual(ByRef Left As RPGCodeMethod, ByRef Right As RPGCodeMethod, ByRef prg As RPGCodeProgram, Optional ByRef pLngPrecision As Long) As Boolean
+    pLngPrecision = 0
     If (Left.name = Right.name) Then
         If (Left.lngParams = Right.lngParams) Then
             If (Left.lngParams) Then
                 Dim i As Long
                 For i = 0 To Left.lngParams - 1
-                    If (Left.dtParams(i) <> Right.dtParams(i)) Then
+                    If ( _
+                            Left.dtParams(i) <> Right.dtParams(i) And _
+                            Right.dtParams(i) <> DT_OTHER _
+                                ) Then
                         Exit Function
                     End If
-                    If (Left.dtParams(i) = DT_OTHER) Then
-                        If Not (classIsKindOf(classFromName(Left.classTypes(i), prg), Right.classTypes(i), prg, pLngPrecison)) Then
-                            Exit Function
+                    If (Right.dtParams(i) = DT_OTHER) Then
+                        Dim j As Long, cls As RPGCODE_CLASS, ctor As RPGCodeMethod
+                        If (Left.dtParams(i) = DT_OTHER) Then
+                            cls = classFromName(Left.classTypes(i), prg)
+                            If Not (classIsKindOf(cls, Right.classTypes(i), prg, j)) Then
+                                ctor.name = Right.classTypes(i) & "::" & Right.classTypes(i)
+                                ctor.lngParams = 1
+                                ReDim ctor.dtParams(0)
+                                ctor.dtParams(0) = DT_OTHER
+                                ReDim ctor.classTypes(0)
+                                ctor.classTypes(0) = Left.classTypes(0)
+                                If (getMethodLine(ctor, prg, , j) = -1) Then
+                                    Exit Function
+                                Else
+                                    j = j - 1
+                                End If
+                            End If
+                        Else
+                            ctor.name = Right.classTypes(i) & "::" & Right.classTypes(i)
+                            ctor.lngParams = 1
+                            ReDim ctor.dtParams(0)
+                            ctor.dtParams(0) = Left.dtParams(0)
+                            ReDim ctor.classTypes(0)
+                            If (getMethodLine(ctor, prg, , j) = -1) Then
+                                Exit Function
+                            Else
+                                j = j - 1
+                            End If
                         End If
+                        pLngPrecision = pLngPrecision + j
                     End If
                 Next i
             End If
@@ -47,7 +85,13 @@ Public Function methodsAreEqual(ByRef Left As RPGCodeMethod, ByRef Right As RPGC
 End Function
 
 '=========================================================================
-' Get the line a method begins on
+' getMethodLine
+'=========================================================================
+' Determine which of a program's methods matches theMethod passed in
+' most closely. theMethod will be matched as Left to the program's
+' methods on the Right. This returns the line on which the found method
+' begins and optionally passes out the index of the method in the
+' program's array. Also searches through class hierarchies.
 '=========================================================================
 Public Function getMethodLine(ByRef theMethod As RPGCodeMethod, ByRef prg As RPGCodeProgram, Optional ByRef lngMethodIdx As Long, Optional ByRef pLngPrecision As Long) As Long
 
@@ -79,7 +123,26 @@ Public Function getMethodLine(ByRef theMethod As RPGCodeMethod, ByRef prg As RPG
 
     If (j = -1) Then
 
-        ' Found no matches
+        Dim lngResolutionPos As Long
+        lngResolutionPos = InStr(1, theMethod.name, "::")
+        If (lngResolutionPos) Then
+            Dim strMethodName As String, cls As RPGCODE_CLASS
+            strMethodName = Mid$(theMethod.name, lngResolutionPos)
+            cls = classFromName(Mid$(theMethod.name, 1, lngResolutionPos - 1), prg)
+            For i = 0 To UBound(cls.strDerived)
+                If (LenB(cls.strDerived(i))) Then
+
+                    theMethod.name = cls.strDerived(i) & strMethodName
+                    getMethodLine = getMethodLine(theMethod, prg, lngMethodIdx, pLngPrecision)
+
+                    ' TBD: Precision checks here
+                    If (getMethodLine <> -1) Then Exit Function
+
+                End If
+            Next i
+        End If
+
+        ' No match found
         getMethodLine = -1
         lngMethodIdx = -1
         Exit Function

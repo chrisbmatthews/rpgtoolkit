@@ -441,8 +441,8 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
         signs(12) = "<<"
         signs(13) = ">>"
 
-        ' Replace "-x" with "0 - x"
-        Text = replace(Text, "-", "0-")
+        ' Replace '-' with '+'
+        Text = replace(Text, "-", "+")
 
         ' Remove brackets from the text for this test
         Text = replace(replace(Text, ")", vbNullString), "(", vbNullString)
@@ -540,7 +540,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
         If (num) Then
             ' We got a number, to boot
             hClass = CLng(num)
-            If (isObject(hClass, prg)) Then
+            If (isObject(hClass)) Then
                 ' And it's an object, woo!
                 Dim outside As Boolean
                 outside = (topNestle(prg) <> hClass)
@@ -689,7 +689,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             ' If it's not NULL
             If (num) Then
                 ' Check if it's already an object
-                If (isObject(num, theProgram)) Then
+                If (isObject(num)) Then
                     ' It is; we may need to handle an overloaded =
                     hClass = num
                     ' Mark that we'll get the data type from the data
@@ -862,7 +862,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                                     ' See if it's an object
                                     Dim hTokenClass As Long
                                     hTokenClass = CLng(num)
-                                    If (isObject(hTokenClass, theProgram)) Then
+                                    If (isObject(hTokenClass)) Then
                                         ' See if it handles said conjuction
                                         Dim cnj As String
                                         cnj = "operator" & conjunctions(tokenIdx - 1)
@@ -1140,7 +1140,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                     Call getVariable(Text & "!", litA, numA, theProgram)
                 End If
                 If (numA) Then
-                    If (isObject(CLng(numA), theProgram)) Then
+                    If (isObject(CLng(numA))) Then
                         bWasVar = True
                         If (getVariable(Text, litA, numA, theProgram) = DT_NUM) Then
                             num = numA
@@ -1380,7 +1380,7 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
 
     'Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
-        If (isVarMember(varname, topNestle(theProgram), theProgram)) Then
+        If (isVarMember(theVar, topNestle(theProgram), theProgram)) Then
             ' Get the new name
             theVar = getObjectVarName(theVar, topNestle(theProgram))
             ' All class members are global
@@ -1485,7 +1485,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
 
     ' Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
-        If (isVarMember(varname, topNestle(theProgram), theProgram)) Then
+        If (isVarMember(theVar, topNestle(theProgram), theProgram)) Then
             theVar = getObjectVarName(theVar, topNestle(theProgram))
         End If
     End If
@@ -1510,7 +1510,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
                 ' If it's not NULL
                 If (numA) Then
                     ' Check if it's already an object
-                    If (isObject(numA, theProgram)) Then
+                    If (isObject(numA)) Then
                         ' It is; we may need to handle an overloaded ! or $
                         Dim hClass As Long
                         hClass = CLng(numA)

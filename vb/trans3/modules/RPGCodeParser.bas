@@ -1414,7 +1414,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     Call getValue(variableName & "!", lit, hClassDbl, prg)
     hClass = CLng(hClassDbl)
     If (hClass) Then
-        If (isObject(hClass, prg)) Then
+        If (isObject(hClass)) Then
             ' Check for overloaded [] operator
             If Not (isMethodMember("operator[]", hClass, prg, topNestle(prg) <> hClass)) Then
                 ' Alert the user

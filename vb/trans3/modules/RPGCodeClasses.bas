@@ -149,7 +149,7 @@ End Function
 '=========================================================================
 ' Determine if something is an object
 '=========================================================================
-Public Function isObject(ByVal hClass As Long, ByRef prg As RPGCodeProgram) As Boolean
+Public Function isObject(ByVal hClass As Long) As Boolean
 
     On Error Resume Next
 
@@ -1358,6 +1358,100 @@ Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef x(
 End Sub
 
 '=========================================================================
+' Return a handle to a copy of an object
+'=========================================================================
+Public Function copyObject(ByVal hObject As Long, ByRef prg As RPGCodeProgram) As Long
+
+    ' Make sure we have a valid object
+    If Not (isObject(hObject)) Then
+
+        ' Bail
+        Exit Function
+
+    End If
+
+    ' Get the object's class
+    Dim cls As RPGCODE_CLASS, lngAddress As Long
+    cls = getClass(hObject, prg)
+
+    ' Create a new handle
+    copyObject = newHandle()
+
+    ' Make sure we have enough room in the objects array
+    If (UBound(g_objects) < copyObject) Then
+        ' Enlarge the array
+        ReDim Preserve g_objects(copyObject + 250)
+    End If
+
+    ' Write in the data
+    g_objects(copyObject).strInstancedFrom = cls.strName
+    lngAddress = VarPtr(g_objects(copyObject))
+    g_objects(copyObject).hClass = lngAddress
+    copyObject = lngAddress
+
+    ' Check if this class has a copy constructor
+    Dim copyCtor As RPGCodeMethod
+    copyCtor.name = cls.strName & "::" & cls.strName
+    copyCtor.lngParams = 1
+    ReDim copyCtor.classTypes(0)
+    ReDim copyCtor.dtParams(0)
+    copyCtor.dtParams(0) = DT_OTHER
+    copyCtor.classTypes(0) = cls.strName
+
+    If (getMethodLine(copyCtor, prg) <> -1) Then
+
+        ' Call the copy constructor
+        Dim retval As RPGCODE_RETURN
+        Call callObjectMethod(copyObject, cls.strName & "(" & CStr(hObject) & ")", prg, retval, cls.strName, True)
+
+    Else
+
+        ' If it has no copy constructor, just perform a direct copy
+
+        ' For each scope
+        Dim i As Long
+        For i = 0 To 1
+
+            ' Get a scope
+            Dim scope As RPGCODE_CLASS_SCOPE
+            If (i = 0) Then
+                scope = cls.scopePublic
+            Else
+                scope = cls.scopePrivate
+            End If
+
+            ' For each variable in this scope (do *not* copy dynamic arrays - if a class
+            ' needs this functionality, then it should have a copy constructor)
+            Dim j As Long
+            For j = 0 To UBound(scope.strVars)
+
+                If Not (scope.isDynamicArray(j)) Then
+
+                    ' Copy over this variable
+                    Dim lit As String, num As Double
+                    If (getVariable(getObjectVarName(scope.strVars(j), hObject), lit, num, prg) = DT_NUM) Then
+
+                        ' It's numerical
+                        Call SetVariable(getObjectVarName(scope.strVars(j), copyObject), CStr(num), prg, True)
+
+                    Else
+
+                        ' It's literal
+                        Call SetVariable(getObjectVarName(scope.strVars(j), copyObject), lit, prg, True)
+
+                    End If ' getVariable == DT_NUM
+
+                End If ' Not (scope.isDynamicArray(j))
+
+            Next j ' = 0 To UBound(scope.strVars)
+
+        Next i ' = 0 To 1
+
+    End If ' (getMethodLine(copyCtor, prg) <> -1)
+
+End Function
+
+'=========================================================================
 ' Create a string for params from an array
 '=========================================================================
 Private Function createParams(ByRef params() As String, ByVal noParams As Boolean) As String
@@ -1562,7 +1656,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     hClass = CLng(hClassDbl)
 
     ' Check if we have an object
-    If Not (isObject(hClass, prg)) Then
+    If Not (isObject(hClass)) Then
 
         ' Not an object
         Call debugger("Error: " & object & " is not an object!-- " & Text)

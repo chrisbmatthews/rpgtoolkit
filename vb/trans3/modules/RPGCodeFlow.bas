@@ -51,7 +51,7 @@ End Type
 '=========================================================================
 ' Call a method in a class
 '=========================================================================
-Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, ByVal methodName As String)
+Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, ByVal methodName As String, Optional ByVal bFromCopyConstructor As Boolean)
 
     On Error Resume Next
 
@@ -76,7 +76,7 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef pr
     Call SetVariable("this!", CStr(hClass), prg, True)
 
     ' Call the method
-    Call MethodCallRPG(Text, theClass.strName & "::" & methodName, prg, retval, True, True, hClass)
+    Call MethodCallRPG(Text, theClass.strName & "::" & methodName, prg, retval, True, True, hClass, bFromCopyConstructor)
 
     ' Decrease the nestle
     Call decreaseNestle(prg)
@@ -123,7 +123,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean, Optional ByVal hObject As Long)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean, Optional ByVal hObject As Long, Optional ByVal bFromCopyConstructor As Boolean)
 
     On Error Resume Next
 
@@ -164,7 +164,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     For i = 1 To number
         theMethod.dtParams(i - 1) = params(i - 1).dataType
         If (theMethod.dtParams(i - 1) = DT_NUM) Then
-            If (isObject(params(i - 1).num, theProgram)) Then
+            If (isObject(params(i - 1).num)) Then
                 theMethod.classTypes(i - 1) = objectType(params(i - 1).num)
                 theMethod.dtParams(i - 1) = DT_OTHER
                 bTryAgain = True
@@ -205,27 +205,6 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     If (foundIt = -1) Then
 
-        If (lngResolutionPos) Then
-
-            ' Try all base classes
-            For t = 0 To UBound(cls.strDerived)
-                If (LenB(cls.strDerived(t))) Then
-
-                    theMethod.name = cls.strDerived(t) & Mid$(mName, lngResolutionPos)
-                    foundIt = getMethodLine(theMethod, theProgram, i)
-
-                    ' TBD: Precision check here
-                    If (foundIt <> -1) Then Exit For
-
-                End If
-            Next t
-
-        End If
-
-    End If
-
-    If (foundIt = -1) Then
-
         If (bTryAgain) Then
             For i = 1 To number
                 theMethod.dtParams(i - 1) = params(i - 1).dataType
@@ -259,10 +238,72 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     For i = 1 To number
 
         Dim dUse As String
-        Select Case params(i - 1).dataType
-            Case DT_LIT: dUse = params(i - 1).lit
-            Case DT_NUM: dUse = CStr(params(i - 1).num)
-        End Select
+        dUse = vbNullString
+
+        If (theMethod.dtParams(i - 1) = DT_OTHER) Then
+
+            ' Check for an appropriate constructor
+            Dim ctor As RPGCodeMethod
+            ctor.name = theMethod.classTypes(i - 1) & "::" & theMethod.classTypes(i - 1)
+            ctor.lngParams = 1
+            ReDim ctor.dtParams(0)
+            ReDim ctor.classTypes(0)
+            Dim bIsObject As Boolean
+            bIsObject = isObject(params(i - 1).num)
+            If (bIsObject) Then
+                ctor.dtParams(0) = DT_OTHER
+                ctor.classTypes(0) = objectType(params(i - 1).num)
+                ' Make sure left and right types are inequal (because the copy
+                ' constructor should get the actual object, not a copy)
+                If (theMethod.classTypes(i - 1) = ctor.classTypes(0)) Then
+                    ' We cannot call this method as we'll recurse to our end
+                    ctor.dtParams(0) = DT_VOID
+                End If
+            Else
+                ctor.dtParams(0) = params(i - 1).dataType
+            End If
+
+            If (ctor.dtParams(0) <> DT_VOID) Then
+
+                If (getMethodLine(ctor, theProgram) <> -1) Then
+
+                    ' Call this constructor
+                    Dim cParams(0) As String
+                    If (bIsObject) Then
+                        cParams(0) = CStr(params(i - 1).num)
+                    Else
+                        If (params(i - 1).dataType = DT_LIT) Then
+                            cParams(0) = """" & params(i - 1).lit & """"
+                        Else
+                            cParams(0) = CStr(params(i - 1).num)
+                        End If
+                    End If
+
+                    dUse = CStr(createRPGCodeObject(theMethod.classTypes(i - 1), theProgram, cParams, False))
+
+                End If
+
+            Else
+
+                If Not (bFromCopyConstructor) Then
+
+                    ' Make a copy of the object
+                    dUse = CStr(copyObject(params(i - 1).num, theProgram))
+
+                End If
+
+            End If
+
+        End If
+
+        If (StrPtr(dUse) = 0) Then
+
+            Select Case params(i - 1).dataType
+                Case DT_LIT: dUse = params(i - 1).lit
+                Case DT_NUM: dUse = CStr(params(i - 1).num)
+            End Select
+
+        End If
 
         ' Declare and set this variable
         Call declareVariable(theMethod.paramNames(i), theProgram)
