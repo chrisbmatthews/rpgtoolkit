@@ -104,7 +104,7 @@ Public Type TKBoard
     anmTileInsertIdx As Long              'index of animated tile insertion
     anmTileLUTIndices() As Long           'indices into LUT of animated tiles
     anmTileLUTInsertIdx As Long           'index of LUT table insertion
-    strFilename As String                 'filename of the board
+    strFileName As String                 'filename of the board
 End Type
 
 '=========================================================================
@@ -584,6 +584,7 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
         .BoardSkillNight = 0
         .BoardBackgroundNight = vbNullString
         .isIsometric = 0
+        ReDim .Threads(0)
         ReDim .animatedTile(10)
         ReDim .anmTileLUTIndices(10)
         .anmTileLUTInsertIdx = 0
@@ -756,7 +757,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
         fileOpen = PakLocate(fileOpen)
         currentBoard = fileOpen ' Potential problems here
     
-        .strFilename = RemovePath(fileOpen)
+        .strFileName = RemovePath(fileOpen)
     
         Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long, user As Long
         Dim regYN As Long, regCode As String, loopControl As Long
