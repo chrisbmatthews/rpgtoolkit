@@ -1547,8 +1547,15 @@ Private Sub tileform_MouseDown(Button As Integer, Shift As Integer, x As Single,
             
             openTileEditorDocs(indice).currentColor = tileMem(mouseX + 1, mouseY + 1)
             
-            'Update the selected color picturebox in TkMainForm
-            Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(indice).currentColor)
+            'Update the selected color picturebox in TkMainForm.
+            If openTileEditorDocs(indice).currentColor <> -1 Then
+                Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(indice).currentColor)
+            Else
+                'Transparent colour - draw squares.
+                Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, RGB(255, 255, 255))
+                Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, vbQBColor(7))
+                Call vbPicFillRect(tkMainForm.selectedcolor, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, 100, 100, vbQBColor(7))
+            End If
             
             'Change the selected tool
             openTileEditorDocs(indice).tileMode = 0
