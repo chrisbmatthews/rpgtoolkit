@@ -1881,7 +1881,7 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
-    dataUse$ = GetBrackets(Text)    'Get text inside brackets
+    dataUse$ = GetBrackets(theProgram.program(theProgram.programPos))    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     Dim res As Long
     If number <> 3 Then
@@ -8274,7 +8274,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
     Dim use As String
     use$ = Text$
     Dim dataUseWhile As String
-    dataUseWhile$ = GetBrackets(Text)
+    dataUseWhile$ = GetBrackets(theProgram.program(theProgram.programPos))
     'Now evaluate condition:
     
     Dim res As Long
