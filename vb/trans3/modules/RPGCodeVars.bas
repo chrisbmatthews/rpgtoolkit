@@ -687,6 +687,8 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     End If
 
+    Dim bAddedTdc As Boolean
+
     If Not (noVar) Then ' If there's a var
 
         ' Get the destination variable and remove unwanted characters
@@ -696,6 +698,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         If ((rdtdc <> "!") And (rdtdc <> "$")) Then
             ' Append a "!"
             Destination = Destination & "!"
+            bAddedTdc = True
             ' Get value of the destination
             Call getValue(Destination, lit, num, theProgram)
             ' If it's not NULL
@@ -987,8 +990,12 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
                     Else
 
-                        ' Create a new copy
-                        dRes = copyObject(dRes, theProgram)
+                        If (bAddedTdc) Then
+
+                            ' Create a new copy
+                            dRes = copyObject(dRes, theProgram)
+
+                        End If
 
                     End If
 
