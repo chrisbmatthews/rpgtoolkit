@@ -325,7 +325,22 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
         If (LeftB$(ucl, 12) = "METHOD") Then
             ' It's a method
             If (StrPtr(strClass)) Then
-                Call addMethodToPrg(strClass & "::" & GetMethodName(thePrg.program(a)), a, thePrg)
+                ' Check if the implementation is here
+                Dim moveLine As Long
+                moveLine = a
+                Do
+                    ' Check the next line
+                    moveLine = moveLine + 1
+                    If (LenB(thePrg.program(moveLine)) <> 0) Then
+                        ' There's a line here
+                        If (thePrg.program(moveLine) = "{") Then
+                            ' Implementation is here
+                            Call addMethodToPrg(strClass & "::" & GetMethodName(thePrg.program(a)), a, thePrg)
+                        End If
+                        ' Either way, exit this loop
+                        Exit Do
+                    End If
+                Loop
             Else
                 Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
             End If

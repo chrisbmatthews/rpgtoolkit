@@ -25,11 +25,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 '=========================================================================
-' Member constants
-'=========================================================================
-Private Const WINDOWS_CLASS = "DirectXHost"
-
-'=========================================================================
 ' Member variables
 '=========================================================================
 Private m_created As Boolean        'window created?
@@ -39,6 +34,7 @@ Private m_createCaption As String   'caption to create window with
 Private m_createStyle As Long       'style to create window with
 Private m_createX As Long           'x position window should start at
 Private m_createY As Long           'y position window should start at
+Private m_class As String           'the windows class
 
 '=========================================================================
 ' Public variables
@@ -63,8 +59,9 @@ Private Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
 ' Member enumerations
 '=========================================================================
 Public Enum STYLE_ENUM
-    FullScreenMode = 0
-    windowed = 1
+    FullScreenMode
+    windowed
+    nullStyle
 End Enum
 
 '=========================================================================
@@ -84,7 +81,7 @@ End Property
 '=========================================================================
 Public Sub Destroy()
     On Error Resume Next
-    Call killHostWindow(WINDOWS_CLASS, App.hInstance)
+    Call killHostWindow(m_class, App.hInstance)
 End Sub
 
 '=========================================================================
@@ -95,6 +92,8 @@ Public Property Let style(ByVal newValue As STYLE_ENUM)
         m_createStyle = &H80000000
     ElseIf newValue = windowed Then
         m_createStyle = &H0& Or &HC00000 Or &H80000 Or &H20000
+    ElseIf (newValue = nullStyle) Then
+        m_createStyle = 0
     End If
 End Property
 
@@ -189,7 +188,7 @@ End Sub
 '=========================================================================
 ' Create the console
 '=========================================================================
-Public Sub Create()
+Public Sub Create(ByRef strClass As String)
 
     On Error Resume Next
 
@@ -201,11 +200,14 @@ Public Sub Create()
                                m_createStyle, _
                                m_createCaption, _
                                App.hInstance, _
-                               WINDOWS_CLASS, _
+                               strClass, _
                                LoadResPicture(101, vbResCursor).handle _
                                                                          )
 
     'Flag the window has been created
     m_created = True
+
+    ' Record the class
+    m_class = strClass
 
 End Sub

@@ -122,7 +122,7 @@ Public Sub Render()
             Call CanvasFill(canvas, TRANSP_COLOR)
         'End If
 
-        'If board is isometric, render twice as much
+        ' If board is isometric, render twice as much
         If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
             m_tilesY = m_tilesY * 2
             topY = topY * 2
@@ -163,7 +163,8 @@ End Sub
 '=========================================================================
 ' Was this the same render as another object?
 '=========================================================================
-Public Function equal(ByVal anotherBoardRender As CBoardRender) As Boolean
+Public Function equal(ByRef anotherBoardRender As CBoardRender) As Boolean
+    On Error Resume Next
     With anotherBoardRender
         equal = ( _
              .canvas = canvas _

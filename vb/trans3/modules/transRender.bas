@@ -22,7 +22,7 @@ Public Declare Function DXInitGfxMode Lib "actkrt3.dll" (ByVal hwnd As Long, ByV
 Public Declare Function DXKillGfxMode Lib "actkrt3.dll" () As Long
 
 ' Flip the back buffer onto the screen
-Public Declare Function DXFlip Lib "actkrt3.dll" Alias "DXRefresh" () As Long
+Public Declare Function DXFlip Lib "actkrt3.dll" Alias "DXRefresh" (Optional ByVal cnv As Long) As Long
 
 ' Lock the screen, obtaining its HDC
 Public Declare Function DXLockScreen Lib "actkrt3.dll" () As Long
@@ -78,9 +78,6 @@ Private Declare Function CNVCloseHDC Lib "actkrt3.dll" (ByVal handle As Long, By
 '=========================================================================
 ' Globals
 '=========================================================================
-
-' FPS to *try* and render
-Public Const RENDER_FPS = 60
 
 ' Screen width and height in twips
 Public screenWidth As Integer, screenHeight As Integer
@@ -202,6 +199,9 @@ Public renderRenderNowCanvasTranslucent As Boolean
 ' Canvas used for the mouse pointer
 Public cnvMousePointer As Long
 
+' Back buffer canvas
+Private m_backCnv As Long
+
 '=========================================================================
 ' A player render
 '=========================================================================
@@ -265,6 +265,29 @@ Public Sub DXRefresh()
 
     ' Close the canvas' HDC
     Call CNVCloseHDC(cnvMousePointer, hdc)
+
+    '=====================================================================
+
+    ' Flip the back buffer to a canvas
+    ' Call DXFlip(m_backCnv)
+
+    ' Lay down the mouse cursor
+    ' Call DXDrawCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
+
+    ' Flip to the screen
+    ' Call DXFlip
+
+    ' Lay down the original back buffer (sans cursor)
+    ' Call DXDrawCanvas(m_backCnv, 1, 1)
+
+    ' Get the mouse pointer canvas' HDC
+    ' cnvHdc = CNVOpenHDC(cnvMousePointer)
+
+    ' Blt the mouse onto the back buffer
+    ' Call TransparentBlt(bbdc, x, y, 32, 32, cnvHdc, 0, 0, 32, 32, mainMem.transpcolor)
+
+    ' Close the canvas' HDC
+    ' Call CNVCloseHDC(cnvMousePointer, cnvHdc)
 
 End Sub
 
@@ -1294,6 +1317,7 @@ Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     Call CanvasFill(cnvRenderNow, TRANSP_COLOR)
     cnvMousePointer = CreateCanvas(32, 32)
     Call CanvasFill(cnvMousePointer, TRANSP_COLOR)
+    m_backCnv = CreateCanvas(width, height)
     globalCanvasHeight = height
     globalCanvasWidth = width
 End Sub
@@ -1327,15 +1351,13 @@ Private Sub destroyCanvases()
     Next t
     Call DestroyCanvas(cnvRenderNow)
     Call DestroyCanvas(cnvMousePointer)
+    Call DestroyCanvas(m_backCnv)
 End Sub
 
 '========================================================================='
 ' Kill and unload the graphics system
 '=========================================================================
 Public Sub destroyGraphics()
-
-    ' Empty int
-    Dim newValue As Long
 
     ' Destroy global canvases
     Call destroyCanvases
@@ -1651,8 +1673,8 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
     resY = height
 
     ' Number of tiles screen can hold
-    tilesX = width \ 32
-    tilesY = height \ 32
+    tilesX = width / 32
+    tilesY = height / 32
 
     ' Dimensions of screen in isometric tiles
     isoTilesX = tilesX / 2 ' = 10.0 (640res) = 12.5 (800res)
@@ -1706,7 +1728,7 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
     End Select
 
     ' Create the host window
-    Call host.Create
+    Call host.Create("DirectXHost")
 
     ' Enter the gfx initialization loop
     Do

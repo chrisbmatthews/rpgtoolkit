@@ -5564,6 +5564,7 @@ Public Sub ReturnMethodRPG(ByVal Text As String, ByRef theProgram As RPGCodeProg
     For t = 1 To 100
         If UCase$(pointer$(t)) = UCase$(dataUse$) Or UCase$(pointer$(t)) = UCase$(dataUse$ & "!") Then
             foundIt = 1
+            aa = getValue(dataUse$, lit$, num, theProgram)
             If aa = 0 Then
                 datu$ = CStr(num)
 
@@ -5841,10 +5842,13 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 'Enlarge the array if required...
                 On Error GoTo enlargeArray
                 testArray = cnvRPGCode(paras(0).num)
-                
+
+                If (Not CanvasOccupied(cnvRPGCode(paras(0).num))) Then
+                    cnvRPGCode(paras(0).num) = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+                End If
+
                 'Save the screen!
-                CanvasGetScreen _
-                    cnvRPGCode(paras(0).num)
+                CanvasGetScreen cnvRPGCode(paras(0).num)
 
             Else
                 debugger "SaveScreen() requires either no data elements or" _
@@ -5869,7 +5873,7 @@ createArray:
     
 enlargeArray:
     ReDim Preserve cnvRPGCode(UBound(cnvRPGCode) + 1)
-    cnvRPGCode(UBound(cnvRPGCode)) = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+    ' cnvRPGCode(UBound(cnvRPGCode)) = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
     Resume
     
 End Sub

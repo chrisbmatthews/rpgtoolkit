@@ -299,9 +299,9 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                                 If (Not theClass.isInterface) Then
                                     For idx = 0 To UBound(theScope.methods)
                                         If (scopeIdx = 0) Then
-                                            Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic, toInherit)
+                                            Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic, toInherit, , , True)
                                         Else
-                                            Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePrivate, toInherit)
+                                            Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePrivate, toInherit, , , True)
                                         End If
                                     Next idx
                                 Else
@@ -568,7 +568,7 @@ End Sub
 '=========================================================================
 ' Add a method to a scope
 '=========================================================================
-Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = vbNullString, Optional ByVal needNotExist As Boolean, Optional ByVal internalClass As Boolean)
+Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = vbNullString, Optional ByVal needNotExist As Boolean, Optional ByVal internalClass As Boolean, Optional ByVal noErrorOnRedefine As Boolean)
 
     On Error Resume Next
 
@@ -586,7 +586,7 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
     If (Not internalClass) Then
 
         ' Get the method's name
-        origName = GetMethodName(Text)
+        origName = GetMethodName(removeClassName(Text))
         If (LenB(overrideName) = 0) Then
             methodName = UCase$(theClass) & "::" & UCase$(origName)
         Else
@@ -619,7 +619,9 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
     For idx = 0 To UBound(scope.methods)
         If (scope.methods(idx).name = UCase$(origName)) Then
             ' Illegal redifinition
-            Call debugger("Illegal redefinition of method " & origName & " -- " & Text)
+            If (Not noErrorOnRedefine) Then
+                Call debugger("Illegal redefinition of method " & origName & " -- " & Text)
+            End If
             Exit Sub
 
         ElseIf (LenB(scope.methods(idx).name) = 0) Then
