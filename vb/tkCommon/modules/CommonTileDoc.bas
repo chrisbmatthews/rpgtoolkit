@@ -74,7 +74,6 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
                         yCount = 1
                     End If
 
-                'Else This is a masked pixel: Do nothing!
                 End If
             Next y
         Next x
@@ -92,10 +91,7 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
             If bufTile(x, y) <> -1 Then
                 Call vbPicPSet(pic, x + xLoc, y + yLoc, bufTile(x, y))
             Else
-                If isoMaskBmp(x, y) <> RGB(0, 0, 0) Then
-                    'Mask pixel.
-                    Call vbPicPSet(pic, x + xLoc, y + yLoc, activeTile.BackColor)
-                Else
+                If isoMaskBmp(x, y) = RGB(0, 0, 0) Then
                     Call vbPicPSet(pic, x + xLoc, y + yLoc, RGB(255, 255, 255))
                 End If
             End If
