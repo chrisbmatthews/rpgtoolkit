@@ -184,6 +184,30 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     'return selected file, or "" if cancelled
     On Error Resume Next
     
+    If 1 = 1 Then
+    
+        'Use the Windows dialog since the canvas version is buggy now.
+        
+        Dim oldpath As String, dlg As FileDialogInfo
+        oldpath = CurDir
+        
+        dlg.strDefaultFolder = path
+        dlg.strTitle = "Save / Load A Game"
+        dlg.strDefaultExt = ext
+        dlg.strFileTypes = "RPG Toolkit Saved Game (*.sav)|*.sav|All files(*.*)|*.*"
+        
+        If SaveFileDialog(dlg) Then
+            ShowFileDialog = dlg.strSelectedFileNoPath
+        Else
+            ShowFileDialog = ""
+        End If
+        
+        ChDir (oldpath)
+        
+        Exit Function
+        
+    End If
+    
     Call haltKeyDownScanning
     
     'save screen...
@@ -565,11 +589,11 @@ Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional 
     textSize = 20
     
     Dim cnv As Long
-    Dim Width As Long
-    Width = (textSize / 1.5) * maxWidth
-    If Width < 100 Then Width = 100
+    Dim width As Long
+    width = (textSize / 1.5) * maxWidth
+    If width < 100 Then width = 100
     
-    cnv = CreateCanvas(Width, textSize * (subStrings + UBound(options) + 3))
+    cnv = CreateCanvas(width, textSize * (subStrings + UBound(options) + 3))
     Call CanvasFill(cnv, bgColor)
     If bgPic <> "" Then
         Call CanvasLoadSizedPicture(cnv, bgPic)
