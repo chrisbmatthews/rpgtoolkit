@@ -399,7 +399,8 @@ BOOL APIENTRY CNVBltCanvasTranslucentPart(
 		height,
 		dIntensity,
 		crUnaffectedColor,
-		crTransparentColor);
+		crTransparentColor
+	);
 
 }
 
@@ -425,7 +426,7 @@ BOOL APIENTRY CNVBltCanvasTranslucent(
 		dIntensity,
 		crUnaffectedColor,
 		crTransparentColor
-			);
+	);
 
 }
 
