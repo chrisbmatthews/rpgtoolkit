@@ -52,7 +52,6 @@ Option Explicit
 Public tilePreview(64, 32) As Long      'Used for some effects
 Public saveChanges As Boolean           'Used for the effects
 Public isoMaskBmp(64, 32) As Long       'Isomask loaded from frmMain
-Public isIsoTile As Boolean             'If tile we're working on is a new isometric. Temporary!
 Public xRange As Integer                '= 32 OR 64 depending on tiletype. This way we don't
                                         'need to make new tileMem.
 

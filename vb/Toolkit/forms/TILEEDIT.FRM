@@ -519,8 +519,6 @@ Public Sub isoChange( _
         openTileEditorDocs(indice).tileName = ""
         activeTile.Caption = LoadStringLoc(801, "Tile Editor") + "  (Untitled)"
         
-        isIsoTile = False
-
         For x = 0 To 64
             For y = 0 To 32
                 tileMem(x, y) = -1
@@ -1078,12 +1076,10 @@ Private Sub Form_Activate(): On Error GoTo ErrorHandler
         tkMainForm.tileIsoCheck.value = 1
         xRange = 64
         xMod = 2
-        isIsoTile = True
     Else
         tkMainForm.tileIsoCheck.value = 0
         xRange = 32
         xMod = 1
-        isIsoTile = False
     End If
 
     Call isoUpdate
@@ -1726,10 +1722,12 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     
     If UCase(whichType) = "ISO" Then
         'Set the mode to isometric.
-        tkMainForm.tileIsoCheck.value = 1
+        activeTile.isoChange (True)
     Else
-        tkMainForm.tileIsoCheck.value = 0
+        activeTile.isoChange (False)
     End If
+    
+    MsgBox "openTileEditorDocs(indice).iso=" & openTileEditorDocs(indice).isometric
     
     If UCase(whichType) = "TST" Or UCase(whichType) = "ISO" Then
         'Yipes! we've selected an archive!
