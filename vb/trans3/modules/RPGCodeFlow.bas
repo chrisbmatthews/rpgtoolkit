@@ -98,8 +98,8 @@ Public Sub debugger(ByVal Text As String)
 
     If (Not checkErrorHandling()) Then
         If (debugYN = 1) Then
-            Call debugWin.Show
-            debugWin.buglist.Text = debugWin.buglist.Text & Text & vbCrLf
+            Call debugwin.Show
+            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
             Call processEvent
         End If
     End If
@@ -223,7 +223,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             If (dataG = 0) Then
                 dUse$ = CStr(num)
             Else
-                If (Not (InStr(1, lit, Chr(34)))) Then
+                If (Not (InStr(1, parameterList$(pList), Chr(34)))) Then
                     lit = lit & "!"
                     If (getValue(lit, lit, num, theProgram) = DT_NUM) Then
                         dUse = CStr(num)
