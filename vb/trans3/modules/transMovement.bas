@@ -842,16 +842,34 @@ Public Function obtainTileType(ByVal testX As Double, _
     If testX < 1 Or testX > boardList(activeBoardIndex).theData.bSizeX _
     Or testY < 1 Or testY > boardList(activeBoardIndex).theData.bSizeY Then Exit Function
     
-    If Not ((movementSize <> 1)) Then
-    'If True Then
-    
-        'Tiletype at the target.
-        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-            'Call invIsoCoordTransform(testX, testY, testX, testY)
-            typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testL)
-        Else
-            typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testL)
-        End If
+    If movementSize = 1 Then
+        
+        With boardList(activeBoardIndex).theData
+            'Tiletype at the target.
+            If (.isIsometric = 1) Then
+                'Call invIsoCoordTransform(testX, testY, testX, testY)
+                typetile = .tiletype(testX, testY, testL)
+            Else
+                typetile = .tiletype(testX, testY, testL)
+
+                'Block diagonal movement across solid corners.
+                Select Case direction
+                    Case MV_NE 'x - 1, y + 1 > x, y
+                       If .tiletype(testX - 1, testY, testL) = SOLID Or _
+                          .tiletype(testX, testY + 1, testL) = SOLID Then typetile = SOLID
+                    Case MV_NW 'x + 1, y + 1 > x, y
+                       If .tiletype(testX + 1, testY, testL) = SOLID Or _
+                          .tiletype(testX, testY + 1, testL) = SOLID Then typetile = SOLID
+                    Case MV_SE 'x - 1,y - 1 > x, y
+                       If .tiletype(testX - 1, testY, testL) = SOLID Or _
+                          .tiletype(testX, testY - 1, testL) = SOLID Then typetile = SOLID
+                    Case MV_SW 'x + 1,y - 1 > x, y
+                       If .tiletype(testX + 1, testY, testL) = SOLID Or _
+                          .tiletype(testX, testY - 1, testL) = SOLID Then typetile = SOLID
+                End Select
+            End If
+            
+        End With
         
     Else
     
