@@ -628,11 +628,9 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         Dim mutliStatus As Boolean
         mutliStatus = isMultiTasking()
 
-        If (mutliStatus) Then
-            ' If we're multitasking then flag we're not so thread loops
-            ' don't mess up when running these programs that aren't threads!
-            isMultiTasking() = False
-        End If
+        ' If we're multitasking then flag we're not so thread loops
+        ' don't mess up when running these programs that aren't threads!
+        isMultiTasking() = False
 
         If UCase$(CStr(mainMem.Key)) = UCase$(CStr(keyCode)) Then
             ' User pressed the activation key.
@@ -645,7 +643,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
             Call runProgram(projectPath & prgPath & mainMem.runTime)
         End If
 
-        ' Check extended runtime keys...
+        ' Check extended runtime keys
         For Index = 0 To 50
             If UCase$(Chr$(keyCode)) = UCase$(Chr$(mainMem.runTimeKeys(Index))) Then
                 If (LenB(mainMem.runTimePrg(Index)) <> 0) Then
