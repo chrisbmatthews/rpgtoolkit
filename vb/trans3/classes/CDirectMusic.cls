@@ -86,7 +86,7 @@ Public Sub playMidi(ByRef strFilename As String, Optional ByVal bLoopMidi As Boo
     If (bLoopMidi) Then
 
         ' Set it to loop
-        Call m_segment.SetRepeats(2147483647) ' [ Infinite repeats ]
+        Call m_segment.SetRepeats(-1&) ' [ Infinite repeats ]
 
     End If
 
