@@ -281,6 +281,9 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
         signs(9) = "%"
         signs(10) = "=="
 
+        ' Replace "-x" with "0 - x"
+        Text = replace(Text, "-", "0-")
+
         ' Remove brackets from the text for this test
         Text = replace(replace(Text, ")", vbNullString), "(", vbNullString)
 

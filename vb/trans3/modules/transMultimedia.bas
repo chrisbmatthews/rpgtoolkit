@@ -1,6 +1,6 @@
 Attribute VB_Name = "transMultimedia"
 '=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews , Contributors
+'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '=========================================================================
@@ -63,7 +63,7 @@ Public Sub checkMusic(Optional ByVal forceNow As Boolean)
     
     On Error Resume Next
 
-    If (Not forceNow) Then
+    If Not (forceNow) Then
         If (waitingForInput()) Then Exit Sub
     End If
 
@@ -77,7 +77,7 @@ Public Sub checkMusic(Optional ByVal forceNow As Boolean)
 
     ElseIf (UCase$(boardMusic) = UCase$(musicPlaying)) Then
 
-        If (Not isMediaPlaying(boardMusic)) Then
+        If Not (isMediaPlaying(boardMusic)) Then
             Call playMedia(boardMusic)
         End If
 
@@ -188,7 +188,7 @@ Public Sub playSoundFX(ByVal file As String)
 
     On Error Resume Next
 
-    If (Not fileExists(file)) Then
+    If Not (fileExists(file)) Then
         'Can't play it if it doesn't exist!
         Exit Sub
     End If
@@ -267,7 +267,7 @@ End Sub
 ' Wait for all sound effects to finish
 '=========================================================================
 Public Sub waitOnSFX()
-    Do Until (Not IsPlayingMCI(SFX_DEVICE)) And (TKAudiereIsPlaying(fgDevice) = 0)
+    Do Until (Not (IsPlayingMCI(SFX_DEVICE))) And (TKAudiereIsPlaying(fgDevice) = 0)
         Call processEvent
     Loop
 End Sub

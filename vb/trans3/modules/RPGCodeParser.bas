@@ -1250,8 +1250,8 @@ Public Function inStrOutsideQuotes(ByVal start As Long, ByRef Text As String, By
     For a = start To Len(Text)
         char = Mid$(Text, a, Len(find))
         If Left$(char, 1) = ("""") Then
-            ignore = (Not ignore)
-        ElseIf (char = find) And (Not ignore) Then
+            ignore = Not (ignore)
+        ElseIf (char = find) And (Not (ignore)) Then
             inStrOutsideQuotes = a
             Exit Function
         End If
@@ -1270,14 +1270,14 @@ Public Function MWinPrepare(ByVal Text As String, ByRef prg As RPGCodeProgram) A
     firstLocation = InStr(1, Text, "<")
 
     'If we found one
-    If firstLocation <> 0 Then
+    If (firstLocation <> 0) Then
 
         'Find the associated >
         Dim secondLocation As Long
         secondLocation = InStr(1, Text, ">")
 
         'If we found one
-        If secondLocation <> 0 Then
+        If (secondLocation <> 0) Then
 
             'Get the name of the variable between them
             Dim theVar As String

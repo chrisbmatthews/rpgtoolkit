@@ -233,9 +233,6 @@ End Type
 '=========================================================================
 Public Sub DXRefresh()
 
-    ' Colin: Is the new flicker here tolerable? The speed increease is
-    '        too great to not consider it.
-
     ' Make the flip
     Call DXFlip
 
@@ -255,36 +252,13 @@ Public Sub DXRefresh()
     hdc = CNVOpenHDC(cnvMousePointer)
 
     ' Blt the mouse onto the window
-    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
+    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpColor)
 
     ' Close the canvas' HDC
     Call CNVCloseHDC(cnvMousePointer, hdc)
 
     ' Release the window's DC
     Call ReleaseDC(host.hwnd, xdc)
-
-    '=====================================================================
-
-    ' Flip the back buffer to a canvas
-    ' Call DXFlip(m_backCnv)
-
-    ' Lay down the mouse cursor
-    ' Call DXDrawCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
-
-    ' Flip to the screen
-    ' Call DXFlip
-
-    ' Lay down the original back buffer (sans cursor)
-    ' Call DXDrawCanvas(m_backCnv, 1, 1)
-
-    ' Get the mouse pointer canvas' HDC
-    ' cnvHdc = CNVOpenHDC(cnvMousePointer)
-
-    ' Blt the mouse onto the back buffer
-    ' Call TransparentBlt(bbdc, x, y, 32, 32, cnvHdc, 0, 0, 32, 32, mainMem.transpcolor)
-
-    ' Close the canvas' HDC
-    ' Call CNVCloseHDC(cnvMousePointer, cnvHdc)
 
 End Sub
 
@@ -1311,6 +1285,7 @@ Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     Next t
     cnvRPGCodeAccess = CreateCanvas(width, height)
     cnvRenderNow = CreateCanvas(width, height)
+    Call CanvasFill(cnvRPGCodeScreen, 0)
     Call CanvasFill(cnvRenderNow, TRANSP_COLOR)
     cnvMousePointer = CreateCanvas(32, 32)
     Call CanvasFill(cnvMousePointer, TRANSP_COLOR)
@@ -1526,6 +1501,15 @@ End Function
 '=========================================================================
 Public Sub renderRPGCodeScreen()
 
+    ' Lay down the RPGCode screen
+    Call DXDrawCanvas(cnvRPGCodeScreen, 0, 0)
+
+    ' Draw the message box if it's being shown
+    If (bShowMsgBox) Then
+        ' Draw the messsage window
+        Call DXDrawCanvasTranslucent(cnvMsgBox, (tilesX * 32 - 600) * 0.5, 0, , fontColor)
+    End If
+
     ' Make the flip
     Call DXFlip
 
@@ -1545,21 +1529,10 @@ Public Sub renderRPGCodeScreen()
     hdc = CNVOpenHDC(cnvMousePointer)
 
     ' Blt the mouse onto the window
-    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
+    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpColor)
 
     ' Close the canvas' HDC
     Call CNVCloseHDC(cnvMousePointer, hdc)
-
-    ' Draw the message box if it's being shown
-    If (bShowMsgBox) Then
-
-        ' Blt the message box opaque for now
-        Dim mdc As Long
-        mdc = CNVOpenHDC(cnvMsgBox)
-        Call BitBlt(xdc, (tilesX * 32 - 600) * 0.5, 0, 600, 100, mdc, 0, 0, vbSrcCopy)
-        Call CNVCloseHDC(cnvMsgBox, mdc)
-
-    End If
 
     ' Release the window's DC
     Call ReleaseDC(host.hwnd, xdc)

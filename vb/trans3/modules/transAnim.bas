@@ -17,7 +17,6 @@ Option Explicit
 '=========================================================================
 Public Sub TransAnimateAt(ByVal x As Long, ByVal y As Long)
     On Error Resume Next
-    Call CanvasGetScreen(cnvRPGCodeScreen)
     Call AnimateAtCanvas( _
                             animationMem, _
                             x, _
@@ -66,8 +65,7 @@ Private Sub AnimateAtCanvas( _
         Call AnimDrawFrameCanvas(theAnim, currentFrame, x, y, cnv)
 
         'Render the screen
-        If (cnv = cnvRPGCodeScreen) Then
-            Call DXDrawCanvas(cnvRPGCodeScreen, 0, 0)
+        If cnv = cnvRPGCodeScreen Then
             Call renderRPGCodeScreen
         Else
             Call renderCanvas(cnv)
@@ -81,7 +79,6 @@ Private Sub AnimateAtCanvas( _
     'Restore screen
     Call Canvas2CanvasBlt(oldScreen, cnv, 0, 0)
     If (cnv = cnvRPGCodeScreen) Then
-        Call DXDrawCanvas(cnvRPGCodeScreen, 0, 0)
         Call renderRPGCodeScreen
     Else
         Call renderCanvas(cnv)
@@ -92,3 +89,4 @@ Private Sub AnimateAtCanvas( _
     Call DestroyCanvas(oldScreen)
 
 End Sub
+

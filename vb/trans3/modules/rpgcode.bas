@@ -1412,25 +1412,12 @@ Sub DrawCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
     sa = getValue(useIt4$, lit$, st, theProgram)
     ea = getValue(useIt5$, lit$, en, theProgram)
     a = getValue(useIt6$, lit$, cnv, theProgram)
-
+   
     Dim startangle As Double, endangle As Double
     startangle = st * 3.14159 / 180     'conv to radians
     endangle = en * 3.14159 / 180     'conv to radians
-
     If number <> 6 Then
-        Dim x2 As Double, y2 As Double
-        x1 = x1 - radius
-        y1 = y1 - radius
-        x2 = x1 + radius * 2
-        y2 = y1 + radius * 2
-        Dim rgn As Long, brush As Long, hdc As Long
-        rgn = CreateEllipticRgn(x1, y1, x2 + 1, y2 + 1)
-        brush = CreateSolidBrush(fontColor)
-        hdc = DXLockScreen()
-        Call FrameRgn(hdc, rgn, brush, 1, 1)
-        Call DXUnlockScreen
-        Call DeleteObject(rgn)
-        Call DeleteObject(brush)
+        Call CanvasDrawEllipse(cnvRPGCodeScreen, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
         Call renderRPGCodeScreen
     Else
         Call CanvasDrawEllipse(cnv, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
@@ -1631,9 +1618,9 @@ Sub FillCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
 End Sub
 
 Sub FillRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    'FillRect(x1,y1,x2,y2, [cnvId!])
+    '#fillrect(x1,y1,x2,y2, [cnvId!])
     'fill a rect
-    On Error Resume Next
+    On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -1649,40 +1636,38 @@ Sub FillRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt3$ = GetElement(dataUse$, 3)
     useIt4$ = GetElement(dataUse$, 4)
     useIt5 = GetElement(dataUse$, 5)
-
+    
     Dim cnv As Double
     xx1 = getValue(useIt1$, lit$, x1, theProgram)
     yy1 = getValue(useIt2$, lit$, y1, theProgram)
     xx2 = getValue(useIt3$, lit$, x2, theProgram)
     yy2 = getValue(useIt4$, lit$, y2, theProgram)
+    
+    ' CMB, you're just nasty with those typos, heh.
+    'a = GetValue(useIt4$, lit$, cnv, theProgram)
+    a = getValue(useIt5, lit, cnv, theProgram)
+    
+    'Commenting by KSNiloc...
 
-    Call getValue(useIt5, lit, cnv, theProgram)
+    'If xx1 = DT_LIT Or yy1 = DT_LIT Or xx2 = DT_LIT Or yy2 = DT_LIT Or a = DT_LIT Then
+    '    Call debugger("Error: FillRect data type must be numerical!-- " + text$)
+    'Else
+        If number = 4 Then
+            Call CanvasFillBox(cnvRPGCodeScreen, x1, y1, x2, y2, fontColor)
+            Call renderRPGCodeScreen
+            'DXDrawCanvasPartial cnvRPGCodeScreen, _
+                                x1, y1, x1, y1, _
+                                x2 - x1 + 10, y2 - y1 + 10
+        Else
+            Call CanvasFillBox(cnv, x1, y1, x2, y2, fontColor)
+        End If
+    'End If
 
-    If (number = 4) Then
-        Dim hdc As Long, pen As Long, l As Long, brush As Long, m As Long
-        hdc = DXLockScreen()
-        pen = CreatePen(0, 1, fontColor)
-        l = SelectObject(hdc, pen)
-        brush = CreateSolidBrush(fontColor)
-        m = SelectObject(hdc, brush)
-        Dim theRegion As RECT
-        With theRegion
-            .Bottom = y2 + 1
-            .Right = x2 + 1
-            .Left = x1
-            .Top = y1
-        End With
-        Call FillRect(hdc, theRegion, brush)
-        Call SelectObject(hdc, m)
-        Call SelectObject(hdc, l)
-        Call DeleteObject(brush)
-        Call DeleteObject(pen)
-        Call DXUnlockScreen
-        Call renderRPGCodeScreen
-    Else
-        Call CanvasFillBox(cnv, x1, y1, x2, y2, fontColor)
-    End If
-
+    Exit Sub
+'Begin error handling code:
+errorhandler:
+    
+    Resume Next
 End Sub
 
 Sub FontRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -2622,22 +2607,19 @@ Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt5$ = GetElement(dataUse$, 5)
     Dim useIt6 As String
     useIt6 = GetElement(dataUse, 6)
-
+    
     xx = getValue(useIt1$, lit$, x, theProgram)
     yy = getValue(useIt2$, lit$, y, theProgram)
     Dim cnv As Double
     getValue useIt6, lit, cnv, theProgram
-
+    
+    If cnv = 0 Then cnv = cnvRPGCodeScreen
+    
     If xx = 1 Or yy = 1 Then
         Call debugger("Error: GetPixel data type must be numerical!-- " + Text$)
     Else
         Dim p As Long, rr As Long, gg As Long, bb As Long
-        If (cnv <> 0) Then
-            p = CanvasGetPixel(cnv, x, y)
-        Else
-            p = GetPixel(DXLockScreen(), x, y)
-            Call DXUnlockScreen
-        End If
+        p = CanvasGetPixel(cnv, x, y)
         rr = red(p)
         gg = green(p)
         bb = blue(p)
@@ -4590,11 +4572,7 @@ Sub PrintRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hdc = CanvasOpenHDC(cnvRPGCodeScreen)
     Call putText(lit$, textX, textY, fontColor, fontSize, fontSize, hdc)
     Call CanvasCloseHDC(cnvRPGCodeScreen, hdc)
-    'Call renderRPGCodeScreen
-    DXDrawCanvasPartial cnvRPGCodeScreen, _
-                        textX, textY, textX, textY, _
-                        GetCanvasWidth(cnvRPGCodeScreen) - textX, fontSize * (Len(lit) * 2 + 10)
-    DXRefresh
+    Call renderRPGCodeScreen
     textY = textY + 1
 
     Exit Sub
@@ -6019,7 +5997,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub setbuttonRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SetButtonRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '#SetButton("face.bmp",buttonnum,x1,y1,dx,dy)
     'Sets a button on the screen.
     'dx and dy are displacement
@@ -6058,7 +6036,9 @@ Sub setbuttonRPG(Text$, ByRef theProgram As RPGCodeProgram)
         destBut = inBounds(destBut, 0, 50)
         x1 = inBounds(x1, 0, tilesX * 32)
         y1 = inBounds(y1, 0, tilesY * 32)
-               
+        
+        ' ! MODIFIED BY KSNiloc...
+        
         buttons(destBut).x1 = x1 - 20
         buttons(destBut).x2 = x1 + dx - 20
         buttons(destBut).y1 = y1
@@ -6085,12 +6065,16 @@ Sub setbuttonRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
         End If
         If bLoaded Then
-            Call DXDrawCanvas(cnv, x1, y1)
-            Call renderRPGCodeScreen
+            Call Canvas2CanvasBlt(cnv, cnvRPGCodeScreen, x1, y1)
         End If
         Call DestroyCanvas(cnv)
+        'Call renderRPGCodeScreen
+        DXDrawCanvasPartial cnvRPGCodeScreen, _
+                            x1, y1, x1, y1, _
+                            dx, dy
+        DXRefresh
     End If
-
+    
 End Sub
 
 Public Sub setConstants()
@@ -6175,7 +6159,7 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     pp = getValue(useIt6$, lit$, perc, theProgram)
     Dim cnvToUse As Double
     getValue useIt7, lit, cnvToUse, theProgram
-    ' If cnvToUse = 0 Then cnvToUse = cnvRPGCodeScreen
+    If cnvToUse = 0 Then cnvToUse = cnvRPGCodeScreen
     
     If theFace = 0 Then
         Call debugger("Error: SetImageAdditive face data type must be literal!-- " + Text$)
@@ -6201,16 +6185,12 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         
         Dim hdc As Long, hdc2 As Long
-        If (cnvToUse <> 0) Then
-            hdc = CanvasOpenHDC(cnvToUse)
-        Else
-            hdc = DXLockScreen()
-        End If
+        hdc = CanvasOpenHDC(cnvToUse)
         hdc2 = CanvasOpenHDC(cnv)
         
         'now manually copy the image over...
         'use hi-speed engine....
-        Call GFXBitBltAdditive(hdc, _
+        a = GFXBitBltAdditive(hdc, _
                                 x1, _
                                 y1, _
                                 dx - 1, _
@@ -6219,15 +6199,12 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
                                 0, _
                                 0, _
                                 perc)
-
-        If (cnvToUse <> 0) Then
-            Call CanvasCloseHDC(cnvToUse, hdc)
-        Else
-            Call DXUnlockScreen
-            Call renderRPGCodeScreen
-        End If
+        Call CanvasCloseHDC(cnvToUse, hdc)
         Call CanvasCloseHDC(cnv, hdc2)
         Call DestroyCanvas(cnv)
+        If cnvToUse = cnvRPGCodeScreen Then
+            Call renderRPGCodeScreen
+        End If
     End If
 End Sub
 
@@ -6244,7 +6221,7 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 5 And number <> 6 Then
-        Call debugger("Error: SetImage must have 5 data elements!-- " & Text$)
+        Call debugger("Error: SetImage must have 5 data elements!-- " + Text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, x1 As Double, y1 As Double, dx As Double, dy As Double
@@ -6264,22 +6241,24 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
     y2to = getValue(useIt5$, lit$, dy, theProgram)
     Dim cnv2 As Double
     getValue useIt6, lit, cnv2, theProgram
+
+    If cnv2 = 0 Then cnv2 = cnvRPGCodeScreen
     
     If theFace = 0 Then
-        Call debugger("Error: SetImage face data type must be literal!-- " & Text$)
+        Call debugger("Error: SetImage face data type must be literal!-- " + Text$)
         Exit Sub
     End If
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Then
-        Call debugger("Error: SetImage coords must be numerical!-- " & Text$)
+        Call debugger("Error: SetImage coords must be numerical!-- " + Text$)
     Else
         x1 = inBounds(x1, 0, tilesX * 32)
         y1 = inBounds(y1, 0, tilesY * 32)
-
+        
         fface$ = projectPath$ & bmpPath$ & fface$
 
         Dim cnv As Long
         cnv = CreateCanvas(dx, dy)
-
+        
         Dim f As String
         If pakFileRunning Then
             f$ = PakLocate(fface$)
@@ -6287,11 +6266,9 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Else
             Call CanvasLoadSizedPicture(cnv, fface$)
         End If
-
-        If (cnv2 <> 0) Then
-            Call Canvas2CanvasBlt(cnv, cnv2, x1, y1)
-        Else
-            Call DXDrawCanvas(cnv, x1, y1)
+        
+        Call Canvas2CanvasBlt(cnv, cnv2, x1, y1)
+        If cnv2 = cnvRPGCodeScreen Then
             Call renderRPGCodeScreen
         End If
 
@@ -6313,7 +6290,7 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 5 And number <> 6 Then
-        Call debugger("Error: SetImageTranslucent must have 8 data elements!-- " & Text$)
+        Call debugger("Error: SetImageTranslucent must have 8 data elements!-- " + Text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, x1 As Double, y1 As Double, dx As Double, dy As Double
@@ -6332,14 +6309,16 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     x2to = getValue(useIt4$, lit$, dx, theProgram)
     y2to = getValue(useIt5$, lit$, dy, theProgram)
     Dim cnv2 As Double
-    Call getValue(useIt6, lit, cnv2, theProgram)
-
+    getValue useIt6, lit, cnv2, theProgram
+    
+    If cnv2 = 0 Then cnv2 = cnvRPGCodeScreen
+    
     If theFace = 0 Then
-        Call debugger("Error: SetImageTranslucent face data type must be literal!-- " & Text$)
+        Call debugger("Error: SetImageTranslucent face data type must be literal!-- " + Text$)
         Exit Sub
     End If
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Then
-        Call debugger("Error: SetImageTranslucent coords must be numerical!-- " & Text$)
+        Call debugger("Error: SetImageTranslucent coords must be numerical!-- " + Text$)
     Else
         x1 = inBounds(x1, 0, tilesX * 32)
         y1 = inBounds(y1, 0, tilesY * 32)
@@ -6350,22 +6329,19 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
         cnv = CreateCanvas(dx, dy)
         
         Dim f As String
-        If (pakFileRunning) Then
+        If pakFileRunning Then
             f$ = PakLocate(fface$)
             Call CanvasLoadSizedPicture(cnv, f$)
         Else
             Call CanvasLoadSizedPicture(cnv, fface$)
         End If
-
-        If (cnv2 <> 0) Then
-            Call Canvas2CanvasBltTranslucent(cnv, cnv2, x1, y1)
-        Else
-            Call DXDrawCanvasTranslucent(cnv, x1, y1)
+        
+        Call Canvas2CanvasBltTranslucent(cnv, cnv2, _
+                                    x1, y1)
+        Call DestroyCanvas(cnv)
+        If cnv2 = cnvRPGCodeScreen Then
             Call renderRPGCodeScreen
         End If
-
-        Call DestroyCanvas(cnv)
-
     End If
 End Sub
 
@@ -6409,7 +6385,9 @@ Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     bT = getValue(useIt8$, lit$, bb, theProgram)
     Dim cnv2 As Double
     getValue useIt9, lit, cnv2, theProgram
-       
+    
+    If cnv2 = 0 Then cnv2 = cnvRPGCodeScreen
+    
     If theFace = 0 Then
         Call debugger("Error: SetImageTransparent face data type must be literal!-- " + Text$)
         Exit Sub
@@ -6433,15 +6411,12 @@ Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Call CanvasLoadSizedPicture(cnv, fface$)
         End If
         
-        If (cnv2 <> 0) Then
-            Call Canvas2CanvasBltTransparent(cnv, cnv2, x1, y1, RGB(rr, gg, bb))
-        Else
-            Call DXDrawCanvasTransparent(cnv, x1, y1, RGB(rr, gg, bb))
+        Call Canvas2CanvasBltTransparent(cnv, cnv2, _
+                                    x1, y1, RGB(rr, gg, bb))
+        Call DestroyCanvas(cnv)
+        If cnv2 = cnvRPGCodeScreen Then
             Call renderRPGCodeScreen
         End If
-
-        Call DestroyCanvas(cnv)
-
     End If
 End Sub
 
@@ -6464,20 +6439,20 @@ Sub SetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt2$ = GetElement(dataUse$, 2)
     'Dim useIt3 As String
     useIt3 = GetElement(dataUse, 3)
-
+    
     Dim x As Double, y As Double, xx As Long, yy As Long
     xx = getValue(useIt1$, lit$, x, theProgram)
     yy = getValue(useIt2$, lit$, y, theProgram)
     Dim cnv As Double
     getValue useIt3, lit, cnv, theProgram
-
+    
+    If cnv = 0 Then cnv = cnvRPGCodeScreen
+    
     If xx = 1 Or yy = 1 Then
         Call debugger("Error: SetPixel data type must be numerical!-- " + Text$)
     Else
-        If (cnv <> 0) Then
-            Call CanvasSetPixel(cnv, x, y, fontColor)
-        Else
-            Call DXDrawPixel(x, y, fontColor)
+        Call CanvasSetPixel(cnv, x, y, fontColor)
+        If cnv = cnvRPGCodeScreen Then
             Call renderRPGCodeScreen
         End If
     End If
@@ -7186,17 +7161,17 @@ End Sub
 
 Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
+    ' ! MODIFIED BY KSNiloc...
+
     'Text(x!,y!,"text" [,cnv!])
     'puts text at x y
-
-    On Error Resume Next
-
+    On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 And number <> 4 Then
-        Call debugger("Error: Text must have 3 data elements!-- " & Text$)
+        Call debugger("Error: Text must have 3 data elements!-- " + Text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -7210,49 +7185,54 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
     yto = getValue(useIt2$, lit$, num2, theProgram)
     txtto = getValue(useIt3$, lit1$, num3, theProgram)
     Dim cnv As Double
-    Call getValue(useIt4, lit, cnv, theProgram)
+    getValue useIt4, lit, cnv, theProgram
 
+    If cnv = 0 Then cnv = cnvRPGCodeScreen
+    
     If txtto = 0 Then
         lit1$ = CStr(num3)
     End If
-
     If xto = 1 Or yto = 1 Then
-        Call debugger("Error: Text location data type must be numerical!-- " & Text$)
+        Call debugger("Error: Text location data type must be numerical!-- " + Text$)
     Else
-
-        Dim hdc As Long
-        If (cnv = 0) Then
-            ' Use the screen
-            hdc = DXLockScreen()
-        End If
-
         textX = num1
         textY = num2 + 1
         'replace <> w/vars
         lit1$ = MWinPrepare(lit1$, theProgram)
+        Dim hdc As Long
+        hdc = CanvasOpenHDC(cnv)
 
-        If (hdc = 0) Then
-            ' It's not the screen
-            hdc = CanvasOpenHDC(cnv)
-        End If
-
-        Select Case UCase$(GetCommandName(Text))
-            Case "TEXT": putText lit1$, num1, num2, fontColor, fontSize, fontSize, hdc
-            Case "PIXELTEXT"
+        Select Case LCase$(GetCommandName(Text))
+            Case "text": putText lit1$, num1, num2, fontColor, fontSize, fontSize, hdc
+            Case "pixeltext"
                 putText lit1, (num1 / fontSize) + 1, _
                               (num2 / fontSize) + 1, _
                                                        fontColor, fontSize, fontSize, hdc
         End Select
 
-        If (cnv <> 0) Then
-            Call CanvasCloseHDC(cnv, hdc)
-        Else
-            Call DXUnlockScreen
+        Call CanvasCloseHDC(cnv, hdc)
+        If cnv = cnvRPGCodeScreen Then
             Call renderRPGCodeScreen
+            'If LCase$(GetCommandName(Text, theProgram)) = "text" Then
+            '    DXDrawCanvasPartial cnvRPGCodeScreen, _
+            '                        num1, num2, _
+            '                        num1, num2, _
+            '                        GetCanvasWidth(cnvRPGCodeScreen) - num1, fontSize
+            'Else
+            '    DXDrawCanvasPartial cnvRPGCodeScreen, _
+            '                        (num1 / fontSize), (num2 / fontSize), _
+            '                        (num1 / fontSize), (num2 / fontSize), _
+            '                        GetCanvasWidth(cnvRPGCodeScreen) - num1, fontSize
+            'End If
+            'DXRefresh
         End If
-
     End If
 
+    Exit Sub
+'Begin error handling code:
+errorhandler:
+    
+    Resume Next
 End Sub
 
 Sub TextSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -7659,40 +7639,32 @@ Sub DrawCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPG
         '    Call debugger("Error: DrawCanvas data type must be num, num, num, num, num!-- " + text$)
         'Else
             Dim cnv As Long
-            cnv = CLng(num1)
+            cnv = num1
             If number = 3 Then
                 'straight blt
-                Call DXDrawCanvas(cnv, num2, num3)
+                Call Canvas2CanvasBlt(cnv, cnvRPGCodeScreen, num2, num3)
                 Call renderRPGCodeScreen
             Else
                 'resize blt
                 Dim cnvDest As Long
-                If (number = 6) Then
+                cnvDest = cnvRPGCodeScreen
+                If number = 6 Then
                     cnvDest = num6
                 End If
                 
                 Dim hdcDest As Long
-                If (cnvDest <> 0) Then
-                    hdcDest = CanvasOpenHDC(cnvDest)
-                Else
-                    hdcDest = DXLockScreen()
-                End If
-
+                hdcDest = CanvasOpenHDC(cnvDest)
+                
                 Call CanvasStretchBlt(cnv, num4, num5, num2, num3, hdcDest)
-
-                If (cnvDest <> 0) Then
-                    Call CanvasCloseHDC(cnvDest, hdcDest)
-                Else
-                    Call DXUnlockScreen
+                
+                Call CanvasCloseHDC(cnvDest, hdcDest)
+                
+                If number = 5 Then
                     Call renderRPGCodeScreen
                 End If
-
             End If
-
         'End If
-
     End If
-
 End Sub
 
 
@@ -8453,7 +8425,7 @@ Public Sub ClearRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     ' Clears a canvas to black
 
     If (LenB(GetBrackets(Text)) = 0) Then
-        Call DXClearScreen(0)
+        Call CanvasFill(cnvRPGCodeScreen, 0)
         Call renderRPGCodeScreen
     Else
         Dim paras() As parameters
@@ -8751,7 +8723,7 @@ End Sub
 Sub DrawLineRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '#drawLine(x1,y1,x2,y2, [cnvId!])
     'draws a line
-    On Error Resume Next
+    On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -8769,27 +8741,32 @@ Sub DrawLineRPG(Text$, ByRef theProgram As RPGCodeProgram)
     y1 = paras(1).num
     x2 = paras(2).num
     y2 = paras(3).num
-
+    
     Dim cnv As Double
     If number = 5 Then
         cnv = paras(4).num
     End If
+   
+    'If xx1 = DT_LIT Or yy1 = DT_LIT Or xx2 = DT_LIT Or yy2 = DT_LIT Or a = DT_LIT Then
+    '    Call debugger("Error: DrawLine data type must be numerical!-- " + text$)
+    'Else
+        If number = 4 Then
+            Call CanvasDrawLine(cnvRPGCodeScreen, x1, y1, x2, y2, fontColor)
+            Call renderRPGCodeScreen
+            'DXDrawCanvasPartial cnvRPGCodeScreen, _
+                                x1 - 10, y1 - 10, x1 - 10, y1 - 10, _
+                                x2 - x1 + 10, y2 - y1 + 10
+            'DXRefresh
+        Else
+            Call CanvasDrawLine(cnv, x1, y1, x2, y2, fontColor)
+        End If
+    'End If
 
-    If (number = 4) Then
-        Dim hdc As Long, brush As Long, point As POINTAPI, m As Long
-        hdc = DXLockScreen()
-        brush = CreatePen(0, 1, fontColor)
-        m = SelectObject(hdc, brush)
-        Call MoveToEx(hdc, x1, y1, point)
-        Call LineTo(hdc, x2, y2)
-        Call SelectObject(hdc, m)
-        Call DeleteObject(brush)
-        Call DXUnlockScreen
-        Call renderRPGCodeScreen
-    Else
-        Call CanvasDrawLine(cnv, x1, y1, x2, y2, fontColor)
-    End If
-
+    Exit Sub
+'Begin error handling code:
+errorhandler:
+    
+    Resume Next
 End Sub
 
 Sub DrawRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -8811,29 +8788,35 @@ Sub DrawRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt3$ = GetElement(dataUse$, 3)
     useIt4$ = GetElement(dataUse$, 4)
     useIt5 = GetElement(dataUse$, 5)
-
+    
     Dim cnv As Double
     xx1 = getValue(useIt1$, lit$, x1, theProgram)
     yy1 = getValue(useIt2$, lit$, y1, theProgram)
     xx2 = getValue(useIt3$, lit$, x2, theProgram)
     yy2 = getValue(useIt4$, lit$, y2, theProgram)
 
-    Call getValue(useIt5, lit, cnv, theProgram)
+    ' ! MODIFIED BY KSNiloc...
+    
+    'Uh-huh. Looks like you made a typo, CMB. =P
+    'a = GetValue(useIt4$, lit$, cnv, theProgram)
+    a = getValue(useIt5, lit, cnv, theProgram)
 
-    If (number = 4) Then
-        Dim rgn As Long, brush As Long, hdc As Long
-        rgn = CreateRectRgn(x1, y1, x2 + 1, y2 + 1)
-        brush = CreateSolidBrush(fontColor)
-        hdc = DXLockScreen()
-        Call FrameRgn(hdc, rgn, brush, 1, 1)
-        Call DXUnlockScreen
-        Call DeleteObject(rgn)
-        Call DeleteObject(brush)
-        Call renderRPGCodeScreen
-    Else
-        Call CanvasBox(cnv, x1, y1, x2, y2, fontColor)
-    End If
+    'If xx1 = DT_LIT Or yy1 = DT_LIT Or xx2 = DT_LIT Or yy2 = DT_LIT Or a = DT_LIT Then
+    '    Call debugger("Error: DrawRect data type must be numerical!-- " + Text$)
+    'Else
+        If number = 4 Then
+            Call CanvasBox(cnvRPGCodeScreen, x1, y1, x2, y2, fontColor)
+            Call renderRPGCodeScreen
+        Else
+            Call CanvasBox(cnv, x1, y1, x2, y2, fontColor)
+        End If
+    'End If
 
+    Exit Sub
+'Begin error handling code:
+errorhandler:
+    
+    Resume Next
 End Sub
 
 Sub EmptyRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -9547,9 +9530,6 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If xx = 0 Or yy = 1 Or zz = 1 Then
         Call debugger("Error: Wipe data type must be lit, num!, num!-- " + Text$)
     Else
-    
-        Call CanvasGetScreen(cnvRPGCodeScreen)
-    
         'load the image...
         If (LenB(file$) <> 0) Then
             file$ = addExt(file$, ".bmp")
@@ -9760,14 +9740,9 @@ Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
         zoomPerc = num
         Dim cnv As Long
         cnv = CreateCanvas(tilesX * 32, tilesY * 32)
-        
-        Call CanvasGetScreen(cnv)
-
-        hdc = DXLockScreen()
-        hdc2 = CanvasOpenHDC(cnv)
-        
+        Call Canvas2CanvasBlt(cnvRPGCodeScreen, cnv, 0, 0)
         For tt = 1 To zoomPerc
-
+            'tt = zoomperc
             newWidth = Int(32 * tilesX)
             newHeight = Int(32 * tilesY)
             zz = 1 + (tt / 100)
@@ -9775,20 +9750,21 @@ Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
             newWidth = Int(newWidth * zz)
             newHeight = Int(newHeight * zz)
                 
-            offx = -1 * ((newWidth - (32 * tilesX)) \ 2)
-            offy = -1 * ((newHeight - (32 * tilesY)) \ 2)
+            offx = -1 * Int((newWidth - (32 * tilesX)) / 2)
+            offy = -1 * Int((newHeight - (32 * tilesY)) / 2)
+            
+            hdc = CanvasOpenHDC(cnvRPGCodeScreen)
+            hdc2 = CanvasOpenHDC(cnv)
             
             Call StretchBlt(hdc, offx, offy, _
                 newWidth, newHeight, hdc2, _
                 0, 0, Int(tilesX * 32), Int(tilesY * 32), &HCC0020)
             
+            Call CanvasCloseHDC(cnvRPGCodeScreen, hdc)
+            Call CanvasCloseHDC(cnv, hdc2)
             Call renderRPGCodeScreen
-            Call Sleep(walkDelay * 1000)
+            Call delay(walkDelay)
         Next tt
-        
-        Call DXUnlockScreen
-        Call CanvasCloseHDC(cnv, hdc2)
-        
         Call DestroyCanvas(cnv)
     End If
 
@@ -9824,7 +9800,6 @@ Sub earthquakeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         Dim cnv As Long
         cnv = CreateCanvas(tilesX * 32, tilesY * 32)
-        Call CanvasGetScreen(cnvRPGCodeScreen)
         Call Canvas2CanvasBlt(cnvRPGCodeScreen, cnv, 0, 0)
         For tt = 1 To num
             newWidth = Int(32 * tilesX)
@@ -9835,33 +9810,32 @@ Sub earthquakeRPG(Text$, ByRef theProgram As RPGCodeProgram)
             newHeight = Int(newHeight * zz)
         
         
-            offx = ((newWidth - (32 * tilesX)) \ 2)
-            offy = ((newHeight - (32 * tilesY)) \ 2)
+            offx = Int((newWidth - (32 * tilesX)) / 2)
+            offy = Int((newHeight - (32 * tilesY)) / 2)
             offx = num
             offy = num
             
             Call CanvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
-            Call DXDrawCanvasPartial(cnv, 0, 0, offx, offy, tilesX * 32 - offx, tilesY * 32 - offy)
+            Call Canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, 0, 0, offx, offy, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
             Call delay(walkDelay)
         
             Call CanvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
-            Call DXDrawCanvasPartial(cnv, offx, 0, 0, offy, tilesX * 32 - offx, tilesY * 32 - offy)
+            Call Canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, offx, 0, 0, offy, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
             Call delay(walkDelay)
         
             Call CanvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
-            Call DXDrawCanvasPartial(cnv, 0, offy, offx, 0, tilesX * 32 - offx, tilesY * 32 - offy)
+            Call Canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, 0, offy, offx, 0, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
             Call delay(walkDelay)
         
             Call CanvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
-            Call DXDrawCanvasPartial(cnv, offx, offy, 0, 0, tilesX * 32 - offx, tilesY * 32 - offy)
+            Call Canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, offx, offy, 0, 0, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
             Call delay(walkDelay)
-
         Next tt
-        Call DXDrawCanvas(cnv, 0, 0)
+        Call Canvas2CanvasBlt(cnv, cnvRPGCodeScreen, 0, 0)
         Call DestroyCanvas(cnv)
         Call renderRPGCodeScreen
     End If
@@ -11859,7 +11833,7 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     End If
     host.cursorHotSpotX = paras(1).num
     host.cursorHotSpotY = paras(2).num
-    mainMem.transpcolor = RGB(paras(3).num, paras(4).num, paras(5).num)
+    mainMem.transpColor = RGB(paras(3).num, paras(4).num, paras(5).num)
     Dim ext As String, theFile As String
     ext = UCase$(commonRoutines.extention(paras(0).lit))
     If (ext = "TST" Or ext = "GPH") Then
@@ -11916,14 +11890,14 @@ Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, By
         theAttrib.Bold = Bold
         theAttrib.Underline = Underline
         Dim hFontNew As Long, hFontOld As Long, textRectSize As size
-        hdc = DXLockScreen()
+        hdc = CanvasOpenHDC(cnvRPGCodeScreen)
         hFontOld = SetDeviceFont(hdc, theAttrib, hFontNew)
         textRectSize.cx = 0: textRectSize.cy = 0
         Call GetTextExtentPoint32(hdc, stringin, Len(stringin), textRectSize)
         textWidth = textRectSize.cx: textHeight = textRectSize.cy
         Call SelectObject(hdc, hFontOld)
         Call DeleteObject(hFontNew)
-        Call DXUnlockScreen
+        Call CanvasCloseHDC(cnvRPGCodeScreen, hdc)
     End If
 
     retval.dataType = DT_NUM
@@ -11997,7 +11971,7 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     End If
 
     ' Did everything turn out alright?
-    If (Not allIsGood) Then
+    If Not (allIsGood) Then
         ' Tell the user
         Call debugger("DrawCanvasTransparent() requires num, num, num, num, num, num [, num, num [, num]]")
         ' Bail
@@ -12005,20 +11979,20 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     End If
 
     ' Declare variables for the coming blt
-    Dim x As Long, y As Long, width As Long, transpcolor As Long
+    Dim x As Long, y As Long, width As Long, transpColor As Long
     Dim height As Long, cnvSource As Long
 
     ' In all cases, record x, y, r, g, b and the canvas
     cnvSource = CLng(paras(0).num)
     x = CLng(paras(1).num)
     y = CLng(paras(2).num)
-    transpcolor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
+    transpColor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
 
     ' If we only have six params, just finish this now
     If (UBound(paras) = 5) Then
 
         ' Draw the canvas
-        Call DXDrawCanvasTransparent(cnvSource, x, y, transpcolor)
+        Call Canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpColor)
 
         ' Bail
         Exit Sub
@@ -12048,12 +12022,12 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     If (UBound(paras) = 7) Then
 
         ' Blt to the screen
-        Call DXDrawCanvasTransparent(cnv, x, y, transpcolor)
+        Call Canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpColor)
 
     Else
 
         ' Blt to another canvas
-        Call Canvas2CanvasBltTransparent(cnv, CLng(paras(8).num), x, y, transpcolor)
+        Call Canvas2CanvasBltTransparent(cnv, CLng(paras(8).num), x, y, transpColor)
 
     End If
 
