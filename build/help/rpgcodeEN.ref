@@ -1,6 +1,10 @@
 RPGCode Language Specification
-Version 2.1
-Copyright 1999 - 2002 By Christopher B. Matthews
+Version 3.0
+Copyright 1999 - 2005 By Christopher B. Matthews and Contributors
+
+(Alter this when you update ;) )
+:COUNT
+184
 
 :COMMAND
 This list was last updated 12/23/04
