@@ -648,7 +648,7 @@ Private Sub Rotate(ByVal how As ROTATE_TYPE)
    
     'Reset variables
     yy = 1: xx = 1
-   
+
     'Start changing the tiles
     Select Case how
         Case Left 'KSNiloc
@@ -688,7 +688,7 @@ End Sub
 '========================================================================
 'KSNiloc: Enum please
 Private Sub Flip(ByVal how As FLIP_TYPE)
-   
+
     'Use new undo
     Call SetUndo
    
@@ -711,7 +711,7 @@ Private Sub Flip(ByVal how As FLIP_TYPE)
             tilemem(X, Y) = buftile(X, Y)
         Next Y
     Next X
-   
+
     'Redraw
     Call tileRedraw
 End Sub
