@@ -20,7 +20,7 @@ Public Const MV_SE = 7
 Public Const MV_SW = 8
 
 'Tile type constants.
-'Note: Stairs in the form "stairs & layer number"; i.e. layer = stairs - 10
+'Note: Stairs in the form "stairs + layer number"; i.e. layer = stairs - 10
 Public Const NORMAL = 0
 Public Const SOLID = 1
 Public Const UNDER = 2
@@ -142,7 +142,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
 '           (both moving / stationary) are considered.
 '============================================================================================
 'Last edited for 3.0.5 by Delano : individual speed movement.
-'Called by EffectiveTileType, MoveItems, MovePlayers, PushItem, PushPlayer*
+'Called by EffectiveTileType, MoveItems, MovePlayers, PushItem, PushPlayer
     
     On Error Resume Next
 
@@ -151,20 +151,39 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
     
     'Altered for pixel movement: test location.
     
+    'Transform pixel isometrics.
+    Dim posX As Double, posY As Double, xTarg As Double, yTarg As Double
+    Dim tPosX As Double, tPosY As Double, txTarg As Double, tyTarg As Double
+    Dim pMovementSize As Double
+    
+    Call isoCoordTransform(pos.x, pos.y, posX, posY)
+    Call isoCoordTransform(pend.xTarg, pend.yTarg, xTarg, yTarg)
+    
+    If boardIso() Then
+        pMovementSize = 1       '"Sprite depth"
+    Else
+        pMovementSize = movementSize
+    End If
+    
     'Check players.
     For i = 0 To UBound(pendingPlayerMovement)
     
         If showPlayer(i) And i <> currentPlayer Then
             'Only if the player is on the board, and is not the player we're checking against.
         
-    
-            If (Not usingPixelMovement) Then
+            Call isoCoordTransform(pPos(i).x, pPos(i).y, tPosX, tPosY)
+            Call isoCoordTransform(pendingPlayerMovement(i).xTarg, _
+                                   pendingPlayerMovement(i).yTarg, _
+                                   txTarg, _
+                                   tyTarg)
+        
+            If Not usingPixelMovement Then
                 'Tile movement.
                 
                 'Current (test!) location against player current location.
                 If _
-                    Abs(pPos(i).y - pos.y) < movementSize And _
-                    Abs(pPos(i).x - pos.x) < 1 And _
+                    Abs(posY - tPosY) < pMovementSize And _
+                    Abs(posX - tPosX) < 1 And _
                     pPos(i).l = pos.l Then
                     
                     Call traceString("ChkObs:P:T:1")
@@ -179,8 +198,8 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                 'then movement would be rejected) it must be due to another moving *player*.
                 'In this case, continue movement because we can't stop!
                 If _
-                    Abs(pend.yTarg - pendingPlayerMovement(i).yTarg) < movementSize And _
-                    Abs(pend.xTarg - pendingPlayerMovement(i).xTarg) < 1 And _
+                    Abs(yTarg - tyTarg) < pMovementSize And _
+                    Abs(xTarg - txTarg) < 1 And _
                     pPos(i).l = pos.l And _
                     startingMove Then
                     
@@ -190,7 +209,6 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     Exit Function
                     
                 End If
-                    
         
             Else
                 'Pixel movement.
@@ -199,40 +217,40 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                 
                     'Current locations: minimum separations. Probably don't even need these.
                     If _
-                        Abs(pPos(i).y - pos.y) < movementSize And _
-                        Abs(pPos(i).x - pos.x) < 1 And _
+                        Abs(posY - tPosY) < pMovementSize And _
+                        Abs(posX - tPosX) < 1 And _
                         pPos(i).l = pos.l Then
+                        
+                        Call traceString("ChkObs:P:PX:1 [!]")
                         
                         checkObstruction = SOLID
                         Exit Function
-                        
-                        Call traceString("ChkObs:P:PX:1 [!]")
                         
                     End If
                     
                     'Target location against player current location.
                     If _
-                        Abs(pPos(i).y - pend.yTarg) < movementSize And _
-                        Abs(pPos(i).x - pend.xTarg) < 1 And _
+                        Abs(tPosY - yTarg) < pMovementSize And _
+                        Abs(tPosX - xTarg) < 1 And _
                         pPos(i).l = pos.l Then
+                        
+                        Call traceString("ChkObs:P:PX:2")
                         
                         checkObstruction = SOLID
                         Exit Function
-                        
-                        Call traceString("ChkObs:P:PX:2")
                         
                     End If
             
                     'Target location against player target location.
                     If _
-                        Abs(pend.yTarg - pendingPlayerMovement(i).yTarg) < movementSize And _
-                        Abs(pend.xTarg - pendingPlayerMovement(i).xTarg) < 1 And _
+                        Abs(yTarg - tyTarg) < pMovementSize And _
+                        Abs(xTarg - txTarg) < 1 And _
                         pPos(i).l = pos.l Then
+                        
+                        Call traceString("ChkObs:P:PX:3")
                         
                         checkObstruction = SOLID
                         Exit Function
-                        
-                        Call traceString("ChkObs:P:PX:3")
                        
                     End If
                     
@@ -250,13 +268,19 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
     
         If LenB(itemMem(i).itemName) <> 0 And i <> currentItem Then
     
+            Call isoCoordTransform(itmPos(i).x, itmPos(i).y, tPosX, tPosY)
+            Call isoCoordTransform(pendingItemMovement(i).xTarg, _
+                                   pendingItemMovement(i).yTarg, _
+                                   txTarg, _
+                                   tyTarg)
+                                   
             If Not (usingPixelMovement) Then
                 'Tile movement.
             
                 'Current locations.
                 If _
-                    Abs(itmPos(i).y - pos.y) < movementSize And _
-                    Abs(itmPos(i).x - pos.x) < 1 And _
+                    Abs(tPosY - posY) < pMovementSize And _
+                    Abs(tPosX - posX) < 1 And _
                     itmPos(i).l = pos.l Then
                     
                     coordMatch = True
@@ -275,8 +299,8 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                 'then movement would be rejected) it must be due to another moving *player*.
                 'In this case, continue movement because we can't stop!
                 If _
-                    Abs(pend.yTarg - pendingItemMovement(i).yTarg) < movementSize And _
-                    Abs(pend.xTarg - pendingItemMovement(i).xTarg) < 1 And _
+                    Abs(yTarg - tyTarg) < pMovementSize And _
+                    Abs(xTarg - txTarg) < 1 And _
                     itmPos(i).l = pos.l And _
                     startingMove Then
                     
@@ -293,8 +317,8 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     
                     'Current locations: minimum separations. Probably don't even need these.
                     If _
-                        Abs(itmPos(i).y - pos.y) < movementSize And _
-                        Abs(itmPos(i).x - pos.x) < 1 And _
+                        Abs(tPosY - posY) < pMovementSize And _
+                        Abs(tPosX - posX) < 1 And _
                         itmPos(i).l = pos.l Then
                         
                         coordMatch = True
@@ -305,8 +329,8 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                 
                     'Target against  item current location.
                     If _
-                        Abs(itmPos(i).y - pend.yTarg) < movementSize And _
-                        Abs(itmPos(i).x - pend.xTarg) < 1 And _
+                        Abs(tPosY - yTarg) < pMovementSize And _
+                        Abs(tPosX - xTarg) < 1 And _
                         itmPos(i).l = pos.l Then
                         
                         coordMatch = True
@@ -317,8 +341,8 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                 
                     'Target against item target location.
                     If _
-                        Abs(pend.yTarg - pendingItemMovement(i).yTarg) < movementSize And _
-                        Abs(pend.xTarg - pendingItemMovement(i).xTarg) < 1 And _
+                        Abs(yTarg - tyTarg) < pMovementSize And _
+                        Abs(xTarg - txTarg) < 1 And _
                         itmPos(i).l = pos.l Then
                         
                         coordMatch = True
@@ -600,7 +624,7 @@ Private Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal
     On Error Resume Next
     
     Dim typetile As Long
-    typetile = boardList(activeBoardIndex).theData.tiletype(x, y, l)
+    typetile = boardList(activeBoardIndex).theData.tileType(x, y, l)
     
     If bFast Then
         EffectiveTileType = typetile
@@ -844,727 +868,20 @@ Private Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As L
     CheckEdges = False
 End Function
 
-Private Function pushPlayerNorthEast(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
-    '=================================================================================
-    'Push player pnum NorthEast by moveFraction.
-    'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    '=================================================================================
-    'EDITED: [Isometrics - Delano 11/05/04]
-    
-    On Error Resume Next
-    
-    fightInProgress = False
-    stepsTaken = stepsTaken + 1
-    
-    'Before doing anything, let's see if we are going off the board.
-    'Checks for links and will send to new board if a link is possible.
-    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
-        pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Function
-    End If
-   
-    pPos(pNum).stance = "walk_ne"
-    
-Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
-                ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
-                ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
-                ".loopFrame=" & pPos(pNum).loopFrame & _
-                ".tt=" & staticTileType)
-    
-    'Ok, we have to insert the new fractional co-ords into a
-    'test pos to see if we can move this frame.
-    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
-    Dim moveFraction As Double
-    
-    testPos = pPos(pNum)
-    testPend = pendingPlayerMovement(pNum)
-    
-    'moveFraction is a fraction of the tile.
-    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
-    
-    'Insert the new fractional co-ords into the test location.
-    Call incrementPosition(testPos, testPend, moveFraction)
-    
-    'Now, check the new co-ords for blocking objects.
-    If _
-        staticTileType = SOLID Or _
-        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
-        'The new co-ords are blocked, or the target is permanently blocked.
-        'All other tiletypes are evaluated to either NORMAL or UNDER, so
-        'we don't need to any other checks.
-        Exit Function
-    End If
-    
-    Dim scrollEast As Boolean, scrollNorth As Boolean
-    scrollEast = True
-    
-    'Scrolling north is handled by the new function checkScrollNorth, but for diagonal
-    'isometrics the conditions are a little different from checkScrollEast. Not sure why...
-    
-    If boardIso() Then
-        'PushEast code. Should be exactly the same as pushSouthEast! Any changes should be copied!
-        
-        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
-            (pPos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
-            (pPos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
-            pNum <> selectedPlayer Then
-            scrollEast = False
-            
-        End If
-    Else
-        'Same as pushSouthEast.
-        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-        
-        If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
-            (pPos(pNum).x < (tilesX / 2) And topX = 0) Or _
-            (pPos(pNum).x - topX < (tilesX / 2)) Or _
-            pNum <> selectedPlayer Then
-            scrollEast = False
-        End If
-    End If
-    
-    scrollNorth = checkScrollNorth(pNum)
-              
-    If scrollEast Or scrollNorth Then
-        Call scrollDownLeft(moveFraction, scrollEast, scrollNorth)
-    End If
-    
-    Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
-    
-    'We can move, put the test location into the true loc.
-    pPos(pNum) = testPos
-    
-    pushPlayerNorthEast = True
-            
-End Function
-
-Private Function pushPlayerNorthWest(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
-    '============================================================================
-    'Push player pnum NorthWest by moveFraction.
-    'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    '============================================================================
-    'EDITED: [Isometrics - Delano 11/05/04]
-    
-    On Error Resume Next
-    
-    fightInProgress = False
-    stepsTaken = stepsTaken + 1
-    
-    'Before doing anything, let's see if we are going off the board.
-    'Checks for links and will send to new board if a link is possible.
-    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
-        pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Function
-    End If
-
-    pPos(pNum).stance = "walk_nw"
-    
-Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
-                ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
-                ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
-                ".loopFrame=" & pPos(pNum).loopFrame & _
-                ".tt=" & staticTileType)
-    
-    'Ok, we have to insert the new fractional co-ords into a
-    'test pos to see if we can move this frame.
-    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
-    Dim moveFraction As Double
-    
-    testPos = pPos(pNum)
-    testPend = pendingPlayerMovement(pNum)
-    
-    'moveFraction is a fraction of the tile.
-    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
-    
-    'Insert the new fractional co-ords into the test location.
-    Call incrementPosition(testPos, testPend, moveFraction)
-    
-    'Now, check the new co-ords for blocking objects.
-    If _
-        staticTileType = SOLID Or _
-        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
-        'The new co-ords are blocked, or the target is permanently blocked.
-        'All other tiletypes are evaluated to either NORMAL or UNDER, so
-        'we don't need to any other checks.
-        Exit Function
-    End If
-    
-    Dim scrollWest As Boolean, scrollNorth As Boolean
-    scrollWest = True
-
-    'Scrolling north is handled by the new function checkScrollNorth, but for diagonal
-    'isometrics the conditions need to be a little different from checkScrollWest. Not sure why...
-    
-    If boardIso() Then
-        'pushWest code. Should be exactly the same as pushSouthWest!
-        If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
-            topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
-            (pPos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
-            ((topX + 1) - 1 < 0) Or _
-            pNum <> selectedPlayer Then
-            
-            scrollWest = False
-        End If
-    Else
-        'This is pushWest standard code.
-        
-        If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
-            topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
-            (pPos(pNum).x - topX > (tilesX / 2)) Or _
-            (topX <= 0) Or _
-            pNum <> selectedPlayer Then
-            
-            scrollWest = False
-        End If
-    End If
-    
-    scrollNorth = checkScrollNorth(pNum)
-    
-    If scrollWest Or scrollNorth Then
-        Call scrollDownRight(moveFraction, scrollWest, scrollNorth)
-    End If
-    
-    pPos(pNum) = testPos
-    
-    pushPlayerNorthWest = True
-            
-End Function
-
-Private Function pushPlayerSouthEast(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
-    '============================================================================
-    'Push player pnum SouthEast by moveFraction.
-    'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    '============================================================================
-    'EDITED: [Isometrics - Delano 3/05/04]
-    
-    On Error Resume Next
-    
-    fightInProgress = False
-    stepsTaken = stepsTaken + 1
-    
-    'Before doing anything, let's see if we are going off the board.
-    'Checks for links and will send to new board if a link is possible.
-    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
-        pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Function
-    End If
-
-    pPos(pNum).stance = "walk_se"
-    
-Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
-                ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
-                ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
-                ".loopFrame=" & pPos(pNum).loopFrame & _
-                ".tt=" & staticTileType)
-    
-    'Ok, we have to insert the new fractional co-ords into a
-    'test pos to see if we can move this frame.
-    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
-    Dim moveFraction As Double
-    
-    testPos = pPos(pNum)
-    testPend = pendingPlayerMovement(pNum)
-    
-    'moveFraction is a fraction of the tile.
-    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
-    
-    'Insert the new fractional co-ords into the test location.
-    Call incrementPosition(testPos, testPend, moveFraction)
-    
-    'Now, check the new co-ords for blocking objects.
-    If _
-        staticTileType = SOLID Or _
-        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
-        'The new co-ords are blocked, or the target is permanently blocked.
-        'All other tiletypes are evaluated to either NORMAL or UNDER, so
-        'we don't need to any other checks.
-        Exit Function
-    End If
-    
-    
-    'Introducing new independent direction variables.
-    Dim scrollEast As Boolean, scrollsouth As Boolean
-    scrollEast = True
-    scrollsouth = True
-    
-    'Accounting for isometrics:
-    If boardIso() Then
-        'This is the PushEast code. + 0.5 modif - does it work?
-        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
-            (pPos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
-            (pPos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
-            pNum <> selectedPlayer Then
-            scrollEast = False
-        End If
-        'pushSouth code with topY modification. ANY CHANGES SHOULD BE COPIED TO pushSouthWest
-        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-            (pPos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
-            (pPos(pNum).y - (topY) < (isoTilesY / 2)) Or _
-            pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
-            scrollsouth = False
-        End If
-    Else
-        'Original code was incomplete even for standard boards!! FIXED.
-        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-        If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
-            (pPos(pNum).x < (tilesX / 2) And topX = 0) Or _
-            (pPos(pNum).x - topX < (tilesX / 2)) Or _
-            pNum <> selectedPlayer Then
-            scrollEast = False
-        End If
-        'TRIAL ADDITION: pushSouth code w/scrollSouth
-        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-        If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-            (pPos(pNum).y < (tilesY / 2) And topY = 0) Or _
-            (pPos(pNum).y - topY < (tilesY / 2)) Or _
-            pNum <> selectedPlayer Then
-            scrollsouth = False
-        End If
-    End If
-    
-    If scrollEast Or scrollsouth Then
-        Call scrollUpLeft(moveFraction, scrollEast, scrollsouth)
-    End If
-    
-    pPos(pNum) = testPos
-    
-    pushPlayerSouthEast = True
-            
-End Function
-
-Private Function pushPlayerSouthWest(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
-    '============================================================================
-    'Push player pNum SouthWest by moveFraction.
-    'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    '============================================================================
-    'EDITED: [Isometrics - Delano 3/05/04]
-    
-    On Error Resume Next
-    
-    fightInProgress = False
-    stepsTaken = stepsTaken + 1
-    
-    'Before doing anything, let's see if we are going off the board.
-    'Checks for links and will send to new board if a link is possible.
-    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
-        pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Function
-    End If
-    
-    pPos(pNum).stance = "walk_sw"
-    
-Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
-                ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
-                ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
-                ".loopFrame=" & pPos(pNum).loopFrame & _
-                ".tt=" & staticTileType)
-    
-    'Ok, we have to insert the new fractional co-ords into a
-    'test pos to see if we can move this frame.
-    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
-    Dim moveFraction As Double
-    
-    testPos = pPos(pNum)
-    testPend = pendingPlayerMovement(pNum)
-    
-    'moveFraction is a fraction of the tile.
-    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
-    
-    'Insert the new fractional co-ords into the test location.
-    Call incrementPosition(testPos, testPend, moveFraction)
-    
-    'Now, check the new co-ords for blocking objects.
-    If _
-        staticTileType = SOLID Or _
-        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
-        'The new co-ords are blocked, or the target is permanently blocked.
-        'All other tiletypes are evaluated to either NORMAL or UNDER, so
-        'we don't need to any other checks.
-        Exit Function
-    End If
-    
-    Dim scrollWest As Boolean, scrollsouth As Boolean
-    scrollWest = True
-    scrollsouth = True
-    
-    'Accounting for isometrics:
-    If boardIso() Then
-        'This is the pushWest code. Might have to change cf. SouthEast 0.5
-        If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
-            topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
-            (pPos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
-            ((topX + 1) - 1 < 0) Or _
-            pNum <> selectedPlayer Then
-            scrollWest = False
-        End If
-        'pushSouth code. Should be exactly the same as pushSouthEast!
-        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-            (pPos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
-            (pPos(pNum).y - (topY) < (isoTilesY / 2)) Or _
-            pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
-            scrollsouth = False
-        End If
-    Else
-        'Original code was incomplete! This is pushWest standard code.
-        'Swapping " - 1 <" for "<=" (boards do not scroll to edges)
-        If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
-            topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
-            (pPos(pNum).x - topX > (tilesX / 2)) Or _
-            (topX <= 0) Or _
-            pNum <> selectedPlayer Then
-            scrollWest = False
-        End If
-        'pushSouth standard board code with topY modification.
-        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-        If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-            (pPos(pNum).y < (tilesY / 2) And topY = 0) Or _
-            (pPos(pNum).y - topY < (tilesY / 2)) Or _
-            pNum <> selectedPlayer Then
-            scrollsouth = False
-        End If
-    End If
-    
-    If scrollWest Or scrollsouth Then
-        Call scrollUpRight(moveFraction, scrollWest, scrollsouth)
-    End If
-    
-    pPos(pNum) = testPos
-    
-    pushPlayerSouthWest = True
-
-End Function
-
-Private Function pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double) As Boolean
-    '======================================
-    'EDITED: [Isometrics - Delano 11/05/04]
-    'Substituted tile type constants.
-    'Moved scroll checking to a new function.
-    '======================================
-    
-    'Push player pnum North by moveFraction.
-    'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    'Calls incrementPosition if movement is possible, and scrollNorth if scrolling required.
-    
-    On Error Resume Next
-
-    fightInProgress = False
-    stepsTaken = stepsTaken + 1
-    
-    'Before doing anything, let's see if we are going off the board.
-    'Checks for links and will send to new board if a link is possible.
-    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
-        pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Function
-    End If
-
-    'obtain the tile type at the target...
-    Dim typetile As Long
-        
-    'typetile = pendingPlayerMovement(pNum).tiletype
-    'typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
-                          pendingPlayerMovement(pNum).yTarg, _
-                          pendingPlayerMovement(pNum).lTarg, _
-                          MV_NORTH, _
-                          pPos(pNum))
-                              
-    'Check if an item is blocking: do this every fraction!
-        
-    If checkObstruction(pPos(pNum), pendingPlayerMovement(pNum), pNum, -1) = SOLID Then typetile = SOLID
-    
-    'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    pPos(pNum).stance = "walk_n"
-    'Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
-    
-    Select Case typetile
-        Case NORMAL, UNDER:
-            'Shift the screen drawing co-ords down (topY) if needed.
-            If checkScrollNorth(pNum) Then Call scrollDown(moveFraction)
-            
-            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
-            pushPlayerNorth = True
-            
-        'Case SOLID:
-            'Walk on the spot.
-    End Select
-    
-End Function
-
-Private Function pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double) As Boolean
-    '======================================
-    'EDITED: [Isometrics - Delano 11/05/04]
-    'Substituted tile type constants.
-    'Moved scroll checking to a new function.
-    '======================================
-    
-    'Push player pnum South by moveFraction.
-    'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    'Calls incrementPosition if movement is possible, and scrollSouth if scrolling required.
-    
-    On Error Resume Next
-
-    fightInProgress = False
-    stepsTaken = stepsTaken + 1
-    
-    'Before doing anything, let's see if we are going off the board.
-    'Checks for links and will send to new board if a link is possible.
-    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
-        pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Function
-    End If
-
-    'obtain the 'tile type' at the target...
-    Dim typetile As Long
-        
-    'typetile = pendingPlayerMovement(pNum).tiletype
-    'typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
-                              pendingPlayerMovement(pNum).yTarg, _
-                              pendingPlayerMovement(pNum).lTarg, _
-                              MV_SOUTH, _
-                              pPos(pNum))
-                          
-    'Check if an item is blocking: do this every fraction!
-    If checkObstruction(pPos(pNum), pendingPlayerMovement(pNum), pNum, -1) = SOLID Then typetile = SOLID
-
-    'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    pPos(pNum).stance = "walk_s"
-    'Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
-    
-    Select Case typetile
-        Case NORMAL, UNDER:
-            'Shift the screen drawing co-ords up (topY) if needed.
-            If checkScrollSouth(pNum) Then Call scrollUp(moveFraction)
-            
-            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
-            pushPlayerSouth = True
-            
-        'Case SOLID:
-            'Walk on the spot.
-    End Select
-End Function
-
-Private Function pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double) As Boolean
-    '======================================
-    'EDITED: [Isometrics - Delano 11/05/04]
-    'Substituted tile type constants.
-    'Moved scroll checking to a new function.
-    '======================================
-    
-    'Push player pnum East by moveFraction.
-    'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    'Calls incrementPosition if movement is possible, and scrollEast if scrolling required.
-    
-    On Error Resume Next
-
-    fightInProgress = False
-    stepsTaken = stepsTaken + 1
-    
-    'Before doing anything, let's see if we are going off the board.
-    'Checks for links and will send to new board if a link is possible.
-    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
-        pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Function
-    End If
-
-    'Obtain the 'tile type' at the target...
-    Dim typetile As Long
-    
-    'typetile = pendingPlayerMovement(pNum).tiletype
-    'typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
-                              pendingPlayerMovement(pNum).yTarg, _
-                              pendingPlayerMovement(pNum).lTarg, _
-                              MV_EAST, _
-                              pPos(pNum))
-    
-    'Check if an item is blocking: do this every fraction!
-    If checkObstruction(pPos(pNum), pendingPlayerMovement(pNum), pNum, -1) = SOLID Then
-        typetile = SOLID
-    End If
-    
-    'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    pPos(pNum).stance = "walk_e"
-    'Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
-    
-    Select Case typetile
-    
-        Case NORMAL, UNDER:
-            'Shift the screen drawing co-ords left (topX) if needed.
-            If checkScrollEast(pNum) Then Call scrollLeft(moveFraction)
-            
-            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
-            pushPlayerEast = True
-                        
-        'Case SOLID:
-            'Walk on the spot.
-    End Select
-End Function
-
-Private Function pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double) As Boolean
-    '======================================
-    'EDITED: [Isometrics - Delano 11/05/04]
-    'Substituted tile type constants.
-    'Moved scroll checking to a new function.
-    '======================================
-    
-    'Push player pNum NorthEast by moveFraction.
-    'Called by movePlayers, each frame of the movement cycle (currently 4 times).
-    'Calls incrementPosition if movement is possible, and scrollNorthEast if scrolling required.
-    
-    On Error Resume Next
-
-    fightInProgress = False
-    stepsTaken = stepsTaken + 1
-    
-    'Before doing anything, let's see if we are going off the board.
-    'Checks for links and will send to new board if a link is possible.
-    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
-        pendingPlayerMovement(pNum).direction = MV_IDLE
-        Exit Function
-    End If
-
-    'obtain the tile type at the target...
-    Dim typetile As Long
-    
-    'typetile = pendingPlayerMovement(pNum).tiletype
-    'typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
-                              pendingPlayerMovement(pNum).yTarg, _
-                              pendingPlayerMovement(pNum).lTarg, _
-                              MV_WEST, _
-                              pPos(pNum))
-    
-    'Check if an item is blocking: do this every fraction!
-    If checkObstruction(pPos(pNum), pendingPlayerMovement(pNum), pNum, -1) = SOLID Then
-        'Uh-oh! We might be in mid-movement but we can't stop indefinitely:
-        'we have to finish moving.
-        typetile = SOLID
-    End If
-   
-   'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    pPos(pNum).stance = "walk_w"
-    
-    Select Case typetile
-        Case NORMAL, UNDER:
-            'Shift the screen drawing co-ords right (topX) if needed.
-            If checkScrollWest(pNum) Then Call scrollRight(moveFraction)
-            
-            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
-            pushPlayerWest = True
-            
-        'Case SOLID:
-            'Walk on the spot.
-    End Select
-    
-End Function
-
-Public Function roundCoords( _
-                               ByRef passPos As PLAYER_POSITION, _
-                               Optional ByVal linkDirection As Long _
-                                                                      ) As PLAYER_POSITION
-
-    '=============================================
-    'Rounds player coordinates [KSNiloc/Delano]
-    '=============================================
-    
-    'Called by programTest, passing in the target co-ordinates after (pixel) movement.
-    
-    'We want programs to trigger when it *appears* that the sprite is in far enough onto the
-    'tile to trigger it.
-    'Sprite size will vary widely, but we assume 32px wide, with "feet" at the very base of
-    'the sprite.
-    'Triggering will act differently for horizontal and vertical movement.
-    '   Horizontally, the position of the base is well-defined, and it can be clearly seen
-    '   when a player is aligned with the tile (y = 0.25 -> 1.00 == 4 quarters.)
-    '   Vertically, it depends on the width of the player. Assuming 32px, the player will
-    '   straddle the trigger tile from x = -0.25 -> 0.75 == 7 quarters, but if we disregard
-    '   the first on either side, that leaves x = -0.75 -> 0.5 == 4 quarters which is better.
-    '
-    '   This does however lead to inconsistencies when walking onto tiles from different
-    '   directions: walking up the side of a tile @ x = -0.25 or x = 0.75 won't trigger,
-    '   whilst walking on the same spots horizontally will trigger.
-    '
-    '   There are also problems with diagonals: the corner sectors won't trigger because
-    '   their co-ords correspond to other trigger spots.
-    '
-    '   Trigger programs run only once per tile by only running when first entering the tile.
-    '   Decimal checks on the co-ords ensure this.
-
-    Dim pos As PLAYER_POSITION
-    pos = passPos
-    
-    Dim dx As Double, dy As Double
-
-    If boardIso() Then
-    
-    Else
-
-        'Standard.
-        Select Case linkDirection
-        
-            'First, check East-West.
-            Case MV_EAST, MV_NE, MV_SE
-            
-                If pos.x - Int(pos.x) = movementSize Then
-                    dx = -Int(-pos.x)
-                End If
-                
-            Case MV_WEST, MV_NW, MV_SW
-            
-                If pos.x - Int(pos.x) = 1 - movementSize Then
-                    dx = Int(pos.x)
-                End If
-                
-        End Select
-
-        Select Case linkDirection
-
-            'Now check North-South. Overwrite dx for diagonals if found.
-            Case MV_NORTH, MV_NE, MV_NW
-
-                If Int(pos.y) = pos.y Then
-                    dx = Round(pos.x)
-                End If
-
-            Case MV_SOUTH, MV_SE, MV_SW
-
-                If pos.y - Int(pos.y) = movementSize Then
-                    dx = Round(pos.x)
-                End If
-
-            Case MV_EAST, MV_WEST
-                'None, but to prevent them in Case Else.
-
-            Case Else
-
-                dx = Round(pos.x)
-                pos.y = Round(pos.y)
-
-        End Select
-        
-        'All cases, assign what we've calculated.
-        pos.x = dx
-        pos.y = -Int(-pos.y)
-
-    End If
-
-    roundCoords = pos
-
-End Function
-
 Public Function obtainTileType(ByVal testX As Double, _
                                ByVal testY As Double, _
                                ByVal testL As Long, _
                                ByVal direction As Long, _
-                               ByRef passPos As PLAYER_POSITION, _
+                               ByRef passpos As PLAYER_POSITION, _
                                Optional ByVal activeItem As Long = -1) As Byte
 
-    '========================================================
+    '===========================================================
     'Determines the effective tile type at the test co-ords
     'by considering items, tiletypes and stairs.
     'Items at the location will block movement.
     'The player is moved to the new level on stairs.
-    '========================================================
-    'Edited for 3.0.4 by Delano: isometrics, pixel movement.
-    'Added code to prevent players walking across the corners
-    'of solid tiles in isometrics.
+    '============================================================
+    'Last edited for 3.0.5 by Delano: isometrics, pixel movement.
 
     'Called by the pushPlayer and pushItem subs.
     On Error Resume Next
@@ -1580,104 +897,320 @@ Public Function obtainTileType(ByVal testX As Double, _
     'If True Then
     
         'Tiletype at the target.
-        typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testL)
-    
+        If boardIso Then
+            'Call invIsoCoordTransform(testX, testY, testX, testY)
+            typetile = boardList(activeBoardIndex).theData.tileType(testX, testY, testL)
+        Else
+            typetile = boardList(activeBoardIndex).theData.tileType(testX, testY, testL)
+        End If
+        
     Else
-
-        With boardList(activeBoardIndex).theData
-            Select Case direction
-                Case MV_NORTH:
-                    'first = .tiletype(Int(testX), Int(testY), testL)  'To stay away!
-                    'second = .tiletype(-Int(-testX), Int(testY), testL)
-                    first = .tiletype(Int(testX), -Int(-testY), testL) 'To approach walls.
-                    second = .tiletype(-Int(-testX), -Int(-testY), testL)
-                Case MV_SOUTH:
-                    first = .tiletype(Int(testX), -Int(-testY), testL)
-                    second = .tiletype(-Int(-testX), -Int(-testY), testL)
-                Case MV_EAST:
-                    first = .tiletype(-Int(-testX), -Int(-testY), testL)
-                    'second = .tiletype(-Int(-testX), Int(testY), testL)    'To stay away!
-                Case MV_WEST:
-                    first = .tiletype(Int(testX), -Int(-testY), testL)
-                    'second = .tiletype(Int(testX), Int(testY), testL)      'To stay away!
-                    
-                'Problems if approaching walls.
-                Case MV_NE:
-                    'typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
-                    
-                    'The current type.
-                    typetile = .tiletype(Int(testX), -Int(-testY), testL)
-                        
-                    If testX > Int(testX) Then
-                        'We're crossing two tiles horizontally. Test the tile to the right.
-                        typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
-                        
-                    End If
-                    If testY = Int(testY) Then
-                        'We're moving to two tiles vertically. Test tiles above and to the right.
-                        first = .tiletype(Int(testX), Int(testY), testL)
-                        second = .tiletype(-Int(-testX), Int(testY), testL)
-                        
-                    End If
-                    
-                    
-                Case MV_NW:
-                    'typetile = .tiletype(Int(testX), -Int(-testY), testL)
-                    
-                    'The current type.
-                    typetile = .tiletype(Int(testX), -Int(-testY), testL)
+    
+        If boardIso() Then
+        
+            '========================================================================
+            ' Co-ordinate transform! New type to old.
+            
+            'Ok, we use the non-isometric rounding values, but switch cases since we've rotated
+            'the grid. However, all the .tileType() values are referenced in the old co-ordinate
+            'system.
+            'First, transform to the new system, then do the roundings, transform back, get the
+            'tiletype.
+            
+            '# denotes transformed tiles. Don't remove commented code!
+            
+            Dim trX As Double, trY As Double
+            'Transform.
+            Call isoCoordTransform(testX, testY, testX, testY)
+            
+            With boardList(activeBoardIndex).theData
+                Select Case direction
+                 Case MV_NE
+                     '#first = .tiletype(Int(testX), Int(testY), testL)  'To stay away!
+                     '#second = .tiletype(-Int(-testX), Int(testY), testL)
+                     ''first = .tileType(Int(testX), -Int(-testY), testL) 'To approach walls.
+                     ''second = .tileType(-Int(-testX), -Int(-testY), testL)
                      
-                    If testX > Int(testX) Then
-                        'We're crossing two tiles horizontally. Test the tile to the left.
-                        typetile = .tiletype(Int(testX), -Int(-testY), testL)
-                        
-                    End If
-                    If testY = Int(testY) Then
-                        'We're moving up to two tiles. Test tiles above and to the left.
-                        first = .tiletype(Int(testX), Int(testY), testL)
-                        second = .tiletype(-Int(-testX), Int(testY), testL)
-                    End If
-                    
-                    
-                Case MV_SE:
-                    'typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
-                    
-                    'The current type.
-                    typetile = .tiletype(Int(testX), -Int(-testY), testL)
-                    
-                    If testX > Int(testX) Then
-                        'We're crossing two tiles horizontally. Test the tile to the right.
-                        typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
-                        
-                    End If
-                    If testY - movementSize = Int(testY) Then
-                        'We're moving down to two tiles. Test tiles above and to the right.
-                        first = .tiletype(Int(testX), -Int(-testY), testL)
-                        second = .tiletype(-Int(-testX), -Int(-testY), testL)
-                    
-                    End If
-                    
-                    
-                Case MV_SW:
-                    'typetile = .tiletype(Int(testX), -Int(-testY), testL)
-                    
-                    'The current type.
-                    typetile = .tiletype(Int(testX), -Int(-testY), testL)
-                    
-                    If testX > Int(testX) Then
-                        'We're crossing two tiles horizontally. Test the tile to the left.
-                        typetile = .tiletype(Int(testX), -Int(-testY), testL)
-                        
-                    End If
-                    If testY - movementSize = Int(testY) Then
-                        'We're moving down to two tiles. Test tiles above and to the left.
-                        first = .tiletype(Int(testX), -Int(-testY), testL)
-                        second = .tiletype(-Int(-testX), -Int(-testY), testL)
-   
-                    End If
-                    
-            End Select
-        End With
+                     'Inverse transform: [to stay away - different to 2D]
+                     Call invIsoCoordTransform(Int(testX), Int(testY), trX, trY)
+                     first = .tileType(trX, trY, testL)
+                     Call invIsoCoordTransform(-Int(-testX), Int(testY), trX, trY)
+                     second = .tileType(trX, trY, testL)
+                     
+                     
+                 Case MV_SW
+                     '#first = .tileType(Int(testX), -Int(-testY), testL)
+                     '#second = .tileType(-Int(-testX), -Int(-testY), testL)
+                 
+                     'Transform:
+                     Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                     first = .tileType(trX, trY, testL)
+                     Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
+                     second = .tileType(trX, trY, testL)
+                 
+                 
+                 Case MV_SE
+                     '#first = .tileType(-Int(-testX), -Int(-testY), testL)
+                     '#second = .tiletype(-Int(-testX), Int(testY), testL)    'To stay away!
+                 
+                     'Transform: [to approach]
+                     Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
+                     first = .tileType(trX, trY, testL)
+                     Call invIsoCoordTransform(-Int(-testX), Int(testY), trX, trY)
+                     second = .tileType(trX, trY, testL)
+                 
+                 Case MV_NW
+                     '#first = .tileType(Int(testX), -Int(-testY), testL)
+                     '#second = .tiletype(Int(testX), Int(testY), testL)      'To stay away!
+                     
+                     'Transform: [to stay away]
+                     Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                     first = .tileType(trX, trY, testL)
+                     Call invIsoCoordTransform(Int(testX), Int(testY), trX, trY)
+                     second = .tileType(trX, trY, testL)
+                
+                 
+                 'Problems if approaching walls.
+                 Case MV_EAST
+                     ''typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
+                     
+                     ''The current type.
+                     '#typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         
+                     'Transform: [to approach]
+                     Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                     typetile = .tileType(trX, trY, testL)
+                         
+                         
+                     If testX > Int(testX) Then
+                         'We're crossing two tiles horizontally. Test the tile to the right.
+                         '#typetile = .tileType(-Int(-testX), -Int(-testY), testL)
+                         
+                         'Transform: [to approach]
+                         Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
+                         typetile = .tileType(trX, trY, testL)
+                         
+                     End If
+                     If testY > Int(testY) Then
+                         ''We're moving to two tiles vertically. Test tiles above and to the right.
+                         '#first = .tileType(Int(testX), Int(testY), testL)
+                         '#second = .tileType(-Int(-testX), Int(testY), testL)
+                         
+                         'Transform: [to approach]
+                         Call invIsoCoordTransform(Int(testX), Int(testY), trX, trY)
+                         first = .tileType(trX, trY, testL)
+                         Call invIsoCoordTransform(-Int(-testX), Int(testY), trX, trY)
+                         second = .tileType(trX, trY, testL)
+                         
+                     End If
+                     
+                     
+                 Case MV_NORTH
+                     ''typetile = .tiletype(Int(testX), -Int(-testY), testL)
+                     
+                     ''The current type.
+                     '#typetile = .tileType(Int(testX), -Int(-testY), testL)
+                      
+                     'Transform: [to approach]
+                     Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                     typetile = .tileType(trX, trY, testL)
+                         
+                     If testX > Int(testX) Then
+                         'We're crossing two tiles horizontally. Test the tile to the left.
+                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         
+                         'Transform: [to approach]
+                         Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                         typetile = .tileType(trX, trY, testL)
+                         
+                     End If
+                     If testY > Int(testY) Then
+                         ''We're moving up to two tiles. Test tiles above and to the left.
+                         '#first = .tileType(Int(testX), Int(testY), testL)
+                         '#second = .tileType(-Int(-testX), Int(testY), testL)
+                         
+                         'Transform: [to approach]
+                         Call invIsoCoordTransform(Int(testX), Int(testY), trX, trY)
+                         first = .tileType(trX, trY, testL)
+                         Call invIsoCoordTransform(-Int(-testX), Int(testY), trX, trY)
+                         second = .tileType(trX, trY, testL)
+                         
+                     End If
+                     
+                     
+                 Case MV_SOUTH
+                     ''typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
+                     
+                     ''The current type.
+                     '#typetile = .tileType(Int(testX), -Int(-testY), testL)
+                     
+                     'Transform: [to approach]
+                     Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                     typetile = .tileType(trX, trY, testL)
+                     
+                     If testX > Int(testX) Then
+                         ''We're crossing two tiles horizontally. Test the tile to the right.
+                         '#typetile = .tileType(-Int(-testX), -Int(-testY), testL)
+                         
+                         'Transform: [to approach]
+                         Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
+                         typetile = .tileType(trX, trY, testL)
+                         
+                     End If
+                     If testY - movementSize = Int(testY) Then
+                         ''We're moving down to two tiles. Test tiles above and to the right.
+                         '#first = .tileType(Int(testX), -Int(-testY), testL)
+                         '#second = .tileType(-Int(-testX), -Int(-testY), testL)
+                     
+                         'Transform: [to approach]
+                         Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                         first = .tileType(trX, trY, testL)
+                         Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
+                         second = .tileType(trX, trY, testL)
+                         
+                     End If
+                     
+                     
+                 Case MV_WEST
+                     ''typetile = .tiletype(Int(testX), -Int(-testY), testL)
+                     
+                     ''The current type.
+                     '#typetile = .tileType(Int(testX), -Int(-testY), testL)
+                     
+                     'Transform: [to approach]
+                     Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                     typetile = .tileType(trX, trY, testL)
+                     
+                     If testX > Int(testX) Then
+                         ''We're crossing two tiles horizontally. Test the tile to the left.
+                         '#typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         
+                         'Transform: [to approach]
+                         Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                         typetile = .tileType(trX, trY, testL)
+                         
+                         
+                     End If
+                     If testY - movementSize = Int(testY) Then
+                         ''We're moving down to two tiles. Test tiles above and to the left.
+                         '#first = .tileType(Int(testX), -Int(-testY), testL)
+                         '#second = .tileType(-Int(-testX), -Int(-testY), testL)
+                         
+                         'Transform: [to approach]
+                         Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
+                         first = .tileType(trX, trY, testL)
+                         Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
+                         second = .tileType(trX, trY, testL)
+    
+                     End If
+                     
+                End Select
+            End With
+            
+            'All done! transform testX,testY back.
+            Call invIsoCoordTransform(testX, testY, testX, testY)
+                
+        '==================== end transform ================================
+        
+        Else
+            '2D board.
+    
+             With boardList(activeBoardIndex).theData
+                 Select Case direction
+                     Case MV_NORTH
+                         'first = .tiletype(Int(testX), Int(testY), testL)  'To stay away!
+                         'second = .tiletype(-Int(-testX), Int(testY), testL)
+                         first = .tileType(Int(testX), -Int(-testY), testL) 'To approach walls.
+                         second = .tileType(-Int(-testX), -Int(-testY), testL)
+                     Case MV_SOUTH
+                         first = .tileType(Int(testX), -Int(-testY), testL)
+                         second = .tileType(-Int(-testX), -Int(-testY), testL)
+                     Case MV_EAST
+                         first = .tileType(-Int(-testX), -Int(-testY), testL)
+                         'second = .tiletype(-Int(-testX), Int(testY), testL)    'To stay away!
+                     Case MV_WEST
+                         first = .tileType(Int(testX), -Int(-testY), testL)
+                         'second = .tiletype(Int(testX), Int(testY), testL)      'To stay away!
+                         
+                     'Problems if approaching walls.
+                     Case MV_NE
+                         'typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
+                         
+                         'The current type.
+                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                             
+                         If testX > Int(testX) Then
+                             'We're crossing two tiles horizontally. Test the tile to the right.
+                             typetile = .tileType(-Int(-testX), -Int(-testY), testL)
+                             
+                         End If
+                         If testY = Int(testY) Then
+                             'We're moving to two tiles vertically. Test tiles above and to the right.
+                             first = .tileType(Int(testX), Int(testY), testL)
+                             second = .tileType(-Int(-testX), Int(testY), testL)
+                             
+                         End If
+                         
+                         
+                     Case MV_NW
+                         'typetile = .tiletype(Int(testX), -Int(-testY), testL)
+                         
+                         'The current type.
+                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                          
+                         If testX > Int(testX) Then
+                             'We're crossing two tiles horizontally. Test the tile to the left.
+                             typetile = .tileType(Int(testX), -Int(-testY), testL)
+                             
+                         End If
+                         If testY = Int(testY) Then
+                             'We're moving up to two tiles. Test tiles above and to the left.
+                             first = .tileType(Int(testX), Int(testY), testL)
+                             second = .tileType(-Int(-testX), Int(testY), testL)
+                         End If
+                         
+                         
+                     Case MV_SE
+                         'typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
+                         
+                         'The current type.
+                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         
+                         If testX > Int(testX) Then
+                             'We're crossing two tiles horizontally. Test the tile to the right.
+                             typetile = .tileType(-Int(-testX), -Int(-testY), testL)
+                             
+                         End If
+                         If testY - movementSize = Int(testY) Then
+                             'We're moving down to two tiles. Test tiles above and to the right.
+                             first = .tileType(Int(testX), -Int(-testY), testL)
+                             second = .tileType(-Int(-testX), -Int(-testY), testL)
+                         
+                         End If
+                         
+                         
+                     Case MV_SW
+                         'typetile = .tiletype(Int(testX), -Int(-testY), testL)
+                         
+                         'The current type.
+                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         
+                         If testX > Int(testX) Then
+                             'We're crossing two tiles horizontally. Test the tile to the left.
+                             typetile = .tileType(Int(testX), -Int(-testY), testL)
+                             
+                         End If
+                         If testY - movementSize = Int(testY) Then
+                             'We're moving down to two tiles. Test tiles above and to the left.
+                             first = .tileType(Int(testX), -Int(-testY), testL)
+                             second = .tileType(-Int(-testX), -Int(-testY), testL)
+        
+                         End If
+                         
+                 End Select
+             End With
+        
+        End If 'boardIso
         
         Dim a As Byte
         For a = SOLID To STAIRS8
@@ -1694,7 +1227,7 @@ Public Function obtainTileType(ByVal testX As Double, _
     
     'if we're sitting on stairs, forget about tiles above.
     If typetile >= STAIRS1 And typetile <= STAIRS8 Then
-        passPos.l = typetile - 10
+        passpos.l = typetile - 10
         typetile = NORMAL
         underneath = 0
     End If
@@ -1714,7 +1247,7 @@ Public Function obtainTileType(ByVal testX As Double, _
     'Added: Prevent players from crossing corners of solid tiles on isometric boards:
     Dim leftTile As Byte, rightTile As Byte, aboveTile As Byte, belowTile As Byte
     
-    If boardIso() Then
+    If boardIso() And Not usingPixelMovement() Then
         'Check if the tiles above and below the movement are solid.
         'We get the location with respect to the *test* (target) co-ordinates.
         With boardList(activeBoardIndex).theData
@@ -1722,42 +1255,42 @@ Public Function obtainTileType(ByVal testX As Double, _
                 Case MV_NORTH:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        leftTile = .tiletype(testX - 1, testY + 1, testL)
-                        rightTile = .tiletype(testX, testY + 1, testL)
+                        leftTile = .tileType(testX - 1, testY + 1, testL)
+                        rightTile = .tileType(testX, testY + 1, testL)
                     Else
                         'Odd y
-                        leftTile = .tiletype(testX, testY + 1, testL)
-                        rightTile = .tiletype(testX + 1, testY + 1, testL)
+                        leftTile = .tileType(testX, testY + 1, testL)
+                        rightTile = .tileType(testX + 1, testY + 1, testL)
                     End If
                 Case MV_SOUTH:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        leftTile = .tiletype(testX - 1, testY - 1, testL)
-                        rightTile = .tiletype(testX, testY - 1, testL)
+                        leftTile = .tileType(testX - 1, testY - 1, testL)
+                        rightTile = .tileType(testX, testY - 1, testL)
                     Else
                         'Odd y
-                        leftTile = .tiletype(testX, testY - 1, testL)
-                        rightTile = .tiletype(testX + 1, testY - 1, testL)
+                        leftTile = .tileType(testX, testY - 1, testL)
+                        rightTile = .tileType(testX + 1, testY - 1, testL)
                     End If
                 Case MV_EAST:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        aboveTile = .tiletype(testX - 1, testY - 1, testL)
-                        belowTile = .tiletype(testX - 1, testY + 1, testL)
+                        aboveTile = .tileType(testX - 1, testY - 1, testL)
+                        belowTile = .tileType(testX - 1, testY + 1, testL)
                     Else
                         'Odd y
-                        aboveTile = .tiletype(testX, testY - 1, testL)
-                        belowTile = .tiletype(testX, testY + 1, testL)
+                        aboveTile = .tileType(testX, testY - 1, testL)
+                        belowTile = .tileType(testX, testY + 1, testL)
                     End If
                  Case MV_WEST:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        aboveTile = .tiletype(testX, testY - 1, testL)
-                        belowTile = .tiletype(testX, testY + 1, testL)
+                        aboveTile = .tileType(testX, testY - 1, testL)
+                        belowTile = .tileType(testX, testY + 1, testL)
                     Else
                         'Odd y
-                        aboveTile = .tiletype(testX + 1, testY - 1, testL)
-                        belowTile = .tiletype(testX + 1, testY + 1, testL)
+                        aboveTile = .tileType(testX + 1, testY - 1, testL)
+                        belowTile = .tileType(testX + 1, testY + 1, testL)
                     End If
             End Select
         End With
@@ -1772,10 +1305,11 @@ Public Function obtainTileType(ByVal testX As Double, _
     
 End Function
 
-Public Function moveItems() As Boolean: On Error Resume Next
+Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On Error Resume Next
 '===========================================================
 'Loops over items and checks/sets the movement state.
 'Returns whether any movement occured.
+'If singleItem supplied, will only move this item.
 'Called by: gameLogic, runQueuedMovements
 '===========================================================
    
@@ -1785,103 +1319,106 @@ Public Function moveItems() As Boolean: On Error Resume Next
     
     For itmIdx = 0 To UBound(pendingItemMovement)
         'All of these items will be in view.
+        If singleItem = itmIdx Or -1 Then
         
-        If itmPos(itmIdx).loopFrame <= 0 Then
-            'Parse the queue.
-            pendingItemMovement(itmIdx).direction = getQueuedMovement(pendingItemMovement(itmIdx).queue)
-            
+            If itmPos(itmIdx).loopFrame <= 0 Then
+                'Parse the queue.
+                pendingItemMovement(itmIdx).direction = getQueuedMovement(pendingItemMovement(itmIdx).queue)
+                
+                If pendingItemMovement(itmIdx).direction <> MV_IDLE Then
+                
+                    'Insert the target co-ordinates.
+                    Call insertTarget(pendingItemMovement(itmIdx))
+                    
+                    'Get the tiletype once.
+                    With pendingItemMovement(itmIdx)
+                    
+                        'The board tile isn't going anywhere during the move; get it once.
+                        staticTileType(itmIdx) = obtainTileType(.xTarg, _
+                                                   .yTarg, _
+                                                   .lTarg, _
+                                                   .direction, _
+                                                   itmPos(itmIdx), _
+                                                   itmIdx)
+                    End With
+                    
+                    'Check for stationary items only (for tile mvt).
+                    'Check all items now only (for pixel mvt).
+                    If checkObstruction(itmPos(itmIdx), _
+                                        pendingItemMovement(itmIdx), _
+                                        -1, _
+                                        itmIdx, _
+                                        True) _
+                                        = SOLID Then
+                                        
+                        staticTileType(itmIdx) = SOLID
+                        
+                    End If
+                
+                    'We can start moving.
+                    itmPos(itmIdx).loopFrame = 0
+                    
+                End If '.direction <> MV_IDLE
+                
+            End If '.loopFrame < 0
+                
             If pendingItemMovement(itmIdx).direction <> MV_IDLE Then
             
-                'Insert the target co-ordinates.
-                Call insertTarget(pendingItemMovement(itmIdx))
                 
-                'Get the tiletype once.
-                With pendingItemMovement(itmIdx)
-                
-                    'The board tile isn't going anywhere during the move; get it once.
-                    staticTileType(itmIdx) = obtainTileType(.xTarg, _
-                                               .yTarg, _
-                                               .lTarg, _
-                                               .direction, _
-                                               itmPos(itmIdx), _
-                                               itmIdx)
-                End With
-                
-                'Check for stationary items only (for tile mvt).
-                'Check all items now only (for pixel mvt).
-                If checkObstruction(itmPos(itmIdx), _
-                                    pendingItemMovement(itmIdx), _
-                                    -1, _
-                                    itmIdx, _
-                                    True) _
-                                    = SOLID Then
-                                    
-                    staticTileType(itmIdx) = SOLID
+                 With itemMem(itmIdx)
+                    'Normalise the speed to the average mainloop time.
+                    '.loopSpeed = CLng(.speed / gAvgTime)
                     
-                End If
-            
-                'We can start moving.
-                itmPos(itmIdx).loopFrame = 0
+                    .loopSpeed = CLng(.speed)    'If not using decimal delay.
+                    
+                    'Check divide by zero.
+                    If .loopSpeed = 0 Then .loopSpeed = 1
+                    
+                    
+                End With
+               
+                If pushItem(itmIdx, staticTileType(itmIdx)) Then
+                    'Only increment the frames if movement was successful.
+                    
+                    With itmPos(itmIdx)
+    
+                        If .loopFrame Mod ((itemMem(itmIdx).loopSpeed + loopOffset) / movementSize) = 0 Then
+                            'Only increment the frame if we're on a multiple of .speed.
+                            '/ movementSize to handle pixel movement.
+                            .frame = .frame + 1
+                        End If
+                                    
+                        .loopFrame = .loopFrame + 1
+                        
+                        If .loopFrame = FRAMESPERMOVE * (itemMem(itmIdx).loopSpeed + loopOffset) Then
+                            'The item has finished moving, update origin, reset the counter.
+                            
+                            With pendingItemMovement(itmIdx)
+                                .direction = MV_IDLE
+                                .xOrig = .xTarg
+                                .yOrig = .yTarg
+                                .lOrig = itmPos(itmIdx).l
+                                itmPos(itmIdx).x = .xTarg
+                                itmPos(itmIdx).y = .yTarg
+                            End With
+                            
+                            'Start the idle timer:
+                            .idleTime = Timer()
+                            
+                            .loopFrame = 0
+                            
+                        End If
+                        
+                    End With 'itmPos(itmIdx)
+                    
+                End If 'pushItem
+                
+                'Movement occured (or was blocked), return True.
+                moveItems = True
                 
             End If '.direction <> MV_IDLE
             
-        End If '.loopFrame < 0
-            
-        If pendingItemMovement(itmIdx).direction <> MV_IDLE Then
-        
-            
-             With itemMem(itmIdx)
-                'Normalise the speed to the average mainloop time.
-                '.loopSpeed = CLng(.speed / gAvgTime)
-                
-                .loopSpeed = CLng(.speed)    'If not using decimal delay.
-                
-                'Check divide by zero.
-                If .loopSpeed = 0 Then .loopSpeed = 1
-                
-                
-            End With
-           
-            If pushItem(itmIdx, staticTileType(itmIdx)) Then
-                'Only increment the frames if movement was successful.
-                
-                With itmPos(itmIdx)
-
-                    If .loopFrame Mod ((itemMem(itmIdx).loopSpeed + loopOffset) / movementSize) = 0 Then
-                        'Only increment the frame if we're on a multiple of .speed.
-                        '/ movementSize to handle pixel movement.
-                        .frame = .frame + 1
-                    End If
-                                
-                    .loopFrame = .loopFrame + 1
-                    
-                    If .loopFrame = FRAMESPERMOVE * (itemMem(itmIdx).loopSpeed + loopOffset) Then
-                        'The item has finished moving, update origin, reset the counter.
-                        
-                        With pendingItemMovement(itmIdx)
-                            .direction = MV_IDLE
-                            .xOrig = .xTarg
-                            .yOrig = .yTarg
-                            .lOrig = itmPos(itmIdx).l
-                            itmPos(itmIdx).x = .xTarg
-                            itmPos(itmIdx).y = .yTarg
-                        End With
-                        
-                        'Start the idle timer:
-                        .idleTime = Timer()
-                        
-                        .loopFrame = 0
-                        
-                    End If
-                    
-                End With 'itmPos(itmIdx)
-                
-            End If 'pushItem
-            
-            'Movement occured (or was blocked), return True.
-            moveItems = True
-            
-        End If '.direction <> MV_IDLE
+        End If 'singleItem = itmIdx or -1
         
     Next itmIdx
 
@@ -1919,7 +1456,7 @@ Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) A
         End Select
     End With
 
-    Call traceString("ITEM.x=" & itmPos(itemNum).x & ".y=" & itmPos(itemNum).y & _
+    'Call traceString("ITEM.x=" & itmPos(itemNum).x & ".y=" & itmPos(itemNum).y & _
                 ".xTarg=" & pendingItemMovement(itemNum).xTarg & _
                 ".yTarg=" & pendingItemMovement(itemNum).yTarg & _
                 ".loopFrame=" & itmPos(itemNum).loopFrame & _
@@ -1956,10 +1493,11 @@ Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) A
 
 End Function
 
-Public Function movePlayers() As Boolean: On Error Resume Next
+Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean: On Error Resume Next
 '======================================================
 'Loops over players and checks/sets the movement state.
 'Returns whether any movement occured.
+'If singlePlayer supplied, will only move that player.
 'Called by: gameLogic, runQueuedMovements
 '======================================================
 
@@ -1969,8 +1507,8 @@ Public Function movePlayers() As Boolean: On Error Resume Next
     
     For playerIdx = 0 To UBound(pendingPlayerMovement)
     
-        If showPlayer(playerIdx) Then
-            'If player is visible.
+        If showPlayer(playerIdx) And (singlePlayer = playerIdx Or -1) Then
+            'If player is visible, or we're running this for singlePlayer only.
         
             If pPos(playerIdx).loopFrame < 0 Then
                 'Negative value indicates idle status.
@@ -2024,11 +1562,10 @@ Public Function movePlayers() As Boolean: On Error Resume Next
                 
             End If '.loopFrame = 0
             
-
 'Call traceString("MVPLY.x=" & pPos(playerIdx).x & ".y=" & pPos(playerIdx).y & _
                 ".lpf=" & pPos(playerIdx).loopFrame & _
-                " .dir=" & pendingPlayerMovement(playerIdx).direction)
-                
+                " .dir=" & pendingPlayerMovement(playerIdx).direction & _
+                " stt=" & staticTileType(playerIdx))
                 
             If pendingPlayerMovement(playerIdx).direction <> MV_IDLE Then
         
@@ -2047,20 +1584,7 @@ Public Function movePlayers() As Boolean: On Error Resume Next
                 End With
                 
                 'Always increment the position as a fraction of the total movement.
-                
-                Select Case pendingPlayerMovement(playerIdx).direction
-                
-                    'Case MV_NORTH: mvOccured = pushPlayerNorth(playerIdx, moveFraction)
-                    'Case MV_SOUTH: mvOccured = pushPlayerSouth(playerIdx, moveFraction)
-                    'Case MV_EAST: mvOccured = pushPlayerEast(playerIdx, moveFraction)
-                    'Case MV_WEST: mvOccured = pushPlayerWest(playerIdx, moveFraction)
-                    Case MV_NE: mvOccured = pushPlayerNorthEast(playerIdx, staticTileType(playerIdx))
-                    Case MV_NW: mvOccured = pushPlayerNorthWest(playerIdx, staticTileType(playerIdx))
-                    Case MV_SE: mvOccured = pushPlayerSouthEast(playerIdx, staticTileType(playerIdx))
-                    Case MV_SW: mvOccured = pushPlayerSouthWest(playerIdx, staticTileType(playerIdx))
-                    Case Else: mvOccured = pushPlayer(playerIdx, staticTileType(playerIdx))
-                    
-                End Select
+                mvOccured = pushPlayer(playerIdx, staticTileType(playerIdx))
                 
                 If mvOccured Or staticTileType(playerIdx) = SOLID Then
                     'Only increment frames if we're moving or are not allowed to move.
@@ -2115,13 +1639,19 @@ Public Function movePlayers() As Boolean: On Error Resume Next
 
 End Function
 
-Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean: On Error Resume Next
-'===============================================================================
-'Single push player sub. Tests the fractional position and copies to the player
+Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
+'=======================================================================================
+'Single push player sub. Tests the fractional position and copies to the player.
 'position if movement is possible.
 'Returns whether movement occured.
 'Called by movePlayers only.
-'===============================================================================
+'=======================================================================================
+'Last edited for 3.0.5 by Delano: merged directions into one function.
+
+    On Error Resume Next
+    
+    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
+    Dim moveFraction As Double
 
     fightInProgress = False
     stepsTaken = stepsTaken + 1
@@ -2130,27 +1660,20 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
     'Checks for links and will send to new board if a link is possible.
     If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
         pendingPlayerMovement(pNum).direction = MV_IDLE
+        pPos(pNum).loopFrame = -1
         Exit Function
     End If
     
-    'Insert the player stance.
-    Select Case pendingPlayerMovement(pNum).direction
-        Case MV_NORTH: pPos(pNum).stance = "walk_n"
-        Case MV_SOUTH: pPos(pNum).stance = "walk_s"
-        Case MV_EAST: pPos(pNum).stance = "walk_e"
-        Case MV_WEST: pPos(pNum).stance = "walk_w"
-    End Select
-    
-'Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
+If pPos(pNum).loopFrame = 0 Then Call traceString(" ")
+Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
                 ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
                 ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
                 ".loopFrame=" & pPos(pNum).loopFrame & _
-                ".tt=" & staticTileType)
+                " topX=" & topX & " topY=" & topY)
+    
                 
     'Ok, we have to insert the new fractional co-ords into a
     'test pos to see if we can move this frame.
-    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
-    Dim moveFraction As Double
     
     testPos = pPos(pNum)
     testPend = pendingPlayerMovement(pNum)
@@ -2167,16 +1690,37 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
         checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
         'The new co-ords are blocked, or the target is permanently blocked.
         'All other tiletypes are evaluated to either NORMAL or UNDER, so
-        'we don't need to any other checks.
+        'we don't need to do any other checks.
         Exit Function
     End If
     
     'Shift the screen drawing co-ords if needed.
     Select Case pendingPlayerMovement(pNum).direction
-        Case MV_NORTH: If checkScrollNorth(pNum) Then Call scrollDown(moveFraction)
-        Case MV_SOUTH: If checkScrollSouth(pNum) Then Call scrollUp(moveFraction)
-        Case MV_EAST: If checkScrollEast(pNum) Then Call scrollLeft(moveFraction)
-        Case MV_WEST: If checkScrollWest(pNum) Then Call scrollRight(moveFraction)
+        Case MV_NORTH
+            testPos.stance = "walk_n"
+            If checkScrollNorth(pNum) Then Call scrollDown(moveFraction)
+        Case MV_SOUTH
+            testPos.stance = "walk_s"
+            If checkScrollSouth(pNum) Then Call scrollUp(moveFraction)
+        Case MV_EAST
+            testPos.stance = "walk_e"
+            If checkScrollEast(pNum) Then Call scrollLeft(moveFraction)
+        Case MV_WEST
+            testPos.stance = "walk_w"
+            If checkScrollWest(pNum) Then Call scrollRight(moveFraction)
+        Case MV_NE
+            testPos.stance = "walk_ne"
+            Call scrollDownLeft(moveFraction, checkScrollEast(pNum), checkScrollNorth(pNum))
+        Case MV_NW
+            testPos.stance = "walk_nw"
+            Call scrollDownRight(moveFraction, checkScrollWest(pNum), checkScrollNorth(pNum))
+        Case MV_SE
+            testPos.stance = "walk_se"
+            Call scrollUpLeft(moveFraction, checkScrollEast(pNum), checkScrollSouth(pNum))
+        Case MV_SW
+            testPos.stance = "walk_sw"
+            Call scrollUpRight(moveFraction, checkScrollWest(pNum), checkScrollSouth(pNum))
+        
     End Select
     
     'We can move, put the test location into the true loc.
@@ -2193,6 +1737,7 @@ Private Function getQueuedMovement(ByRef queue As String) As Long: On Error Resu
 'Returns the direction value, or MV_IDLE if none.
 'Called by: movePlayers, moveItems
 '======================================================================
+'By Delano for 3.0.5
 
     Dim i As Long
         
@@ -2218,9 +1763,7 @@ End Function
 
 Public Sub runQueuedMovements(): On Error Resume Next
 '======================================================================
-'run all player and item movements currently pending
-'without regard for gamestate (like if gamestate is GS_MOVEMENT or not)
-'won't run programs and stuff when player moves.
+'Runs queued movements stacked up through rpgcode.
 '======================================================================
 'Called by ItemStepRPG, PlayerStepRPG, PushItemRPG, PushRPG, WanderRPG.
 
@@ -2246,6 +1789,7 @@ Public Sub setQueuedMovements(ByRef queue As String, ByRef path As String): On E
 'Parse a string of movements for pushing and add them to the objects' queue.
 'Called by PushItemRPG, PushRPG...
 '===========================================================================
+'By Delano for 3.0.5
 
     Dim element As Long, jString As String
     Dim largeArray() As String, smallArray() As String, i As Long
@@ -2314,188 +1858,185 @@ Call traceString("in:setQueuedMovements queue = " & queue)
         
 End Sub
 
-
 Private Function checkScrollNorth(ByVal playerNum As Long) As Boolean
-'======================================================
-'NEW FUNCTION: [Delano - 9/05/04]
-'Clearing up the pushPlayer subs by placing similar scrolling checks in functions.
-'======================================================
-On Error Resume Next
+'====================================================================
+'Scrolling checks for pushPlayer.
+'Last edited for 3.0.5 by Delano.
+'====================================================================
+    On Error Resume Next
 
+    Dim y As Double
     checkScrollNorth = True
 
     If boardIso() Then
-        'If at top of board
-        'OR in lower half of screen AND at the bottom of the board
-        'OR in lower half of screen
         
-        If ((topY * 2 + 1) - 1 < 0) Or _
-            (pPos(playerNum).y > boardList(activeBoardIndex).theData.bSizeY - (isoTilesY / 2) And _
-            (topY * 2) + 1 = boardList(activeBoardIndex).theData.bSizeY - isoTilesY) Or _
-            (pPos(playerNum).y - ((topY * 2) + 1) > (isoTilesY / 2)) Or _
+        '3.0.5
+        y = getBottomCentreY(pPos(playerNum).x, pPos(playerNum).y)
+        
+        If _
+            (topY * 2 + 1) - 1 <= 0 Or _
+            y > (isoTilesY / 2) * 16 Or _
             playerNum <> selectedPlayer Then
+                'If at top of board
+                'OR in lower half of screen
             
-            checkScrollNorth = False
+                checkScrollNorth = False
         End If
-    Else
-        'Swapping " - 1 <" for "<=" (boards do not scroll to edges)
         
-        If (topY <= 0) Or _
-            (pPos(playerNum).y > boardList(activeBoardIndex).theData.bSizeY - (tilesY / 2) And _
-            topY = boardList(activeBoardIndex).theData.bSizeY - tilesY) Or _
-            (pPos(playerNum).y - topY > (tilesY / 2)) Or _
+    Else
+        
+        If _
+            pPos(playerNum).y - topY > tilesY / 2 Or _
+            topY <= 0 Or _
             playerNum <> selectedPlayer Then
+                'If at top of board
+                'OR in lower half of screen
             
-            checkScrollNorth = False
+                checkScrollNorth = False
         End If
     End If
 
 End Function
 
 Private Function checkScrollSouth(ByVal playerNum As Long) As Boolean
-'======================================================
-'NEW FUNCTION: [Delano - 9/05/04]
-'Clearing up the pushPlayer subs by placing similar scrolling checks in functions.
-'======================================================
-On Error Resume Next
+'====================================================================
+'Scrolling checks for pushPlayer.
+'Last edited for 3.0.5 by Delano.
+'====================================================================
+    On Error Resume Next
 
+    Dim y As Double
     checkScrollSouth = True
 
     If boardIso() Then
-        'If at south edge of board
-        'OR at north edge and pos less than half screen height
-        'OR in middle and pos less than half screen height
-        'Trading + 1 for ">="
+        '3.0.5
+        y = getBottomCentreY(pPos(playerNum).x, pPos(playerNum).y)
         
-        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-            (pPos(playerNum).y < (isoTilesY / 2) And topY = 0) Or _
-            (pPos(playerNum).y - (topY * 2) < (isoTilesY / 2)) Or _
-            playerNum <> selectedPlayer Then '^Doesn't work with topy * 2 + 1
-            
-            checkScrollSouth = False
-        End If
-    Else
-        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-        
-        If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
-            (pPos(playerNum).y < (tilesY / 2) And topY = 0) Or _
-            (pPos(playerNum).y - topY < (tilesY / 2)) Or _
+        If (topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY Or _
+            y < (isoTilesY / 2) * 16 Or _
             playerNum <> selectedPlayer Then
+                'If at south edge of board
+                'OR in middle and pos less than half screen height
             
-            checkScrollSouth = False
+                checkScrollSouth = False
+        End If
+
+    Else
+        
+        If _
+            topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY Or _
+            pPos(playerNum).y - topY < tilesY / 2 Or _
+            playerNum <> selectedPlayer Then
+                'If at south edge of board
+                'OR in middle and pos less than half screen height
+            
+                checkScrollSouth = False
         End If
     End If
-
 
 End Function
 
 Private Function checkScrollEast(ByVal playerNum As Long) As Boolean
-'======================================================
-'NEW FUNCTION: [Delano - 9/05/04]
-'Clearing up the pushPlayer subs by placing similar scrolling checks in functions.
-'======================================================
-On Error Resume Next
-
+'====================================================================
+'Scrolling checks for pushPlayer.
+'Last edited for 3.0.5 by Delano.
+'====================================================================
+    On Error Resume Next
+    
+    Dim x As Double
     checkScrollEast = True
 
     If boardIso() Then
-        'If at east edge of board
-        'OR at west edge and pos less than half screen width
-        'OR in middle and pos less than half screen width
-        'Trading + 1 for ">=", adding + 0.5 because each tile has two columns
         
-        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
-            (pPos(playerNum).x < (isoTilesX / 2) And topX = 0) Or _
-            (pPos(playerNum).x - topX < (isoTilesX / 2)) Or _
+        x = getBottomCentreX(pPos(playerNum).x, pPos(playerNum).y)
+
+        If _
+            topX + isoTilesX + 1 / 2 >= boardList(activeBoardIndex).theData.bSizeX Or _
+            x < (isoTilesX / 2) * 64 Or _
             playerNum <> selectedPlayer Then
-            
-            checkScrollEast = False
+                'If at east edge of board
+                'OR in middle and pos less than half screen width
+        
+                checkScrollEast = False
         End If
-    Else
-        'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
         
-        If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
-            (pPos(playerNum).x < (tilesX / 2) And topX = 0) Or _
-            (pPos(playerNum).x - topX < (tilesX / 2)) Or _
+    Else
+        
+        If _
+            topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX Or _
+            pPos(playerNum).x - topX < tilesX / 2 Or _
             playerNum <> selectedPlayer Then
-            
-            checkScrollEast = False
+                'If at east edge of board
+                'OR in middle and pos less than half screen width
+        
+                checkScrollEast = False
         End If
     End If
 
 End Function
 
-
 Private Function checkScrollWest(ByVal playerNum As Long) As Boolean
-'======================================================
-'NEW FUNCTION: [Delano - 11/05/04]
-'Clearing up the pushPlayer subs by placing similar scrolling checks in functions.
-'======================================================
-On Error Resume Next
+'====================================================================
+'Scrolling checks for pushPlayer.
+'Last edited for 3.0.5 by Delano.
+'====================================================================
+    On Error Resume Next
 
+    Dim x As Double
     checkScrollWest = True
     
     If boardIso() Then
-        'If at right edge of board AND on right side of screen
-        'OR on right side of screen
-        'OR at left edge of board.
-        'isoTopX = topX + 1
         
-        If (pPos(playerNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
-            topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
-            (pPos(playerNum).x - (topX + 1) > (isoTilesX / 2)) Or _
-            ((topX + 1) - 1 < 0) Or _
+        '3.0.5
+        x = getBottomCentreX(pPos(playerNum).x, pPos(playerNum).y)
+        
+        If _
+            x > (isoTilesX / 2) * 64 Or _
+            topX <= 0 Or _
             playerNum <> selectedPlayer Then
+                'OR on right side of screen.
+                'OR at left edge of board.
             
-            checkScrollWest = False
+                checkScrollWest = False
         End If
-    Else
-        'Swapping " - 1 <" for "<=" (boards do not scroll to edges)
         
-        If (pPos(playerNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
-            topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
-            (pPos(playerNum).x - topX > (tilesX / 2)) Or _
-            (topX <= 0) Or _
+    Else
+        '2D.
+        If _
+            pPos(playerNum).x - topX > tilesX / 2 Or _
+            topX <= 0 Or _
             playerNum <> selectedPlayer Then
+                'OR on right side of screen.
+                'OR at left edge of board.
             
-            checkScrollWest = False
+                checkScrollWest = False
         End If
     End If
 
 End Function
 
-
 Public Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY As Long, ByVal testL As Long) As Long
-'==========================
-'EDITED: [Delano - 1/05/04]
-'MOVED from Mod commonBoard to transMovement; was unused in toolkit3.
-'==========================
-'Called by: TestLink and Send only (in trans3).
-
+'===========================================================
 'Tests if we can go to x,x,layer on specified board.
-'Returns -1 if we cannot, otherwise it returns the tiletype
-
+'Returns -1 if we cannot, otherwise it returns the tiletype.
+'===========================================================
+'Called by: TestLink and Send.
     On Error Resume Next
     
-    Dim test As Boolean
-    test = fileExists(file$)
+    TestBoard = -1
     
     If Not (pakFileRunning) Then
-        If Not (test) Then
-            TestBoard = -1
-            Exit Function
-        End If
+        If Not fileExists(file) Then Exit Function
     End If
 
     Dim aBoard As TKBoard
     Call openBoard(file, aBoard)
     lastRender.canvas = -1
-    If testX > aBoard.bSizeX Or testY > aBoard.bSizeY Or testL > aBoard.bSizeL Then
-        TestBoard = -1
-        Exit Function
-    End If
-    TestBoard = aBoard.tiletype(testX, testY, testL)
+    If _
+        testX > aBoard.bSizeX Or _
+        testY > aBoard.bSizeY Or _
+        testL > aBoard.bSizeL Then Exit Function
+        
+    TestBoard = aBoard.tileType(testX, testY, testL)
 
 End Function
-
-
