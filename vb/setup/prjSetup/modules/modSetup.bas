@@ -36,7 +36,7 @@ Private Declare Function lClose Lib "kernel32" Alias "_lclose" (ByVal hFile As L
 Private Const REG_SZ = 1                        ' Registry string
 Private Const HKEY_LOCAL_MACHINE = &H80000002   ' Local machine registry section
 Private Const OF_SHARE_EXCLUSIVE = &H10         ' Exclusive access
-Private Const EXE_CRC As Long = 0               ' CRC checksum ran on this file
+Private Const ZIP_CRC As Long = 65000474        ' CRC checksum ran on the ZIP
 Public Const RPGTOOLKIT_VERSION = "3.06"        ' Version of the toolkit
 
 '=========================================================================
@@ -51,12 +51,6 @@ Public Sub Main()
  
     ' First, initiate the common controls
     Call initCommonControls
-
-    ' Check for valid CRC
-    If (EXE_CRC <> calcCrcFile(App.Path & "\" & App.EXEName & ".exe")) Then
-        Call MsgBox("This file appears to be corrupted. Please try downloading again.")
-        Exit Sub
-    End If
 
     ' Check if same version is already installed
     If (GetSetting("RPGToolkit3", "Settings", "Version", vbNullString) = RPGTOOLKIT_VERSION) Then
@@ -294,6 +288,11 @@ Public Sub performSetup()
 
     ' Obtain zip.zip
     Call selfExtract(strExe, "zip.zip", lngPosistion)
+    Call calcCrcTable
+    If (calcCrcFile("zip.zip") <> ZIP_CRC) Then
+        Call MsgBox("This installation program is corrupt. Please try downloading again.", vbCritical, "Corrupt File")
+        End
+    End If
 
     ' Extract the files
     Call extractDir("zip.zip", strPath)
