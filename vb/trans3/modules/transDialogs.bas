@@ -50,16 +50,16 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
     Call haltKeyDownScanning
     
     'save screen...
-    Call CanvasGetScreen(cnvAllPurpose)
+    Call canvasGetScreen(cnvAllPurpose)
     
     Dim offsetX As Long
     Dim offsetY As Long
     
     Dim cnv As Long
-    cnv = CreateCanvas(400, 90)
+    cnv = createCanvas(400, 90)
     
     Dim cnvTextBox As Long
-    cnvTextBox = CreateCanvas(380, 20)
+    cnvTextBox = createCanvas(380, 20)
     Dim textBoxContents As String
     
     textBoxContents = initialValue
@@ -67,8 +67,8 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
     Dim textSize As Long
     textSize = 20
     
-    offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) \ 2
-    offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) \ 2
+    offsetX = (getCanvasWidth(cnvAllPurpose) - getCanvasWidth(cnv)) \ 2
+    offsetY = (getCanvasHeight(cnvAllPurpose) - getCanvasHeight(cnv)) \ 2
     
     Dim done As Boolean
     done = False
@@ -79,15 +79,15 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
         cnt = 1
         
         'fill the text box...
-        Call CanvasFill(cnvTextBox, RGB(255, 255, 255))
-        Call CanvasDrawText(cnvTextBox, textBoxContents + "|", "Arial", textSize, 1, 1, 0, False, False, False, False)
+        Call canvasFill(cnvTextBox, RGB(255, 255, 255))
+        Call canvasDrawText(cnvTextBox, textBoxContents + "|", "Arial", textSize, 1, 1, 0, False, False, False, False)
         
         
         'list is filled...  finish constructing the dialog...
-        Call CanvasFill(cnv, 0)
-        Call CanvasDrawText(cnv, title, "Arial", textSize, 1, 1, RGB(255, 255, 255))
-        Call CanvasDrawText(cnv, Text, "Arial", textSize, 1, 2, RGB(255, 255, 255))
-        Call Canvas2CanvasBlt(cnvTextBox, cnv, 10, 50)
+        Call canvasFill(cnv, 0)
+        Call canvasDrawText(cnv, title, "Arial", textSize, 1, 1, RGB(255, 255, 255))
+        Call canvasDrawText(cnv, Text, "Arial", textSize, 1, 2, RGB(255, 255, 255))
+        Call canvas2CanvasBlt(cnvTextBox, cnv, 10, 50)
             
         Call DXDrawCanvas(cnvAllPurpose, 0, 0)
         Call DXDrawCanvas(cnv, offsetX, offsetY)
@@ -125,8 +125,8 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
         End If
     Loop
     
-    Call DestroyCanvas(cnvTextBox)
-    Call DestroyCanvas(cnv)
+    Call destroyCanvas(cnvTextBox)
+    Call destroyCanvas(cnv)
     Call FlushKB
     Call startKeyDownScanning
 End Function
@@ -211,7 +211,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     Call haltKeyDownScanning
     
     'save screen...
-    Call CanvasGetScreen(cnvAllPurpose)
+    Call canvasGetScreen(cnvAllPurpose)
     
     Dim offsetX As Long
     Dim offsetY As Long
@@ -235,13 +235,13 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     
     'now we have the file list in files, and the count in count
     Dim cnv As Long
-    cnv = CreateCanvas(400, 270)
+    cnv = createCanvas(400, 270)
     
     Dim cnvList As Long
-    cnvList = CreateCanvas(380, 200)
+    cnvList = createCanvas(380, 200)
     
     Dim cnvTextBox As Long
-    cnvTextBox = CreateCanvas(380, 20)
+    cnvTextBox = createCanvas(380, 20)
     Dim textBoxContents As String
     
     textBoxContents = Files(0)
@@ -251,13 +251,13 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     Dim textSize As Long
     textSize = 20
     
-    offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) \ 2
-    offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) \ 2
+    offsetX = (getCanvasWidth(cnvAllPurpose) - getCanvasWidth(cnv)) \ 2
+    offsetY = (getCanvasHeight(cnvAllPurpose) - getCanvasHeight(cnv)) \ 2
     
     
     'fill the list...
     Dim filesPerPage As Long
-    filesPerPage = (GetCanvasHeight(cnvList) \ textSize)
+    filesPerPage = (getCanvasHeight(cnvList) \ textSize)
     
     Dim cursorNum As Long
     cursorNum = 0
@@ -266,12 +266,12 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     done = False
     Call cursorDelay
     Do While Not (done)
-        Call CanvasFill(cnvList, RGB(255, 255, 255))
+        Call canvasFill(cnvList, RGB(255, 255, 255))
         Dim idx As Long
         Dim cnt As Long
         cnt = 1
         For idx = topFile To topFile + filesPerPage Step 1
-            Call CanvasDrawText(cnvList, Files(idx), "Arial", textSize, 1.2, cnt, 0, False, False, False, False)
+            Call canvasDrawText(cnvList, Files(idx), "Arial", textSize, 1.2, cnt, 0, False, False, False, False)
             If (idx + 1) >= count Then
                 Exit For
             End If
@@ -279,13 +279,13 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         Next idx
         
         'fill the text box...
-        Call CanvasFill(cnvTextBox, RGB(255, 255, 255))
-        Call CanvasDrawText(cnvTextBox, textBoxContents + "|", "Arial", textSize, 1, 1, 0, False, False, False, False)
+        Call canvasFill(cnvTextBox, RGB(255, 255, 255))
+        Call canvasDrawText(cnvTextBox, textBoxContents + "|", "Arial", textSize, 1, 1, 0, False, False, False, False)
         
         'list is filled...  finish constructing the dialog...
-        Call CanvasFill(cnv, 0)
-        Call Canvas2CanvasBlt(cnvList, cnv, 10, 50)
-        Call Canvas2CanvasBlt(cnvTextBox, cnv, 10, 10)
+        Call canvasFill(cnv, 0)
+        Call canvas2CanvasBlt(cnvList, cnv, 10, 50)
+        Call canvas2CanvasBlt(cnvTextBox, cnv, 10, 10)
             
         Call DXDrawCanvas(cnvAllPurpose, 0, 0)
         Call DXDrawCanvas(cnv, offsetX, offsetY)
@@ -364,9 +364,9 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         End If
     Loop
     
-    Call DestroyCanvas(cnvTextBox)
-    Call DestroyCanvas(cnvList)
-    Call DestroyCanvas(cnv)
+    Call destroyCanvas(cnvTextBox)
+    Call destroyCanvas(cnvList)
+    Call destroyCanvas(cnv)
     Call FlushKB
     Call startKeyDownScanning
 End Function
@@ -415,13 +415,15 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
     
     'Save the screen into a canvas...
     Dim cnv As Long
-    cnv = CreateCanvas(resX, resY)
-    Call CanvasGetScreen(cnv)
+    cnv = createCanvas(resX, resY)
+    Call CBCanvasGetScreen(cnv)
         
     Dim cursorNum As Long
     cursorNum = 0
     
-    Dim done As Boolean
+    Dim done As Boolean, bOldRunningProgram As Boolean
+    bOldRunningProgram = runningProgram
+    runningProgram = False
     
     Call cursorDelay
     Do Until done
@@ -502,7 +504,8 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
     Call DXDrawCanvas(cnv, 0, 0)
     Call DXRefresh
     Call FlushKB
-    Call DestroyCanvas(cnv)
+    Call destroyCanvas(cnv)
+    runningProgram = bOldRunningProgram
     
     CursorMapRun = cursorNum
 End Function
@@ -558,7 +561,7 @@ Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional 
     'returns index of selected option
     
     'save screen...
-    Call CanvasGetScreen(cnvAllPurpose)
+    Call canvasGetScreen(cnvAllPurpose)
         
     Dim subStrings As Long
     Dim t As Long
@@ -593,28 +596,28 @@ Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional 
     width = (textSize / 1.5) * maxWidth
     If width < 100 Then width = 100
     
-    cnv = CreateCanvas(width, textSize * (subStrings + UBound(options) + 3))
-    Call CanvasFill(cnv, bgColor)
+    cnv = createCanvas(width, textSize * (subStrings + UBound(options) + 3))
+    Call canvasFill(cnv, bgColor)
     If LenB(bgPic) Then
-        Call CanvasLoadSizedPicture(cnv, bgPic)
+        Call canvasLoadSizedPicture(cnv, bgPic)
     End If
     
     Dim oy As Long
     If subStrings > 0 Then
         For t = 0 To subStrings - 1
-            Call CanvasDrawText(cnv, textlist(t), "Arial", textSize, 1.4, 2 + t, textColor, True, False, False, False)
+            Call canvasDrawText(cnv, textlist(t), "Arial", textSize, 1.4, 2 + t, textColor, True, False, False, False)
         Next t
         oy = subStrings + 1
     End If
         
     For t = 0 To UBound(options) - 1
-        Call CanvasDrawText(cnv, options(t), "Arial", textSize, 1.4, t + oy + 2, textColor, True, False, False, False)
+        Call canvasDrawText(cnv, options(t), "Arial", textSize, 1.4, t + oy + 2, textColor, True, False, False, False)
     Next t
     
     Dim offsetX As Long
     Dim offsetY As Long
-    offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) \ 2
-    offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) \ 2
+    offsetX = (getCanvasWidth(cnvAllPurpose) - getCanvasWidth(cnv)) \ 2
+    offsetY = (getCanvasHeight(cnvAllPurpose) - getCanvasHeight(cnv)) \ 2
     
     Dim cursorNum As Long
     cursorNum = 0
