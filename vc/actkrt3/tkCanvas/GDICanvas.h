@@ -44,7 +44,7 @@ struct COLOR24
 #	define INLINE inline
 #	define FAST_CALL // Register (fast) calls are specific to VC++
 #endif
-#define DOUBLE double
+typedef double DOUBLE;
 #define STATIC static
 
 //--------------------------------------------------------------------------

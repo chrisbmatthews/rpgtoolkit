@@ -371,6 +371,39 @@ BOOL APIENTRY CNVBltCanvasTransparent(
 }
 
 //--------------------------------------------------------------------------
+// Partially blt translucently between canvases
+//--------------------------------------------------------------------------
+BOOL APIENTRY CNVBltCanvasTranslucentPart(
+	CONST CNV_HANDLE cnvSource,
+	CONST CNV_HANDLE cnvTarget,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST DOUBLE dIntensity,
+	CONST INT crUnaffectedColor,
+	CONST INT crTransparentColor
+		)
+{
+
+	// Execute the blt
+	return reinterpret_cast<CGDICanvas *>(cnvSource)->BltTranslucentPart(
+		reinterpret_cast<CGDICanvas *>(cnvTarget),
+		x,
+		y,
+		xSrc,
+		ySrc,
+		width,
+		height,
+		dIntensity,
+		crUnaffectedColor,
+		crTransparentColor);
+
+}
+
+//--------------------------------------------------------------------------
 // Blt translucently between canvases
 //--------------------------------------------------------------------------
 BOOL APIENTRY CNVBltCanvasTranslucent(
@@ -378,7 +411,7 @@ BOOL APIENTRY CNVBltCanvasTranslucent(
 	CONST CNV_HANDLE cnvTarget,
 	CONST INT x,
 	CONST INT y,
-	CONST double dIntensity,
+	CONST DOUBLE dIntensity,
 	CONST INT crUnaffectedColor,
 	CONST INT crTransparentColor
 		)

@@ -25,6 +25,9 @@
 // Types
 //--------------------------------------------------------------------------
 typedef INT CNV_HANDLE;			// Handle to a canvas
+#ifndef DOUBLE
+typedef double DOUBLE;
+#endif
 
 //--------------------------------------------------------------------------
 // Prototypes
@@ -139,7 +142,22 @@ BOOL APIENTRY CNVBltCanvasTranslucent(
 	CONST CNV_HANDLE cnvTarget,
 	CONST INT x,
 	CONST INT y,
-	CONST double dIntensity,
+	CONST DOUBLE dIntensity,
+	CONST INT crUnaffectedColor,
+	CONST INT crTransparentColor
+);
+
+// Partially blt translucently between canvases
+BOOL APIENTRY CNVBltCanvasTranslucentPart(
+	CONST CNV_HANDLE cnvSource,
+	CONST CNV_HANDLE cnvTarget,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST DOUBLE dIntensity,
 	CONST INT crUnaffectedColor,
 	CONST INT crTransparentColor
 );
