@@ -64,29 +64,27 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-' ! MODIFIED BY KSNiloc...
-
 Option Explicit
 
 Public Sub setStatus(ByVal sPercent As Long, ByVal cap As String)
 
     On Error Resume Next
+
     imgLoading.Width = sPercent * maxProgress.Width / 100
     DoEvents
 
-    'set the current status on the bar at a certain percentage
-    'Call vbPicFillRect(bar, sPercent, 0, 100, 1000, vbQBColor(15))
-    'Dim t As Long
-    'For t = sPercent To 0 Step -1
-    '    Call vbPicFillRect(bar, 0, 0, t, 1000, RGB(255 - t * 2.5, 0, t * 2.5))
-    'Next t
-    'perc.caption = toString(sPercent) + " %"
-    'Label1.caption = cap
 End Sub
 
 Private Sub Form_Load()
+
     On Error Resume Next
+
     imgLoading.Width = 0
-    'SetParent Me.hwnd, tkMainForm.hwnd
+
+    If isToolkit Then
+        SetParent Me.hwnd, tkMainForm.hwnd
+    End If
+
     DoEvents
+
 End Sub

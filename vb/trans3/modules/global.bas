@@ -53,6 +53,8 @@ Public Const plugPath = "Plugin\"              'plugin file path
 Public Const resourcePath = "Resources\"       'resource file path
 Public Const isToolkit As Boolean = False      'is this the editor?
 
+Public tkMainForm As Form                      'not used
+
 'Tile Editor
 Public buftile(32, 32) As Long                 'Tile buffer
 Public lastTileset As String
