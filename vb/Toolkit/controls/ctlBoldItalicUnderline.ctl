@@ -107,12 +107,3 @@ End Property
 Public Property Let Underline(ByVal bol As Boolean)
     chkUnderline.value = CInt(booleanToLong(bol))
 End Property
-Private Sub chkBold_Click()
-    Bold = Not Bold
-End Sub
-Private Sub chkItalics_Click()
-    Italics = Not Italics
-End Sub
-Private Sub chkUnderline_Click()
-    Underline = Not Underline
-End Sub
