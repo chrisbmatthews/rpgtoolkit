@@ -2605,13 +2605,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "2/11/2005"
+            TextSave        =   "19/02/2005"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "5:08 PM"
+            TextSave        =   "15:54"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2978,25 +2978,56 @@ Private Sub cmdRefreshTree_Click()
 End Sub
 
 '============================================================================
+' TILESET BROWSER EVENTS
+'============================================================================
+
+'============================================================================
+'Open tileset button at the top of the flyout tileset viewer.
+'============================================================================
+Private Sub changedSelectedTileset_Click(): On Error Resume Next
+    
+    ChDir (currentDir)
+    
+    'Set up the dialog window for opening the tileset.
+    Dim dlg As FileDialogInfo
+    dlg.strDefaultFolder = projectPath & tilePath
+    dlg.strTitle = "Select Tileset"
+    dlg.strDefaultExt = "tst"
+    dlg.strFileTypes = "Supported Types|*.tst;*.iso|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
+    
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub   'User pressed cancel.
+    ChDir (currentDir)
+    
+    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
+    
+    configfile.lastTileset = dlg.strSelectedFileNoPath
+    tstFile = dlg.strSelectedFileNoPath
+    tstnum = 0
+    
+    Call fillTilesetBar                                 'Draw the tileset.
+End Sub
+
+'============================================================================
 ' Current tileset browser draw grid check button.
 '============================================================================
 Private Sub chkCurTilesetDrawGrid_Click(): On Error Resume Next
-    ' Redraw the tileset (with or without grid)
+    ' Redraw the tileset (with or without grid).
     Call fillTilesetBar
 End Sub
 
-Private Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On Error Resume Next
-'===================================================================
+'============================================================================
 'Draws the opened tileset in the flyout tileset viewer.
 'Called by fillTilesetBar, tilesetScroller_Change
-'===================================================================
+'============================================================================
+Private Sub redrawTilesetBar(): On Error Resume Next
+
     Dim isoFormat As Long, tilesWide As Long, tilesHigh As Long
     Dim x As Long, y As Long
     
-    If configfile.lastTileset = vbNullString Then Exit Sub
+    If LenB(configfile.lastTileset) = 0 Then Exit Sub
     If tstnum = 0 Then tstnum = 1
     
-    If UCase$(GetExt(configfile.lastTileset)) = "ISO" Then isoFormat = 2
+    If UCase$(GetExt(configfile.lastTileset)) = "ISO" Then isoFormat = ISOTYPE
     
     'Calculate the number of tiles that will be in view.
     If isoFormat = 0 Then
@@ -3038,27 +3069,23 @@ Private Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On 
                 Call vbPicLine(currentTilesetForm, 0, y, tilesWide * 64, y, QBColor(1))
             Next y
         End If
-
         
     End If 'Draw grid.
         
-    If autoRefresh Then
-        Call vbPicRefresh(currentTilesetForm)
-    End If
+    currentTilesetForm.Refresh
     
 End Sub
 
-Private Sub fillTilesetBar(): On Error Resume Next
-'=================================================
+'============================================================================
 'Sets up the drawing of the flyout tileset viewer.
 'Called by: popButton_click, changeSelectedTileset_click
-'=================================================
-'Edited by Delano for 3.0.4 new isometric tilesets.
-'Configured the scroller to scroll row by row.
-
-'Fill the current tileset bar with the contents of the current tileset,
-'or draws it for the first time.
+'============================================================================
+Private Sub fillTilesetBar(): On Error Resume Next
+    
     Dim tilesHigh As Integer, tilesWide As Integer, setType As Integer
+            
+    'Prevent the scroller changing for this sub.
+    ignoreFlag = True
     
     'resize the picture box...
     currentTilesetForm.Height = tilesetBar.Height - (900)
@@ -3067,17 +3094,16 @@ Private Sub fillTilesetBar(): On Error Resume Next
     End If
     tilesetScroller.Height = currentTilesetForm.Height
     
-    'Clear the picture box. Added for non-flickering scrolling.
-    Call vbPicAutoRedraw(currentTilesetForm, False)
-    currentTilesetForm.picture = LoadPicture("")
+    'Clear the picture box.
+    currentTilesetForm.AutoRedraw = False
+    currentTilesetForm.Cls
     
-    If configfile.lastTileset$ <> "" Then
+    If LenB(configfile.lastTileset) Then
     
-        setType = tilesetInfo(projectPath$ + tilePath$ + configfile.lastTileset$)
+        setType = tilesetInfo(projectPath & tilePath & configfile.lastTileset)
         If setType = TSTTYPE Or setType = ISOTYPE Then
-            'tilesetInfo now returns 2 for isometric tilesets. Set type constants introduced.
             
-            currentTilesetInfo.Caption = LoadStringLoc(2035, "Tileset") + " " + configfile.lastTileset + LoadStringLoc(2036, ": Contains") + str$(tileset.tilesInSet) + " Tiles"
+            currentTilesetInfo.Caption = LoadStringLoc(2035, "Tileset") & " " & configfile.lastTileset & LoadStringLoc(2036, ": Contains") & str$(tileset.tilesInSet) & " Tiles"
     
             'Set the scroller depending on the tileset type.
             If setType = ISOTYPE Then
@@ -3103,19 +3129,95 @@ Private Sub fillTilesetBar(): On Error Resume Next
                 tilesetScroller.Enabled = True
             End If
                     
-            ignoreFlag = True
             tilesetScroller.value = 0
-            ignoreFlag = False
             
-            Call vbPicAutoRedraw(currentTilesetForm, True)
-            Call redrawTilesetBar(True)
-            'Call drawTstGrid(True)
+            currentTilesetForm.AutoRedraw = True
+            Call redrawTilesetBar
         End If
     Else
         'No tileset has been previously opened.
         tilesetScroller.Enabled = False
     End If
+    
+    'Activate the scroller.
+    ignoreFlag = False
 End Sub
+
+'============================================================================
+'MouseDown event on the flyout tileset viewer.
+'============================================================================
+Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+
+    Dim tileNumber As Integer, formType As Long
+    Dim tilesWide As Integer, tilesHigh As Integer, tileX As Integer, tileY As Integer
+    
+    If LenB(configfile.lastTileset) = 0 Then Exit Sub
+    
+    'Determine the tile that has been clicked on by considering the size of the form,
+    'the position of the scroller, and the type of tileset.
+    If UCase$(GetExt(configfile.lastTileset)) = "ISO" Then
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
+        tileX = Int(x / 64)
+    Else
+        'Not isometric.
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)   'width of window.
+        tileX = Int(x / 32)                                                        'x-tile clicked.
+    End If
+    
+    tilesHigh = Int((currentTilesetForm.Height / Screen.TwipsPerPixelY) / 32)
+    tileY = Int(y / 32)
+    
+    'Alterations for the scroller. Now scrolls row by row.
+    tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
+    tileNumber = tileNumber + (tilesetScroller.value * tilesWide)       'Add the rows that have been scrolled.
+    
+    'Check we've not selected a tile that isn't in the set.
+    If tileNumber > tileset.tilesInSet Then Exit Sub
+    
+    setFilename = configfile.lastTileset & CStr(tileNumber)
+    
+    'Inform the system that the set filename has changed. For loading into whichever editor is active.
+    formType = activeForm.formType
+    Select Case formType
+        Case FT_BOARD, FT_ANIMATION, FT_TILEBITMAP, FT_TILEANIM
+            'These editors have specific uses for the tileset browser.
+            Call activeForm.changeSelectedTile(setFilename)
+        Case Else
+            'It's not a form that uses the tile browser, so load it in the tile editor.
+            Dim newTile As New tileedit
+            Set activeTile = newTile
+            activeTile.Show
+            Call activeTile.openFile(projectPath & tilePath & setFilename)
+    End Select
+
+End Sub
+
+'============================================================================
+'Scrolling the flyout tileset viewer.
+'============================================================================
+Private Sub tilesetScroller_Change(): On Error Resume Next
+
+    Dim setType As Long, tilesWide As Long
+        
+    If ignoreFlag = False Then
+        Call currentTilesetForm.SetFocus
+        ignoreFocus = True
+        
+        'Check the current tileset type.
+        setType = 1
+        If UCase$(GetExt(tstFile)) = "ISO" Then setType = ISOTYPE
+        
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32 * setType)
+                
+        'tstnum is the first tile to draw (tile in top lefthand corner).
+        tstnum = (tilesetScroller.value * tilesWide) + 1
+        
+        Call redrawTilesetBar
+    End If
+End Sub
+'============================================================================
+'END TILESET BROWSER
+'============================================================================
 
 '============================================================================
 ' Hide the tabs
@@ -3320,55 +3422,6 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
     a = Shell("setupkit.exe", 1)
     'mainoption.ZOrder 1
     Exit Sub
-End Sub
-
-Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-'===========================================================
-'MouseDown event on the flyout tileset viewer.
-'===========================================================
-
-    Dim tileNumber As Integer, formType As Long
-    Dim tilesWide As Integer, tilesHigh As Integer, tileX As Integer, tileY As Integer
-    
-    If configfile.lastTileset$ = "" Then Exit Sub
-    
-    'Determine the tile that has been clicked on by considering the size of the form,
-    'the position of the scroller, and the type of tileset.
-    If UCase$(GetExt(configfile.lastTileset$)) = "ISO" Then
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(x / 64)
-    Else
-        'Not isometric.
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tileX = Int(x / 32)                                                        'x-tile clicked.
-    End If
-    
-    tilesHigh = Int((currentTilesetForm.Height / Screen.TwipsPerPixelY) / 32)
-    tileY = Int(y / 32)
-    
-    'Alterations for the scroller. Now scrolls row by row.
-    tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
-    tileNumber = tileNumber + (tilesetScroller.value * tilesWide)       'Add the rows that have been scrolled.
-    
-    'Check we've not selected a tile that isn't in the set.
-    If tileNumber > tileset.tilesInSet Then Exit Sub
-    
-    setFilename = configfile.lastTileset & CStr(tileNumber)
-    
-    'Inform the system that the set filename has changed. For loading into whichever editor is active.
-    formType = activeForm.formType
-    Select Case formType
-        Case FT_BOARD, FT_ANIMATION, FT_TILEBITMAP, FT_TILEANIM
-            'These editors have specific uses for the tileset browser.
-            Call activeForm.changeSelectedTile(setFilename)
-        Case Else
-            'It's not a form that uses the tile browser, so load it in the tile editor.
-            Dim newTile As New tileedit
-            Set activeTile = newTile
-            activeTile.Show
-            Call activeTile.openFile(projectPath & tilePath & setFilename)
-    End Select
-
 End Sub
 
 Private Sub exitbutton_Click()
@@ -4191,42 +4244,6 @@ Private Sub tilesetBar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub tilesetScroller_Change(): On Error Resume Next
-'=========================================================
-'Scrolling the flyout tileset viewer.
-'=========================================================
-'Edited by Delano for 3.0.4 new isometric tilesets.
-'Configured to scroll row by row.
-
-    Dim iMetric As Integer, tilesWide As Integer, tilesHigh As Integer
-        
-    If ignoreFlag = False Then
-        Call currentTilesetForm.SetFocus
-        ignoreFocus = True
-        
-        If tstnum = 0 Then tstnum = 1
-        
-        'Added: Check the current tileset file.
-        iMetric = 0
-        If UCase$(GetExt(tstFile$)) = "ISO" Then iMetric = 2
-        
-        Call GFXInitScreen(640, 480)
-        
-        If iMetric = 0 Then
-            tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)
-        Else
-            tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
-        End If
-        tilesHigh = Int((currentTilesetForm.Height / Screen.TwipsPerPixelY) / 32)
-                
-        'Scrollbar alteration: tstnum is the first tile to draw (tile in top lefthand corner).
-        tstnum = (tilesetScroller.value * tilesWide) + 1      '.value is now the row.
-        
-        
-        Call redrawTilesetBar(True)
-    End If
-End Sub
-
 Private Sub tileTool_Click(index As Integer): On Error Resume Next
     Call activeTile.ToolSet(index)
 End Sub
@@ -4363,42 +4380,6 @@ Private Sub currenttile_Click(): On Error Resume Next
 End Sub
 Private Sub Editlayer_Click(): On Error Resume Next
     Call activeBoard.changeLayer
-End Sub
-Private Sub changedSelectedTileset_Click(): On Error Resume Next
-'================================================================
-'The open tileset button at the top of the flyout tileset viewer.
-'================================================================
-'Edited by Delano for 3.0.4 for new isometric tilesets.
-'Added .iso permissions for the open dialog window.
-
-    Dim antiPath As String, whichType As String
-    
-    ChDir (currentDir$)
-    
-    'Set up the dialog window for opening the tileset.
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tilePath$
-    dlg.strTitle = "Select Tileset"
-    dlg.strDefaultExt = "tst"
-    
-    'Added: Allow to open files with the new .iso extension.
-    dlg.strFileTypes = "Supported Types|*.tst;*.iso|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then
-        filename$(1) = dlg.strSelectedFile      'Filename chosen for opening. (with path)
-        antiPath$ = dlg.strSelectedFileNoPath   'Filename without path.
-    Else
-        Exit Sub 'user pressed cancel
-    End If
-    
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    
-    configfile.lastTileset$ = antiPath$                    'The current tileset, without path.
-    tstFile$ = antiPath$
-    tstnum = 0
-    
-    Call fillTilesetBar                         'Draw the tileset.
 End Sub
 '=========================================================================================
 ' END BOARD EDITOR RELATED EVENTS
