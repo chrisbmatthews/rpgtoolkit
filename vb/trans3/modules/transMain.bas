@@ -38,7 +38,6 @@ Public movementCounter As Long          'number of times GS_MOVEMENT has been ru
 Public saveFileLoaded As Boolean        'was the game loaded from start menu?
 Public runningAsEXE As Boolean          'are we running as an exe file?
 Public gShuttingDown As Boolean         'Has the shutdown process been initiated?
-Public slackTime As Double              'cpu speed estimate
 Public host As New clsDirectXHost       'DirectX host window
 
 '=======================================================================
@@ -143,6 +142,8 @@ Private Function getMainFilename() As String
             mainfile = gamPath & args(0)
             Call openMain(mainfile, mainMem)
             Call openSystems(True)
+            Call DXClearScreen(0)
+            Call DXRefresh
             Call runProgram(projectPath & prgPath & args(1))
             Call closeSystems
 
@@ -293,12 +294,8 @@ Public Sub gameLogic()
             Call renderNow
 
             'Make sure this is run four times
-            If movementCounter < framesPerMove Then
+            If movementCounter < FRAMESPERMOVE Then
                 gGameState = GS_MOVEMENT
-                'GameSpeed delay
-                If (Not GS_ANIMATING) And (Not GS_LOOPING) Then
-                    Call delay(walkDelay / ((framesPerMove * movementSize) / 2))
-                End If
             Else
                 'We're done movement
                 gGameState = GS_DONEMOVE
@@ -385,59 +382,17 @@ Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     On Error Resume Next
     Call initActiveX
     Call initGraphics(testingPRG)
-    Call DXClearScreen(0)
-    Call DXRefresh
     Call correctPaths
     Call InitPlugins
     Call BeginPlugins
     Call startMenuPlugin
     Call startFightPlugin
     Call initMedia
-    Call setupMain(testingPRG)
+    Call DXClearScreen(0)
     Call DXRefresh
-    Call calculateSlackTime
+    Call setupMain(testingPRG)
     Call initClock(RENDER_FPS)
     Call initEventProcessor(AddressOf closeSystems)
-End Sub
-
-'=======================================================================
-' Get an estimate speed of this CPU
-'=======================================================================
-Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
-
-    Dim a As Long
-
-    If recurse Then
-
-        Dim running As Double
-        For a = 1 To 10
-            Call calculateSlackTime(False)
-            running = running + slackTime
-        Next a
-        slackTime = running / 10
-
-    Else
-
-        'Get the current tick count
-        Dim startTime As Double
-        startTime = Timer()
-
-        'Do events ten times
-        For a = 1 To 1000
-            Call processEvent
-        Next a
-
-        'Get tick count again
-        Dim endTime As Double
-        endTime = Timer()
-
-        'Calculate the slack
-        slackTime = (((endTime - startTime) / 5) / 100) + 1
-
-    End If
-
-    'We now have an approximate idea of this CPU's speed
-
 End Sub
 
 '=======================================================================

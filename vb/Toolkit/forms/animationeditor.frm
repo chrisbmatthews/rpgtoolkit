@@ -753,14 +753,14 @@ Private Sub DrawFrame(ByVal framenum As Long)
 
     On Error Resume Next
 
-    'Clear picturebox
-    Call vbPicCls(arena)
+    'Clear the pic box
+    Call arena.cls
 
     'Draw the frame
-    Call AnimDrawFrame(animationList(activeAnimationIndex).theData, framenum, 0, 0, vbPicHDC(arena))
+    Call AnimDrawFrame(animationList(activeAnimationIndex).theData, framenum, 0, 0, arena.hdc)
 
     'Refresh the picturebox
-    Call vbPicRefresh(arena)
+    Call arena.Refresh
 
     'Get the total number of frames
     Dim maxFrame As Long

@@ -143,11 +143,11 @@ Sub giveExperience(ByVal amount As Long, thePlayer As TKPlayer)
     
     Dim nxtLev As Integer
     nxtLev = thePlayer.nextLevel
-    Do While thePlayer.nextLevel <= 0
+    If thePlayer.nextLevel <= 0 Then
         'level up!!!
         Call increaseLevel(thePlayer)
         thePlayer.nextLevel = thePlayer.nextLevel - Abs(nxtLev)
-    Loop
+    End If
 End Sub
 
 Sub increaseLevel(ByRef thePlayer As TKPlayer)

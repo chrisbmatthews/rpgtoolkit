@@ -75,6 +75,7 @@ Private Sub Form_Load()
         With Me
             .Top = Screen.height - .height
             .Left = Screen.width - .width
+            Call .Refresh
         End With
     End If
 End Sub

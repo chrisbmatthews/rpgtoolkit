@@ -87,6 +87,8 @@ Private mVarAnimationDelay As Double
 
 Public itmPos() As PLAYER_POSITION    'positions of items on board
 
+Public Const FRAMESPERMOVE = 4
+
 Public Property Get animationDelay() As Double
     animationDelay = mVarAnimationDelay
     If animationDelay = 0 Then animationDelay = 1
@@ -94,10 +96,6 @@ End Property
 
 Public Property Let animationDelay(ByVal newVal As Double)
     mVarAnimationDelay = newVal
-End Property
-
-Public Property Get framesPerMove() As Double
-    framesPerMove = Round(4 / slackTime)
 End Property
 
 Public Function onlyDecimal(ByVal number As Double) As Double
@@ -638,7 +636,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     
     'Set the mainLoop movementCounter to the end of the move.
     'Goes straight into GS_DONEMOVE state, rather than finishing the last 3 frames (caused pause on moving to new board).
-    movementCounter = framesPerMove
+    movementCounter = FRAMESPERMOVE
     
     TestLink = True
 End Function
@@ -1665,7 +1663,7 @@ Public Sub moveItems()
     Dim t As Long
     
     Dim moveFraction As Double
-    moveFraction = movementSize / framesPerMove
+    moveFraction = movementSize / FRAMESPERMOVE
     
     For t = 0 To maxP
         Select Case pendingItemMovement(t).direction
@@ -1771,7 +1769,7 @@ Public Sub movePlayers()
 
     'Distance to move each player
     Dim moveFraction As Double
-    moveFraction = movementSize / framesPerMove
+    moveFraction = movementSize / FRAMESPERMOVE
 
     'Increase movedThisFrame
     Call incrementFrame(-1)
@@ -1801,7 +1799,7 @@ Public Sub incrementFrame(ByRef frame As Long)
     Static movedThisFrame As Double     'How far have we moved this frame?
 
     Dim fraction As Double
-    fraction = (1 / framesPerMove * animationDelay)
+    fraction = (1 / FRAMESPERMOVE * animationDelay)
 
     If frame = -2 Then
         If movedThisFrame >= fraction Then movedThisFrame = 0
@@ -1823,7 +1821,7 @@ Sub runQueuedMovements()
 
     'movement has occurred...
     Dim cnt As Long
-    For cnt = 1 To framesPerMove
+    For cnt = 1 To FRAMESPERMOVE
         Call moveItems
         Call movePlayers
         Call renderNow

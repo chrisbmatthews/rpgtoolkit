@@ -41,8 +41,7 @@ Public Enum RPGC_DT                     'rpgcode data type enum
     DT_LIT = 1                          '  literal variable
     DT_STRING = 2                       '  string
     DT_NUMBER = 3                       '  number
-    DT_COMMAND = 4                      '  command (function)
-    DT_EQUATION = 5                     '  equation
+    DT_EQUATION = 4                     '  equation
 End Enum
 
 Public Type RPGCODE_RETURN              'rpgcode return structure
@@ -70,14 +69,14 @@ End Property
 '=========================================================================
 ' Pops up the rpgcode debugger
 '=========================================================================
-Public Sub debugger(ByVal Text As String)
+Public Sub debugger(ByVal text As String)
 
     On Error Resume Next
 
     If Not checkErrorHandling() Then
         If debugYN = 1 Then
             Call debugwin.Show
-            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
+            debugwin.buglist.text = debugwin.buglist.text & text & vbCrLf
             Call processEvent
         Else
             Call Unload(debugwin)
@@ -117,7 +116,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
+Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
 
     On Error Resume Next
 
@@ -128,12 +127,12 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If commandName$ = "" Then
-        mName = GetCommandName(Text)   'get command name without extra info
+        mName = GetCommandName(text)   'get command name without extra info
     Else
         mName = commandName
     End If
 
-    If QueryPlugins(mName, Text, retval) Then
+    If QueryPlugins(mName, text, retval) Then
         'Found the command in a plugin, don't waste time checking for a method!
         Exit Sub
     End If
@@ -164,7 +163,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     If foundIt = -1 Then
         'Method doesn't exist!
         If (Not noMethodNotFound) Then
-            Call debugger("Error: Method not found!-- " & Text$)
+            Call debugger("Error: Method not found!-- " & text$)
         End If
         Exit Sub
     Else
@@ -178,7 +177,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
         
         'Get parameters from calling line
-        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
         For pList = 1 To number
             parameterList$(pList) = GetElement(dataUse$, pList)
@@ -971,7 +970,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
     Select Case testText
 
         Case "VAR":
-            Call VariableManip(splice$, theProgram)  'manipulate var
+            Call variableManip(splice$, theProgram)  'manipulate var
             DoSingleCommand = increment(theProgram)
             Exit Function
         
