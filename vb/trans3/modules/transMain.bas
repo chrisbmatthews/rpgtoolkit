@@ -480,8 +480,6 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     lineNum = 1                     'First line in MWin
     saveFileLoaded = False          'Starting new game
 
-    'Set initial game speed
-    Call gameSpeed(mainMem.gameSpeed)
 
     'Set initial pixel movement value
     If (mainMem.pixelMovement = 1) Then
@@ -489,6 +487,9 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     Else
         movementSize = 1
     End If
+    
+    'Set initial game speed
+    Call gameSpeed(mainMem.gameSpeed)
 
     'Register all fonts
     Call LoadFontsFromFolder(projectPath & fontPath)
