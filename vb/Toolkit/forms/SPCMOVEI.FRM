@@ -301,7 +301,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     Label1.Caption = LoadStringLoc(2023, "Special Move Info (Move") + str$(playerList(activePlayerIndex).specialMoveNumber) + ")"
     minexp.Text = str$(playerList(activePlayerIndex).theData.spcMinExp(playerList(activePlayerIndex).specialMoveNumber))

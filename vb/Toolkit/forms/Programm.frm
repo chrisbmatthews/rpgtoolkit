@@ -133,26 +133,26 @@ Attribute VB_Exposed = False
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     a = proglist.ListIndex
     If a = -1 Then MsgBox LoadStringLoc(987, "Please Select A Program From The Above List First!"): Exit Sub
     boardList(activeBoardIndex).prgCondition = a
     programset.Show vbModal ', me
     proglist.Clear
     For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
-        If boardList(activeBoardIndex).theData.programName$(t) = "" Then namei$ = LoadStringLoc(1010, "None") Else namei$ = boardList(activeBoardIndex).theData.programName$(t)
-        proglist.AddItem "Program" + str$(t) + ": " + namei$ + "   Location:" + str$(boardList(activeBoardIndex).theData.progX(t)) + "," + str$(boardList(activeBoardIndex).theData.progY(t)) + ", Layer" + str$(boardList(activeBoardIndex).theData.progLayer(t))
+        If boardList(activeBoardIndex).theData.programName$(t) = "" Then nameI$ = LoadStringLoc(1010, "None") Else nameI$ = boardList(activeBoardIndex).theData.programName$(t)
+        proglist.AddItem "Program" + str$(t) + ": " + nameI$ + "   Location:" + str$(boardList(activeBoardIndex).theData.progX(t)) + "," + str$(boardList(activeBoardIndex).theData.progY(t)) + ", Layer" + str$(boardList(activeBoardIndex).theData.progLayer(t))
     Next t
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     a = proglist.ListIndex
     If a = -1 Then MsgBox LoadStringLoc(987, "Please Select A Program From The Above List First!"): Exit Sub
     boardList(activeBoardIndex).theData.programName$(a) = ""   'Board program filenames
@@ -169,19 +169,19 @@ Private Sub Command2_Click()
 
     proglist.Clear
     For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
-        If boardList(activeBoardIndex).theData.programName$(t) = "" Then namei$ = LoadStringLoc(1010, "None") Else namei$ = boardList(activeBoardIndex).theData.programName$(t)
-        proglist.AddItem "Program" + str$(t) + ": " + namei$ + "   Location:" + str$(boardList(activeBoardIndex).theData.progX(t)) + "," + str$(boardList(activeBoardIndex).theData.progY(t)) + ", Layer" + str$(boardList(activeBoardIndex).theData.progLayer(t))
+        If boardList(activeBoardIndex).theData.programName$(t) = "" Then nameI$ = LoadStringLoc(1010, "None") Else nameI$ = boardList(activeBoardIndex).theData.programName$(t)
+        proglist.AddItem "Program" + str$(t) + ": " + nameI$ + "   Location:" + str$(boardList(activeBoardIndex).theData.progX(t)) + "," + str$(boardList(activeBoardIndex).theData.progY(t)) + ", Layer" + str$(boardList(activeBoardIndex).theData.progLayer(t))
     Next t
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     MsgBox LoadStringLoc(948, "To set a program, click on the tile you want")
     boardList(activeBoardIndex).drawState = 2
     boardList(activeBoardIndex).prgCondition = -1
@@ -189,36 +189,36 @@ Private Sub Command3_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
-    Call LocalizeForm(Me)
+    On Error GoTo ErrorHandler
+    ' Call LocalizeForm(Me)
     
     proglist.Clear
     For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
-        If boardList(activeBoardIndex).theData.programName$(t) = "" Then namei$ = LoadStringLoc(1010, "None") Else namei$ = boardList(activeBoardIndex).theData.programName$(t)
-        proglist.AddItem "Program" + str$(t) + ": " + namei$ + "   Location:" + str$(boardList(activeBoardIndex).theData.progX(t)) + "," + str$(boardList(activeBoardIndex).theData.progY(t)) + ", Layer" + str$(boardList(activeBoardIndex).theData.progLayer(t))
+        If boardList(activeBoardIndex).theData.programName$(t) = "" Then nameI$ = LoadStringLoc(1010, "None") Else nameI$ = boardList(activeBoardIndex).theData.programName$(t)
+        proglist.AddItem "Program" + str$(t) + ": " + nameI$ + "   Location:" + str$(boardList(activeBoardIndex).theData.progX(t)) + "," + str$(boardList(activeBoardIndex).theData.progY(t)) + ", Layer" + str$(boardList(activeBoardIndex).theData.progLayer(t))
     Next t
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub proglist_DblClick()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Command1_Click
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

@@ -85,16 +85,16 @@ Attribute VB_Exposed = False
 
 Sub infofill()
     On Error Resume Next
-    Call ListCategories(helppath$ + ObtainCaptionFromTag(DB_EventFile, resourcePath$ + m_LangFile), categories)
-    Call DisplayEventCommands(helppath$ + ObtainCaptionFromTag(DB_EventFile, resourcePath$ + m_LangFile), "", events)
+    Call ListCategories(helpPath$ + ObtainCaptionFromTag(DB_EventFile, resourcePath$ + m_LangFile), categories)
+    Call DisplayEventCommands(helpPath$ + ObtainCaptionFromTag(DB_EventFile, resourcePath$ + m_LangFile), "", events)
 End Sub
 
 
 Private Sub categories_Click()
     On Error Resume Next
-    cat$ = categories.List(categories.ListIndex)
+    cat$ = categories.list(categories.ListIndex)
     If cat$ = "All" Then cat$ = ""
-    Call DisplayEventCommands(helppath$ + ObtainCaptionFromTag(DB_EventFile, resourcePath$ + m_LangFile), cat$, events)
+    Call DisplayEventCommands(helpPath$ + ObtainCaptionFromTag(DB_EventFile, resourcePath$ + m_LangFile), cat$, events)
 End Sub
 
 
@@ -102,7 +102,7 @@ Private Sub Command1_Click()
     On Error Resume Next
     idx = events.ListIndex
     If idx = -1 Then idx = 0
-    cmd$ = events.List(idx)
+    cmd$ = events.list(idx)
     l = Len(cmd$)
     
     thecmd$ = "#"
@@ -132,7 +132,7 @@ End Sub
 
 
 Private Sub Form_Load()
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Call infofill
 End Sub
 

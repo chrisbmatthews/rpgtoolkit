@@ -4,24 +4,41 @@ Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form frmColoringOptions 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
-   Caption         =   "Syntax Coloring Options"
-   ClientHeight    =   3495
-   ClientLeft      =   0
-   ClientTop       =   0
+   BorderStyle     =   4  'Fixed ToolWindow
+   Caption         =   "RPGCode Editor Options"
+   ClientHeight    =   3330
+   ClientLeft      =   45
+   ClientTop       =   315
    ClientWidth     =   4455
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3495
+   ScaleHeight     =   3330
    ScaleWidth      =   4455
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CommandButton cmdSave 
+      Caption         =   "Save"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   3120
+      TabIndex        =   29
+      Top             =   240
+      Width           =   1215
+   End
+   Begin VB.CommandButton cmdDefault 
+      Caption         =   "Default"
+      Height          =   375
+      Left            =   3120
+      TabIndex        =   28
+      Top             =   720
+      Width           =   1215
+   End
    Begin TabDlg.SSTab Tabs 
       Height          =   2895
       Left            =   120
-      TabIndex        =   3
-      Top             =   480
+      TabIndex        =   0
+      Top             =   240
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   5106
@@ -38,7 +55,6 @@ Begin VB.Form frmColoringOptions
       TabPicture(1)   =   "frmSyntaxColor.frx":001C
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "fraTab1"
-      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Common"
       TabPicture(2)   =   "frmSyntaxColor.frx":0038
@@ -52,19 +68,18 @@ Begin VB.Form frmColoringOptions
          ForeColor       =   &H80000008&
          Height          =   2295
          Left            =   -74880
-         TabIndex        =   24
+         TabIndex        =   21
          Top             =   480
          Width           =   2655
          Begin RichTextLib.RichTextBox codeForm 
             Height          =   1575
             Left            =   120
-            TabIndex        =   27
+            TabIndex        =   24
             Top             =   600
             Width           =   2415
             _ExtentX        =   4260
             _ExtentY        =   2778
             _Version        =   393217
-            Enabled         =   -1  'True
             ScrollBars      =   3
             Appearance      =   0
             TextRTF         =   $"frmSyntaxColor.frx":0054
@@ -83,7 +98,7 @@ Begin VB.Form frmColoringOptions
             Caption         =   "Text to place at the start of each newly created program file:"
             Height          =   495
             Left            =   120
-            TabIndex        =   26
+            TabIndex        =   23
             Top             =   120
             Width           =   2415
          End
@@ -101,7 +116,7 @@ Begin VB.Form frmColoringOptions
          ForeColor       =   &H80000008&
          Height          =   2295
          Left            =   -74880
-         TabIndex        =   23
+         TabIndex        =   20
          Top             =   480
          Width           =   2655
          Begin VB.Frame Frame1 
@@ -111,7 +126,7 @@ Begin VB.Form frmColoringOptions
             ForeColor       =   &H80000008&
             Height          =   855
             Left            =   120
-            TabIndex        =   25
+            TabIndex        =   22
             Top             =   240
             Width           =   2415
             Begin VB.PictureBox Picture1 
@@ -121,7 +136,7 @@ Begin VB.Form frmColoringOptions
                Left            =   120
                ScaleHeight     =   495
                ScaleWidth      =   2175
-               TabIndex        =   28
+               TabIndex        =   25
                Top             =   240
                Width           =   2175
                Begin VB.OptionButton optSpaces 
@@ -131,7 +146,7 @@ Begin VB.Form frmColoringOptions
                   ForeColor       =   &H80000008&
                   Height          =   255
                   Left            =   0
-                  TabIndex        =   30
+                  TabIndex        =   27
                   Top             =   0
                   Value           =   -1  'True
                   Width           =   975
@@ -143,7 +158,7 @@ Begin VB.Form frmColoringOptions
                   ForeColor       =   &H80000008&
                   Height          =   255
                   Left            =   0
-                  TabIndex        =   29
+                  TabIndex        =   26
                   Top             =   240
                   Width           =   975
                End
@@ -163,7 +178,7 @@ Begin VB.Form frmColoringOptions
          ForeColor       =   &H80000008&
          Height          =   2295
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   1
          Top             =   480
          Width           =   2655
          Begin VB.PictureBox shpColorPreview 
@@ -186,7 +201,7 @@ Begin VB.Form frmColoringOptions
             MousePointer    =   99  'Custom
             ScaleHeight     =   225
             ScaleWidth      =   585
-            TabIndex        =   10
+            TabIndex        =   7
             Top             =   120
             Width           =   615
          End
@@ -205,80 +220,80 @@ Begin VB.Form frmColoringOptions
             ForeColor       =   &H80000008&
             Height          =   255
             Index           =   2
-            Left            =   1920
-            MousePointer    =   99  'Custom
-            ScaleHeight     =   225
-            ScaleWidth      =   585
-            TabIndex        =   9
-            Top             =   840
-            Width           =   615
-         End
-         Begin VB.PictureBox shpColorPreview 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BeginProperty Font 
-               Name            =   "Trebuchet MS"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   3
-            Left            =   1920
-            MousePointer    =   99  'Custom
-            ScaleHeight     =   225
-            ScaleWidth      =   585
-            TabIndex        =   8
-            Top             =   1200
-            Width           =   615
-         End
-         Begin VB.PictureBox shpColorPreview 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BeginProperty Font 
-               Name            =   "Trebuchet MS"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   4
-            Left            =   1920
-            MousePointer    =   99  'Custom
-            ScaleHeight     =   225
-            ScaleWidth      =   585
-            TabIndex        =   7
-            Top             =   1560
-            Width           =   615
-         End
-         Begin VB.PictureBox shpColorPreview 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BeginProperty Font 
-               Name            =   "Trebuchet MS"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   5
             Left            =   1920
             MousePointer    =   99  'Custom
             ScaleHeight     =   225
             ScaleWidth      =   585
             TabIndex        =   6
+            Top             =   840
+            Width           =   615
+         End
+         Begin VB.PictureBox shpColorPreview 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Index           =   3
+            Left            =   1920
+            MousePointer    =   99  'Custom
+            ScaleHeight     =   225
+            ScaleWidth      =   585
+            TabIndex        =   5
+            Top             =   1200
+            Width           =   615
+         End
+         Begin VB.PictureBox shpColorPreview 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Index           =   4
+            Left            =   1920
+            MousePointer    =   99  'Custom
+            ScaleHeight     =   225
+            ScaleWidth      =   585
+            TabIndex        =   4
+            Top             =   1560
+            Width           =   615
+         End
+         Begin VB.PictureBox shpColorPreview 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Index           =   5
+            Left            =   1920
+            MousePointer    =   99  'Custom
+            ScaleHeight     =   225
+            ScaleWidth      =   585
+            TabIndex        =   3
             Top             =   1920
             Width           =   615
          End
@@ -301,7 +316,7 @@ Begin VB.Form frmColoringOptions
             MousePointer    =   99  'Custom
             ScaleHeight     =   225
             ScaleWidth      =   585
-            TabIndex        =   5
+            TabIndex        =   2
             Top             =   480
             Width           =   615
          End
@@ -309,61 +324,61 @@ Begin VB.Form frmColoringOptions
             Height          =   255
             Index           =   1
             Left            =   1080
-            TabIndex        =   11
+            TabIndex        =   8
             Top             =   480
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
             Index           =   2
             Left            =   1080
-            TabIndex        =   12
+            TabIndex        =   9
             Top             =   840
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
             Index           =   3
             Left            =   1080
-            TabIndex        =   13
+            TabIndex        =   10
             Top             =   1200
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
             Index           =   4
             Left            =   1080
-            TabIndex        =   14
+            TabIndex        =   11
             Top             =   1560
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
             Index           =   5
             Left            =   1080
-            TabIndex        =   15
+            TabIndex        =   12
             Top             =   1920
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
             Index           =   0
             Left            =   1080
-            TabIndex        =   16
+            TabIndex        =   13
             Top             =   120
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin VB.Shape Shape1 
             Height          =   2295
@@ -386,7 +401,7 @@ Begin VB.Form frmColoringOptions
             Height          =   255
             Index           =   0
             Left            =   120
-            TabIndex        =   22
+            TabIndex        =   19
             Top             =   120
             Width           =   855
          End
@@ -405,7 +420,7 @@ Begin VB.Form frmColoringOptions
             Height          =   255
             Index           =   1
             Left            =   120
-            TabIndex        =   21
+            TabIndex        =   18
             Top             =   480
             Width           =   855
          End
@@ -424,7 +439,7 @@ Begin VB.Form frmColoringOptions
             Height          =   255
             Index           =   2
             Left            =   120
-            TabIndex        =   20
+            TabIndex        =   17
             Top             =   840
             Width           =   855
          End
@@ -443,7 +458,7 @@ Begin VB.Form frmColoringOptions
             Height          =   255
             Index           =   3
             Left            =   120
-            TabIndex        =   19
+            TabIndex        =   16
             Top             =   1200
             Width           =   855
          End
@@ -462,7 +477,7 @@ Begin VB.Form frmColoringOptions
             Height          =   255
             Index           =   4
             Left            =   120
-            TabIndex        =   18
+            TabIndex        =   15
             Top             =   1560
             Width           =   855
          End
@@ -481,50 +496,11 @@ Begin VB.Form frmColoringOptions
             Height          =   255
             Index           =   5
             Left            =   120
-            TabIndex        =   17
+            TabIndex        =   14
             Top             =   1920
             Width           =   855
          End
       End
-   End
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
-      TabIndex        =   2
-      Top             =   0
-      Width           =   3735
-      _ExtentX        =   6588
-      _ExtentY        =   847
-      Object.Width           =   3735
-      Caption         =   "Program Editor Options"
-   End
-   Begin Toolkit.TKButton cmdDefault 
-      Height          =   495
-      Left            =   3120
-      TabIndex        =   1
-      Top             =   1320
-      Width           =   1215
-      _ExtentX        =   3440
-      _ExtentY        =   873
-      Object.Width           =   1935
-      Caption         =   "Default"
-   End
-   Begin Toolkit.TKButton cmdSave 
-      Height          =   495
-      Left            =   3120
-      TabIndex        =   0
-      Top             =   840
-      Width           =   1215
-      _ExtentX        =   3440
-      _ExtentY        =   873
-      Object.Width           =   1935
-      Caption         =   "Save"
-   End
-   Begin VB.Shape Shape3 
-      Height          =   3495
-      Left            =   0
-      Top             =   0
-      Width           =   4455
    End
 End
 Attribute VB_Name = "frmColoringOptions"
@@ -611,7 +587,6 @@ End Sub
 Private Sub Form_Activate()
  Dim a As Long
  For a = 0 To 5: shpColorPreview(a).MouseIcon = Images.MouseLink: Next a
- Set TopBar.theForm = Me
 End Sub
 
 Private Sub Form_Load(): On Error Resume Next
@@ -652,9 +627,9 @@ Private Sub lblOK_Click()
  Call cmdOK_Click
 End Sub
 
-Private Sub shpColorPreview_Click(Index As Integer)
+Private Sub shpColorPreview_Click(index As Integer)
  Dim retColor As Long
  retColor = ColorDialog(True)
  If retColor = -1 Then Exit Sub
- shpColorPreview(Index).BackColor = retColor
+ shpColorPreview(index).BackColor = retColor
 End Sub

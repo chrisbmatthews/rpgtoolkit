@@ -1,12 +1,10 @@
 VERSION 5.00
 Begin VB.Form helpAbout 
-   Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "About RPG Toolkit"
-   ClientHeight    =   5295
-   ClientLeft      =   2550
-   ClientTop       =   2400
+   ClientHeight    =   5040
+   ClientLeft      =   2595
+   ClientTop       =   2715
    ClientWidth     =   7215
    BeginProperty Font 
       Name            =   "MS Sans Serif"
@@ -23,24 +21,12 @@ Begin VB.Form helpAbout
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   5295
+   ScaleHeight     =   5040
    ScaleWidth      =   7215
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1115"
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
-      TabIndex        =   8
-      Top             =   0
-      Width           =   6975
-      _ExtentX        =   12303
-      _ExtentY        =   847
-      Object.Width           =   6975
-      Caption         =   "About the RPGToolkit Development System, Version 3"
-   End
    Begin VB.TextBox Text1 
-      Appearance      =   0  'Flat
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -56,24 +42,15 @@ Begin VB.Form helpAbout
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   5
-      Top             =   3480
+      Top             =   3120
       Width           =   6855
    End
-   Begin VB.Shape Shape1 
-      Height          =   5295
-      Left            =   0
-      Top             =   0
-      Width           =   7215
-   End
    Begin VB.Label Label7 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       Caption         =   $"HELPABOU.frx":0CCA
-      ForeColor       =   &H80000008&
       Height          =   615
       Left            =   240
       TabIndex        =   7
-      Top             =   2640
+      Top             =   2280
       Width           =   6855
    End
    Begin VB.Label Label6 
@@ -95,7 +72,7 @@ Begin VB.Form helpAbout
       Left            =   120
       TabIndex        =   6
       Tag             =   "1126"
-      Top             =   2160
+      Top             =   1800
       Width           =   4095
    End
    Begin VB.Label Label8 
@@ -117,7 +94,7 @@ Begin VB.Form helpAbout
       Left            =   120
       TabIndex        =   4
       Tag             =   "1122"
-      Top             =   840
+      Top             =   480
       Width           =   2895
    End
    Begin VB.Label Label5 
@@ -140,7 +117,7 @@ Begin VB.Form helpAbout
       Left            =   4320
       TabIndex        =   3
       Tag             =   "1124"
-      Top             =   1440
+      Top             =   1080
       Width           =   2415
    End
    Begin VB.Label Label3 
@@ -162,7 +139,7 @@ Begin VB.Form helpAbout
       Left            =   120
       TabIndex        =   2
       Tag             =   "1126"
-      Top             =   1680
+      Top             =   1320
       Width           =   4095
    End
    Begin VB.Label Label2 
@@ -184,7 +161,7 @@ Begin VB.Form helpAbout
       Left            =   120
       TabIndex        =   1
       Tag             =   "1094"
-      Top             =   1200
+      Top             =   840
       Width           =   3855
    End
    Begin VB.Label Label1 
@@ -206,7 +183,7 @@ Begin VB.Form helpAbout
       Left            =   120
       TabIndex        =   0
       Tag             =   "1127"
-      Top             =   480
+      Top             =   120
       Width           =   6615
    End
 End
@@ -223,8 +200,6 @@ Option Explicit
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-
-    Set TopBar.theForm = Me
 
     Dim theText As String
     theText = theText & "Open source contributions by: Colin James Fitzpatrick (KSNiloc), Peter Fenner (Asimir), Phil Carty (Xavier), John@aljo, Jonathan Hughes (Delano), Chris Hutchinson (Euix), Geoff, Sander Knape (Woozy), Samuel Bedwell (Occasionally_Correct)" & vbCrLf & vbCrLf
@@ -255,9 +230,10 @@ Private Sub Form_Load()
     theText = theText & "These notices must be retained in any copies of any part of this" & vbCrLf
     theText = theText & "documentation and/or software." & vbCrLf & vbCrLf
 
+    theText = theText & "This product includes software developed by vbAccelerator (http://vbaccelerator.com/)." & vbCrLf & vbCrLf
+
     theText = theText & "This program uses the Audiere sound library, released under the LGPL." & vbCrLf
     theText = theText & "Used under license.  http://audiere.sourceforge.net" & vbCrLf & vbCrLf
-    theText = theText & "This product includes software developed by vbAccelerator (http://vbaccelerator.com/)." & vbCrLf & vbCrLf
 
     Text1.Text = theText
 
@@ -276,6 +252,6 @@ Private Sub Text1_KeyPress(KeyAscii As Integer)
     KeyAscii = 0
 End Sub
 
-Private Sub Text1_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Text1_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Button = -1: Shift = 0
 End Sub

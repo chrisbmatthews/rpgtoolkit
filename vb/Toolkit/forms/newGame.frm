@@ -193,8 +193,8 @@ Private Sub Command1_Click()
         tt$ = tt$ + ".gam"
         mainMem.mainScreenType = 1
         Call saveMain(gamPath$ + tt$, mainMem)
-        mainfile$ = tt$
-        configfile.lastProject$ = mainfile$
+        mainFile$ = tt$
+        configfile.lastProject$ = mainFile$
         Call CopyDir(gamePath$ + "Basic\" + fontPath$, projectPath$ + fontPath$)
         If Check1.value = 1 Then
             'copy default files
@@ -236,7 +236,7 @@ End Sub
 
 
 Private Sub Form_Load()
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
 End Sub
 
 Private Sub gamett_Change()

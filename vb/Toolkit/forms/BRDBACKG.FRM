@@ -2,11 +2,11 @@ VERSION 5.00
 Begin VB.Form brdbackground 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
+   BorderStyle     =   1  'Fixed Single
    Caption         =   "Board Backgrounds"
    ClientHeight    =   1815
-   ClientLeft      =   1860
-   ClientTop       =   1785
+   ClientLeft      =   1905
+   ClientTop       =   2220
    ClientWidth     =   7215
    BeginProperty Font 
       Name            =   "MS Sans Serif"
@@ -20,48 +20,21 @@ Begin VB.Form brdbackground
    ForeColor       =   &H80000008&
    Icon            =   "BRDBACKG.frx":0000
    LinkTopic       =   "Form2"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   1815
    ScaleWidth      =   7215
-   ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1079"
-   Begin Toolkit.TKButton cmdOK 
+   Begin VB.CommandButton cmdOK 
+      Caption         =   "OK"
+      Default         =   -1  'True
       Height          =   375
       Left            =   6240
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   600
       Width           =   855
-      _ExtentX        =   661
-      _ExtentY        =   661
-      Object.Width           =   360
-      Caption         =   "OK"
-   End
-   Begin VB.PictureBox cmdChangeBoardBitmap 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Left            =   2640
-      MousePointer    =   99  'Custom
-      Picture         =   "BRDBACKG.frx":0CCA
-      ScaleHeight     =   375
-      ScaleWidth      =   615
-      TabIndex        =   6
-      Top             =   1000
-      Width           =   615
-   End
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
-      TabIndex        =   5
-      Top             =   0
-      Width           =   4215
-      _ExtentX        =   7435
-      _ExtentY        =   847
-      Object.Width           =   4215
-      Caption         =   "Board Background"
    End
    Begin VB.Frame brdColour 
       Appearance      =   0  'Flat
@@ -81,18 +54,26 @@ Begin VB.Form brdbackground
       Left            =   3600
       TabIndex        =   3
       Tag             =   "1083"
-      Top             =   480
+      Top             =   240
       Width           =   2535
-      Begin Toolkit.TKButton cmdSelectColor 
+      Begin VB.PictureBox Picture1 
+         BackColor       =   &H80000009&
+         BorderStyle     =   0  'None
          Height          =   375
-         Left            =   600
-         TabIndex        =   7
+         Left            =   720
+         ScaleHeight     =   375
+         ScaleWidth      =   1695
+         TabIndex        =   6
          Top             =   480
-         Width           =   1815
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "Select Color"
+         Width           =   1695
+         Begin VB.CommandButton cmdSelectColor 
+            Caption         =   "Select Color"
+            Height          =   375
+            Left            =   0
+            TabIndex        =   7
+            Top             =   0
+            Width           =   1695
+         End
       End
       Begin VB.PictureBox picBoardColor 
          Appearance      =   0  'Flat
@@ -100,7 +81,7 @@ Begin VB.Form brdbackground
          BackColor       =   &H80000005&
          ForeColor       =   &H80000008&
          Height          =   375
-         Left            =   120
+         Left            =   240
          ScaleHeight     =   345
          ScaleWidth      =   345
          TabIndex        =   4
@@ -126,10 +107,28 @@ Begin VB.Form brdbackground
       Left            =   120
       TabIndex        =   0
       Tag             =   "1085"
-      Top             =   480
+      Top             =   240
       Width           =   3375
+      Begin VB.PictureBox Picture2 
+         BackColor       =   &H80000009&
+         BorderStyle     =   0  'None
+         Height          =   255
+         Left            =   2640
+         ScaleHeight     =   255
+         ScaleWidth      =   495
+         TabIndex        =   8
+         Top             =   600
+         Width           =   495
+         Begin VB.CommandButton cmdChangeBoardBitmap 
+            Caption         =   "..."
+            Height          =   255
+            Left            =   0
+            TabIndex        =   9
+            Top             =   0
+            Width           =   495
+         End
+      End
       Begin VB.TextBox brdbmpname 
-         Appearance      =   0  'Flat
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -140,7 +139,7 @@ Begin VB.Form brdbackground
             Strikethrough   =   0   'False
          EndProperty
          Height          =   285
-         Left            =   120
+         Left            =   240
          TabIndex        =   1
          Top             =   600
          Width           =   2295
@@ -162,18 +161,12 @@ Begin VB.Form brdbackground
          ForeColor       =   &H80000008&
          Height          =   255
          Index           =   0
-         Left            =   120
+         Left            =   240
          TabIndex        =   2
          Tag             =   "1013"
          Top             =   360
          Width           =   1215
       End
-   End
-   Begin VB.Shape Shape1 
-      Height          =   1815
-      Left            =   0
-      Top             =   0
-      Width           =   7215
    End
 End
 Attribute VB_Name = "brdbackground"
@@ -198,7 +191,7 @@ Private Sub brdbmpname_Change(): On Error Resume Next
     
     'Destroy the old image canvas, reset the pointer.
     If boardList(activeBoardIndex).theData.brdBackCNV <> 0 Then
-        Call DestroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
+        Call destroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
         boardList(activeBoardIndex).theData.brdBackCNV = 0
     End If
     
@@ -241,7 +234,7 @@ Private Sub cmdChangeBoardBitmap_Click(): On Error Resume Next
     
     'Destroy the old image canvas, reset the pointer.
     If boardList(activeBoardIndex).theData.brdBackCNV <> 0 Then
-        Call DestroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
+        Call destroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
         boardList(activeBoardIndex).theData.brdBackCNV = 0
     End If
     
@@ -264,16 +257,14 @@ End Sub
 
 Private Sub Form_Load(): On Error Resume Next
 
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
 
     'Set data.
     brdbmpname.Text = boardList(activeBoardIndex).theData.brdBack
     Call vbPicFillRect(picBoardColor, 0, 0, 1000, 1000, boardList(activeBoardIndex).theData.brdColor)
     
     cmdChangeBoardBitmap.MouseIcon = Images.MouseLink()
-    
-    Set TopBar.theForm = Me
-    
+       
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer): On Error Resume Next

@@ -137,11 +137,11 @@ Private Sub colcode_Change()
     Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(activeTile.indice).currentColor)
 End Sub
 
-Private Sub dospal_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub dospal_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     Dim xx As Long, yy As Long, theColor As Long
-    xx = Int((X / 10))
-    yy = Int((Y / 10))
+    xx = Int((x / 10))
+    yy = Int((y / 10))
     theColor = yy * 16 + xx
     Call vbPicFillRect(dosCurrentCol, 0, 0, 100, 100, GFXGetDOSColor(theColor))
     colCode.Text = str(theColor)
@@ -159,7 +159,7 @@ End Sub
 
 Private Sub Form_Activate()
     On Error Resume Next
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     Dim xx As Long, yy As Long
     Dim color As Long
     For yy = 0 To 15
@@ -173,7 +173,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
 End Sub
 
 Private Sub selectdoscol_Click()

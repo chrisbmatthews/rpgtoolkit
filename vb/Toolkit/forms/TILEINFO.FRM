@@ -573,7 +573,7 @@ Private Sub Form_Load()
     Dim Temp As String, tileopen As String, fn As String, ex As String
     Dim levelnum As Integer, numof As Integer, testtype As Integer, t As Integer
     
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     Call vbPicAutoRedraw(tileinfopic, True)
     Call vbPicAutoRedraw(tileInfoIso, True)         'Added.

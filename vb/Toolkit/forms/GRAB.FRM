@@ -1123,7 +1123,7 @@ Private Sub Form_Load(): On Error Resume Next
 'Grabber entry point.
 '=========================
     
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     grab.tag = 1608         'Assign a name for the editor bar.
     grab.Caption = "Grab Tile (No image)"
     chkWelcome.value = configfile.grabTips

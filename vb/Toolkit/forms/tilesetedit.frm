@@ -509,7 +509,7 @@ End Sub
 ' Form_Load
 '========================================================================
 Private Sub Form_Load()
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
 End Sub
 '========================================================================
 ' When you click in the Files list

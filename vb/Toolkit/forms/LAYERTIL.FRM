@@ -1,40 +1,36 @@
 VERSION 5.00
 Begin VB.Form frmLayerTile 
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
-   Caption         =   "Form1"
-   ClientHeight    =   2415
-   ClientLeft      =   0
-   ClientTop       =   0
+   BorderStyle     =   4  'Fixed ToolWindow
+   Caption         =   "Layer Tile"
+   ClientHeight    =   2100
+   ClientLeft      =   45
+   ClientTop       =   315
    ClientWidth     =   3735
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   2415
+   ScaleHeight     =   2100
    ScaleWidth      =   3735
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin Toolkit.TKButton butCancel 
-      Height          =   495
-      Left            =   2520
-      TabIndex        =   7
-      Top             =   960
-      Width           =   1095
-      _ExtentX        =   661
-      _ExtentY        =   873
-      Object.Width           =   360
-      Caption         =   "Cancel"
-   End
-   Begin Toolkit.TKButton butOK 
-      Height          =   495
-      Left            =   2520
-      TabIndex        =   6
-      Top             =   480
-      Width           =   855
-      _ExtentX        =   661
-      _ExtentY        =   873
-      Object.Width           =   360
+   Begin VB.CommandButton butOK 
       Caption         =   "OK"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   2520
+      TabIndex        =   5
+      Top             =   240
+      Width           =   1095
+   End
+   Begin VB.CommandButton butCancel 
+      Cancel          =   -1  'True
+      Caption         =   "Cancel"
+      Height          =   375
+      Left            =   2520
+      TabIndex        =   4
+      Top             =   720
+      Width           =   1095
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
@@ -42,9 +38,28 @@ Begin VB.Form frmLayerTile
       ForeColor       =   &H80000008&
       Height          =   1815
       Left            =   120
-      TabIndex        =   1
-      Top             =   360
+      TabIndex        =   0
+      Top             =   120
       Width           =   2295
+      Begin VB.PictureBox Picture1 
+         BackColor       =   &H80000009&
+         BorderStyle     =   0  'None
+         Height          =   495
+         Left            =   120
+         ScaleHeight     =   495
+         ScaleWidth      =   1335
+         TabIndex        =   6
+         Top             =   240
+         Width           =   1335
+         Begin VB.CommandButton butOpenTile 
+            Caption         =   "Open Tile"
+            Height          =   375
+            Left            =   0
+            TabIndex        =   7
+            Top             =   0
+            Width           =   1215
+         End
+      End
       Begin VB.CheckBox chkTrans 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
@@ -52,7 +67,7 @@ Begin VB.Form frmLayerTile
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   3
          Top             =   1440
          Width           =   1695
       End
@@ -63,7 +78,7 @@ Begin VB.Form frmLayerTile
          ForeColor       =   &H80000008&
          Height          =   375
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   2
          Top             =   960
          Width           =   1335
       End
@@ -76,38 +91,10 @@ Begin VB.Form frmLayerTile
          ScaleHeight     =   31
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   31
-         TabIndex        =   3
+         TabIndex        =   1
          Top             =   240
          Width           =   495
       End
-      Begin Toolkit.TKButton butOpenTile 
-         Height          =   375
-         Left            =   120
-         TabIndex        =   2
-         Top             =   240
-         Width           =   1335
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "Open Tile"
-      End
-   End
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
-      TabIndex        =   0
-      Top             =   0
-      Width           =   2895
-      _ExtentX        =   5106
-      _ExtentY        =   847
-      Object.Width           =   2895
-      Caption         =   "Layer Tile"
-   End
-   Begin VB.Shape Shape1 
-      Height          =   2415
-      Left            =   0
-      Top             =   0
-      Width           =   3735
    End
 End
 Attribute VB_Name = "frmLayerTile"
@@ -275,7 +262,7 @@ End Sub
 Private Sub Form_Load(): On Error Resume Next
     
     'Localize this form
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     'Store the current tile and clear buftile
     Dim x As Integer, y As Integer
@@ -291,10 +278,7 @@ Private Sub Form_Load(): On Error Resume Next
     
     'Set the chkTrans checkbox
     chkTrans.value = openTileEditorDocs(activeTile.indice).transparentLayer = 1
-    
-    'Make sure the topbar knows which form it is on
-    Set TopBar.theForm = Me
-    
+        
 End Sub
 
 '========================================================================

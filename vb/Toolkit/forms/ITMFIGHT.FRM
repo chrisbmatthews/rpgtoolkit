@@ -466,7 +466,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     hpup.Text = str$(itemList(activeItemIndex).theData.fgtHPup)
     smup.Text = str$(itemList(activeItemIndex).theData.fgtSMup)

@@ -894,7 +894,7 @@ End Sub
 '=========================================================================
 Private Sub Form_Load()
     On Error Resume Next
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Set activeBackground = Me
     dataIndex = VectBackgroundNewSlot()
     activeBkgIndex = dataIndex

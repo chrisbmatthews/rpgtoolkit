@@ -2,74 +2,50 @@ VERSION 5.00
 Begin VB.Form frmThreading 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Threading"
-   ClientHeight    =   4575
-   ClientLeft      =   0
-   ClientTop       =   0
+   ClientHeight    =   3795
+   ClientLeft      =   45
+   ClientTop       =   315
    ClientWidth     =   4215
    LinkTopic       =   "Form2"
-   ScaleHeight     =   4575
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   ScaleHeight     =   3795
    ScaleWidth      =   4215
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
-   Begin VB.ListBox lstThreads 
-      Appearance      =   0  'Flat
-      Height          =   3540
-      Left            =   120
-      TabIndex        =   4
-      Top             =   720
-      Width           =   2415
-   End
-   Begin Toolkit.TKButton cmdRemove 
-      Height          =   495
+   Begin VB.CommandButton cmdSave 
+      Caption         =   "Save"
+      Default         =   -1  'True
+      Height          =   375
       Left            =   2760
       TabIndex        =   3
-      Top             =   2280
+      Top             =   360
       Width           =   1215
-      _ExtentX        =   820
-      _ExtentY        =   873
-      Object.Width           =   450
-      Caption         =   "Remove"
    End
-   Begin Toolkit.TKButton cmdAdd 
-      Height          =   495
+   Begin VB.CommandButton cmdAdd 
+      Caption         =   "Add"
+      Height          =   375
       Left            =   2760
       TabIndex        =   2
-      Top             =   1680
+      Top             =   1080
       Width           =   1215
-      _ExtentX        =   820
-      _ExtentY        =   873
-      Object.Width           =   450
-      Caption         =   "Add"
    End
-   Begin Toolkit.TKButton cmdSave 
-      Height          =   495
+   Begin VB.CommandButton cmdRemove 
+      Caption         =   "Remove"
+      Height          =   375
       Left            =   2760
       TabIndex        =   1
-      Top             =   840
+      Top             =   1560
       Width           =   1215
-      _ExtentX        =   820
-      _ExtentY        =   873
-      Object.Width           =   450
-      Caption         =   "Save"
    End
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
+   Begin VB.ListBox lstThreads 
+      Height          =   3375
+      Left            =   120
       TabIndex        =   0
-      Top             =   0
-      Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   847
-      Object.Width           =   3495
-      Caption         =   "Threading"
-   End
-   Begin VB.Shape shpBorder 
-      Height          =   4575
-      Left            =   0
-      Top             =   0
-      Width           =   4215
+      Top             =   240
+      Width           =   2415
    End
 End
 Attribute VB_Name = "frmThreading"
@@ -140,7 +116,6 @@ End Sub
 
 Private Sub Form_Load()
 
-    Set TopBar.theForm = Me
     populateListBox
 
 End Sub
@@ -171,7 +146,7 @@ Private Sub saveListBoxContents()
     ReDim boardList(activeBoardIndex).theData.Threads(0)
     For a = 0 To lstThreads.ListCount - 1
         ReDim Preserve boardList(activeBoardIndex).theData.Threads(a)
-        Threads(a) = lstThreads.List(a)
+        Threads(a) = lstThreads.list(a)
     Next a
 
 End Sub

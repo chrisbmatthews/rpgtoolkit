@@ -248,7 +248,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     If itemList(activeItemIndex).theData.itmPrgOnBoard$ <> "" Then onboard.Text = itemList(activeItemIndex).theData.itmPrgOnBoard$   'Program to run while item is on board
     If itemList(activeItemIndex).theData.itmPrgPickUp$ <> "" Then equipped.Text = itemList(activeItemIndex).theData.itmPrgPickUp$    'Program to run when picked up.

@@ -631,7 +631,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     Text1.Text = str$(playerList(activePlayerIndex).theData.levelType)
     maxlevbox.Text = str$(playerList(activePlayerIndex).theData.maxLevel)

@@ -755,7 +755,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     itemset.Height = 1950
         

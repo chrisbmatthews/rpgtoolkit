@@ -2,52 +2,38 @@ VERSION 5.00
 Begin VB.Form characterGraphics 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
-   Caption         =   "Character Graphics"
-   ClientHeight    =   6975
-   ClientLeft      =   435
-   ClientTop       =   840
+   BorderStyle     =   1  'Fixed Single
+   Caption         =   "Character Sprite List"
+   ClientHeight    =   6495
+   ClientLeft      =   480
+   ClientTop       =   1275
    ClientWidth     =   7575
    Icon            =   "characterGraphics.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
-   ScaleHeight     =   6975
+   MinButton       =   0   'False
+   ScaleHeight     =   6495
    ScaleWidth      =   7575
-   ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1236"
+   Begin VB.CommandButton butOK 
+      Caption         =   "OK"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   6720
+      TabIndex        =   12
+      Top             =   240
+      Width           =   735
+   End
    Begin VB.ListBox lstBattle 
-      Appearance      =   0  'Flat
       CausesValidation=   0   'False
-      Height          =   1005
+      Height          =   1035
       ItemData        =   "characterGraphics.frx":0CCA
       Left            =   240
       List            =   "characterGraphics.frx":0CCC
-      TabIndex        =   9
-      Top             =   3000
-      Width           =   3015
-   End
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
       TabIndex        =   4
-      Top             =   0
-      Width           =   5175
-      _ExtentX        =   9128
-      _ExtentY        =   847
-      Object.Width           =   5175
-      Caption         =   "Character Sprite List"
-   End
-   Begin Toolkit.TKButton butOK 
-      Height          =   375
-      Left            =   6720
-      TabIndex        =   3
-      Top             =   720
-      Width           =   735
-      _ExtentX        =   661
-      _ExtentY        =   661
-      Object.Width           =   360
-      Caption         =   "OK"
+      Top             =   2520
+      Width           =   3015
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
@@ -56,115 +42,130 @@ Begin VB.Form characterGraphics
       Height          =   6135
       Left            =   120
       TabIndex        =   0
-      Top             =   600
+      Top             =   120
       Width           =   6495
-      Begin VB.TextBox txtFrameTime 
-         Appearance      =   0  'Flat
-         Height          =   285
-         Left            =   4200
-         TabIndex        =   22
-         Top             =   5640
-         Width           =   735
+      Begin VB.PictureBox Picture2 
+         BackColor       =   &H80000009&
+         BorderStyle     =   0  'None
+         Height          =   375
+         Left            =   3240
+         ScaleHeight     =   375
+         ScaleWidth      =   3135
+         TabIndex        =   21
+         Top             =   4440
+         Width           =   3135
+         Begin VB.CommandButton picBrowse 
+            Caption         =   "..."
+            Height          =   255
+            Left            =   2520
+            TabIndex        =   23
+            Top             =   0
+            Width           =   495
+         End
+         Begin VB.TextBox txtAnim 
+            Height          =   285
+            Left            =   0
+            TabIndex        =   22
+            Top             =   0
+            Width           =   2415
+         End
       End
-      Begin VB.TextBox txtIdleTime 
-         Appearance      =   0  'Flat
-         Height          =   285
-         Left            =   1800
-         TabIndex        =   20
-         Top             =   5640
-         Width           =   735
+      Begin VB.PictureBox Picture1 
+         BackColor       =   &H80000009&
+         BorderStyle     =   0  'None
+         Height          =   1095
+         Left            =   120
+         ScaleHeight     =   1095
+         ScaleWidth      =   6255
+         TabIndex        =   13
+         Top             =   4920
+         Width           =   6255
+         Begin VB.TextBox txtFrameTime 
+            Height          =   285
+            Left            =   4080
+            TabIndex        =   18
+            Top             =   720
+            Width           =   735
+         End
+         Begin VB.TextBox txtIdleTime 
+            Height          =   285
+            Left            =   1680
+            TabIndex        =   17
+            Top             =   720
+            Width           =   735
+         End
+         Begin VB.CommandButton picPlay 
+            Caption         =   ">"
+            Height          =   375
+            Left            =   3120
+            TabIndex        =   16
+            Top             =   0
+            Width           =   375
+         End
+         Begin VB.CommandButton butDelete 
+            Caption         =   "Delete"
+            Height          =   375
+            Left            =   1440
+            TabIndex        =   15
+            Top             =   0
+            Width           =   855
+         End
+         Begin VB.CommandButton butNew 
+            Caption         =   "New"
+            Height          =   375
+            Left            =   360
+            TabIndex        =   14
+            Top             =   0
+            Width           =   855
+         End
+         Begin VB.Label lblSecond2 
+            BackStyle       =   0  'Transparent
+            Caption         =   "Seconds between each step:"
+            Height          =   495
+            Left            =   2640
+            TabIndex        =   20
+            Top             =   600
+            Width           =   1575
+         End
+         Begin VB.Label lblDelay 
+            BackStyle       =   0  'Transparent
+            Caption         =   "Seconds before player is considered idle:"
+            Height          =   495
+            Left            =   0
+            TabIndex        =   19
+            Top             =   600
+            Width           =   1695
+         End
       End
       Begin VB.ListBox lstStand 
-         Appearance      =   0  'Flat
          CausesValidation=   0   'False
-         Height          =   1590
+         Height          =   1620
          ItemData        =   "characterGraphics.frx":0CCE
          Left            =   3240
          List            =   "characterGraphics.frx":0CD0
-         TabIndex        =   15
+         TabIndex        =   8
          Top             =   435
          Width           =   3015
       End
-      Begin Toolkit.TKButton butDelete 
-         Height          =   375
-         Left            =   1440
-         TabIndex        =   12
-         Top             =   4920
-         Width           =   1095
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "Delete"
-      End
-      Begin Toolkit.TKButton butNew 
-         Height          =   375
-         Left            =   120
-         TabIndex        =   11
-         Top             =   4920
-         Width           =   1215
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "New"
-      End
       Begin VB.ListBox lstCustom 
-         Appearance      =   0  'Flat
          CausesValidation=   0   'False
-         Height          =   1005
+         Height          =   840
          ItemData        =   "characterGraphics.frx":0CD2
          Left            =   120
          List            =   "characterGraphics.frx":0CD4
-         TabIndex        =   7
+         TabIndex        =   2
          Top             =   3840
          Width           =   3015
       End
-      Begin VB.PictureBox picPlay 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         ForeColor       =   &H80000008&
-         Height          =   442
-         Left            =   3240
-         MousePointer    =   99  'Custom
-         Picture         =   "characterGraphics.frx":0CD6
-         ScaleHeight     =   405
-         ScaleWidth      =   435
-         TabIndex        =   6
-         Top             =   4920
-         Width           =   465
-      End
-      Begin VB.PictureBox picBrowse 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   375
-         Left            =   5760
-         MousePointer    =   99  'Custom
-         Picture         =   "characterGraphics.frx":1660
-         ScaleHeight     =   375
-         ScaleWidth      =   615
-         TabIndex        =   5
-         Top             =   4440
-         Width           =   615
-      End
       Begin VB.ListBox lstMove 
-         Appearance      =   0  'Flat
          CausesValidation=   0   'False
-         Height          =   1590
-         ItemData        =   "characterGraphics.frx":1C4A
+         Height          =   1620
+         ItemData        =   "characterGraphics.frx":0CD6
          Left            =   120
-         List            =   "characterGraphics.frx":1C4C
-         TabIndex        =   2
+         List            =   "characterGraphics.frx":0CD8
+         TabIndex        =   1
          Top             =   435
          Width           =   3015
-      End
-      Begin VB.TextBox txtAnim 
-         Appearance      =   0  'Flat
-         Height          =   285
-         Left            =   3240
-         TabIndex        =   1
-         Top             =   4560
-         Width           =   2415
       End
       Begin VB.PictureBox picAnim 
          Appearance      =   0  'Flat
@@ -177,27 +178,9 @@ Begin VB.Form characterGraphics
          ScaleHeight     =   49
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   81
-         TabIndex        =   17
+         TabIndex        =   10
          Top             =   3480
          Width           =   1215
-      End
-      Begin VB.Label lblSecond2 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Seconds between each step:"
-         Height          =   495
-         Left            =   2760
-         TabIndex        =   21
-         Top             =   5520
-         Width           =   1575
-      End
-      Begin VB.Label lblDelay 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Seconds before player is considered idle:"
-         Height          =   495
-         Left            =   120
-         TabIndex        =   19
-         Top             =   5520
-         Width           =   1695
       End
       Begin VB.Label lblToBig 
          Appearance      =   0  'Flat
@@ -206,7 +189,7 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   975
          Left            =   3360
-         TabIndex        =   18
+         TabIndex        =   11
          Top             =   2520
          Visible         =   0   'False
          Width           =   2175
@@ -225,7 +208,7 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3240
-         TabIndex        =   16
+         TabIndex        =   9
          Top             =   2160
          Width           =   2535
       End
@@ -236,7 +219,7 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   14
+         TabIndex        =   7
          Top             =   195
          Width           =   3015
       End
@@ -247,7 +230,7 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3240
-         TabIndex        =   13
+         TabIndex        =   6
          Top             =   195
          Width           =   3015
       End
@@ -258,7 +241,7 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   5
          Top             =   2160
          Width           =   3015
       End
@@ -269,16 +252,10 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   3
          Top             =   3600
          Width           =   3015
       End
-   End
-   Begin VB.Shape Shape1 
-      Height          =   6975
-      Left            =   0
-      Top             =   0
-      Width           =   7575
    End
 End
 Attribute VB_Name = "characterGraphics"
@@ -297,7 +274,7 @@ Option Explicit
 '========================================================================
 ' Set the info of the listboxes
 '========================================================================
-Private Sub fillInfo(Optional ByVal list As ListBox, Optional ByVal Index As Integer): On Error Resume Next
+Private Sub fillInfo(Optional ByVal list As ListBox, Optional ByVal index As Integer): On Error Resume Next
 
     'Delay and idle time
     txtFrameTime.Text = CStr(playerList(activePlayerIndex).theData.speed)
@@ -373,10 +350,10 @@ Private Sub fillInfo(Optional ByVal list As ListBox, Optional ByVal Index As Int
     End With
 
     'Set the selected animation
-    If IsMissing(list) And IsMissing(Index) Then
+    If IsMissing(list) And IsMissing(index) Then
         lstMove.ListIndex = 0
     Else
-        list.ListIndex = Index
+        list.ListIndex = index
     End If
 
 End Sub
@@ -435,11 +412,8 @@ End Sub
 Private Sub Form_Load(): On Error Resume Next
 
     'Localize this form
-    Call LocalizeForm(Me)
-    
-    'Make sure the top bar knows which form it is on
-    Set TopBar.theForm = Me
-    
+    ' Call LocalizeForm(Me)
+       
     'Fill in the data
     Call fillInfo
     
@@ -589,8 +563,8 @@ Private Sub setAnim(): On Error Resume Next
         Else
         
             'Position the picture box & set the width and height
-            picAnim.width = anm.animSizeX * Screen.TwipsPerPixelX
-            picAnim.height = anm.animSizeY * Screen.TwipsPerPixelY
+            picAnim.Width = anm.animSizeX * Screen.TwipsPerPixelX
+            picAnim.Height = anm.animSizeY * Screen.TwipsPerPixelY
             picAnim.Left = Shape2.Left + 100
             picAnim.Top = Shape2.Top + 100
             
@@ -711,8 +685,8 @@ Private Sub picPlay_Click(): On Error Resume Next
         
             'Position the picture box & set the width and height
             With picAnim
-                .width = anm.animSizeX * Screen.TwipsPerPixelX
-                .height = anm.animSizeY * Screen.TwipsPerPixelY
+                .Width = anm.animSizeX * Screen.TwipsPerPixelX
+                .Height = anm.animSizeY * Screen.TwipsPerPixelY
                 .Left = Shape2.Left + 100
                 .Top = Shape2.Top + 100
             End With

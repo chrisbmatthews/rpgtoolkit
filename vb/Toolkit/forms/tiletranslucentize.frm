@@ -102,7 +102,7 @@ Private Sub chkPreview_Click()
         For x = 1 To xRange
             For y = 1 To 32
                 'If tilemem(x, y) <> -1 Then
-                    tilemem(x, y) = tilepreview(x, y)
+                    tileMem(x, y) = tilePreview(x, y)
                 'End If
             Next y
         Next x
@@ -129,7 +129,7 @@ Private Sub cmdOK_Click()
     End If
     
     'The user wants to save the changes
-    SaveChanges = True
+    saveChanges = True
     
     Unload Me
     Exit Sub
@@ -153,19 +153,19 @@ End Sub
 '========================================================================
 Private Sub Form_Activate()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     'Used to store the current tile for when the "preview" function is used
     For x = 1 To xRange
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilepreview(x, y) = tilemem(x, y)
+                tilePreview(x, y) = tileMem(x, y)
             'End If
         Next y
     Next x
     
     'Set the variable to False at the start
-    SaveChanges = False
+    saveChanges = False
     
     Exit Sub
     
@@ -181,13 +181,13 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     'If the user has pressed the X in the form, he doesn't wants to add the changes
 
-    If Not SaveChanges Then
+    If Not saveChanges Then
     'Use new undo
-    Call activeTile.SetUndo
+    Call activeTile.setUndo
     For x = 1 To xRange
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+                tileMem(x, y) = tilePreview(x, y)
             'End If
         Next y
     Next x
@@ -211,7 +211,7 @@ Sub Preview(level As Integer)
     For x = 1 To xRange
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+                tileMem(x, y) = tilePreview(x, y)
             'End If
         Next y
     Next x
@@ -221,12 +221,12 @@ Sub Preview(level As Integer)
     If level = 2 Then
         For x = 1 To xRange Step level
             For y = 1 To 32 Step level
-                If tilemem(x, y) <> -1 Then
-                    tilemem(x, y) = -1
+                If tileMem(x, y) <> -1 Then
+                    tileMem(x, y) = -1
                     If x = 1 Then
-                        tilemem(xRange, y + level / 2) = -1
+                        tileMem(xRange, y + level / 2) = -1
                     Else
-                        tilemem(x - level / 2, y + level / 2) = -1
+                        tileMem(x - level / 2, y + level / 2) = -1
                     End If
                 End If
             Next y
@@ -235,8 +235,8 @@ Sub Preview(level As Integer)
         level = level / 2
         For x = 1 To xRange Step level
             For y = 1 To 32 Step level
-                If tilemem(x, y) <> -1 Then
-                    tilemem(x, y) = -1
+                If tileMem(x, y) <> -1 Then
+                    tileMem(x, y) = -1
                 End If
             Next y
         Next x

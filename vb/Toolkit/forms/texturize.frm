@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.Form tiletexturize 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Texturize"
@@ -76,7 +76,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private X As Integer, Y As Integer
+Private x As Integer, y As Integer
 
 '========================================================================
 ' sldTexturize_Scroll
@@ -102,13 +102,13 @@ End Sub
 Private Sub chkPreview_Click()
     'If they uncheck it, we should turn the tile back to how it was at the start
     If chkPreview.value = 0 Then
-        For X = 1 To xRange
-            For Y = 1 To 32
-                If tileMem(X, Y) <> -1 Then
-                    tileMem(X, Y) = tilePreview(X, Y)
+        For x = 1 To xRange
+            For y = 1 To 32
+                If tileMem(x, y) <> -1 Then
+                    tileMem(x, y) = tilePreview(x, y)
                 End If
-            Next Y
-        Next X
+            Next y
+        Next x
     activeTile.tileRedraw
     'If they check it, preview the tile!
     Else
@@ -156,16 +156,16 @@ End Sub
 '========================================================================
 Private Sub Form_Activate()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     'Used to store the current tile for when the "preview" function is used
-    For X = 1 To xRange
-        For Y = 1 To 32
-            If tileMem(X, Y) <> -1 Then
-                tilePreview(X, Y) = tileMem(X, Y)
+    For x = 1 To xRange
+        For y = 1 To 32
+            If tileMem(x, y) <> -1 Then
+                tilePreview(x, y) = tileMem(x, y)
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     
     'Set the variable to False at the start
     saveChanges = False
@@ -187,13 +187,13 @@ Private Sub Form_Unload(Cancel As Integer)
     If Not saveChanges Then
     'Use new undo
     Call activeTile.setUndo
-    For X = 1 To xRange
-        For Y = 1 To 32
-            If tileMem(X, Y) <> -1 Then
-                tileMem(X, Y) = tilePreview(X, Y)
+    For x = 1 To xRange
+        For y = 1 To 32
+            If tileMem(x, y) <> -1 Then
+                tileMem(x, y) = tilePreview(x, y)
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     activeTile.tileRedraw
     End If
 End Sub
@@ -215,23 +215,23 @@ Sub Preview(level As Integer)
     End If
     
     'First we need to to set the tile back to how it was at the start
-    For X = 1 To xRange
-        For Y = 1 To 32
-            If tileMem(X, Y) <> -1 Then
-                tileMem(X, Y) = tilePreview(X, Y)
+    For x = 1 To xRange
+        For y = 1 To 32
+            If tileMem(x, y) <> -1 Then
+                tileMem(x, y) = tilePreview(x, y)
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
 
     'Ok that's done, let's preview!
-    For X = 1 To xRange Step level
-        For Y = 1 To 32 Step level
-            If tileMem(X, Y) <> -1 Then
-                aa = tileMem(X, Y)
+    For x = 1 To xRange Step level
+        For y = 1 To 32 Step level
+            If tileMem(x, y) <> -1 Then
+                aa = tileMem(x, y)
                 redd = red(aa)
-                aa = tileMem(X, Y)
+                aa = tileMem(x, y)
                 greenn = green(aa)
-                aa = tileMem(X, Y)
+                aa = tileMem(x, y)
                 bluee = blue(aa)
                 sr = Int(Rnd(1) * 80) - 40
                 sg = Int(Rnd(1) * 60) - 30
@@ -245,10 +245,10 @@ Sub Preview(level As Integer)
                 If greenn < 0 Then greenn = 0
                 If bluee > 255 Then bluee = 255
                 If bluee < 0 Then bluee = 0
-                tileMem(X, Y) = RGB(redd, greenn, bluee)
+                tileMem(x, y) = RGB(redd, greenn, bluee)
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     'Redraw
     Call activeTile.tileRedraw
 End Sub

@@ -133,6 +133,6 @@ End Sub
 ' Form loaded
 '========================================================================
 Private Sub Form_Load()
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Set TopBar.theForm = Me
 End Sub

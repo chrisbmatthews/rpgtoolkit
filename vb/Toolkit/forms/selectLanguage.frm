@@ -127,7 +127,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     Call traceString("About to fill in language box")
     Call infofill

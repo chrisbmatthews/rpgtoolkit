@@ -269,7 +269,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Frame1.Caption = str(boardList(activeBoardIndex).infoX) & "," & str(boardList(activeBoardIndex).infoY) & "," & str(boardList(activeBoardIndex).currentLayer)
     Set TopBar.theForm = Me
 End Sub

@@ -427,7 +427,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     oldValue = 0
     redambient.max = 255
     redambient.min = 0

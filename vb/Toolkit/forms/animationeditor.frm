@@ -265,12 +265,12 @@ End Sub
 '========================================================================
 ' Set the size of the animation
 '========================================================================
-Public Sub setAnimSize(ByVal Index As Integer): On Error Resume Next
+Public Sub setAnimSize(ByVal index As Integer): On Error Resume Next
 
     'Needs to be updated
     animationList(activeAnimationIndex).animNeedUpdate = True
     
-    If Index <> 4 Then
+    If index <> 4 Then
         
         'It is not a custom animation, un-enable the 2 textboxes
         tkMainForm.txtAnimXSize.Enabled = False
@@ -281,7 +281,7 @@ Public Sub setAnimSize(ByVal Index As Integer): On Error Resume Next
     With animationList(activeAnimationIndex).theData
         
         'Now, see which one is clicked and set the width & height
-        Select Case Index
+        Select Case index
             Case 0
                 
                 'Small
@@ -594,7 +594,7 @@ End Sub
 Private Sub Form_Load(): On Error Resume Next
 
     'Localize this form
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     'Create new slot
     dataIndex = VectAnimationNewSlot()
@@ -734,7 +734,7 @@ End Sub
 '========================================================================
 ' When you click in the animation picturebox
 '========================================================================
-Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     
     With animationList(activeAnimationIndex).theData
@@ -750,7 +750,7 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y 
             
             'Get the color of the pixel
             Dim colour As Long
-            colour = vbFrmPoint(arena, X, Y)
+            colour = vbFrmPoint(arena, x, y)
             
             'Set the transparent color
             .animTransp(.animCurrentFrame) = colour

@@ -270,7 +270,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     If boardList(activeBoardIndex).spotLight = 1 Then slighton.value = -1: slightoff.value = 0
     If boardList(activeBoardIndex).spotLight = 0 Then slightoff.value = -1: slighton.value = 0

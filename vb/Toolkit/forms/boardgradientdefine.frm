@@ -225,7 +225,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Set TopBar.theForm = Me
     If boardList(activeBoardIndex).ambientR < 0 Then boardList(activeBoardIndex).ambientR = 0
     If boardList(activeBoardIndex).ambientG < 0 Then boardList(activeBoardIndex).ambientG = 0

@@ -442,7 +442,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     Text1.Text = rpgcodeList(activeRPGCodeIndex).Ifont$
     Text2.Text = rpgcodeList(activeRPGCodeIndex).Imwin$

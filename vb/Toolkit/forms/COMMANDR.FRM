@@ -2,11 +2,11 @@ VERSION 5.00
 Begin VB.Form commandRef 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
+   BorderStyle     =   1  'Fixed Single
    Caption         =   "RPGCode Version 2 Language Specification"
-   ClientHeight    =   5055
-   ClientLeft      =   3840
-   ClientTop       =   615
+   ClientHeight    =   4755
+   ClientLeft      =   3885
+   ClientTop       =   1050
    ClientWidth     =   6255
    BeginProperty Font 
       Name            =   "MS Sans Serif"
@@ -21,33 +21,20 @@ Begin VB.Form commandRef
    Icon            =   "COMMANDR.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
+   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   5055
+   ScaleHeight     =   4755
    ScaleWidth      =   6255
-   ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1208"
-   Begin Toolkit.TKButton command1 
+   Begin VB.CommandButton Command1 
+      Caption         =   "OK"
+      Default         =   -1  'True
       Height          =   375
       Left            =   5040
-      TabIndex        =   3
-      Top             =   480
-      Width           =   855
-      _ExtentX        =   661
-      _ExtentY        =   661
-      Object.Width           =   360
-      Caption         =   "OK"
-   End
-   Begin Toolkit.TKTopBar topBar 
-      Height          =   480
-      Left            =   0
       TabIndex        =   2
-      Top             =   0
-      Width           =   4335
-      _ExtentX        =   7646
-      _ExtentY        =   847
-      Object.Width           =   4335
-      Caption         =   "Command Reference"
+      Top             =   120
+      Width           =   1095
    End
    Begin VB.TextBox description 
       BeginProperty Font 
@@ -63,7 +50,7 @@ Begin VB.Form commandRef
       Left            =   120
       MultiLine       =   -1  'True
       TabIndex        =   1
-      Top             =   4200
+      Top             =   3840
       Width           =   6015
    End
    Begin VB.ListBox commands 
@@ -79,14 +66,8 @@ Begin VB.Form commandRef
       Height          =   3570
       Left            =   120
       TabIndex        =   0
-      Top             =   480
+      Top             =   120
       Width           =   4815
-   End
-   Begin VB.Shape Shape1 
-      Height          =   5055
-      Left            =   0
-      Top             =   0
-      Width           =   6255
    End
 End
 Attribute VB_Name = "commandRef"
@@ -104,7 +85,7 @@ Option Explicit
 
 Private Sub Command1_Click()
     On Error Resume Next
-    Call Unload(commandref)
+    Call Unload(commandRef)
 End Sub
 
 Private Sub commands_Click()
@@ -129,10 +110,9 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo errref
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Dim num As Long
     num = FreeFile()
-    Set TopBar.theForm = Me
     Open helpPath$ + ObtainCaptionFromTag(DB_QuickRefFile, resourcePath$ + m_LangFile) For Input As #num
         Do Until EOF(num)
             If UCase$(fread(num)) = ":COMMAND" Then

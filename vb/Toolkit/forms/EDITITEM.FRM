@@ -884,7 +884,7 @@ End Sub
 '=========================================================================
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     Set activeItem = Me
     dataIndex = VectItemNewSlot()

@@ -159,7 +159,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Select Case boardList(activeBoardIndex).theData.ambientEffect
         Case 0
             none.value = -1

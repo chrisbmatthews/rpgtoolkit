@@ -2,36 +2,26 @@ VERSION 5.00
 Begin VB.Form frmIndentWizard 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
+   BorderStyle     =   1  'Fixed Single
    Caption         =   "Indent Wizard"
-   ClientHeight    =   3375
-   ClientLeft      =   0
-   ClientTop       =   0
+   ClientHeight    =   2820
+   ClientLeft      =   45
+   ClientTop       =   435
    ClientWidth     =   4335
    LinkTopic       =   "Form2"
-   ScaleHeight     =   3375
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   ScaleHeight     =   2820
    ScaleWidth      =   4335
-   ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Begin VB.CommandButton cmdIndent 
       Caption         =   "Indent"
       Default         =   -1  'True
       Height          =   375
       Left            =   2640
-      TabIndex        =   6
-      Top             =   840
-      Width           =   1575
-   End
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
       TabIndex        =   5
-      Top             =   0
-      Width           =   3135
-      _extentx        =   5530
-      _extenty        =   847
-      Object.width           =   3135
-      caption         =   "Indent Wizard"
+      Top             =   240
+      Width           =   1575
    End
    Begin VB.Frame frmInfo 
       Appearance      =   0  'Flat
@@ -50,7 +40,7 @@ Begin VB.Form frmIndentWizard
       Height          =   615
       Left            =   2640
       TabIndex        =   2
-      Top             =   1560
+      Top             =   720
       Visible         =   0   'False
       Width           =   1575
       Begin VB.Label lblWait 
@@ -91,7 +81,7 @@ Begin VB.Form frmIndentWizard
       Height          =   2535
       Left            =   120
       TabIndex        =   0
-      Top             =   600
+      Top             =   120
       Width           =   2415
       Begin VB.Label lblMoreDescription 
          Appearance      =   0  'Flat
@@ -134,12 +124,6 @@ Begin VB.Form frmIndentWizard
          Width           =   2175
       End
    End
-   Begin VB.Shape shpBorder 
-      Height          =   3375
-      Left            =   0
-      Top             =   0
-      Width           =   4335
-   End
 End
 Attribute VB_Name = "frmIndentWizard"
 Attribute VB_GlobalNameSpace = False
@@ -170,10 +154,6 @@ Private Sub cmdIndent_Click()
     Else
         Call indentCode(vbTab)
     End If
-End Sub
-
-Private Sub Form_Activate()
-    Set TopBar.theForm = Me
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

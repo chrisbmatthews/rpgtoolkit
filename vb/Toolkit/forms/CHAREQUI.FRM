@@ -252,93 +252,93 @@ Attribute VB_Exposed = False
 
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 Private Sub accessorynamebox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     t = Combo1.ListIndex
     If t = -1 Then t = 0
-    playerList(activePlayerIndex).theData.accessoryName$(t + 1) = accessorynamebox.text
+    playerList(activePlayerIndex).theData.accessoryName$(t + 1) = accessorynamebox.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).theData.armorType(1) = Check1.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).theData.armorType(2) = Check2.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).theData.armorType(3) = Check3.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).theData.armorType(4) = Check4.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check5_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).theData.armorType(5) = Check5.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check6_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).theData.armorType(6) = Check6.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Combo1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     t = Combo1.ListIndex + 1
-    accessorynamebox.text = playerList(activePlayerIndex).theData.accessoryName$(t)
+    accessorynamebox.Text = playerList(activePlayerIndex).theData.accessoryName$(t)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -348,8 +348,8 @@ Private Sub Command6_Click()
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
-    Call LocalizeForm(Me)
+    On Error GoTo ErrorHandler
+    ' Call LocalizeForm(Me)
     
     Check1.value = playerList(activePlayerIndex).theData.armorType(1)
     Check2.value = playerList(activePlayerIndex).theData.armorType(2)
@@ -361,13 +361,13 @@ Private Sub Form_Load()
     For t = 1 To 10
         Combo1.AddItem "Accessory" + str$(t)
     Next t
-    Combo1.text = "Accessory 1"
-    accessorynamebox.text = playerList(activePlayerIndex).theData.accessoryName$(1)
+    Combo1.Text = "Accessory 1"
+    accessorynamebox.Text = playerList(activePlayerIndex).theData.accessoryName$(1)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

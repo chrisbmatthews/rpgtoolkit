@@ -263,7 +263,7 @@ End Sub
 '========================================================================
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     '!NEW! Set the variable to False at the start...
     saveChanges = False
@@ -327,11 +327,11 @@ End Sub
 '========================================================================
 ' ldir_MouseDown
 '========================================================================
-Private Sub ldir_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub ldir_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     'now find openTileEditorDocs(activeTile.indice).angle
     'Hypotenuse length
     '!NEW! Declared variables
-    Dim Length, adj, inv, ang, A As Integer
+    Dim Length, adj, inv, ang, a As Integer
     
     On Error GoTo ErrorHandler
     If x = 50 Or y = 50 Then Exit Sub
@@ -344,8 +344,8 @@ Private Sub ldir_MouseDown(button As Integer, Shift As Integer, x As Single, y A
     'convert to degrees
     openTileEditorDocs(activeTile.indice).angle = Int((ang * 180) / 3.14)
     If y > 50 Then
-        A = 180 - openTileEditorDocs(activeTile.indice).angle
-        openTileEditorDocs(activeTile.indice).angle = 180 + A
+        a = 180 - openTileEditorDocs(activeTile.indice).angle
+        openTileEditorDocs(activeTile.indice).angle = 180 + a
     End If
     angtext.Caption = str$(openTileEditorDocs(activeTile.indice).angle) + "--" + str$(openTileEditorDocs(activeTile.indice).lightLength)
     Call vbPicFillRect(ldir, 0, 0, 1000, 1000, vbQBColor(15))
@@ -368,7 +368,7 @@ End Sub
 '========================================================================
 ' tileform_MouseDown
 '========================================================================
-Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub tileform_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     On Error GoTo ErrorHandler
     '!NEW! Declared variables
     Dim newX, newY As Integer
@@ -398,10 +398,10 @@ End Sub
 '========================================================================
 ' tileform_MouseMove
 '========================================================================
-Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub tileform_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     On Error GoTo ErrorHandler
-    If button = 1 Then
-        Call tileform_MouseDown(button, Shift, x, y)
+    If Button = 1 Then
+        Call tileform_MouseDown(Button, Shift, x, y)
     End If
 
     Exit Sub
@@ -414,7 +414,7 @@ End Sub
 '========================================================================
 ' !NEW! tileform_MouseUp
 '========================================================================
-Private Sub tileform_MouseUp(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub tileform_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     'If preview is checked, preview the tile
     If chkPreview.value = 1 Then Call Preview
 End Sub
@@ -424,7 +424,7 @@ End Sub
 '========================================================================
 Sub Preview()
     '!NEW! Declared variables
-    Dim max, st, rad, A, r, g, b, darken As Long
+    Dim max, st, rad, a, r, g, b, darken As Long
     
     'These 2 variables are giving me problems... whatever variable I change
     'them too, they always give me an error.
@@ -458,21 +458,21 @@ Sub Preview()
                         newY = newY - xRange
                     End If
                     'Debug.Print "newX: " & newX & ". newY: " & newY
-                    A = tileMem(newX, newY)
+                    a = tileMem(newX, newY)
                     
                     '!EDIT! Edited these lines here, check the documentation for my reason
-                    If A <> -1 Then
-                        r = red(A)
-                        A = tileMem(newX, newY)
+                    If a <> -1 Then
+                        r = red(a)
+                        a = tileMem(newX, newY)
                     End If
                     
-                    If A <> -1 Then
-                        g = green(A)
-                        A = tileMem(newX, newY)
+                    If a <> -1 Then
+                        g = green(a)
+                        a = tileMem(newX, newY)
                     End If
                     
-                    If A <> -1 Then
-                        b = blue(A)
+                    If a <> -1 Then
+                        b = blue(a)
                         darken = st * 10
                         st = st - 1
                         r = inBounds(r - darken, 0, 255)

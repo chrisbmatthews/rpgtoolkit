@@ -78,59 +78,57 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "startframe"
+      Tab(1).Control(0)=   "fraSettings"
       Tab(1).Control(0).Enabled=   0   'False
-      Tab(1).Control(1)=   "fraSettings"
+      Tab(1).Control(1)=   "startframe"
       Tab(1).Control(1).Enabled=   0   'False
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(0)=   "actionframe"
       Tab(2).Control(0).Enabled=   0   'False
-      Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(1)=   "prgframe"
       Tab(2).Control(1).Enabled=   0   'False
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
       Tab(3).ControlEnabled=   0   'False
-      Tab(3).Control(0)=   "fightframe"
+      Tab(3).Control(0)=   "Picture7"
       Tab(3).Control(0).Enabled=   0   'False
-      Tab(3).Control(1)=   "Picture7"
+      Tab(3).Control(1)=   "fightframe"
       Tab(3).Control(1).Enabled=   0   'False
       Tab(3).ControlCount=   2
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
       Tab(4).ControlEnabled=   0   'False
-      Tab(4).Control(0)=   "screenframe"
+      Tab(4).Control(0)=   "Picture11"
       Tab(4).Control(0).Enabled=   0   'False
-      Tab(4).Control(1)=   "Picture8"
+      Tab(4).Control(1)=   "Picture10"
       Tab(4).Control(1).Enabled=   0   'False
       Tab(4).Control(2)=   "Picture9"
       Tab(4).Control(2).Enabled=   0   'False
-      Tab(4).Control(3)=   "Picture10"
+      Tab(4).Control(3)=   "Picture8"
       Tab(4).Control(3).Enabled=   0   'False
-      Tab(4).Control(4)=   "Picture11"
+      Tab(4).Control(4)=   "screenframe"
       Tab(4).Control(4).Enabled=   0   'False
       Tab(4).ControlCount=   5
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label24"
+      Tab(5).Control(0)=   "Frame3"
       Tab(5).Control(0).Enabled=   0   'False
       Tab(5).Control(1)=   "daynightcheckbox"
       Tab(5).Control(1).Enabled=   0   'False
-      Tab(5).Control(2)=   "Frame3"
+      Tab(5).Control(2)=   "Label24"
       Tab(5).Control(2).Enabled=   0   'False
-      Tab(5).Control(3)=   "Picture12"
-      Tab(5).Control(3).Enabled=   0   'False
-      Tab(5).ControlCount=   4
+      Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
       Tab(6).ControlEnabled=   0   'False
-      Tab(6).Control(0)=   "Frame1"
+      Tab(6).Control(0)=   "Picture13"
       Tab(6).Control(0).Enabled=   0   'False
-      Tab(6).Control(1)=   "Picture13"
+      Tab(6).Control(1)=   "Frame1"
       Tab(6).Control(1).Enabled=   0   'False
       Tab(6).ControlCount=   2
       Begin VB.PictureBox Picture13 
@@ -139,7 +137,7 @@ Begin VB.Form editmainfile
          Left            =   -74520
          ScaleHeight     =   3375
          ScaleWidth      =   6255
-         TabIndex        =   100
+         TabIndex        =   95
          Top             =   960
          Width           =   6255
          Begin VB.CommandButton cmdSelectBattleSystem 
@@ -155,7 +153,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5040
-            TabIndex        =   107
+            TabIndex        =   102
             Tag             =   "1021"
             Top             =   2880
             Width           =   1095
@@ -172,7 +170,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2160
-            TabIndex        =   106
+            TabIndex        =   101
             Text            =   "None"
             Top             =   2880
             Width           =   2655
@@ -189,7 +187,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2160
-            TabIndex        =   105
+            TabIndex        =   100
             Text            =   "None"
             Top             =   2400
             Width           =   2655
@@ -207,7 +205,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5040
-            TabIndex        =   104
+            TabIndex        =   99
             Tag             =   "1021"
             Top             =   2400
             Width           =   1095
@@ -226,7 +224,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5040
-            TabIndex        =   103
+            TabIndex        =   98
             Top             =   1200
             Width           =   1095
          End
@@ -244,7 +242,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5040
-            TabIndex        =   102
+            TabIndex        =   97
             Top             =   1680
             Width           =   1095
          End
@@ -260,7 +258,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   2010
             Left            =   0
-            TabIndex        =   101
+            TabIndex        =   96
             Top             =   0
             Width           =   4815
          End
@@ -277,7 +275,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   0
-            TabIndex        =   109
+            TabIndex        =   104
             Top             =   2880
             Width           =   2055
          End
@@ -294,91 +292,9 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   0
-            TabIndex        =   108
+            TabIndex        =   103
             Top             =   2400
             Width           =   2055
-         End
-      End
-      Begin VB.PictureBox Picture12 
-         BorderStyle     =   0  'None
-         Height          =   1215
-         Left            =   -74640
-         ScaleHeight     =   1215
-         ScaleWidth      =   6015
-         TabIndex        =   95
-         Top             =   1320
-         Width           =   6015
-         Begin VB.TextBox daylengthbox 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   480
-            TabIndex        =   98
-            Text            =   "10"
-            Top             =   720
-            Width           =   735
-         End
-         Begin VB.OptionButton daynightvirtual 
-            Caption         =   "The day is a set number of minutes long"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   0
-            TabIndex        =   97
-            Tag             =   "1163"
-            Top             =   360
-            Width           =   4575
-         End
-         Begin VB.OptionButton daynightreal 
-            Caption         =   "Day and night corresponds to Real World"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   375
-            Left            =   0
-            TabIndex        =   96
-            Tag             =   "1164"
-            Top             =   0
-            Value           =   -1  'True
-            Width           =   4455
-         End
-         Begin VB.Label Label25 
-            Caption         =   "Minutes"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   1440
-            TabIndex        =   99
-            Tag             =   "1165"
-            Top             =   720
-            Width           =   1095
          End
       End
       Begin VB.PictureBox Picture11 
@@ -1520,6 +1436,88 @@ Begin VB.Form editmainfile
          Tag             =   "1162"
          Top             =   1080
          Width           =   6255
+         Begin VB.PictureBox Picture12 
+            BorderStyle     =   0  'None
+            Height          =   1215
+            Left            =   120
+            ScaleHeight     =   1215
+            ScaleWidth      =   6015
+            TabIndex        =   105
+            Top             =   240
+            Width           =   6015
+            Begin VB.OptionButton daynightreal 
+               Caption         =   "Day and night corresponds to Real World"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   375
+               Left            =   0
+               TabIndex        =   108
+               Tag             =   "1164"
+               Top             =   0
+               Value           =   -1  'True
+               Width           =   4455
+            End
+            Begin VB.OptionButton daynightvirtual 
+               Caption         =   "The day is a set number of minutes long"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   0
+               TabIndex        =   107
+               Tag             =   "1163"
+               Top             =   360
+               Width           =   4575
+            End
+            Begin VB.TextBox daylengthbox 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   480
+               TabIndex        =   106
+               Text            =   "10"
+               Top             =   720
+               Width           =   735
+            End
+            Begin VB.Label Label25 
+               Caption         =   "Minutes"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   1440
+               TabIndex        =   109
+               Tag             =   "1165"
+               Top             =   720
+               Width           =   1095
+            End
+         End
       End
       Begin VB.CheckBox daynightcheckbox 
          Caption         =   "Game is affected by day and night"
@@ -2149,8 +2147,8 @@ End Sub
 '=========================================================================
 ' Change screen style
 '=========================================================================
-Private Sub chkScreenStyle_Click(ByRef Index As Integer)
-    mainMem.extendToFullScreen = Index
+Private Sub chkScreenStyle_Click(ByRef index As Integer)
+    mainMem.extendToFullScreen = index
 End Sub
 
 '=========================================================================
@@ -2572,7 +2570,7 @@ End Sub
 '=========================================================================
 Private Sub Form_Load(): On Error Resume Next
     On Error Resume Next
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     filename(2) = vbNullString
     sliGameSpeed.max = MAX_GAMESPEED                'Gamespeed range.
     sliGameSpeed.min = -MAX_GAMESPEED

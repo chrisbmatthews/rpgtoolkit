@@ -549,16 +549,16 @@ Sub UpdateRPGCodeEquiv()
     bIgnore = False
 End Sub
 
-Private Sub argVal_Change(Index As Integer)
-    newArgs$(Index) = argVal(Index).Text
+Private Sub argVal_Change(index As Integer)
+    newArgs$(index) = argVal(index).Text
     Call UpdateRPGCodeEquiv
 End Sub
 
-Private Sub browsebutton_Click(Index As Integer)
+Private Sub browsebutton_Click(index As Integer)
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + evtArgType$(Index)
+    dlg.strDefaultFolder = projectPath$ + evtArgType$(index)
     
     dlg.strTitle = "Select File"
     dlg.strDefaultExt = ""
@@ -571,8 +571,8 @@ Private Sub browsebutton_Click(Index As Integer)
         Exit Sub
     End If
     ChDir (currentDir$)
-    argVal(Index).Text = antiPath$
-    newArgs(Index) = antiPath$
+    argVal(index).Text = antiPath$
+    newArgs(index) = antiPath$
     bIgnore = False
     Call UpdateRPGCodeEquiv
 End Sub
@@ -623,7 +623,7 @@ Private Sub directedit_Change()
 End Sub
 
 Private Sub Form_Load()
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Call infofill
 End Sub
 

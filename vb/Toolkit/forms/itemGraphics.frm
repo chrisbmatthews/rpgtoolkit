@@ -2,41 +2,29 @@ VERSION 5.00
 Begin VB.Form itemGraphics 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
-   Caption         =   "Character Graphics"
-   ClientHeight    =   6375
-   ClientLeft      =   435
-   ClientTop       =   840
-   ClientWidth     =   7575
+   BorderStyle     =   4  'Fixed ToolWindow
+   Caption         =   "Item Sprite List"
+   ClientHeight    =   5835
+   ClientLeft      =   480
+   ClientTop       =   1155
+   ClientWidth     =   7680
    Icon            =   "itemGraphics.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
-   ScaleHeight     =   6375
-   ScaleWidth      =   7575
+   MinButton       =   0   'False
+   ScaleHeight     =   5835
+   ScaleWidth      =   7680
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1236"
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
-      TabIndex        =   4
-      Top             =   0
-      Width           =   5175
-      _ExtentX        =   9128
-      _ExtentY        =   847
-      Object.Width           =   5175
-      Caption         =   "Item Sprite List"
-   End
-   Begin Toolkit.TKButton butOK 
+   Begin VB.CommandButton butOK 
+      Caption         =   "OK"
+      Default         =   -1  'True
       Height          =   375
       Left            =   6720
-      TabIndex        =   3
-      Top             =   720
-      Width           =   735
-      _ExtentX        =   661
-      _ExtentY        =   661
-      Object.Width           =   360
-      Caption         =   "OK"
+      TabIndex        =   10
+      Top             =   240
+      Width           =   855
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
@@ -45,115 +33,134 @@ Begin VB.Form itemGraphics
       Height          =   5535
       Left            =   120
       TabIndex        =   0
-      Top             =   600
+      Top             =   120
       Width           =   6495
-      Begin VB.TextBox txtFrameTime 
-         Appearance      =   0  'Flat
-         Height          =   285
-         Left            =   1920
-         TabIndex        =   20
-         Top             =   4800
-         Width           =   735
-      End
-      Begin VB.TextBox txtIdleTime 
-         Appearance      =   0  'Flat
-         Height          =   285
-         Left            =   1920
-         TabIndex        =   18
-         Top             =   4200
-         Width           =   735
-      End
-      Begin VB.ListBox lstStand 
-         Appearance      =   0  'Flat
-         CausesValidation=   0   'False
-         Height          =   1590
-         ItemData        =   "itemGraphics.frx":0CCA
-         Left            =   3240
-         List            =   "itemGraphics.frx":0CCC
-         TabIndex        =   13
-         Top             =   435
-         Width           =   3015
-      End
-      Begin Toolkit.TKButton butDelete 
-         Height          =   375
-         Left            =   1440
-         TabIndex        =   10
-         Top             =   3480
-         Width           =   1095
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "Delete"
-      End
-      Begin Toolkit.TKButton butNew 
-         Height          =   375
-         Left            =   120
-         TabIndex        =   9
-         Top             =   3480
-         Width           =   1215
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "New"
-      End
-      Begin VB.ListBox lstCustom 
-         Appearance      =   0  'Flat
-         CausesValidation=   0   'False
-         Height          =   1005
-         ItemData        =   "itemGraphics.frx":0CCE
-         Left            =   120
-         List            =   "itemGraphics.frx":0CD0
-         TabIndex        =   7
-         Top             =   2400
-         Width           =   3015
-      End
-      Begin VB.PictureBox picPlay 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         ForeColor       =   &H80000008&
-         Height          =   442
-         Left            =   3240
-         MousePointer    =   99  'Custom
-         Picture         =   "itemGraphics.frx":0CD2
-         ScaleHeight     =   405
-         ScaleWidth      =   435
-         TabIndex        =   6
-         Top             =   4920
-         Width           =   465
-      End
-      Begin VB.PictureBox picBrowse 
+      Begin VB.PictureBox Picture2 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
-         Height          =   375
-         Left            =   5760
-         MousePointer    =   99  'Custom
-         Picture         =   "itemGraphics.frx":165C
-         ScaleHeight     =   375
-         ScaleWidth      =   615
-         TabIndex        =   5
+         Height          =   975
+         Left            =   3240
+         ScaleHeight     =   975
+         ScaleWidth      =   3135
+         TabIndex        =   18
          Top             =   4440
-         Width           =   615
+         Width           =   3135
+         Begin VB.CommandButton picPlay 
+            Caption         =   ">"
+            Height          =   375
+            Left            =   0
+            TabIndex        =   21
+            Top             =   360
+            Width           =   495
+         End
+         Begin VB.CommandButton picBrowse 
+            Caption         =   "..."
+            Height          =   255
+            Left            =   2520
+            TabIndex        =   20
+            Top             =   0
+            Width           =   615
+         End
+         Begin VB.TextBox txtAnim 
+            Height          =   285
+            Left            =   0
+            TabIndex        =   19
+            Top             =   0
+            Width           =   2415
+         End
       End
-      Begin VB.ListBox lstMove 
+      Begin VB.PictureBox Picture1 
          Appearance      =   0  'Flat
-         CausesValidation=   0   'False
-         Height          =   1590
-         ItemData        =   "itemGraphics.frx":1C46
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   1695
          Left            =   120
-         List            =   "itemGraphics.frx":1C48
-         TabIndex        =   2
+         ScaleHeight     =   1695
+         ScaleWidth      =   2895
+         TabIndex        =   11
+         Top             =   3720
+         Width           =   2895
+         Begin VB.CommandButton butNew 
+            Caption         =   "New"
+            Height          =   375
+            Left            =   240
+            TabIndex        =   17
+            Top             =   0
+            Width           =   1095
+         End
+         Begin VB.CommandButton butDelete 
+            Caption         =   "Delete"
+            Height          =   375
+            Left            =   1560
+            TabIndex        =   16
+            Top             =   0
+            Width           =   1095
+         End
+         Begin VB.TextBox txtIdleTime 
+            Height          =   285
+            Left            =   1800
+            TabIndex        =   13
+            Top             =   600
+            Width           =   735
+         End
+         Begin VB.TextBox txtFrameTime 
+            Height          =   285
+            Left            =   1800
+            TabIndex        =   12
+            Top             =   1200
+            Width           =   735
+         End
+         Begin VB.Label lblDelay 
+            BackStyle       =   0  'Transparent
+            Caption         =   "Seconds before item is considered idle:"
+            Height          =   495
+            Left            =   0
+            TabIndex        =   15
+            Top             =   480
+            Width           =   1695
+         End
+         Begin VB.Label lblSecond2 
+            BackStyle       =   0  'Transparent
+            Caption         =   "Seconds between each step:"
+            Height          =   495
+            Left            =   0
+            TabIndex        =   14
+            Top             =   1080
+            Width           =   1575
+         End
+      End
+      Begin VB.ListBox lstStand 
+         CausesValidation=   0   'False
+         Height          =   1620
+         ItemData        =   "itemGraphics.frx":0CCA
+         Left            =   3240
+         List            =   "itemGraphics.frx":0CCC
+         TabIndex        =   6
          Top             =   435
          Width           =   3015
       End
-      Begin VB.TextBox txtAnim 
-         Appearance      =   0  'Flat
-         Height          =   285
-         Left            =   3240
+      Begin VB.ListBox lstCustom 
+         CausesValidation=   0   'False
+         Height          =   1035
+         ItemData        =   "itemGraphics.frx":0CCE
+         Left            =   120
+         List            =   "itemGraphics.frx":0CD0
+         TabIndex        =   2
+         Top             =   2520
+         Width           =   3015
+      End
+      Begin VB.ListBox lstMove 
+         CausesValidation=   0   'False
+         Height          =   1620
+         ItemData        =   "itemGraphics.frx":0CD2
+         Left            =   120
+         List            =   "itemGraphics.frx":0CD4
          TabIndex        =   1
-         Top             =   4560
-         Width           =   2415
+         Top             =   435
+         Width           =   3015
       End
       Begin VB.PictureBox picAnim 
          Appearance      =   0  'Flat
@@ -166,27 +173,9 @@ Begin VB.Form itemGraphics
          ScaleHeight     =   49
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   81
-         TabIndex        =   15
+         TabIndex        =   8
          Top             =   3480
          Width           =   1215
-      End
-      Begin VB.Label lblSecond2 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Seconds between each step:"
-         Height          =   495
-         Left            =   120
-         TabIndex        =   19
-         Top             =   4680
-         Width           =   1575
-      End
-      Begin VB.Label lblDelay 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Seconds before item is considered idle:"
-         Height          =   495
-         Left            =   120
-         TabIndex        =   17
-         Top             =   4080
-         Width           =   1695
       End
       Begin VB.Label lblToBig 
          Appearance      =   0  'Flat
@@ -195,7 +184,7 @@ Begin VB.Form itemGraphics
          ForeColor       =   &H80000008&
          Height          =   975
          Left            =   3360
-         TabIndex        =   16
+         TabIndex        =   9
          Top             =   2520
          Visible         =   0   'False
          Width           =   2175
@@ -214,7 +203,7 @@ Begin VB.Form itemGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3240
-         TabIndex        =   14
+         TabIndex        =   7
          Top             =   2160
          Width           =   2535
       End
@@ -225,7 +214,7 @@ Begin VB.Form itemGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   5
          Top             =   195
          Width           =   3015
       End
@@ -236,7 +225,7 @@ Begin VB.Form itemGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3240
-         TabIndex        =   11
+         TabIndex        =   4
          Top             =   195
          Width           =   3015
       End
@@ -247,16 +236,10 @@ Begin VB.Form itemGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   3
          Top             =   2160
          Width           =   3015
       End
-   End
-   Begin VB.Shape Shape1 
-      Height          =   6375
-      Left            =   0
-      Top             =   0
-      Width           =   7575
    End
 End
 Attribute VB_Name = "itemGraphics"
@@ -275,7 +258,7 @@ Option Explicit
 '========================================================================
 ' Set the info of the listboxes
 '========================================================================
-Private Sub fillInfo(Optional ByVal list As ListBox, Optional ByVal Index As Integer): On Error Resume Next
+Private Sub fillInfo(Optional ByVal list As ListBox, Optional ByVal index As Integer): On Error Resume Next
 
     'Delay and idle time
     txtFrameTime.Text = CStr(itemList(activeItemIndex).theData.speed)
@@ -336,10 +319,10 @@ Private Sub fillInfo(Optional ByVal list As ListBox, Optional ByVal Index As Int
     End With
 
     'Set the selected animation
-    If IsMissing(list) And IsMissing(Index) Then
+    If IsMissing(list) And IsMissing(index) Then
         lstMove.ListIndex = 0
     Else
-        list.ListIndex = Index
+        list.ListIndex = index
     End If
 
 End Sub
@@ -398,11 +381,8 @@ End Sub
 Private Sub Form_Load(): On Error Resume Next
 
     'Localize this form
-    Call LocalizeForm(Me)
-    
-    'Make sure the top bar knows which form it is on
-    Set TopBar.theForm = Me
-    
+    ' Call LocalizeForm(Me)
+      
     'Fill in the data
     Call fillInfo
     
@@ -524,8 +504,8 @@ Private Sub setAnim(): On Error Resume Next
         Else
         
             'Position the picture box & set the width and height
-            picAnim.width = anm.animSizeX * Screen.TwipsPerPixelX
-            picAnim.height = anm.animSizeY * Screen.TwipsPerPixelY
+            picAnim.Width = anm.animSizeX * Screen.TwipsPerPixelX
+            picAnim.Height = anm.animSizeY * Screen.TwipsPerPixelY
             picAnim.Left = Shape2.Left + 100
             picAnim.Top = Shape2.Top + 100
             
@@ -641,8 +621,8 @@ Private Sub picPlay_Click(): On Error Resume Next
         
             'Position the picture box & set the width and height
             With picAnim
-                .width = anm.animSizeX * Screen.TwipsPerPixelX
-                .height = anm.animSizeY * Screen.TwipsPerPixelY
+                .Width = anm.animSizeX * Screen.TwipsPerPixelX
+                .Height = anm.animSizeY * Screen.TwipsPerPixelY
                 .Left = Shape2.Left + 100
                 .Top = Shape2.Top + 100
             End With

@@ -15,12 +15,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5910
+      Height          =   5700
       Left            =   8775
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   2730
       TabIndex        =   88
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   2730
       Begin VB.Frame fileTree1 
@@ -191,13 +191,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   360
+      Height          =   570
       Left            =   0
       TabIndex        =   1
       Top             =   0
       Width           =   11880
       _ExtentX        =   20955
-      _ExtentY        =   635
+      _ExtentY        =   1005
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -385,12 +385,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5910
+      Height          =   5700
       Left            =   465
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   3510
       TabIndex        =   56
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -437,8 +437,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -625,12 +625,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5910
+      Height          =   5700
       Left            =   -1350
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   1815
       TabIndex        =   53
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   1815
       Begin VB.CommandButton Command2 
@@ -696,12 +696,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   5910
+      Height          =   5700
       Left            =   0
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   975
       TabIndex        =   11
-      Top             =   360
+      Top             =   570
       Width           =   975
       Begin VB.CommandButton Command3 
          BeginProperty Font 
@@ -2376,12 +2376,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5910
+      Height          =   5700
       Left            =   11505
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   375
       TabIndex        =   3
-      Top             =   360
+      Top             =   570
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2434,12 +2434,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5910
+      Height          =   5700
       Left            =   3975
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   4800
       TabIndex        =   2
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2568,7 +2568,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "3:29 PM"
+            TextSave        =   "5:18 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2581,6 +2581,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
+            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -3508,7 +3509,7 @@ End Sub
 
 Private Sub mainToolbar_ButtonMenuClick(ByVal ButtonMenu As MSComctlLib.ButtonMenu): On Error Resume Next
     Dim frm As Form
-    Select Case ButtonMenu.Index
+    Select Case ButtonMenu.index
         Case 1:
             Set frm = New tileedit
         Case 2:
@@ -3572,7 +3573,7 @@ Private Sub MDIForm_Load(): On Error Resume Next
     lblAnimNewTBM.MouseIcon = Images.MouseLink()
 
     Call createIsoMask
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     toolTop = 240
     
@@ -3853,12 +3854,12 @@ End Sub
 
 '=========================================================================================
 ' ADDED FOURTH BUTTON FOR BOARD TOOLBAR
-Private Sub popButton_Click(Index As Integer): On Error Resume Next
+Private Sub popButton_Click(index As Integer): On Error Resume Next
     
-    Select Case Index
+    Select Case index
         Case 0
             'File tree.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(1).value = 0
                 popButton(2).value = 0
                 popButton(3).value = 0
@@ -3871,7 +3872,7 @@ Private Sub popButton_Click(Index As Integer): On Error Resume Next
             
         Case 1
             'Open editors.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(0).value = 0
                 popButton(2).value = 0
                 popButton(3).value = 0
@@ -3882,7 +3883,7 @@ Private Sub popButton_Click(Index As Integer): On Error Resume Next
             
         Case 2
             'Tileset browser.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(0).value = 0
                 popButton(1).value = 0
                 popButton(3).value = 0
@@ -3896,7 +3897,7 @@ Private Sub popButton_Click(Index As Integer): On Error Resume Next
             
         Case 3
             'Board editor toolbar.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(0).value = 0
                 popButton(1).value = 0
                 popButton(2).value = 0
@@ -4189,8 +4190,8 @@ Private Sub tilesetScroller_Change(): On Error Resume Next
     End If
 End Sub
 
-Private Sub tileTool_Click(Index As Integer): On Error Resume Next
-    Call activeTile.ToolSet(Index)
+Private Sub tileTool_Click(index As Integer): On Error Resume Next
+    Call activeTile.ToolSet(index)
 End Sub
 
 Private Sub tiletypes_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
@@ -4279,12 +4280,12 @@ Private Sub bTools_Close_Click(): On Error Resume Next
     pTools.Visible = False
 End Sub
 ' set display option
-Private Sub bTools_Display_Option_Click(Index As Integer): On Error Resume Next
-    boardToolbar.Display.Update(Index) = bTools_Display_Option(Index).value
+Private Sub bTools_Display_Option_Click(index As Integer): On Error Resume Next
+    boardToolbar.Display.Update(index) = bTools_Display_Option(index).value
 End Sub
 ' select display format
-Private Sub bTools_Objects_Display_Click(Index As Integer): On Error Resume Next
-    boardToolbar.Objects.Display = Index
+Private Sub bTools_Objects_Display_Click(index As Integer): On Error Resume Next
+    boardToolbar.Objects.Display = index
 End Sub
 ' select object
 Private Sub bTools_Objects_Tree_Click(): On Error Resume Next
@@ -4428,8 +4429,8 @@ End Sub
 ' ANIMATION EDITOR RELATED EVENTS
 '=========================================================================================
 'Set the size of the animation
-Private Sub optAnimSize_Click(Index As Integer): On Error Resume Next
-    Call activeAnimation.setAnimSize(Index)
+Private Sub optAnimSize_Click(index As Integer): On Error Resume Next
+    Call activeAnimation.setAnimSize(index)
 End Sub
 'Set the X-Size (Custom anim only)
 Private Sub txtAnimXSize_Change(): On Error Resume Next

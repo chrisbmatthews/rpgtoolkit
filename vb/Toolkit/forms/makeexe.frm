@@ -288,7 +288,7 @@ Private Sub Form_Load()
     Command2.MousePointer = 99
     Command2.MouseIcon = Images.MouseLink
     Set TopBar.theForm = Me
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Text1.Text = GetSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, "")
 End Sub
 

@@ -84,7 +84,7 @@ Private Sub Command1_Click()
 End Sub
 
 Private Sub Form_Load()
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Call infofill
 End Sub
 

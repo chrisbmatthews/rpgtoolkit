@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form config 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Toolkit3 (Configuration)"
-   ClientHeight    =   5355
+   ClientHeight    =   5250
    ClientLeft      =   45
    ClientTop       =   330
    ClientWidth     =   6540
@@ -12,77 +12,108 @@ Begin VB.Form config
    MaxButton       =   0   'False
    MDIChild        =   -1  'True
    MinButton       =   0   'False
-   ScaleHeight     =   5355
+   ScaleHeight     =   5250
    ScaleWidth      =   6540
    Tag             =   "1823"
    WindowState     =   2  'Maximized
-   Begin VB.Frame Frame2 
-      Caption         =   "QuickLaunch"
-      Height          =   1575
-      Left            =   240
-      TabIndex        =   4
-      Tag             =   "1824"
-      Top             =   3480
-      Width           =   6135
-      Begin VB.CommandButton Command2 
-         Caption         =   "Browse..."
+   Begin VB.PictureBox Picture2 
+      BorderStyle     =   0  'None
+      Height          =   2775
+      Left            =   360
+      ScaleHeight     =   2775
+      ScaleWidth      =   5775
+      TabIndex        =   8
+      Top             =   360
+      Width           =   5775
+      Begin VB.PictureBox wallpaperthumb 
+         AutoRedraw      =   -1  'True
+         Height          =   2250
+         Left            =   2520
+         ScaleHeight     =   2190
+         ScaleWidth      =   2940
+         TabIndex        =   10
+         Top             =   0
+         Width           =   3000
+      End
+      Begin VB.CommandButton Command1 
+         Caption         =   "Change"
          Height          =   345
-         Left            =   4920
-         TabIndex        =   11
-         Tag             =   "1021"
-         Top             =   600
+         Left            =   0
+         TabIndex        =   9
+         Tag             =   "1829"
+         Top             =   2280
          Width           =   1095
       End
-      Begin VB.CommandButton qlicon 
-         Height          =   480
-         Left            =   2520
-         Style           =   1  'Graphical
-         TabIndex        =   10
-         Top             =   960
-         Width           =   480
+      Begin VB.Label wallpath 
+         Alignment       =   1  'Right Justify
+         Caption         =   "path"
+         Height          =   255
+         Left            =   1200
+         TabIndex        =   11
+         Tag             =   "1830"
+         Top             =   2400
+         Width           =   4335
       End
-      Begin VB.TextBox qltarget 
-         Height          =   285
-         Left            =   2040
-         TabIndex        =   8
-         Top             =   600
-         Width           =   2775
+   End
+   Begin VB.PictureBox Picture1 
+      BorderStyle     =   0  'None
+      Height          =   1095
+      Left            =   360
+      ScaleHeight     =   1095
+      ScaleWidth      =   5895
+      TabIndex        =   2
+      Top             =   3840
+      Width           =   5895
+      Begin VB.ComboBox Combo1 
+         Height          =   315
+         Left            =   0
+         TabIndex        =   7
+         Text            =   "Combo1"
+         Top             =   0
+         Width           =   1695
       End
       Begin VB.CheckBox qlenabled 
          Caption         =   "Enabled"
          Height          =   255
-         Left            =   120
+         Left            =   0
          TabIndex        =   6
          Tag             =   "1825"
-         Top             =   1080
+         Top             =   480
          Width           =   1455
       End
-      Begin VB.ComboBox Combo1 
-         Height          =   315
-         Left            =   120
+      Begin VB.TextBox qltarget 
+         Height          =   285
+         Left            =   1920
          TabIndex        =   5
-         Text            =   "Combo1"
-         Top             =   600
-         Width           =   1695
+         Top             =   0
+         Width           =   2775
       End
-      Begin VB.Label Label2 
-         Caption         =   "Icon"
-         Height          =   255
-         Left            =   2040
-         TabIndex        =   9
-         Tag             =   "1826"
-         Top             =   960
-         Width           =   735
-      End
-      Begin VB.Label Label1 
-         Caption         =   "Target"
-         Height          =   255
-         Left            =   2040
-         TabIndex        =   7
-         Tag             =   "1827"
+      Begin VB.CommandButton qlicon 
+         Height          =   480
+         Left            =   2400
+         Style           =   1  'Graphical
+         TabIndex        =   4
          Top             =   360
-         Width           =   1335
+         Width           =   480
       End
+      Begin VB.CommandButton Command2 
+         Caption         =   "Browse..."
+         Height          =   345
+         Left            =   4800
+         TabIndex        =   3
+         Tag             =   "1021"
+         Top             =   0
+         Width           =   1095
+      End
+   End
+   Begin VB.Frame Frame2 
+      Caption         =   "QuickLaunch"
+      Height          =   1575
+      Left            =   240
+      TabIndex        =   1
+      Tag             =   "1824"
+      Top             =   3480
+      Width           =   6135
    End
    Begin VB.Frame Frame1 
       Caption         =   "Wallpaper"
@@ -92,35 +123,6 @@ Begin VB.Form config
       Tag             =   "1828"
       Top             =   120
       Width           =   6015
-      Begin VB.CommandButton Command1 
-         Caption         =   "Change"
-         Height          =   345
-         Left            =   240
-         TabIndex        =   2
-         Tag             =   "1829"
-         Top             =   2280
-         Width           =   1095
-      End
-      Begin VB.PictureBox wallpaperthumb 
-         AutoRedraw      =   -1  'True
-         Height          =   2250
-         Left            =   2760
-         ScaleHeight     =   2190
-         ScaleWidth      =   2940
-         TabIndex        =   1
-         Top             =   360
-         Width           =   3000
-      End
-      Begin VB.Label wallpath 
-         Alignment       =   1  'Right Justify
-         Caption         =   "path"
-         Height          =   255
-         Left            =   1440
-         TabIndex        =   3
-         Tag             =   "1830"
-         Top             =   2760
-         Width           =   4335
-      End
    End
 End
 Attribute VB_Name = "config"
@@ -250,7 +252,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     Call infofill
 

@@ -1747,7 +1747,7 @@ End Sub
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     Call LocalizeTabStrip(TabStrip1)
     
     Frame4.Visible = True
@@ -1815,9 +1815,9 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub Label3_Click(Index As Integer)
+Private Sub Label3_Click(index As Integer)
     On Error GoTo ErrorHandler
-    If Index = 2 Then mainfight.Show
+    If index = 2 Then mainfight.Show
 
     Exit Sub
 'Begin error handling code:
@@ -1827,9 +1827,9 @@ ErrorHandler:
 End Sub
 
 
-Private Sub Label5_Click(Index As Integer)
+Private Sub Label5_Click(index As Integer)
     On Error GoTo ErrorHandler
-    If Index = 1 Then editBackground.Show
+    If index = 1 Then editBackground.Show
 
     Exit Sub
 'Begin error handling code:
@@ -1877,7 +1877,7 @@ Private Sub TabStrip1_Click()
     Frame8.Visible = False
 'FIXIT: p1.SelectedItem.Index property has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
 'FIXIT: electedItem.Index property has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
-    Select Case TabStrip1.SelectedItem.Index
+    Select Case TabStrip1.SelectedItem.index
         Case 1:
             Frame4.Visible = True
         Case 2:

@@ -146,7 +146,7 @@ Private Sub Command3_Click()
 End Sub
 
 Private Sub Form_Load()
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
 End Sub
 
 

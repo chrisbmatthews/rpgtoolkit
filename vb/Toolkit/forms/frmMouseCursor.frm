@@ -2,127 +2,132 @@ VERSION 5.00
 Begin VB.Form frmMouseCursor 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "(Mouse Cursor)"
-   ClientHeight    =   4335
-   ClientLeft      =   0
-   ClientTop       =   0
+   ClientHeight    =   4095
+   ClientLeft      =   45
+   ClientTop       =   315
    ClientWidth     =   4815
    ControlBox      =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   4335
+   ScaleHeight     =   4095
    ScaleWidth      =   4815
    ShowInTaskbar   =   0   'False
+   Begin VB.CommandButton cmdOK 
+      Caption         =   "OK"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   3840
+      TabIndex        =   4
+      Top             =   3550
+      Width           =   855
+   End
    Begin VB.Frame fraCustom 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      Caption         =   "Frame1"
+      Caption         =   "Custom Cursor"
       ForeColor       =   &H80000008&
       Height          =   3255
       Left            =   120
-      TabIndex        =   5
-      Top             =   360
+      TabIndex        =   3
+      Top             =   120
       Width           =   4575
-      Begin VB.PictureBox picTranspColor 
-         Appearance      =   0  'Flat
-         BackColor       =   &H00FFFFFF&
-         FillColor       =   &H00FFFFFF&
-         FillStyle       =   0  'Solid
-         FontTransparent =   0   'False
-         ForeColor       =   &H00FFFFFF&
-         Height          =   375
-         Left            =   3480
-         ScaleHeight     =   345
-         ScaleWidth      =   345
-         TabIndex        =   12
-         Top             =   1560
-         Width           =   375
-      End
-      Begin Toolkit.TKButton cmdSetHotSpot 
-         Height          =   375
-         Left            =   0
-         TabIndex        =   11
-         Top             =   1560
-         Width           =   2415
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "Set Cursor Hot Spot"
-      End
-      Begin VB.PictureBox cmdBrowse 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
+      Begin VB.PictureBox Picture1 
+         BackColor       =   &H80000009&
          BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   375
-         Left            =   3960
-         MousePointer    =   99  'Custom
-         Picture         =   "frmMouseCursor.frx":0000
-         ScaleHeight     =   375
-         ScaleWidth      =   615
-         TabIndex        =   9
-         Top             =   2670
-         Width           =   615
-      End
-      Begin VB.PictureBox picPreview 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H80000005&
-         ForeColor       =   &H80000008&
-         Height          =   1020
-         Left            =   240
-         ScaleHeight     =   66
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   66
-         TabIndex        =   8
-         Top             =   360
-         Width           =   1020
-      End
-      Begin VB.TextBox txtFilename 
-         Appearance      =   0  'Flat
-         Height          =   285
-         Left            =   0
-         TabIndex        =   6
-         Top             =   2760
-         Width           =   3855
-      End
-      Begin Toolkit.TKButton cmdTranspColor 
-         Height          =   375
-         Left            =   0
-         TabIndex        =   7
-         Top             =   2160
-         Width           =   2535
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "Set Transparent Color"
-      End
-      Begin VB.Label Label2 
-         Alignment       =   2  'Center
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "Current Transparent Color"
-         ForeColor       =   &H80000008&
-         Height          =   375
-         Left            =   3000
-         TabIndex        =   13
-         Top             =   2040
-         Width           =   1335
-      End
-      Begin VB.Label Label1 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         Caption         =   "In game the cursor will be 32x32 pixles, it is shown larger here for your convenience."
-         ForeColor       =   &H80000008&
-         Height          =   615
-         Left            =   1560
-         TabIndex        =   10
-         Top             =   480
-         Width           =   2415
+         Height          =   2895
+         Left            =   120
+         ScaleHeight     =   2895
+         ScaleWidth      =   4335
+         TabIndex        =   5
+         Top             =   240
+         Width           =   4335
+         Begin VB.CommandButton cmdTranspColor 
+            Caption         =   "Set Transparent Color"
+            Height          =   375
+            Left            =   0
+            TabIndex        =   11
+            Top             =   1800
+            Width           =   2295
+         End
+         Begin VB.CommandButton cmdBrowse 
+            Caption         =   "..."
+            Height          =   255
+            Left            =   3840
+            TabIndex        =   10
+            Top             =   2400
+            Width           =   495
+         End
+         Begin VB.PictureBox picTranspColor 
+            Appearance      =   0  'Flat
+            BackColor       =   &H00FFFFFF&
+            FillColor       =   &H00FFFFFF&
+            FillStyle       =   0  'Solid
+            FontTransparent =   0   'False
+            ForeColor       =   &H00FFFFFF&
+            Height          =   375
+            Left            =   3480
+            ScaleHeight     =   345
+            ScaleWidth      =   345
+            TabIndex        =   9
+            Top             =   1200
+            Width           =   375
+         End
+         Begin VB.PictureBox picPreview 
+            Appearance      =   0  'Flat
+            AutoRedraw      =   -1  'True
+            BackColor       =   &H80000005&
+            ForeColor       =   &H80000008&
+            Height          =   1020
+            Left            =   240
+            ScaleHeight     =   66
+            ScaleMode       =   3  'Pixel
+            ScaleWidth      =   66
+            TabIndex        =   8
+            Top             =   0
+            Width           =   1020
+         End
+         Begin VB.TextBox txtFilename 
+            Height          =   285
+            Left            =   0
+            TabIndex        =   7
+            Top             =   2400
+            Width           =   3735
+         End
+         Begin VB.CommandButton cmdSetHotSpot 
+            Caption         =   "Set Cursor Hot Spot"
+            Height          =   375
+            Left            =   0
+            TabIndex        =   6
+            Top             =   1320
+            Width           =   2295
+         End
+         Begin VB.Label Label2 
+            Alignment       =   2  'Center
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Current Transparent Color"
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Left            =   3000
+            TabIndex        =   13
+            Top             =   1680
+            Width           =   1335
+         End
+         Begin VB.Label Label1 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            Caption         =   "In game the cursor will be 32x32 pixels, it is shown larger here for your convenience."
+            ForeColor       =   &H80000008&
+            Height          =   615
+            Left            =   1560
+            TabIndex        =   12
+            Top             =   120
+            Width           =   2415
+         End
       End
    End
    Begin VB.OptionButton optCustom 
@@ -132,8 +137,8 @@ Begin VB.Form frmMouseCursor
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   2640
-      TabIndex        =   4
-      Top             =   3910
+      TabIndex        =   2
+      Top             =   3600
       Width           =   975
    End
    Begin VB.OptionButton optNoCursor 
@@ -143,8 +148,8 @@ Begin VB.Form frmMouseCursor
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   1440
-      TabIndex        =   3
-      Top             =   3910
+      TabIndex        =   1
+      Top             =   3600
       Width           =   1095
    End
    Begin VB.OptionButton optDefault 
@@ -154,49 +159,9 @@ Begin VB.Form frmMouseCursor
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   240
-      TabIndex        =   2
-      Top             =   3910
-      Width           =   1095
-   End
-   Begin Toolkit.TKButton cmdOK 
-      Height          =   375
-      Left            =   3840
-      TabIndex        =   1
-      Top             =   3840
-      Width           =   855
-      _ExtentX        =   661
-      _ExtentY        =   661
-      Object.Width           =   360
-      Caption         =   "OK"
-   End
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
       TabIndex        =   0
-      Top             =   0
-      Width           =   3375
-      _ExtentX        =   5953
-      _ExtentY        =   847
-      Object.Width           =   3375
-      Caption         =   "Mouse Cursor Settings"
-   End
-   Begin VB.Line Line2 
-      X1              =   3720
-      X2              =   3720
-      Y1              =   3720
-      Y2              =   4320
-   End
-   Begin VB.Line Line1 
-      X1              =   0
-      X2              =   4800
-      Y1              =   3720
-      Y2              =   3720
-   End
-   Begin VB.Shape Shape1 
-      Height          =   4335
-      Left            =   0
-      Top             =   0
-      Width           =   4815
+      Top             =   3600
+      Width           =   1095
    End
 End
 Attribute VB_Name = "frmMouseCursor"
@@ -342,7 +307,6 @@ End Sub
 '=========================================================================
 Private Sub Form_Load()
     On Error Resume Next
-    Set TopBar.theForm = Me
     cmdBrowse.MouseIcon = Images.MouseLink()
     Call fillInfo
 End Sub

@@ -150,7 +150,7 @@ End Sub
 ' Form_Load
 '========================================================================
 Private Sub Form_Load()
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     '!NEW! Set the variable to False at the start...
     saveChanges = False
 End Sub

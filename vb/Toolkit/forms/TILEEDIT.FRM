@@ -1187,7 +1187,7 @@ Private Sub Form_Load(): On Error Resume Next
     Call clearTileDoc(openTileEditorDocs(indice))
 
     'Set some variables for the form
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
 
     'Refresh Data
     Dim x As Integer, y As Integer
@@ -1291,19 +1291,19 @@ End Sub
 '========================================================================
 ' Depress tool index, and unpress the others
 '========================================================================
-Public Sub ToolSet(ByVal Index As Byte): On Error Resume Next
+Public Sub ToolSet(ByVal index As Byte): On Error Resume Next
     'If this sub is called during this sub, Exit Sub
     If ignore = 1 Then Exit Sub
     
     ignore = 1
     
     'Update current tool variable
-    openTileEditorDocs(indice).tileMode = Index
+    openTileEditorDocs(indice).tileMode = index
     
     'Go through the tools
     Dim i As Integer
     For i = 0 To 8
-        If i = Index Then
+        If i = index Then
             tkMainForm.tileTool(i).value = 1
         Else
             tkMainForm.tileTool(i).value = 0

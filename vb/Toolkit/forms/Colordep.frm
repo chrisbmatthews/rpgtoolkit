@@ -49,5 +49,5 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Form_Load()
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
 End Sub

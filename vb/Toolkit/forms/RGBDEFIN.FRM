@@ -332,8 +332,8 @@ Private Sub chkPreview_Click()
     If chkPreview.value = 0 Then
         For x = 1 To xRange
             For y = 1 To 32
-                If tilemem(x, y) <> -1 Then
-                    tilemem(x, y) = tilepreview(x, y)
+                If tileMem(x, y) <> -1 Then
+                    tileMem(x, y) = tilePreview(x, y)
                 End If
             Next y
         Next x
@@ -355,7 +355,7 @@ Private Sub cmdOK_Click()
     Call Preview
     
     '!NEW! The user wants to save the changes
-    SaveChanges = True
+    saveChanges = True
     
     Unload Me
     
@@ -380,7 +380,7 @@ End Sub
 '========================================================================
 Private Sub Form_Activate()
     On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     RedScroll.max = 255
     RedScroll.min = -255
@@ -396,14 +396,14 @@ Private Sub Form_Activate()
     '!NEW! Used to store the current tile for when the "preview" function is used
     For x = 1 To xRange
         For y = 1 To 32
-            If tilemem(x, y) <> -1 Then
-                tilepreview(x, y) = tilemem(x, y)
+            If tileMem(x, y) <> -1 Then
+                tilePreview(x, y) = tileMem(x, y)
             End If
         Next y
     Next x
     
      '!NEW! Set the variable to False at the start
-    SaveChanges = False
+    saveChanges = False
     
     Exit Sub
     
@@ -419,13 +419,13 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     'If the user has pressed the X in the form, he doesn't wants to add the changes
 
-    If Not SaveChanges Then
+    If Not saveChanges Then
         'Use new undo
-        Call activeTile.SetUndo
+        Call activeTile.setUndo
         For x = 1 To xRange
             For y = 1 To 32
-                If tilemem(x, y) <> -1 Then
-                    tilemem(x, y) = tilepreview(x, y)
+                If tileMem(x, y) <> -1 Then
+                    tileMem(x, y) = tilePreview(x, y)
                 End If
             Next y
         Next x
@@ -439,8 +439,8 @@ Private Sub Preview()
     'First we need to to set the tile back to how it was at the start
     For x = 1 To xRange
         For y = 1 To 32
-            If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+            If tileMem(x, y) <> -1 Then
+                tileMem(x, y) = tilePreview(x, y)
             End If
         Next y
     Next x
@@ -448,10 +448,10 @@ Private Sub Preview()
     'Ok, let's preview it now!
     For x = 1 To xRange
         For y = 1 To 32
-            If tilemem(x, y) <> -1 Then
-                rr = red(tilemem(x, y))
-                gg = green(tilemem(x, y))
-                bb = blue(tilemem(x, y))
+            If tileMem(x, y) <> -1 Then
+                rr = red(tileMem(x, y))
+                gg = green(tileMem(x, y))
+                bb = blue(tileMem(x, y))
                 rr = rr + RedScroll.value
                 gg = gg + GreenScroll.value
                 bb = bb + BlueScroll.value
@@ -461,7 +461,7 @@ Private Sub Preview()
                 If gg < 0 Then gg = 0
                 If bb > 255 Then bb = 255
                 If bb < 0 Then bb = 0
-                tilemem(x, y) = RGB(rr, gg, bb)
+                tileMem(x, y) = RGB(rr, gg, bb)
             End If
         Next y
     Next x
