@@ -206,20 +206,20 @@ Public Sub openItems()
     Dim valueTestLit As String          'literal test value
     Dim multiPrg As String              'the multitasking program
 
+    'Destroy old item canvases
+    For itemNum = 0 To maxItem
+        Call DestroyCanvas(cnvSprites(itemNum))
+    Next itemNum
+
     ReDim pendingItemMovement(maxItem)  'pending item movements
     ReDim lastItemRender(maxItem)       'last item renders
     ReDim itmPos(maxItem)               'position of items
     ReDim itemMem(maxItem)              'item data
     ReDim cnvSprites(maxItem)           'item sprites
 
-    'Destroy old item canvases
-    For itemNum = 0 To maxItem
-        Call DestroyCanvas(cnvSprites(itemNum))
-    Next itemNum
-
     'Create new item canvases
     For itemNum = 0 To maxItem
-        cnvSprites(itemNum) = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+        cnvSprites(itemNum) = CreateCanvas(1, 1)
     Next itemNum
 
     'Loop over each item
