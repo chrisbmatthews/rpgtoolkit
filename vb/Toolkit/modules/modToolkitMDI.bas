@@ -39,6 +39,7 @@ Public Const FT_RUNTIME = 27
 Public Const FT_TIPS = 28
 Public Const FT_TUTORIAL = 29
 Public Const FT_CURSOR = 30
+Public Const FT_HELP = 31
 
 '=========================================================================
 ' Editor documents
@@ -639,19 +640,19 @@ Public Sub redrawAllTiles()
     Set activeTile = currenttile
 End Sub
 
-Public Property Get tileMem(ByVal X As Long, ByVal Y As Long) As Long
+Public Property Get tileMem(ByVal x As Long, ByVal y As Long) As Long
     On Error Resume Next
     If activeTile Is Nothing Then
         Set activeTile = New tileedit
     End If
-    tileMem = openTileEditorDocs(activeTile.indice).tileMem(X, Y)
+    tileMem = openTileEditorDocs(activeTile.indice).tileMem(x, y)
 End Property
-Public Property Let tileMem(ByVal X As Long, ByVal Y As Long, ByVal newVal As Long)
+Public Property Let tileMem(ByVal x As Long, ByVal y As Long, ByVal newVal As Long)
     On Error Resume Next
     If activeTile Is Nothing Then
         Set activeTile = New tileedit
     End If
-    openTileEditorDocs(activeTile.indice).tileMem(X, Y) = newVal
+    openTileEditorDocs(activeTile.indice).tileMem(x, y) = newVal
 End Property
 
 Public Property Get detail() As Byte

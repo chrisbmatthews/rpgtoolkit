@@ -338,12 +338,6 @@ Begin VB.Form boardedit
          Shortcut        =   {F1}
          Tag             =   "1207"
       End
-      Begin VB.Menu rpgcodeprimermnu 
-         Caption         =   "RPGCode Primer"
-      End
-      Begin VB.Menu rpgcodreferencemnu 
-         Caption         =   "RPGCode Reference"
-      End
       Begin VB.Menu sub46 
          Caption         =   "-"
       End
@@ -955,7 +949,7 @@ Public Sub drawLayers(Optional ByVal buttonClick As Boolean = False): On Error R
     Dim Temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
     
     ' drawbackground
-    DrawBackground
+    drawBackground
     
     ' set picture box auto redraw to true
     Call vbPicAutoRedraw(boardform, True)
@@ -1585,7 +1579,7 @@ End Sub
 '========================================================================
 ' draw background image
 '========================================================================
-Public Sub DrawBackground()
+Public Sub drawBackground()
 
     Dim x As Long, y As Long
     
@@ -1641,7 +1635,7 @@ Public Sub boardRedraw(): On Error Resume Next
     ' fill picture box with board color
     Call vbPicFillRect(boardform, 0, 0, 2000, 2000, boardList(activeBoardIndex).theData.brdColor)
         
-    Call DrawBackground
+    Call drawBackground
     
     ' set picture box auto redraw to true
     Call vbPicAutoRedraw(boardform, True)

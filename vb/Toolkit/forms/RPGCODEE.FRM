@@ -100,7 +100,6 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
-      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -336,12 +335,6 @@ Begin VB.Form rpgcodeedit
       End
       Begin VB.Menu mnuUsersGuide 
          Caption         =   "User's Guide"
-      End
-      Begin VB.Menu mnuRPGCodePrimer 
-         Caption         =   "RPGCode Primer"
-      End
-      Begin VB.Menu mnuRPGCodeReference 
-         Caption         =   "RPGCode Reference"
       End
       Begin VB.Menu sub7 
          Caption         =   "-"

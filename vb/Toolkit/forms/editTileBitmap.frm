@@ -155,12 +155,6 @@ Begin VB.Form editTileBitmap
          Shortcut        =   {F1}
          Tag             =   "1207"
       End
-      Begin VB.Menu mnuRPGCodePrimer 
-         Caption         =   "RPGCode Primer"
-      End
-      Begin VB.Menu mnuRPGCodeReference 
-         Caption         =   "RPGCode Reference"
-      End
       Begin VB.Menu sub6 
          Caption         =   "-"
       End

@@ -699,12 +699,6 @@ Begin VB.Form edititem
          Shortcut        =   {F1}
          Tag             =   "1207"
       End
-      Begin VB.Menu mnurpgcodeprimer 
-         Caption         =   "RPGCode Primer"
-      End
-      Begin VB.Menu mnurpgcodereference 
-         Caption         =   "RPGCode Reference"
-      End
       Begin VB.Menu sub6 
          Caption         =   "-"
       End

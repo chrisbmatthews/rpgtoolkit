@@ -312,12 +312,6 @@ Begin VB.Form tileedit
          Caption         =   "User's Guide"
          Shortcut        =   {F1}
       End
-      Begin VB.Menu mnuRPGCodePrimer 
-         Caption         =   "RPGCode Primer"
-      End
-      Begin VB.Menu mnurpgcodereference 
-         Caption         =   "RPGCode Reference"
-      End
       Begin VB.Menu sub7 
          Caption         =   "-"
       End

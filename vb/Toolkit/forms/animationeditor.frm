@@ -157,12 +157,6 @@ Begin VB.Form animationeditor
          Caption         =   "User's Guide"
          Shortcut        =   {F1}
       End
-      Begin VB.Menu mnuRPGCodePrimer 
-         Caption         =   "RPGCode Primer"
-      End
-      Begin VB.Menu mnuRPGCodeReference 
-         Caption         =   "RPGCode Reference"
-      End
       Begin VB.Menu sub7 
          Caption         =   "-"
       End

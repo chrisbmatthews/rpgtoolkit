@@ -443,8 +443,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -2590,13 +2590,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "3/13/2003"
+            TextSave        =   "3/19/2003"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "7:06 PM"
+            TextSave        =   "7:09 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2760,12 +2760,6 @@ Begin VB.MDIForm tkMainForm
       Begin VB.Menu usersguidemnu 
          Caption         =   "User's Guide"
          Shortcut        =   {F1}
-      End
-      Begin VB.Menu rpgcodeprimermnu 
-         Caption         =   "RPGCode Primer"
-      End
-      Begin VB.Menu rpgcodereferencemnu 
-         Caption         =   "RPGCode Reference"
       End
       Begin VB.Menu sub45 
          Caption         =   "-"
@@ -4325,15 +4319,8 @@ Public Sub tutorialmnu_Click(): On Error Resume Next
     Call frmTutorial.Show(vbModal)
 End Sub
 
-Public Sub usersguidemnu_Click(): On Error GoTo ErrorHandler
-    
-    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Public Sub usersguidemnu_Click()
+    Call frmHelpViewer.Show
 End Sub
 
 '=========================================================================================

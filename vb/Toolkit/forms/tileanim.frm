@@ -292,12 +292,6 @@ Begin VB.Form tileanim
          Caption         =   "User's Guide"
          Shortcut        =   {F1}
       End
-      Begin VB.Menu mnurpgcodeprimer 
-         Caption         =   "RPGCode Primer"
-      End
-      Begin VB.Menu mnurpgcodereference 
-         Caption         =   "RPGCode Reference"
-      End
       Begin VB.Menu sub8 
          Caption         =   "-"
       End
