@@ -300,21 +300,6 @@ Begin VB.Form tileedit
       Begin VB.Menu mnushowprojectlist 
          Caption         =   "Show/Hide Project List"
       End
-      Begin VB.Menu sub6 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mnutilehorizontally 
-         Caption         =   "Tile Horizontally"
-      End
-      Begin VB.Menu mnutilevertically 
-         Caption         =   "Tile Vertically"
-      End
-      Begin VB.Menu mnuCascade 
-         Caption         =   "Cascade"
-      End
-      Begin VB.Menu mnuArrangeIcons 
-         Caption         =   "Arrange Icons"
-      End
    End
    Begin VB.Menu hmnu 
       Caption         =   "Help"
@@ -1313,19 +1298,19 @@ End Sub
 '========================================================================
 ' Depress tool index, and unpress the others
 '========================================================================
-Public Sub ToolSet(ByVal index As Byte): On Error Resume Next
+Public Sub ToolSet(ByVal Index As Byte): On Error Resume Next
     'If this sub is called during this sub, Exit Sub
     If ignore = 1 Then Exit Sub
     
     ignore = 1
     
     'Update current tool variable
-    openTileEditorDocs(indice).tileMode = index
+    openTileEditorDocs(indice).tileMode = Index
     
     'Go through the tools
     Dim i As Integer
     For i = 0 To 8
-        If i = index Then
+        If i = Index Then
             tkMainForm.tileTool(i).value = 1
         Else
             tkMainForm.tileTool(i).value = 0

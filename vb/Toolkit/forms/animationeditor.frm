@@ -152,21 +152,6 @@ Begin VB.Form animationeditor
       Begin VB.Menu mnushowProjectList 
          Caption         =   "Show/Hide Project List"
       End
-      Begin VB.Menu sub5 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mnuTileHorizontally 
-         Caption         =   "Tile Horizontally"
-      End
-      Begin VB.Menu mnuTileVertically 
-         Caption         =   "Tile Vertically"
-      End
-      Begin VB.Menu mnuCascade 
-         Caption         =   "Cascade"
-      End
-      Begin VB.Menu mnuArrangeIcons 
-         Caption         =   "Arrange Icons"
-      End
    End
    Begin VB.Menu mnuHelp 
       Caption         =   "Help"
@@ -280,12 +265,12 @@ End Sub
 '========================================================================
 ' Set the size of the animation
 '========================================================================
-Public Sub setAnimSize(ByVal index As Integer): On Error Resume Next
+Public Sub setAnimSize(ByVal Index As Integer): On Error Resume Next
 
     'Needs to be updated
     animationList(activeAnimationIndex).animNeedUpdate = True
     
-    If index <> 4 Then
+    If Index <> 4 Then
         
         'It is not a custom animation, un-enable the 2 textboxes
         tkMainForm.txtAnimXSize.Enabled = False
@@ -296,7 +281,7 @@ Public Sub setAnimSize(ByVal index As Integer): On Error Resume Next
     With animationList(activeAnimationIndex).theData
         
         'Now, see which one is clicked and set the width & height
-        Select Case index
+        Select Case Index
             Case 0
                 
                 'Small
@@ -749,7 +734,7 @@ End Sub
 '========================================================================
 ' When you click in the animation picturebox
 '========================================================================
-Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
     
     With animationList(activeAnimationIndex).theData
@@ -765,7 +750,7 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
             
             'Get the color of the pixel
             Dim colour As Long
-            colour = vbFrmPoint(arena, x, y)
+            colour = vbFrmPoint(arena, X, Y)
             
             'Set the transparent color
             .animTransp(.animCurrentFrame) = colour

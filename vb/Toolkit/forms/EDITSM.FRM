@@ -533,21 +533,6 @@ Begin VB.Form editsm
       Begin VB.Menu mnushowprojectlist 
          Caption         =   "Show/Hide Project List"
       End
-      Begin VB.Menu sub5 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mnuTileHorizontally 
-         Caption         =   "Tile Horizontally"
-      End
-      Begin VB.Menu mnuTileVertically 
-         Caption         =   "Tile Vertically"
-      End
-      Begin VB.Menu mnuCascade 
-         Caption         =   "Cascade"
-      End
-      Begin VB.Menu mnuArrangeIcons 
-         Caption         =   "Arrange Icons"
-      End
    End
    Begin VB.Menu h 
       Caption         =   "Help"

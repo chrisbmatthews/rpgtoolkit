@@ -277,21 +277,6 @@ Begin VB.Form tileanim
       Begin VB.Menu mnushowprojectlist 
          Caption         =   "Show/Hide Project List"
       End
-      Begin VB.Menu sub6 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mnutilehorizontally 
-         Caption         =   "Tile Horizontally"
-      End
-      Begin VB.Menu mnutilevertically 
-         Caption         =   "Tile Vertically"
-      End
-      Begin VB.Menu mnucascade 
-         Caption         =   "Cascade"
-      End
-      Begin VB.Menu mnuarrangeicons 
-         Caption         =   "Arrange Icons"
-      End
    End
    Begin VB.Menu mnuHelp 
       Caption         =   "Help"

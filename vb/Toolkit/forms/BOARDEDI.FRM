@@ -325,21 +325,6 @@ Begin VB.Form boardedit
       Begin VB.Menu showprojectlistmnu 
          Caption         =   "Show/Hide Project List"
       End
-      Begin VB.Menu sep5 
-         Caption         =   "-"
-      End
-      Begin VB.Menu tilehorizontallymnu 
-         Caption         =   "Tile Horizontally"
-      End
-      Begin VB.Menu tileverticallymnu 
-         Caption         =   "Tile Vertically"
-      End
-      Begin VB.Menu cascademnu 
-         Caption         =   "Cascade"
-      End
-      Begin VB.Menu arrangeiconsmnu 
-         Caption         =   "Arrange Icons"
-      End
    End
    Begin VB.Menu h 
       Caption         =   "Help"
@@ -2610,10 +2595,10 @@ End Sub
 '========================================================================
 ' Update tile type, via popup menu
 '========================================================================
-Private Sub mnuPop_Type_L_Click(index As Integer)
+Private Sub mnuPop_Type_L_Click(Index As Integer)
 
     ' update tile type
-    boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = index
+    boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = Index
                 
     ' update tiletype for that tile only
     viewtiletypes boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY
@@ -2623,10 +2608,10 @@ End Sub
 '========================================================================
 ' Update tile type, via popup menu
 '========================================================================
-Private Sub mnuPop_Type_T_Click(index As Integer)
+Private Sub mnuPop_Type_T_Click(Index As Integer)
 
     ' update tile type
-    boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = index
+    boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = Index
                 
     ' update tiletype for that tile only
     viewtiletypes boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY

@@ -1257,21 +1257,6 @@ Begin VB.Form characteredit
       Begin VB.Menu mnushowprojectlist 
          Caption         =   "Show/Hide Project List"
       End
-      Begin VB.Menu sub6 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mnutilehorizontally 
-         Caption         =   "Tile Horizontally"
-      End
-      Begin VB.Menu mnutilevertically 
-         Caption         =   "Tile Vertically"
-      End
-      Begin VB.Menu mnucascade 
-         Caption         =   "Cascade"
-      End
-      Begin VB.Menu mnuarrangeicons 
-         Caption         =   "Arrange Icons"
-      End
    End
    Begin VB.Menu h 
       Caption         =   "Help"
@@ -1386,16 +1371,16 @@ End Sub
 '==============================================================================
 ' "Default" check box array: set variables to default form.
 '==============================================================================
-Private Sub chkDefault_Click(index As Integer): On Error Resume Next
+Private Sub chkDefault_Click(Index As Integer): On Error Resume Next
 
     'If unchecked, exit.
-    If chkDefault(index).value = 0 Then Exit Sub
+    If chkDefault(Index).value = 0 Then Exit Sub
 
     Dim varname As String
 
     'Select the variable ending for the specific index.
     With playerList(activePlayerIndex).theData
-        Select Case index
+        Select Case Index
         
             Case 0: varname = "[name]$"
             Case 1: varname = "[experience]!"
@@ -1413,7 +1398,7 @@ Private Sub chkDefault_Click(index As Integer): On Error Resume Next
     'Change the associated text box to the default name.
     ' e.g. Frap[name]$
     'This will trigger txt*_change and alter the member variables also.
-    txtVariables(index).Text = addUnderscore(playerList(activePlayerIndex).theData.charname) & varname
+    txtVariables(Index).Text = addUnderscore(playerList(activePlayerIndex).theData.charname) & varname
 
 End Sub
 
@@ -1658,10 +1643,10 @@ End Sub
 '==============================================================================
 'Array of initial stat text boxes.
 '==============================================================================
-Private Sub txtStats_Change(index As Integer): On Error Resume Next
+Private Sub txtStats_Change(Index As Integer): On Error Resume Next
 
     With playerList(activePlayerIndex).theData
-        Select Case index
+        Select Case Index
         
             Case 0
                     playerList(activePlayerIndex).theData.charname = txtStats(0).Text
@@ -1691,10 +1676,10 @@ End Sub
 '==============================================================================
 'Array of variable text boxes.
 '==============================================================================
-Private Sub txtVariables_Change(index As Integer): On Error Resume Next
+Private Sub txtVariables_Change(Index As Integer): On Error Resume Next
 
     With playerList(activePlayerIndex).theData
-        Select Case index
+        Select Case Index
         
             Case 0: .nameVar = txtVariables(0).Text
             Case 1: .experienceVar = txtVariables(1).Text
@@ -1721,7 +1706,7 @@ Private Sub tabCharacter_Click(): On Error Resume Next
     frStats.Visible = False
     frVariables.Visible = False
 
-    Select Case tabCharacter.SelectedItem.index
+    Select Case tabCharacter.SelectedItem.Index
         Case 1:
             frStats.Visible = True
         Case 2:

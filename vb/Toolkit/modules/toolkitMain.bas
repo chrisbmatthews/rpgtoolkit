@@ -9,14 +9,14 @@ Option Explicit
 
 Public Sub Main()
     '=======================================================
-    'Toolkit main entry point
+    ' Toolkit main entry point
     '=======================================================
     On Error Resume Next
     Call Load(configfile)
     Call initRuntimes
     Call createFileAssociations
     Call StartTracing("tktrace.txt")
-    Call Randomize(Timer)
+    Call Randomize(timer)
     Call BoardInit(boardList(activeBoardIndex).theData)
     Call TileAnmClear(tileAnmList(activeTileAnmIndex).theData)
     Call InitTkGfx
@@ -33,7 +33,7 @@ End Sub
 
 Private Sub initDirectories()
     '=======================================================
-    'Create "resource", "game", and "help" folders
+    ' Create "resource", "game", and "help" folders
     '=======================================================
     On Error Resume Next
     currentDir = CurDir()
@@ -44,7 +44,7 @@ End Sub
 
 Private Sub initPlayers()
     '=======================================================
-    'Initiates player structure
+    ' Initiates player structure
     '=======================================================
     On Error Resume Next
     Dim a As Long
@@ -57,7 +57,7 @@ End Sub
 
 Private Sub initRuntimes()
     '=======================================================
-    'Initiate runtimes
+    ' Initiate runtimes
     '=======================================================
     On Error Resume Next
     If Command <> "" Then Call ChDir(App.path)
@@ -73,23 +73,23 @@ End Sub
 
 Private Sub initTimer()
     '=======================================================
-    'Initiate splash screen timer
+    ' Initiate splash screen timer
     '=======================================================
     On Error Resume Next
-    frmMain.Timer1.interval = 1
+    frmMain.Timer1.Interval = 1
     If (Command <> "") Then
         'Do nothing
     ElseIf GetSetting("RPGToolkit3", "Settings", "Splash", "1") = "0" Then
         'Do nothing
     Else
-        frmMain.Timer1.interval = 3800
+        frmMain.Timer1.Interval = 3800
         Call frmMain.Show(vbModal)
     End If
 End Sub
 
 Private Sub initEnemyEditor()
     '=======================================================
-    'Initiate the enemy editor
+    ' Initiate the enemy editor
     '=======================================================
     On Error Resume Next
     enemylist(activeEnemyIndex).theData.eneSizeX = 1
@@ -98,18 +98,18 @@ End Sub
 
 Private Sub initBoardAndTileEditor()
     '=======================================================
-    'Initiate the board and tile editors
+    ' Initiate the board and tile editors
     '=======================================================
     On Error Resume Next
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     boardList(activeBoardIndex).spotLightRadius = 2
     boardList(activeBoardIndex).percentFade = 100
     detail = 1
-    For x = 1 To 19
-        For y = 1 To 11
-            boardList(activeBoardIndex).BoardTile(x, y) = -1
-        Next y
-    Next x
+    For X = 1 To 19
+        For Y = 1 To 11
+            boardList(activeBoardIndex).BoardTile(X, Y) = -1
+        Next Y
+    Next X
     boardList(activeBoardIndex).theData.brdColor = vbQBColor(15)
     boardList(activeBoardIndex).theData.bSizeX = 19
     boardList(activeBoardIndex).theData.bSizeY = 11
@@ -123,7 +123,7 @@ End Sub
 
 Private Sub initLocalization()
     '=======================================================
-    'Initiate the localization system
+    ' Initiate the localization system
     '=======================================================
     On Error Resume Next
     If m_LangFile = "" Then
@@ -136,17 +136,17 @@ End Sub
 
 Private Sub displayTip()
     '=======================================================
-    'Display a tip if they are enabled
+    ' Display a tip if they are enabled
     '=======================================================
     On Error Resume Next
     If configfile.tipsOnOff = 1 Then
-        Call tips.Show
+        Call tips.Show(vbModal)
     End If
 End Sub
 
 Private Sub askTutorial()
     '=======================================================
-    'Ask to show the tutorial if we haven't before
+    ' Ask to show the tutorial if we haven't before
     '=======================================================
     On Error Resume Next
     If configfile.tutCurrentLesson = 0 Then

@@ -6,7 +6,6 @@ Begin VB.Form mainfight
    ClientLeft      =   1800
    ClientTop       =   2820
    ClientWidth     =   8865
-   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -20,12 +19,10 @@ Begin VB.Form mainfight
    Icon            =   "MAINFIGH.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
-   MDIChild        =   -1  'True
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5850
    ScaleWidth      =   8865
-   WindowState     =   2  'Maximized
    Begin VB.CommandButton Command5 
       Appearance      =   0  'Flat
       Caption         =   "OK"

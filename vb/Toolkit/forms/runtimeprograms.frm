@@ -9,7 +9,6 @@ Begin VB.Form runtimeprograms
    Icon            =   "runtimeprograms.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
-   MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   2055
    ScaleWidth      =   6390

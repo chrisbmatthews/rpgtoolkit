@@ -78,36 +78,46 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "fraSettings"
-      Tab(1).Control(1)=   "startframe"
+      Tab(1).Control(0)=   "startframe"
+      Tab(1).Control(0).Enabled=   0   'False
+      Tab(1).Control(1)=   "fraSettings"
+      Tab(1).Control(1).Enabled=   0   'False
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
       Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(0).Enabled=   0   'False
       Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(1).Enabled=   0   'False
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
       Tab(3).ControlEnabled=   0   'False
       Tab(3).Control(0)=   "fightframe"
+      Tab(3).Control(0).Enabled=   0   'False
       Tab(3).ControlCount=   1
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
       Tab(4).ControlEnabled=   0   'False
       Tab(4).Control(0)=   "screenframe"
+      Tab(4).Control(0).Enabled=   0   'False
       Tab(4).ControlCount=   1
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
       Tab(5).Control(0)=   "Label24"
+      Tab(5).Control(0).Enabled=   0   'False
       Tab(5).Control(1)=   "daynightcheckbox"
+      Tab(5).Control(1).Enabled=   0   'False
       Tab(5).Control(2)=   "Frame3"
+      Tab(5).Control(2).Enabled=   0   'False
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
       Tab(6).ControlEnabled=   0   'False
       Tab(6).Control(0)=   "Frame1"
+      Tab(6).Control(0).Enabled=   0   'False
       Tab(6).ControlCount=   1
       Begin VB.Frame fraSettings 
          Caption         =   "Misc Settings:"
@@ -1964,21 +1974,6 @@ Begin VB.Form editmainfile
       Begin VB.Menu mnuShowProjectList 
          Caption         =   "Show/Hide Project List"
       End
-      Begin VB.Menu sub5 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mnuTileHorizontally 
-         Caption         =   "Tile Horizontally"
-      End
-      Begin VB.Menu mnuTileVertically 
-         Caption         =   "Tile Vertically"
-      End
-      Begin VB.Menu mnuCascade 
-         Caption         =   "Cascade"
-      End
-      Begin VB.Menu mnuArrangeIcons 
-         Caption         =   "Arrange Icons"
-      End
    End
    Begin VB.Menu h 
       Caption         =   "Help"
@@ -2093,8 +2088,8 @@ End Sub
 '=========================================================================
 ' Change screen style
 '=========================================================================
-Private Sub chkScreenStyle_Click(ByRef index As Integer)
-    mainMem.extendToFullScreen = index
+Private Sub chkScreenStyle_Click(ByRef Index As Integer)
+    mainMem.extendToFullScreen = Index
 End Sub
 
 '=========================================================================
@@ -2114,7 +2109,7 @@ End Sub
 ' Mouse cursor button
 '=========================================================================
 Private Sub cmdMouseCursor_Click()
-    Call frmMouseCursor.Show
+    Call frmMouseCursor.Show(vbModal)
 End Sub
 
 '=========================================================================
@@ -2138,7 +2133,7 @@ End Sub
 '=========================================================================
 Private Sub cmdEditFighting_Click(): On Error Resume Next
     mainNeedUpdate = True
-    Call mainfight.Show
+    Call mainfight.Show(vbModal)
 End Sub
 
 '=========================================================================
@@ -2300,7 +2295,7 @@ End Sub
 ' Extended run-time programs
 '=========================================================================
 Private Sub cmdExtendedRunTimes_Click(): On Error Resume Next
-    Call runtimeprograms.Show
+    Call runtimeprograms.Show(vbModal)
 End Sub
 
 '=========================================================================

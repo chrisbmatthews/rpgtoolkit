@@ -11,11 +11,11 @@ Begin VB.Form frmTutorial
    ControlBox      =   0   'False
    Icon            =   "frmTutorial.frx":0000
    LinkTopic       =   "Form1"
-   MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   4935
    ScaleWidth      =   4215
    ShowInTaskbar   =   0   'False
+   StartUpPosition =   2  'CenterScreen
    Begin RichTextLib.RichTextBox txtContent 
       Height          =   3735
       Left            =   120
@@ -25,7 +25,6 @@ Begin VB.Form frmTutorial
       _ExtentX        =   7011
       _ExtentY        =   6588
       _Version        =   393217
-      Enabled         =   -1  'True
       ReadOnly        =   -1  'True
       ScrollBars      =   2
       Appearance      =   0

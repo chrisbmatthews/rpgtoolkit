@@ -11,7 +11,6 @@ Begin VB.Form frmMouseCursor
    ControlBox      =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
-   MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   4335
    ScaleWidth      =   4815
@@ -48,10 +47,10 @@ Begin VB.Form frmMouseCursor
          TabIndex        =   11
          Top             =   1560
          Width           =   2415
-         _extentx        =   661
-         _extenty        =   661
-         Object.width           =   360
-         caption         =   "Set Cursor Hot Spot"
+         _ExtentX        =   661
+         _ExtentY        =   661
+         Object.Width           =   360
+         Caption         =   "Set Cursor Hot Spot"
       End
       Begin VB.PictureBox cmdBrowse 
          Appearance      =   0  'Flat
@@ -96,10 +95,10 @@ Begin VB.Form frmMouseCursor
          TabIndex        =   7
          Top             =   2160
          Width           =   2535
-         _extentx        =   661
-         _extenty        =   661
-         Object.width           =   360
-         caption         =   "Set Transparent Color"
+         _ExtentX        =   661
+         _ExtentY        =   661
+         Object.Width           =   360
+         Caption         =   "Set Transparent Color"
       End
       Begin VB.Label Label2 
          Alignment       =   2  'Center
@@ -165,10 +164,10 @@ Begin VB.Form frmMouseCursor
       TabIndex        =   1
       Top             =   3840
       Width           =   855
-      _extentx        =   661
-      _extenty        =   661
-      Object.width           =   360
-      caption         =   "OK"
+      _ExtentX        =   661
+      _ExtentY        =   661
+      Object.Width           =   360
+      Caption         =   "OK"
    End
    Begin Toolkit.TKTopBar TopBar 
       Height          =   480
@@ -176,10 +175,10 @@ Begin VB.Form frmMouseCursor
       TabIndex        =   0
       Top             =   0
       Width           =   3375
-      _extentx        =   5953
-      _extenty        =   847
-      Object.width           =   3375
-      caption         =   "Mouse Cursor Settings"
+      _ExtentX        =   5953
+      _ExtentY        =   847
+      Object.Width           =   3375
+      Caption         =   "Mouse Cursor Settings"
    End
    Begin VB.Line Line2 
       X1              =   3720

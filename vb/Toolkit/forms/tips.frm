@@ -8,10 +8,10 @@ Begin VB.Form tips
    ClientWidth     =   6555
    Icon            =   "tips.frx":0000
    MaxButton       =   0   'False
-   MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   3165
    ScaleWidth      =   6555
+   StartUpPosition =   2  'CenterScreen
    Tag             =   "1837"
    Begin VB.Timer size 
       Interval        =   1
