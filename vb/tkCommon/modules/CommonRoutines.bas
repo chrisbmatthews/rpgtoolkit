@@ -69,7 +69,7 @@ Option Explicit
         Dim t As Long
         Do Until done
             t = t + 1
-            TabStrip1.Tabs.item(t).caption = LoadStringLoc(TabStrip1.Tabs.item(t).Tag, TabStrip1.Tabs.item(t).caption)
+            TabStrip1.Tabs.item(t).Caption = LoadStringLoc(TabStrip1.Tabs.item(t).Tag, TabStrip1.Tabs.item(t).Caption)
         Loop
         Exit Sub
 tabErr:
@@ -403,7 +403,6 @@ tabErr:
         If file = "" Then Exit Sub
         Call openMain(file, mainMem)
         oldpath = currentDir & "\" & projectPath
-        'Call tkMainForm.fillTree("", projectPath)
     End Sub
 
     Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
@@ -879,7 +878,7 @@ loadtileerr:
                     'It's a delimiter...
                     If c = chars(b) Then
                         'Take it off the ret() array...
-                        ret(UBound(ret)) = left(ret(UBound(ret)), _
+                        ret(UBound(ret)) = Left(ret(UBound(ret)), _
                         Len(ret(UBound(ret))) - 1)
                         'Put it in the ud() array...
                         uD(UBound(ret)) = c
@@ -1002,5 +1001,5 @@ Public Function extention(ByVal file As String) As String: On Error Resume Next
     'Split the file.
     strArray() = Split(file, ".")
     'Last element will be the extension. Take the first 3 letters.
-    extention = left(strArray(UBound(strArray)), 3)
+    extention = Left(strArray(UBound(strArray)), 3)
 End Function

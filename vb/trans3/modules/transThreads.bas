@@ -23,16 +23,17 @@ Public Enum THREAD_LOOP_TYPE
     TYPE_UNTIL = 3
     TYPE_FOR = 4
 End Enum
+
 Private loopStart() As Long
 Private loopDepth() As Long
-Private loopType() As THREAD_LOOP_TYPE
-Public loopPRG() As RPGCodeProgram
-Public loopEnd() As Boolean
 Private loopOver() As Boolean
 Private loopCondition() As String
 Private loopIncrement() As String
-Public GS_LOOPING As Boolean
+Private loopType() As THREAD_LOOP_TYPE
 Private currentlyLooping As Long
+Public loopPRG() As RPGCodeProgram
+Public loopEnd() As Boolean
+Public GS_LOOPING As Boolean
 
 Public threads() As RPGCODE_THREAD     'threads
 
@@ -559,13 +560,14 @@ Public Sub ceaseAllMultitaskingAnimations()
 
 End Sub
 
-Public Sub handleMultitaskingAnimations()
+Public Sub handleMultitaskingAnimations(Optional ByVal cnv As Long = 1)
 
     '========================================
     'This sub handles multitasking animations
-    'Called ONLY by mainLoop()
     '========================================
     'Added by KSNiloc
+
+    If Not GS_ANIMATING Then Exit Sub
 
     'Declarations...
     Dim frame As Long
@@ -576,8 +578,8 @@ Public Sub handleMultitaskingAnimations()
     Dim y As Long
 
     'Make us a canvas...
-    screen = CreateCanvas(globalCanvasWidth, globalCanvasHeight, True)
-    CanvasGetScreen screen
+    'screen = CreateCanvas(globalCanvasWidth, globalCanvasHeight, True)
+    'CanvasGetScreen screen
 
     'First see what we are to do...
     num = multitaskCurrentlyAnimating
@@ -587,13 +589,17 @@ Public Sub handleMultitaskingAnimations()
     y = multitaskAnimationY(num)
 
     'Draw that frame!
-    AnimDrawFrameCanvas anim, frame, x, y, screen, True
+    If cnv <> -1 Then
+        Call AnimDrawFrameCanvas(anim, frame, x, y, cnv, True)
+    Else
+        Call AnimDrawFrame(anim, frame, x, y, host.hdc, True)
+    End If
 
     'Render the screen...
-    renderCanvas screen
+    'renderCanvas screen
 
     'Destroy our canvas...
-    DestroyCanvas screen
+    'DestroyCanvas screen
 
     'Increment the frame...
     frame = frame + 1

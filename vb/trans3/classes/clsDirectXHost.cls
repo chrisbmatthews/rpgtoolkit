@@ -18,7 +18,13 @@ Attribute VB_Exposed = False
 '=========================================================================
 
 '=========================================================================
-' DirectX host class - removes need for 'host form'
+' DirectX host class
+'=========================================================================
+
+'=========================================================================
+' This class replaces the host form with more more correct and rebust
+' code. It also harbours the engine's main loop (mainEventLoop). Keyboard
+' and mouse input is now picked up in transEvents.
 '=========================================================================
 
 Option Explicit
@@ -107,6 +113,8 @@ Private Const PM_REMOVE = &H1
 Private Const WINDOWS_CLASS = "DirectXHost"
 Private Const WS_POPUP = &H80000000
 Private Const IDC_NO = 32648&
+Private Const WS_CHILD = &H40000000
+Private Const BS_PUSHBUTTON = &H0&
 
 '=========================================================================
 ' Member variables
@@ -119,6 +127,8 @@ Private m_createCaption As String
 Private m_createStyle As Long
 Private m_createX As Long
 Private m_createY As Long
+Private m_buttonHwnd As Long
+Private m_showingCornerButton As Boolean
 
 '=========================================================================
 ' Public properties
@@ -252,7 +262,12 @@ End Sub
 '=========================================================================
 Public Sub mainEventLoop()
 
-    'Now we need to head into an infinite event loop
+    'This is the main event loop of the whole trans3 engine.
+    'It will process events in the DirectX host window and
+    'send them to WndProc() (in transEvents). It also
+    'continually calls gameLogic() (in transMain). The only
+    'to break out of this loop is to call PostQuitMessage().
+
     Dim message As msg
     Do While True
         If PeekMessage(message, m_hwnd, 0, 0, PM_REMOVE) Then
@@ -267,12 +282,14 @@ Public Sub mainEventLoop()
                 Call DispatchMessage(message)
             End If
         End If
-        Call transMain.mainLoop
+        Call gameLogic
     Loop
 
     'Clean up
     Call DestroyWindow(m_hwnd)
     Call UnregisterClass(WINDOWS_CLASS, App.hInstance)
+    Call closeSystems
+    Call endform.Show(vbModal)
 
 End Sub
 

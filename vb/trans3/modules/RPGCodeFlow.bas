@@ -318,6 +318,8 @@ Public Sub multiTaskNow()
         End If
     Next t
 
+    If (gGameState <> GS_PAUSE) And (GS_LOOPING) Then Call handleThreadLooping
+
     'Flag we're no longer multitasking
     gbMultiTasking = False
 

@@ -1649,6 +1649,10 @@ Sub renderNow(Optional ByVal cnvTarget As Long = -1)
         If cnvTarget = -1 Then
             Call DXRefresh
         End If
+
+        'handle multitasking animations
+        Call handleMultitaskingAnimations(cnvTarget)
+        
     End If
 End Sub
 

@@ -3948,7 +3948,7 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 Call RestoreCharacter(playerFile$(t), t, False)
             End If
         Next t
-        Call openboard(currentBoard$, boardList(activeBoardIndex).theData)
+        Call openBoard(currentBoard$, boardList(activeBoardIndex).theData)
         'clear non-persistent threads...
         Call ClearNonPersistentThreads
         lastRender.canvas = -1
@@ -3958,11 +3958,9 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call openItems
         Call renderNow
         Call renderNow(cnvRPGCodeScreen)
-        
-        ' ! ADDED BY KSNiloc...
-        launchBoardThreads boardList(activeBoardIndex).theData
-        
-        loaded = 1
+        Call launchBoardThreads(boardList(activeBoardIndex).theData)
+        saveFileLoaded = True
+
     End If
 
     Exit Sub
@@ -4759,19 +4757,19 @@ Sub prg(Text$, ByRef theProgram As RPGCodeProgram)
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
 
-    Dim useIt4 As String, num4 As Double, pnum As Long, ax As Long, ay As Long, al As Long
+    Dim useIt4 As String, num4 As Double, pNum As Long, ax As Long, ay As Long, al As Long
     useIt1$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
     useIt3$ = GetElement(dataUse$, 3)
     useIt4$ = GetElement(dataUse$, 4)
     If number = 3 Then useIt4$ = "1"
 
-    pnum = getValue(useIt1$, lit1$, num1, theProgram)
+    pNum = getValue(useIt1$, lit1$, num1, theProgram)
     ax = getValue(useIt2$, lit$, num2, theProgram)
     ay = getValue(useIt3$, lit$, num3, theProgram)
     al = getValue(useIt4$, lit$, num4, theProgram)
     Dim theOne As Long, t As Long
-    If pnum = 1 Then
+    If pNum = 1 Then
         'user inputted a filename.
         theOne = -1
         lit1$ = addExt(lit1$, ".prg")
@@ -6349,7 +6347,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     
     'aa = Timer 'Measure the time it takes to open a board.
     
-    Call openboard(projectPath$ + brdPath$ + targetBoardName$, boardList(activeBoardIndex).theData)
+    Call openBoard(projectPath$ + brdPath$ + targetBoardName$, boardList(activeBoardIndex).theData)
     
     'Clear non-persistent threads...
     Call ClearNonPersistentThreads
@@ -7970,7 +7968,7 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
         brd$ = addExt(lit$, ".brd")
         Dim boardTemp As TKBoard
         boardTemp = boardList(activeBoardIndex).theData
-        Call openboard(projectPath$ + brdPath$ + brd$, boardList(activeBoardIndex).theData)
+        Call openBoard(projectPath$ + brdPath$ + brd$, boardList(activeBoardIndex).theData)
         lastRender.canvas = -1
         ChDir (projectPath$)
         If pakFileRunning Then
@@ -11591,7 +11589,7 @@ Public Sub mousePointer( _
                 Exit Sub
             ElseIf LCase(paras(0).lit) = "none" Then
                 host.mousePointer = 99
-                host.MouseIcon = canvas_host.noCursor.Picture
+                host.mouseIcon = canvas_host.noCursor.Picture
                 Exit Sub
             End If
             
@@ -11612,7 +11610,7 @@ Public Sub mousePointer( _
             fface = projectPath & bmpPath & fface
             
             host.mousePointer = 99
-            host.MouseIcon = LoadPicture(fface)
+            host.mouseIcon = LoadPicture(fface)
 
         Case Else
             debugger "MousePointer() can have either zero or one data elements--" & Text

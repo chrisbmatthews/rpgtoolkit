@@ -388,7 +388,7 @@ End Sub
 ' Return the number of files this project consists of
 '=========================================================================
 Public Function CountProjectFiles() As Integer
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     'returns the total number of files in the project
     Dim count As Long, a As String
     count = 1 'the mainForm file counts as 1
@@ -495,7 +495,7 @@ Public Function CountProjectFiles() As Integer
 
     Exit Function
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 
@@ -602,6 +602,12 @@ Public Sub DeletePakTemp()
 
     Call deletePath(PakTempPath)
     PakTempPath = ""
+    
+    If runningAsEXE Then
+        Call Kill(TempDir & "actkrt3.dll")
+        Call Kill(TempDir & "freeImage.dll")
+        Call Kill(TempDir & "temp.tpk")
+    End If
 
 End Sub
 

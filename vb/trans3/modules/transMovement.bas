@@ -64,17 +64,22 @@ Public Type PENDING_MOVEMENT
     xOrig As Double         'original board co-ordinates
     yOrig As Double
     lOrig As Double
-
     xTarg As Double         'target board co-ordinates
     yTarg As Double
     lTarg As Double
 End Type
 
 Public pendingPlayerMovement(4) As PENDING_MOVEMENT   'pending player movements
-
 Public pendingItemMovement() As PENDING_MOVEMENT 'pending movements for the items
 
-Public facing As Long           'which direction are you facing? 1-s, 2-w, 3-n, 4-e
+Public Enum FACING_DIRECTION
+    South = 1
+    West = 2
+    North = 2
+    East = 4
+End Enum
+
+Public facing As FACING_DIRECTION     'which direction are you facing? 1-s, 2-w, 3-n, 4-e
 
 Private movedThisFrame As Double
 Private mVarAnimationDelay As Double
@@ -612,7 +617,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     
     Call ClearNonPersistentThreads
     
-    Call openboard(projectPath$ + brdPath$ + targetBoard$, boardList(activeBoardIndex).theData)
+    Call openBoard(projectPath$ + brdPath$ + targetBoard$, boardList(activeBoardIndex).theData)
     lastRender.canvas = -1
     scTopX = -1000
     scTopY = -1000
@@ -684,7 +689,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
     CheckEdges = False
 End Function
 
-Sub pushPlayerNorthEast(ByVal pnum As Long, ByVal moveFraction As Double)
+Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -703,27 +708,27 @@ Sub pushPlayerNorthEast(ByVal pnum As Long, ByVal moveFraction As Double)
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
     Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pnum), pnum)
+    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
     
     If bWentOffEdge Then
-        pendingPlayerMovement(pnum).direction = MV_IDLE
+        pendingPlayerMovement(pNum).direction = MV_IDLE
         Exit Sub
     End If
 
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
-                              pendingPlayerMovement(pnum).yTarg, _
-                              pendingPlayerMovement(pnum).lTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+                              pendingPlayerMovement(pNum).yTarg, _
+                              pendingPlayerMovement(pNum).lTarg, _
                               MV_NE, _
-                              ppos(pnum))
+                              ppos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pnum).stance = "walk_ne"
+    ppos(pNum).stance = "walk_ne"
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pnum).frame
+    incrementFrame ppos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -741,9 +746,9 @@ Sub pushPlayerNorthEast(ByVal pnum As Long, ByVal moveFraction As Double)
                 'PushEast code. SHOULD BE EXACTLY THE SAME AS FOR pushSouthEast! ANY CHANGES SHOULD BE COPIED!
                 
                 If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.Bsizex) Or _
-                    (ppos(pnum).x < (isoTilesX / 2) And topX = 0) Or _
-                    (ppos(pnum).x - topX + 0.5 < (isoTilesX / 2)) Or _
-                    pnum <> selectedPlayer Then
+                    (ppos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
+                    (ppos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
+                    pNum <> selectedPlayer Then
                     scrollEast = False
                     
                 End If
@@ -752,20 +757,20 @@ Sub pushPlayerNorthEast(ByVal pnum As Long, ByVal moveFraction As Double)
                 'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
                 
                 If (topX + tilesX >= boardList(activeBoardIndex).theData.Bsizex) Or _
-                    (ppos(pnum).x < (tilesX / 2) And topX = 0) Or _
-                    (ppos(pnum).x - topX < (tilesX / 2)) Or _
-                    pnum <> selectedPlayer Then
+                    (ppos(pNum).x < (tilesX / 2) And topX = 0) Or _
+                    (ppos(pNum).x - topX < (tilesX / 2)) Or _
+                    pNum <> selectedPlayer Then
                     scrollEast = False
                 End If
             End If
             
-            scrollNorth = checkScrollNorth(pnum) 'New function!
+            scrollNorth = checkScrollNorth(pNum) 'New function!
                       
             If scrollEast Or scrollNorth Then
                 Call scrollDownLeft(moveFraction, scrollEast, scrollNorth)
             End If
             
-            Call incrementPosition(ppos(pnum), pendingPlayerMovement(pnum), moveFraction)
+            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Advance the frame but don't move.
@@ -773,7 +778,7 @@ Sub pushPlayerNorthEast(ByVal pnum As Long, ByVal moveFraction As Double)
 End Sub
 
 
-Sub pushPlayerNorthWest(ByVal pnum As Long, ByVal moveFraction As Double)
+Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -792,28 +797,28 @@ Sub pushPlayerNorthWest(ByVal pnum As Long, ByVal moveFraction As Double)
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
     Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pnum), pnum)
+    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
     
     If bWentOffEdge Then
-        pendingPlayerMovement(pnum).direction = MV_IDLE
+        pendingPlayerMovement(pNum).direction = MV_IDLE
         Exit Sub
     End If
 
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
-                              pendingPlayerMovement(pnum).yTarg, _
-                              pendingPlayerMovement(pnum).lTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+                              pendingPlayerMovement(pNum).yTarg, _
+                              pendingPlayerMovement(pNum).lTarg, _
                               MV_NW, _
-                              ppos(pnum))
+                              ppos(pNum))
                               'didItem)
     
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pnum).stance = "walk_nw"
+    ppos(pNum).stance = "walk_nw"
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pnum).frame
+    incrementFrame ppos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -829,41 +834,41 @@ Sub pushPlayerNorthWest(ByVal pnum As Long, ByVal moveFraction As Double)
             
             If boardIso() Then
                 'pushWest code. SHOULD BE EXACTLY THE SAME AS FOR pushSouthWest! ANY CHANGES SHOULD BE COPIED
-                If (ppos(pnum).x > boardList(activeBoardIndex).theData.Bsizex - (isoTilesX / 2) And _
+                If (ppos(pNum).x > boardList(activeBoardIndex).theData.Bsizex - (isoTilesX / 2) And _
                     topX + 1 = boardList(activeBoardIndex).theData.Bsizex - isoTilesX) Or _
-                    (ppos(pnum).x - (topX + 1) > (isoTilesX / 2)) Or _
+                    (ppos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
                     ((topX + 1) - 1 < 0) Or _
-                    pnum <> selectedPlayer Then
+                    pNum <> selectedPlayer Then
                     
                     scrollWest = False
                 End If
             Else
                 'This is pushWest standard code.
                 
-                If (ppos(pnum).x > boardList(activeBoardIndex).theData.Bsizex - (tilesX / 2) And _
+                If (ppos(pNum).x > boardList(activeBoardIndex).theData.Bsizex - (tilesX / 2) And _
                     topX = boardList(activeBoardIndex).theData.Bsizex - tilesX) Or _
-                    (ppos(pnum).x - topX > (tilesX / 2)) Or _
+                    (ppos(pNum).x - topX > (tilesX / 2)) Or _
                     (topX <= 0) Or _
-                    pnum <> selectedPlayer Then
+                    pNum <> selectedPlayer Then
                     
                     scrollWest = False
                 End If
             End If
             
-            scrollNorth = checkScrollNorth(pnum) 'New function!
+            scrollNorth = checkScrollNorth(pNum) 'New function!
             
             If scrollWest Or scrollNorth Then
                 Call scrollDownRight(moveFraction, scrollWest, scrollNorth)
             End If
             
-            Call incrementPosition(ppos(pnum), pendingPlayerMovement(pnum), moveFraction)
+            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Walk on the spot.
     End Select
 End Sub
 
-Sub pushPlayerSouthEast(ByVal pnum As Long, ByVal moveFraction As Double)
+Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double)
     '=====================================
     'EDITED: [Isometrics - Delano 3/05/04]
     'Substituted tile type constants.
@@ -881,21 +886,21 @@ Sub pushPlayerSouthEast(ByVal pnum As Long, ByVal moveFraction As Double)
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
     Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pnum), pnum)
+    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
     
     If bWentOffEdge Then
-        pendingPlayerMovement(pnum).direction = MV_IDLE
+        pendingPlayerMovement(pNum).direction = MV_IDLE
         Exit Sub
     End If
 
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
-                              pendingPlayerMovement(pnum).yTarg, _
-                              pendingPlayerMovement(pnum).lTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+                              pendingPlayerMovement(pNum).yTarg, _
+                              pendingPlayerMovement(pNum).lTarg, _
                               MV_SE, _
-                              ppos(pnum))
+                              ppos(pNum))
                               'didItem)
     
     'Introducing new independent direction variables.
@@ -912,33 +917,33 @@ Sub pushPlayerSouthEast(ByVal pnum As Long, ByVal moveFraction As Double)
             If boardIso() Then
                 'This is the PushEast code. + 0.5 modif - does it work?
                 If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.Bsizex) Or _
-                    (ppos(pnum).x < (isoTilesX / 2) And topX = 0) Or _
-                    (ppos(pnum).x - topX + 0.5 < (isoTilesX / 2)) Or _
-                    pnum <> selectedPlayer Then
+                    (ppos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
+                    (ppos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
+                    pNum <> selectedPlayer Then
                     scrollEast = False
                 End If
                 'pushSouth code with topY modification. ANY CHANGES SHOULD BE COPIED TO pushSouthWest
                 If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-                    (ppos(pnum).y < (isoTilesY / 2) And topY = 0) Or _
-                    (ppos(pnum).y - (topY) < (isoTilesY / 2)) Or _
-                    pnum <> selectedPlayer Then '^Doesn't work with topy * 2...
+                    (ppos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
+                    (ppos(pNum).y - (topY) < (isoTilesY / 2)) Or _
+                    pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
                     scrollsouth = False
                 End If
             Else
                 'Original code was incomplete even for standard boards!! FIXED.
                 'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
                 If (topX + tilesX >= boardList(activeBoardIndex).theData.Bsizex) Or _
-                    (ppos(pnum).x < (tilesX / 2) And topX = 0) Or _
-                    (ppos(pnum).x - topX < (tilesX / 2)) Or _
-                    pnum <> selectedPlayer Then
+                    (ppos(pNum).x < (tilesX / 2) And topX = 0) Or _
+                    (ppos(pNum).x - topX < (tilesX / 2)) Or _
+                    pNum <> selectedPlayer Then
                     scrollEast = False
                 End If
                 'TRIAL ADDITION: pushSouth code w/scrollSouth
                 'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
                 If (topY + tilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-                    (ppos(pnum).y < (tilesY / 2) And topY = 0) Or _
-                    (ppos(pnum).y - topY < (tilesY / 2)) Or _
-                    pnum <> selectedPlayer Then
+                    (ppos(pNum).y < (tilesY / 2) And topY = 0) Or _
+                    (ppos(pNum).y - topY < (tilesY / 2)) Or _
+                    pNum <> selectedPlayer Then
                     scrollsouth = False
                 End If
             End If
@@ -947,22 +952,22 @@ Sub pushPlayerSouthEast(ByVal pnum As Long, ByVal moveFraction As Double)
                 Call scrollUpLeft(moveFraction, scrollEast, scrollsouth)
             End If
             
-            ppos(pnum).stance = "walk_se"
+            ppos(pNum).stance = "walk_se"
             ' MODIFIED BY KSNiloc...
-            incrementFrame ppos(pnum).frame
+            incrementFrame ppos(pNum).frame
             'ppos(pNum).frame = ppos(pNum).frame + 1
-            Call incrementPosition(ppos(pnum), pendingPlayerMovement(pnum), moveFraction)
+            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         Case SOLID:
             'Walk on the spot.
-            ppos(pnum).stance = "walk_se"
+            ppos(pNum).stance = "walk_se"
             ' MODIFIED BY KSNiloc...
-            incrementFrame ppos(pnum).frame
+            incrementFrame ppos(pNum).frame
             'ppos(pNum).frame = ppos(pNum).frame + 1
     End Select
 End Sub
 
-Sub pushPlayerSouthWest(ByVal pnum As Long, ByVal moveFraction As Double)
+Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double)
     '=====================================
     'EDITED: [Isometrics - Delano 3/05/04]
     'Substituted tile type constants.
@@ -980,21 +985,21 @@ Sub pushPlayerSouthWest(ByVal pnum As Long, ByVal moveFraction As Double)
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
     Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pnum), pnum)
+    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
     
     If bWentOffEdge Then
-        pendingPlayerMovement(pnum).direction = MV_IDLE
+        pendingPlayerMovement(pNum).direction = MV_IDLE
         Exit Sub
     End If
 
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
-                              pendingPlayerMovement(pnum).yTarg, _
-                              pendingPlayerMovement(pnum).lTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+                              pendingPlayerMovement(pNum).yTarg, _
+                              pendingPlayerMovement(pNum).lTarg, _
                               MV_SW, _
-                              ppos(pnum))
+                              ppos(pNum))
                               'didItem)
     
     'Introducing new independent direction variables
@@ -1010,36 +1015,36 @@ Sub pushPlayerSouthWest(ByVal pnum As Long, ByVal moveFraction As Double)
             'Accounting for isometrics:
             If boardIso() Then
                 'This is the pushWest code. MIGHT NEED TO CHANGE cf. SouthEast 0.5
-                If (ppos(pnum).x > boardList(activeBoardIndex).theData.Bsizex - (isoTilesX / 2) And _
+                If (ppos(pNum).x > boardList(activeBoardIndex).theData.Bsizex - (isoTilesX / 2) And _
                     topX + 1 = boardList(activeBoardIndex).theData.Bsizex - isoTilesX) Or _
-                    (ppos(pnum).x - (topX + 1) > (isoTilesX / 2)) Or _
+                    (ppos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
                     ((topX + 1) - 1 < 0) Or _
-                    pnum <> selectedPlayer Then
+                    pNum <> selectedPlayer Then
                     scrollWest = False
                 End If
                 'pushSouth code. SHOULD BE EXACTLY THE SAME AS FOR pushSouthEast! ANY CHANGES SHOULD BE COPIED
                 If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-                    (ppos(pnum).y < (isoTilesY / 2) And topY = 0) Or _
-                    (ppos(pnum).y - (topY) < (isoTilesY / 2)) Or _
-                    pnum <> selectedPlayer Then '^Doesn't work with topy * 2...
+                    (ppos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
+                    (ppos(pNum).y - (topY) < (isoTilesY / 2)) Or _
+                    pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
                     scrollsouth = False
                 End If
             Else
                 'Original code was incomplete! This is pushWest standard code.
                 'Swapping " - 1 <" for "<=" (boards do not scroll to edges)
-                If (ppos(pnum).x > boardList(activeBoardIndex).theData.Bsizex - (tilesX / 2) And _
+                If (ppos(pNum).x > boardList(activeBoardIndex).theData.Bsizex - (tilesX / 2) And _
                     topX = boardList(activeBoardIndex).theData.Bsizex - tilesX) Or _
-                    (ppos(pnum).x - topX > (tilesX / 2)) Or _
+                    (ppos(pNum).x - topX > (tilesX / 2)) Or _
                     (topX <= 0) Or _
-                    pnum <> selectedPlayer Then
+                    pNum <> selectedPlayer Then
                     scrollWest = False
                 End If
                 'pushSouth standard board code with topY modification. ANY CHANGES SHOULD BE COPIED TO pushSouthEast
                 'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
                 If (topY + tilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-                    (ppos(pnum).y < (tilesY / 2) And topY = 0) Or _
-                    (ppos(pnum).y - topY < (tilesY / 2)) Or _
-                    pnum <> selectedPlayer Then
+                    (ppos(pNum).y < (tilesY / 2) And topY = 0) Or _
+                    (ppos(pNum).y - topY < (tilesY / 2)) Or _
+                    pNum <> selectedPlayer Then
                     scrollsouth = False
                 End If
             End If
@@ -1048,22 +1053,22 @@ Sub pushPlayerSouthWest(ByVal pnum As Long, ByVal moveFraction As Double)
                 Call scrollUpRight(moveFraction, scrollWest, scrollsouth)
             End If
             
-            ppos(pnum).stance = "walk_sw"
+            ppos(pNum).stance = "walk_sw"
             ' MODIFIED BY KSNiloc...
-            incrementFrame ppos(pnum).frame
+            incrementFrame ppos(pNum).frame
             'ppos(pNum).frame = ppos(pNum).frame + 1
-            Call incrementPosition(ppos(pnum), pendingPlayerMovement(pnum), moveFraction)
+            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         Case SOLID:
             'Walk on the spot.
-            ppos(pnum).stance = "walk_sw"
+            ppos(pNum).stance = "walk_sw"
             ' MODIFIED BY KSNiloc...
-            incrementFrame ppos(pnum).frame
+            incrementFrame ppos(pNum).frame
             'ppos(pNum).frame = ppos(pNum).frame + 1
     End Select
 End Sub
 
-Sub pushPlayerNorth(ByVal pnum As Long, ByVal moveFraction As Double)
+Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1082,28 +1087,28 @@ Sub pushPlayerNorth(ByVal pnum As Long, ByVal moveFraction As Double)
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
     Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pnum), pnum)
+    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
     
     If bWentOffEdge Then
-        pendingPlayerMovement(pnum).direction = MV_IDLE
+        pendingPlayerMovement(pNum).direction = MV_IDLE
         Exit Sub
     End If
 
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
-                              pendingPlayerMovement(pnum).yTarg, _
-                              pendingPlayerMovement(pnum).lTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+                              pendingPlayerMovement(pNum).yTarg, _
+                              pendingPlayerMovement(pNum).lTarg, _
                               MV_NORTH, _
-                              ppos(pnum))
+                              ppos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pnum).stance = "walk_n"
+    ppos(pNum).stance = "walk_n"
     
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pnum).frame
+    incrementFrame ppos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -1112,12 +1117,12 @@ Sub pushPlayerNorth(ByVal pnum As Long, ByVal moveFraction As Double)
     
             Dim scrollNorth As Boolean
            
-            scrollNorth = checkScrollNorth(pnum) 'New function!
+            scrollNorth = checkScrollNorth(pNum) 'New function!
             
             If scrollNorth Then Call scrollDown(moveFraction)
             'shift the screen drawing co-ords down (topY).
             
-            Call incrementPosition(ppos(pnum), pendingPlayerMovement(pnum), moveFraction)
+            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Walk on the spot.
@@ -1125,7 +1130,7 @@ Sub pushPlayerNorth(ByVal pnum As Long, ByVal moveFraction As Double)
     
 End Sub
 
-Sub pushPlayerSouth(ByVal pnum As Long, ByVal moveFraction As Double)
+Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1144,27 +1149,27 @@ Sub pushPlayerSouth(ByVal pnum As Long, ByVal moveFraction As Double)
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
     Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pnum), pnum)
+    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
     
     If bWentOffEdge Then
-        pendingPlayerMovement(pnum).direction = MV_IDLE
+        pendingPlayerMovement(pNum).direction = MV_IDLE
         Exit Sub
     End If
 
     'obtain the 'tile type' at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
-                              pendingPlayerMovement(pnum).yTarg, _
-                              pendingPlayerMovement(pnum).lTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+                              pendingPlayerMovement(pNum).yTarg, _
+                              pendingPlayerMovement(pNum).lTarg, _
                               MV_SOUTH, _
-                              ppos(pnum))
+                              ppos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pnum).stance = "walk_s"
+    ppos(pNum).stance = "walk_s"
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pnum).frame
+    incrementFrame ppos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -1173,12 +1178,12 @@ Sub pushPlayerSouth(ByVal pnum As Long, ByVal moveFraction As Double)
             
             Dim scrollsouth As Boolean 'determine if a scroll is required
                 
-            scrollsouth = checkScrollSouth(pnum) 'New function!
+            scrollsouth = checkScrollSouth(pNum) 'New function!
             
             If scrollsouth Then Call scrollUp(moveFraction)
             'shift the screen drawing co-ords up (topY).
             
-            Call incrementPosition(ppos(pnum), pendingPlayerMovement(pnum), moveFraction)
+            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Walk on the spot.
@@ -1186,7 +1191,7 @@ Sub pushPlayerSouth(ByVal pnum As Long, ByVal moveFraction As Double)
 End Sub
 
 
-Sub pushPlayerEast(ByVal pnum As Long, ByVal moveFraction As Double)
+Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1205,28 +1210,28 @@ Sub pushPlayerEast(ByVal pnum As Long, ByVal moveFraction As Double)
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
     Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pnum), pnum)
+    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
     
     If bWentOffEdge Then
-        pendingPlayerMovement(pnum).direction = MV_IDLE
+        pendingPlayerMovement(pNum).direction = MV_IDLE
         Exit Sub
     End If
 
     'Obtain the 'tile type' at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
-                              pendingPlayerMovement(pnum).yTarg, _
-                              pendingPlayerMovement(pnum).lTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+                              pendingPlayerMovement(pNum).yTarg, _
+                              pendingPlayerMovement(pNum).lTarg, _
                               MV_EAST, _
-                              ppos(pnum))
+                              ppos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pnum).stance = "walk_e"
+    ppos(pNum).stance = "walk_e"
     
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pnum).frame
+    incrementFrame ppos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -1236,19 +1241,19 @@ Sub pushPlayerEast(ByVal pnum As Long, ByVal moveFraction As Double)
             
             Dim scrollEast As Boolean
 
-            scrollEast = checkScrollEast(pnum) 'New function! Cleaned up a bit.
+            scrollEast = checkScrollEast(pNum) 'New function! Cleaned up a bit.
             
             If scrollEast Then Call scrollLeft(moveFraction)
             'shift the screen drawing co-ords left (topX).
             
-            Call incrementPosition(ppos(pnum), pendingPlayerMovement(pnum), moveFraction)
+            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
                         
         'Case SOLID:
             'Walk on the spot.
     End Select
 End Sub
 
-Sub pushPlayerWest(ByVal pnum As Long, ByVal moveFraction As Double)
+Sub pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
     'Substituted tile type constants.
@@ -1267,27 +1272,27 @@ Sub pushPlayerWest(ByVal pnum As Long, ByVal moveFraction As Double)
     'Before doing anything, let's see if we are going off the board.
     'Checks for links and will send to new board if a link is possible.
     Dim bWentOffEdge As Boolean
-    bWentOffEdge = CheckEdges(pendingPlayerMovement(pnum), pnum)
+    bWentOffEdge = CheckEdges(pendingPlayerMovement(pNum), pNum)
     
     If bWentOffEdge Then
-        pendingPlayerMovement(pnum).direction = MV_IDLE
+        pendingPlayerMovement(pNum).direction = MV_IDLE
         Exit Sub
     End If
 
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
-                              pendingPlayerMovement(pnum).yTarg, _
-                              pendingPlayerMovement(pnum).lTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pNum).xTarg, _
+                              pendingPlayerMovement(pNum).yTarg, _
+                              pendingPlayerMovement(pNum).lTarg, _
                               MV_WEST, _
-                              ppos(pnum))
+                              ppos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pnum).stance = "walk_w"
+    ppos(pNum).stance = "walk_w"
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pnum).frame
+    incrementFrame ppos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -1296,12 +1301,12 @@ Sub pushPlayerWest(ByVal pnum As Long, ByVal moveFraction As Double)
             
             Dim scrollWest As Boolean
             
-            scrollWest = checkScrollWest(pnum) 'New function!
+            scrollWest = checkScrollWest(pNum) 'New function!
             
             If scrollWest Then Call scrollRight(moveFraction)
             'shift the screen drawing co-ords right (topX).
             
-            Call incrementPosition(ppos(pnum), pendingPlayerMovement(pnum), moveFraction)
+            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Walk on the spot.
@@ -1878,10 +1883,10 @@ Sub runQueuedMovements()
         pendingItemMovement(cnt).direction = MV_IDLE
     Next cnt
 
-    If UCase$(ppos(selectedPlayer).stance) = "WALK_S" Then facing = 1
-    If UCase$(ppos(selectedPlayer).stance) = "WALK_W" Then facing = 2
-    If UCase$(ppos(selectedPlayer).stance) = "WALK_N" Then facing = 3
-    If UCase$(ppos(selectedPlayer).stance) = "WALK_E" Then facing = 4
+    If UCase$(ppos(selectedPlayer).stance) = "WALK_S" Then facing = South
+    If UCase$(ppos(selectedPlayer).stance) = "WALK_W" Then facing = West
+    If UCase$(ppos(selectedPlayer).stance) = "WALK_N" Then facing = North
+    If UCase$(ppos(selectedPlayer).stance) = "WALK_E" Then facing = East
 End Sub
 
 
@@ -2061,7 +2066,7 @@ Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY As Lon
     End If
 
     Dim aBoard As TKBoard
-    Call openboard(file$, aBoard)
+    Call openBoard(file$, aBoard)
     lastRender.canvas = -1
     If testX > aBoard.Bsizex Or testY > aBoard.Bsizey Or testL > aBoard.Bsizel Then
         TestBoard = -1

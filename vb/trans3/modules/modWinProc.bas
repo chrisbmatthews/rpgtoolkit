@@ -68,7 +68,7 @@ Public Const WA_INACTIVE = 0
 '=========================================================================
 Public Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Public Declare Function ValidateRgn Lib "user32" (ByVal hwnd As Long, ByVal hRgn As Long) As Long
-Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, source As Any, ByVal Length As Long)
+Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
 Public Declare Function BeginPaint Lib "user32" (ByVal hwnd As Long, lpPaint As PAINTSTRUCT) As Long
 Public Declare Function EndPaint Lib "user32" (ByVal hwnd As Long, lpPaint As PAINTSTRUCT) As Long
 Public Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As msg, ByVal hwnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
@@ -77,6 +77,7 @@ Public Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (l
 Public Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
 Public Declare Function UnregisterClass Lib "user32" Alias "UnregisterClassA" (ByVal lpClassName As String, ByVal hInstance As Long) As Long
 Public Declare Function DestroyWindow Lib "user32" (ByVal hwnd As Long) As Long
+Public Declare Sub PostQuitMessage Lib "user32" (ByVal nExitCode As Long)
 
 '=========================================================================
 ' Event handler
@@ -88,14 +89,7 @@ Public Function WndProc( _
                            ByVal lParam As Long _
                                                   ) As Long
 
-    'This is called everytime an event occurs (a button being clicked, form
-    'activated, etc). Normally, VB handles this, but you can't rely on VB,
-    'learn to do it by hand!
-
-    'hwnd is the handle of the window where the message is occuring, msg is
-    'a constant representing the message that occured, wparam and lparam both
-    'contain two usually unused pieces of data that we can get with low and
-    'high byte calls.
+    'This procecure handles events in the DirectX host window
 
     Select Case msg
 
@@ -112,12 +106,7 @@ Public Function WndProc( _
 
         Case WM_DESTROY
             'Window was closed-- bail!
-            If Not gShuttingDown Then
-                Call PostQuitMessage(0)
-                Call closeSystems
-                Call endform.Show(vbModal)
-                End
-            End If
+            If Not gShuttingDown Then Call PostQuitMessage(0)
 
         Case WM_CHAR
             'Key was pressed
@@ -156,14 +145,14 @@ End Function
 '=========================================================================
 ' Get low word
 '=========================================================================
-Private Function LoWord(LongIn As Long) As Integer
+Private Function LoWord(ByRef LongIn As Long) As Integer
    Call CopyMemory(LoWord, LongIn, 2)
 End Function
 
 '=========================================================================
 ' Get high word
 '=========================================================================
-Private Function HiWord(LongIn As Long) As Integer
+Private Function HiWord(ByRef LongIn As Long) As Integer
    Call CopyMemory(HiWord, ByVal (VarPtr(LongIn) + 2), 2)
 End Function
 
@@ -171,6 +160,11 @@ End Function
 ' Process events
 '=========================================================================
 Public Sub processEvent()
+
+    'This procedure is pretty much a replacement for DoEvents.
+    'It will process a message from the queue *if there is one*
+    'and then be done with.
+
     Dim message As msg
     If PeekMessage(message, host.hwnd, 0, 0, &H1) Then
         'There was a message, check if it's WinProc asking
@@ -187,4 +181,5 @@ Public Sub processEvent()
         End If
     End If
     DoEvents
+
 End Sub

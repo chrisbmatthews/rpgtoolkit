@@ -130,6 +130,5 @@ End Function
 '=========================================================================
 Public Sub updateGameTime()
     On Error Resume Next
-    'update count of game length
     gameTime = (Timer - initTime) + addTime
 End Sub

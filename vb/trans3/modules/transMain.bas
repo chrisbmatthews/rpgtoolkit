@@ -1,37 +1,74 @@
 Attribute VB_Name = "transMain"
+'=======================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=======================================================================
 
-'mainForm entry point for trans3
+'=======================================================================
+' Trans engine entry procedures
+'=======================================================================
 
 Option Explicit
 
-Public Declare Sub PostQuitMessage Lib "user32" (ByVal nExitCode As Long)
+'=======================================================================
+' Declarations
+'=======================================================================
 
-Public gGameState As Long
-Public gPrevGameState As Long
+Public gGameState As GAME_LOGIC_STATE
+Public gPrevGameState As GAME_LOGIC_STATE
 
-'Game states...
-Public Const GS_IDLE = 0        'just re-renders the screen
-Public Const GS_QUIT = 1        'shutdown sequence
-Public Const GS_MOVEMENT = 2    'movement is occurring (players or items)
-Public Const GS_DONEMOVE = 3    'movement is finished
-Public Const GS_PAUSE = 4       'pause game
+Public Enum GAME_LOGIC_STATE      'state of gameLogic() procedure
+    GS_IDLE = 0                   '  just re-renders the screen
+    GS_QUIT = 1                   '  shutdown sequence
+    GS_MOVEMENT = 2               '  movement is occurring (players or items)
+    GS_DONEMOVE = 3               '  movement is finished
+    GS_PAUSE = 4                  '  pause game (do nothing)
+End Enum
 
-Public movementCounter As Long  'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
-Public loaded As Long           'was the game loaded from start menu? 0-no, 1-yes
-Public runningAsEXE As Boolean  'are we running as an exe file?
-Public gShuttingDown As Boolean 'Has the shutdown process been initiated?
+Public movementCounter As Long    'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
+Public saveFileLoaded As Boolean  'was the game loaded from start menu? 0-no, 1-yes
+Public runningAsEXE As Boolean    'are we running as an exe file?
+Public gShuttingDown As Boolean   'Has the shutdown process been initiated?
+Public slackTime As Double        'cpu speed estimate
+Public host As New clsDirectXHost 'DirectX host window
 
-Public slackTime As Double
-
-Public Sub closeSystems()
+'==========================================
+' Main entry point
+'==========================================
+Public Sub Main()
 
     On Error Resume Next
 
-    gShuttingDown = True
+    'Init some misc stuff
+    Call initDefaults
 
+    'Get a main filename
+    Dim mainFile As String
+    mainFile = getMainFilename()
+
+    'If we got one
+    If mainFile <> "" Then
+
+        'Open the main file
+        Call openMain(mainFile, mainMem)
+
+        'Startup
+        Call openSystems
+
+        'Run game
+        Call host.mainEventLoop
+
+    End If
+
+End Sub
+
+'==========================================
+' Close systems
+'==========================================
+Public Sub closeSystems()
+    On Error Resume Next
+    gShuttingDown = True
     Call stopMedia
     Call stopMenuPlugin
     Call stopFightPlugin
@@ -43,22 +80,14 @@ Public Sub closeSystems()
     Call ClearAllThreads
     Call killMedia
     Call DeletePakTemp
-
-    If runningAsEXE Then
-        Call Kill(TempDir & "actkrt3.dll")
-        Call Kill(TempDir & "freeImage.dll")
-        Call Kill(TempDir & "temp.tpk")
-    End If
-
     Call CloseWindow(host.hwnd)
-    'Call DestroyWindow(host.hwnd)
-    'Call UnregisterClass(host.className, App.hInstance)
-
 End Sub
 
-Public Function getMainFilename() As String
+'==========================================
+' Get a main filename
+'==========================================
+Private Function getMainFilename() As String
 
-    'Get a main filename
     'Precedurence is as follows:
     ' + Command line
     ' + Main.gam
@@ -81,7 +110,7 @@ Public Function getMainFilename() As String
 
                 Call setupPakSystem(TempDir & Command)
                 Call Kill(PakFileMounted)
-                ChDir (currentDir)
+                Call ChDir(currentDir)
                 toRet = "main.gam"
                 projectPath = ""
                 getMainFilename = toRet
@@ -104,12 +133,11 @@ Public Function getMainFilename() As String
         ElseIf UBound(args) = 1 Then
 
             'run program
-            mainfile = gamPath & args(0)
-            Call openMain(mainfile, mainMem)
+            mainFile = gamPath & args(0)
+            Call openMain(mainFile, mainMem)
             Call openSystems(True)
             Call runProgram(projectPath & prgPath & args(1))
             Call closeSystems
-            End
 
         End If
 
@@ -158,9 +186,17 @@ Public Function getMainFilename() As String
 
     End If
 
+    'If we're running from a single file, the project is in this directory
+    If runningAsEXE Or pakFileRunning Then
+        projectPath = ""
+    End If
+
 End Function
 
-Private Sub initgame()
+'==========================================
+' Init some common stuff
+'==========================================
+Private Sub initGame()
     On Error Resume Next
     Call Randomize(Timer)
     currentDir = CurDir()
@@ -178,8 +214,10 @@ Private Sub initgame()
     Call InitLocalizeSystem
 End Sub
 
-Sub initDefaults()
-    'initialise defaults
+'==========================================
+' Set the defaults
+'==========================================
+Private Sub initDefaults()
     On Error Resume Next
     initTime = Timer()
     Call StartTracing("trace.txt")
@@ -187,101 +225,78 @@ Sub initDefaults()
         Call ChDir("C:\Program Files\Toolkit3\")
         currentDir = CurDir()
         If Not InitRuntime() Then
-            Call MsgBox("Could not initialize actkrt3.dll.  Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
+            Call MsgBox("Could not initialize actkrt3.dll. Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
             End
         End If
     End If
-    Call initgame
+    Call initGame
 End Sub
 
-Public Sub Main()
+'==========================================
+' Runs one 'frame' of the game logic
+'==========================================
+Public Sub gameLogic()
+
+    'NOTE: This is no longer the main loop. The main
+    '      loop is now in clsDirectXHost and is called
+    '      mainEventLoop().
 
     On Error Resume Next
 
-    Call initDefaults
+    Static checkFight As Long   'Used to track number of times fighting
+                                '*would* have been checked for if not
+                                'in pixel movement. In pixel movement,
+                                'only check every four steps (one tile).
 
-    Dim mainfile As String
-    mainfile = getMainFilename()
-
-    If mainfile <> "" Then
-
-        Call openMain(mainfile, mainMem)
-
-        If runningAsEXE Or pakFileRunning Then
-            projectPath = ""
-        End If
-        
-        'Startup
-        Call openSystems
-
-        'Run game
-        Call host.mainEventLoop
-
-    End If
-
-End Sub
-
-Public Sub mainLoop()
-
-    'main execution loop
-        
-    On Error Resume Next
- 
-    Static checkFight As Long
-   
     Select Case gGameState
-        
-        Case GS_IDLE
 
-            Call checkMusic
-            Call renderNow
-            Call multiTaskNow
-            Call scanKeys
-            Call updateGameTime
-            DoEvents
-                
+        Case GS_IDLE
+            Call checkMusic         'keep the music looping
+            Call renderNow          'render the scene
+            Call multiTaskNow       'run rpgcode multitasking
+            Call scanKeys           'scan for important keys
+            Call updateGameTime     'update time game has been running for
+
         Case GS_MOVEMENT
-            'movement has occurred...
 
             Call moveItems
             Call movePlayers
 
-            'this should be called framesPerMove times (moving 1/framesPerMove each time)
+            'this should be called framesPerMove times
             movementCounter = movementCounter + 1
 
+            'Re-render the scene
             Call renderNow
 
+            'Make sure this is run four times
             If movementCounter < framesPerMove Then
                 gGameState = GS_MOVEMENT
                 If (Not GS_ANIMATING) And (Not GS_LOOPING) Then
                     Call delay(walkDelay / ((framesPerMove * movementSize) / 2))
                 End If
             Else
+                'We're done movement
                 gGameState = GS_DONEMOVE
                 movementCounter = 0
             End If
 
         Case GS_DONEMOVE
-            'movement is done...
-            'check rpgcode programs, etc...
 
             'clear pending item movements...
             Dim cnt As Long
             For cnt = 0 To UBound(pendingItemMovement)
                 pendingItemMovement(cnt).direction = MV_IDLE
-                    
-                'Isometric fix:
                 pendingItemMovement(cnt).xOrig = itmPos(cnt).x
                 pendingItemMovement(cnt).yOrig = itmPos(cnt).y
             Next cnt
-                
+
             'The pending movements have to be cleared *before* any programs are run,
             'whereas the movement direction can only be cleared afterwards.
             For cnt = 0 To UBound(pendingPlayerMovement)
                 pendingPlayerMovement(cnt).xOrig = ppos(cnt).x
                 pendingPlayerMovement(cnt).yOrig = ppos(cnt).y
             Next cnt
-                
+
             'check if player moved...
             If pendingPlayerMovement(selectedPlayer).direction <> MV_IDLE Then
                 'will create a temporary player position which is based on
@@ -294,9 +309,13 @@ Public Sub mainLoop()
                 tempPos.x = pendingPlayerMovement(selectedPlayer).xTarg
                 tempPos.y = pendingPlayerMovement(selectedPlayer).yTarg
 
+                'Test for a program
                 Call programTest(tempPos)
+                
+                'Flag player is no longer moving
                 pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
 
+                'Test for a fight
                 If usingPixelMovement() Then
                     checkFight = checkFight + 1
                     If checkFight = 4 Then
@@ -314,66 +333,46 @@ Public Sub mainLoop()
                 pendingPlayerMovement(cnt).direction = MV_IDLE
             Next cnt
 
-            If UCase(ppos(selectedPlayer).stance) = "WALK_S" Then facing = 1
-            If UCase(ppos(selectedPlayer).stance) = "WALK_W" Then facing = 2
-            If UCase(ppos(selectedPlayer).stance) = "WALK_N" Then facing = 3
-            If UCase(ppos(selectedPlayer).stance) = "WALK_E" Then facing = 4
+            'Convert *STUPID* string positions to numerical
+            If UCase(ppos(selectedPlayer).stance) = "WALK_S" Then facing = South
+            If UCase(ppos(selectedPlayer).stance) = "WALK_W" Then facing = West
+            If UCase(ppos(selectedPlayer).stance) = "WALK_N" Then facing = North
+            If UCase(ppos(selectedPlayer).stance) = "WALK_E" Then facing = East
 
+            'Back to idle state
             gGameState = GS_IDLE
-                
+
         Case GS_QUIT
+            'Post quit message to break out of main event loop
             Call PostQuitMessage(0)
-                
-        Case GS_PAUSE
-            'do nothing!
-            DoEvents
 
     End Select
 
-    If gGameState <> GS_PAUSE Then
-        
-        If GS_ANIMATING Then
-            'We're running multi-task animations here!
-            Call handleMultitaskingAnimations
-        End If
-
-        If GS_LOOPING Then
-            'We're in a loop!
-            Call handleThreadLooping
-            movementCounter = 5
-        End If
-
-    End If
-   
 End Sub
 
-Sub openSystems(Optional ByVal testingPRG As Boolean)
+'==========================================
+' Open systems
+'==========================================
+Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     On Error Resume Next
-
     Call initActiveX
-
     Call initGraphics(testingPRG)
     Call DXClearScreen(0)
     Call DXRefresh
-
     Call InitPlugins
     Call BeginPlugins
     Call startMenuPlugin
     Call startFightPlugin
     Call initMedia
-    
     Call setupMain(testingPRG)
     Call DXRefresh
-    
     Call calculateSlackTime
-   
 End Sub
 
+'==========================================
+' Get an estimate speed of this CPU
+'==========================================
 Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
-
-    '==================================
-    'Calculate this CPU's slack time
-    '==================================
 
     Dim a As Long
 
@@ -410,14 +409,11 @@ Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
 
 End Sub
 
+'==========================================
+' Register ActiveX components
+'==========================================
 Private Sub initActiveX()
-
-    '==================================
-    'Registers plugin\ folder
-    '==================================
-
     On Error Resume Next
-
     Dim a As Long
     For a = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(a) <> "" Then
@@ -426,76 +422,73 @@ Private Sub initActiveX()
             Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
         End If
     Next a
-
 End Sub
 
+'==========================================
+' Set some things based on the main file
+'==========================================
 Public Sub setupMain(Optional ByVal testingPRG As Boolean)
-'==================================
-'EDITED: [Delano - 20/05/04]
-'Initialized #Gamespeed delay and cursor speed delay.
-'Renamed variables: t >> pNum, a >> charFile
-'==================================
-'This sub sets up the game based upon the mainForm file info.
-'Called by opensystems only.
 
-    On Error GoTo errorhandler
+    On Error Resume Next
 
     topX = 0
     topY = 0
+
+    'If we're running as an exe, don't show the debug window!
     If Not runningAsEXE Then
         debugYN = 1
     End If
-    
-    fontName$ = "Arial"             'Default true type font; or "base.fnt"
-    fontSize = 20
+
+    fontName = "Arial"              'Default true type font
+    fontSize = 20                   'Default font ize
     fontColor = vbQBColor(15)       'White
     MWinBkg = vbQBColor(0)          'Black
-    mwinLines = 4
-    textX = 1                       'Text location
-    textY = 1
-    loaded = 0
-    
+    mwinLines = 4                   'Lines MWin can hold
+    textX = 1                       'Text location X
+    textY = 1                       'Text location Y
+    saveFileLoaded = False          'Starting new game
+
+    'Set initial game speed
     Call gameSpeed(mainMem.gameSpeed)
-    
+
+    'Set initial pixel movement value
     If mainMem.pixelMovement = 1 Then
         movementSize = 0.25
     Else
         movementSize = 1
     End If
-    
+
+    'Register all fonts
     Call LoadFontsFromFolder(projectPath & fontPath)
-    
-    If mainMem.gameTitle$ <> "" Then
-        host.Caption = mainMem.gameTitle$
+
+    'Change the DirectX host's caption to the game's title (for windowed mode)
+    If mainMem.gameTitle <> "" Then
+        host.Caption = mainMem.gameTitle
     End If
-    
-    'OK, deal with the character first:
-    
-    Dim charFile As String
-    charFile$ = mainMem.initChar$
-    
-    If charFile$ <> "" Then
-        'If a main character has been specified, load it. Else?
-        Call CreateCharacter(projectPath$ + temPath$ + charFile$, 0)
+
+    If mainMem.initChar <> "" Then
+        'If a main character has been specified, load it
+        Call CreateCharacter(projectPath & temPath & mainMem.initChar, 0)
     End If
-    
+
+    'Unless we're testing a program from the PRG editor, run the
+    'startup program
     If Not testingPRG Then
         Call runProgram(projectPath & prgPath & mainMem.startupPrg)
     End If
-    
-    'Initial board
-    If loaded = 0 And (Not testingPRG) Then
+
+    'Unless we loaded a game (using Load()) or we're testing a PRG from
+    'the program editor, send the player to the initial board
+    If (Not saveFileLoaded) And (Not testingPRG) Then
 
         scTopX = -1000
         scTopY = -1000
         lastRender.canvas = -1
-        'Clear non-persistent threads...
-        Call ClearNonPersistentThreads
 
-        Call openboard(projectPath$ + brdPath$ + mainMem.initBoard$, boardList(activeBoardIndex).theData)
+        Call ClearNonPersistentThreads
+        Call openBoard(projectPath & brdPath & mainMem.initBoard, boardList(activeBoardIndex).theData)
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)
         Call openItems
-
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
 
         'Setup player position.
@@ -506,22 +499,13 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         ppos(0).frame = 0
         selectedPlayer = 0
 
-        Dim pnum As Long
-        For pnum = 0 To UBound(showPlayer)
-            showPlayer(pnum) = False
-        Next pnum
+        Dim pNum As Long
+        For pNum = 0 To UBound(showPlayer)
+            showPlayer(pNum) = False
+        Next pNum
         showPlayer(selectedPlayer) = True
-        facing = 1                      'Facing South.
-        
+        facing = South
+
     End If
 
-    Exit Sub
-    
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
-    
 End Sub
-
-

@@ -470,8 +470,7 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             done = True
         End If
         
-        'KSNiloc adds...
-        DoEvents
+        Call processEvent
         
     Loop
     

@@ -124,7 +124,6 @@ Private Sub Form_Activate()
         End
     Else
         Visible = True
-        DoEvents
     End If
 End Sub
 
