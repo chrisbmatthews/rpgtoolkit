@@ -59,6 +59,7 @@ End Type
 '=========================================================================
 Private Type RPGCODE_CLASS_MAIN_DATA
     classes() As RPGCODE_CLASS              'Classes this program can instance
+    nestle() As Long                        'Nestle of classes
 End Type
 
 '=========================================================================
@@ -395,6 +396,17 @@ End Function
 '=========================================================================
 Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg As RPGCodeProgram) As Boolean
 
+    On Error Resume Next
+
+    
+
+End Function
+
+'=========================================================================
+' Determine if a method is a member of a class
+'=========================================================================
+Public Function isMethodMember(ByVal methodName As String, ByVal hClass As Long, ByRef prg As RPGCodeProgram) As Boolean
+
 End Function
 
 '=========================================================================
@@ -408,6 +420,15 @@ Public Function getObjectVarName(ByVal theVar As String, ByVal hClass As Long) A
     getObjectVarName = CStr(hClass) & "::" & theVar
 
 End Function
+
+'=========================================================================
+' Call a method in a class
+'=========================================================================
+Public Sub callObjectMethod(ByVal hClass As Long, ByRef prg As RPGCodeProgram)
+
+    On Error Resume Next
+
+End Sub
 
 '=========================================================================
 ' Get a class from an instance of it
@@ -472,7 +493,7 @@ End Sub
 '=========================================================================
 ' Create a new instance of a class
 '=========================================================================
-Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCodeProgram) As Long
+Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCodeProgram, ByRef params() As String) As Long
 
     On Error Resume Next
 
