@@ -671,7 +671,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     Dim lit As String               ' Literal value
     Dim num As Double               ' Numerical value
     Dim hClass As Long              ' Handle to a class
-    Dim retVal As RPGCODE_RETURN    ' Return value
+    Dim retval As RPGCODE_RETURN    ' Return value
     Dim destLit As String           ' Destination as a string
     Dim destNum As Double           ' Destination as a num
     Dim noVar As Boolean            ' No var on left side?
@@ -800,7 +800,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                         ' If this class handles this operator
                         If (isMethodMember("operator++", hClass, theProgram, isOutside(hClass, theProgram))) Then
                             ' Call the method
-                            Call callObjectMethod(hClass, "operator++", theProgram, retVal, "operator++")
+                            Call callObjectMethod(hClass, "operator++", theProgram, retval, "operator++")
                             ' Leave this procedure
                             Exit Sub
                         End If
@@ -813,7 +813,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                         ' If this class handles this operator
                         If (isMethodMember("operator--", hClass, theProgram, isOutside(hClass, theProgram))) Then
                             ' Call the method
-                            Call callObjectMethod(hClass, "operator--", theProgram, retVal, "operator--")
+                            Call callObjectMethod(hClass, "operator--", theProgram, retval, "operator--")
                             ' Leave this procedure
                             Exit Sub
                         End If
@@ -889,13 +889,13 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                                         cnj = "operator" & conjunctions(tokenIdx - 1)
                                         If (isMethodMember(cnj, hTokenClass, theProgram, isOutside(hClass, theProgram))) Then
                                             ' Call the method
-                                            Call callObjectMethod(hTokenClass, cnj & "(" & valueList(tokenIdx) & ")", theProgram, retVal, cnj)
+                                            Call callObjectMethod(hTokenClass, cnj & "(" & valueList(tokenIdx) & ")", theProgram, retval, cnj)
                                             ' Switch on returned type
                                             Dim theVal As String
-                                            Select Case retVal.dataType
-                                                Case DT_LIT: theVal = retVal.lit
-                                                Case DT_NUM: theVal = CStr(retVal.num)
-                                                Case DT_REFERENCE: theVal = retVal.ref
+                                            Select Case retval.dataType
+                                                Case DT_LIT: theVal = retval.lit
+                                                Case DT_NUM: theVal = CStr(retval.num)
+                                                Case DT_REFERENCE: theVal = retval.ref
                                             End Select
                                             ' Fill in new data
                                             Call getValue(theVal, lit, numberUse(tokenIdx - 1), theProgram)
@@ -942,7 +942,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 ' If this class handles this *specific* operator
                 If (isMethodMember("operator" & equal, hClass, theProgram, isOutside(hClass, theProgram))) Then
                     ' Call the method
-                    Call callObjectMethod(hClass, "operator" & equal & "(" & CStr(dRes) & ")", theProgram, retVal, "operator" & equal)
+                    Call callObjectMethod(hClass, "operator" & equal & "(" & CStr(dRes) & ")", theProgram, retval, "operator" & equal)
                     ' Leave this procedure
                     Exit Sub
                 End If
@@ -966,7 +966,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 ' If this class handles =
                 If (isMethodMember("operator=", hClass, theProgram, isOutside(hClass, theProgram))) Then
                     ' Call the method
-                    Call callObjectMethod(hClass, "operator=(" & CStr(dRes) & ")", theProgram, retVal, "operator=")
+                    Call callObjectMethod(hClass, "operator=(" & CStr(dRes) & ")", theProgram, retval, "operator=")
                     ' Leave this procedure
                     Exit Sub
                 End If
@@ -1048,7 +1048,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 ' If this class handles =
                 If (isMethodMember("operator=", hClass, theProgram, isOutside(hClass, theProgram))) Then
                     ' Call the method
-                    Call callObjectMethod(hClass, "operator=(""" & strRes & """)", theProgram, retVal, "operator=")
+                    Call callObjectMethod(hClass, "operator=(""" & strRes & """)", theProgram, retval, "operator=")
                     ' Leave this procedure
                     Exit Sub
                 End If
@@ -1664,7 +1664,7 @@ End Sub
 Public Sub ShutdownVarSystem()
     On Error Resume Next
     Call RPGCShutdown
-    Call killAllTimers
+    ' Call killAllTimers
 End Sub
 
 '=========================================================================
