@@ -261,15 +261,6 @@ inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, 
 		SetRect(&dxInfo.windowedMode.surfaceRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
 		SetRect(&dxInfo.windowedMode.destRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
 
-		//get the point of the window outside of the title bar and border
-		POINT ptPrimeBlt;
-		memset(&ptPrimeBlt, 0, sizeof(POINT));
-		ClientToScreen(ghWndMain, &ptPrimeBlt);
-
-		//now offset the top/left of the window rect by the distance from the
-		//title bar / border
-		OffsetRect(&dxInfo.windowedMode.destRect, ptPrimeBlt.x, ptPrimeBlt.y);
-
 		//setup the effects to blt with
 		memset(&dxInfo.windowedMode.bltFx, 0, sizeof(DDBLTFX));
 		dxInfo.windowedMode.bltFx.dwSize = sizeof(DDBLTFX);
@@ -322,14 +313,14 @@ inline bool KillGraphicsMode()
 		//kill primary surface...
 		if(gDXInfo.lpddsPrime)
 		{
-			if (FAILED(gDXInfo.lpddsPrime->Release())) return false;;
+			if (FAILED(gDXInfo.lpddsPrime->Release())) return false;
 			gDXInfo.lpddsPrime = NULL;
 		}
 
 		//kill direct draw...
 		if(gDXInfo.lpdd)
 		{
-			if (FAILED(gDXInfo.lpdd->Release())) return false;;
+			if (FAILED(gDXInfo.lpdd->Release())) return false;
 			gDXInfo.lpdd = NULL;
 		}
 	}
@@ -494,24 +485,29 @@ inline bool Refresh()
 		}
 		else
 		{
+
+			//get the point of the window outside of the title bar and border
+			POINT ptPrimeBlt;
+			ptPrimeBlt.x = ptPrimeBlt.y = 0;
+			ClientToScreen(ghWndMain, &ptPrimeBlt);
+
+			//now offset the top/left of the window rect by the distance from the
+			//title bar / border
+			OffsetRect(&gDXInfo.windowedMode.destRect, ptPrimeBlt.x, ptPrimeBlt.y);
+
 			//Blt onto the window
 			gDXInfo.lpddsPrime->Blt(&gDXInfo.windowedMode.destRect, gDXInfo.lpddsSecond, &gDXInfo.windowedMode.surfaceRect, DDBLT_WAIT | DDBLT_ROP, &gDXInfo.windowedMode.bltFx);
+
 		}
 	}
-	else
+	else if (g_pBackBuffer)
 	{
-
 		//if offscreen buffer exists, blit it formward.
-		if (g_pBackBuffer)
-		{
-			HDC hdc = GetDC(ghWndMain);
-			
-			HDC hdcBuffer = g_pBackBuffer->OpenDC();
-			BitBlt(hdc, 0, 0, g_pBackBuffer->GetWidth(), g_pBackBuffer->GetHeight(), hdcBuffer, 0, 0, SRCCOPY);
-			g_pBackBuffer->CloseDC(hdcBuffer);
-			
-			ReleaseDC(ghWndMain, hdc);
-		}
+		HDC hdc = GetDC(ghWndMain);
+		HDC hdcBuffer = g_pBackBuffer->OpenDC();
+		BitBlt(hdc, 0, 0, g_pBackBuffer->GetWidth(), g_pBackBuffer->GetHeight(), hdcBuffer, 0, 0, SRCCOPY);
+		g_pBackBuffer->CloseDC(hdcBuffer);
+		ReleaseDC(ghWndMain, hdc);
 	}
 
 	return true;
