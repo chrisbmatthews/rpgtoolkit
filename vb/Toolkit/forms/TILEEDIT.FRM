@@ -387,7 +387,6 @@ Private xMod As Byte     '= 2 for isometric, 1 for 2D
 ' variable declaration
 '========================================================================
 
-
 'publictile.grid, On or Off?
 Private GridOff As Boolean
 
@@ -411,96 +410,6 @@ Public ignoreDeactivate As Boolean
 
 '!NEW! For the changecolor function
 Private bchangecolor As Integer
-
-'!NEW! For the multiple undo's
-Private whichundo As Integer
-
-'========================================================================
-' ???
-'========================================================================
-Public Sub ScrollNorth_Click()
-    On Error GoTo ErrorHandler
-    For xx = 1 To 32
-        For yy = 1 To 32
-            buftile(xx, yy) = tilemem(xx, yy)
-        Next yy
-    Next xx
-    For xx = 1 To 32
-        For yy = 2 To 32
-            tilemem(xx, yy) = buftile(xx, yy - 1)
-        Next yy
-    Next xx
-    For xx = 1 To 32
-        tilemem(xx, 1) = buftile(xx, 32)
-    Next xx
-    Call activeTile.tileRedraw
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-'========================================================================
-' ???
-'========================================================================
-Public Sub ScrollSouth_Click()
-    On Error Resume Next
-    For xx = 1 To 32
-        For yy = 1 To 32
-            buftile(xx, yy) = tilemem(xx, yy)
-        Next yy
-    Next xx
-    For xx = 1 To 32
-        For yy = 1 To 31
-            tilemem(xx, yy) = buftile(xx, yy + 1)
-        Next yy
-    Next xx
-    For xx = 1 To 32
-        tilemem(xx, 32) = buftile(xx, 1)
-    Next xx
-    Call activeTile.tileRedraw
-End Sub
-'========================================================================
-' ???
-'========================================================================
-Public Sub ScrollWest_Click()
-    On Error Resume Next
-    For xx = 1 To 32
-        For yy = 1 To 32
-            buftile(xx, yy) = tilemem(xx, yy)
-        Next yy
-    Next xx
-    For xx = 2 To 32
-        For yy = 1 To 32
-            tilemem(xx, yy) = buftile(xx - 1, yy)
-        Next yy
-    Next xx
-    For yy = 1 To 32
-        tilemem(1, yy) = buftile(32, yy)
-    Next yy
-    Call activeTile.tileRedraw
-End Sub
-'========================================================================
-' ???
-'========================================================================
-Public Sub ScrollEast_Click()
-    On Error Resume Next
-    For xx = 1 To 32
-        For yy = 1 To 32
-            buftile(xx, yy) = tilemem(xx, yy)
-        Next yy
-    Next xx
-    For xx = 1 To 31
-        For yy = 1 To 32
-            tilemem(xx, yy) = buftile(xx + 1, yy)
-        Next yy
-    Next xx
-    For yy = 1 To 32
-        tilemem(32, yy) = buftile(1, yy)
-    Next yy
-    Call activeTile.tileRedraw
-End Sub
-
 '========================================================================
 ' Identify type of form
 '========================================================================
@@ -538,7 +447,7 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
         
         'Isometric check button is depressed - isometric mode.
         isIsoTile = True        'Control boolean.
-        xrange = 64             'Loop ranger.
+        xRange = 64             'Loop ranger.
         theData.isometric = True
         xMod = 2
         
@@ -547,14 +456,13 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
         Call tstToIsometric
         
         'Copy the buffer tile into tilemem.
-        Dim x, y As Integer
+        Dim x As Integer, y As Integer
         For x = 0 To 64
             For y = 0 To 32
                 tilemem(x + 1, y + 1) = buftile(x, y)
             Next y
         Next x
         
-        tkMainForm.isoMirror.cls
         tkMainForm.isoMirror.BorderStyle = 0
         'Unenable some stuff
         mnuRotate.Enabled = False
@@ -563,6 +471,7 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
         convert.Enabled = False
         layer.Enabled = False
         lsrc.Enabled = False
+        tkMainForm.cmdImport.Enabled = False
         'Make the normal tile preview picturebox in TkMainForm white
         Call vbPicFillRect(tkMainForm.mirror, 0, 0, 100, 100, vbQBColor(15))
     Else
@@ -588,11 +497,11 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
         
         tkMainForm.isoMirror.BorderStyle = 1
         isIsoTile = False
-        xrange = 32
+        xRange = 32
         theData.isometric = False
         xMod = 1
         
-        tkMainForm.isoMirror.cls
+        'tkMainForm.isoMirror.cls
         
         'Enable some stuff
         mnuRotate.Enabled = True
@@ -601,8 +510,9 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
         convert.Enabled = True
         layer.Enabled = True
         lsrc.Enabled = True
+        tkMainForm.cmdImport.Enabled = True
     End If
-    
+    'Re-draw/size
     Call Form_Resize
 End Sub
 '========================================================================
@@ -628,7 +538,7 @@ End Sub
 '========================================================================
 ' Scroll (NEW for 3.0.4 by Woozy)
 '========================================================================
-Public Sub Scroll(how As Integer)
+Public Sub Scroll(how As Integer): On Error Resume Next
     'How: 1 - North
     '     2 - East
     '     3 - South
@@ -636,53 +546,53 @@ Public Sub Scroll(how As Integer)
     'Use new undo
     'Call SetUndo
     
-    Dim xx, yy As Integer
+    Dim xx As Integer, yy As Integer
     
     Select Case how
         Case 1 'North
-            For xx = 1 To xrange
+            For xx = 1 To xRange
                 For yy = 1 To 32 - 1
                     buftile(xx, yy) = tilemem(xx, yy + 1)
                 Next yy
             Next xx
         
-            For xx = 1 To xrange
+            For xx = 1 To xRange
                 buftile(xx, 32) = tilemem(xx, 1)
             Next xx
         Case 2 'East
-            For xx = 1 To xrange
+            For xx = 1 To xRange
                 For yy = 1 To 32
                     buftile(xx, yy) = tilemem(xx - 1, yy)
                 Next yy
             Next xx
             
             For yy = 1 To 32
-                buftile(1, yy) = tilemem(xrange, yy)
+                buftile(1, yy) = tilemem(xRange, yy)
             Next yy
         Case 3 'South
-            For xx = 1 To xrange
+            For xx = 1 To xRange
                 For yy = 1 To 32
                     buftile(xx, yy) = tilemem(xx, yy - 1)
                 Next yy
             Next xx
         
-            For xx = 1 To xrange
+            For xx = 1 To xRange
                 buftile(xx, 1) = tilemem(xx, 32)
             Next xx
         Case 4 'West
-            For xx = 1 To xrange - 1
+            For xx = 1 To xRange - 1
                 For yy = 1 To 32
                     buftile(xx, yy) = tilemem(xx + 1, yy)
                 Next yy
             Next xx
             
             For yy = 1 To 32
-                buftile(xrange, yy) = tilemem(1, yy)
+                buftile(xRange, yy) = tilemem(1, yy)
             Next yy
     End Select
     
     'Change the tile
-    For xx = 1 To xrange
+    For xx = 1 To xRange
         For yy = 1 To 32
             tilemem(xx, yy) = buftile(xx, yy)
         Next yy
@@ -703,7 +613,7 @@ Private Sub Rotate(how As Integer)
     'Use new undo
     Call SetUndo
     
-    Dim x, y, xx, yy As Integer
+    Dim x As Integer, y As Integer, xx As Integer, yy As Integer
     
     'Buff it
     For x = 1 To 32
@@ -759,7 +669,7 @@ Private Sub Flip(how As Integer)
     'Use new undo
     Call SetUndo
     
-    Dim x, y As Integer
+    Dim x As Integer, y As Integer
     
     For x = 1 To 32
         For y = 1 To 32
@@ -788,13 +698,13 @@ End Sub
 ' the time to fix this for 3.0.4. It'll be here in 3.0.5 (or 3.1, hopefully =P)
 '========================================================================
 Public Sub SetUndo()
-    Dim xu, yu As Integer
+    Dim x As Integer, y As Integer
     
-    For xu = 1 To xrange
-        For yu = 1 To 32
-            publicTile.Undotile(xu, yu) = tilemem(xu, yu)
-        Next yu
-    Next xu
+    For x = 1 To xRange
+        For y = 1 To 32
+            publicTile.Undotile(x, y) = tilemem(x, y)
+        Next y
+    Next x
 End Sub
 '========================================================================
 ' This gets the info from the undo and changes the tile back (NEW for 3.0.4 by Woozy)
@@ -803,15 +713,15 @@ End Sub
 Public Sub GetUndo()
     'ReDim the variable
     ReDim bufundo(64, 32)
-    Dim xu, yu As Integer
+    Dim x As Integer, y As Integer
     
-    For xu = 1 To xrange
-        For yu = 1 To 32
-            bufundo(xu, yu) = tilemem(xu, yu)
-            tilemem(xu, yu) = publicTile.Undotile(xu, yu)
-            publicTile.Undotile(xu, yu) = bufundo(xu, yu)
-        Next yu
-    Next xu
+    For x = 1 To xRange
+        For y = 1 To 32
+            bufundo(x, y) = tilemem(x, y)
+            tilemem(x, y) = publicTile.Undotile(x, y)
+            publicTile.Undotile(x, y) = bufundo(x, y)
+        Next y
+    Next x
 
     'Redraw
     Call tileRedraw
@@ -838,7 +748,7 @@ Private Sub fillTile(ByVal x As Long, ByVal y As Long, ByVal crColor As Long, Op
     'Check right (east).
     x2 = x + 1
     y2 = y
-    If (x2 <= xrange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
+    If (x2 <= xRange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
         If tilemem(x2, y2) = replaceCol Then
             Call fillTile(x2, y2, crColor, x, y)
         End If
@@ -847,7 +757,7 @@ Private Sub fillTile(ByVal x As Long, ByVal y As Long, ByVal crColor As Long, Op
     'Check up (north).
     x2 = x
     y2 = y - 1
-    If (x2 <= xrange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
+    If (x2 <= xRange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
         If tilemem(x2, y2) = replaceCol Then
             Call fillTile(x2, y2, crColor, x, y)
         End If
@@ -856,7 +766,7 @@ Private Sub fillTile(ByVal x As Long, ByVal y As Long, ByVal crColor As Long, Op
     'Check left (west).
     x2 = x - 1
     y2 = y
-    If (x2 <= xrange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
+    If (x2 <= xRange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
         If tilemem(x2, y2) = replaceCol Then
             Call fillTile(x2, y2, crColor, x, y)
         End If
@@ -865,7 +775,7 @@ Private Sub fillTile(ByVal x As Long, ByVal y As Long, ByVal crColor As Long, Op
     'Check down (south).
     x2 = x
     y2 = y + 1
-    If (x2 <= xrange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
+    If (x2 <= xRange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
         If tilemem(x2, y2) = replaceCol Then
             Call fillTile(x2, y2, crColor, x, y)
         End If
@@ -885,17 +795,17 @@ Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, 
     'Use new undo
     Call SetUndo
     
-    Dim x, y As Integer
-    Dim Canv, tc, p As Long
+    Dim x As Integer, y As Integer
+    Dim Canv As Long, tc As Long, p As Long
     'Create an offscreen canvas, and test it.
-    Canv = CreateCanvas(xrange, 32)
+    Canv = CreateCanvas(xRange, 32)
     tc = RGB(255, 100, 50)                              'Transparent colour.
     Call CanvasSetPixel(Canv, 0, 0, tc)
     tc = CanvasGetPixel(Canv, 0, 0)
     
     'Copy the tilemem to the offscreen canvas.
     If detail = 1 Or detail = 2 Then                    'High (24bit) detail.
-        For x = 1 To xrange
+        For x = 1 To xRange
             For y = 1 To 32
                 If tilemem(x, y) <> -1 Then
                     Call CanvasSetPixel(Canv, x - 1, y - 1, tilemem(x, y))
@@ -941,7 +851,7 @@ Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, 
         End Select
         
         'Copy the canvas back to the tilemem.
-        For x = 1 To xrange
+        For x = 1 To xRange
             For y = 1 To 32
                 p = CanvasGetPixel(Canv, x - 1, y - 1)
                 If p = tc Then
@@ -986,15 +896,15 @@ End Sub
 '========================================================================
 Public Sub changeColor()
     'If the user has choosen the color he wants to change, we go through this loop
-    Dim xx, yy As Integer
+    Dim x As Integer, y As Integer
     If bchangecolor = 2 Then
-        For xx = 1 To xrange                            '<-- Edit
-            For yy = 1 To 32
-                If tilemem(xx, yy) = publicTile.changeColor Then
-                    tilemem(xx, yy) = publicTile.currentColor
+        For x = 1 To xRange                            '<-- Edit
+            For y = 1 To 32
+                If tilemem(x, y) = publicTile.changeColor Then
+                    tilemem(x, y) = publicTile.currentColor
                 End If
-            Next yy
-        Next xx
+            Next y
+        Next x
         'Redraw the tile
         activeTile.tileRedraw
         'Reset the function
@@ -1019,7 +929,7 @@ Private Sub Form_Activate()
     Set activeTile = Me
     Set activeForm = Me
     
-    Dim x, y As Integer                                 '<-- New
+    Dim x As Integer, y As Integer                                 '<-- New
     
     If Not (ignoreDeactivate) Then
         'Refresh data
@@ -1035,15 +945,16 @@ Private Sub Form_Activate()
     ignoreDeactivate = False
     
     'Set ISO or not (NEW)
+    
     If theData.isometric Then
         tkMainForm.tileIsoCheck.value = 1
-        xrange = 64
+        xRange = 64
         xMod = 2
         isIsoTile = True
         tkMainForm.isoMirror.BorderStyle = 0
     Else
         tkMainForm.tileIsoCheck.value = 0
-        xrange = 32
+        xRange = 32
         xMod = 1
         isIsoTile = False
         tkMainForm.isoMirror.BorderStyle = 1
@@ -1081,10 +992,10 @@ Private Sub Form_Deactivate()
     'Store the data
     theData = publicTile
     
-    Dim x, y As Integer                                     '<-- New
+    Dim x As Integer, y As Integer                                     '<-- New
     
     'Refresh data
-    For x = 0 To xrange                                     '<-- Edit
+    For x = 0 To xRange                                     '<-- Edit
         For y = 0 To 32
             theData.tilemem(x, y) = tilemem(x, y)
         Next y
@@ -1133,13 +1044,14 @@ Private Sub Form_Load()
     Set activeTile = Me
     
     'Initial (non)isometric settings. (NEW for 3.0.4 by Delano)
+    
     isIsoTile = False
-    xrange = 32
+    xRange = 32
     theData.isometric = False
     xMod = 1
 
     'Refresh data...
-    Dim x, y As Integer                                 '<-- New
+    Dim x As Integer, y As Integer                                 '<-- New
     
     For x = 0 To 64                                     '<-- Edit
         For y = 0 To 32
@@ -1239,22 +1151,22 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single,
     End If
    
     'Tileform size in pixels.
-    Dim wwidth, hheight As Integer                          '<-- New
+    Dim wwidth As Integer, hheight As Integer                          '<-- New
     wwidth = (activeTile.tileform.Width) / Screen.TwipsPerPixelX
     hheight = (activeTile.tileform.height) / Screen.TwipsPerPixelY
-    
+
     'Size of a pixel on the tile.
-    Dim pixelWidth, pixelHeight As Integer
-    pixelWidth = (wwidth / xrange)                          '<-- Edit
+    Dim pixelWidth As Integer, pixelHeight As Integer
+    pixelWidth = (wwidth / xRange)                          '<-- Edit
     pixelHeight = (hheight / 32)
     
     'Tile pixel co-ordinates (which pixel selected).
-    Dim xx, yy As Integer
+    Dim xx As Integer, yy As Integer
     xx = Int(x / pixelWidth)
     yy = Int(y / pixelHeight)
     
     'If a rouge pixel has been selected.
-    If xx > (xrange - 1) Or yy > 31 Then Exit Sub           '<-- Edit
+    If xx > (xRange - 1) Or yy > 31 Then Exit Sub           '<-- Edit
     
     'Exit sub if there's clicked in the not-available part
     If isoMaskBmp(xx + 1, yy + 1) <> vbQBColor(0) And isIsoTile Then Exit Sub '<-- New
@@ -1288,8 +1200,6 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single,
                     tilemem(xx + 1, yy + 1) = coloruse
                     
                     coloruse = RGB(255, 255, 255)
-                    'Call vbPicPSet(tkMainForm.mirror, xx, yy, RGB(255, 255, 255))
-                    'Call vbPicPSet(tkMainForm.isoMirror, getIsoX(xx, yy), getIsoY(xx, yy), RGB(255, 255, 255))
                 Else
                     'Solid pixel.
                 
@@ -1300,9 +1210,6 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single,
                     End If
                     
                     tilemem(xx + 1, yy + 1) = coloruse
-                    'Call vbPicPSet(tkMainForm.mirror, xx, yy, coloruse)
-                    'Call vbPicPSet(tkMainForm.isoMirror, getIsoX(xx, yy), getIsoY(xx, yy), coloruse)
-                    
                 End If
             End If 'isIsoTile
             
@@ -1364,22 +1271,22 @@ Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single,
     On Error Resume Next
     
     'Tileform size in pixels.
-    Dim wwidth, hheight As Integer                      '<-- New
+    Dim wwidth As Integer, hheight As Integer                      '<-- New
     wwidth = (activeTile.tileform.Width) / Screen.TwipsPerPixelX
     hheight = (activeTile.tileform.height) / Screen.TwipsPerPixelY
     
     'Size of a pixel on the tile.
-    Dim pixelWidth, pixelHeight As Integer
-    pixelWidth = (wwidth / xrange)                      '<- Edit
+    Dim pixelWidth As Integer, pixelHeight As Integer
+    pixelWidth = (wwidth / xRange)                      '<- Edit
     pixelHeight = (hheight / 32)
     
     'Tile pixel co-ordinates (which pixel selected).
-    Dim xx, yy As Integer
+    Dim xx As Integer, yy As Integer
     xx = Int(x / pixelWidth)
     yy = Int(y / pixelHeight)
     
     'If pixel is out of the tile's range.
-    If xx > (xrange - 1) Or yy > 31 Then Exit Sub       '<-- Edit
+    If xx > (xRange - 1) Or yy > 31 Then Exit Sub       '<-- Edit
     If xx < 0 Or yy < 0 Then Exit Sub
     
     'Update Co-ordinate label
@@ -1397,7 +1304,7 @@ Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single,
     xx = xx * pixelWidth + (pixelWidth / 2)
     yy = yy * pixelHeight + (pixelHeight / 2)
     
-    Dim x1, y1 As Integer                               '<-- New
+    Dim x1 As Integer, y1 As Integer                               '<-- New
     x1 = Int(dragX1 / pixelWidth) * pixelWidth + (pixelWidth / 2)
     y1 = Int(dragY1 / pixelHeight) * pixelHeight + (pixelHeight / 2)
     
@@ -1432,7 +1339,8 @@ Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single,
                 y1 = yy
                 yy = Temp
             End If
-            Dim cx, cy, rx, ry, rad, asp As Integer     '<-- New
+            Dim cx As Integer, cy As Integer, rx As Integer
+            Dim ry As Integer, rad As Integer, asp As Integer     '<-- New
             cx = x1 + ((xx - x1) / 2)
             cy = y1 + ((yy - y1) / 2)
             rx = xx - cx
@@ -1478,15 +1386,16 @@ End Sub
 Private Sub tileform_MouseUp(button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     
-    Dim wwidth, hheight As Integer                      '<-- New
+    Dim wwidth As Integer, hheight As Integer                      '<-- New
     wwidth = (activeTile.tileform.Width) / Screen.TwipsPerPixelX
     hheight = (activeTile.tileform.height) / Screen.TwipsPerPixelY
     
-    Dim pixelWidth, pixelHeight As Integer
-    pixelWidth = (wwidth / xrange)                      '<-- Edit
+    Dim pixelWidth As Integer, pixelHeight As Integer
+    pixelWidth = (wwidth / xRange)                      '<-- Edit
     pixelHeight = (hheight / 32)
     
-    Dim x2, y2, x1, y1 As Integer                       '<-- New
+    Dim x2 As Integer, y2 As Integer
+    Dim x1 As Integer, y1 As Integer                       '<-- New
     x2 = Int(x / pixelWidth)
     y2 = Int(y / pixelHeight)
     x1 = Int(dragX1 / pixelWidth)
@@ -1517,7 +1426,7 @@ Sub drawGrid()
     If GridOff = True Then Exit Sub
     
     'Size of form in pixels.
-    Dim wwidth, hheight As Integer                      '<-- New
+    Dim wwidth As Integer, hheight As Integer                      '<-- New
     wwidth = (activeTile.tileform.Width) / Screen.TwipsPerPixelX
     hheight = (activeTile.tileform.height) / Screen.TwipsPerPixelY
     
@@ -1525,10 +1434,10 @@ Sub drawGrid()
 
     'Size of a pixel on the tile.
     Dim pixelWidth, pixelHeight As Integer
-    pixelWidth = (wwidth / xrange)                      '<-- Edit
+    pixelWidth = (wwidth / xRange)                      '<-- Edit
     pixelHeight = (hheight / 32)
     
-    Dim x, y As Integer                                 '<-- New
+    Dim x As Integer, y As Integer                                 '<-- New
     If detail = 1 Then
         For x = 0 To wwidth Step pixelWidth
             Call vbPicLine(tileform, x, 0, x, hheight, vbQBColor(1))
@@ -1554,17 +1463,18 @@ Sub highredraw()
     wwidth = (activeTile.tileform.Width) / Screen.TwipsPerPixelX
     hheight = (activeTile.tileform.height) / Screen.TwipsPerPixelY
     
-    Dim pixelWidth, pixelHeight As Integer
-    pixelWidth = (wwidth / xrange)                      '<-- Edit
+    Dim pixelWidth As Integer, pixelHeight As Integer
+    pixelWidth = (wwidth / xRange)                      '<-- Edit
     pixelHeight = (hheight / 32)
     
     If detail = 3 Or detail = 5 Then
         Call color_16million
     End If
     
-    Dim x, y, xx, yy As Integer                         '<-- New
-    'For x = 1 To 32
-    For x = 1 To xrange                                                     '//==
+    Dim x As Integer, y As Integer
+    Dim xx As Integer, yy As Integer                         '<-- New
+
+    For x = 1 To xRange                                                     '//==
         For y = 1 To 32
             xx = (x * pixelWidth) - (pixelWidth - 1)
             yy = (y * pixelHeight) - (pixelHeight - 1)
@@ -1790,7 +1700,8 @@ Public Sub tileRedraw()
     On Error GoTo ErrorHandler
     Call activeTile.highredraw
     Call drawGrid
-
+    tkMainForm.isoMirror.cls
+    
     If isIsoTile Then
         'Draw the tile isometrically. Send a different value to the function.
         'Moved to highRedraw.
@@ -2131,7 +2042,6 @@ Private Sub savetile2_Click(): On Error Resume Next
     
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
-
 '==========================================================================================
 'File -> Save into tileset
 'Alterations for isometrics, 3.0.4
@@ -2282,8 +2192,8 @@ Private Sub cmdClear_Click()
     'Use new undo
     Call SetUndo
     
-    Dim x, y As Integer
-    For x = 1 To xrange
+    Dim x As Integer, y As Integer
+    For x = 1 To xRange
         For y = 1 To 32
             tilemem(x, y) = -1
         Next y
@@ -2393,10 +2303,11 @@ Public Sub gryscle_Click()
     'Use new undo
     Call SetUndo                                        '<-- Edit
     
-    Dim x, y As Integer                                 '<-- New
-    Dim rr, gg, bb, newavg As Long                      '<-- New
+    Dim x As Integer, y As Integer                      '<-- New
+    Dim rr As Long, gg As Long, bb As Long
+    Dim newavg As Long                                  '<-- New
     'Start converting
-    For x = 1 To xrange
+    For x = 1 To xRange
         For y = 1 To 32
             If tilemem(x, y) <> -1 Then
                 rr = red(tilemem(x, y))
@@ -2451,9 +2362,12 @@ Private Sub blurmnu_Click()
     Call SetUndo
     
     Dim x, y As Integer                                 '<-- New
-    Dim aa, r, g, b, r2, g2, b2, nr, ng, nb As Long     '<-- New
+    Dim aa As Long                                      '<-- New
+    Dim r As Long, g As Long, b As Long                 '<-- New
+    Dim r2 As Long, g2 As Long, b2 As Long              '<-- New
+    Dim nr As Long, ng As Long, nb As Long              '<-- New
     'Start blurring
-    For x = 1 To xrange                                 '<-- Edit
+    For x = 1 To xRange                                 '<-- Edit
         For y = 1 To 32
         
             aa = tilemem(x, y)
@@ -2465,7 +2379,7 @@ Private Sub blurmnu_Click()
             aa = tilemem(x, y)
             If aa = -1 Then aa = vbQBColor(15)
             b = blue(aa) / 2
-            If x = xrange Then                          '<-- Edit
+            If x = xRange Then                          '<-- Edit
                 aa = tilemem(1, y)
                 If aa = -1 Then aa = vbQBColor(15)
             Else
@@ -2473,7 +2387,7 @@ Private Sub blurmnu_Click()
                 If aa = -1 Then aa = vbQBColor(15)
             End If
             r2 = red(aa) / 2
-            If x = xrange Then                          '<-- Edit
+            If x = xRange Then                          '<-- Edit
                 aa = tilemem(1, y)
                 If aa = -1 Then aa = vbQBColor(15)
             Else
@@ -2481,7 +2395,7 @@ Private Sub blurmnu_Click()
                 If aa = -1 Then aa = vbQBColor(15)
             End If
             g2 = green(aa) / 2
-            If x = xrange Then                          '<-- Edit
+            If x = xRange Then                          '<-- Edit
                 aa = tilemem(1, y)
                 If aa = -1 Then aa = vbQBColor(15)
             Else
@@ -2492,7 +2406,7 @@ Private Sub blurmnu_Click()
             nr = inbounds(r + r2, 0, 255)
             ng = inbounds(g + g2, 0, 255)
             nb = inbounds(b + b2, 0, 255)
-            If x = xrange Then                          '<-- Edit
+            If x = xRange Then                          '<-- Edit
                 tilemem(1, y) = RGB(nr, ng, nb)
             Else
                 tilemem(x + 1, y) = RGB(nr, ng, nb)
