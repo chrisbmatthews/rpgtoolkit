@@ -15,8 +15,14 @@ Option Explicit
 ' Integral variables
 '=========================================================================
 
+Public Type RPGCodeMethod            'rpgcode method structure
+    name As String                   '  name of the method
+    line As Long                     '  line method is defined on
+End Type
+
 Public Type RPGCodeProgram           'rpgcode program structure
     program() As String              '  the program text
+    methods() As RPGCodeMethod       '  methods in this program
     programPos As Long               '  current position in program
     included(50) As String           '  included files
     Length As Long                   '  length of program
@@ -31,6 +37,75 @@ Public Type RPGCodeProgram           'rpgcode program structure
 End Type
 
 Public errorBranch As String         'label to branch to on error
+
+'=========================================================================
+' Get the line a method begins on
+'=========================================================================
+Public Function getMethodLine(ByVal name As String, ByRef prg As RPGCodeProgram)
+
+    On Error Resume Next
+
+    Dim idx As Long     'For for loops
+
+    'Make name all caps
+    name = UCase(name)
+
+    'Cycle through all methods in the program
+    For idx = 0 To UBound(prg.methods)
+        If (prg.methods(idx).name = name) Then
+            'Found it!
+            getMethodLine = prg.methods(idx).line
+            Exit Function
+        ElseIf (idx = UBound(prg.methods)) Then
+            'Method not in program
+            getMethodLine = -1
+            Exit Function
+        End If
+    Next idx
+
+End Function
+
+'=========================================================================
+' Add a method to a program
+'=========================================================================
+Public Sub addMethodToPrg(ByVal name As String, ByVal line As Long, ByRef prg As RPGCodeProgram)
+
+    On Error Resume Next
+
+    Dim idx As Long     'For for loops
+    Dim space As Long   'Space for entry
+
+    'Make name all caps
+    name = UCase(name)
+
+    'Make space invalid
+    space = -1
+
+    'Cycle through all methods already in the program
+    For idx = 0 To UBound(prg.methods)
+        If (prg.methods(idx).name = name) Then
+            'Already in program
+            Exit Sub
+        ElseIf (prg.methods(idx).name = "") Then
+            'If we haven't found a space
+            If (space = -1) Then
+                'This is an empty space
+                space = idx
+            End If
+        End If
+    Next idx
+
+    If (space = -1) Then
+        'If we get here, then there wasn't an empty space
+        ReDim Preserve prg.methods(UBound(prg.methods) + 1)
+        space = UBound(prg.methods)
+    End If
+
+    'Now record the method
+    prg.methods(space).name = name
+    prg.methods(space).line = line
+
+End Sub
 
 '=========================================================================
 ' Add a local heap to a program
@@ -75,6 +150,7 @@ End Function
 '=========================================================================
 Public Sub InitRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
     On Error Resume Next
+    ReDim thePrg.methods(0)
     Call ClearRPGCodeProcess(thePrg)
     thePrg.programPos = 0
     thePrg.Length = 0
@@ -93,6 +169,7 @@ End Sub
 Public Sub ClearRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
     On Error GoTo skipheap
     'clear the stack...
+    ReDim thePrg.methods(0)
     Dim t As Long
     For t = 0 To UBound(thePrg.heapStack)
         Call RPGCDestroyHeap(thePrg.heapStack(t))
@@ -253,9 +330,13 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
     Close num
 
-    'Now remove all #s because they are evil...
+    'Now cycle over each line
     For a = 0 To UBound(thePrg.program)
         thePrg.program(a) = replaceOutsideQuotes(thePrg.program(a), "#", "")
+        If (UCase(GetCommandName(thePrg.program(a))) = "METHOD") Then
+            'It's a method
+            Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
+        End If
     Next a
 
     'Return the result
@@ -273,10 +354,10 @@ End Function
 '=========================================================================
 ' Strip comments off a line
 '=========================================================================
-Public Function stripComments(ByVal text As String) As String
+Public Function stripComments(ByVal Text As String) As String
     Dim a As Long, char As String, ignore As Boolean
-    For a = 1 To Len(text)
-        char = Mid(text, a, 2)
+    For a = 1 To Len(Text)
+        char = Mid(Text, a, 2)
         If (Left(char, 1) = Chr(34)) Then
             If (ignore) Then
                 ignore = False
@@ -284,11 +365,11 @@ Public Function stripComments(ByVal text As String) As String
                 ignore = True
             End If
         ElseIf (char = "//") And (Not ignore) Then
-            stripComments = Mid(text, 1, a - 1)
+            stripComments = Mid(Text, 1, a - 1)
             Exit Function
         End If
     Next a
-    stripComments = text
+    stripComments = Text
 End Function
 
 '=========================================================================

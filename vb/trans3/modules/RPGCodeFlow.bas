@@ -139,18 +139,10 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     End If
 
     oldPos = theProgram.programPos
+
     'Now to find that method name
-    foundIt = -1
-    For t = 0 To theProgram.Length
-        test$ = GetCommandName$(theProgram.program$(t))  'get command name without extra info
-        If UCase$(test$) = "METHOD" Then
-            itis$ = GetMethodName(theProgram.program$(t))
-            If UCase$(itis$) = UCase$(mName$) Then
-                foundIt = t
-                Exit For
-            End If
-        End If
-    Next t
+    foundIt = getMethodLine(mName, theProgram)
+
     If foundIt = -1 Then
         'Method doesn't exist!
         If (Not noMethodNotFound) Then
