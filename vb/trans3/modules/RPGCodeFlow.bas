@@ -193,6 +193,8 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     On Error Resume Next
 
+    If (LenB(Text) = 0) Then Exit Sub
+
     Dim parameterList(100) As String
     Dim destList(100) As String
 
@@ -235,7 +237,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     If foundIt = -1 Then
         'Method doesn't exist!
         If (Not noMethodNotFound) Then
-            Call debugger("Error: Method not found!-- " & Text$)
+            Call debugger("Error: Method not found!-- " & Text)
         End If
         Exit Sub
     Else

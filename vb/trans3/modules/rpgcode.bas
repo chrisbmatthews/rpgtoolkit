@@ -4857,24 +4857,24 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         
     Else
         'If not running concurrently, run these queued movements now.
-        
+
         Do While movePlayers(playerNum)
             Call renderNow
             Call processEvent
         Loop
-        
+
         'Update the rpgcode canvas in case we're still in a program.
         Call CanvasGetScreen(cnvRPGCodeScreen)
-        
+
         Select Case UCase$(pPos(selectedPlayer).stance)
             Case "WALK_S": facing = South
             Case "WALK_W": facing = West
             Case "WALK_N": facing = North
             Case "WALK_E": facing = East
         End Select
-        
+
         'Call runQueuedMovements
-        
+
     End If
 
 End Sub

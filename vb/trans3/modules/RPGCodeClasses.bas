@@ -218,6 +218,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     Dim classIdx As Long        ' Current class
     Dim inStruct As Boolean     ' In a structure?
     Dim methodHere As Boolean   ' Method declared on this line?
+    Dim ignoreCheck As Long     ' Ignore a check of some kind
 
     ' Some vars for splitting up the line
     Dim parts() As String, delimiters() As String, chars(1) As String
@@ -229,7 +230,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     For lineIdx = 0 To UBound(prg.program)
 
         cmd = UCase$(GetCommandName(prg.program(lineIdx)))
-        methodHere = False
+        ignoreCheck = ignoreCheck - 1
 
         If (opening And inClass And (cmd = "OPENBLOCK")) Then
             ' Found first { bracket
@@ -350,7 +351,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             ' Split up the line
             chars(0) = ":"
             chars(1) = ","
-            parts() = multiSplit(UCase$(prg.program(lineIdx)), chars, delimiters, False)
+            parts = multiSplit(UCase$(prg.program(lineIdx)), chars, delimiters, False)
             prg.classes.classes(classIdx).strName = GetMethodName(Trim$(parts(0)))
 
             If (cmd = "STRUCT") Then
@@ -368,7 +369,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             End If
 
         ElseIf (inClass And (LenB(scope) <> 0) And (LenB(prg.program(lineIdx)) <> 0) And (Right$(prg.program(lineIdx), 1) <> ":") And (depth = 1)) Then
-            If (InStr(1, prg.program(lineIdx), "(")) Then
+            If (InStrB(1, prg.program(lineIdx), "(")) Then
                 ' Found a method
                 If (Not inStruct) Then
                     ' Check if the method is right here
@@ -377,15 +378,9 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                     Do
                         methodCheckIdx = methodCheckIdx + 1
                         If (LenB(prg.program(methodCheckIdx)) <> 0) Then
-                            If (prg.program(methodCheckIdx) = "{") Then
-                                ' The method's body is right here
-                                Dim mName As String
-                                mName = GetMethodName(prg.program(lineIdx))
-                                ' Add this method to the program
-                                Call addMethodToPrg(prg.classes.classes(classIdx).strName & "::" & mName, lineIdx, prg)
-                                ' Flag there was a method here
-                                methodHere = True
-                            End If
+                            ' Check if the method is here
+                            methodHere = (prg.program(methodCheckIdx) = "{")
+                            ignoreCheck = methodCheckIdx - lineIdx
                             ' Leave this loop
                             Exit Do
                         End If
@@ -395,16 +390,12 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                     Else
                         Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePublic, , (prg.classes.classes(classIdx).isInterface))
                     End If
-                    If (methodHere) Then
-                        ' Set in the new line
-                        prg.program(lineIdx) = replace(prg.program(lineIdx), "method " & mName, "method " & prg.classes.classes(classIdx).strName & "::" & mName, , , vbTextCompare)
-                    End If
                 Else
                     Call debugger("Methods are not valid in structures-- " & prg.program(lineIdx))
                 End If
             Else
                 ' Found a variable
-                If (InStr(1, prg.program(lineIdx), "[")) Then
+                If (InStrB(1, prg.program(lineIdx), "[")) Then
                     ' It's an array
                     If (scope = "private") Then
                         Call addArrayToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePrivate)
@@ -457,6 +448,10 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 prg.program(lineIdx) = vbNullString
             End If
 
+        End If
+
+        If ((depth = 1) And (ignoreCheck = 0)) Then
+            methodHere = False
         End If
 
     Next lineIdx

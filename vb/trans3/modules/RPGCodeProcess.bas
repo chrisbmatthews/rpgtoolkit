@@ -317,11 +317,38 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     Close num
 
     ' Now cycle over each line
+    Dim strClass As String, depth As Long
     For a = 0 To UBound(thePrg.program)
         thePrg.program(a) = Trim$(replaceOutsideQuotes(thePrg.program(a), "#", vbNullString))
-        If (Left$(UCase$(Trim$(thePrg.program(a))), 6) = "METHOD") Then
+        Dim ucl As String
+        ucl = UCase$(thePrg.program(a))
+        If (LeftB$(ucl, 12) = "METHOD") Then
             ' It's a method
-            Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
+            If (StrPtr(strClass)) Then
+                Call addMethodToPrg(strClass & "::" & GetMethodName(thePrg.program(a)), a, thePrg)
+            Else
+                Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
+            End If
+        ElseIf (ucl = "{") Then
+            If (StrPtr(strClass)) Then
+                depth = depth + 1
+            End If
+        ElseIf (ucl = "}") Then
+            If (StrPtr(strClass)) Then
+                depth = depth - 1
+                If (depth = 0) Then
+                    strClass = vbNullString
+                End If
+            End If
+        ElseIf (LeftB$(ucl, 10) = "CLASS") Then
+            ' It's a class
+            Dim istr As Long
+            istr = InStr(1, thePrg.program(a), ":")
+            If (istr) Then
+                strClass = Trim$(replace(Left$(thePrg.program(a), istr - 1), "class", vbNullString, , , vbTextCompare))
+            Else
+                strClass = GetMethodName(thePrg.program(a))
+            End If
         End If
     Next a
 
