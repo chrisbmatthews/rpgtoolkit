@@ -457,23 +457,6 @@ Public Function isPressed(ByVal theKey As String) As Boolean
             If GetAsyncKeyState(VK_DOWN) < 0 Then isPressed = True
             Exit Function
             
-        Case "JOYLEFT":
-            If theDir = 5 Or theDir = 6 Or theDir = 4 Then isPressed = True
-            'If the joystick was moved left.
-            Exit Function
-        
-        Case "JOYRIGHT":
-            If theDir = 1 Or theDir = 2 Or theDir = 8 Then isPressed = True
-            Exit Function
-            
-        Case "JOYUP":
-            If theDir = 3 Or theDir = 4 Or theDir = 2 Then isPressed = True
-            Exit Function
-            
-        Case "JOYDOWN":
-            If theDir = 7 Or theDir = 8 Or theDir = 6 Then isPressed = True
-            Exit Function
-            
         Case "SPACE":
             If GetAsyncKeyState(VK_SPACE) < 0 Then isPressed = True
             Exit Function
@@ -528,6 +511,23 @@ Public Function isPressed(ByVal theKey As String) As Boolean
             Exit Function
             
         'Joystick buttons.
+        Case "JOYLEFT":
+            If theDir = 5 Or theDir = 6 Or theDir = 4 Then isPressed = True
+            'If the joystick was moved left.
+            Exit Function
+        
+        Case "JOYRIGHT":
+            If theDir = 1 Or theDir = 2 Or theDir = 8 Then isPressed = True
+            Exit Function
+            
+        Case "JOYUP":
+            If theDir = 3 Or theDir = 4 Or theDir = 2 Then isPressed = True
+            Exit Function
+            
+        Case "JOYDOWN":
+            If theDir = 7 Or theDir = 8 Or theDir = 6 Then isPressed = True
+            Exit Function
+        
         Case "BUTTON", "BUTTON1":
             isPressed = but(0)
             Exit Function
@@ -745,6 +745,8 @@ Public Sub scanKeys()
 
     On Error Resume Next
     
+    Dim queue As String
+    queue = vbNullString
     'Temporarily defining these true always. Defined at top of this module.
     useArrowKeys = True
     useNumberPad = True
@@ -758,117 +760,83 @@ Public Sub scanKeys()
         'Update the origin location to the current location (however this is already done
         'by the isometric "jump" correction in the mainLoop).
         pendingPlayerMovement(selectedPlayer).direction = MV_NE
-        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-        
-        'Insert the target co-ordinates based on the movement direction.
-        Call insertTarget(pendingPlayerMovement(selectedPlayer))
-        
-        'Set the frame count for the move to zero (i.e. next frame will be the first).
-        movementCounter = 0
-        
-        'Set the mainLoop state to movement. The mainLoop will repeat until the required number of
-        'frames are drawn.
-        gGameState = GS_MOVEMENT
+        queue = "5"
    
     ElseIf (isPressed("LEFT") And isPressed("UP") And useArrowKeys) Or (isPressed("NUMPAD7") And useNumberPad) Then
         'Move NorthWest
-
         pendingPlayerMovement(selectedPlayer).direction = MV_NW
-        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-        Call insertTarget(pendingPlayerMovement(selectedPlayer))
-
-        movementCounter = 0
-        gGameState = GS_MOVEMENT
+        queue = "6"
 
     ElseIf (isPressed("RIGHT") And isPressed("DOWN") And useArrowKeys) Or (isPressed("NUMPAD3") And useNumberPad) Then
         'Move SouthEast
-
         pendingPlayerMovement(selectedPlayer).direction = MV_SE
-        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-        Call insertTarget(pendingPlayerMovement(selectedPlayer))
-
-        movementCounter = 0
-        gGameState = GS_MOVEMENT
-
+        queue = "7"
+    
     ElseIf (isPressed("LEFT") And isPressed("DOWN") And useArrowKeys) Or (isPressed("NUMPAD1") And useNumberPad) Then
         'Move SouthWest
-
         pendingPlayerMovement(selectedPlayer).direction = MV_SW
-        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-        Call insertTarget(pendingPlayerMovement(selectedPlayer))
-
-        movementCounter = 0
-        gGameState = GS_MOVEMENT
+        queue = "8"
     
     ElseIf (isPressed("UP") And useArrowKeys) Or _
         (isPressed("NUMPAD8") And useNumberPad) Or (isPressed("JOYUP") And useJoystick) Then
         'Move North
-
         pendingPlayerMovement(selectedPlayer).direction = MV_NORTH
-        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-        Call insertTarget(pendingPlayerMovement(selectedPlayer))
-
-        movementCounter = 0
-        gGameState = GS_MOVEMENT
+        queue = "1"
 
     ElseIf (isPressed("DOWN") And useArrowKeys) Or _
         (isPressed("NUMPAD2") And useNumberPad) Or (isPressed("JOYDOWN") And useJoystick) Then
         'Move South
-
         pendingPlayerMovement(selectedPlayer).direction = MV_SOUTH
-        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-        Call insertTarget(pendingPlayerMovement(selectedPlayer))
-
-        movementCounter = 0
-        gGameState = GS_MOVEMENT
+        queue = "2"
 
     ElseIf (isPressed("RIGHT") And useArrowKeys) Or _
         (isPressed("NUMPAD6") And useNumberPad) Or (isPressed("JOYRIGHT") And useJoystick) Then
         'Move East
-
         pendingPlayerMovement(selectedPlayer).direction = MV_EAST
-        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-        Call insertTarget(pendingPlayerMovement(selectedPlayer))
-
-        movementCounter = 0
-        gGameState = GS_MOVEMENT
+        queue = "3"
 
     ElseIf (isPressed("LEFT") And useArrowKeys) Or _
         (isPressed("NUMPAD4") And useNumberPad) Or (isPressed("JOYLEFT") And useJoystick) Then
         'Move West
-
         pendingPlayerMovement(selectedPlayer).direction = MV_WEST
-        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-        Call insertTarget(pendingPlayerMovement(selectedPlayer))
-
-        movementCounter = 0
-        gGameState = GS_MOVEMENT
+        queue = "4"
 
     ElseIf isPressed("BUTTON1") Then
         'Let joystick button 1 act as the activation key.
         keyWaitState = mainMem.Key
         Call programTest(pPos(selectedPlayer))
+        Exit Sub
 
     ElseIf isPressed("BUTTON2") Then
         'Bring up the menu when the user presses joystick button 2.
         Call showMenu
+        Exit Sub
 
     End If
+    
+    'Queue up the new movement.
+    If LenB(queue) <> 0 Then
+        'Overwrite any queued movements.
+        pendingPlayerMovement(selectedPlayer).queue = queue
+        gGameState = GS_MOVEMENT
+    End If
+    
+    Exit Sub
+    
+    'Old:
+    
+    'Insert the target co-ordinates based on the movement direction.
+    pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+    pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+    pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
+    Call insertTarget(pendingPlayerMovement(selectedPlayer), pPos(selectedPlayer))
+    
+    'Set the frame count for the move to zero (i.e. next frame will be the first).
+    'movementCounter = 0
+    
+    'Set the mainLoop state to movement. The mainLoop will repeat until the required number of
+    'frames are drawn.
+    gGameState = GS_MOVEMENT
+   
 
 End Sub
