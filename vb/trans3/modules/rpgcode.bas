@@ -3719,56 +3719,50 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#Load("filename")
-    'Load saved game
-    On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    num = CountData(dataUse$)        'how many data elements are there?
-    If num <> 1 Then
-        Call debugger("Warning: Load has more than 1 data element!-- " + Text$)
-    End If
-    useIt$ = GetElement(dataUse$, 1)
-    If (LenB(useIt$) = 0) Then
-        Call debugger("Error: Load has no data element!-- " + Text$)
+Public Sub LoadRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+'===========================================================================
+'#Load("filename.sav") Load a saved game.
+'This sub is also called for loading through the default menu.
+'===========================================================================
+    On Error Resume Next
+    
+    Dim paras() As parameters, t As Long
+    paras = GetParameters(Text, theProgram)
+    
+    If UBound(paras) <> 0 Then
+        Call debugger("Warning: #Load() requires 1 data element!-- " + Text)
         Exit Sub
     End If
-    a = getValue(useIt$, lit$, num, theProgram)
-    If a = 0 Then
-        Call debugger("Error: Load data type must be literal!-- " + Text$)
-    Else
-        lit$ = addExt(lit$, ".sav")
-        Call LoadState(savPath & lit$)
-        'Now to place the character where it should be:
-        'Create characters:
-        Dim t As Long
-        For t = 0 To 4
-            If (LenB(playerFile$(t))) Then
-                Call RestoreCharacter(playerFile$(t), t, False)
-            End If
-        Next t
-        Call openBoard(currentBoard, boardList(activeBoardIndex).theData)
-        'clear non-persistent threads...
-        Call ClearNonPersistentThreads
-        ' lastRender.canvas = -1
-        scTopX = -1
-        scTopY = -1
-        Call alignBoard(pPos(0).x, pPos(0).y)
-        Call openItems
-        Call renderNow
-        Call renderNow(cnvRPGCodeScreen)
-        Call launchBoardThreads(boardList(activeBoardIndex).theData)
-        saveFileLoaded = True
-
+    If paras(0).dataType <> DT_LIT Then
+        Call debugger("Warning: #Load() data type must be literal!-- " + Text)
+        Exit Sub
     End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
     
-    Resume Next
+    paras(0).lit = addExt(paras(0).lit, ".sav")
+    'Load the .sav file.
+    Call LoadState(savPath & paras(0).lit)
+    
+    'Create characters.
+    For t = 0 To 4
+        If (LenB(playerFile(t))) Then Call RestoreCharacter(playerFile(t), t, False)
+    Next t
+    
+    'Load board data.
+    Call openBoard(currentBoard, boardList(activeBoardIndex).theData)
+    
+    Call ClearNonPersistentThreads
+    Call clearAnmCache
+    'lastRender.canvas = -1
+    scTopX = -1000: scTopY = -1000
+    Call alignBoard(pPos(selectedPlayer).x, pPos(selectedPlayer).y)
+    Call openItems
+    'Re-render with new board and items.
+    Call renderNow
+    Call renderNow(cnvRPGCodeScreen)
+    Call launchBoardThreads(boardList(activeBoardIndex).theData)
+    
+    saveFileLoaded = True           'Used to prevent new game loading after start menu Load.
+
 End Sub
 
 
