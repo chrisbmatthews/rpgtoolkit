@@ -4490,16 +4490,16 @@ Sub Prompt(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RE
         Dim aa As Long, ans As String
         useIt2$ = GetElement(dataUse$, 2)
         aa = getValue(useIt1$, lit$, num1, theProgram)
-        'ans$ = InputBox$(lit$, LoadStringLoc(871, "Please Enter an Answer"))
-        ans$ = ShowPromptDialog(LoadStringLoc(871, "Please Enter an Answer"), lit$)
+        ans$ = InputBox$(lit$, LoadStringLoc(871, "Please Enter an Answer"))
+        ' ans$ = ShowPromptDialog(LoadStringLoc(871, "Please Enter an Answer"), lit$)
         Call SetVariable(useIt2$, ans$, theProgram)
         retval.dataType = DT_LIT
         retval.lit = ans$
     Else
         useIt2$ = GetElement(dataUse$, 2)
         aa = getValue(useIt1$, lit$, num1, theProgram)
-        'ans$ = InputBox$(lit$, LoadStringLoc(871, "Please Enter an Answer"))
-        ans$ = ShowPromptDialog(LoadStringLoc(871, "Please Enter an Answer"), lit$)
+        ans$ = InputBox$(lit$, LoadStringLoc(871, "Please Enter an Answer"))
+        ' ans$ = ShowPromptDialog(LoadStringLoc(871, "Please Enter an Answer"), lit$)
         retval.dataType = DT_LIT
         retval.lit = ans$
     End If
@@ -11628,7 +11628,7 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     End If
     host.cursorHotSpotX = paras(1).num
     host.cursorHotSpotY = paras(2).num
-    mainMem.transpcolor = RGB(paras(3).num, paras(4).num, paras(5).num)
+    mainMem.transpColor = RGB(paras(3).num, paras(4).num, paras(5).num)
     Dim ext As String, theFile As String
     ext = UCase$(commonRoutines.extention(paras(0).lit))
     If (ext = "TST" Or ext = "GPH") Then
@@ -11774,20 +11774,20 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     End If
 
     ' Declare variables for the coming blt
-    Dim x As Long, y As Long, width As Long, transpcolor As Long
+    Dim x As Long, y As Long, width As Long, transpColor As Long
     Dim height As Long, cnvSource As Long
 
     ' In all cases, record x, y, r, g, b and the canvas
     cnvSource = CLng(paras(0).num)
     x = CLng(paras(1).num)
     y = CLng(paras(2).num)
-    transpcolor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
+    transpColor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
 
     ' If we only have six params, just finish this now
     If (UBound(paras) = 5) Then
 
         ' Draw the canvas
-        Call canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpcolor)
+        Call canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpColor)
 
         ' Bail
         Exit Sub
@@ -11800,34 +11800,18 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
 
     End If
 
-    ' Create an intermidiate canvas
-    Dim cnv As Long
-    cnv = createCanvas(width, height)
-
-    ' Get its DC
-    Dim hCnvDC As Long
-    hCnvDC = canvasOpenHDC(cnv)
-
-    ' Stretch the canvas
-    Call canvasStretchBlt(cnvSource, width, height, 0, 0, hCnvDC)
-
-    ' Close its DC
-    Call canvasCloseHDC(cnv, hCnvDC)
-
     If (UBound(paras) = 7) Then
 
         ' Blt to the screen
-        Call canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpcolor)
+        Call canvas2CanvasBltTransparentPartial(cnvSource, cnvRPGCodeScreen, x, y, 0, 0, width, height, transpColor)
+        Call renderRPGCodeScreen
 
     Else
 
         ' Blt to another canvas
-        Call canvas2CanvasBltTransparent(cnv, CLng(paras(8).num), x, y, transpcolor)
+        Call canvas2CanvasBltTransparentPartial(cnvSource, CLng(paras(8).num), x, y, 0, 0, width, height, transpColor)
 
     End If
-
-    ' Destroy said canvas
-    Call destroyCanvas(cnv)
 
 End Sub
 
