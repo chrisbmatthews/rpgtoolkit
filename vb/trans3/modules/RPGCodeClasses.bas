@@ -181,14 +181,15 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
     On Error Resume Next
 
-    Dim lineIdx As Long     ' Current line
-    Dim inClass As Boolean  ' Inside a class?
-    Dim scope As String     ' Current scope (public or private)
-    Dim cmd As String       ' The command
-    Dim opening As Boolean  ' Looking for { bracket?
-    Dim depth As Long       ' Depth in class
-    Dim classIdx As Long    ' Current class
-    Dim inStruct As Boolean ' In a structure?
+    Dim lineIdx As Long         ' Current line
+    Dim inClass As Boolean      ' Inside a class?
+    Dim scope As String         ' Current scope (public or private)
+    Dim cmd As String           ' The command
+    Dim opening As Boolean      ' Looking for { bracket?
+    Dim depth As Long           ' Depth in class
+    Dim classIdx As Long        ' Current class
+    Dim inStruct As Boolean     ' In a structure?
+    Dim methodHere As Boolean   ' Method declared on this line?
 
     ' Make classIdx void
     classIdx = -1
@@ -197,6 +198,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     For lineIdx = 0 To UBound(prg.program)
 
         cmd = UCase(GetCommandName(prg.program(lineIdx)))
+        methodHere = False
 
         If (opening And inClass And (cmd = "OPENBLOCK")) Then
             ' Found first { bracket
@@ -324,6 +326,8 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                             If (prg.program(methodCheckIdx) = "{") Then
                                 ' The method's body is right here
                                 Call addMethodToPrg(prg.classes.classes(classIdx).strName & "::" & GetMethodName(prg.program(lineIdx)), methodCheckIdx, prg)
+                                ' Flag there was a method here
+                                methodHere = True
                             End If
                             ' Leave this loop
                             Exit Do
@@ -388,7 +392,9 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             End If
 
             ' Make sure this line isn't run
-            prg.program(lineIdx) = ""
+            If (Not methodHere) Then
+                prg.program(lineIdx) = ""
+            End If
 
         End If
 
