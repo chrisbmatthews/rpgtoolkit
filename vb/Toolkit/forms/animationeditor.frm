@@ -888,19 +888,12 @@ Private Sub Form_Activate()
     Set activeForm = Me
     activeAnimationIndex = dataIndex
 
-    'Extras
+    'Extras [Vampz - Make Sure Other Tools Hidden]
+    Call hideAllTools
     tkMainForm.bottomFrame.Visible = True
-    tkMainForm.tileBmpExtras.Visible = False
     tkMainForm.animationExtras.Visible = True
-    tkMainForm.tileExtras.Visible = False
-    
-    'Tools
-    tkMainForm.tilebmpTools.Visible = False
     tkMainForm.animationTools.Visible = True
-    tkMainForm.rpgcodeTools.Visible = False
-    tkMainForm.tileTools.Visible = False
     tkMainForm.animationTools.Top = tkMainForm.toolTop
-    tkMainForm.boardTools.Visible = False
     
     Call infofill
 End Sub
