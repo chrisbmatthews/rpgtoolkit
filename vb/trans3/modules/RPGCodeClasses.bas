@@ -1117,7 +1117,7 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
     ' Get the class
     theClass = getClass(hClass, prg)
 
-    If (theClass.strName = "INVALID") Then
+    If (LenB(theClass.strName) = 0) Then
         ' Class doesn't exist!
         Exit Function
     End If
@@ -1201,7 +1201,7 @@ Public Function isMethodMember(ByVal methodName As String, ByVal hClass As Long,
     ' Get the class
     theClass = getClass(hClass, prg)
 
-    If (theClass.strName = "INVALID") Then
+    If (LenB(theClass.strName) = 0) Then
         ' Class doesn't exist!
         Exit Function
     End If
@@ -1320,7 +1320,6 @@ Public Function getClass(ByVal hClass As Long, ByRef prg As RPGCodeProgram) As R
     Next idx
 
     ' If we get here, it wasn't a valid class
-    getClass.strName = "INVALID"
 
 End Function
 
@@ -1339,7 +1338,7 @@ Private Sub clearObject(ByRef object As RPGCODE_CLASS_INSTANCE, ByRef prg As RPG
     ' Get the class
     theClass = getClass(object.hClass, prg)
 
-    If (theClass.strName = "INVALID") Then
+    If (LenB(theClass.strName) = 0) Then
         ' Class doesn't exist!
         Exit Sub
     End If

@@ -62,7 +62,7 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef pr
     ' Get the class
     theClass = getClass(hClass, prg)
 
-    If (theClass.strName = "INVALID") Then
+    If (LenB(theClass.strName) = 0) Then
         'Class doesn't exist!
         Exit Sub
     End If
