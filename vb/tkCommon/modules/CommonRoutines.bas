@@ -69,7 +69,7 @@ Option Explicit
         Dim t As Long
         Do Until done
             t = t + 1
-            TabStrip1.Tabs.item(t).Caption = LoadStringLoc(TabStrip1.Tabs.item(t).Tag, TabStrip1.Tabs.item(t).Caption)
+            TabStrip1.Tabs.Item(t).Caption = LoadStringLoc(TabStrip1.Tabs.Item(t).tag, TabStrip1.Tabs.Item(t).Caption)
         Loop
         Exit Sub
 tabErr:
@@ -629,7 +629,7 @@ loadtileerr:
         Dim num As Long
         num = FreeFile
         Open file For Output As num
-            Print #num, activeRPGCode.CodeForm.Text
+            Print #num, activeRPGCode.codeForm.Text
         Close num
     End Sub
 
@@ -641,7 +641,9 @@ loadtileerr:
         filename(1) = filenm
 
         Dim extension As String
-        extension = UCase(GetExt(filename(1)))
+        'Note: extention will only return 3 letters, GetExt returns everything after the "."
+        'this includes the tileset index number on open tiles.
+        extension = UCase(extention(filename(1)))
     
         If extension = "TST" Or extension = "ISO" Then      'Added.
             Call insertIntoTileSet(tilesetFilename(filenm), getTileNum(filenm$))
