@@ -72,7 +72,9 @@ Attribute VB_Exposed = False
 'Read LICENSE.txt for licensing info
 '========================================================================
 Option Explicit
-Dim x, y As Integer
+
+'KSNiloc: No EVIL variants, please
+Private x As Integer, y As Integer
 
 '========================================================================
 ' sldTranslucentize_Scroll
