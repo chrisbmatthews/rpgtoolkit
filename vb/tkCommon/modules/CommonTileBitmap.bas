@@ -46,37 +46,37 @@ Sub TileBitmapSize(ByRef theTileBmp As TKTileBitmap, ByVal sizex As Integer, ByV
     theTileBmp.sizey = sizey
 End Sub
 
-Sub DrawTileBitmap(ByVal hdc As Long, ByVal maskhdc As Long, ByVal x As Long, ByVal y As Long, ByRef theTileBmp As TKTileBitmap)
+Sub DrawTileBitmap(ByVal hdc As Long, ByVal maskhdc As Long, ByVal X As Long, ByVal Y As Long, ByRef theTileBmp As TKTileBitmap)
     On Error Resume Next
     'draw a tile bitmap
     
     Dim oldX As Long, oldY As Long, xx As Long, yy As Long
-    oldX = x
-    oldY = y
+    oldX = X
+    oldY = Y
     
-    xx = x / 32 + 1
-    yy = y / 32 + 1
-    For x = 0 To theTileBmp.sizex - 1
-        For y = 0 To theTileBmp.sizey - 1
-            If theTileBmp.tiles(x, y) <> "" Then
+    xx = X / 32 + 1
+    yy = Y / 32 + 1
+    For X = 0 To theTileBmp.sizex - 1
+        For Y = 0 To theTileBmp.sizey - 1
+            If theTileBmp.tiles(X, Y) <> "" Then
                 If hdc <> -1 Then
-                    Call drawTile(hdc, tilePath & theTileBmp.tiles(x, y), x + xx, y + yy, theTileBmp.redS(x, y), theTileBmp.greenS(x, y), theTileBmp.blueS(x, y), False, True, False, False)
+                    Call drawTile(hdc, tilePath & theTileBmp.tiles(X, Y), X + xx, Y + yy, theTileBmp.redS(X, Y), theTileBmp.greenS(X, Y), theTileBmp.blueS(X, Y), False, True, False, False)
                 End If
                 If maskhdc <> -1 Then
-                    Call drawTile(maskhdc, tilePath & theTileBmp.tiles(x, y), x + xx, y + yy, theTileBmp.redS(x, y), theTileBmp.greenS(x, y), theTileBmp.blueS(x, y), True, True)
+                    Call drawTile(maskhdc, tilePath & theTileBmp.tiles(X, Y), X + xx, Y + yy, theTileBmp.redS(X, Y), theTileBmp.greenS(X, Y), theTileBmp.blueS(X, Y), True, True)
                 End If
             Else
                 If hdc <> -1 And maskhdc <> -1 Then
-                    Call vbHdcFillRect(hdc, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, RGB(0, 0, 0))
-                    Call vbHdcFillRect(maskhdc, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, RGB(255, 255, 255))
+                    Call vbHdcFillRect(hdc, oldX + X * 32, oldY + Y * 32, oldX + 32 + X * 32, oldY + 32 + Y * 32, RGB(0, 0, 0))
+                    Call vbHdcFillRect(maskhdc, oldX + X * 32, oldY + Y * 32, oldX + 32 + X * 32, oldY + 32 + Y * 32, RGB(255, 255, 255))
                 End If
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
 End Sub
 
 
-Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long, ByVal y As Long, ByRef theTileBmp As TKTileBitmap): On Error Resume Next
+Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal X As Long, ByVal Y As Long, ByRef theTileBmp As TKTileBitmap): On Error Resume Next
 '====================================
 'Draw a tile bitmap, including tst.
 'Called when rendering sprite frames.
@@ -84,26 +84,32 @@ Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long,
 '====================================
     
     Dim oldX As Long, oldY As Long, xx As Long, yy As Long
-    oldX = x
-    oldY = y
+    oldX = X
+    oldY = Y
     
-    xx = x / 32 + 1
-    yy = y / 32 + 1
-    For x = 0 To theTileBmp.sizex - 1
-        For y = 0 To theTileBmp.sizey - 1
-            If theTileBmp.tiles(x, y) <> "" Then
+    xx = X / 32 + 1
+    yy = Y / 32 + 1
+    For X = 0 To theTileBmp.sizex - 1
+        For Y = 0 To theTileBmp.sizey - 1
+            If theTileBmp.tiles(X, Y) <> "" Then
                 If cnv <> -1 Then
                 
                     'Ambient levels determined in renderAnimationFrame *before*
                     'opening DC.
-                    
+
+                    #If (isToolkit = 1) Then
+                        'Declare variables defined in transRender if running
+                        'in toolkit3.exe project
+                        Dim addOnR As Double, addOnG As Double, addOnB As Double
+                    #End If
+
                     Call drawTileCNV(cnv, _
-                                    tilePath$ & theTileBmp.tiles(x, y), _
-                                    x + xx, _
-                                    y + yy, _
-                                    theTileBmp.redS(x, y) + addOnR, _
-                                    theTileBmp.greenS(x, y) + addOnG, _
-                                    theTileBmp.blueS(x, y) + addOnB, _
+                                    tilePath$ & theTileBmp.tiles(X, Y), _
+                                    X + xx, _
+                                    Y + yy, _
+                                    theTileBmp.redS(X, Y) + addOnR, _
+                                    theTileBmp.greenS(X, Y) + addOnG, _
+                                    theTileBmp.blueS(X, Y) + addOnB, _
                                     False, _
                                     True, _
                                     False, _
@@ -114,24 +120,24 @@ Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long,
                 If cnvMask <> -1 Then
                 
                     Call drawTileCNV(cnvMask, _
-                        tilePath$ & theTileBmp.tiles(x, y), _
-                        x + xx, _
-                        y + yy, _
-                        theTileBmp.redS(x, y), _
-                        theTileBmp.greenS(x, y), _
-                        theTileBmp.blueS(x, y), _
+                        tilePath$ & theTileBmp.tiles(X, Y), _
+                        X + xx, _
+                        Y + yy, _
+                        theTileBmp.redS(X, Y), _
+                        theTileBmp.greenS(X, Y), _
+                        theTileBmp.blueS(X, Y), _
                         True, _
                         True)
                         
                 End If
             Else
                 If cnv <> -1 And cnvMask <> -1 Then
-                    Call CanvasFillBox(cnv, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, RGB(0, 0, 0))
-                    Call CanvasFillBox(cnvMask, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, RGB(255, 255, 255))
+                    Call CanvasFillBox(cnv, oldX + X * 32, oldY + Y * 32, oldX + 32 + X * 32, oldY + 32 + Y * 32, RGB(0, 0, 0))
+                    Call CanvasFillBox(cnvMask, oldX + X * 32, oldY + Y * 32, oldX + 32 + X * 32, oldY + 32 + Y * 32, RGB(255, 255, 255))
                 End If
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
 End Sub
 
 Sub OpenTileBitmap(ByVal file As String, ByRef theTileBmp As TKTileBitmap)
@@ -144,7 +150,7 @@ Sub OpenTileBitmap(ByVal file As String, ByRef theTileBmp As TKTileBitmap)
     Call TileBitmapClear(theTileBmp)
     
     file = PakLocate(file)
-    Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long, x As Long, y As Long
+    Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long, X As Long, Y As Long
     
     num = FreeFile
     Open file For Binary As #num
@@ -163,19 +169,19 @@ Sub OpenTileBitmap(ByVal file As String, ByRef theTileBmp As TKTileBitmap)
         theTileBmp.sizey = BinReadInt(num)
         
         Call TileBitmapSize(theTileBmp, theTileBmp.sizex, theTileBmp.sizey)
-        For x = 0 To theTileBmp.sizex
-            For y = 0 To theTileBmp.sizey
-                theTileBmp.tiles(x, y) = BinReadString(num)
-                theTileBmp.redS(x, y) = BinReadInt(num)
-                theTileBmp.greenS(x, y) = BinReadInt(num)
-                theTileBmp.blueS(x, y) = BinReadInt(num)
-            Next y
-        Next x
+        For X = 0 To theTileBmp.sizex
+            For Y = 0 To theTileBmp.sizey
+                theTileBmp.tiles(X, Y) = BinReadString(num)
+                theTileBmp.redS(X, Y) = BinReadInt(num)
+                theTileBmp.greenS(X, Y) = BinReadInt(num)
+                theTileBmp.blueS(X, Y) = BinReadInt(num)
+            Next Y
+        Next X
     Close #num
 End Sub
 
 
-Sub DrawSizedTileBitmap(ByRef tbm As TKTileBitmap, ByVal x As Long, ByVal y As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long)
+Sub DrawSizedTileBitmap(ByRef tbm As TKTileBitmap, ByVal X As Long, ByVal Y As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long)
     'load and draw an image
     On Error Resume Next
     
@@ -203,7 +209,7 @@ Sub DrawSizedTileBitmap(ByRef tbm As TKTileBitmap, ByVal x As Long, ByVal y As L
     'MsgBox "done draw"
     
     ww = GetCanvasWidth(cnv)
-    Call CanvasMaskBltStretch(cnv, cnvMask, x, y, sizex, sizey, hdc)
+    Call CanvasMaskBltStretch(cnv, cnvMask, X, Y, sizex, sizey, hdc)
     Call DestroyCanvas(cnv)
     Call DestroyCanvas(cnvMask)
 End Sub
@@ -213,7 +219,7 @@ End Sub
 Sub SaveTileBitmap(ByVal file As String, ByRef theTileBmp As TKTileBitmap)
     On Error Resume Next
     'save tile bitmap
-    Dim num As Long, x As Long, y As Long
+    Dim num As Long, X As Long, Y As Long
     num = FreeFile
     
     Kill file
@@ -226,14 +232,14 @@ Sub SaveTileBitmap(ByVal file As String, ByRef theTileBmp As TKTileBitmap)
         'first is the size...
         Call BinWriteInt(num, theTileBmp.sizex)
         Call BinWriteInt(num, theTileBmp.sizey)
-        For x = 0 To theTileBmp.sizex
-            For y = 0 To theTileBmp.sizey
-                Call BinWriteString(num, theTileBmp.tiles(x, y))
-                Call BinWriteInt(num, theTileBmp.redS(x, y))
-                Call BinWriteInt(num, theTileBmp.greenS(x, y))
-                Call BinWriteInt(num, theTileBmp.blueS(x, y))
-            Next y
-        Next x
+        For X = 0 To theTileBmp.sizex
+            For Y = 0 To theTileBmp.sizey
+                Call BinWriteString(num, theTileBmp.tiles(X, Y))
+                Call BinWriteInt(num, theTileBmp.redS(X, Y))
+                Call BinWriteInt(num, theTileBmp.greenS(X, Y))
+                Call BinWriteInt(num, theTileBmp.blueS(X, Y))
+            Next Y
+        Next X
     Close #num
 End Sub
 
@@ -260,15 +266,15 @@ Sub TileBitmapResize(ByRef theTileBmp As TKTileBitmap, ByVal sizex As Integer, B
     ReDim g(theTileBmp.sizex, theTileBmp.sizey) As Integer
     ReDim b(theTileBmp.sizex, theTileBmp.sizey) As Integer
     
-    Dim x As Long, y As Long, xx As Long, yy As Long
-    For x = 0 To theTileBmp.sizex
-        For y = 0 To theTileBmp.sizey
-            t(x, y) = theTileBmp.tiles(x, y)
-            r(x, y) = theTileBmp.redS(x, y)
-            g(x, y) = theTileBmp.greenS(x, y)
-            b(x, y) = theTileBmp.blueS(x, y)
-        Next y
-    Next x
+    Dim X As Long, Y As Long, xx As Long, yy As Long
+    For X = 0 To theTileBmp.sizex
+        For Y = 0 To theTileBmp.sizey
+            t(X, Y) = theTileBmp.tiles(X, Y)
+            r(X, Y) = theTileBmp.redS(X, Y)
+            g(X, Y) = theTileBmp.greenS(X, Y)
+            b(X, Y) = theTileBmp.blueS(X, Y)
+        Next Y
+    Next X
     
     'resize...
     ReDim theTileBmp.tiles(sizex, sizey)
@@ -280,14 +286,14 @@ Sub TileBitmapResize(ByRef theTileBmp As TKTileBitmap, ByVal sizex As Integer, B
     If sizey < theTileBmp.sizey Then yy = sizey Else yy = theTileBmp.sizey
     
     'now fill it in with the old info...
-    For x = 0 To xx
-        For y = 0 To yy
-            theTileBmp.tiles(x, y) = t(x, y)
-            theTileBmp.redS(x, y) = r(x, y)
-            theTileBmp.greenS(x, y) = g(x, y)
-            theTileBmp.blueS(x, y) = b(x, y)
-        Next y
-    Next x
+    For X = 0 To xx
+        For Y = 0 To yy
+            theTileBmp.tiles(X, Y) = t(X, Y)
+            theTileBmp.redS(X, Y) = r(X, Y)
+            theTileBmp.greenS(X, Y) = g(X, Y)
+            theTileBmp.blueS(X, Y) = b(X, Y)
+        Next Y
+    Next X
     
     theTileBmp.sizex = sizex
     theTileBmp.sizey = sizey

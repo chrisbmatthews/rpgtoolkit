@@ -91,11 +91,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub Form_Load()
-
-End Sub
-
-
 Private Sub Timer1_Timer()
     '=======================================================
     'Close the splash screen

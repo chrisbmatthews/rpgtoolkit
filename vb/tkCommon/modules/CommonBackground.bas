@@ -50,12 +50,12 @@ End Sub
 '=========================================================================
 ' Draw a background
 '=========================================================================
-Public Sub DrawBackground(ByRef theBkg As TKBackground, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal hdc As Long)
+Public Sub DrawBackground(ByRef theBkg As TKBackground, ByVal X As Long, ByVal Y As Long, ByVal width As Long, ByVal height As Long, ByVal hdc As Long)
     On Error Resume Next
     Dim file As String
     file = PakLocate(projectPath & bmpPath & theBkg.image)
     If fileExists(file) Then
-        Call DrawSizedImage(file, x, y, width, height, hdc)
+        Call DrawSizedImage(file, X, Y, width, height, hdc)
     End If
 End Sub
 
@@ -144,7 +144,7 @@ Public Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
 ver2bkg:
         'open background (ver 2)
 
-        Dim x As Long, y As Long, user As Long
+        Dim X As Long, Y As Long, user As Long
 
         Dim tbm As TKTileBitmap
 
@@ -161,11 +161,11 @@ ver2bkg:
                 user = MsgBox("This Background was created using Version " + CStr(majorVer) + "." + CStr(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
                 If user = 7 Then Close num: Exit Sub     'selected no
             End If
-            For x = 1 To 19
-                For y = 1 To 11
-                    tbm.tiles(x - 1, y - 1) = fread(num)
-                Next y
-            Next x
+            For X = 1 To 19
+                For Y = 1 To 11
+                    tbm.tiles(X - 1, Y - 1) = fread(num)
+                Next Y
+            Next X
 
             .bkgMusic = fread(num)
             .bkgSelWav = fread(num)
@@ -173,21 +173,15 @@ ver2bkg:
             .bkgReadyWav = fread(num)
             .bkgCantDoWav = fread(num)
 
-            Dim theBack As String
-            theBack = fread(num)
-            If (theBack <> "") Then
-                .image = theBack
-                Close num
-                Exit Sub
-            End If
+            Call fread(num)
 
-            For x = 1 To 19
-                For y = 1 To 11
-                    tbm.redS(x - 1, y - 1) = fread(num)
-                    tbm.greenS(x - 1, y - 1) = fread(num)
-                    tbm.blueS(x - 1, y - 1) = fread(num)
-                Next y
-            Next x
+            For X = 1 To 19
+                For Y = 1 To 11
+                    tbm.redS(X - 1, Y - 1) = fread(num)
+                    tbm.greenS(X - 1, Y - 1) = fread(num)
+                    tbm.blueS(X - 1, Y - 1) = fread(num)
+                Next Y
+            Next X
 
             Dim tbmName As String
             tbmName$ = replace(RemovePath(file$), ".", "_") + ".tbm"
