@@ -118,40 +118,40 @@ Sub drawTstGrid(Optional ByVal autoRefresh As Boolean = False)
 '=============================================================
 'draws publictile.grid around tileset tiles
 '=============================================================
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
-    Dim x As Integer, y As Integer, tilesWide As Integer, tilesHigh As Integer
+    Dim X As Integer, Y As Integer, tilesWide As Integer, tilesHigh As Integer
     
     If drawGridCheck.value = 0 Then Exit Sub
     
     Call vbPicAutoRedraw(tiles, autoRefresh)
     
     tilesHigh = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
-    tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
+    tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
     
     'Draw vertical lines.
     If iso.value = 0 Then
         'Not isometric
-        For x = 0 To tilesWide * 32 Step 32
-            Call vbPicLine(tiles, x, 0, x, tilesHigh * 32, vbQBColor(1))
-        Next x
+        For X = 0 To tilesWide * 32 Step 32
+            Call vbPicLine(tiles, X, 0, X, tilesHigh * 32, vbQBColor(1))
+        Next X
     Else
-        For x = 0 To tilesWide * 32 Step 64
-            Call vbPicLine(tiles, x, 0, x, tilesHigh * 32, vbQBColor(1))
-        Next x
+        For X = 0 To tilesWide * 32 Step 64
+            Call vbPicLine(tiles, X, 0, X, tilesHigh * 32, vbQBColor(1))
+        Next X
         
     End If
     
     'Draw horizontal lines.
-    For y = 0 To (tilesHigh + 1) * 32 Step 32
-        Call vbPicLine(tiles, 0, y, tilesWide * 32, y, vbQBColor(1))
-    Next y
+    For Y = 0 To (tilesHigh + 1) * 32 Step 32
+        Call vbPicLine(tiles, 0, Y, tilesWide * 32, Y, vbQBColor(1))
+    Next Y
     
     If autoRefresh Then Call vbPicRefresh(tiles)
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -164,7 +164,7 @@ Sub redraw(Optional ByVal autoRefresh As Boolean = False)
 'Edited by Delano 24/06/04 for 3.0.4
 'Added support for .iso.
 
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim tilesWide As Integer, tilesHigh As Integer
     Dim a As Long, iMetric As Long
@@ -178,9 +178,9 @@ Sub redraw(Optional ByVal autoRefresh As Boolean = False)
     
     'Calculate the number of visible tiles.
     If iso.value = 0 Then
-        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
+        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
     Else
-        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 64)
+        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 64)
     End If
     tilesHigh = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
     
@@ -189,13 +189,13 @@ Sub redraw(Optional ByVal autoRefresh As Boolean = False)
     
     'This export requires iMetric = 2 for .iso tiles!!
     'tstnum is the tile to start drawing at.
-    a = GFXdrawTstWindow(projectPath$ + tilepath$ + tstFile$, vbPicHDC(tiles), tstnum, tilesWide, tilesHigh, iMetric)
+    a = GFXdrawTstWindow(projectPath$ + tilePath$ + tstFile$, vbPicHDC(tiles), tstnum, tilesWide, tilesHigh, iMetric)
 
     If autoRefresh Then Call vbPicRefresh(tiles)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -204,14 +204,14 @@ Private Sub drawGridCheck_Click()
 '================================
 'Draw grid check button.
 '================================
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Call redraw(True)
     Call drawTstGrid(True)
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -224,9 +224,9 @@ Private Sub Form_Load()
 'Edited by Delano for 3.0.4
 'Added support for .iso.
 
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
-    Dim x As Integer, y As Integer, setType As Integer
+    Dim X As Integer, Y As Integer, setType As Integer
     
     Call LocalizeForm(Me)
     
@@ -234,18 +234,18 @@ Private Sub Form_Load()
     If tstnum = 0 Then tstnum = 1
     
     'Put the current tilemem into the buffer.
-    For x = 1 To 32
-        For y = 1 To 32
-            buftile(x, y) = tilemem(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            buftile(X, Y) = tileMem(X, Y)
+        Next Y
+    Next X
     
     'Get the type and header of the selected set.
-    setType = tilesetInfo(projectPath$ + tilepath$ + tstFile$)
+    setType = tilesetInfo(projectPath$ + tilePath$ + tstFile$)
     If setType = TSTTYPE Or setType = ISOTYPE Then
         'tilesetInfo now returns 2 for isometric tilesets. Set type constants introduced.
     
-        Info.caption = LoadStringLoc(2035, "Tileset") + " " + tstFile$ + LoadStringLoc(2036, ": Contains") + str$(tileset.tilesInSet) + " Tiles"
+        Info.Caption = LoadStringLoc(2035, "Tileset") + " " + tstFile$ + LoadStringLoc(2036, ": Contains") + str$(tileset.tilesInSet) + " Tiles"
         
         'If we've selected a .iso, disable the iso button. Or check?
         If setType = ISOTYPE Then
@@ -260,9 +260,9 @@ Private Sub Form_Load()
         
         'Set the scroller depending on the tileset type.
         If setType = ISOTYPE Then
-            tilesWide = (tiles.width / Screen.TwipsPerPixelY) / 64
+            tilesWide = (tiles.Width / Screen.TwipsPerPixelY) / 64
         Else
-            tilesWide = (tiles.width / Screen.TwipsPerPixelY) / 32
+            tilesWide = (tiles.Width / Screen.TwipsPerPixelY) / 32
         End If
         tilesHigh = (tiles.height / Screen.TwipsPerPixelY) / 32
         
@@ -271,9 +271,9 @@ Private Sub Form_Load()
         'Now we have the number of rows, but we want to stop when the last row
         'is at the bottom of the window. Take off the viewable number of rows.
         
-        tilesetBrowserScroll.Max = (-Int(tileset.tilesInSet / (-tilesWide))) - tilesHigh
+        tilesetBrowserScroll.max = (-Int(tileset.tilesInSet / (-tilesWide))) - tilesHigh
         
-        If tilesetBrowserScroll.Max < 1 Then
+        If tilesetBrowserScroll.max < 1 Then
             'If all the tiles are contained in the window.
             tilesetBrowserScroll.Enabled = False
         Else
@@ -292,7 +292,7 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -308,7 +308,7 @@ Private Sub Form_Resize(): On Error Resume Next
     Dim tilesWide As Integer, tilesHigh As Integer
     
     'New form width in pixels
-    pixelWidth = Me.width / Screen.TwipsPerPixelX
+    pixelWidth = Me.Width / Screen.TwipsPerPixelX
     pixelHeight = Me.height / Screen.TwipsPerPixelY
     
     'Size the tile picture box can be. Take off border allowances (32px x, 64px y).
@@ -326,22 +326,22 @@ Private Sub Form_Resize(): On Error Resume Next
 
     'Set the size of the tiles picture box.
     If iso.value = 1 Then
-        tiles.width = tilesWide * 64 * Screen.TwipsPerPixelX
+        tiles.Width = tilesWide * 64 * Screen.TwipsPerPixelX
     Else
-        tiles.width = tilesWide * 32 * Screen.TwipsPerPixelX
+        tiles.Width = tilesWide * 32 * Screen.TwipsPerPixelX
     End If
     tiles.height = tilesHigh * 32 * Screen.TwipsPerPixelY
     
     'Align the scroller to the tile window.
-    tilesetBrowserScroll.Left = tiles.Left + tiles.width
+    tilesetBrowserScroll.Left = tiles.Left + tiles.Width
     tilesetBrowserScroll.height = tiles.height
     
     'Align the tools frame (under the tile box).
     toolFrame.Top = tiles.Top + tiles.height
 
-    tilesetBrowserScroll.Max = (-Int(tileset.tilesInSet / (-tilesWide))) - tilesHigh
+    tilesetBrowserScroll.max = (-Int(tileset.tilesInSet / (-tilesWide))) - tilesHigh
     
-    If tilesetBrowserScroll.Max < 1 Then
+    If tilesetBrowserScroll.max < 1 Then
         'If all the tiles are contained in the window.
         tilesetBrowserScroll.Enabled = False
     Else
@@ -364,15 +364,15 @@ Private Sub Form_Unload(Cancel As Integer)
 '=========================================
 'Edited by Delano for 3.0.4
 'Added clear code.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
-    Dim x As Byte, y As Byte
+    Dim X As Byte, Y As Byte
     
-    For x = 1 To 32
-        For y = 1 To 32
-            tilemem(x, y) = buftile(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            tileMem(X, Y) = buftile(X, Y)
+        Next Y
+    Next X
 
     'Clear the picture box - moved from redraw.
     Call vbPicAutoRedraw(tiles, False)
@@ -381,7 +381,7 @@ Private Sub Form_Unload(Cancel As Integer)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -393,7 +393,7 @@ Private Sub iso_Click()
 '=============================
 'Edited by Delano for 3.0.4
 'Added clear code.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     'Clear the picture box - moved from redraw.
     Call vbPicAutoRedraw(tiles, False)
@@ -404,27 +404,27 @@ Private Sub iso_Click()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
-Private Sub tiles_MouseDown(button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub tiles_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
 '=========================================================
 'Mouse down on the tile area. Sets the global SetFilename$
 'which is used for opening tiles in the tile editor.
 '=========================================================
 'Edited by Delano for 3.0.4
 'Scrolls row by row, without flickering
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim tX As Integer, tY As Integer, xx As Integer, yy As Integer, num As Integer
     
     'Calculate the number of tiles that will fit on the form.
     If iso.value = 0 Then
-        tX = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
+        tX = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
     Else
-        tX = Int((tiles.width / Screen.TwipsPerPixelX) / 64)
+        tX = Int((tiles.Width / Screen.TwipsPerPixelX) / 64)
     End If
     tY = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
     
@@ -433,11 +433,11 @@ Private Sub tiles_MouseDown(button As Integer, shift As Integer, x As Single, y 
     'tileset.
     
     If iso.value = 0 Then
-        xx = Int(x / 32)
+        xx = Int(X / 32)
     Else
-        xx = Int(x / 64)
+        xx = Int(X / 64)
     End If
-    yy = Int(y / 32)
+    yy = Int(Y / 32)
     
     num = yy * tX + xx
     num = num + tilesetBrowserScroll.value * tX + 1
@@ -458,7 +458,7 @@ Private Sub tiles_MouseDown(button As Integer, shift As Integer, x As Single, y 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -482,21 +482,22 @@ Private Sub tilesetBrowserScroll_Change(): On Error GoTo ErrorHandler
     
     If iso.value = 0 Then
         'Not isometric.
-        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
+        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
     Else
-        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 64)
+        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 64)
     End If
     tilesHigh = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
     
     tstnum = (tilesetBrowserScroll.value * tilesWide) + 1      '.value is now the row.
-    
+
+    Call tiles.cls
     Call redraw(True)
     Call drawTstGrid(True)
     
     Exit Sub
     
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

@@ -1140,7 +1140,6 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error GoTo ErrorHandler
         
         'Redraw tile
         Call highredraw
-        Call activeTile.highredraw
         
         'Update filename
         publicTile.tileName = setFilename$
@@ -1651,10 +1650,6 @@ Public Sub saveFile(): On Error GoTo ErrorHandler
     publicTile.tileneedupdate = False
     If filename(2) = "" Then
         Call Show
-    filename(2) = publicTile.tileName
-    publicTile.tileneedupdate = False
-    If filename(2) = "" Then
-        Call Show
         Call savenoquestions_Click
         Exit Sub
     End If
@@ -1679,11 +1674,13 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     Call checkSave      'Check if a tile is already open and needs saving.
     publicTile.tileneedupdate = False
     
+    Dim antiPath As String
     filename(1) = file
     antiPath = absNoPath(file)
     
     Call FileCopy(filename(1), projectPath & tilePath & antiPath)
-    
+
+    Dim whichType As String
     whichType = GetExt(filename(1))
     
     If UCase(whichType) = "ISO" Then
@@ -1728,6 +1725,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
             'Now we need to form the 32x32 tile into a 64x32 in tilemem:
             
             'Temporarily hold tilemem in the buffer.
+            Dim xx As Long, yy As Long
             For xx = 1 To 32
                 For yy = 1 To 32
                     buftile(xx, yy) = tileMem(xx, yy)
@@ -1800,7 +1798,7 @@ Public Sub opentile_Click(): On Error Resume Next
     Else
         Exit Sub
     End If
-<<<<<<< TILEEDIT.FRM
+
     Call ChDir(currentDir$)
 
 

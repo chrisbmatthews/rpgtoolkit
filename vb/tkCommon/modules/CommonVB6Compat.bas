@@ -7,6 +7,14 @@ Attribute VB_Name = "CommonVB6Compat"
 'for working under the .NET framework
 Option Explicit
 
+'=======================================================
+'Cleaned up a bit, 3.0.4 by KSNiloc
+'
+' ---What needs to be done
+' + Re-write these procedures using GDI
+'
+'=======================================================
+
 'Constants for use with BitBlt()
 Global Const SRCCOPY = &HCC0020 ' (DWORD) dest = source
 Global Const SRCPAINT = &HEE0086        ' (DWORD) dest = source OR dest
@@ -50,6 +58,7 @@ Public Type POINTAPI
     X As Long
     Y As Long
 End Type
+
 Public Declare Function MoveToEx Lib "gdi32" (ByVal hdc As Long, ByVal X As Long, ByVal Y As Long, lpPoint As POINTAPI) As Long
 Public Declare Function LineTo Lib "gdi32" (ByVal hdc As Long, ByVal X As Long, ByVal Y As Long) As Long
 Public Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
@@ -57,7 +66,7 @@ Public Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nW
 Public Declare Function Ellipse Lib "gdi32" (ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Public Declare Function Rectangle Lib "gdi32" (ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Public Declare Function FillRect Lib "user32" (ByVal hdc As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Public Declare Function ExtFloodFill Lib "gdi32" (ByVal hdc As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long, ByVal wFillType As Long) As Long
+
 Public Const FLOODFILLBORDER = 0
 Public Const FLOODFILLSURFACE = 1
 
@@ -73,7 +82,7 @@ Public Declare Function FrameRgn Lib "gdi32" (ByVal hdc As Long, ByVal hRgn As L
 Public Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
 Public Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hwndParent&, ByVal hWndChildAfter&, ByVal lpClassName$, ByVal lpWindowName$) As Long
 
-Sub VBHdcFillRect(ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
+Public Sub VBHdcFillRect(ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     On Error Resume Next
     Dim pen As Long, l As Long, brush As Long, m As Long
     pen = CreatePen(0, 1, crColor)
@@ -94,118 +103,54 @@ Sub VBHdcFillRect(ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x
     Call DeleteObject(pen)
 End Sub
 
-
 Sub vbPicLine(ByRef pic As PictureBox, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     'draw line on a picturebox
     pic.Line (x1, y1)-(x2, y2), crColor
-
-    'Dim point As POINTAPI
-    'brush = CreatePen(0, 1, crcolor)
-    'm = SelectObject(vbPicHDC(pic), brush)
-    'Call MoveToEx(vbPicHDC(pic), x1, y1, point)
-    'Call LineTo(vbPicHDC(pic), x2, y2)
-    'Call SelectObject(vbPicHDC(pic), m)
-    'Call DeleteObject(brush)
 End Sub
 
 Sub vbFrmLine(ByRef pic As Form, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     'draw line on a form
     pic.Line (x1, y1)-(x2, y2), crColor
-
-    'Dim point As POINTAPI
-    'brush = CreatePen(0, 1, crcolor)
-    'm = SelectObject(vbFrmHDC(pic), brush)
-    'Call MoveToEx(vbFrmHDC(pic), x1, y1, point)
-    'Call LineTo(vbFrmHDC(pic), x2, y2)
-    'Call SelectObject(vbFrmHDC(pic), m)
-    'Call DeleteObject(brush)
 End Sub
 
 Function vbPicPoint(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long) As Long
     'get point
-    'vbPicPoint = GetPixel(vbPicHDC(pic), x, y)
     vbPicPoint = pic.point(X, Y)
 End Function
 
 Function vbFrmPoint(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long) As Long
     'get point
-    'vbFrmPoint = GetPixel(vbPicHDC(pic), x, y)
     vbFrmPoint = pic.point(X, Y)
 End Function
 
 Sub vbPicPSet(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long)
     'pset
     pic.PSet (X, Y), crColor
-    'Call SetPixelV(vbPicHDC(pic), x, y, crcolor)
 End Sub
 
 Sub vbFrmPSet(ByRef pic As Form, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long)
     'pset
     pic.PSet (X, Y), crColor
-    'Call SetPixelV(vbFrmHDC(pic), x, y, crcolor)
 End Sub
 
 Sub vbPicRect(ByRef pic As PictureBox, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     'draw a recy on a picturebox
     pic.Line (x1, y1)-(x2, y2), crColor, B
-
-    'brush = CreateSolidBrush(crcolor)
-    'a = Rectangle(vbPicHDC(pic), x1, y1, x2 + 1, y2 + 1)
-    'Call DeleteObject(brush)
 End Sub
 
 Sub vbFrmRect(ByRef pic As Form, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     'draw a rect on a form
     pic.Line (x1, y1)-(x2, y2), crColor, B
-
-    'brush = CreateSolidBrush(crcolor)
-    'a = Rectangle(vbFrmHDC(pic), x1, y1, x2 + 1, y2 + 1)
-    'Call DeleteObject(brush)
 End Sub
 
 Sub vbPicFillRect(ByRef pic As PictureBox, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     'draw a filled rect on a picturebox
     pic.Line (x1, y1)-(x2, y2), crColor, BF
-
-    'pen = CreatePen(0, 1, crcolor)
-    'l = SelectObject(vbPicHDC(pic), pen)
-    'brush = CreateSolidBrush(crcolor)
-    'm = SelectObject(vbPicHDC(pic), brush)
-    
-    'Dim r As RECT
-    'r.Bottom = y2 + 1
-    'r.Right = x2 + 1
-    'r.Left = x1
-    'r.Top = y1
-    'Call FillRect(vbPicHDC(pic), r, brush)
-    
-    'Call SelectObject(vbPicHDC(pic), m)
-    'Call SelectObject(vbPicHDC(pic), l)
-    'Call DeleteObject(brush)
-    'Call DeleteObject(pen)
 End Sub
 
 Sub vbFrmFillRect(ByRef pic As Form, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     'draw a filled rect on a form
     pic.Line (x1, y1)-(x2, y2), crColor, BF
-    
-    'pen = CreatePen(0, 1, crcolor)
-    'l = SelectObject(vbFrmHDC(pic), pen)
-    'brush = CreateSolidBrush(crcolor)
-    'm = SelectObject(vbFrmHDC(pic), brush)
-    
-    'Dim r As RECT
-    'r.Bottom = y2 + 1
-    'r.Right = x2 + 1
-    'r.Left = x1
-    'r.Top = y1
-    'Call FillRect(vbFrmHDC(pic), r, brush)
-    
-    'Call SelectObject(vbFrmHDC(pic), m)
-    'Call SelectObject(vbFrmHDC(pic), l)
-    'Call DeleteObject(brush)
-    'Call DeleteObject(pen)
-    
 End Sub
 
 Function vbQBColor(ByVal crColor As Long) As Long
@@ -269,12 +214,12 @@ End Sub
 
 Sub vbPicCls(ByRef pic As PictureBox)
     'cls
-    pic.cls
+    Call pic.cls
 End Sub
 
 Sub vbFrmCls(ByRef pic As Form)
     'cls
-    pic.cls
+    Call pic.cls
 End Sub
 
 Sub vbPicCircle(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long, ByVal radius As Long, ByVal crColor As Long, Optional ByVal startangle As Double = -1, Optional ByVal endangle As Double = -1, Optional ByVal aspect As Double = -1)
@@ -294,30 +239,13 @@ Sub vbPicCircle(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long, ByVal
     End If
 End Sub
 
-'Sub vbFrmCircle(ByRef pic As Form, ByVal x As Long, ByVal y As Long, ByVal radius As Long, ByVal crcolor As Long, ByVal crcolor As Long, Optional ByVal startangle As Double = -1, Optional ByVal endangle As Double = -1, Optional ByVal aspect As Double = -1)
-'    'draw circle
-'    If startangle = -1 And endangle = -1 Then
-'        If aspect = -1 Then
-'            pic.Circle (x, y), radius, crcolor
-'        Else
-'            pic.Circle (x, y), radius, crcolor, , , aspect
-'        End If
-'    Else
-'        If aspect = -1 Then
-'            pic.Circle (x, y), radius, crcolor, startangle, endangle
-'        Else
-'            pic.Circle (x, y), radius, crcolor, startangle, endangle, aspect
-'        End If
-'    End If
-'End Sub
-
 Sub vbPicRefresh(ByRef pic As PictureBox)
     'refresh
-    pic.Refresh
+    Call pic.Refresh
 End Sub
 
 Sub vbFrmRefresh(ByRef pic As Form)
     'refresh
-    pic.Refresh
+    Call pic.Refresh
 End Sub
 
