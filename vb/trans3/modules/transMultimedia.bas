@@ -178,7 +178,8 @@ Public Sub playMedia(ByRef file As String)
         Call PlayMCI(file, MID_DEVICE)
 
     ElseIf (isPlayedByAudiere(ext)) Then
-        Call TKAudierePlay(bkgDevice, file, 1, 0)
+        ' Set to autorepeat
+        Call TKAudierePlay(bkgDevice, file, 1, 1)
 
     End If
 
