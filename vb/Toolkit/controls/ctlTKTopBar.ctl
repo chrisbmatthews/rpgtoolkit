@@ -77,18 +77,19 @@ Public theForm As Form
 ''''''''''''''''''
 
 Private draggingWindow As Boolean
+Dim mouseX As Long, mouseY As Long
 
 ''''''''''''
 'Properties'
 ''''''''''''
 
-Public Property Get Width() As Long
-    Width = topBar.Width
+Public Property Get width() As Long
+    width = topBar.width
 End Property
 
-Public Property Let Width(ByVal new_width As Long)
-    topBar.Width = new_width
-    UserControl.Width = new_width
+Public Property Let width(ByVal new_width As Long)
+    topBar.width = new_width
+    UserControl.width = new_width
     Call resizeMe
 End Property
 
@@ -117,15 +118,15 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Public Sub resizeMe()
- UserControl.Width = Me.Width
- topBar.Width = Me.Width
+ UserControl.width = Me.width
+ topBar.width = Me.width
  'Corner.Left = TopBar.Width - Corner.Width
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
  On Error Resume Next
  With PropBag
-  Me.Width = .ReadProperty("Width")
+  Me.width = .ReadProperty("Width")
   Me.Caption = .ReadProperty("Caption")
  End With
  resizeMe
@@ -133,13 +134,13 @@ End Sub
 
 Private Sub UserControl_Resize()
  UserControl.height = 480
- topBar.Width = UserControl.Width
+ topBar.width = UserControl.width
  resizeMe
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
  With PropBag
-  .WriteProperty "Width", Me.Width
+  .WriteProperty "Width", Me.width
   .WriteProperty "Caption", Me.Caption
  End With
 End Sub
@@ -150,50 +151,54 @@ End Sub
 
 'First, make actions that are part of the window drag work...
 
-Private Sub Corner_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Corner_Mouseup(Button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub Label1_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Label1_Mouseup(Button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub TopBar_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TopBar_Mouseup(Button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub Corner_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseDownEvent button, X, Y
+Private Sub Corner_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseDownEvent Button, X, Y
 End Sub
 
-Private Sub Label1_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseDownEvent button, X, Y
+Private Sub Label1_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseDownEvent Button, X, Y
 End Sub
 
-Private Sub TopBar_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseDownEvent button, X, Y
+Private Sub TopBar_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseDownEvent Button, X, Y
 End Sub
 
-Private Sub Corner_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseMoveEvent X, Y
+Private Sub Corner_Mousemove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseMoveEvent Button, X, Y
 End Sub
 
-Private Sub Label1_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseMoveEvent X, Y
+Private Sub Label1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseMoveEvent Button, X, Y
 End Sub
 
-Private Sub TopBar_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseMoveEvent X, Y
+Private Sub TopBar_Mousemove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseMoveEvent Button, X, Y
 End Sub
 
-Private Sub mouseDownEvent(ByVal button As Integer, ByVal X As Single, ByVal Y As Single)
-
+Private Sub mouseDownEvent(ByVal Button As Integer, ByVal X As Single, ByVal Y As Single)
+    mouseX = X
+    mouseY = Y
 End Sub
 
 Private Sub mouseUpEvent()
 
 End Sub
 
-Private Sub mouseMoveEvent(ByVal X As Single, ByVal Y As Single)
-
+Private Sub mouseMoveEvent(ByVal Button As Integer, ByVal X As Single, ByVal Y As Single)
+    If Button = vbLeftButton Then
+        theForm.Left = theForm.Left - (mouseX - X)
+        theForm.Top = theForm.Top - (mouseY - Y)
+    End If
 End Sub
