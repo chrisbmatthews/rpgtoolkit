@@ -23,17 +23,18 @@ int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer)
 	initVbString(pText);
 	
 	inlineString text = pText;			//Text we're operating on
-	inlineString part;					//A character
+	inlineString part(1);				//A character
 	inlineString toRet;					//The thing we'll return
 	int t = 0;				 			//Loop control variables
 	int length = text.len();			//Length of text
-	bool foundIt = false;
-	int startAt;
+	bool foundIt = false;				//found symbol yet?
+	int startAt = 0;					//char to start looking
+
 	for (t = 1; t <= length; t++)
 	{
 		//Find the start symbol
 		part = text.mid(t, 1);
-		if (part.contains(startSymbol))
+		if (part == startSymbol)
 		{
 			startAt = t;
 			foundIt = true;
@@ -44,8 +45,7 @@ int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer)
 	{
 		for (t = startAt + 1; t <= length; t++)
 		{
-			part = text.mid(t, 1);
-			toRet += part;
+			toRet += text.mid(t, 1);
 		}
 	}
 
@@ -64,7 +64,7 @@ int APIENTRY RPGCParseBefore(char* pText, char* startSymbol, int &lengthBuffer)
 	initVbString(pText);
 
 	inlineString text = pText;			//Text we're operating on
-	inlineString part;					//A character
+	inlineString part(1);				//A character
 	inlineString toRet;					//The thing we'll return
 	int t = 0;				 			//Loop control variables
 	int length = text.len();			//Length of text
@@ -73,7 +73,7 @@ int APIENTRY RPGCParseBefore(char* pText, char* startSymbol, int &lengthBuffer)
 	{
 		//Find the start symbol
 		part = text.mid(t, 1);
-		if (part.contains(startSymbol))
+		if (part == startSymbol)
 		{
 			//Found it
 			return returnVbString(toRet, lengthBuffer);
@@ -98,7 +98,7 @@ int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
 	initVbString(pText);
 
 	inlineString text = pText;		//Text we're operating on
-	inlineString part;				//A character
+	inlineString part(1);			//A character
 	inlineString mName;				//Name of the method
 	int t = 0;				 		//Loop control variables
 	int startHere = 0;				//Where to start
@@ -108,7 +108,7 @@ int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
 	{
         //Attempt to find #
 		part = text.mid(t, 1);
-        if ( !part.contains(" ") && (!part.contains(TAB)) && (!part.contains("#")) )
+        if ( (part != " ") && (part != TAB) && (part != "#") )
 		{
 			startHere = t - 1;
 			if (startHere == 0) startHere = 1;
@@ -125,7 +125,7 @@ int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
 	{
 		//Find start of command name
 		part = text.mid(t, 1);
-        if (!part.contains(" "))
+        if (part != " ")
 		{
 			startHere = t;
 			t = length;
@@ -136,7 +136,7 @@ int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
 	{
         //Find end of command name
         part = text.mid(t, 1);
-        if (part.contains(" "))
+        if (part == " ")
 		{
 			startHere = t;
 			t = length;
@@ -147,7 +147,7 @@ int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
 	{
         //Find start of method
         part = text.mid(t, 1);
-        if (!part.contains(" "))
+        if (part != " ")
 		{
 			startHere = t;
 			t = length;
@@ -158,7 +158,7 @@ int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
 	{
         //Find name  of method
         part = text.mid(t, 1);
-		if ( part.contains(" ") || part.contains("(") )
+		if ( part == " " || part == "(" )
 		{
             t = length + 1;
         }

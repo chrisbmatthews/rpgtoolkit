@@ -33,6 +33,7 @@ class inlineString
 
 		char* m_contents;									// pointer to string holding contents
 		int m_length;										// max length of string
+		inlineString& getChars(int start, int length);		// get character(s) from the string
 
 	//////////////////////////////////////////////////////
 	// Public scope
@@ -41,18 +42,15 @@ class inlineString
 
 		//mainipulation
 		int len();											// return length of the string
+		void newMem(char* theNewMem);						// copy string to new memory
 		inlineString& mid(int start, int length);			// get character(s) from the string
 		inlineString& left(int length);						// get character(s) from left of string
 		inlineString& right(int length);					// get character(s) from right of string
-		bool contains(char* text);							// check if we contain a pointer to a string
-		bool contains(std::string text);					// check if we contain an STL string
-		bool contains(inlineString text);					// check if we contain an inlineString
-		void newMem(char* theNewMem);						// copy string to new memory
 
 		//construction
 		inlineString(int length = 4048);					// empty string
 		inlineString(char* defaultVal, int length = 4048);	// construct from a pointer to a string
-		inlineString(std::string cFrom, int length = 4048); // construct from an STL string
+		inlineString(std::string cFrom, int length = 4048);	// construct from an STL string
 		inlineString(char defaultVal, int length = 4048);	// construct from a character
 
 		//deconstruction
@@ -73,6 +71,15 @@ class inlineString
 		operator char*();									// cast to pointer to a string
 		operator std::string();								// cast to STL string
 		unsigned char& operator [] (int pos);				// get/set binary value
+		bool operator == (char* text);						// == to a pointer to a string?
+		bool operator == (std::string text);				// == to an STL string?
+		bool operator == (inlineString text);				// == to an inlineString?
+		bool operator == (int text);						// == to an int?
+		bool operator != (char* text);						// != to a pointer to a string?
+		bool operator != (std::string text);				// != to an STL string?
+		bool operator != (inlineString text);				// != to an inlineString?
+		bool operator != (int text);						// != to an int?
+		bool operator != (char text);						// != to a character?
 
 };
 
