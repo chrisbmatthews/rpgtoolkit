@@ -162,6 +162,9 @@ EXPORTS
 	TKAudiereGetPosition	@218
 	TKAudiereSetPosition	@219
 
+	;Misc
 	RPGCEvaluate		@220
 
-    ; Explicit exports can go here
+	;RPGCodeParser
+	;RPGCGetMethodName	@221
+	;RPGCGetStringBuffer	@222

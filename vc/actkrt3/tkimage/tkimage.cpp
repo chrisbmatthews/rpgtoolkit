@@ -83,7 +83,7 @@ int APIENTRY IMGDrawSized(char* pstrFilename, int x, int y, int sizex, int sizey
 }
 
 ////////////////////////////////////////////////////////
-// Load an images
+// Load an image
 ////////////////////////////////////////////////////////
 FIBITMAP* APIENTRY IMGLoad(char* pstrFilename)
 {
