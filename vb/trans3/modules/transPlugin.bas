@@ -431,6 +431,7 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
                     End If
 
                     ' Some plugins--truiken's flash plugin--steal the focus from us
+                    Call SetFocus(0)
                     Call SetFocus(host.hwnd)
 
                     ' All's good
