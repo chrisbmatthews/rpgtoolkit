@@ -12,6 +12,11 @@ Attribute VB_Name = "CommonTKPlugin"
 Option Explicit
 
 '=========================================================================
+' Proprocessor flags
+'=========================================================================
+#Const USE_REGSVR32 = True  ' Call regsvr32 ?
+
+'=========================================================================
 ' Declarations
 '=========================================================================
 Public Declare Function PLUGInitSystem Lib "actkrt3.dll" (ByRef cbArray As Long, ByVal cbArrayCount As Long) As Long
@@ -32,9 +37,53 @@ Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (By
 Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+#If (USE_REGSVR32) Then
+Private Declare Function CreateProcessA Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As String, ByVal lpProcessAttributes As Long, ByVal lpThreadAttributes As Long, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As Long, ByVal lpCurrentDirectory As Long, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Long
+Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
+Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
+Private Declare Function GetExitCodeProcess Lib "kernel32" (ByVal hProcess As Long, lpExitCode As Long) As Long
+#End If
 
 '=========================================================================
-' Plugin constants
+' Startup info structure
+'=========================================================================
+#If (USE_REGSVR32) Then
+Private Type STARTUPINFO
+    cb As Long
+    lpReserved As String
+    lpDesktop As String
+    lpTitle As String
+    dwX As Long
+    dwY As Long
+    dwXSize As Long
+    dwYSize As Long
+    dwXCountChars As Long
+    dwYCountChars As Long
+    dwFillAttribute As Long
+    dwFlags As Long
+    wShowWindow As Integer
+    cbReserved2 As Integer
+    lpReserved2 As Long
+    hStdInput As Long
+    hStdOutput As Long
+    hStdError As Long
+End Type
+#End If
+
+'=========================================================================
+' Win32 process information structure
+'=========================================================================
+#If (USE_REGSVR32) Then
+Private Type PROCESS_INFORMATION
+    hProcess As Long
+    hThread As Long
+    dwProcessID As Long
+    dwThreadID As Long
+End Type
+#End If
+
+'=========================================================================
+' Cconstants
 '=========================================================================
 Public Const PT_RPGCODE = 1                   ' plugin type rpgcode
 Public Const PT_MENU = 2                      ' plugin type menu
@@ -58,11 +107,39 @@ Public Const FIGHT_RUN_MANUAL = 1             ' Player party ran - tell trans th
 Public Const FIGHT_WON_AUTO = 2               ' Player party won - have trans apply the rewards for us
 Public Const FIGHT_WON_MANUAL = 3             ' Player party won - tell trans that the plugin has already given rewards
 Public Const FIGHT_LOST = 4                   ' Player party lost
+#If (USE_REGSVR32) Then
+Private Const NORMAL_PRIORITY_CLASS = &H20&
+Private Const INFINITE = -1&
+#End If
 
 '=========================================================================
 ' Members
 '=========================================================================
 Private m_comPlugins() As CComPlugin
+
+'=========================================================================
+' Run a command
+'=========================================================================
+#If (USE_REGSVR32) Then
+Private Sub execute(ByRef strCmdLine As String)
+
+    Dim proc As PROCESS_INFORMATION, start As STARTUPINFO
+
+    ' Initialize the starup information struct
+    start.cb = LenB(start)
+
+    ' Create a process for the application
+    Call CreateProcessA(0, strCmdLine, 0, 0, 1, NORMAL_PRIORITY_CLASS, 0, 0, start, proc)
+
+    ' Wait an indefinite amount of time for the process to close
+    Call WaitForSingleObject(proc.hProcess, INFINITE)
+
+    ' Close handles
+    Call CloseHandle(proc.hThread)
+    Call CloseHandle(proc.hProcess)
+
+End Sub
+#End If
 
 '=========================================================================
 ' Register or unregister a COM server
@@ -71,6 +148,13 @@ Public Sub registerServer(ByRef strServer As String, ByVal hwnd As Long, Optiona
 
     ' First, make sure the file exists
     If (GetAttr(strServer) And vbDirectory) Then Exit Sub
+
+#If (USE_REGSVR32) Then
+
+    ' Just call regsvr32
+    Call execute("regsvr32 /s " & IIf(bRegister, vbNullString, "/u ") & strServer)
+
+#Else
 
     ' Load the server
     Dim pServer As Long
@@ -87,6 +171,8 @@ Public Sub registerServer(ByRef strServer As String, ByVal hwnd As Long, Optiona
 
     ' Unload the server
     Call FreeLibrary(pServer)
+
+#End If
 
 End Sub
 
