@@ -222,7 +222,7 @@ Private Function equEvaluate(ByVal Text As String) As Double
     Next idx
 
     ' Before we try and solve this equation, let's make sure all's good
-    If ((depth) Or ((operatorIdx + 1) <> tokenIdx)) Then
+    If ((depth <> 0) Or ((operatorIdx + 1) <> tokenIdx)) Then
         ' Error out
         equEvaluate = -1
         Exit Function
