@@ -122,12 +122,8 @@ Public Function Fight( _
     menuGraphic = CBGetGeneralString(GEN_FIGHTMENUGRAPHIC, 0, 0)
     Call CBCanvasLoadSizedImage(cnvParty, menuGraphic)
 
-    Call Load(frmMusicCheck)
-
     'Run the fight
     Fight = mainLoop()
-
-    Call Unload(frmMusicCheck)
 
     'Clean up
     Call CBDestroyCanvas(cnvParty)
@@ -141,7 +137,7 @@ Private Function mainLoop() As Long
     'Main fight execution loop
     '====================================================================================
 
-    Do While True
+    Do
 
         'See if the fight is over
         Dim toRet As Long
@@ -1780,29 +1776,29 @@ Private Function itemMenuScanKeys(ByRef player As Fighter) As Boolean
             Dim theItem As String
             theItem = items(startGrab + menuPos).filename
             If theItem <> "" Then
-            Dim tarParty As Long, tarMember As Long
-            Call characterSelect(tarParty, tarMember, PLAYER_PARTY)
-            If tarMember <> -1 Then
-                Call cursorSelSound
-                Call CBFightUseItem( _
-                                       PLAYER_PARTY, _
-                                       player.idx, _
-                                       tarParty, _
-                                       tarMember, _
-                                       theItem)
-                done = True
-                itemMenuScanKeys = True
+                Dim tarParty As Long, tarMember As Long
+                Call characterSelect(tarParty, tarMember, PLAYER_PARTY)
+                If tarMember <> -1 Then
+                    Call cursorSelSound
+                    Call CBFightUseItem( _
+                                           PLAYER_PARTY, _
+                                           player.idx, _
+                                           tarParty, _
+                                           tarMember, _
+                                           theItem)
+                    done = True
+                    itemMenuScanKeys = True
+                Else
+                    Call cursorCancelSound
+                End If
             Else
                 Call cursorCancelSound
             End If
-        Else
-            Call cursorCancelSound
-        End If
 
         ElseIf isPressed("ESC", "B", "Q") Then
             Call cursorCancelSound
             done = True
-       
+
         End If
 
         Call CBDoEvents

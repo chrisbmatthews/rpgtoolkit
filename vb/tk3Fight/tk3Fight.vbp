@@ -4,13 +4,12 @@ Module=modCallbacks; modules\modCallbacks.bas
 Module=modConstants; modules\modConstants.bas
 Class=clsTk3Fight; classes\clsMain.cls
 Module=modMisc; modules\modMisc.bas
-Form=forms\frmMusicCheck.frm
 Module=modBattleSystem; modules\modBattleSystem.bas
 Startup="(None)"
 HelpFile=""
 Title="tk3Fight"
 ExeName32="tk3fight.dll"
-Path32="..\..\..\..\..\Toolkit3\Game\Basic\Plugin"
+Path32="..\..\..\..\..\Toolkit3\Game\DarkAge\Plugin"
 Command32=""
 Name="tk3Fight"
 HelpContextID="0"
@@ -42,6 +41,8 @@ Retained=0
 ThreadPerObject=0
 MaxNumberOfThreads=1
 ThreadingModel=1
+DebugStartupOption=0
+UseExistingBrowser=0
 
 [MS Transaction Server]
 AutoRefresh=1

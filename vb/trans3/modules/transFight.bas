@@ -314,7 +314,7 @@ Public Sub fightTick()
     Dim status As TKStatusEffect
     
     'first increment ticks...
-    For t = 0 To UBound(parties) - 1
+    For t = 0 To UBound(parties)
         For u = 0 To UBound(parties(t).fighterList) - 1
             If parties(t).fighterList(u).chargeCounter <= parties(t).fighterList(u).maxChargeTime Then
                 'check if the fighter has a status effect applied that changes the charge time...

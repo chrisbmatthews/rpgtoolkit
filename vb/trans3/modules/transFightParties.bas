@@ -31,8 +31,7 @@ Public Type FighterParty                 'fighting party structure
     winProgram As String                 '  rpgcode program to run when you beat them
 End Type
 
-'NOTE:  Fighting system DEPENDS on WASTED 3rd dimension!!!
-Public parties(0 To 2) As FighterParty   'fighting parties -- 0 is enemy, 1 is player
+Public parties(0 To 1) As FighterParty   'fighting parties -- 0 is enemy, 1 is player
 
 Public Const ENEMY_PARTY = 0             'enemy party
 Public Const PLAYER_PARTY = 1            'player party
