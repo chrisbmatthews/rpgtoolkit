@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.Form editmainfile 
    BorderStyle     =   1  'Fixed Single
@@ -20,7 +20,6 @@ Begin VB.Form editmainfile
    ForeColor       =   &H80000008&
    Icon            =   "EDITMAINv2.frx":0000
    LinkTopic       =   "Form2"
-   MaxButton       =   0   'False
    MDIChild        =   -1  'True
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   6030
@@ -2385,6 +2384,15 @@ Private Sub Form_Load()
     filename(2) = ""
     sliGameSpeed.max = MAX_GAMESPEED
     Call infofill
+End Sub
+
+'=========================================================================
+' Resize form
+'=========================================================================
+Private Sub Form_Resize(): On Error Resume Next
+    'Centre the tabs.
+    tabMain.Top = (editmainfile.height - tabMain.height) / 2 - 200
+    tabMain.Left = (editmainfile.width - tabMain.width) / 2
 End Sub
 
 '=========================================================================
