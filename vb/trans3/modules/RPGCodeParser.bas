@@ -176,28 +176,28 @@ Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional B
     Dim a As Long           'For loop control variable
     Dim S As Long           'For loop control variable
 
-    ReDim signs(18)
-    signs(0) = "+="
-    signs(1) = "-="
-    signs(2) = "++"
-    signs(3) = "--"
-    signs(4) = "*="
-    signs(5) = "/="
-    signs(6) = "="
-    signs(7) = "+"
-    signs(8) = "-"
-    signs(9) = "/"
-    signs(10) = "*"
-    signs(11) = "^"
-    signs(12) = "\"
-    signs(13) = "|="  '[Faero] Binary or
-    signs(14) = "&="  '[Faero] Binary and
-    signs(15) = "`="  '[Faero] Binary exclusive or
-    signs(16) = "%="  '[Faero] Modulus
-    signs(17) = "|="  '[Faero] Binary or
-    signs(18) = "&="  '[Faero] Binary and
-    signs(19) = "`="  '[Faero] Binary exclusive or
-    signs(20) = "%="  '[Faero] Modulus
+    ReDim signs(20)
+    signs(0) = "|="
+    signs(1) = "&="
+    signs(2) = "`="
+    signs(3) = "%="
+    signs(4) = "+="
+    signs(5) = "-="
+    signs(6) = "++"
+    signs(7) = "--"
+    signs(8) = "*="
+    signs(9) = "/="
+    signs(10) = "="
+    signs(11) = "+"
+    signs(12) = "-"
+    signs(13) = "/"
+    signs(14) = "*"
+    signs(15) = "^"
+    signs(16) = "\"
+    signs(17) = "|"
+    signs(18) = "&"
+    signs(19) = "`"
+    signs(20) = "%"
     If (comparison) Then
         ReDim Preserve signs(23)
         signs(21) = "<"

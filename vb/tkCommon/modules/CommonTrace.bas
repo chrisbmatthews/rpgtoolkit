@@ -74,24 +74,22 @@ End Sub
 ' Save data in prg for analizing
 '=========================================================================
 #If (isToolkit = 0) And (enableTracer) Then
-    Public Sub traceProgram(ByRef prg As RPGCodeProgram, ByVal file As String, ByVal silent As Boolean)
+Public Sub traceProgram(ByRef prg As RPGCodeProgram, ByVal file As String)
 
-        Dim line As String
-        Dim ff As Long
-        Dim a As Long
+    Dim line As String
+    Dim ff As Long
+    Dim a As Long
 
-        ff = FreeFile()
-        Open file For Output As ff
-            For a = 0 To UBound(prg.program)
-                line = prg.program(a)
-                If a = prg.programPos Then line = line & "  ** Current Line"
-                Print #ff, line
-            Next a
-            Print #ff, ""
-            Print #ff, prg.programPos
-        Close ff
+    ff = FreeFile()
+    Open file For Output As ff
+        For a = 0 To UBound(prg.program)
+            line = prg.program(a)
+            If a = prg.programPos Then line = line & "  ** Current Line"
+            Print #ff, line
+        Next a
+        Print #ff, ""
+        Print #ff, prg.programPos
+    Close ff
 
-        If Not silent Then MsgBox "Program traced successfully saved in " & file & "."
-
-    End Sub
+End Sub
 #End If

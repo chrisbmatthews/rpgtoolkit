@@ -521,7 +521,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     On Error Resume Next
 
-    Dim destination As String       ' RPGCode destination variable
+    Dim Destination As String       ' RPGCode destination variable
     Dim tokenIdx As Long            ' Token index
     Dim dType As RPGC_DT            ' Type of data
     Dim equal As String             ' The conjunction
@@ -529,15 +529,15 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     Dim lit As String               ' Literal value
     Dim num As Double               ' Numerical value
     Dim hClass As Long              ' Handle to a class
-    Dim retVal As RPGCODE_RETURN    ' Return value
+    Dim retval As RPGCODE_RETURN    ' Return value
 
     ' Get the destination variable and remove unwanted characters
-    destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", ""), " ", ""), vbTab, ""), theProgram)
-    If (Right(destination, 1) <> "!" And Right(destination, 1) <> "$") Then
+    Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", ""), " ", ""), vbTab, ""), theProgram)
+    If (Right(Destination, 1) <> "!" And Right(Destination, 1) <> "$") Then
         ' Append a "!"
-        destination = destination & "!"
+        Destination = Destination & "!"
         ' Get value of the destination
-        Call getValue(destination, lit, num, theProgram)
+        Call getValue(Destination, lit, num, theProgram)
         ' If it's not NULL
         If (num <> 0) Then
             ' Check if it's already an object
@@ -553,7 +553,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         End If
     Else
         ' Get the type of the destination
-        dType = dataType(destination)
+        dType = dataType(Destination)
     End If
 
     If ((dType = DT_NUM) Or (dType = DT_VOID)) Then
@@ -561,6 +561,12 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         ' the string to evaluate (prevents some errors)
         Text = Text & " +0+0"
     End If
+
+    ' Check what type of conjuction we have
+    equal = MathFunction(Text, 1)
+
+    ' Remove the conjuction from the text
+    Text = replace(Text, equal, "=")
 
     ' Get the number of tokens we have
     number = ValueNumber(Text)
@@ -594,20 +600,17 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram)
             Next tokenIdx
 
-            ' Check what type of conjuction we have
-            equal = MathFunction(Text, 1)
-
             ' Switch on the sign
             Select Case equal
 
                 Case "++"                           'INCREMENTAION OPERATOR
                                                     '----------------------
-                    Call SetVariable(destination, CBGetNumerical(destination) + 1, theProgram)
+                    Call SetVariable(Destination, CBGetNumerical(Destination) + 1, theProgram)
                     Exit Sub
 
                 Case "--"                           'DECREMENTATION OPERATOR
                                                     '-----------------------
-                    Call SetVariable(destination, CBGetNumerical(destination) - 1, theProgram)
+                    Call SetVariable(Destination, CBGetNumerical(Destination) - 1, theProgram)
                     Exit Sub
 
                 Case "+=", "-=", "*=", "/=", "="    'OTHER VALID OPERATOR
@@ -638,19 +641,19 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
                 Case "-="       'RELATIVE SUBTRACTION OPERATOR
                                 '-----------------------------
-                    Call SetVariable(destination, CStr(CBGetNumerical(destination) - numberUse(number)), theProgram)
+                    Call SetVariable(Destination, CStr(CBGetNumerical(Destination) - numberUse(number)), theProgram)
 
                 Case "+="       'RELATIVE ADDITION OPERATOR
                                 '--------------------------
-                    Call SetVariable(destination, CStr(numberUse(number) + CBGetNumerical(destination)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number) + CBGetNumerical(Destination)), theProgram)
 
                 Case "*="       'RELATIVE MULTIPLICATION OPERATOR
                                 '--------------------------------
-                    Call SetVariable(destination, CStr(numberUse(number) * CBGetNumerical(destination)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number) * CBGetNumerical(Destination)), theProgram)
 
                 Case "/="       'RELATIVE DIVISION OPERATOR
                                 '--------------------------
-                    Call SetVariable(destination, CStr(CBGetNumerical(destination) / numberUse(number)), theProgram)
+                    Call SetVariable(Destination, CStr(CBGetNumerical(Destination) / numberUse(number)), theProgram)
 
                 Case "="        'NORMAL EQUAL OPERATOR
                                 '---------------------
@@ -660,31 +663,31 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                         ' If this class handles =
                         If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                             ' Call the method
-                            Call callObjectMethod(hClass, "operator=(" & CStr(numberUse(number)) & ")", theProgram, retVal, "operator=")
+                            Call callObjectMethod(hClass, "operator=(" & CStr(numberUse(number)) & ")", theProgram, retval, "operator=")
                             ' Leave this procedure
                             Exit Sub
                         End If
                     End If
 
                     ' Set destination to result
-                    Call SetVariable(destination, CStr(numberUse(number)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number)), theProgram)
 
                 Case "|="      '[Faero] Or
                                 '---------------------
 
-                    Call SetVariable(destination, CStr(numberUse(number) Or CBGetNumerical(destination)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number) Or CBGetNumerical(Destination)), theProgram)
 
                 Case "&="      '[Faero] And
                                 '---------------------
-                    Call SetVariable(destination, CStr(numberUse(number) And CBGetNumerical(destination)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number) And CBGetNumerical(Destination)), theProgram)
 
                 Case "`="      '[Faero] XOr
                                 '---------------------
-                    Call SetVariable(destination, CStr(numberUse(number) Xor CBGetNumerical(destination)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number) Xor CBGetNumerical(Destination)), theProgram)
 
                 Case "%="      '[Faero] Modulus
                                 '---------------------
-                    Call SetVariable(destination, CStr(numberUse(number) Mod CBGetNumerical(destination)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number) Mod CBGetNumerical(Destination)), theProgram)
 
             End Select
 
@@ -697,9 +700,6 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Call getValue(Trim(valueList(tokenIdx)), litUse(tokenIdx), num, theProgram)
             Next tokenIdx
 
-            ' Get the equal sign
-            equal = MathFunction(Text, 1)
-
             ' Combine the tokens
             Dim res As String
             For tokenIdx = 2 To number
@@ -708,20 +708,20 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
             If (equal = "+=") Then
                 ' Add result to existing value
-                Call SetVariable(destination, CBGetString(destination) & res, theProgram)
+                Call SetVariable(Destination, CBGetString(Destination) & res, theProgram)
             Else
                 ' If we recorded a class' handle earlier
                 If (hClass <> 0) Then
                     ' If this class handles =
                     If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                         ' Call the method
-                        Call callObjectMethod(hClass, "operator=(" & Chr(34) & res & Chr(34) & ")", theProgram, retVal, "operator=")
+                        Call callObjectMethod(hClass, "operator=(" & Chr(34) & res & Chr(34) & ")", theProgram, retval, "operator=")
                         ' Leave this procedure
                         Exit Sub
                     End If
                 End If
                 ' Set destination to result
-                Call SetVariable(destination, res, theProgram)
+                Call SetVariable(Destination, res, theProgram)
             End If
 
         Case Else       'INVALID DESTINATION VARIABLE
