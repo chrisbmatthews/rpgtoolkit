@@ -109,7 +109,7 @@ Private Const CC_ENABLEHOOK = &H10
 Private Const CC_ENABLETEMPLATE = &H20
 Private Const CC_ENABLETEMPLATEHANDLE = &H40
 Private Const CC_FULLOPEN = &H2
-Private Const CC_INTERIORS = 128 '  Can do interiors
+Private Const CC_INTERIORS = 128         '  Can do interiors
 Private Const CC_NONE = 0                '  Curves not supported
 Private Const CC_PIE = 2                 '  Can do pie wedges
 Private Const CC_PREVENTFULLOPEN = &H4
@@ -121,6 +121,7 @@ Private Const CC_STYLED = 32             '  Can do styled lines
 Private Const CC_WIDE = 16               '  Can do wide lines
 Private Const CC_WIDESTYLED = 64         '  Can do wide styled lines
 Private Const OFN_OVERWRITEPROMPT = &H2
+Private Const OFN_NOREADONLYRETURN = &H8000&
 
 '=========================================================================
 ' Convert a pointer to a null-terminated string to a VB string
@@ -274,7 +275,9 @@ Public Function SaveFileDialog(ByRef dlgInfo As FileDialogInfo, _
           .lpstrFileTitle = .lpstrFile '
           .nMaxFileTitle = MAX_BUFFER
           .lpstrDefExt = dlgInfo.strDefaultExt
-          If overwritePrompt Then .flags = OFN_OVERWRITEPROMPT      'Prompt if overwriting.
+          .flags = OFN_NOREADONLYRETURN         'Do not allow for selection of read-only files.
+          'Prompt if overwriting - optional since this may be a save-game file.
+          If overwritePrompt Then .flags = OFN_NOREADONLYRETURN Or OFN_OVERWRITEPROMPT
     End With
     
     retval = GetSaveFileName(opfS)
