@@ -49,6 +49,52 @@ Begin VB.Form tileinfo
       Tag             =   "1701"
       Top             =   120
       Width           =   5295
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   855
+         Left            =   4320
+         ScaleHeight     =   855
+         ScaleWidth      =   855
+         TabIndex        =   18
+         Top             =   1800
+         Width           =   855
+         Begin VB.CommandButton EditItem 
+            Caption         =   "Edit"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   0
+            TabIndex        =   20
+            Tag             =   "1377"
+            Top             =   360
+            Width           =   615
+         End
+         Begin VB.CommandButton EditProgram 
+            Caption         =   "Edit"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   0
+            TabIndex        =   19
+            Tag             =   "1377"
+            Top             =   0
+            Width           =   615
+         End
+      End
       Begin VB.PictureBox tileInfoIso 
          BackColor       =   &H80000005&
          Height          =   545
@@ -56,7 +102,7 @@ Begin VB.Form tileinfo
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   64
-         TabIndex        =   19
+         TabIndex        =   17
          Top             =   2400
          Width           =   1020
       End
@@ -67,45 +113,9 @@ Begin VB.Form tileinfo
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   32
-         TabIndex        =   18
+         TabIndex        =   16
          Top             =   2400
          Width           =   545
-      End
-      Begin VB.CommandButton EditProgram 
-         Caption         =   "Edit"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   4440
-         TabIndex        =   17
-         Tag             =   "1377"
-         Top             =   1800
-         Width           =   615
-      End
-      Begin VB.CommandButton EditItem 
-         Caption         =   "Edit"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   4440
-         TabIndex        =   16
-         Tag             =   "1377"
-         Top             =   2160
-         Width           =   615
       End
       Begin VB.Label Label2 
          Caption         =   "Location:"
@@ -559,7 +569,7 @@ Private Sub Form_Load()
 
     On Error Resume Next
     
-    Dim X As Integer, Y As Integer, colorit As Long
+    Dim x As Integer, y As Integer, colorit As Long
     Dim Temp As String, tileopen As String, fn As String, ex As String
     Dim levelnum As Integer, numof As Integer, testtype As Integer, t As Integer
     
@@ -570,11 +580,11 @@ Private Sub Form_Load()
 
     'Hold the current tilemem in the tile buffer.
     openTileEditorDocs(activeTile.indice).oldDetail = detail
-    For X = 1 To 32
-        For Y = 1 To 32
-            bufTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            bufTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
     
     'First, see if it's in an archive
     tileopen$ = projectPath$ + tilePath$ + BoardGetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)
@@ -598,15 +608,15 @@ Private Sub Form_Load()
         End If
         
         'Draw the tile 2D. Not edited for .iso, incase people want to use .iso on 2D boards...
-        For X = 1 To 32
-            For Y = 1 To 32
-                colorit = tileMem(X, Y)
+        For x = 1 To 32
+            For y = 1 To 32
+                colorit = tileMem(x, y)
                 If colorit = -1 Then colorit = vbQBColor(15)
-                Call vbPicPSet(tileinfopic, X - 1, Y - 1, colorit)
+                Call vbPicPSet(tileinfopic, x - 1, y - 1, colorit)
                 
-                tileMem(X, Y) = bufTile(X, Y)
-            Next Y
-        Next X
+                tileMem(x, y) = bufTile(x, y)
+            Next y
+        Next x
         detail = openTileEditorDocs(activeTile.indice).oldDetail
     End If
 

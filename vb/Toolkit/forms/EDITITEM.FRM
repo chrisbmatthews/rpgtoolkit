@@ -32,24 +32,35 @@ Begin VB.Form edititem
       TabIndex        =   0
       Top             =   120
       Width           =   8055
-      Begin VB.TextBox itemnamebox 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   3000
-         TabIndex        =   27
-         Top             =   360
+      Begin VB.PictureBox Picture3 
+         BorderStyle     =   0  'None
+         Height          =   495
+         Left            =   5640
+         ScaleHeight     =   495
+         ScaleWidth      =   2055
+         TabIndex        =   30
+         Top             =   3960
          Width           =   2055
+         Begin VB.CommandButton Command5 
+            Caption         =   "Graphics..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   31
+            Tag             =   "1300"
+            Top             =   0
+            Width           =   1935
+         End
       End
-      Begin VB.Frame Frame2 
-         Caption         =   "Item Abilities"
+      Begin VB.Frame Frame5 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -62,9 +73,230 @@ Begin VB.Form edititem
          Height          =   1815
          Left            =   240
          TabIndex        =   18
+         Tag             =   "1366"
+         Top             =   2640
+         Width           =   4575
+         Begin VB.PictureBox Picture1 
+            BorderStyle     =   0  'None
+            Height          =   1455
+            Left            =   120
+            ScaleHeight     =   1455
+            ScaleWidth      =   4335
+            TabIndex        =   19
+            Top             =   240
+            Width           =   4335
+            Begin VB.OptionButton Option2 
+               Caption         =   "Used By Defined Characters"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   0
+               TabIndex        =   23
+               Tag             =   "1368"
+               Top             =   240
+               Width           =   3975
+            End
+            Begin VB.ComboBox chars 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   315
+               Left            =   0
+               TabIndex        =   22
+               Text            =   "Character 1"
+               Top             =   600
+               Visible         =   0   'False
+               Width           =   1575
+            End
+            Begin VB.OptionButton Option1 
+               Caption         =   "Used By All Characters"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   195
+               Left            =   0
+               TabIndex        =   21
+               Tag             =   "1367"
+               Top             =   0
+               Value           =   -1  'True
+               Width           =   4335
+            End
+            Begin VB.TextBox charname 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   1800
+               TabIndex        =   20
+               Top             =   600
+               Visible         =   0   'False
+               Width           =   2055
+            End
+            Begin VB.Label Label3 
+               Alignment       =   2  'Center
+               Caption         =   "Please Type The Player's Handle Here!"
+               BeginProperty Font 
+                  Name            =   "Arial"
+                  Size            =   6.75
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   375
+               Left            =   1800
+               TabIndex        =   24
+               Tag             =   "1369"
+               Top             =   960
+               Visible         =   0   'False
+               Width           =   1815
+            End
+         End
+      End
+      Begin VB.TextBox itemnamebox 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   285
+         Left            =   3000
+         TabIndex        =   16
+         Top             =   360
+         Width           =   2055
+      End
+      Begin VB.Frame Frame2 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   1815
+         Left            =   240
+         TabIndex        =   11
          Tag             =   "1376"
          Top             =   720
          Width           =   3135
+         Begin VB.PictureBox Picture2 
+            BorderStyle     =   0  'None
+            Height          =   1215
+            Left            =   1800
+            ScaleHeight     =   1215
+            ScaleWidth      =   1215
+            TabIndex        =   25
+            Top             =   360
+            Width           =   1215
+            Begin VB.CommandButton Command1 
+               Caption         =   "Edit"
+               Enabled         =   0   'False
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   0
+               TabIndex        =   29
+               Tag             =   "1377"
+               Top             =   0
+               Width           =   975
+            End
+            Begin VB.CommandButton Command2 
+               Caption         =   "Edit"
+               Enabled         =   0   'False
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   0
+               TabIndex        =   28
+               Tag             =   "1377"
+               Top             =   240
+               Width           =   975
+            End
+            Begin VB.CommandButton Command3 
+               Caption         =   "Edit"
+               Enabled         =   0   'False
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   0
+               TabIndex        =   27
+               Tag             =   "1377"
+               Top             =   480
+               Width           =   975
+            End
+            Begin VB.CommandButton Command4 
+               Caption         =   "Edit"
+               Enabled         =   0   'False
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   0
+               TabIndex        =   26
+               Tag             =   "1377"
+               Top             =   720
+               Width           =   975
+            End
+         End
          Begin VB.CheckBox fight 
             Caption         =   "Battle-Driven"
             BeginProperty Font 
@@ -78,7 +310,7 @@ Begin VB.Form edititem
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   19
+            TabIndex        =   12
             Tag             =   "1353"
             Top             =   1080
             Width           =   1695
@@ -96,7 +328,7 @@ Begin VB.Form edititem
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   20
+            TabIndex        =   13
             Tag             =   "1352"
             Top             =   840
             Width           =   1695
@@ -114,86 +346,10 @@ Begin VB.Form edititem
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   21
+            TabIndex        =   14
             Tag             =   "1379"
             Top             =   600
             Width           =   1695
-         End
-         Begin VB.CommandButton Command4 
-            Caption         =   "Edit"
-            Enabled         =   0   'False
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   2040
-            TabIndex        =   22
-            Tag             =   "1377"
-            Top             =   1080
-            Width           =   975
-         End
-         Begin VB.CommandButton Command3 
-            Caption         =   "Edit"
-            Enabled         =   0   'False
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   2040
-            TabIndex        =   23
-            Tag             =   "1377"
-            Top             =   840
-            Width           =   975
-         End
-         Begin VB.CommandButton Command2 
-            Caption         =   "Edit"
-            Enabled         =   0   'False
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   2040
-            TabIndex        =   24
-            Tag             =   "1377"
-            Top             =   600
-            Width           =   975
-         End
-         Begin VB.CommandButton Command1 
-            Caption         =   "Edit"
-            Enabled         =   0   'False
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   2040
-            TabIndex        =   26
-            Tag             =   "1377"
-            Top             =   360
-            Width           =   975
          End
          Begin VB.CheckBox equipable 
             Caption         =   "Equipable"
@@ -208,14 +364,13 @@ Begin VB.Form edititem
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   25
+            TabIndex        =   15
             Tag             =   "1378"
             Top             =   360
             Width           =   1695
          End
       End
       Begin VB.Frame Frame4 
-         Caption         =   "Buy/Sell"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -227,7 +382,7 @@ Begin VB.Form edititem
          EndProperty
          Height          =   1815
          Left            =   3600
-         TabIndex        =   8
+         TabIndex        =   1
          Tag             =   "1370"
          Top             =   720
          Width           =   4215
@@ -243,7 +398,7 @@ Begin VB.Form edititem
             EndProperty
             Height          =   285
             Left            =   1680
-            TabIndex        =   12
+            TabIndex        =   5
             Top             =   1080
             Width           =   1935
          End
@@ -259,7 +414,7 @@ Begin VB.Form edititem
             EndProperty
             Height          =   285
             Left            =   1680
-            TabIndex        =   11
+            TabIndex        =   4
             Text            =   "0"
             Top             =   720
             Width           =   1935
@@ -276,7 +431,7 @@ Begin VB.Form edititem
             EndProperty
             Height          =   285
             Left            =   1680
-            TabIndex        =   10
+            TabIndex        =   3
             Text            =   "0"
             Top             =   360
             Width           =   1935
@@ -294,7 +449,7 @@ Begin VB.Form edititem
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   9
+            TabIndex        =   2
             Tag             =   "1371"
             Top             =   1440
             Width           =   2295
@@ -313,7 +468,7 @@ Begin VB.Form edititem
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   17
+            TabIndex        =   10
             Tag             =   "1354"
             Top             =   1080
             Width           =   1455
@@ -332,7 +487,7 @@ Begin VB.Form edititem
             Height          =   255
             Index           =   1
             Left            =   3720
-            TabIndex        =   16
+            TabIndex        =   9
             Tag             =   "1374"
             Top             =   720
             Width           =   255
@@ -351,7 +506,7 @@ Begin VB.Form edititem
             Height          =   255
             Index           =   0
             Left            =   3720
-            TabIndex        =   15
+            TabIndex        =   8
             Tag             =   "1374"
             Top             =   360
             Width           =   255
@@ -370,7 +525,7 @@ Begin VB.Form edititem
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   14
+            TabIndex        =   7
             Tag             =   "1373"
             Top             =   720
             Width           =   1455
@@ -389,139 +544,11 @@ Begin VB.Form edititem
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   13
+            TabIndex        =   6
             Tag             =   "1372"
             Top             =   360
             Width           =   1455
          End
-      End
-      Begin VB.Frame Frame5 
-         Caption         =   "Item Usage"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   1815
-         Left            =   240
-         TabIndex        =   2
-         Tag             =   "1366"
-         Top             =   2640
-         Width           =   4575
-         Begin VB.OptionButton Option2 
-            Caption         =   "Used By Defined Characters"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   120
-            TabIndex        =   3
-            Tag             =   "1368"
-            Top             =   600
-            Width           =   3975
-         End
-         Begin VB.TextBox charname 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   1800
-            TabIndex        =   6
-            Top             =   960
-            Visible         =   0   'False
-            Width           =   2055
-         End
-         Begin VB.ComboBox chars 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   315
-            Left            =   120
-            TabIndex        =   5
-            Text            =   "Character 1"
-            Top             =   960
-            Visible         =   0   'False
-            Width           =   1575
-         End
-         Begin VB.OptionButton Option1 
-            Caption         =   "Used By All Characters"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   195
-            Left            =   120
-            TabIndex        =   4
-            Tag             =   "1367"
-            Top             =   360
-            Value           =   -1  'True
-            Width           =   4335
-         End
-         Begin VB.Label Label3 
-            Alignment       =   2  'Center
-            Caption         =   "Please Type The Player's Handle Here!"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   6.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   375
-            Left            =   1920
-            TabIndex        =   7
-            Tag             =   "1369"
-            Top             =   1320
-            Visible         =   0   'False
-            Width           =   1815
-         End
-      End
-      Begin VB.CommandButton Command5 
-         Caption         =   "Graphics..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   5520
-         TabIndex        =   1
-         Tag             =   "1300"
-         Top             =   4080
-         Width           =   1935
       End
       Begin VB.Label Label2 
          Caption         =   "Item Name (Handle):"
@@ -537,7 +564,7 @@ Begin VB.Form edititem
          Height          =   255
          Index           =   0
          Left            =   360
-         TabIndex        =   28
+         TabIndex        =   17
          Tag             =   "1380"
          Top             =   360
          Width           =   2535

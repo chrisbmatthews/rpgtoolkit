@@ -60,6 +60,34 @@ Begin VB.Form enemyrewards
       Tag             =   "1390"
       Top             =   120
       Width           =   4935
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   495
+         Left            =   3720
+         ScaleHeight     =   495
+         ScaleWidth      =   1095
+         TabIndex        =   9
+         Top             =   1560
+         Width           =   1095
+         Begin VB.CommandButton Command14 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   10
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+      End
       Begin VB.TextBox Text1 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -72,7 +100,7 @@ Begin VB.Form enemyrewards
          EndProperty
          Height          =   285
          Left            =   1920
-         TabIndex        =   5
+         TabIndex        =   4
          Text            =   "0"
          Top             =   360
          Width           =   1695
@@ -89,7 +117,7 @@ Begin VB.Form enemyrewards
          EndProperty
          Height          =   285
          Left            =   1920
-         TabIndex        =   4
+         TabIndex        =   3
          Text            =   "0"
          Top             =   720
          Width           =   1695
@@ -106,28 +134,10 @@ Begin VB.Form enemyrewards
          EndProperty
          Height          =   285
          Left            =   120
-         TabIndex        =   3
+         TabIndex        =   2
          Text            =   "None"
          Top             =   1560
          Width           =   3495
-      End
-      Begin VB.CommandButton Command14 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3720
-         TabIndex        =   2
-         Tag             =   "1021"
-         Top             =   1560
-         Width           =   1095
       End
       Begin VB.Label Label2 
          Caption         =   "Experience Gained:"
@@ -142,7 +152,7 @@ Begin VB.Form enemyrewards
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   8
          Tag             =   "1389"
          Top             =   360
          Width           =   1695
@@ -160,7 +170,7 @@ Begin VB.Form enemyrewards
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   7
          Tag             =   "1388"
          Top             =   720
          Width           =   1695
@@ -178,7 +188,7 @@ Begin VB.Form enemyrewards
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   6
          Tag             =   "1387"
          Top             =   1200
          Width           =   4215
@@ -200,7 +210,7 @@ Begin VB.Form enemyrewards
          Left            =   1560
          MouseIcon       =   "ENEMYREW.frx":0CCA
          MousePointer    =   99  'Custom
-         TabIndex        =   6
+         TabIndex        =   5
          Tag             =   "1150"
          Top             =   2040
          Visible         =   0   'False
@@ -224,16 +234,16 @@ End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
     dlg.strFileTypes = "Supported Files|*.prg|RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
     
     If Err = 32755 Then
-        Text3.text = ""
+        Text3.Text = ""
         enemylist(activeEnemyIndex).theData.eneWinPrg$ = ""
     End If
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
@@ -242,73 +252,73 @@ Private Sub Command14_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    Text3.text = antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    Text3.Text = antiPath$
     enemylist(activeEnemyIndex).theData.eneWinPrg$ = antiPath$
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     Call infofill
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub infofill()
-    On Error GoTo errorhandler
-    Text1.text = str$(enemylist(activeEnemyIndex).theData.eneExp)
-    Text2.text = str$(enemylist(activeEnemyIndex).theData.eneGP)
-    Text3.text = enemylist(activeEnemyIndex).theData.eneWinPrg$
+    On Error GoTo ErrorHandler
+    Text1.Text = str$(enemylist(activeEnemyIndex).theData.eneExp)
+    Text2.Text = str$(enemylist(activeEnemyIndex).theData.eneGP)
+    Text3.Text = enemylist(activeEnemyIndex).theData.eneWinPrg$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeRPGCode.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Text1_Change()
-    On Error GoTo errorhandler
-    enemylist(activeEnemyIndex).theData.eneExp = val(Text1.text)
+    On Error GoTo ErrorHandler
+    enemylist(activeEnemyIndex).theData.eneExp = val(Text1.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Text2_Change()
-    On Error GoTo errorhandler
-    enemylist(activeEnemyIndex).theData.eneGP = val(Text2.text)
+    On Error GoTo ErrorHandler
+    enemylist(activeEnemyIndex).theData.eneGP = val(Text2.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Text3_Change()
     On Error Resume Next
-    enemylist(activeEnemyIndex).theData.eneWinPrg$ = Text3.text
+    enemylist(activeEnemyIndex).theData.eneWinPrg$ = Text3.Text
 End Sub
 

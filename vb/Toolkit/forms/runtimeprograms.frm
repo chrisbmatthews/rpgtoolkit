@@ -21,10 +21,29 @@ Begin VB.Form runtimeprograms
       Tag             =   "1729"
       Top             =   120
       Width           =   4935
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   375
+         Left            =   3600
+         ScaleHeight     =   375
+         ScaleWidth      =   1215
+         TabIndex        =   8
+         Top             =   1080
+         Width           =   1215
+         Begin VB.CommandButton Command14 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   9
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+      End
       Begin VB.ComboBox keynum 
          Height          =   315
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   4
          Text            =   "Combo1"
          Top             =   720
          Width           =   1335
@@ -32,31 +51,22 @@ Begin VB.Form runtimeprograms
       Begin VB.TextBox activationkey 
          Height          =   285
          Left            =   1680
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   720
          Width           =   1095
       End
       Begin VB.TextBox runtimep 
          Height          =   285
          Left            =   3000
-         TabIndex        =   3
+         TabIndex        =   2
          Top             =   720
          Width           =   1695
-      End
-      Begin VB.CommandButton Command14 
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   2
-         Tag             =   "1021"
-         Top             =   1080
-         Width           =   1095
       End
       Begin VB.Label Label2 
          Caption         =   "Activation Key"
          Height          =   375
          Left            =   1680
-         TabIndex        =   7
+         TabIndex        =   6
          Tag             =   "1731"
          Top             =   360
          Width           =   1215
@@ -65,7 +75,7 @@ Begin VB.Form runtimeprograms
          Caption         =   "Key Number"
          Height          =   375
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   7
          Tag             =   "1732"
          Top             =   360
          Width           =   1575
@@ -74,7 +84,7 @@ Begin VB.Form runtimeprograms
          Caption         =   "Run Time Program"
          Height          =   375
          Left            =   3000
-         TabIndex        =   6
+         TabIndex        =   5
          Tag             =   "1730"
          Top             =   360
          Width           =   1695

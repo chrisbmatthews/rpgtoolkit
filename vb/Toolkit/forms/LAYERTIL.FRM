@@ -157,12 +157,12 @@ Private Sub butOpenTile_click(): On Error Resume Next
     ReDim buffer(32, 32)
     
     'Store the current tileMem
-    Dim X As Integer, Y As Integer
-    For X = 1 To 32
-        For Y = 1 To 32
-            bufTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    Dim x As Integer, y As Integer
+    For x = 1 To 32
+        For y = 1 To 32
+            bufTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
     
     'Open a file dialog
     Dim dlg As FileDialogInfo
@@ -187,7 +187,7 @@ Private Sub butOpenTile_click(): On Error Resume Next
         
         'Open the tileset form
         ChDir (currentDir)
-        tilesetform.Show vbModal
+        tilesetForm.Show vbModal
         
         If setFilename = "" Then Exit Sub
         Call openWinTile(projectPath + tilePath + setFilename)
@@ -203,21 +203,21 @@ Private Sub butOpenTile_click(): On Error Resume Next
     picPreview.cls
     
     'Paint the opened tile on the picturebox
-    For X = 1 To 32
-        For Y = 1 To 32
-            Call vbPicPSet(picPreview, X - 1, Y - 1, tileMem(X, Y))
-            bufTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            Call vbPicPSet(picPreview, x - 1, y - 1, tileMem(x, y))
+            bufTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
     
     'Change tilemem back
-    For X = 1 To 32
-        For Y = 1 To 32
-            buffer(X, Y) = tileMem(X, Y)
-            tileMem(X, Y) = bufTile(X, Y)
-            bufTile(X, Y) = buffer(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            buffer(x, y) = tileMem(x, y)
+            tileMem(x, y) = bufTile(x, y)
+            bufTile(x, y) = buffer(x, y)
+        Next y
+    Next x
     
     'Preview tile
     If chkPreview.value Then Call Preview
@@ -232,12 +232,12 @@ Private Sub chkPreview_Click()
     'If it's unchecked, change the tile back
     If chkPreview.value = 0 Then
     
-        Dim X, Y As Integer
-        For X = 1 To 32
-            For Y = 1 To 32
-                tileMem(X, Y) = tilePreview(X, Y)
-            Next Y
-        Next X
+        Dim x, y As Integer
+        For x = 1 To 32
+            For y = 1 To 32
+                tileMem(x, y) = tilePreview(x, y)
+            Next y
+        Next x
     
         'Redraw
         activeTile.tileRedraw
@@ -278,13 +278,13 @@ Private Sub Form_Load(): On Error Resume Next
     Call LocalizeForm(Me)
     
     'Store the current tile and clear buftile
-    Dim X As Integer, Y As Integer
-    For X = 1 To 32
-        For Y = 1 To 32
-            bufTile(X, Y) = -1
-            tilePreview(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    Dim x As Integer, y As Integer
+    For x = 1 To 32
+        For y = 1 To 32
+            bufTile(x, y) = -1
+            tilePreview(x, y) = tileMem(x, y)
+        Next y
+    Next x
     
     'Set this to false at startup
     saveChanges = False
@@ -309,14 +309,14 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
         Call activeTile.setUndo
         
         'Change the tile
-        Dim X As Integer, Y As Integer
-        For X = 1 To 32
-            For Y = 1 To 32
-                If tileMem(X, Y) <> -1 Then
-                    tileMem(X, Y) = tilePreview(X, Y)
+        Dim x As Integer, y As Integer
+        For x = 1 To 32
+            For y = 1 To 32
+                If tileMem(x, y) <> -1 Then
+                    tileMem(x, y) = tilePreview(x, y)
                 End If
-            Next Y
-        Next X
+            Next y
+        Next x
         
     End If
     
@@ -341,29 +341,29 @@ End Sub
 Private Sub Preview(): On Error Resume Next
 
     'First we need to to set the tile back to how it was at the start
-    Dim X, Y As Integer
-    For X = 1 To 32
-        For Y = 1 To 32
-            tileMem(X, Y) = tilePreview(X, Y)
-        Next Y
-    Next X
+    Dim x, y As Integer
+    For x = 1 To 32
+        For y = 1 To 32
+            tileMem(x, y) = tilePreview(x, y)
+        Next y
+    Next x
 
-    For X = 1 To 32
-        For Y = 1 To 32
+    For x = 1 To 32
+        For y = 1 To 32
         
             If openTileEditorDocs(activeTile.indice).transparentLayer = 0 Then
             
                 'Not a transparent layer, just copy it
-                If bufTile(X, Y) = -1 Then bufTile(X, Y) = tileMem(X, Y)
-                tileMem(X, Y) = bufTile(X, Y)
+                If bufTile(x, y) = -1 Then bufTile(x, y) = tileMem(x, y)
+                tileMem(x, y) = bufTile(x, y)
                 
             Else
             
                 'Transparent layer, add effect
-                If bufTile(X, Y) = -1 Then
+                If bufTile(x, y) = -1 Then
                 
                     'Transparent pixel
-                    bufTile(X, Y) = tileMem(X, Y)
+                    bufTile(x, y) = tileMem(x, y)
                 Else
                 
                     'Not transparent
@@ -371,23 +371,23 @@ Private Sub Preview(): On Error Resume Next
                     'Needed variables
                     Dim rrbuf As String, ggbuf As String, bbbuf As String
                     Dim rrtile As String, ggtile As String, bbtile As String
-                    rrbuf = red(bufTile(X, Y))
-                    ggbuf = green(bufTile(X, Y))
-                    bbbuf = blue(bufTile(X, Y))
-                    rrtile = red(tileMem(X, Y))
-                    ggtile = green(tileMem(X, Y))
-                    bbtile = green(tileMem(X, Y))
+                    rrbuf = red(bufTile(x, y))
+                    ggbuf = green(bufTile(x, y))
+                    bbbuf = blue(bufTile(x, y))
+                    rrtile = red(tileMem(x, y))
+                    ggtile = green(tileMem(x, y))
+                    bbtile = green(tileMem(x, y))
                     rrtile = rrtile + rrbuf: If rrtile > 255 Then rrtile = 255
                     ggtile = ggtile + ggbuf: If ggtile > 255 Then ggtile = 255
                     bbtile = bbtile + bbbuf: If bbtile > 255 Then bbtile = 255
-                    tileMem(X, Y) = RGB(rrtile, ggtile, bbtile)
+                    tileMem(x, y) = RGB(rrtile, ggtile, bbtile)
                     
                 End If
                 
             End If
             
-        Next Y
-    Next X
+        Next y
+    Next x
     
     'Redraw
     activeTile.tileRedraw

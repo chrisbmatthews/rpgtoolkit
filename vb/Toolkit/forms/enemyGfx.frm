@@ -20,6 +20,53 @@ Begin VB.Form enemyGfx
       TabIndex        =   1
       Top             =   120
       Width           =   6975
+      Begin VB.PictureBox Picture2 
+         BorderStyle     =   0  'None
+         Height          =   615
+         Left            =   5640
+         ScaleHeight     =   615
+         ScaleWidth      =   1215
+         TabIndex        =   9
+         Top             =   600
+         Width           =   1215
+         Begin VB.CommandButton Command14 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   10
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+      End
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   855
+         Left            =   3360
+         ScaleHeight     =   855
+         ScaleWidth      =   1335
+         TabIndex        =   6
+         Top             =   3720
+         Width           =   1335
+         Begin VB.CommandButton Command2 
+            Appearance      =   0  'Flat
+            Caption         =   "Remove"
+            Height          =   345
+            Left            =   0
+            TabIndex        =   8
+            Top             =   480
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command1 
+            Appearance      =   0  'Flat
+            Caption         =   "Add"
+            Height          =   345
+            Left            =   0
+            TabIndex        =   7
+            Top             =   0
+            Width           =   1095
+         End
+      End
       Begin VB.CommandButton Command8 
          Appearance      =   0  'Flat
          BeginProperty Font 
@@ -35,56 +82,29 @@ Begin VB.Form enemyGfx
          Left            =   3480
          Picture         =   "enemyGfx.frx":0CCA
          Style           =   1  'Graphical
-         TabIndex        =   7
+         TabIndex        =   4
          Top             =   960
          Width           =   375
-      End
-      Begin VB.CommandButton Command14 
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   5640
-         TabIndex        =   6
-         Tag             =   "1021"
-         Top             =   600
-         Width           =   1095
       End
       Begin VB.TextBox Text1 
          Height          =   285
          Left            =   3480
-         TabIndex        =   5
+         TabIndex        =   3
          Top             =   600
          Width           =   2055
       End
       Begin VB.ListBox spriteList 
          Height          =   4155
          Left            =   240
-         TabIndex        =   4
+         TabIndex        =   2
          Top             =   360
          Width           =   3015
-      End
-      Begin VB.CommandButton Command1 
-         Appearance      =   0  'Flat
-         Caption         =   "Add"
-         Height          =   345
-         Left            =   3480
-         TabIndex        =   3
-         Top             =   3720
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command2 
-         Appearance      =   0  'Flat
-         Caption         =   "Remove"
-         Height          =   345
-         Left            =   3480
-         TabIndex        =   2
-         Top             =   4200
-         Width           =   1095
       End
       Begin VB.Label Label2 
          Caption         =   "Animation"
          Height          =   255
          Left            =   3480
-         TabIndex        =   8
+         TabIndex        =   5
          Tag             =   "2061"
          Top             =   360
          Width           =   2415
@@ -153,7 +173,7 @@ End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String, idx As Long, dx As Long
     
@@ -169,10 +189,10 @@ Private Sub Command14_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + miscPath$ + antiPath$
-    Text1.text = antiPath$
+    Text1.Text = antiPath$
     
     idx = spriteList.ListIndex
     If idx = -1 Then idx = 0
@@ -227,7 +247,7 @@ Private Sub Command8_Click()
         anmFile$ = enemylist(activeEnemyIndex).theData.customGfx(dx)
     End If
     
-    If anmFile$ <> "" And FileExists(projectPath$ + miscPath$ + anmFile$) Then
+    If anmFile$ <> "" And fileExists(projectPath$ + miscPath$ + anmFile$) Then
         'play animation
         animationHost.file = projectPath$ + miscPath$ + anmFile$
         animationHost.repeats = 3
@@ -251,10 +271,10 @@ Private Sub spriteList_Click()
     If idx = -1 Then idx = 0
     
     If idx < UBound(enemylist(activeEnemyIndex).theData.gfx) Then
-        Text1.text = enemylist(activeEnemyIndex).theData.gfx(idx)
+        Text1.Text = enemylist(activeEnemyIndex).theData.gfx(idx)
     Else
         dx = enemyGetCustomHandleIdx(enemylist(activeEnemyIndex).theData, idx - UBound(enemylist(activeEnemyIndex).theData.gfx))
-        Text1.text = enemylist(activeEnemyIndex).theData.customGfx(dx)
+        Text1.Text = enemylist(activeEnemyIndex).theData.customGfx(dx)
     End If
 End Sub
 
@@ -273,10 +293,10 @@ Private Sub Text1_Change()
     If idx = -1 Then idx = 0
     
     If idx < UBound(enemylist(activeEnemyIndex).theData.gfx) Then
-        enemylist(activeEnemyIndex).theData.gfx(idx) = Text1.text
+        enemylist(activeEnemyIndex).theData.gfx(idx) = Text1.Text
     Else
         dx = enemyGetCustomHandleIdx(enemylist(activeEnemyIndex).theData, idx - UBound(enemylist(activeEnemyIndex).theData.gfx))
-        enemylist(activeEnemyIndex).theData.customGfx(dx) = Text1.text
+        enemylist(activeEnemyIndex).theData.customGfx(dx) = Text1.Text
     End If
 End Sub
 

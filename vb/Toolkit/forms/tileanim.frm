@@ -33,7 +33,7 @@ Begin VB.Form tileanim
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   64
-         TabIndex        =   13
+         TabIndex        =   11
          Top             =   360
          Width           =   960
       End
@@ -53,7 +53,7 @@ Begin VB.Form tileanim
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   32
-         TabIndex        =   9
+         TabIndex        =   7
          Top             =   360
          Width           =   480
       End
@@ -62,7 +62,7 @@ Begin VB.Form tileanim
          Left            =   2280
          Max             =   200
          Min             =   1
-         TabIndex        =   8
+         TabIndex        =   6
          Top             =   480
          Value           =   1
          Width           =   2175
@@ -73,12 +73,40 @@ Begin VB.Form tileanim
          TabIndex        =   1
          Top             =   1200
          Width           =   4335
+         Begin VB.PictureBox Picture1 
+            BorderStyle     =   0  'None
+            Height          =   375
+            Left            =   2880
+            ScaleHeight     =   375
+            ScaleWidth      =   1215
+            TabIndex        =   12
+            Top             =   240
+            Width           =   1215
+            Begin VB.CommandButton Command3 
+               Caption         =   "Ins"
+               Height          =   375
+               Left            =   0
+               TabIndex        =   14
+               Tag             =   "1518"
+               Top             =   0
+               Width           =   495
+            End
+            Begin VB.CommandButton Command5 
+               Caption         =   "Del"
+               Height          =   375
+               Left            =   600
+               TabIndex        =   13
+               Tag             =   "1517"
+               Top             =   0
+               Width           =   495
+            End
+         End
          Begin VB.CommandButton Command6 
             Height          =   375
             Left            =   1440
             Picture         =   "tileanim.frx":0CCA
             Style           =   1  'Graphical
-            TabIndex        =   3
+            TabIndex        =   2
             Top             =   240
             Width           =   375
          End
@@ -87,25 +115,16 @@ Begin VB.Form tileanim
             Left            =   480
             Picture         =   "tileanim.frx":1994
             Style           =   1  'Graphical
-            TabIndex        =   5
+            TabIndex        =   4
             Top             =   240
             Width           =   375
-         End
-         Begin VB.CommandButton Command5 
-            Caption         =   "Del"
-            Height          =   375
-            Left            =   3720
-            TabIndex        =   7
-            Tag             =   "1517"
-            Top             =   240
-            Width           =   495
          End
          Begin VB.CommandButton Command4 
             Height          =   375
             Left            =   120
             Picture         =   "tileanim.frx":265E
             Style           =   1  'Graphical
-            TabIndex        =   6
+            TabIndex        =   5
             Top             =   240
             Width           =   375
          End
@@ -114,25 +133,16 @@ Begin VB.Form tileanim
             Left            =   1080
             Picture         =   "tileanim.frx":3328
             Style           =   1  'Graphical
-            TabIndex        =   4
+            TabIndex        =   3
             Top             =   240
             Width           =   375
-         End
-         Begin VB.CommandButton Command3 
-            Caption         =   "Ins"
-            Height          =   375
-            Left            =   3120
-            TabIndex        =   2
-            Tag             =   "1518"
-            Top             =   240
-            Width           =   495
          End
       End
       Begin VB.Label framecount 
          Caption         =   "Frame 1 / 1"
          Height          =   255
          Left            =   2280
-         TabIndex        =   12
+         TabIndex        =   10
          Tag             =   "1527"
          Top             =   720
          Width           =   2175
@@ -141,7 +151,7 @@ Begin VB.Form tileanim
          Caption         =   "Slow"
          Height          =   255
          Left            =   2280
-         TabIndex        =   11
+         TabIndex        =   9
          Tag             =   "1179"
          Top             =   240
          Width           =   495
@@ -150,7 +160,7 @@ Begin VB.Form tileanim
          Caption         =   "Fast"
          Height          =   255
          Left            =   3960
-         TabIndex        =   10
+         TabIndex        =   8
          Tag             =   "1178"
          Top             =   240
          Width           =   495

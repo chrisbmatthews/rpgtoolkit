@@ -29,9 +29,73 @@ Begin VB.Form editsm
    Begin VB.Frame mainFrame 
       Height          =   4215
       Left            =   120
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   120
       Width           =   7215
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   1215
+         Left            =   5880
+         ScaleHeight     =   1215
+         ScaleWidth      =   1215
+         TabIndex        =   19
+         Top             =   2160
+         Width           =   1215
+         Begin VB.CommandButton Command2 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   22
+            Tag             =   "1021"
+            Top             =   720
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command1 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   21
+            Tag             =   "1021"
+            Top             =   360
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command14 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   20
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+      End
       Begin VB.TextBox namebox 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -130,7 +194,7 @@ Begin VB.Form editsm
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   11
+         TabIndex        =   8
          Tag             =   "1353"
          Top             =   3360
          Width           =   2295
@@ -148,7 +212,7 @@ Begin VB.Form editsm
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   12
+         TabIndex        =   9
          Tag             =   "1352"
          Top             =   3720
          Width           =   2295
@@ -165,7 +229,7 @@ Begin VB.Form editsm
          EndProperty
          Height          =   285
          Left            =   3240
-         TabIndex        =   7
+         TabIndex        =   6
          Text            =   "None"
          Top             =   2520
          Width           =   2535
@@ -182,7 +246,7 @@ Begin VB.Form editsm
          EndProperty
          Height          =   285
          Left            =   3240
-         TabIndex        =   9
+         TabIndex        =   7
          Text            =   "None"
          Top             =   2880
          Width           =   2535
@@ -204,60 +268,6 @@ Begin VB.Form editsm
          Top             =   1800
          Width           =   2535
       End
-      Begin VB.CommandButton Command14 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   5880
-         TabIndex        =   6
-         Tag             =   "1021"
-         Top             =   2160
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command1 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   5880
-         TabIndex        =   8
-         Tag             =   "1021"
-         Top             =   2520
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command2 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   5880
-         TabIndex        =   10
-         Tag             =   "1021"
-         Top             =   2880
-         Width           =   1095
-      End
       Begin VB.Label Label2 
          Caption         =   "Name:"
          BeginProperty Font 
@@ -272,7 +282,7 @@ Begin VB.Form editsm
          Height          =   255
          Index           =   0
          Left            =   240
-         TabIndex        =   21
+         TabIndex        =   18
          Tag             =   "1112"
          Top             =   360
          Width           =   2895
@@ -291,7 +301,7 @@ Begin VB.Form editsm
          Height          =   255
          Index           =   1
          Left            =   240
-         TabIndex        =   20
+         TabIndex        =   17
          Tag             =   "1362"
          Top             =   720
          Width           =   2895
@@ -310,7 +320,7 @@ Begin VB.Form editsm
          Height          =   255
          Index           =   2
          Left            =   240
-         TabIndex        =   19
+         TabIndex        =   16
          Tag             =   "1361"
          Top             =   1440
          Width           =   2895
@@ -329,7 +339,7 @@ Begin VB.Form editsm
          Height          =   255
          Index           =   3
          Left            =   240
-         TabIndex        =   18
+         TabIndex        =   15
          Tag             =   "1360"
          Top             =   2160
          Width           =   2895
@@ -348,7 +358,7 @@ Begin VB.Form editsm
          Height          =   255
          Index           =   4
          Left            =   240
-         TabIndex        =   17
+         TabIndex        =   14
          Tag             =   "1359"
          Top             =   1080
          Width           =   3015
@@ -367,7 +377,7 @@ Begin VB.Form editsm
          Height          =   255
          Index           =   5
          Left            =   240
-         TabIndex        =   16
+         TabIndex        =   13
          Tag             =   "1358"
          Top             =   2520
          Width           =   2895
@@ -386,7 +396,7 @@ Begin VB.Form editsm
          Height          =   255
          Index           =   6
          Left            =   240
-         TabIndex        =   15
+         TabIndex        =   12
          Tag             =   "1357"
          Top             =   2880
          Width           =   2895
@@ -405,7 +415,7 @@ Begin VB.Form editsm
          Height          =   255
          Index           =   7
          Left            =   240
-         TabIndex        =   14
+         TabIndex        =   11
          Tag             =   "1354"
          Top             =   1800
          Width           =   2895

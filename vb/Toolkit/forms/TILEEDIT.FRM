@@ -907,13 +907,6 @@ Private Sub fillTile( _
                         ByVal crColor As Long _
                                                 )
 
-    '========================================================================
-    'Re-written by KSNiloc
-    '
-    ' + Now uses GDI
-    ' + Much, much, much faster
-    '========================================================================
-
     On Error Resume Next
 
     'Get the color where the user clicked down

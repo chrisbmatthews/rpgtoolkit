@@ -1,17 +1,52 @@
 Attribute VB_Name = "toolkitMain"
 '=======================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
+'=======================================================================
+
+'=======================================================================
+' Toolkit3 Entry Point
 '=======================================================================
 
 Option Explicit
 
-Public Sub Main()
-    '=======================================================
-    ' Toolkit main entry point
-    '=======================================================
+'=======================================================================
+' Declarations
+'=======================================================================
+Private Declare Function InitCommonControlsEx Lib "comctl32.dll" (ByRef iccex As tagInitCommonControlsEx) As Boolean
+
+'=======================================================================
+' Common controls structure
+'=======================================================================
+Private Type tagInitCommonControlsEx
+   lngSize As Long
+   lngICC As Long
+End Type
+
+'=======================================================================
+' Constants
+'=======================================================================
+Private Const ICC_USEREX_CLASSES = &H200
+
+'=======================================================================
+' Initiate the common controls
+'=======================================================================
+Public Function initCommonControls() As Boolean
     On Error Resume Next
+    Dim iccex As tagInitCommonControlsEx
+    iccex.lngSize = LenB(iccex)
+    iccex.lngICC = ICC_USEREX_CLASSES
+    Call InitCommonControlsEx(iccex)
+    initCommonControls = (Err.number = 0)
+End Function
+
+'=======================================================================
+' Toolkit main entry point
+'=======================================================================
+Public Sub Main()
+    On Error Resume Next
+    Call initCommonControls
     Call Load(configfile)
     Call initRuntimes
     Call createFileAssociations
@@ -31,10 +66,10 @@ Public Sub Main()
     Call askTutorial
 End Sub
 
+'=======================================================================
+' Create "resource", "game", and "help" folders
+'=======================================================================
 Private Sub initDirectories()
-    '=======================================================
-    ' Create "resource", "game", and "help" folders
-    '=======================================================
     On Error Resume Next
     currentDir = CurDir()
     Call MkDir(Mid(resourcePath, 1, Len(resourcePath) - 1))
@@ -42,25 +77,25 @@ Private Sub initDirectories()
     Call MkDir(Mid(helpPath, 1, Len(helpPath) - 1))
 End Sub
 
+'=======================================================================
+' Initiates player structure
+'=======================================================================
 Private Sub initPlayers()
-    '=======================================================
-    ' Initiates player structure
-    '=======================================================
     On Error Resume Next
-    Dim a As Long
-    For a = 1 To 6
-        playerList(activePlayerIndex).theData.armorType(a) = 1
-    Next a
+    Dim i As Long
+    For i = 1 To 6
+        playerList(activePlayerIndex).theData.armorType(i) = 1
+    Next i
     playerList(activePlayerIndex).theData.maxLevel = 99
     playerList(activePlayerIndex).theData.experienceIncrease = 2
 End Sub
 
+'=======================================================================
+' Initiate runtimes
+'=======================================================================
 Private Sub initRuntimes()
-    '=======================================================
-    ' Initiate runtimes
-    '=======================================================
     On Error Resume Next
-    If Command <> "" Then Call ChDir(App.path)
+    If Command$() <> "" Then Call ChDir(App.path)
     If Not (InitRuntime()) Then
         Call ChDir("C:\Program Files\Toolkit3\")
         currentDir = CurDir()
@@ -71,13 +106,13 @@ Private Sub initRuntimes()
     End If
 End Sub
 
+'=======================================================================
+' Initiate splash screen timer
+'=======================================================================
 Private Sub initTimer()
-    '=======================================================
-    ' Initiate splash screen timer
-    '=======================================================
     On Error Resume Next
     frmMain.Timer1.Interval = 1
-    If (Command <> "") Then
+    If (Command$() <> "") Then
         'Do nothing
     ElseIf GetSetting("RPGToolkit3", "Settings", "Splash", "1") = "0" Then
         'Do nothing
@@ -87,44 +122,44 @@ Private Sub initTimer()
     End If
 End Sub
 
+'=======================================================================
+' Initiate the enemy editor
+'=======================================================================
 Private Sub initEnemyEditor()
-    '=======================================================
-    ' Initiate the enemy editor
-    '=======================================================
     On Error Resume Next
     enemylist(activeEnemyIndex).theData.eneSizeX = 1
     enemylist(activeEnemyIndex).theData.eneSizeY = 1
 End Sub
 
+'=======================================================================
+' Initiate the board and tile editors
+'=======================================================================
 Private Sub initBoardAndTileEditor()
-    '=======================================================
-    ' Initiate the board and tile editors
-    '=======================================================
     On Error Resume Next
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     boardList(activeBoardIndex).spotLightRadius = 2
     boardList(activeBoardIndex).percentFade = 100
     detail = 1
-    For X = 1 To 19
-        For Y = 1 To 11
-            boardList(activeBoardIndex).BoardTile(X, Y) = -1
-        Next Y
-    Next X
+    For x = 1 To 19
+        For y = 1 To 11
+            boardList(activeBoardIndex).BoardTile(x, y) = -1
+        Next y
+    Next x
     boardList(activeBoardIndex).theData.brdColor = vbQBColor(15)
     boardList(activeBoardIndex).theData.bSizeX = 19
     boardList(activeBoardIndex).theData.bSizeY = 11
-    Call setupAutoTiler 'initialize autotiler tilemorphs
+    Call setupAutoTiler ' initialize autotiler tilemorphs
     
-    'Initiate a first tile editor doc (for tilemem use elsewhere - bug fix).
+    ' Initiate a first tile editor doc (for tilemem use elsewhere - bug fix).
     tileedit.indice = newTileEditIndice()
     Call clearTileDoc(openTileEditorDocs(tileedit.indice))
     
 End Sub
 
+'=======================================================================
+' Initiate the localization system
+'=======================================================================
 Private Sub initLocalization()
-    '=======================================================
-    ' Initiate the localization system
-    '=======================================================
     On Error Resume Next
     If m_LangFile = "" Then
         m_LangFile = "0english.lng"
@@ -134,20 +169,20 @@ Private Sub initLocalization()
     Call LocalizeForm(frmMain)
 End Sub
 
+'=======================================================================
+' Display a tip if they are enabled
+'=======================================================================
 Private Sub displayTip()
-    '=======================================================
-    ' Display a tip if they are enabled
-    '=======================================================
     On Error Resume Next
     If configfile.tipsOnOff = 1 Then
         Call tips.Show(vbModal)
     End If
 End Sub
 
+'=======================================================================
+' Ask to show the tutorial if we haven't before
+'=======================================================================
 Private Sub askTutorial()
-    '=======================================================
-    ' Ask to show the tutorial if we haven't before
-    '=======================================================
     On Error Resume Next
     If configfile.tutCurrentLesson = 0 Then
         Call tutorialask.Show(vbModal)

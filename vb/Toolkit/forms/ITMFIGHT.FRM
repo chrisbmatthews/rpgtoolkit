@@ -74,7 +74,7 @@ Begin VB.Form itmfight
          EndProperty
          Height          =   1455
          Left            =   240
-         TabIndex        =   9
+         TabIndex        =   7
          Tag             =   "1534"
          Top             =   360
          Width           =   6975
@@ -90,7 +90,7 @@ Begin VB.Form itmfight
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   11
+            TabIndex        =   9
             Text            =   "0"
             Top             =   360
             Width           =   495
@@ -107,7 +107,7 @@ Begin VB.Form itmfight
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   10
+            TabIndex        =   8
             Text            =   "0"
             Top             =   720
             Width           =   495
@@ -126,7 +126,7 @@ Begin VB.Form itmfight
             ForeColor       =   &H00808080&
             Height          =   255
             Left            =   120
-            TabIndex        =   16
+            TabIndex        =   14
             Tag             =   "1537"
             Top             =   1080
             Width           =   5655
@@ -145,7 +145,7 @@ Begin VB.Form itmfight
             Height          =   375
             Index           =   0
             Left            =   120
-            TabIndex        =   15
+            TabIndex        =   13
             Tag             =   "1536"
             Top             =   360
             Width           =   2295
@@ -164,7 +164,7 @@ Begin VB.Form itmfight
             Height          =   255
             Index           =   0
             Left            =   3120
-            TabIndex        =   14
+            TabIndex        =   12
             Tag             =   "1504"
             Top             =   360
             Width           =   615
@@ -183,7 +183,7 @@ Begin VB.Form itmfight
             Height          =   375
             Index           =   3
             Left            =   120
-            TabIndex        =   13
+            TabIndex        =   11
             Tag             =   "1535"
             Top             =   720
             Width           =   2295
@@ -202,7 +202,7 @@ Begin VB.Form itmfight
             Height          =   255
             Index           =   3
             Left            =   3120
-            TabIndex        =   12
+            TabIndex        =   10
             Tag             =   "1504"
             Top             =   720
             Width           =   615
@@ -225,41 +225,51 @@ Begin VB.Form itmfight
          Tag             =   "1196"
          Top             =   1920
          Width           =   6975
-         Begin VB.CommandButton Command1 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
+         Begin VB.PictureBox Picture1 
+            BorderStyle     =   0  'None
+            Height          =   855
             Left            =   5760
-            TabIndex        =   6
-            Tag             =   "1021"
-            Top             =   720
-            Width           =   1095
-         End
-         Begin VB.CommandButton Command14 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   5760
-            TabIndex        =   5
-            Tag             =   "1021"
+            ScaleHeight     =   855
+            ScaleWidth      =   1095
+            TabIndex        =   17
             Top             =   360
             Width           =   1095
+            Begin VB.CommandButton Command14 
+               Caption         =   "Browse..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   345
+               Left            =   0
+               TabIndex        =   19
+               Tag             =   "1021"
+               Top             =   0
+               Width           =   1095
+            End
+            Begin VB.CommandButton Command1 
+               Caption         =   "Browse..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   345
+               Left            =   0
+               TabIndex        =   18
+               Tag             =   "1021"
+               Top             =   360
+               Width           =   1095
+            End
          End
          Begin VB.TextBox animation 
             BeginProperty Font 
@@ -309,7 +319,7 @@ Begin VB.Form itmfight
             Height          =   495
             Index           =   2
             Left            =   120
-            TabIndex        =   8
+            TabIndex        =   6
             Tag             =   "1499"
             Top             =   720
             Width           =   3375
@@ -328,7 +338,7 @@ Begin VB.Form itmfight
             Height          =   375
             Index           =   0
             Left            =   120
-            TabIndex        =   7
+            TabIndex        =   5
             Tag             =   "1533"
             Top             =   360
             Width           =   3375
@@ -351,7 +361,7 @@ Begin VB.Form itmfight
          Left            =   4560
          MouseIcon       =   "ITMFIGHT.frx":0CCA
          MousePointer    =   99  'Custom
-         TabIndex        =   18
+         TabIndex        =   16
          Tag             =   "1150"
          Top             =   3360
          Visible         =   0   'False
@@ -374,7 +384,7 @@ Begin VB.Form itmfight
          Left            =   4440
          MouseIcon       =   "ITMFIGHT.frx":0FD4
          MousePointer    =   99  'Custom
-         TabIndex        =   17
+         TabIndex        =   15
          Tag             =   "1356"
          Top             =   3720
          Visible         =   0   'False
@@ -394,12 +404,12 @@ Attribute VB_Exposed = False
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 Private Sub animation_Change()
     On Error Resume Next
-    itemList(activeItemIndex).theData.itmAnimation$ = animation.text
+    itemList(activeItemIndex).theData.itmAnimation$ = animation.Text
 End Sub
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + miscPath$
     
@@ -413,19 +423,19 @@ Private Sub Command1_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + miscPath$ + antiPath$
-    animation.text = antiPath$
+    animation.Text = antiPath$
     itemList(activeItemIndex).theData.itmAnimation$ = antiPath$
 End Sub
 
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -437,11 +447,11 @@ Private Sub Command14_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     whichType$ = extention(filename$(1))
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    equipped.text = antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    equipped.Text = antiPath$
     itemList(activeItemIndex).theData.fgtUse = antiPath$
 End Sub
 
@@ -451,33 +461,33 @@ End Sub
 
 Private Sub equipped_Change()
     On Error Resume Next
-    itemList(activeItemIndex).theData.fgtUse$ = equipped.text
+    itemList(activeItemIndex).theData.fgtUse$ = equipped.Text
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
-    hpup.text = str$(itemList(activeItemIndex).theData.fgtHPup)
-    smup.text = str$(itemList(activeItemIndex).theData.fgtSMup)
-    If itemList(activeItemIndex).theData.fgtUse$ <> "" Then equipped.text = itemList(activeItemIndex).theData.fgtUse$
-    If itemList(activeItemIndex).theData.itmAnimation$ <> "" Then animation.text = itemList(activeItemIndex).theData.itmAnimation$
+    hpup.Text = str$(itemList(activeItemIndex).theData.fgtHPup)
+    smup.Text = str$(itemList(activeItemIndex).theData.fgtSMup)
+    If itemList(activeItemIndex).theData.fgtUse$ <> "" Then equipped.Text = itemList(activeItemIndex).theData.fgtUse$
+    If itemList(activeItemIndex).theData.itmAnimation$ <> "" Then animation.Text = itemList(activeItemIndex).theData.itmAnimation$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub hpup_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.fgtHPup = val(hpup.text)
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.fgtHPup = val(hpup.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -487,35 +497,35 @@ Private Sub Label1_Click()
 End Sub
 
 Private Sub Label8_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     animationedit.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeRPGCode.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub smup_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.fgtSMup = val(smup.text)
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.fgtSMup = val(smup.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

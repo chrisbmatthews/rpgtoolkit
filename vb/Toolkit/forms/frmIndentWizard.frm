@@ -13,16 +13,25 @@ Begin VB.Form frmIndentWizard
    ScaleWidth      =   4335
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CommandButton cmdIndent 
+      Caption         =   "Indent"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   2640
+      TabIndex        =   6
+      Top             =   840
+      Width           =   1575
+   End
    Begin Toolkit.TKTopBar TopBar 
       Height          =   480
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   0
       Width           =   3135
-      _ExtentX        =   5530
-      _ExtentY        =   847
-      Object.Width           =   3135
-      Caption         =   "Indent Wizard"
+      _extentx        =   5530
+      _extenty        =   847
+      Object.width           =   3135
+      caption         =   "Indent Wizard"
    End
    Begin VB.Frame frmInfo 
       Appearance      =   0  'Flat
@@ -40,7 +49,7 @@ Begin VB.Form frmIndentWizard
       ForeColor       =   &H80000008&
       Height          =   615
       Left            =   2640
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   1560
       Visible         =   0   'False
       Width           =   1575
@@ -60,7 +69,7 @@ Begin VB.Form frmIndentWizard
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   240
          Width           =   1335
       End
@@ -81,7 +90,7 @@ Begin VB.Form frmIndentWizard
       ForeColor       =   &H80000008&
       Height          =   2535
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   600
       Width           =   2415
       Begin VB.Label lblMoreDescription 
@@ -100,7 +109,7 @@ Begin VB.Form frmIndentWizard
          ForeColor       =   &H80000008&
          Height          =   1335
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   1080
          Width           =   2175
       End
@@ -120,21 +129,10 @@ Begin VB.Form frmIndentWizard
          ForeColor       =   &H80000008&
          Height          =   735
          Left            =   120
-         TabIndex        =   2
+         TabIndex        =   1
          Top             =   240
          Width           =   2175
       End
-   End
-   Begin Toolkit.TKButton cmdIndent 
-      Height          =   495
-      Left            =   2760
-      TabIndex        =   0
-      Top             =   720
-      Width           =   1455
-      _ExtentX        =   820
-      _ExtentY        =   873
-      Object.Width           =   450
-      Caption         =   "Indent"
    End
    Begin VB.Shape shpBorder 
       Height          =   3375

@@ -26,7 +26,7 @@ Begin VB.Form testprefs
       ScaleHeight     =   30
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   489
-      TabIndex        =   19
+      TabIndex        =   15
       Top             =   10
       Width           =   7335
       Begin VB.PictureBox Corner 
@@ -39,7 +39,7 @@ Begin VB.Form testprefs
          Picture         =   "testprefs.frx":0CCA
          ScaleHeight     =   450
          ScaleWidth      =   450
-         TabIndex        =   20
+         TabIndex        =   16
          Top             =   0
          Width           =   450
       End
@@ -57,7 +57,7 @@ Begin VB.Form testprefs
          EndProperty
          Height          =   375
          Left            =   600
-         TabIndex        =   21
+         TabIndex        =   17
          Top             =   0
          Width           =   2775
       End
@@ -83,7 +83,7 @@ Begin VB.Form testprefs
       Picture         =   "testprefs.frx":1943
       ScaleHeight     =   495
       ScaleWidth      =   1095
-      TabIndex        =   17
+      TabIndex        =   13
       Top             =   720
       Width           =   1095
       Begin VB.Label lblOK 
@@ -102,7 +102,7 @@ Begin VB.Form testprefs
          Left            =   480
          MouseIcon       =   "testprefs.frx":1F17
          MousePointer    =   99  'Custom
-         TabIndex        =   18
+         TabIndex        =   14
          Top             =   120
          Width           =   735
       End
@@ -118,10 +118,57 @@ Begin VB.Form testprefs
       Tag             =   "1746"
       Top             =   600
       Width           =   6375
+      Begin VB.PictureBox Picture1 
+         BackColor       =   &H80000009&
+         BorderStyle     =   0  'None
+         Height          =   1815
+         Left            =   5040
+         ScaleHeight     =   1815
+         ScaleWidth      =   1095
+         TabIndex        =   18
+         Top             =   360
+         Width           =   1095
+         Begin VB.CommandButton Command4 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   22
+            Tag             =   "1021"
+            Top             =   1440
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command3 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   21
+            Tag             =   "1021"
+            Top             =   1080
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command2 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   20
+            Tag             =   "1021"
+            Top             =   720
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command14 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   19
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+      End
       Begin VB.TextBox Text1 
          Height          =   285
          Left            =   2280
-         TabIndex        =   10
+         TabIndex        =   6
          Text            =   "Text1"
          Top             =   360
          Width           =   2655
@@ -129,7 +176,7 @@ Begin VB.Form testprefs
       Begin VB.TextBox Text2 
          Height          =   285
          Left            =   2280
-         TabIndex        =   9
+         TabIndex        =   5
          Text            =   "Text2"
          Top             =   1080
          Width           =   2655
@@ -137,7 +184,7 @@ Begin VB.Form testprefs
       Begin VB.TextBox Text3 
          Height          =   285
          Left            =   3480
-         TabIndex        =   8
+         TabIndex        =   4
          Text            =   "Text3"
          Top             =   1440
          Width           =   1455
@@ -145,7 +192,7 @@ Begin VB.Form testprefs
       Begin VB.ComboBox Combo1 
          Height          =   315
          Left            =   2280
-         TabIndex        =   7
+         TabIndex        =   3
          Text            =   "Player 1"
          Top             =   1440
          Width           =   1095
@@ -153,7 +200,7 @@ Begin VB.Form testprefs
       Begin VB.TextBox Text4 
          Height          =   285
          Left            =   2280
-         TabIndex        =   6
+         TabIndex        =   2
          Text            =   "Text4"
          Top             =   1800
          Width           =   2655
@@ -161,53 +208,17 @@ Begin VB.Form testprefs
       Begin VB.TextBox Text5 
          Height          =   285
          Left            =   2280
-         TabIndex        =   5
+         TabIndex        =   1
          Text            =   "Text5"
          Top             =   720
          Width           =   2655
-      End
-      Begin VB.CommandButton Command14 
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   5040
-         TabIndex        =   4
-         Tag             =   "1021"
-         Top             =   360
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command2 
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   5040
-         TabIndex        =   3
-         Tag             =   "1021"
-         Top             =   1080
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command3 
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   5040
-         TabIndex        =   2
-         Tag             =   "1021"
-         Top             =   1440
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command4 
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   5040
-         TabIndex        =   1
-         Tag             =   "1021"
-         Top             =   1800
-         Width           =   1095
       End
       Begin VB.Label Label2 
          BackStyle       =   0  'Transparent
          Caption         =   "Initial Font"
          Height          =   255
          Left            =   120
-         TabIndex        =   16
+         TabIndex        =   12
          Tag             =   "1745"
          Top             =   360
          Width           =   2055
@@ -217,7 +228,7 @@ Begin VB.Form testprefs
          Caption         =   "Initial Message Window"
          Height          =   375
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   11
          Tag             =   "1744"
          Top             =   1080
          Width           =   2055
@@ -227,7 +238,7 @@ Begin VB.Form testprefs
          Caption         =   "Initial Characters"
          Height          =   255
          Left            =   120
-         TabIndex        =   14
+         TabIndex        =   10
          Tag             =   "1743"
          Top             =   1440
          Width           =   2055
@@ -237,7 +248,7 @@ Begin VB.Form testprefs
          Caption         =   "Initial Board"
          Height          =   375
          Left            =   120
-         TabIndex        =   13
+         TabIndex        =   9
          Tag             =   "1742"
          Top             =   1800
          Width           =   2055
@@ -248,7 +259,7 @@ Begin VB.Form testprefs
          ForeColor       =   &H00808080&
          Height          =   375
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   8
          Tag             =   "1741"
          Top             =   2280
          Width           =   5775
@@ -258,7 +269,7 @@ Begin VB.Form testprefs
          Caption         =   "Initial Font Size"
          Height          =   255
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   7
          Tag             =   "1740"
          Top             =   720
          Width           =   2055

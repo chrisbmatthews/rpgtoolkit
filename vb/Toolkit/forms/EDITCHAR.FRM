@@ -231,9 +231,9 @@ On Error Resume Next
     playerList(activePlayerIndex).specialMoveNumber = smovelist.ListIndex + 1 'Which special move is selected?
     
     'open OPEN box
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + spcpath$
+    dlg.strDefaultFolder = projectPath$ + spcPath$
     dlg.strTitle = "Select Special Move"
     dlg.strDefaultExt = "spc"
     dlg.strFileTypes = "Special Moves (*.spc)|*.spc|All files (*.*)|*.*"
@@ -244,7 +244,7 @@ On Error Resume Next
         Exit Sub
     End If
     If filename$(1) = "" Then Exit Sub
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     '!NEW! The variable which holds the currently selected item
     Dim currentcharsm As Integer
@@ -254,21 +254,21 @@ On Error Resume Next
     
     playerList(activePlayerIndex).theData.smlist$(playerList(activePlayerIndex).specialMoveNumber) = antiPath$
     smovelist.Clear
-    FileCopy filename$(1), projectPath$ + spcpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + spcPath$ + antiPath$
     For listthru = 1 To 200
         smnameit$ = playerList(activePlayerIndex).theData.smlist$(listthru)
         If smnameit$ = "" Then smnameit$ = LoadStringLoc(1010, "None")
         total$ = str$(listthru) + "- " + smnameit$
         smovelist.AddItem (total$)
     Next listthru
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     '!NEW! The selected item is now the same as it was before the refresh
     smovelist.ListIndex = currentcharsm
 End Sub
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If smovelist.ListIndex = -1 Then
         MsgBox LoadStringLoc(953, "Please select a Special Move from the list first!"), 0, LoadStringLoc(954, "Change Special Move")
         Exit Sub
@@ -278,7 +278,7 @@ Private Sub Command1_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -301,7 +301,7 @@ On Error Resume Next
 End Sub
 
 Private Sub Form_Activate()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     smovelist.Clear
     For listthru = 1 To 200
         smnameit$ = playerList(activePlayerIndex).theData.smlist$(listthru)
@@ -313,13 +313,13 @@ Private Sub Form_Activate()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     smovelist.Clear
@@ -330,44 +330,44 @@ Private Sub Form_Load()
         smovelist.AddItem (total$)
     Next listthru
     smno.value = playerList(activePlayerIndex).theData.smYN
-    smname.text = playerList(activePlayerIndex).theData.specialMoveName$
+    smname.Text = playerList(activePlayerIndex).theData.specialMoveName$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeSpecialMove.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub smname_Change()
-    On Error GoTo errorhandler
-    playerList(activePlayerIndex).theData.specialMoveName$ = smname.text
+    On Error GoTo ErrorHandler
+    playerList(activePlayerIndex).theData.specialMoveName$ = smname.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub smno_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).theData.smYN = 1
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -378,12 +378,12 @@ Private Sub smovelist_DblClick()
 End Sub
 
 Private Sub smyes_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).theData.smYN = 0
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

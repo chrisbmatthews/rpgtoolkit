@@ -30,84 +30,113 @@ Begin VB.Form characteredit
    Begin VB.Frame mainFrame 
       Height          =   4935
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   0
       Top             =   120
       Width           =   7695
-      Begin VB.CommandButton cmdLevels 
-         Appearance      =   0  'Flat
-         Caption         =   "Levels..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   2175
          Left            =   5880
-         TabIndex        =   4
-         Tag             =   "1298"
-         Top             =   3000
-         Width           =   1575
-      End
-      Begin VB.CommandButton cmdEquipment 
-         Appearance      =   0  'Flat
-         Caption         =   "Equipment..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   5880
-         TabIndex        =   3
-         Tag             =   "1299"
-         Top             =   2640
-         Width           =   1575
-      End
-      Begin VB.CommandButton cmdGraphics 
-         Appearance      =   0  'Flat
-         Caption         =   "Graphics..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   5880
-         TabIndex        =   2
-         Tag             =   "1300"
-         Top             =   2280
-         Width           =   1575
-      End
-      Begin VB.CommandButton cmdSpecialMoves 
-         Appearance      =   0  'Flat
-         Caption         =   "Special Moves..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   5880
-         TabIndex        =   1
-         Tag             =   "1301"
-         Top             =   1920
-         Width           =   1575
+         ScaleHeight     =   2175
+         ScaleWidth      =   1695
+         TabIndex        =   50
+         Top             =   1440
+         Width           =   1695
+         Begin VB.CommandButton cmdProfile 
+            Appearance      =   0  'Flat
+            Caption         =   "Profile..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   55
+            Tag             =   "1302"
+            Top             =   0
+            Width           =   1575
+         End
+         Begin VB.CommandButton cmdSpecialMoves 
+            Appearance      =   0  'Flat
+            Caption         =   "Special Moves..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   54
+            Tag             =   "1301"
+            Top             =   360
+            Width           =   1575
+         End
+         Begin VB.CommandButton cmdGraphics 
+            Appearance      =   0  'Flat
+            Caption         =   "Graphics..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   53
+            Tag             =   "1300"
+            Top             =   720
+            Width           =   1575
+         End
+         Begin VB.CommandButton cmdEquipment 
+            Appearance      =   0  'Flat
+            Caption         =   "Equipment..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   52
+            Tag             =   "1299"
+            Top             =   1080
+            Width           =   1575
+         End
+         Begin VB.CommandButton cmdLevels 
+            Appearance      =   0  'Flat
+            Caption         =   "Levels..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   51
+            Tag             =   "1298"
+            Top             =   1440
+            Width           =   1575
+         End
       End
       Begin VB.PictureBox profile 
          AutoRedraw      =   -1  'True
@@ -116,32 +145,12 @@ Begin VB.Form characteredit
          ScaleHeight     =   61
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   61
-         TabIndex        =   6
+         TabIndex        =   1
          ToolTipText     =   "Profile Picture"
          Top             =   240
          Width           =   975
       End
-      Begin VB.CommandButton cmdProfile 
-         Appearance      =   0  'Flat
-         Caption         =   "Profile..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   5880
-         TabIndex        =   0
-         Tag             =   "1302"
-         Top             =   1560
-         Width           =   1575
-      End
       Begin VB.Frame frStats 
-         Caption         =   "Stats"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -153,7 +162,7 @@ Begin VB.Form characteredit
          EndProperty
          Height          =   3615
          Left            =   480
-         TabIndex        =   7
+         TabIndex        =   2
          Tag             =   "1303"
          Top             =   840
          Width           =   4935
@@ -170,7 +179,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   7
             Left            =   2400
-            TabIndex        =   16
+            TabIndex        =   11
             Text            =   "0"
             Top             =   2760
             Width           =   2175
@@ -188,7 +197,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   8
             Left            =   2400
-            TabIndex        =   15
+            TabIndex        =   10
             Text            =   "0"
             Top             =   3120
             Width           =   2175
@@ -206,7 +215,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   6
             Left            =   2400
-            TabIndex        =   14
+            TabIndex        =   9
             Text            =   "0"
             Top             =   2400
             Width           =   2175
@@ -224,7 +233,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   5
             Left            =   2400
-            TabIndex        =   13
+            TabIndex        =   8
             Text            =   "0"
             Top             =   2040
             Width           =   2175
@@ -242,7 +251,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   4
             Left            =   2400
-            TabIndex        =   12
+            TabIndex        =   7
             Text            =   "0"
             Top             =   1680
             Width           =   2175
@@ -260,7 +269,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   3
             Left            =   2400
-            TabIndex        =   11
+            TabIndex        =   6
             Text            =   "0"
             Top             =   1320
             Width           =   2175
@@ -278,7 +287,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   2
             Left            =   2400
-            TabIndex        =   10
+            TabIndex        =   5
             Text            =   "0"
             Top             =   960
             Width           =   2175
@@ -296,7 +305,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   1
             Left            =   2400
-            TabIndex        =   9
+            TabIndex        =   4
             Text            =   "0"
             Top             =   600
             Width           =   2175
@@ -314,7 +323,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   0
             Left            =   2400
-            TabIndex        =   8
+            TabIndex        =   3
             Text            =   "Undefined"
             Top             =   240
             Width           =   2175
@@ -337,7 +346,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   8
             Left            =   120
-            TabIndex        =   25
+            TabIndex        =   20
             Tag             =   "1312"
             Top             =   2760
             Width           =   2175
@@ -360,7 +369,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   7
             Left            =   120
-            TabIndex        =   24
+            TabIndex        =   19
             Tag             =   "1311"
             Top             =   3120
             Width           =   2175
@@ -383,7 +392,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   6
             Left            =   120
-            TabIndex        =   23
+            TabIndex        =   18
             Tag             =   "1310"
             Top             =   2400
             Width           =   2175
@@ -406,7 +415,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   5
             Left            =   120
-            TabIndex        =   22
+            TabIndex        =   17
             Tag             =   "1309"
             Top             =   2040
             Width           =   2175
@@ -429,7 +438,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   4
             Left            =   120
-            TabIndex        =   21
+            TabIndex        =   16
             Tag             =   "1308"
             Top             =   1680
             Width           =   2175
@@ -452,7 +461,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   3
             Left            =   120
-            TabIndex        =   20
+            TabIndex        =   15
             Tag             =   "1307"
             Top             =   1320
             Width           =   2175
@@ -475,7 +484,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   2
             Left            =   120
-            TabIndex        =   19
+            TabIndex        =   14
             Tag             =   "1306"
             Top             =   960
             Width           =   2175
@@ -498,7 +507,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   1
             Left            =   120
-            TabIndex        =   18
+            TabIndex        =   13
             Tag             =   "1305"
             Top             =   600
             Width           =   2175
@@ -521,14 +530,13 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   0
             Left            =   120
-            TabIndex        =   17
+            TabIndex        =   12
             Tag             =   "1304"
             Top             =   240
             Width           =   2175
          End
       End
       Begin VB.Frame frVariables 
-         Caption         =   "Variables"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -540,7 +548,7 @@ Begin VB.Form characteredit
          EndProperty
          Height          =   3615
          Left            =   480
-         TabIndex        =   26
+         TabIndex        =   21
          Tag             =   "1316"
          Top             =   840
          Width           =   4935
@@ -557,7 +565,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   0
             Left            =   2160
-            TabIndex        =   54
+            TabIndex        =   49
             Text            =   "Undefined"
             Top             =   240
             Width           =   1575
@@ -576,7 +584,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   0
             Left            =   3840
-            TabIndex        =   53
+            TabIndex        =   48
             ToolTipText     =   "Use the default form of the variable"
             Top             =   240
             Value           =   1  'Checked
@@ -596,7 +604,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   7
             Left            =   3840
-            TabIndex        =   42
+            TabIndex        =   37
             Tag             =   "1317"
             ToolTipText     =   "Use the default form of the variable"
             Top             =   2760
@@ -616,7 +624,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   7
             Left            =   2160
-            TabIndex        =   41
+            TabIndex        =   36
             Text            =   "Undefined!"
             Top             =   2760
             Width           =   1575
@@ -635,7 +643,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   8
             Left            =   3840
-            TabIndex        =   40
+            TabIndex        =   35
             Tag             =   "1317"
             ToolTipText     =   "Use the default form of the variable"
             Top             =   3120
@@ -655,7 +663,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   8
             Left            =   2160
-            TabIndex        =   39
+            TabIndex        =   34
             Text            =   "Undefined!"
             Top             =   3120
             Width           =   1575
@@ -674,7 +682,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   6
             Left            =   3840
-            TabIndex        =   38
+            TabIndex        =   33
             Tag             =   "1317"
             ToolTipText     =   "Use the default form of the variable"
             Top             =   2400
@@ -694,7 +702,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   6
             Left            =   2160
-            TabIndex        =   37
+            TabIndex        =   32
             Text            =   "Undefined!"
             Top             =   2400
             Width           =   1575
@@ -713,7 +721,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   3
             Left            =   3840
-            TabIndex        =   36
+            TabIndex        =   31
             Tag             =   "1317"
             ToolTipText     =   "Use the default form of the variable"
             Top             =   1320
@@ -733,7 +741,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   3
             Left            =   2160
-            TabIndex        =   35
+            TabIndex        =   30
             Text            =   "Undefined!"
             Top             =   1320
             Width           =   1575
@@ -752,7 +760,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   5
             Left            =   3840
-            TabIndex        =   34
+            TabIndex        =   29
             Tag             =   "1317"
             ToolTipText     =   "Use the default form of the variable"
             Top             =   2040
@@ -772,7 +780,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   5
             Left            =   2160
-            TabIndex        =   33
+            TabIndex        =   28
             Text            =   "Undefined!"
             Top             =   2040
             Width           =   1575
@@ -791,7 +799,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   4
             Left            =   3840
-            TabIndex        =   32
+            TabIndex        =   27
             Tag             =   "1317"
             ToolTipText     =   "Use the default form of the variable"
             Top             =   1680
@@ -811,7 +819,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   4
             Left            =   2160
-            TabIndex        =   31
+            TabIndex        =   26
             Text            =   "Undefined!"
             Top             =   1680
             Width           =   1575
@@ -830,7 +838,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   2
             Left            =   3840
-            TabIndex        =   30
+            TabIndex        =   25
             Tag             =   "1317"
             ToolTipText     =   "Use the default form of the variable"
             Top             =   960
@@ -851,7 +859,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   1
             Left            =   3840
-            TabIndex        =   29
+            TabIndex        =   24
             Tag             =   "1317"
             ToolTipText     =   "Use the default form of the variable"
             Top             =   600
@@ -871,7 +879,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   2
             Left            =   2160
-            TabIndex        =   28
+            TabIndex        =   23
             Text            =   "Undefined!"
             Top             =   960
             Width           =   1575
@@ -889,7 +897,7 @@ Begin VB.Form characteredit
             Height          =   285
             Index           =   1
             Left            =   2160
-            TabIndex        =   27
+            TabIndex        =   22
             Text            =   "Undefined!"
             Top             =   600
             Width           =   1575
@@ -912,7 +920,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   9
             Left            =   120
-            TabIndex        =   51
+            TabIndex        =   46
             Tag             =   "1326"
             Top             =   2760
             Width           =   1815
@@ -935,7 +943,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   8
             Left            =   120
-            TabIndex        =   50
+            TabIndex        =   45
             Tag             =   "1325"
             Top             =   3120
             Width           =   1815
@@ -958,7 +966,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   7
             Left            =   120
-            TabIndex        =   49
+            TabIndex        =   44
             Tag             =   "1324"
             Top             =   2400
             Width           =   1815
@@ -981,7 +989,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   5
             Left            =   120
-            TabIndex        =   48
+            TabIndex        =   43
             Tag             =   "1323"
             Top             =   1320
             Width           =   1935
@@ -1004,7 +1012,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   0
             Left            =   120
-            TabIndex        =   47
+            TabIndex        =   42
             Tag             =   "1322"
             Top             =   240
             Width           =   1815
@@ -1027,7 +1035,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   4
             Left            =   120
-            TabIndex        =   46
+            TabIndex        =   41
             Tag             =   "1321"
             Top             =   2040
             Width           =   1935
@@ -1050,7 +1058,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   3
             Left            =   120
-            TabIndex        =   45
+            TabIndex        =   40
             Tag             =   "1320"
             Top             =   1680
             Width           =   1815
@@ -1073,7 +1081,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   2
             Left            =   120
-            TabIndex        =   44
+            TabIndex        =   39
             Tag             =   "1319"
             Top             =   960
             Width           =   1815
@@ -1096,7 +1104,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   1
             Left            =   120
-            TabIndex        =   43
+            TabIndex        =   38
             Tag             =   "1318"
             Top             =   600
             Width           =   1815
@@ -1104,9 +1112,9 @@ Begin VB.Form characteredit
       End
       Begin MSComctlLib.TabStrip tabCharacter 
          Height          =   4335
-         Left            =   240
-         TabIndex        =   52
-         Top             =   360
+         Left            =   360
+         TabIndex        =   47
+         Top             =   480
          Width           =   5415
          _ExtentX        =   9551
          _ExtentY        =   7646

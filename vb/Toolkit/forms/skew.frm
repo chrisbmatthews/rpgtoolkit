@@ -19,38 +19,48 @@ Begin VB.Form skew
       TabIndex        =   3
       Top             =   120
       Width           =   2295
-      Begin VB.OptionButton Option4 
-         Caption         =   "Sinusodial Continuous"
-         Height          =   195
-         Left            =   240
-         TabIndex        =   6
-         Top             =   960
-         Width           =   1935
-      End
-      Begin VB.OptionButton Option3 
-         Caption         =   "Sinusodial Broken"
-         Height          =   315
-         Left            =   240
-         TabIndex        =   7
-         Top             =   1200
-         Width           =   1695
-      End
-      Begin VB.OptionButton Option2 
-         Caption         =   "Linear Broken"
-         Height          =   315
-         Left            =   240
-         TabIndex        =   5
-         Top             =   600
-         Width           =   1695
-      End
-      Begin VB.OptionButton Option1 
-         Caption         =   "Linear Continuous"
-         Height          =   195
-         Left            =   240
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   1335
+         Left            =   120
+         ScaleHeight     =   1335
+         ScaleWidth      =   2055
          TabIndex        =   4
-         Top             =   360
-         Value           =   -1  'True
-         Width           =   1815
+         Top             =   240
+         Width           =   2055
+         Begin VB.OptionButton Option4 
+            Caption         =   "Sinusodial Continuous"
+            Height          =   195
+            Left            =   0
+            TabIndex        =   8
+            Top             =   600
+            Width           =   1935
+         End
+         Begin VB.OptionButton Option3 
+            Caption         =   "Sinusodial Broken"
+            Height          =   315
+            Left            =   0
+            TabIndex        =   7
+            Top             =   840
+            Width           =   1695
+         End
+         Begin VB.OptionButton Option2 
+            Caption         =   "Linear Broken"
+            Height          =   315
+            Left            =   0
+            TabIndex        =   6
+            Top             =   240
+            Width           =   1695
+         End
+         Begin VB.OptionButton Option1 
+            Caption         =   "Linear Continuous"
+            Height          =   195
+            Left            =   0
+            TabIndex        =   5
+            Top             =   0
+            Value           =   -1  'True
+            Width           =   1815
+         End
       End
    End
    Begin VB.CommandButton cmdOK 
@@ -103,7 +113,7 @@ Private Sub cmdOK_Click()
     Call Preview
     
     '!NEW! The user wants to save the changes
-    SaveChanges = True
+    saveChanges = True
     
     Unload Me
     Exit Sub
@@ -133,7 +143,7 @@ Private Sub chkPreview_Click()
         For x = 1 To 32
             For y = 1 To 32
                 'If tilemem(x, y) <> -1 Then
-                    tilemem(x, y) = tilepreview(x, y)
+                    tileMem(x, y) = tilePreview(x, y)
                 'End If
             Next y
         Next x
@@ -155,13 +165,13 @@ Private Sub Form_Load()
     For x = 1 To 32
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilepreview(x, y) = tilemem(x, y)
+                tilePreview(x, y) = tileMem(x, y)
             'End If
         Next y
     Next x
     
     '!NEW! Set the variable to False at the start
-    SaveChanges = False
+    saveChanges = False
 End Sub
 
 '========================================================================
@@ -170,14 +180,14 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     'If the user has pressed the X in the form, he doesn't wants to add the changes
 
-    If Not SaveChanges Then
+    If Not saveChanges Then
     'Use new undo
-    Call activeTile.SetUndo
+    Call activeTile.setUndo
     Dim x As Integer, y As Integer
     For x = 1 To 32
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+                tileMem(x, y) = tilePreview(x, y)
             'End If
         Next y
     Next x
@@ -215,7 +225,7 @@ Private Sub Preview()
     For x = 1 To 32
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+                tileMem(x, y) = tilePreview(x, y)
             'End If
         Next y
     Next x
@@ -226,7 +236,7 @@ Private Sub Preview()
         'Buff it
         For x = 1 To 32
             For y = 1 To 32
-                buftile(x, y) = tilemem(x, y)
+                bufTile(x, y) = tileMem(x, y)
             Next y
         Next x
         'Start changing the tile
@@ -235,7 +245,7 @@ Private Sub Preview()
             For x = 1 To 32
                 xx = x + incr: yy = y
                 If xx > 32 Then xx = (xx - 32)
-                tilemem(xx, yy) = buftile(x, y)
+                tileMem(xx, yy) = bufTile(x, y)
             Next x
             incr = incr + 1
         Next y
@@ -246,8 +256,8 @@ Private Sub Preview()
         'Buff it
         For x = 1 To 32
             For y = 1 To 32
-                buftile(x, y) = tilemem(x, y)
-                tilemem(x, y) = -1
+                bufTile(x, y) = tileMem(x, y)
+                tileMem(x, y) = -1
             Next y
         Next x
         'Start changing the tile
@@ -257,7 +267,7 @@ Private Sub Preview()
                 xx = x + incr: yy = y
                 If xx > 32 Then
                 Else
-                    tilemem(xx, yy) = buftile(x, y)
+                    tileMem(xx, yy) = bufTile(x, y)
                 End If
             Next x
             incr = incr + 1
@@ -269,7 +279,7 @@ Private Sub Preview()
         'Buff it
         For x = 1 To 32
             For y = 1 To 32
-                buftile(x, y) = tilemem(x, y)
+                bufTile(x, y) = tileMem(x, y)
             Next y
         Next x
         'Start changing the tile
@@ -281,11 +291,11 @@ Private Sub Preview()
             disp = Int(disp * 32)
             yy = 32
             For y = disp To 32
-                tilemem(x, yy) = buftile(x, y)
+                tileMem(x, yy) = bufTile(x, y)
                 yy = yy - 1
             Next y
             For y = 1 To disp - 1
-                tilemem(x, yy) = buftile(x, y)
+                tileMem(x, yy) = bufTile(x, y)
                 yy = yy - 1
             Next y
         Next x
@@ -296,8 +306,8 @@ Private Sub Preview()
         'Buff it
         For x = 1 To 32
             For y = 1 To 32
-                buftile(x, y) = tilemem(x, y)
-                tilemem(x, y) = -1
+                bufTile(x, y) = tileMem(x, y)
+                tileMem(x, y) = -1
             Next y
         Next x
         'Start changing the tile
@@ -312,7 +322,7 @@ Private Sub Preview()
                 yy = yy - 1
             Next y
             For y = 1 To disp - 1
-                tilemem(x, yy) = buftile(x, y)
+                tileMem(x, yy) = bufTile(x, y)
                 yy = yy - 1
             Next y
         Next x

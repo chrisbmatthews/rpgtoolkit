@@ -16,7 +16,7 @@ Begin VB.Form pakfile
       Caption         =   "Cancel"
       Height          =   345
       Left            =   4320
-      TabIndex        =   4
+      TabIndex        =   3
       Tag             =   "1008"
       Top             =   720
       Width           =   1815
@@ -29,14 +29,24 @@ Begin VB.Form pakfile
       Tag             =   "1849"
       Top             =   120
       Width           =   4095
-      Begin VB.CommandButton Command2 
-         Caption         =   "Browse..."
-         Height          =   345
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   375
          Left            =   2880
-         TabIndex        =   3
-         Tag             =   "1021"
+         ScaleHeight     =   375
+         ScaleWidth      =   1095
+         TabIndex        =   5
          Top             =   480
          Width           =   1095
+         Begin VB.CommandButton Command2 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   6
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
       End
       Begin VB.TextBox Text1 
          Height          =   285
@@ -61,7 +71,7 @@ Begin VB.Form pakfile
          Left            =   2400
          MouseIcon       =   "pakfile.frx":0CCA
          MousePointer    =   99  'Custom
-         TabIndex        =   5
+         TabIndex        =   4
          Tag             =   "1848"
          Top             =   960
          Visible         =   0   'False

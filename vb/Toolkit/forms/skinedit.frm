@@ -23,32 +23,40 @@ Begin VB.Form skinedit
       Tag             =   "1736"
       Top             =   120
       Width           =   5295
-      Begin VB.CommandButton Command2 
-         Caption         =   "Browse..."
-         Height          =   345
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   855
          Left            =   3960
-         Style           =   1  'Graphical
-         TabIndex        =   7
-         Tag             =   "1021"
-         Top             =   960
-         Width           =   1095
+         ScaleHeight     =   855
+         ScaleWidth      =   1215
+         TabIndex        =   6
+         Top             =   480
+         Width           =   1215
+         Begin VB.CommandButton Command1 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   8
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command2 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   7
+            Tag             =   "1021"
+            Top             =   480
+            Width           =   1095
+         End
       End
       Begin VB.TextBox Text2 
          Height          =   285
          Left            =   1920
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   960
          Width           =   1935
-      End
-      Begin VB.CommandButton Command1 
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   3960
-         Style           =   1  'Graphical
-         TabIndex        =   4
-         Tag             =   "1021"
-         Top             =   480
-         Width           =   1095
       End
       Begin VB.TextBox Text1 
          Height          =   285
@@ -61,7 +69,7 @@ Begin VB.Form skinedit
          Caption         =   "Window Graphic"
          Height          =   255
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   4
          Tag             =   "1734"
          Top             =   960
          Width           =   1695
@@ -80,7 +88,6 @@ Begin VB.Form skinedit
       Caption         =   "OK"
       Height          =   345
       Left            =   5520
-      Style           =   1  'Graphical
       TabIndex        =   0
       Tag             =   "1022"
       Top             =   240
@@ -102,9 +109,9 @@ Public Sub skin()
 On Error Resume Next
     'skinifies this form.
     If mainMem.skinButton$ <> "" Then
-        Command1.Picture = LoadPicture(projectPath$ + bmppath$ + mainMem.skinButton$)
-        Command2.Picture = LoadPicture(projectPath$ + bmppath$ + mainMem.skinButton$)
-        Command3.Picture = LoadPicture(projectPath$ + bmppath$ + mainMem.skinButton$)
+        Command1.Picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
+        Command2.Picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
+        Command3.Picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
     Else
         Command1.Picture = LoadPicture("")
         Command2.Picture = LoadPicture("")
@@ -113,21 +120,21 @@ On Error Resume Next
     If mainMem.skinWindow$ <> "" Then
         'skinedit.Picture = LoadPicture(projectPath$ + bmppath$ + mainMem.skinWindow$)
         Call vbFrmAutoRedraw(skinedit, True)
-        Call DrawImage(projectPath$ + bmppath$ + mainMem.skinWindow$, 0, 0, vbFrmHDC(skinedit))
+        Call drawImage(projectPath$ + bmpPath$ + mainMem.skinWindow$, 0, 0, vbFrmHDC(skinedit))
         Call vbFrmRefresh(skinedit)
     Else
         skinedit.Picture = LoadPicture("")
     End If
-    Text1.text = mainMem.skinButton$
-    Text2.text = mainMem.skinWindow$
+    Text1.Text = mainMem.skinButton$
+    Text2.Text = mainMem.skinWindow$
 End Sub
 
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmppath$
+    dlg.strDefaultFolder = projectPath$ + bmpPath$
     
     dlg.strTitle = "Select Graphic"
     dlg.strDefaultExt = "bmp"
@@ -141,21 +148,21 @@ Private Sub Command1_Click()
     End If
     bkgNeedUpdate = True
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmppath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
     mainMem.skinButton$ = antiPath$
-    Text1.text = antiPath$
+    Text1.Text = antiPath$
     Call skin
 End Sub
 
 Private Sub toc_Click()
-    On Error GoTo errorhandler
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
+    On Error GoTo ErrorHandler
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -163,9 +170,9 @@ End Sub
 
 Private Sub Command2_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmppath$
+    dlg.strDefaultFolder = projectPath$ + bmpPath$
     
     dlg.strTitle = "Select Graphic"
     dlg.strDefaultExt = "bmp"
@@ -179,75 +186,75 @@ Private Sub Command2_Click()
     End If
     bkgNeedUpdate = True
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmppath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
     mainMem.skinWindow$ = antiPath$
-    Text2.text = antiPath$
+    Text2.Text = antiPath$
     Call skin
 End Sub
 
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload skinedit
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     mainMem.skinButton$ = ""
-    bgname.caption = LoadStringLoc(1010, "None")
+    bgname.Caption = LoadStringLoc(1010, "None")
     Call skin
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Command5_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     mainMem.skinWindow$ = ""
-    wgname.caption = LoadStringLoc(1010, "None")
+    wgname.Caption = LoadStringLoc(1010, "None")
     Call skin
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Call skin
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Text1_Change()
-    mainMem.skinButton$ = Text1.text
+    mainMem.skinButton$ = Text1.Text
 End Sub
 
 
 Private Sub Text2_Change()
-    mainMem.skinWindow$ = Text2.text
+    mainMem.skinWindow$ = Text2.Text
 End Sub
 
 

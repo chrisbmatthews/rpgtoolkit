@@ -15,11 +15,11 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   12135
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   8775
+      ScaleHeight     =   5910
       ScaleWidth      =   2730
-      TabIndex        =   161
+      TabIndex        =   88
       Top             =   360
       Visible         =   0   'False
       Width           =   2730
@@ -27,13 +27,13 @@ Begin VB.MDIForm tkMainForm
          BorderStyle     =   0  'None
          Height          =   5175
          Left            =   120
-         TabIndex        =   164
+         TabIndex        =   91
          Top             =   240
          Width           =   2775
          Begin MSComctlLib.TreeView TreeView1 
             Height          =   5055
             Left            =   0
-            TabIndex        =   165
+            TabIndex        =   92
             TabStop         =   0   'False
             Top             =   0
             Width           =   2535
@@ -58,7 +58,7 @@ Begin VB.MDIForm tkMainForm
          Caption         =   ">"
          Height          =   220
          Left            =   1560
-         TabIndex        =   163
+         TabIndex        =   90
          TabStop         =   0   'False
          Top             =   0
          Visible         =   0   'False
@@ -83,7 +83,7 @@ Begin VB.MDIForm tkMainForm
          Left            =   2400
          Picture         =   "tkMain.frx":0CCA
          Style           =   1  'Graphical
-         TabIndex        =   162
+         TabIndex        =   89
          Top             =   0
          Width           =   220
       End
@@ -102,7 +102,7 @@ Begin VB.MDIForm tkMainForm
          ForeColor       =   &H8000000F&
          Height          =   225
          Left            =   120
-         TabIndex        =   160
+         TabIndex        =   87
          Top             =   0
          Width           =   2535
       End
@@ -195,8 +195,8 @@ Begin VB.MDIForm tkMainForm
       Left            =   0
       TabIndex        =   1
       Top             =   0
-      Width           =   15240
-      _ExtentX        =   26882
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
@@ -385,11 +385,11 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   8430
-      Left            =   3825
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   465
+      ScaleHeight     =   5910
       ScaleWidth      =   3510
-      TabIndex        =   58
+      TabIndex        =   56
       Top             =   360
       Visible         =   0   'False
       Width           =   3510
@@ -407,14 +407,14 @@ Begin VB.MDIForm tkMainForm
          Left            =   3240
          Picture         =   "tkMain.frx":1032C
          Style           =   1  'Graphical
-         TabIndex        =   59
+         TabIndex        =   57
          Top             =   0
          Width           =   220
       End
       Begin TabDlg.SSTab bTools_Tabs 
          Height          =   5775
          Left            =   120
-         TabIndex        =   60
+         TabIndex        =   58
          Top             =   360
          Width           =   3285
          _ExtentX        =   5794
@@ -431,18 +431,57 @@ Begin VB.MDIForm tkMainForm
          Tab(0).Control(0).Enabled=   0   'False
          Tab(0).Control(1)=   "bTools_Objects_Frame"
          Tab(0).Control(1).Enabled=   0   'False
-         Tab(0).ControlCount=   2
+         Tab(0).Control(2)=   "Picture2"
+         Tab(0).Control(2).Enabled=   0   'False
+         Tab(0).ControlCount=   3
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
          Tab(1).Control(0)=   "Frame5"
          Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
+         Begin VB.PictureBox Picture2 
+            BorderStyle     =   0  'None
+            Height          =   1095
+            Left            =   240
+            ScaleHeight     =   1095
+            ScaleWidth      =   1995
+            TabIndex        =   100
+            Top             =   4440
+            Width           =   2000
+            Begin VB.OptionButton bTools_Objects_Display 
+               Caption         =   "current layer only"
+               Height          =   375
+               Index           =   2
+               Left            =   0
+               TabIndex        =   103
+               Top             =   720
+               Width           =   2775
+            End
+            Begin VB.OptionButton bTools_Objects_Display 
+               Caption         =   "by layer"
+               Height          =   375
+               Index           =   1
+               Left            =   0
+               TabIndex        =   102
+               Top             =   360
+               Width           =   1695
+            End
+            Begin VB.OptionButton bTools_Objects_Display 
+               Caption         =   "by object type"
+               Height          =   375
+               Index           =   0
+               Left            =   0
+               TabIndex        =   101
+               Top             =   0
+               Width           =   2775
+            End
+         End
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
             Height          =   1575
             Left            =   -74880
-            TabIndex        =   68
+            TabIndex        =   63
             Top             =   1290
             Width           =   3015
             Begin VB.CheckBox bTools_Display_Option 
@@ -450,7 +489,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   255
                Index           =   3
                Left            =   240
-               TabIndex        =   71
+               TabIndex        =   66
                Top             =   1080
                Width           =   2535
             End
@@ -459,7 +498,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   255
                Index           =   2
                Left            =   240
-               TabIndex        =   70
+               TabIndex        =   65
                Top             =   720
                Width           =   2535
             End
@@ -468,7 +507,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   255
                Index           =   1
                Left            =   240
-               TabIndex        =   69
+               TabIndex        =   64
                Top             =   360
                Width           =   2535
             End
@@ -477,7 +516,7 @@ Begin VB.MDIForm tkMainForm
             Caption         =   "General"
             Height          =   765
             Left            =   -74880
-            TabIndex        =   65
+            TabIndex        =   60
             Top             =   450
             Width           =   3015
             Begin VB.CheckBox bTools_Display_Option 
@@ -485,7 +524,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   255
                Index           =   4
                Left            =   300
-               TabIndex        =   67
+               TabIndex        =   62
                Top             =   750
                Visible         =   0   'False
                Width           =   2535
@@ -495,7 +534,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   255
                Index           =   0
                Left            =   240
-               TabIndex        =   66
+               TabIndex        =   61
                Top             =   360
                Width           =   2535
             End
@@ -504,41 +543,14 @@ Begin VB.MDIForm tkMainForm
             Caption         =   "Object Display Format"
             Height          =   1455
             Left            =   150
-            TabIndex        =   61
+            TabIndex        =   59
             Top             =   4170
             Width           =   3015
-            Begin VB.OptionButton bTools_Objects_Display 
-               Caption         =   "by object type"
-               Height          =   375
-               Index           =   0
-               Left            =   120
-               TabIndex        =   64
-               Top             =   240
-               Width           =   2775
-            End
-            Begin VB.OptionButton bTools_Objects_Display 
-               Caption         =   "by layer"
-               Height          =   375
-               Index           =   1
-               Left            =   120
-               TabIndex        =   63
-               Top             =   600
-               Width           =   2655
-            End
-            Begin VB.OptionButton bTools_Objects_Display 
-               Caption         =   "current layer only"
-               Height          =   375
-               Index           =   2
-               Left            =   120
-               TabIndex        =   62
-               Top             =   960
-               Width           =   2775
-            End
          End
          Begin MSComctlLib.TreeView bTools_Objects_Tree 
             Height          =   3585
             Left            =   150
-            TabIndex        =   72
+            TabIndex        =   67
             Top             =   450
             Width           =   3015
             _ExtentX        =   5318
@@ -566,7 +578,7 @@ Begin VB.MDIForm tkMainForm
          ForeColor       =   &H8000000F&
          Height          =   225
          Left            =   0
-         TabIndex        =   75
+         TabIndex        =   70
          Top             =   0
          Width           =   3375
       End
@@ -586,7 +598,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   225
          Index           =   1
          Left            =   4170
-         TabIndex        =   74
+         TabIndex        =   69
          Top             =   0
          Width           =   4800
       End
@@ -605,7 +617,7 @@ Begin VB.MDIForm tkMainForm
          ForeColor       =   &H8000000F&
          Height          =   585
          Left            =   10380
-         TabIndex        =   73
+         TabIndex        =   68
          Top             =   450
          Width           =   1245
       End
@@ -613,11 +625,11 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   2010
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   -1350
+      ScaleHeight     =   5910
       ScaleWidth      =   1815
-      TabIndex        =   55
+      TabIndex        =   53
       Top             =   360
       Visible         =   0   'False
       Width           =   1815
@@ -635,7 +647,7 @@ Begin VB.MDIForm tkMainForm
          Left            =   1560
          Picture         =   "tkMain.frx":104AE
          Style           =   1  'Graphical
-         TabIndex        =   171
+         TabIndex        =   98
          Top             =   0
          Width           =   220
       End
@@ -645,13 +657,13 @@ Begin VB.MDIForm tkMainForm
          Left            =   0
          ScaleHeight     =   5115
          ScaleWidth      =   1815
-         TabIndex        =   56
+         TabIndex        =   54
          Top             =   240
          Width           =   1815
          Begin Toolkit.ctlNewBar NewBarIn 
             Height          =   5115
             Left            =   0
-            TabIndex        =   57
+            TabIndex        =   55
             Top             =   0
             Width           =   1815
             _ExtentX        =   3201
@@ -673,7 +685,7 @@ Begin VB.MDIForm tkMainForm
          ForeColor       =   &H8000000F&
          Height          =   225
          Left            =   0
-         TabIndex        =   169
+         TabIndex        =   96
          Top             =   0
          Width           =   3375
       End
@@ -684,9 +696,9 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   8430
+      Height          =   5910
       Left            =   0
-      ScaleHeight     =   8430
+      ScaleHeight     =   5910
       ScaleWidth      =   975
       TabIndex        =   11
       Top             =   360
@@ -705,7 +717,7 @@ Begin VB.MDIForm tkMainForm
          Left            =   750
          Picture         =   "tkMain.frx":105F8
          Style           =   1  'Graphical
-         TabIndex        =   172
+         TabIndex        =   99
          Top             =   0
          Width           =   220
       End
@@ -724,7 +736,7 @@ Begin VB.MDIForm tkMainForm
             BorderStyle     =   0  'None
             Height          =   2745
             Left            =   0
-            TabIndex        =   44
+            TabIndex        =   42
             Top             =   1680
             Visible         =   0   'False
             Width           =   975
@@ -733,7 +745,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":10742
                Style           =   1  'Graphical
-               TabIndex        =   167
+               TabIndex        =   94
                ToolTipText     =   "Multi Select"
                Top             =   1560
                Visible         =   0   'False
@@ -744,7 +756,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":1140C
                Style           =   1  'Graphical
-               TabIndex        =   166
+               TabIndex        =   93
                ToolTipText     =   "Toggle Auto Tiler"
                Top             =   2040
                Width           =   375
@@ -763,7 +775,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   1560
                Picture         =   "tkMain.frx":11716
                Style           =   1  'Graphical
-               TabIndex        =   54
+               TabIndex        =   52
                TabStop         =   0   'False
                Tag             =   "1267"
                ToolTipText     =   "Apply lighting gradient"
@@ -775,7 +787,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":123E0
                Style           =   1  'Graphical
-               TabIndex        =   53
+               TabIndex        =   51
                TabStop         =   0   'False
                Tag             =   "1271"
                ToolTipText     =   "Draw lock tool"
@@ -788,7 +800,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":12CAA
                Style           =   1  'Graphical
-               TabIndex        =   52
+               TabIndex        =   50
                TabStop         =   0   'False
                Tag             =   "1227"
                ToolTipText     =   "Grid on/off"
@@ -810,7 +822,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":13974
                Style           =   1  'Graphical
-               TabIndex        =   51
+               TabIndex        =   49
                TabStop         =   0   'False
                Tag             =   "1226"
                ToolTipText     =   "Redraw"
@@ -832,7 +844,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":1423E
                Style           =   1  'Graphical
-               TabIndex        =   50
+               TabIndex        =   48
                TabStop         =   0   'False
                Tag             =   "1222"
                ToolTipText     =   "Select Tile"
@@ -853,7 +865,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":14548
                Style           =   1  'Graphical
-               TabIndex        =   49
+               TabIndex        =   47
                TabStop         =   0   'False
                Tag             =   "1267"
                ToolTipText     =   "Apply lighting gradient"
@@ -865,7 +877,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":15212
                Style           =   1  'Graphical
-               TabIndex        =   48
+               TabIndex        =   46
                TabStop         =   0   'False
                Tag             =   "1270"
                ToolTipText     =   "Tile type lock tool"
@@ -877,7 +889,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":15ADC
                Style           =   1  'Graphical
-               TabIndex        =   47
+               TabIndex        =   45
                TabStop         =   0   'False
                Tag             =   "1269"
                ToolTipText     =   "Eraser"
@@ -889,7 +901,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":163A6
                Style           =   1  'Graphical
-               TabIndex        =   46
+               TabIndex        =   44
                ToolTipText     =   "Isometric View"
                Top             =   2040
                Width           =   375
@@ -899,7 +911,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":17070
                Style           =   1  'Graphical
-               TabIndex        =   45
+               TabIndex        =   43
                TabStop         =   0   'False
                Tag             =   "1642"
                ToolTipText     =   "Eraser"
@@ -911,7 +923,7 @@ Begin VB.MDIForm tkMainForm
             BorderStyle     =   0  'None
             Height          =   2895
             Left            =   0
-            TabIndex        =   30
+            TabIndex        =   28
             Top             =   1680
             Visible         =   0   'False
             Width           =   975
@@ -921,7 +933,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":1793A
                Style           =   1  'Graphical
-               TabIndex        =   43
+               TabIndex        =   41
                TabStop         =   0   'False
                ToolTipText     =   "Change Color"
                Top             =   360
@@ -933,7 +945,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":18604
                Style           =   1  'Graphical
-               TabIndex        =   42
+               TabIndex        =   40
                TabStop         =   0   'False
                Tag             =   "1637"
                ToolTipText     =   "Fill rectangle tool"
@@ -946,7 +958,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":18ECE
                Style           =   1  'Graphical
-               TabIndex        =   41
+               TabIndex        =   39
                TabStop         =   0   'False
                Tag             =   "1638"
                ToolTipText     =   "Rectangle tool"
@@ -959,7 +971,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":19798
                Style           =   1  'Graphical
-               TabIndex        =   40
+               TabIndex        =   38
                TabStop         =   0   'False
                Tag             =   "1639"
                ToolTipText     =   "Filled ellipse tool"
@@ -972,7 +984,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":1A062
                Style           =   1  'Graphical
-               TabIndex        =   39
+               TabIndex        =   37
                TabStop         =   0   'False
                Tag             =   "1640"
                ToolTipText     =   "Ellipse tool"
@@ -985,7 +997,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":1A92C
                Style           =   1  'Graphical
-               TabIndex        =   38
+               TabIndex        =   36
                TabStop         =   0   'False
                Tag             =   "1641"
                ToolTipText     =   "Line tool"
@@ -998,7 +1010,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":1AC36
                Style           =   1  'Graphical
-               TabIndex        =   37
+               TabIndex        =   35
                TabStop         =   0   'False
                Tag             =   "1269"
                ToolTipText     =   "Eraser"
@@ -1011,7 +1023,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":1B500
                Style           =   1  'Graphical
-               TabIndex        =   36
+               TabIndex        =   34
                TabStop         =   0   'False
                Tag             =   "1642"
                ToolTipText     =   "Flood fill tool"
@@ -1024,7 +1036,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":1BDCA
                Style           =   1  'Graphical
-               TabIndex        =   35
+               TabIndex        =   33
                TabStop         =   0   'False
                Tag             =   "1643"
                ToolTipText     =   "Eyedropper tool (capture color)"
@@ -1037,7 +1049,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":1C0D4
                Style           =   1  'Graphical
-               TabIndex        =   34
+               TabIndex        =   32
                TabStop         =   0   'False
                Tag             =   "1644"
                ToolTipText     =   "Pencil tool (draw)"
@@ -1050,7 +1062,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":1C3DE
                Style           =   1  'Graphical
-               TabIndex        =   33
+               TabIndex        =   31
                TabStop         =   0   'False
                Tag             =   "1226"
                ToolTipText     =   "Redraw"
@@ -1062,7 +1074,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":1CCA8
                Style           =   1  'Graphical
-               TabIndex        =   32
+               TabIndex        =   30
                TabStop         =   0   'False
                Tag             =   "1227"
                ToolTipText     =   "Grid on/off"
@@ -1084,7 +1096,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   1560
                Picture         =   "tkMain.frx":1D972
                Style           =   1  'Graphical
-               TabIndex        =   31
+               TabIndex        =   29
                TabStop         =   0   'False
                Tag             =   "1267"
                ToolTipText     =   "Apply lighting gradient"
@@ -1096,7 +1108,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":1E63C
                Style           =   1  'Graphical
-               TabIndex        =   81
+               TabIndex        =   76
                Top             =   360
                Width           =   375
             End
@@ -1105,7 +1117,7 @@ Begin VB.MDIForm tkMainForm
             BorderStyle     =   0  'None
             Height          =   1575
             Left            =   0
-            TabIndex        =   23
+            TabIndex        =   21
             Top             =   1560
             Visible         =   0   'False
             Width           =   975
@@ -1114,7 +1126,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":1F306
                Style           =   1  'Graphical
-               TabIndex        =   29
+               TabIndex        =   27
                TabStop         =   0   'False
                Tag             =   "1269"
                ToolTipText     =   "Eraser"
@@ -1136,7 +1148,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":1FBD0
                Style           =   1  'Graphical
-               TabIndex        =   28
+               TabIndex        =   26
                TabStop         =   0   'False
                Tag             =   "1222"
                ToolTipText     =   "Select Tile"
@@ -1158,7 +1170,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   480
                Picture         =   "tkMain.frx":1FEDA
                Style           =   1  'Graphical
-               TabIndex        =   27
+               TabIndex        =   25
                TabStop         =   0   'False
                Tag             =   "1226"
                ToolTipText     =   "Redraw"
@@ -1179,7 +1191,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   1560
                Picture         =   "tkMain.frx":207A4
                Style           =   1  'Graphical
-               TabIndex        =   26
+               TabIndex        =   24
                TabStop         =   0   'False
                Tag             =   "1267"
                ToolTipText     =   "Apply lighting gradient"
@@ -1191,7 +1203,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":2146E
                Style           =   1  'Graphical
-               TabIndex        =   25
+               TabIndex        =   23
                TabStop         =   0   'False
                Tag             =   "1271"
                ToolTipText     =   "Draw lock tool"
@@ -1204,7 +1216,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   120
                Picture         =   "tkMain.frx":21D38
                Style           =   1  'Graphical
-               TabIndex        =   24
+               TabIndex        =   22
                TabStop         =   0   'False
                Tag             =   "1227"
                ToolTipText     =   "Grid on/off"
@@ -1220,21 +1232,23 @@ Begin VB.MDIForm tkMainForm
             Top             =   240
             Visible         =   0   'False
             Width           =   735
-            Begin VB.CommandButton cmdAnimDel 
-               Caption         =   "Del"
-               Height          =   375
-               Left            =   360
-               TabIndex        =   22
-               Tag             =   "1517"
-               Top             =   840
-               Width           =   375
-            End
             Begin VB.CommandButton cmdAnimIns 
                Caption         =   "Ins"
                Height          =   375
                Left            =   0
-               TabIndex        =   21
+               Style           =   1  'Graphical
+               TabIndex        =   105
                Tag             =   "1518"
+               Top             =   840
+               Width           =   375
+            End
+            Begin VB.CommandButton cmdAnimDel 
+               Caption         =   "Del"
+               Height          =   375
+               Left            =   360
+               Style           =   1  'Graphical
+               TabIndex        =   104
+               Tag             =   "1517"
                Top             =   840
                Width           =   375
             End
@@ -1328,7 +1342,7 @@ Begin VB.MDIForm tkMainForm
          ForeColor       =   &H8000000F&
          Height          =   225
          Left            =   0
-         TabIndex        =   170
+         TabIndex        =   97
          Top             =   0
          Width           =   3375
       End
@@ -1344,25 +1358,53 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   10
-      Top             =   8790
+      Top             =   6270
       Visible         =   0   'False
-      Width           =   15240
+      Width           =   11880
       Begin VB.Frame frmBoardExtras 
          BorderStyle     =   0  'None
          Caption         =   "Frame8"
          Height          =   1455
          Left            =   960
-         TabIndex        =   82
+         TabIndex        =   160
          Top             =   120
          Width           =   10575
+         Begin VB.PictureBox Picture3 
+            BorderStyle     =   0  'None
+            Height          =   375
+            Left            =   3960
+            ScaleHeight     =   375
+            ScaleWidth      =   3975
+            TabIndex        =   181
+            Top             =   1080
+            Width           =   3975
+            Begin VB.CommandButton Command21 
+               Appearance      =   0  'Flat
+               Caption         =   "Draw All Layers"
+               BeginProperty Font 
+                  Name            =   "Arial"
+                  Size            =   9.75
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   300
+               Left            =   0
+               TabIndex        =   182
+               Tag             =   "1265"
+               Top             =   0
+               Width           =   3885
+            End
+         End
          Begin VB.Frame bFrame 
-            Caption         =   "Tile Lighting"
             Height          =   1065
             Index           =   0
             Left            =   0
-            TabIndex        =   96
+            TabIndex        =   175
             Top             =   0
             Width           =   3915
             Begin VB.PictureBox Picture1 
@@ -1384,7 +1426,7 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   17
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   31
-               TabIndex        =   99
+               TabIndex        =   178
                Top             =   270
                Width           =   495
             End
@@ -1393,7 +1435,7 @@ Begin VB.MDIForm tkMainForm
                BackColor       =   &H00FFFFFF&
                Height          =   315
                Left            =   3270
-               TabIndex        =   98
+               TabIndex        =   177
                Top             =   240
                Width           =   495
             End
@@ -1402,7 +1444,7 @@ Begin VB.MDIForm tkMainForm
                Left            =   150
                Max             =   255
                Min             =   -255
-               TabIndex        =   97
+               TabIndex        =   176
                TabStop         =   0   'False
                Top             =   600
                Width           =   3615
@@ -1412,7 +1454,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   285
                Index           =   0
                Left            =   150
-               TabIndex        =   101
+               TabIndex        =   180
                Top             =   300
                Width           =   615
             End
@@ -1421,19 +1463,49 @@ Begin VB.MDIForm tkMainForm
                Height          =   285
                Index           =   1
                Left            =   2640
-               TabIndex        =   100
+               TabIndex        =   179
                Top             =   300
                Width           =   615
             End
          End
          Begin VB.Frame bFrame 
-            Caption         =   "Tile Type - Normal"
+            Caption         =   "Tile Type - Normal                     "
             Height          =   1065
             Index           =   1
-            Left            =   3990
-            TabIndex        =   93
+            Left            =   3960
+            TabIndex        =   170
             Top             =   0
             Width           =   3885
+            Begin VB.PictureBox Picture4 
+               BorderStyle     =   0  'None
+               Height          =   255
+               Left            =   120
+               ScaleHeight     =   255
+               ScaleWidth      =   855
+               TabIndex        =   173
+               Top             =   600
+               Width           =   855
+               Begin VB.CommandButton toggle 
+                  Appearance      =   0  'Flat
+                  BackColor       =   &H00404040&
+                  Caption         =   "Toggle"
+                  BeginProperty Font 
+                     Name            =   "Arial"
+                     Size            =   6.75
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   270
+                  Left            =   0
+                  TabIndex        =   174
+                  Tag             =   "1266"
+                  Top             =   0
+                  Width           =   855
+               End
+            End
             Begin VB.PictureBox tiletypes 
                Appearance      =   0  'Flat
                BackColor       =   &H80000005&
@@ -1444,29 +1516,9 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   16
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   236
-               TabIndex        =   159
+               TabIndex        =   172
                Top             =   240
                Width           =   3570
-            End
-            Begin VB.CommandButton toggle 
-               Appearance      =   0  'Flat
-               BackColor       =   &H00404040&
-               Caption         =   "Toggle"
-               BeginProperty Font 
-                  Name            =   "Arial"
-                  Size            =   6.75
-                  Charset         =   0
-                  Weight          =   400
-                  Underline       =   0   'False
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               Height          =   270
-               Left            =   150
-               TabIndex        =   95
-               Tag             =   "1266"
-               Top             =   600
-               Width           =   855
             End
             Begin VB.PictureBox arrowtype 
                Appearance      =   0  'Flat
@@ -1486,17 +1538,17 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   17
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   23
-               TabIndex        =   94
+               TabIndex        =   171
                Top             =   600
                Width           =   375
             End
          End
          Begin VB.Frame bFrame 
-            Caption         =   "Current Tile - None"
+            Caption         =   "Current Tile - None              "
             Height          =   1455
             Index           =   2
             Left            =   7950
-            TabIndex        =   85
+            TabIndex        =   162
             Top             =   0
             Width           =   2505
             Begin VB.PictureBox currenttile 
@@ -1518,7 +1570,7 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   30
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   30
-               TabIndex        =   90
+               TabIndex        =   167
                Top             =   270
                Width           =   480
             End
@@ -1527,7 +1579,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   195
                Left            =   720
                Style           =   1  'Graphical
-               TabIndex        =   89
+               TabIndex        =   166
                Top             =   840
                Width           =   195
             End
@@ -1536,7 +1588,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   195
                Left            =   720
                Style           =   1  'Graphical
-               TabIndex        =   88
+               TabIndex        =   165
                Top             =   1080
                Width           =   195
             End
@@ -1559,7 +1611,7 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   30
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   62
-               TabIndex        =   87
+               TabIndex        =   164
                Top             =   270
                Width           =   960
             End
@@ -1582,7 +1634,7 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   30
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   30
-               TabIndex        =   86
+               TabIndex        =   163
                Top             =   840
                Width           =   480
             End
@@ -1594,7 +1646,7 @@ Begin VB.MDIForm tkMainForm
                ForeColor       =   &H00000000&
                Height          =   255
                Left            =   990
-               TabIndex        =   92
+               TabIndex        =   169
                Tag             =   "1229"
                Top             =   1050
                Width           =   855
@@ -1607,7 +1659,7 @@ Begin VB.MDIForm tkMainForm
                ForeColor       =   &H00000000&
                Height          =   255
                Left            =   990
-               TabIndex        =   91
+               TabIndex        =   168
                Tag             =   "1277"
                Top             =   810
                Width           =   1215
@@ -1627,29 +1679,10 @@ Begin VB.MDIForm tkMainForm
             EndProperty
             Height          =   345
             Left            =   0
-            TabIndex        =   84
+            TabIndex        =   161
             Text            =   "Editlayer"
             Top             =   1140
             Width           =   3915
-         End
-         Begin VB.CommandButton Command21 
-            Appearance      =   0  'Flat
-            Caption         =   "Draw All Layers"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   300
-            Left            =   3990
-            TabIndex        =   83
-            Tag             =   "1265"
-            Top             =   1140
-            Width           =   3885
          End
       End
       Begin VB.Frame tileBmpExtras 
@@ -1666,21 +1699,41 @@ Begin VB.MDIForm tkMainForm
          Height          =   1455
          Left            =   960
          TabIndex        =   142
-         Top             =   120
+         Top             =   240
          Width           =   7680
          Begin VB.Frame Frame2 
-            Caption         =   "Size"
+            Caption         =   "Size      "
             Height          =   1095
             Index           =   0
             Left            =   3960
             TabIndex        =   153
             Top             =   0
             Width           =   1695
+            Begin VB.PictureBox Picture5 
+               BorderStyle     =   0  'None
+               Height          =   255
+               Left            =   840
+               ScaleHeight     =   255
+               ScaleWidth      =   735
+               TabIndex        =   156
+               Top             =   720
+               Width           =   735
+               Begin VB.CommandButton tileBmpSizeOK 
+                  Appearance      =   0  'Flat
+                  Caption         =   "OK"
+                  Height          =   255
+                  Left            =   0
+                  TabIndex        =   157
+                  Tag             =   "1022"
+                  Top             =   0
+                  Width           =   615
+               End
+            End
             Begin VB.TextBox tileBmpSizeY 
                Appearance      =   0  'Flat
                Height          =   285
                Left            =   960
-               TabIndex        =   156
+               TabIndex        =   155
                Top             =   240
                Width           =   495
             End
@@ -1688,25 +1741,15 @@ Begin VB.MDIForm tkMainForm
                Appearance      =   0  'Flat
                Height          =   285
                Left            =   240
-               TabIndex        =   155
+               TabIndex        =   154
                Top             =   240
                Width           =   495
-            End
-            Begin VB.CommandButton tileBmpSizeOK 
-               Appearance      =   0  'Flat
-               Caption         =   "OK"
-               Height          =   255
-               Left            =   960
-               TabIndex        =   154
-               Tag             =   "1022"
-               Top             =   720
-               Width           =   615
             End
             Begin VB.Label Label12 
                Caption         =   "Y"
                Height          =   255
                Left            =   830
-               TabIndex        =   158
+               TabIndex        =   159
                Tag             =   "1045"
                Top             =   285
                Width           =   135
@@ -1715,14 +1758,14 @@ Begin VB.MDIForm tkMainForm
                Caption         =   "X"
                Height          =   255
                Left            =   110
-               TabIndex        =   157
+               TabIndex        =   158
                Tag             =   "1046"
                Top             =   285
                Width           =   135
             End
          End
          Begin VB.Frame frmTileLightning 
-            Caption         =   "Tile Lighting"
+            Caption         =   "Tile Lighting                "
             Height          =   1095
             Left            =   0
             TabIndex        =   149
@@ -1771,7 +1814,7 @@ Begin VB.MDIForm tkMainForm
             End
          End
          Begin VB.Frame frmTileCur 
-            Caption         =   "Current Tile"
+            Caption         =   "Current Tile              "
             Height          =   1455
             Left            =   5760
             TabIndex        =   143
@@ -1862,72 +1905,92 @@ Begin VB.MDIForm tkMainForm
          BorderStyle     =   0  'None
          Height          =   1455
          Left            =   960
-         TabIndex        =   124
+         TabIndex        =   120
          Top             =   120
          Width           =   10200
          Begin VB.Frame Frame3 
-            Caption         =   "Scroll"
+            Caption         =   "Scroll              "
             Height          =   1215
             Left            =   8880
-            TabIndex        =   137
+            TabIndex        =   133
             Tag             =   "1649"
-            Top             =   0
+            Top             =   240
             Width           =   1215
-            Begin VB.CommandButton Command15 
-               Caption         =   "W"
-               Height          =   195
+            Begin VB.PictureBox Picture6 
+               BorderStyle     =   0  'None
+               Height          =   615
                Left            =   120
-               TabIndex        =   141
-               TabStop         =   0   'False
-               Tag             =   "1650"
+               ScaleHeight     =   615
+               ScaleWidth      =   975
+               TabIndex        =   134
                Top             =   360
-               Width           =   255
-            End
-            Begin VB.CommandButton Command16 
-               Caption         =   "E"
-               Height          =   195
-               Left            =   840
-               TabIndex        =   140
-               TabStop         =   0   'False
-               Tag             =   "1651"
-               Top             =   360
-               Width           =   255
-            End
-            Begin VB.CommandButton Command18 
-               Caption         =   "S"
-               Height          =   195
-               Left            =   480
-               TabIndex        =   139
-               TabStop         =   0   'False
-               Tag             =   "1652"
-               Top             =   480
-               Width           =   255
-            End
-            Begin VB.CommandButton Command19 
-               Caption         =   "N"
-               Height          =   195
-               Left            =   480
-               TabIndex        =   138
-               TabStop         =   0   'False
-               Tag             =   "1653"
-               Top             =   240
-               Width           =   255
+               Width           =   975
+               Begin VB.CommandButton Command19 
+                  Caption         =   "N"
+                  Height          =   195
+                  Left            =   360
+                  TabIndex        =   138
+                  TabStop         =   0   'False
+                  Tag             =   "1653"
+                  Top             =   0
+                  Width           =   255
+               End
+               Begin VB.CommandButton Command18 
+                  Caption         =   "S"
+                  Height          =   195
+                  Left            =   360
+                  TabIndex        =   137
+                  TabStop         =   0   'False
+                  Tag             =   "1652"
+                  Top             =   240
+                  Width           =   255
+               End
+               Begin VB.CommandButton Command16 
+                  Caption         =   "E"
+                  Height          =   195
+                  Left            =   720
+                  TabIndex        =   136
+                  TabStop         =   0   'False
+                  Tag             =   "1651"
+                  Top             =   120
+                  Width           =   255
+               End
+               Begin VB.CommandButton Command15 
+                  Caption         =   "W"
+                  Height          =   195
+                  Left            =   0
+                  TabIndex        =   135
+                  TabStop         =   0   'False
+                  Tag             =   "1650"
+                  Top             =   120
+                  Width           =   255
+               End
             End
          End
          Begin VB.Frame Frame6 
-            Caption         =   "Current Color/Tile"
+            Caption         =   "Current Color/Tile                                "
             Height          =   1215
             Left            =   6360
-            TabIndex        =   132
-            Top             =   0
+            TabIndex        =   127
+            Top             =   240
             Width           =   2415
-            Begin VB.CommandButton cmdImport 
-               Caption         =   "Import"
+            Begin VB.PictureBox Picture8 
+               BorderStyle     =   0  'None
                Height          =   255
                Left            =   120
-               TabIndex        =   136
+               ScaleHeight     =   255
+               ScaleWidth      =   1215
+               TabIndex        =   131
                Top             =   840
-               Width           =   1095
+               Width           =   1215
+               Begin VB.CommandButton cmdImport 
+                  Caption         =   "Import"
+                  Height          =   255
+                  Left            =   0
+                  TabIndex        =   132
+                  Top             =   0
+                  Width           =   1095
+               End
             End
             Begin VB.PictureBox selectedcolor 
                Appearance      =   0  'Flat
@@ -1939,7 +2002,7 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   31
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   31
-               TabIndex        =   135
+               TabIndex        =   130
                Top             =   240
                Width           =   495
             End
@@ -1953,7 +2016,7 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   30
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   30
-               TabIndex        =   134
+               TabIndex        =   129
                Top             =   240
                Width           =   480
             End
@@ -1967,65 +2030,85 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   30
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   62
-               TabIndex        =   133
+               TabIndex        =   128
                Top             =   240
                Width           =   960
             End
          End
          Begin VB.Frame Frame7 
-            Caption         =   "Color"
+            Caption         =   "Color      "
             Height          =   1215
             Left            =   0
-            TabIndex        =   125
-            Top             =   0
+            TabIndex        =   121
+            Top             =   240
             Width           =   6255
-            Begin VB.PictureBox palettebox 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
-               ForeColor       =   &H80000008&
+            Begin VB.PictureBox Picture11 
+               BorderStyle     =   0  'None
                Height          =   495
-               Left            =   120
-               Picture         =   "tkMain.frx":270FD
-               ScaleHeight     =   465
-               ScaleWidth      =   5865
-               TabIndex        =   130
-               Tag             =   "1661"
-               ToolTipText     =   "Click to select a color"
+               Left            =   105
+               ScaleHeight     =   495
+               ScaleWidth      =   6045
+               TabIndex        =   139
                Top             =   240
-               Width           =   5895
+               Width           =   6045
+               Begin VB.CommandButton Command1 
+                  Height          =   495
+                  Left            =   5880
+                  TabIndex        =   141
+                  Tag             =   "1662"
+                  ToolTipText     =   "Select Transparent Color"
+                  Top             =   0
+                  Width           =   135
+               End
+               Begin VB.PictureBox palettebox 
+                  Appearance      =   0  'Flat
+                  BackColor       =   &H80000005&
+                  ForeColor       =   &H80000008&
+                  Height          =   495
+                  Left            =   0
+                  Picture         =   "tkMain.frx":270FD
+                  ScaleHeight     =   465
+                  ScaleWidth      =   5865
+                  TabIndex        =   140
+                  Tag             =   "1661"
+                  ToolTipText     =   "Click to select a color"
+                  Top             =   0
+                  Width           =   5895
+               End
             End
-            Begin VB.CommandButton Command1 
-               Height          =   495
-               Left            =   6020
-               TabIndex        =   129
-               Tag             =   "1662"
-               ToolTipText     =   "Select Transparent Color"
-               Top             =   240
-               Width           =   135
-            End
-            Begin VB.CommandButton cmdDOS 
-               Caption         =   "DOS Pallete"
-               Height          =   255
-               Left            =   1560
-               TabIndex        =   128
-               Top             =   840
-               Width           =   1335
-            End
-            Begin VB.CommandButton cmdSelColor 
-               Caption         =   "Select Color"
+            Begin VB.PictureBox Picture7 
+               BorderStyle     =   0  'None
                Height          =   255
                Left            =   120
-               TabIndex        =   127
+               ScaleHeight     =   255
+               ScaleWidth      =   4335
+               TabIndex        =   122
                Top             =   840
-               Width           =   1335
-            End
-            Begin VB.CommandButton cmdShadeTile 
-               Caption         =   "Shade Tile"
-               Height          =   255
-               Left            =   3000
-               TabIndex        =   126
-               Top             =   840
-               Width           =   1335
+               Width           =   4335
+               Begin VB.CommandButton cmdShadeTile 
+                  Caption         =   "Shade Tile"
+                  Height          =   255
+                  Left            =   2880
+                  TabIndex        =   125
+                  Top             =   0
+                  Width           =   1335
+               End
+               Begin VB.CommandButton cmdSelColor 
+                  Caption         =   "Select Color"
+                  Height          =   255
+                  Left            =   0
+                  TabIndex        =   124
+                  Top             =   0
+                  Width           =   1335
+               End
+               Begin VB.CommandButton cmdDOS 
+                  Caption         =   "DOS Pallete"
+                  Height          =   255
+                  Left            =   1440
+                  TabIndex        =   123
+                  Top             =   0
+                  Width           =   1335
+               End
             End
             Begin VB.Label coords 
                Appearance      =   0  'Flat
@@ -2034,7 +2117,7 @@ Begin VB.MDIForm tkMainForm
                ForeColor       =   &H80000008&
                Height          =   255
                Left            =   5520
-               TabIndex        =   131
+               TabIndex        =   126
                Top             =   840
                Width           =   735
             End
@@ -2044,126 +2127,184 @@ Begin VB.MDIForm tkMainForm
          BorderStyle     =   0  'None
          Height          =   1335
          Left            =   960
-         TabIndex        =   102
-         Top             =   120
+         TabIndex        =   77
+         Top             =   240
          Width           =   9615
          Begin VB.Frame Frame1 
-            Caption         =   "Size"
+            Caption         =   "Size            "
             Height          =   1335
             Left            =   0
-            TabIndex        =   114
+            TabIndex        =   86
             Tag             =   "1042"
             Top             =   0
             Width           =   4215
-            Begin VB.TextBox txtAnimYSize 
-               Appearance      =   0  'Flat
-               Height          =   285
-               Left            =   3480
-               TabIndex        =   121
-               Top             =   840
-               Width           =   495
-            End
-            Begin VB.TextBox txtAnimXSize 
-               Appearance      =   0  'Flat
-               Height          =   285
-               Left            =   2640
-               TabIndex        =   120
-               Top             =   840
-               Width           =   495
-            End
-            Begin VB.OptionButton optAnimSize 
-               Caption         =   "Small (64x64)"
-               Height          =   255
-               Index           =   0
+            Begin VB.PictureBox Picture9 
+               BorderStyle     =   0  'None
+               Height          =   975
                Left            =   120
-               TabIndex        =   119
-               Tag             =   "1524"
+               ScaleHeight     =   975
+               ScaleWidth      =   3975
+               TabIndex        =   106
                Top             =   240
-               Value           =   -1  'True
-               Width           =   1935
-            End
-            Begin VB.OptionButton optAnimSize 
-               Caption         =   "Medium (128x128)"
-               Height          =   255
-               Index           =   1
-               Left            =   120
-               TabIndex        =   118
-               Tag             =   "1523"
-               Top             =   480
-               Width           =   1935
-            End
-            Begin VB.OptionButton optAnimSize 
-               Caption         =   "Large (256x256)"
-               Height          =   255
-               Index           =   2
-               Left            =   120
-               TabIndex        =   117
-               Tag             =   "1522"
-               Top             =   720
-               Width           =   1815
-            End
-            Begin VB.OptionButton optAnimSize 
-               Caption         =   "Sprite (32x64)"
-               Height          =   255
-               Index           =   3
-               Left            =   2280
-               TabIndex        =   116
-               Top             =   240
-               Width           =   1455
-            End
-            Begin VB.OptionButton optAnimSize 
-               Caption         =   "Other"
-               Height          =   255
-               Index           =   4
-               Left            =   2280
-               TabIndex        =   115
-               Tag             =   "1521"
-               Top             =   480
-               Width           =   1695
-            End
-            Begin VB.Label Label6 
-               Caption         =   "X"
-               Height          =   255
-               Left            =   3240
-               TabIndex        =   123
-               Tag             =   "1046"
-               Top             =   840
-               Width           =   135
-            End
-            Begin VB.Label lblAnimNewTBM 
-               AutoSize        =   -1  'True
-               Caption         =   "Create a tile bitmap"
-               BeginProperty Font 
-                  Name            =   "MS Sans Serif"
-                  Size            =   8.25
-                  Charset         =   0
-                  Weight          =   400
-                  Underline       =   -1  'True
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               ForeColor       =   &H00FF0000&
-               Height          =   195
-               Left            =   120
-               MousePointer    =   2  'Cross
-               TabIndex        =   122
-               Top             =   1030
-               Width           =   1350
+               Width           =   3975
+               Begin VB.OptionButton optAnimSize 
+                  Caption         =   "Other"
+                  Height          =   255
+                  Index           =   4
+                  Left            =   2160
+                  TabIndex        =   113
+                  Tag             =   "1521"
+                  Top             =   240
+                  Width           =   1695
+               End
+               Begin VB.OptionButton optAnimSize 
+                  Caption         =   "Sprite (32x64)"
+                  Height          =   255
+                  Index           =   3
+                  Left            =   2160
+                  TabIndex        =   112
+                  Top             =   0
+                  Width           =   1455
+               End
+               Begin VB.OptionButton optAnimSize 
+                  Caption         =   "Large (256x256)"
+                  Height          =   255
+                  Index           =   2
+                  Left            =   0
+                  TabIndex        =   111
+                  Tag             =   "1522"
+                  Top             =   480
+                  Width           =   1815
+               End
+               Begin VB.OptionButton optAnimSize 
+                  Caption         =   "Medium (128x128)"
+                  Height          =   255
+                  Index           =   1
+                  Left            =   0
+                  TabIndex        =   110
+                  Tag             =   "1523"
+                  Top             =   240
+                  Width           =   1935
+               End
+               Begin VB.OptionButton optAnimSize 
+                  Caption         =   "Small (64x64)"
+                  Height          =   255
+                  Index           =   0
+                  Left            =   0
+                  TabIndex        =   109
+                  Tag             =   "1524"
+                  Top             =   0
+                  Value           =   -1  'True
+                  Width           =   1935
+               End
+               Begin VB.TextBox txtAnimXSize 
+                  Appearance      =   0  'Flat
+                  Height          =   285
+                  Left            =   2520
+                  TabIndex        =   108
+                  Top             =   600
+                  Width           =   495
+               End
+               Begin VB.TextBox txtAnimYSize 
+                  Appearance      =   0  'Flat
+                  Height          =   285
+                  Left            =   3360
+                  TabIndex        =   107
+                  Top             =   600
+                  Width           =   495
+               End
+               Begin VB.Label lblAnimNewTBM 
+                  AutoSize        =   -1  'True
+                  Caption         =   "Create a tile bitmap"
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   -1  'True
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  ForeColor       =   &H00FF0000&
+                  Height          =   195
+                  Left            =   0
+                  MousePointer    =   2  'Cross
+                  TabIndex        =   115
+                  Top             =   720
+                  Width           =   1350
+               End
+               Begin VB.Label Label6 
+                  Caption         =   "X"
+                  Height          =   255
+                  Left            =   3120
+                  TabIndex        =   114
+                  Tag             =   "1046"
+                  Top             =   600
+                  Width           =   135
+               End
             End
          End
          Begin VB.Frame Frame2 
-            Caption         =   "Settings"
+            Caption         =   "Settings           "
             Height          =   1335
             Index           =   1
             Left            =   4320
-            TabIndex        =   103
+            TabIndex        =   78
             Top             =   0
             Width           =   5175
+            Begin VB.PictureBox Picture10 
+               BorderStyle     =   0  'None
+               FillStyle       =   0  'Solid
+               Height          =   375
+               Left            =   2160
+               ScaleHeight     =   375
+               ScaleWidth      =   2895
+               TabIndex        =   116
+               Top             =   840
+               Width           =   2895
+               Begin VB.CommandButton cmdAnimTransp 
+                  Caption         =   "Select"
+                  Height          =   315
+                  Left            =   1680
+                  TabIndex        =   118
+                  Tag             =   "1516"
+                  Top             =   0
+                  Width           =   1095
+               End
+               Begin VB.CommandButton cmdAnimDelSound 
+                  Caption         =   "X"
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   700
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   255
+                  Left            =   0
+                  TabIndex        =   117
+                  Tag             =   "1046"
+                  Top             =   120
+                  Width           =   255
+               End
+               Begin VB.Label lblAnimFrameCount 
+                  AutoSize        =   -1  'True
+                  Caption         =   "Frame 1 / 1"
+                  Height          =   195
+                  Left            =   720
+                  TabIndex        =   119
+                  Tag             =   "1527"
+                  Top             =   0
+                  Width           =   825
+               End
+            End
             Begin VB.HScrollBar hsbAnimPause 
                Height          =   135
                Left            =   120
                Max             =   10
-               TabIndex        =   108
+               TabIndex        =   81
                TabStop         =   0   'False
                Top             =   480
                Width           =   2175
@@ -2172,27 +2313,9 @@ Begin VB.MDIForm tkMainForm
                Appearance      =   0  'Flat
                Height          =   285
                Left            =   120
-               TabIndex        =   107
+               TabIndex        =   80
                Top             =   960
                Width           =   1935
-            End
-            Begin VB.CommandButton cmdAnimDelSound 
-               Caption         =   "X"
-               BeginProperty Font 
-                  Name            =   "MS Sans Serif"
-                  Size            =   8.25
-                  Charset         =   0
-                  Weight          =   700
-                  Underline       =   0   'False
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               Height          =   255
-               Left            =   2160
-               TabIndex        =   106
-               Tag             =   "1046"
-               Top             =   960
-               Width           =   255
             End
             Begin VB.PictureBox transpcolor 
                Appearance      =   0  'Flat
@@ -2204,25 +2327,16 @@ Begin VB.MDIForm tkMainForm
                ScaleHeight     =   15
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   143
-               TabIndex        =   105
+               TabIndex        =   79
                Top             =   480
                Width           =   2175
-            End
-            Begin VB.CommandButton cmdAnimTransp 
-               Caption         =   "Select"
-               Height          =   195
-               Left            =   2760
-               TabIndex        =   104
-               Tag             =   "1516"
-               Top             =   780
-               Width           =   1095
             End
             Begin VB.Label Label9 
                AutoSize        =   -1  'True
                Caption         =   "Fast"
                Height          =   195
                Left            =   120
-               TabIndex        =   113
+               TabIndex        =   85
                Tag             =   "1178"
                Top             =   240
                Width           =   300
@@ -2232,7 +2346,7 @@ Begin VB.MDIForm tkMainForm
                Caption         =   "Slow"
                Height          =   195
                Left            =   1920
-               TabIndex        =   112
+               TabIndex        =   84
                Tag             =   "1179"
                Top             =   240
                Width           =   345
@@ -2242,26 +2356,16 @@ Begin VB.MDIForm tkMainForm
                Caption         =   "Sound"
                Height          =   195
                Left            =   120
-               TabIndex        =   111
+               TabIndex        =   83
                Tag             =   "1525"
                Top             =   720
                Width           =   465
-            End
-            Begin VB.Label lblAnimFrameCount 
-               AutoSize        =   -1  'True
-               Caption         =   "Frame 1 / 1"
-               Height          =   195
-               Left            =   2760
-               TabIndex        =   110
-               Tag             =   "1527"
-               Top             =   1005
-               Width           =   825
             End
             Begin VB.Label Label11 
                Caption         =   "Frame Transparent Color"
                Height          =   255
                Left            =   2760
-               TabIndex        =   109
+               TabIndex        =   82
                Tag             =   "1526"
                Top             =   240
                Width           =   1815
@@ -2272,9 +2376,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   14865
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   11505
+      ScaleHeight     =   5910
       ScaleWidth      =   375
       TabIndex        =   3
       Top             =   360
@@ -2330,9 +2434,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   7335
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   3975
+      ScaleHeight     =   5910
       ScaleWidth      =   4800
       TabIndex        =   2
       Top             =   360
@@ -2344,7 +2448,7 @@ Begin VB.MDIForm tkMainForm
          Left            =   0
          ScaleHeight     =   6255
          ScaleWidth      =   4815
-         TabIndex        =   76
+         TabIndex        =   71
          Top             =   240
          Width           =   4815
          Begin VB.CheckBox chkCurTilesetDrawGrid 
@@ -2352,14 +2456,14 @@ Begin VB.MDIForm tkMainForm
             Left            =   3960
             Picture         =   "tkMain.frx":32347
             Style           =   1  'Graphical
-            TabIndex        =   168
+            TabIndex        =   95
             Top             =   120
             Width           =   375
          End
          Begin Toolkit.ctlOpenButton changedSelectedTileset 
             Height          =   375
             Left            =   4345
-            TabIndex        =   80
+            TabIndex        =   75
             Top             =   120
             Width           =   375
             _ExtentX        =   661
@@ -2375,7 +2479,7 @@ Begin VB.MDIForm tkMainForm
             ScaleHeight     =   367
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   286
-            TabIndex        =   78
+            TabIndex        =   73
             Top             =   480
             Width           =   4320
             Begin VB.Timer ReadCommandLine 
@@ -2392,7 +2496,7 @@ Begin VB.MDIForm tkMainForm
          Begin VB.VScrollBar tilesetScroller 
             Height          =   5535
             Left            =   4470
-            TabIndex        =   77
+            TabIndex        =   72
             TabStop         =   0   'False
             Top             =   480
             Width           =   255
@@ -2400,7 +2504,7 @@ Begin VB.MDIForm tkMainForm
          Begin VB.Label currentTilesetInfo 
             Height          =   255
             Left            =   0
-            TabIndex        =   79
+            TabIndex        =   74
             Top             =   150
             Width           =   4335
          End
@@ -2449,9 +2553,9 @@ Begin VB.MDIForm tkMainForm
       Height          =   255
       Left            =   0
       TabIndex        =   0
-      Top             =   10455
-      Width           =   15240
-      _ExtentX        =   26882
+      Top             =   7935
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
@@ -2463,8 +2567,8 @@ Begin VB.MDIForm tkMainForm
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   10954
-            TextSave        =   "11:48 AM"
+            Object.Width           =   5027
+            TextSave        =   "3:29 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2477,7 +2581,6 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
-            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -2830,7 +2933,7 @@ Private Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On 
 'Called by fillTilesetBar, tilesetScroller_Change
 '===================================================================
     Dim isoFormat As Long, tilesWide As Long, tilesHigh As Long
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     
     If configfile.lastTileset = vbNullString Then Exit Sub
     If tstnum = 0 Then tstnum = 1
@@ -2861,21 +2964,21 @@ Private Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On 
         'Draw vertical lines.
         If isoFormat = 0 Then
             'Not isometric
-            For X = 0 To tilesWide * 32 Step 32
-                Call vbPicLine(currentTilesetForm, X, 0, X, tilesHigh * 32, QBColor(1))
-            Next X
+            For x = 0 To tilesWide * 32 Step 32
+                Call vbPicLine(currentTilesetForm, x, 0, x, tilesHigh * 32, QBColor(1))
+            Next x
             'Draw horizontal lines.
-            For Y = 0 To (tilesHigh + 1) * 32 Step 32
-                Call vbPicLine(currentTilesetForm, 0, Y, tilesWide * 32, Y, QBColor(1))
-            Next Y
+            For y = 0 To (tilesHigh + 1) * 32 Step 32
+                Call vbPicLine(currentTilesetForm, 0, y, tilesWide * 32, y, QBColor(1))
+            Next y
         Else
-            For X = 0 To tilesWide * 64 Step 64
-                Call vbPicLine(currentTilesetForm, X, 0, X, tilesHigh * 32, QBColor(1))
-            Next X
+            For x = 0 To tilesWide * 64 Step 64
+                Call vbPicLine(currentTilesetForm, x, 0, x, tilesHigh * 32, QBColor(1))
+            Next x
             'Draw horizontal lines.
-            For Y = 0 To (tilesHigh + 1) * 32 Step 32
-                Call vbPicLine(currentTilesetForm, 0, Y, tilesWide * 64, Y, QBColor(1))
-            Next Y
+            For y = 0 To (tilesHigh + 1) * 32 Step 32
+                Call vbPicLine(currentTilesetForm, 0, y, tilesWide * 64, y, QBColor(1))
+            Next y
         End If
 
         
@@ -3137,7 +3240,7 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
     Exit Sub
 End Sub
 
-Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '===========================================================
 'MouseDown event on the flyout tileset viewer.
 '===========================================================
@@ -3161,14 +3264,14 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X 
     If iMetric = 0 Then
         'Not isometric.
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tileX = Int(X / 32)                                                        'x-tile clicked.
+        tileX = Int(x / 32)                                                        'x-tile clicked.
     Else
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(X / 64)
+        tileX = Int(x / 64)
     End If
     
     tilesHigh = Int((currentTilesetForm.Height / Screen.TwipsPerPixelY) / 32)
-    tileY = Int(Y / 32)
+    tileY = Int(y / 32)
     
     'Alterations for the scroller. Now scrolls row by row.
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
@@ -3342,40 +3445,12 @@ Private Sub mnuTips_Click()
     configfile.tipsOnOff = booleanToLong(mnuTips.Checked)
 End Sub
 
-Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim uD As TK_UNDOCK_DATA
     uD.e = True: uD.W = True
     Call unDock(newBar, "New", uD)
     newBarContainerContainer.Visible = False
     popButton(1).Enabled = False
-End Sub
-
-Private Sub ProjectListSize_Timer()
-
-    ' ! ADDED BY KSNiloc...
-
-    'Overkill, I know (heh...)
-    
-    On Error Resume Next
-
-    projectListSize.Enabled = False
-    
-    'If (Not fileTree1.height = rightbar.height - 400) Or _
-        '(Not TreeView1.height = rightbar.height - 400) Or _
-        '(Not TreeView1.width = 2535) Or (Not fileTree1.Left = 120) Or _
-        '(Not TreeView1.Left = 0) Then
-
-        'TreeView1.height = rightbar.height - 400
-        'fileTree1.height = rightbar.height - 400
-        'TreeView1.width = 2535
-        'fileTree1.width = 2535
-        'TreeView1.Top = 0
-        'TreeView1.Left = 0
-        'fileTree1.Left = 120
-        'fileTree1.Top = 240
-        'Label2.Left = 120
-
-    'End If
 End Sub
 
 Private Sub ReadCommandLine_Timer()
@@ -3768,8 +3843,8 @@ Public Sub openmnu_Click(): On Error Resume Next
     Call tkMainForm.openFile(filename$(1))
 End Sub
 
-Private Sub palettebox_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeTile.palettebox_MouseDown(Button, Shift, X, Y)
+Private Sub palettebox_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeTile.palettebox_MouseDown(Button, Shift, x, y)
 End Sub
 
 Private Sub Picture1_Click(): On Error Resume Next
@@ -3866,7 +3941,7 @@ Private Sub rightbar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub rightbar_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rightbar_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     'ignoreFocus = False
     'rightbar.SetFocus
     'If rightbar.width = 2730 Then
@@ -4118,8 +4193,8 @@ Private Sub tileTool_Click(Index As Integer): On Error Resume Next
     Call activeTile.ToolSet(Index)
 End Sub
 
-Private Sub tiletypes_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeBoard.ChangeTileType(Button, Shift, X, Y)
+Private Sub tiletypes_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeBoard.ChangeTileType(Button, Shift, x, y)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -4134,7 +4209,7 @@ Public Sub toggle_Click(): On Error Resume Next
     Call activeBoard.toggleTileType
 End Sub
 
-Private Sub ToolsTopBar_mouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub ToolsTopBar_mouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -4154,7 +4229,7 @@ Private Sub TreeView1_DblClick(): On Error Resume Next
     ignoreFocus = False
 End Sub
 
-Private Sub TreeView1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TreeView1_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     ignoreFocus = True
 End Sub
 

@@ -42,24 +42,34 @@ Begin VB.Form spcmoveinfo
       Tag             =   "1210"
       Top             =   120
       Width           =   5295
-      Begin VB.CommandButton Command1 
-         Appearance      =   0  'Flat
-         Caption         =   "The Player Can Always Use This Move"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
          Height          =   375
-         Left            =   960
+         Left            =   840
+         ScaleHeight     =   375
+         ScaleWidth      =   3855
          TabIndex        =   11
-         Tag             =   "1209"
-         Top             =   1680
-         Width           =   3495
+         Top             =   1560
+         Width           =   3855
+         Begin VB.CommandButton Command1 
+            Appearance      =   0  'Flat
+            Caption         =   "The Player Can Always Use This Move"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   12
+            Tag             =   "1209"
+            Top             =   0
+            Width           =   3495
+         End
       End
       Begin VB.TextBox minexp 
          BeginProperty Font 
@@ -252,57 +262,57 @@ Attribute VB_Exposed = False
 
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
-    minexp.text = "0"
-    minlevel.text = "0"
+    On Error GoTo ErrorHandler
+    minexp.Text = "0"
+    minlevel.Text = "0"
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
-    playerList(activePlayerIndex).theData.spcMinExp(playerList(activePlayerIndex).specialMoveNumber) = val(minexp.text)     'minimum experience for each move
-    playerList(activePlayerIndex).theData.spcMinLevel(playerList(activePlayerIndex).specialMoveNumber) = val(minlevel.text)   'min level for each move
-    playerList(activePlayerIndex).theData.spcVar$(playerList(activePlayerIndex).specialMoveNumber) = varname.text       'conditional variable for each special move
-    playerList(activePlayerIndex).theData.spcEquals$(playerList(activePlayerIndex).specialMoveNumber) = varequals.text    'condition of variable for each special move.
+    On Error GoTo ErrorHandler
+    playerList(activePlayerIndex).theData.spcMinExp(playerList(activePlayerIndex).specialMoveNumber) = val(minexp.Text)     'minimum experience for each move
+    playerList(activePlayerIndex).theData.spcMinLevel(playerList(activePlayerIndex).specialMoveNumber) = val(minlevel.Text)   'min level for each move
+    playerList(activePlayerIndex).theData.spcVar$(playerList(activePlayerIndex).specialMoveNumber) = varname.Text       'conditional variable for each special move
+    playerList(activePlayerIndex).theData.spcEquals$(playerList(activePlayerIndex).specialMoveNumber) = varequals.Text    'condition of variable for each special move.
     Unload spcmoveinfo
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 Unload spcmoveinfo
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
-    Label1.caption = LoadStringLoc(2023, "Special Move Info (Move") + str$(playerList(activePlayerIndex).specialMoveNumber) + ")"
-    minexp.text = str$(playerList(activePlayerIndex).theData.spcMinExp(playerList(activePlayerIndex).specialMoveNumber))
-    minlevel.text = str$(playerList(activePlayerIndex).theData.spcMinLevel(playerList(activePlayerIndex).specialMoveNumber))
-    varname.text = playerList(activePlayerIndex).theData.spcVar$(playerList(activePlayerIndex).specialMoveNumber)
-    varequals.text = playerList(activePlayerIndex).theData.spcEquals$(playerList(activePlayerIndex).specialMoveNumber)
+    Label1.Caption = LoadStringLoc(2023, "Special Move Info (Move") + str$(playerList(activePlayerIndex).specialMoveNumber) + ")"
+    minexp.Text = str$(playerList(activePlayerIndex).theData.spcMinExp(playerList(activePlayerIndex).specialMoveNumber))
+    minlevel.Text = str$(playerList(activePlayerIndex).theData.spcMinLevel(playerList(activePlayerIndex).specialMoveNumber))
+    varname.Text = playerList(activePlayerIndex).theData.spcVar$(playerList(activePlayerIndex).specialMoveNumber)
+    varequals.Text = playerList(activePlayerIndex).theData.spcEquals$(playerList(activePlayerIndex).specialMoveNumber)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

@@ -61,6 +61,52 @@ Begin VB.Form itmboard
       Tag             =   "1716"
       Top             =   120
       Width           =   7215
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   855
+         Left            =   5880
+         ScaleHeight     =   855
+         ScaleWidth      =   1215
+         TabIndex        =   6
+         Top             =   360
+         Width           =   1215
+         Begin VB.CommandButton Command1 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   8
+            Tag             =   "1021"
+            Top             =   360
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command14 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   7
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+      End
       Begin VB.TextBox equipped 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -73,7 +119,7 @@ Begin VB.Form itmboard
          EndProperty
          Height          =   285
          Left            =   3720
-         TabIndex        =   5
+         TabIndex        =   3
          Text            =   "None"
          Top             =   720
          Width           =   2055
@@ -90,46 +136,10 @@ Begin VB.Form itmboard
          EndProperty
          Height          =   285
          Left            =   3720
-         TabIndex        =   4
+         TabIndex        =   2
          Text            =   "None"
          Top             =   360
          Width           =   2055
-      End
-      Begin VB.CommandButton Command14 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   5880
-         TabIndex        =   3
-         Tag             =   "1021"
-         Top             =   360
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command1 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   5880
-         TabIndex        =   2
-         Tag             =   "1021"
-         Top             =   720
-         Width           =   1095
       End
       Begin VB.Label Label7 
          Caption         =   "Program To Run When Item Is Picked Up:"
@@ -145,7 +155,7 @@ Begin VB.Form itmboard
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   5
          Tag             =   "1717"
          Top             =   720
          Width           =   3615
@@ -164,7 +174,7 @@ Begin VB.Form itmboard
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   4
          Tag             =   "1715"
          Top             =   360
          Width           =   3615
@@ -183,9 +193,9 @@ Attribute VB_Exposed = False
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -197,18 +207,18 @@ Private Sub Command1_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    equipped.text = antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    equipped.Text = antiPath$
     itemList(activeItemIndex).theData.itmPrgPickUp$ = antiPath$
 End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -220,10 +230,10 @@ Private Sub Command14_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    onboard.text = antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    onboard.Text = antiPath$
     itemList(activeItemIndex).theData.itmPrgOnBoard$ = antiPath$
 End Sub
 
@@ -233,25 +243,25 @@ End Sub
 
 Private Sub equipped_Change()
     On Error Resume Next
-    itemList(activeItemIndex).theData.itmPrgPickUp$ = equipped.text
+    itemList(activeItemIndex).theData.itmPrgPickUp$ = equipped.Text
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
-    If itemList(activeItemIndex).theData.itmPrgOnBoard$ <> "" Then onboard.text = itemList(activeItemIndex).theData.itmPrgOnBoard$   'Program to run while item is on board
-    If itemList(activeItemIndex).theData.itmPrgPickUp$ <> "" Then equipped.text = itemList(activeItemIndex).theData.itmPrgPickUp$    'Program to run when picked up.
+    If itemList(activeItemIndex).theData.itmPrgOnBoard$ <> "" Then onboard.Text = itemList(activeItemIndex).theData.itmPrgOnBoard$   'Program to run while item is on board
+    If itemList(activeItemIndex).theData.itmPrgPickUp$ <> "" Then equipped.Text = itemList(activeItemIndex).theData.itmPrgPickUp$    'Program to run when picked up.
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub onboard_Change()
     On Error Resume Next
-    itemList(activeItemIndex).theData.itmPrgOnBoard$ = onboard.text
+    itemList(activeItemIndex).theData.itmPrgOnBoard$ = onboard.Text
 End Sub
 

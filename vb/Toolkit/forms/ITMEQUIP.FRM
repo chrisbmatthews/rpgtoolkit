@@ -62,7 +62,7 @@ Begin VB.Form itmequip
       Top             =   120
       Width           =   8055
       Begin VB.Frame Frame1 
-         Caption         =   "Equipable To"
+         Caption         =   "Equipable To          "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -74,7 +74,7 @@ Begin VB.Form itmequip
          EndProperty
          Height          =   2535
          Left            =   240
-         TabIndex        =   25
+         TabIndex        =   22
          Tag             =   "1506"
          Top             =   360
          Width           =   3255
@@ -91,7 +91,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   33
+            TabIndex        =   30
             Tag             =   "1508"
             Top             =   1800
             Width           =   2775
@@ -109,7 +109,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   32
+            TabIndex        =   29
             Tag             =   "1111"
             Top             =   1560
             Width           =   2775
@@ -127,7 +127,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   31
+            TabIndex        =   28
             Tag             =   "1110"
             Top             =   1320
             Width           =   2895
@@ -145,7 +145,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   30
+            TabIndex        =   27
             Tag             =   "1109"
             Top             =   1080
             Width           =   2895
@@ -163,7 +163,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   29
+            TabIndex        =   26
             Tag             =   "1108"
             Top             =   840
             Width           =   3015
@@ -181,7 +181,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   28
+            TabIndex        =   25
             Tag             =   "1507"
             Top             =   600
             Width           =   3015
@@ -199,7 +199,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   27
+            TabIndex        =   24
             Tag             =   "1106"
             Top             =   360
             Width           =   3015
@@ -216,7 +216,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   285
             Left            =   1080
-            TabIndex        =   26
+            TabIndex        =   23
             Top             =   2040
             Visible         =   0   'False
             Width           =   1815
@@ -234,7 +234,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   255
             Left            =   360
-            TabIndex        =   34
+            TabIndex        =   31
             Tag             =   "1509"
             Top             =   2040
             Visible         =   0   'False
@@ -242,7 +242,7 @@ Begin VB.Form itmequip
          End
       End
       Begin VB.Frame Frame2 
-         Caption         =   "Effects of Equipping Item"
+         Caption         =   "Effects of Equipping Item                     "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -254,7 +254,7 @@ Begin VB.Form itmequip
          EndProperty
          Height          =   2535
          Left            =   3600
-         TabIndex        =   12
+         TabIndex        =   9
          Tag             =   "1500"
          Top             =   360
          Width           =   4215
@@ -270,7 +270,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   285
             Left            =   2880
-            TabIndex        =   16
+            TabIndex        =   13
             Text            =   "0"
             Top             =   360
             Width           =   495
@@ -287,7 +287,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   285
             Left            =   2880
-            TabIndex        =   15
+            TabIndex        =   12
             Text            =   "0"
             Top             =   720
             Width           =   495
@@ -304,7 +304,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   285
             Left            =   2880
-            TabIndex        =   14
+            TabIndex        =   11
             Text            =   "0"
             Top             =   1080
             Width           =   495
@@ -321,7 +321,7 @@ Begin VB.Form itmequip
             EndProperty
             Height          =   285
             Left            =   2880
-            TabIndex        =   13
+            TabIndex        =   10
             Text            =   "0"
             Top             =   1440
             Width           =   495
@@ -340,7 +340,7 @@ Begin VB.Form itmequip
             Height          =   255
             Index           =   3
             Left            =   3480
-            TabIndex        =   24
+            TabIndex        =   21
             Tag             =   "1504"
             Top             =   720
             Width           =   615
@@ -359,7 +359,7 @@ Begin VB.Form itmequip
             Height          =   255
             Index           =   2
             Left            =   3480
-            TabIndex        =   23
+            TabIndex        =   20
             Tag             =   "1504"
             Top             =   1080
             Width           =   615
@@ -378,7 +378,7 @@ Begin VB.Form itmequip
             Height          =   255
             Index           =   1
             Left            =   3480
-            TabIndex        =   22
+            TabIndex        =   19
             Tag             =   "1504"
             Top             =   1440
             Width           =   615
@@ -398,7 +398,7 @@ Begin VB.Form itmequip
             Height          =   255
             Index           =   0
             Left            =   120
-            TabIndex        =   21
+            TabIndex        =   18
             Tag             =   "1505"
             Top             =   360
             Width           =   2655
@@ -417,7 +417,7 @@ Begin VB.Form itmequip
             Height          =   255
             Index           =   0
             Left            =   3480
-            TabIndex        =   20
+            TabIndex        =   17
             Tag             =   "1504"
             Top             =   360
             Width           =   615
@@ -437,7 +437,7 @@ Begin VB.Form itmequip
             Height          =   255
             Index           =   1
             Left            =   360
-            TabIndex        =   19
+            TabIndex        =   16
             Tag             =   "1503"
             Top             =   720
             Width           =   2415
@@ -457,7 +457,7 @@ Begin VB.Form itmequip
             Height          =   255
             Index           =   2
             Left            =   360
-            TabIndex        =   18
+            TabIndex        =   15
             Tag             =   "1502"
             Top             =   1080
             Width           =   2415
@@ -477,14 +477,14 @@ Begin VB.Form itmequip
             Height          =   495
             Index           =   3
             Left            =   120
-            TabIndex        =   17
+            TabIndex        =   14
             Tag             =   "1501"
             Top             =   1440
             Width           =   2655
          End
       End
       Begin VB.Frame Frame3 
-         Caption         =   "RPGCode"
+         Caption         =   "RPGCode        "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -500,59 +500,69 @@ Begin VB.Form itmequip
          Tag             =   "1196"
          Top             =   3000
          Width           =   7575
-         Begin VB.CommandButton Command2 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
+         Begin VB.PictureBox Picture1 
+            BorderStyle     =   0  'None
+            Height          =   1215
             Left            =   6360
-            TabIndex        =   8
-            Tag             =   "1021"
-            Top             =   1080
-            Width           =   1095
-         End
-         Begin VB.CommandButton Command1 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   6360
-            TabIndex        =   7
-            Tag             =   "1021"
-            Top             =   720
-            Width           =   1095
-         End
-         Begin VB.CommandButton Command14 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   6360
-            TabIndex        =   6
-            Tag             =   "1021"
+            ScaleHeight     =   1215
+            ScaleWidth      =   1095
+            TabIndex        =   34
             Top             =   360
             Width           =   1095
+            Begin VB.CommandButton Command14 
+               Caption         =   "Browse..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   345
+               Left            =   0
+               TabIndex        =   37
+               Tag             =   "1021"
+               Top             =   0
+               Width           =   1095
+            End
+            Begin VB.CommandButton Command1 
+               Caption         =   "Browse..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   345
+               Left            =   0
+               TabIndex        =   36
+               Tag             =   "1021"
+               Top             =   360
+               Width           =   1095
+            End
+            Begin VB.CommandButton Command2 
+               Caption         =   "Browse..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   345
+               Left            =   0
+               TabIndex        =   35
+               Tag             =   "1021"
+               Top             =   720
+               Width           =   1095
+            End
          End
          Begin VB.TextBox animation 
             BeginProperty Font 
@@ -620,7 +630,7 @@ Begin VB.Form itmequip
             Height          =   615
             Index           =   2
             Left            =   120
-            TabIndex        =   11
+            TabIndex        =   8
             Tag             =   "1499"
             Top             =   1080
             Width           =   3975
@@ -640,7 +650,7 @@ Begin VB.Form itmequip
             Height          =   375
             Index           =   1
             Left            =   120
-            TabIndex        =   10
+            TabIndex        =   7
             Tag             =   "1498"
             Top             =   720
             Width           =   3975
@@ -660,7 +670,7 @@ Begin VB.Form itmequip
             Height          =   375
             Index           =   0
             Left            =   120
-            TabIndex        =   9
+            TabIndex        =   6
             Tag             =   "1497"
             Top             =   360
             Width           =   3975
@@ -683,34 +693,11 @@ Begin VB.Form itmequip
          Left            =   3240
          MouseIcon       =   "ITMEQUIP.frx":0CCA
          MousePointer    =   99  'Custom
-         TabIndex        =   37
+         TabIndex        =   33
          Tag             =   "1157"
          Top             =   5760
          Visible         =   0   'False
          Width           =   4575
-      End
-      Begin VB.Label Label8 
-         Alignment       =   1  'Right Justify
-         Caption         =   "Also see RPGCode Editor"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00FF0000&
-         Height          =   255
-         Left            =   3360
-         MouseIcon       =   "ITMEQUIP.frx":0FD4
-         MousePointer    =   99  'Custom
-         TabIndex        =   36
-         Tag             =   "1150"
-         Top             =   5040
-         Visible         =   0   'False
-         Width           =   4455
       End
       Begin VB.Label Label9 
          Alignment       =   1  'Right Justify
@@ -727,9 +714,9 @@ Begin VB.Form itmequip
          ForeColor       =   &H00FF0000&
          Height          =   255
          Left            =   3240
-         MouseIcon       =   "ITMEQUIP.frx":12DE
+         MouseIcon       =   "ITMEQUIP.frx":0FD4
          MousePointer    =   99  'Custom
-         TabIndex        =   35
+         TabIndex        =   32
          Tag             =   "1356"
          Top             =   5400
          Visible         =   0   'False
@@ -750,82 +737,82 @@ Attribute VB_Exposed = False
 
 Private Sub animation_Change()
     On Error Resume Next
-    itemList(activeItemIndex).theData.itmAnimation$ = animation.text
+    itemList(activeItemIndex).theData.itmAnimation$ = animation.Text
 End Sub
 
 Private Sub Check1_Click()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.itemarmor(1) = Check1.value
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.itemArmor(1) = Check1.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check2_Click()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.itemarmor(2) = Check2.value
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.itemArmor(2) = Check2.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check3_Click()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.itemarmor(3) = Check3.value
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.itemArmor(3) = Check3.value
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check4_Click()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.itemarmor(4) = Check4.value
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.itemArmor(4) = Check4.value
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check5_Click()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.itemarmor(5) = Check5.value
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.itemArmor(5) = Check5.value
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check6_Click()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.itemarmor(6) = Check6.value
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.itemArmor(6) = Check6.value
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check7_Click()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.itemarmor(7) = Check7.value
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.itemArmor(7) = Check7.value
     If Check7.value = 1 Then
         Label3.Visible = True
         specify.Visible = True
@@ -836,16 +823,16 @@ Private Sub Check7_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -857,18 +844,18 @@ Private Sub Command1_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    removed.text = antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    removed.Text = antiPath$
     itemList(activeItemIndex).theData.prgRemove = antiPath$
 End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -880,16 +867,16 @@ Private Sub Command14_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    equipped.text = antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    equipped.Text = antiPath$
     itemList(activeItemIndex).theData.prgEquip = antiPath$
 End Sub
 
 Private Sub Command2_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + miscPath$
     
@@ -903,10 +890,10 @@ Private Sub Command2_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + miscPath$ + antiPath$
-    animation.text = antiPath$
+    animation.Text = antiPath$
     itemList(activeItemIndex).theData.itmAnimation$ = antiPath$
 End Sub
 
@@ -916,133 +903,133 @@ End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub dpup_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.equipDP = val(dpup.text)
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.equipDP = val(dpup.Text)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub equipped_Change()
     On Error Resume Next
-    itemList(activeItemIndex).theData.prgEquip = equipped.text
+    itemList(activeItemIndex).theData.prgEquip = equipped.Text
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
-    If itemList(activeItemIndex).theData.itemarmor(1) = 1 Then Check1.value = 1
-    If itemList(activeItemIndex).theData.itemarmor(2) = 1 Then Check2.value = 1
-    If itemList(activeItemIndex).theData.itemarmor(3) = 1 Then Check3.value = 1
-    If itemList(activeItemIndex).theData.itemarmor(4) = 1 Then Check4.value = 1
-    If itemList(activeItemIndex).theData.itemarmor(5) = 1 Then Check5.value = 1
-    If itemList(activeItemIndex).theData.itemarmor(6) = 1 Then Check6.value = 1
-    If itemList(activeItemIndex).theData.itemarmor(7) = 1 Then Check7.value = 1
-    specify.text = itemList(activeItemIndex).theData.accessory
-    hpup.text = str$(itemList(activeItemIndex).theData.equipHP)
-    dpup.text = str$(itemList(activeItemIndex).theData.equipDP)
-    fpup.text = str$(itemList(activeItemIndex).theData.equipFP)
-    smup.text = str$(itemList(activeItemIndex).theData.equipSM)
-    If itemList(activeItemIndex).theData.prgEquip <> "" Then equipped.text = itemList(activeItemIndex).theData.prgEquip
-    If itemList(activeItemIndex).theData.prgRemove <> "" Then removed.text = itemList(activeItemIndex).theData.prgRemove
-    If itemList(activeItemIndex).theData.itmAnimation <> "" Then animation.text = itemList(activeItemIndex).theData.itmAnimation
+    If itemList(activeItemIndex).theData.itemArmor(1) = 1 Then Check1.value = 1
+    If itemList(activeItemIndex).theData.itemArmor(2) = 1 Then Check2.value = 1
+    If itemList(activeItemIndex).theData.itemArmor(3) = 1 Then Check3.value = 1
+    If itemList(activeItemIndex).theData.itemArmor(4) = 1 Then Check4.value = 1
+    If itemList(activeItemIndex).theData.itemArmor(5) = 1 Then Check5.value = 1
+    If itemList(activeItemIndex).theData.itemArmor(6) = 1 Then Check6.value = 1
+    If itemList(activeItemIndex).theData.itemArmor(7) = 1 Then Check7.value = 1
+    specify.Text = itemList(activeItemIndex).theData.accessory
+    hpup.Text = str$(itemList(activeItemIndex).theData.equipHP)
+    dpup.Text = str$(itemList(activeItemIndex).theData.equipDP)
+    fpup.Text = str$(itemList(activeItemIndex).theData.equipFP)
+    smup.Text = str$(itemList(activeItemIndex).theData.equipSM)
+    If itemList(activeItemIndex).theData.prgEquip <> "" Then equipped.Text = itemList(activeItemIndex).theData.prgEquip
+    If itemList(activeItemIndex).theData.prgRemove <> "" Then removed.Text = itemList(activeItemIndex).theData.prgRemove
+    If itemList(activeItemIndex).theData.itmAnimation <> "" Then animation.Text = itemList(activeItemIndex).theData.itmAnimation
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub fpup_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.equipFP = val(fpup.text)
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.equipFP = val(fpup.Text)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub hpup_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.equipHP = val(hpup.text)
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.equipHP = val(hpup.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Label8_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeRPGCode.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Label9_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeAnimation.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activePlayer.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub removed_Change()
     On Error Resume Next
-    itemList(activeItemIndex).theData.prgRemove = removed.text
+    itemList(activeItemIndex).theData.prgRemove = removed.Text
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub smup_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.equipSM = val(smup.text)
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.equipSM = val(smup.Text)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub specify_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.accessory = specify.text
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.accessory = specify.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

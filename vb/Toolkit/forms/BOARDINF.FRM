@@ -3,7 +3,7 @@ Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.Form boardinformation 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Board Information"
-   ClientHeight    =   4500
+   ClientHeight    =   4440
    ClientLeft      =   1230
    ClientTop       =   1050
    ClientWidth     =   7515
@@ -22,7 +22,7 @@ Begin VB.Form boardinformation
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   4500
+   ScaleHeight     =   4440
    ScaleWidth      =   7515
    Tag             =   "1039"
    Begin VB.CommandButton Command11 
@@ -38,7 +38,7 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   345
       Left            =   6240
-      TabIndex        =   56
+      TabIndex        =   9
       Tag             =   "1008"
       Top             =   3960
       Width           =   1095
@@ -75,290 +75,300 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   12
+      TabIndex        =   4
       Tag             =   "1057"
-      Top             =   720
+      Top             =   600
       Width           =   6855
-      Begin VB.CommandButton cmdEnterPrg 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   59
-         Tag             =   "1021"
-         Top             =   2160
-         Width           =   1095
-      End
-      Begin VB.TextBox txtEnterPrg 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   58
-         Top             =   2160
-         Width           =   1815
-      End
-      Begin VB.TextBox wl 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   47
-         Top             =   1440
-         Width           =   1815
-      End
-      Begin VB.TextBox el 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   46
-         Top             =   1080
-         Width           =   1815
-      End
-      Begin VB.TextBox sl 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   45
-         Top             =   720
-         Width           =   1815
-      End
-      Begin VB.TextBox nl 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   44
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   2415
+         Left            =   240
+         ScaleHeight     =   2415
+         ScaleWidth      =   6615
+         TabIndex        =   38
          Top             =   360
-         Width           =   1815
-      End
-      Begin VB.CommandButton Command4 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   13
-         Tag             =   "1021"
-         Top             =   1440
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command3 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   14
-         Tag             =   "1021"
-         Top             =   1080
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command2 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   15
-         Tag             =   "1021"
-         Top             =   720
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command1 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   16
-         Tag             =   "1021"
-         Top             =   360
-         Width           =   1095
-      End
-      Begin VB.Label lblDirLinkInfo 
-         Caption         =   "Tip:"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   1335
-         Left            =   4920
-         TabIndex        =   61
-         Top             =   360
-         Width           =   1695
-      End
-      Begin VB.Label lblEnterPrg 
-         Caption         =   "Program to run when entering board"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   495
-         Left            =   120
-         TabIndex        =   60
-         Top             =   2160
-         Width           =   1575
-      End
-      Begin VB.Label Label10 
-         Caption         =   "Western Link"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   51
-         Tag             =   "1058"
-         Top             =   1440
-         Width           =   1455
-      End
-      Begin VB.Label Label9 
-         Caption         =   "Eastern Link"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   50
-         Tag             =   "1059"
-         Top             =   1080
-         Width           =   1455
-      End
-      Begin VB.Label Label8 
-         Caption         =   "Southern Link"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   49
-         Tag             =   "1060"
-         Top             =   720
-         Width           =   1455
-      End
-      Begin VB.Label Label4 
-         Caption         =   "Northern Link"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   48
-         Tag             =   "1061"
-         Top             =   360
-         Width           =   1455
+         Width           =   6615
+         Begin VB.CommandButton Command1 
+            Appearance      =   0  'Flat
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   3480
+            TabIndex        =   48
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command2 
+            Appearance      =   0  'Flat
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   3480
+            TabIndex        =   47
+            Tag             =   "1021"
+            Top             =   360
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command3 
+            Appearance      =   0  'Flat
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   3480
+            TabIndex        =   46
+            Tag             =   "1021"
+            Top             =   720
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command4 
+            Appearance      =   0  'Flat
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   3480
+            TabIndex        =   45
+            Tag             =   "1021"
+            Top             =   1080
+            Width           =   1095
+         End
+         Begin VB.TextBox nl 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1560
+            TabIndex        =   44
+            Top             =   0
+            Width           =   1815
+         End
+         Begin VB.TextBox sl 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1560
+            TabIndex        =   43
+            Top             =   360
+            Width           =   1815
+         End
+         Begin VB.TextBox el 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1560
+            TabIndex        =   42
+            Top             =   720
+            Width           =   1815
+         End
+         Begin VB.TextBox wl 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1560
+            TabIndex        =   41
+            Top             =   1080
+            Width           =   1815
+         End
+         Begin VB.TextBox txtEnterPrg 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1560
+            TabIndex        =   40
+            Top             =   1800
+            Width           =   1815
+         End
+         Begin VB.CommandButton cmdEnterPrg 
+            Appearance      =   0  'Flat
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   3480
+            TabIndex        =   39
+            Tag             =   "1021"
+            Top             =   1800
+            Width           =   1095
+         End
+         Begin VB.Label Label4 
+            Caption         =   "Northern Link"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   54
+            Tag             =   "1061"
+            Top             =   0
+            Width           =   1455
+         End
+         Begin VB.Label Label8 
+            Caption         =   "Southern Link"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   53
+            Tag             =   "1060"
+            Top             =   360
+            Width           =   1455
+         End
+         Begin VB.Label Label9 
+            Caption         =   "Eastern Link"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   52
+            Tag             =   "1059"
+            Top             =   720
+            Width           =   1455
+         End
+         Begin VB.Label Label10 
+            Caption         =   "Western Link"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   51
+            Tag             =   "1058"
+            Top             =   1080
+            Width           =   1455
+         End
+         Begin VB.Label lblEnterPrg 
+            Caption         =   "Program to run when entering board"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   495
+            Left            =   0
+            TabIndex        =   50
+            Top             =   1800
+            Width           =   1575
+         End
+         Begin VB.Label lblDirLinkInfo 
+            Caption         =   "Tip:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   1335
+            Left            =   4800
+            TabIndex        =   49
+            Top             =   0
+            Width           =   1695
+         End
       End
    End
    Begin VB.Frame Frame3 
@@ -374,100 +384,110 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   8
+      TabIndex        =   3
       Tag             =   "1062"
-      Top             =   720
+      Top             =   600
       Width           =   6855
-      Begin VB.CommandButton Command9 
-         Appearance      =   0  'Flat
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   6.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   480
-         Picture         =   "BOARDINF.frx":0CCA
-         Style           =   1  'Graphical
-         TabIndex        =   9
-         Top             =   960
-         Width           =   375
-      End
-      Begin VB.CommandButton Command8 
-         Appearance      =   0  'Flat
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
+      Begin VB.PictureBox Picture2 
+         BorderStyle     =   0  'None
+         Height          =   1815
          Left            =   120
-         Picture         =   "BOARDINF.frx":1994
-         Style           =   1  'Graphical
-         TabIndex        =   10
-         Top             =   960
-         Width           =   375
-      End
-      Begin VB.TextBox music 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   120
+         ScaleHeight     =   1815
+         ScaleWidth      =   5655
          TabIndex        =   55
-         Top             =   600
-         Width           =   3255
-      End
-      Begin VB.CommandButton Command7 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   11
-         Tag             =   "1021"
-         Top             =   600
-         Width           =   1095
-      End
-      Begin VB.Label Label12 
-         Caption         =   "Background Music"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   120
-         TabIndex        =   54
-         Tag             =   "1024"
-         Top             =   240
-         Width           =   2295
+         Top             =   360
+         Width           =   5655
+         Begin VB.CommandButton Command9 
+            Appearance      =   0  'Flat
+            BeginProperty Font 
+               Name            =   "Arial"
+               Size            =   6.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   360
+            Picture         =   "BOARDINF.frx":0CCA
+            Style           =   1  'Graphical
+            TabIndex        =   59
+            Top             =   720
+            Width           =   375
+         End
+         Begin VB.CommandButton Command8 
+            Appearance      =   0  'Flat
+            BeginProperty Font 
+               Name            =   "Arial"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            Picture         =   "BOARDINF.frx":1994
+            Style           =   1  'Graphical
+            TabIndex        =   58
+            Top             =   720
+            Width           =   375
+         End
+         Begin VB.TextBox music 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   0
+            TabIndex        =   57
+            Top             =   360
+            Width           =   3255
+         End
+         Begin VB.CommandButton Command7 
+            Appearance      =   0  'Flat
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   3480
+            TabIndex        =   56
+            Tag             =   "1021"
+            Top             =   360
+            Width           =   1095
+         End
+         Begin VB.Label Label12 
+            Caption         =   "Background Music"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   0
+            TabIndex        =   60
+            Tag             =   "1024"
+            Top             =   0
+            Width           =   2295
+         End
       End
    End
    Begin VB.Frame Frame5 
@@ -483,164 +503,150 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   17
+      TabIndex        =   5
       Tag             =   "1051"
-      Top             =   720
+      Top             =   600
       Width           =   6855
-      Begin VB.TextBox Text2 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   52
-         Top             =   1560
-         Width           =   1815
-      End
-      Begin VB.CheckBox fyes 
-         Caption         =   "Fighting is permitted on this board"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   120
-         TabIndex        =   20
-         Tag             =   "1052"
+      Begin VB.PictureBox Picture8 
+         BorderStyle     =   0  'None
+         Height          =   2055
+         Left            =   240
+         ScaleHeight     =   2055
+         ScaleWidth      =   5415
+         TabIndex        =   61
          Top             =   360
-         Width           =   3255
-      End
-      Begin VB.TextBox skillbox 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   19
-         Text            =   "1"
-         Top             =   720
-         Width           =   1815
-      End
-      Begin VB.CommandButton Command5 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   18
-         Tag             =   "1053"
-         Top             =   1560
-         Width           =   1095
-      End
-      Begin VB.Label Label11 
-         Caption         =   "Background:"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   120
-         TabIndex        =   53
-         Tag             =   "1053"
-         Top             =   1560
-         Width           =   1455
-      End
-      Begin VB.Label Label3 
-         Caption         =   "Board Skill:"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         TabIndex        =   23
-         Tag             =   "1054"
-         Top             =   720
-         Width           =   1335
-      End
-      Begin VB.Label Label3 
-         Alignment       =   1  'Right Justify
-         Caption         =   "Also see Enemy Info"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00FF0000&
-         Height          =   255
-         Index           =   2
-         Left            =   1920
-         MouseIcon       =   "BOARDINF.frx":265E
-         MousePointer    =   99  'Custom
-         TabIndex        =   22
-         Tag             =   "1055"
-         Top             =   1080
-         Visible         =   0   'False
-         Width           =   2775
-      End
-      Begin VB.Label Label5 
-         Alignment       =   1  'Right Justify
-         Caption         =   "Also see Background Editor"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00FF0000&
-         Height          =   255
-         Index           =   1
-         Left            =   1320
-         MouseIcon       =   "BOARDINF.frx":2968
-         MousePointer    =   99  'Custom
-         TabIndex        =   21
-         Tag             =   "1056"
-         Top             =   2040
-         Visible         =   0   'False
-         Width           =   3375
+         Width           =   5415
+         Begin VB.CommandButton Command5 
+            Appearance      =   0  'Flat
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   3480
+            TabIndex        =   65
+            Tag             =   "1053"
+            Top             =   1200
+            Width           =   1095
+         End
+         Begin VB.TextBox skillbox 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1560
+            TabIndex        =   64
+            Text            =   "1"
+            Top             =   360
+            Width           =   1815
+         End
+         Begin VB.CheckBox fyes 
+            Caption         =   "Fighting is permitted on this board"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   0
+            TabIndex        =   63
+            Tag             =   "1052"
+            Top             =   0
+            Width           =   3255
+         End
+         Begin VB.TextBox Text2 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1560
+            TabIndex        =   62
+            Top             =   1200
+            Width           =   1815
+         End
+         Begin VB.Label Label3 
+            Alignment       =   1  'Right Justify
+            Caption         =   "Also see Enemy Info"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   -1  'True
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00FF0000&
+            Height          =   255
+            Index           =   2
+            Left            =   1800
+            MouseIcon       =   "BOARDINF.frx":265E
+            MousePointer    =   99  'Custom
+            TabIndex        =   68
+            Tag             =   "1055"
+            Top             =   720
+            Visible         =   0   'False
+            Width           =   2775
+         End
+         Begin VB.Label Label3 
+            Caption         =   "Board Skill:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Index           =   0
+            Left            =   0
+            TabIndex        =   67
+            Tag             =   "1054"
+            Top             =   360
+            Width           =   1335
+         End
+         Begin VB.Label Label11 
+            Caption         =   "Background:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   0
+            TabIndex        =   66
+            Tag             =   "1053"
+            Top             =   1200
+            Width           =   1455
+         End
       End
    End
    Begin VB.Frame Frame2 
@@ -656,27 +662,37 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   6
+      TabIndex        =   2
       Tag             =   "1063"
-      Top             =   720
+      Top             =   600
       Width           =   6855
-      Begin VB.CheckBox Check1 
-         Caption         =   "Disable Progress Saving"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   495
+      Begin VB.PictureBox Picture3 
+         BorderStyle     =   0  'None
+         Height          =   615
          Left            =   120
-         TabIndex        =   7
-         Tag             =   "1064"
+         ScaleHeight     =   615
+         ScaleWidth      =   2415
+         TabIndex        =   11
          Top             =   240
-         Width           =   2655
+         Width           =   2415
+         Begin VB.CheckBox Check1 
+            Caption         =   "Disable Progress Saving"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   495
+            Left            =   120
+            TabIndex        =   12
+            Tag             =   "1064"
+            Top             =   0
+            Width           =   2655
+         End
       End
    End
    Begin VB.Frame Frame1 
@@ -694,87 +710,97 @@ Begin VB.Form boardinformation
       Left            =   360
       TabIndex        =   1
       Tag             =   "1065"
-      Top             =   720
+      Top             =   600
       Width           =   6855
-      Begin VB.ComboBox consta 
-         Appearance      =   0  'Flat
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   315
-         Left            =   120
-         TabIndex        =   3
-         Text            =   "Constant 1"
-         Top             =   480
-         Width           =   1455
-      End
-      Begin VB.TextBox Text1 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1800
-         TabIndex        =   2
-         Text            =   "0"
-         Top             =   480
-         Width           =   735
-      End
-      Begin VB.Label Label6 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "Number"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00000000&
-         Height          =   255
-         Index           =   0
-         Left            =   120
-         TabIndex        =   5
-         Tag             =   "1066"
-         Top             =   240
-         Width           =   735
-      End
-      Begin VB.Label Label7 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "Value"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00000000&
-         Height          =   255
-         Left            =   1800
-         TabIndex        =   4
-         Tag             =   "1067"
-         Top             =   240
-         Width           =   735
+      Begin VB.PictureBox Picture4 
+         BorderStyle     =   0  'None
+         Height          =   1695
+         Left            =   240
+         ScaleHeight     =   1695
+         ScaleWidth      =   5055
+         TabIndex        =   13
+         Top             =   360
+         Width           =   5055
+         Begin VB.TextBox Text1 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1680
+            TabIndex        =   15
+            Text            =   "0"
+            Top             =   240
+            Width           =   735
+         End
+         Begin VB.ComboBox consta 
+            Appearance      =   0  'Flat
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   315
+            Left            =   0
+            TabIndex        =   14
+            Text            =   "Constant 1"
+            Top             =   240
+            Width           =   1455
+         End
+         Begin VB.Label Label7 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Value"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00000000&
+            Height          =   255
+            Left            =   1680
+            TabIndex        =   17
+            Tag             =   "1067"
+            Top             =   0
+            Width           =   735
+         End
+         Begin VB.Label Label6 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Number"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00000000&
+            Height          =   255
+            Index           =   0
+            Left            =   0
+            TabIndex        =   16
+            Tag             =   "1066"
+            Top             =   0
+            Width           =   735
+         End
       End
    End
    Begin VB.Frame Frame8 
@@ -790,89 +816,99 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   31
+      TabIndex        =   8
       Tag             =   "1040"
-      Top             =   720
+      Top             =   600
       Width           =   6855
-      Begin VB.ComboBox blayer 
-         Appearance      =   0  'Flat
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   315
-         Left            =   120
-         TabIndex        =   33
-         Text            =   "Layer 1"
-         Top             =   480
-         Width           =   1215
-      End
-      Begin VB.TextBox layername 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   32
-         Top             =   480
-         Width           =   1815
-      End
-      Begin VB.Label Label6 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "Layer"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00000000&
-         Height          =   255
-         Index           =   1
-         Left            =   120
-         TabIndex        =   35
-         Tag             =   "1041"
-         Top             =   240
-         Width           =   855
-      End
-      Begin VB.Label Label6 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "Title"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00000000&
-         Height          =   255
-         Index           =   2
-         Left            =   1680
-         TabIndex        =   34
-         Tag             =   "1040"
-         Top             =   240
-         Width           =   495
+      Begin VB.PictureBox Picture5 
+         BorderStyle     =   0  'None
+         Height          =   1695
+         Left            =   240
+         ScaleHeight     =   1695
+         ScaleWidth      =   4815
+         TabIndex        =   18
+         Top             =   360
+         Width           =   4815
+         Begin VB.TextBox layername 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1560
+            TabIndex        =   20
+            Top             =   240
+            Width           =   1815
+         End
+         Begin VB.ComboBox blayer 
+            Appearance      =   0  'Flat
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   315
+            Left            =   0
+            TabIndex        =   19
+            Text            =   "Layer 1"
+            Top             =   240
+            Width           =   1215
+         End
+         Begin VB.Label Label6 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Title"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00000000&
+            Height          =   255
+            Index           =   2
+            Left            =   1560
+            TabIndex        =   22
+            Tag             =   "1040"
+            Top             =   0
+            Width           =   495
+         End
+         Begin VB.Label Label6 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Layer"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00000000&
+            Height          =   255
+            Index           =   1
+            Left            =   0
+            TabIndex        =   21
+            Tag             =   "1041"
+            Top             =   0
+            Width           =   855
+         End
       End
    End
    Begin VB.Frame Frame6 
@@ -888,46 +924,56 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   24
+      TabIndex        =   6
       Tag             =   "1048"
-      Top             =   720
+      Top             =   600
       Width           =   6855
-      Begin VB.CommandButton Command10 
-         Caption         =   "More..."
-         Enabled         =   0   'False
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   2520
-         TabIndex        =   25
-         Tag             =   "1049"
-         Top             =   240
-         Width           =   1215
-      End
-      Begin VB.CheckBox daynight 
-         Caption         =   "Day/Night Enabled"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
+      Begin VB.PictureBox Picture6 
+         BorderStyle     =   0  'None
+         Height          =   1215
          Left            =   240
-         TabIndex        =   26
-         Tag             =   "1050"
-         Top             =   240
-         Width           =   2175
+         ScaleHeight     =   1215
+         ScaleWidth      =   4455
+         TabIndex        =   23
+         Top             =   360
+         Width           =   4455
+         Begin VB.CheckBox daynight 
+            Caption         =   "Day/Night Enabled"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   25
+            Tag             =   "1050"
+            Top             =   0
+            Width           =   2175
+         End
+         Begin VB.CommandButton Command10 
+            Caption         =   "More..."
+            Enabled         =   0   'False
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   2280
+            TabIndex        =   24
+            Tag             =   "1049"
+            Top             =   0
+            Width           =   1215
+         End
       End
    End
    Begin VB.Frame Frame7 
@@ -943,181 +989,191 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   27
+      TabIndex        =   7
       Tag             =   "1042"
-      Top             =   720
+      Top             =   600
       Width           =   6855
-      Begin VB.OptionButton Option2 
-         Caption         =   "8 Layers"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   1800
-         TabIndex        =   43
-         Tag             =   "1043"
-         Top             =   480
-         Width           =   1575
-      End
-      Begin VB.OptionButton Option1 
-         Caption         =   "4 Layers"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   1800
-         TabIndex        =   42
-         Tag             =   "1044"
-         Top             =   240
-         Width           =   1815
-      End
-      Begin VB.VScrollBar VScroll3 
-         Height          =   255
-         Left            =   1560
-         Max             =   0
-         Min             =   2048
-         TabIndex        =   39
-         TabStop         =   0   'False
-         Top             =   360
-         Width           =   135
-      End
-      Begin VB.VScrollBar VScroll2 
-         Height          =   255
-         Left            =   720
-         Max             =   0
-         Min             =   2048
-         TabIndex        =   38
-         TabStop         =   0   'False
-         Top             =   360
-         Value           =   2048
-         Width           =   135
-      End
-      Begin VB.TextBox sy 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1080
-         TabIndex        =   37
-         Top             =   360
-         Width           =   495
-      End
-      Begin VB.TextBox sx 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
+      Begin VB.PictureBox Picture7 
+         BorderStyle     =   0  'None
+         Height          =   1815
          Left            =   240
-         TabIndex        =   36
-         Top             =   360
-         Width           =   495
-      End
-      Begin VB.HScrollBar HScroll1 
-         Height          =   135
-         Left            =   2160
-         Max             =   512
-         Min             =   19
-         TabIndex        =   29
-         Top             =   1440
-         Value           =   19
-         Visible         =   0   'False
-         Width           =   375
-      End
-      Begin VB.VScrollBar VScroll1 
-         Height          =   375
-         Left            =   2040
-         Max             =   512
-         Min             =   11
-         TabIndex        =   28
-         Top             =   1080
-         Value           =   11
-         Visible         =   0   'False
-         Width           =   135
-      End
-      Begin VB.Label Label2 
-         Caption         =   "Y"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   960
-         TabIndex        =   41
-         Tag             =   "1045"
-         Top             =   360
-         Width           =   135
-      End
-      Begin VB.Label Label1 
-         Caption         =   "X"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   120
-         TabIndex        =   40
-         Tag             =   "1046"
-         Top             =   360
-         Width           =   135
-      End
-      Begin VB.Label bs 
-         Caption         =   "xx X yy"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   2280
-         TabIndex        =   30
-         Tag             =   "1047"
-         Top             =   1200
-         Visible         =   0   'False
-         Width           =   855
+         ScaleHeight     =   1815
+         ScaleWidth      =   4335
+         TabIndex        =   26
+         Top             =   240
+         Width           =   4335
+         Begin VB.VScrollBar VScroll1 
+            Height          =   375
+            Left            =   2280
+            Max             =   512
+            Min             =   11
+            TabIndex        =   34
+            Top             =   600
+            Value           =   11
+            Visible         =   0   'False
+            Width           =   135
+         End
+         Begin VB.HScrollBar HScroll1 
+            Height          =   135
+            Left            =   2400
+            Max             =   512
+            Min             =   19
+            TabIndex        =   33
+            Top             =   960
+            Value           =   19
+            Visible         =   0   'False
+            Width           =   375
+         End
+         Begin VB.TextBox sx 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   240
+            TabIndex        =   32
+            Top             =   120
+            Width           =   495
+         End
+         Begin VB.TextBox sy 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1200
+            TabIndex        =   31
+            Top             =   120
+            Width           =   495
+         End
+         Begin VB.VScrollBar VScroll2 
+            Height          =   255
+            Left            =   720
+            Max             =   0
+            Min             =   2048
+            TabIndex        =   30
+            TabStop         =   0   'False
+            Top             =   120
+            Value           =   2048
+            Width           =   135
+         End
+         Begin VB.VScrollBar VScroll3 
+            Height          =   255
+            Left            =   1680
+            Max             =   0
+            Min             =   2048
+            TabIndex        =   29
+            TabStop         =   0   'False
+            Top             =   120
+            Width           =   135
+         End
+         Begin VB.OptionButton Option1 
+            Caption         =   "4 Layers"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   2040
+            TabIndex        =   28
+            Tag             =   "1044"
+            Top             =   0
+            Width           =   1815
+         End
+         Begin VB.OptionButton Option2 
+            Caption         =   "8 Layers"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   2040
+            TabIndex        =   27
+            Tag             =   "1043"
+            Top             =   240
+            Width           =   1575
+         End
+         Begin VB.Label Label1 
+            Caption         =   "X"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   0
+            TabIndex        =   37
+            Tag             =   "1046"
+            Top             =   120
+            Width           =   135
+         End
+         Begin VB.Label Label2 
+            Caption         =   "Y"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   960
+            TabIndex        =   36
+            Tag             =   "1045"
+            Top             =   120
+            Width           =   135
+         End
+         Begin VB.Label bs 
+            Caption         =   "xx X yy"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   2520
+            TabIndex        =   35
+            Tag             =   "1047"
+            Top             =   720
+            Visible         =   0   'False
+            Width           =   855
+         End
       End
    End
    Begin MSComctlLib.TabStrip TabStrip1 
       Height          =   3735
       Left            =   240
-      TabIndex        =   57
+      TabIndex        =   10
       Top             =   120
       Width           =   7095
       _ExtentX        =   12515
@@ -1330,11 +1386,11 @@ Private Sub Command1_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    E$ = extention(antiPath$)
-    If UCase$(E$) = "BRD" Then
+    e$ = extention(antiPath$)
+    If UCase$(e$) = "BRD" Then
         FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
     End If
-    If UCase$(E$) = "PRG" Then
+    If UCase$(e$) = "PRG" Then
         FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     End If
     boardList(activeBoardIndex).theData.dirLink$(1) = antiPath$
@@ -1378,11 +1434,11 @@ Private Sub Command2_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    E$ = extention(antiPath$)
-    If UCase$(E$) = "BRD" Then
+    e$ = extention(antiPath$)
+    If UCase$(e$) = "BRD" Then
         FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
     End If
-    If UCase$(E$) = "PRG" Then
+    If UCase$(e$) = "PRG" Then
         FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     End If
     boardList(activeBoardIndex).theData.dirLink$(2) = antiPath$
@@ -1411,11 +1467,11 @@ Private Sub Command3_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    E$ = extention(antiPath$)
-    If UCase$(E$) = "BRD" Then
+    e$ = extention(antiPath$)
+    If UCase$(e$) = "BRD" Then
         FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
     End If
-    If UCase$(E$) = "PRG" Then
+    If UCase$(e$) = "PRG" Then
         FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     End If
     boardList(activeBoardIndex).theData.dirLink$(3) = antiPath$
@@ -1438,11 +1494,11 @@ Private Sub Command4_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    E$ = extention(antiPath$)
-    If UCase$(E$) = "BRD" Then
+    e$ = extention(antiPath$)
+    If UCase$(e$) = "BRD" Then
         FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
     End If
-    If UCase$(E$) = "PRG" Then
+    If UCase$(e$) = "PRG" Then
         FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     End If
     boardList(activeBoardIndex).theData.dirLink$(4) = antiPath$
@@ -1507,7 +1563,7 @@ Private Sub Command6_Click(): On Error GoTo ErrorHandler
         Call BoardResize(bx, By, bl, boardList(activeBoardIndex).theData)
         
         ' Resize form
-        Call activeBoard.resizeForm(activeBoard.width, activeBoard.height)
+        Call activeBoard.resizeForm(activeBoard.Width, activeBoard.Height)
         
         boardNeedUpdate = True
         
@@ -1618,7 +1674,7 @@ If boardList(activeBoardIndex).theData.boardMusic$ = "" Then MsgBox LoadStringLo
 ext$ = extention(boardList(activeBoardIndex).theData.boardMusic$)
 If UCase$(ext$) = "WAV" Then
     wFlags% = SND_ASYNC Or SND_NODEFAULT
-    X% = sndPlaySound(projectPath$ + mediaPath$ + boardList(activeBoardIndex).theData.boardMusic$, wFlags%)
+    x% = sndPlaySound(projectPath$ + mediaPath$ + boardList(activeBoardIndex).theData.boardMusic$, wFlags%)
 Else
     'If UCase$(ext$) = "MID" Then
     '    OLE1.SourceDoc = projectPath$ + mediapath$ + boardmusic$
@@ -1639,7 +1695,7 @@ Private Sub Command9_Click()
 ext$ = extention(boardList(activeBoardIndex).theData.boardMusic$)
 If UCase$(ext$) = "WAV" Then
     wFlags% = SND_ASYNC
-    X% = sndPlaySound("stop.wav", wFlags%)
+    x% = sndPlaySound("stop.wav", wFlags%)
 Else
     'OLE1.Action = 10
     Call mp3player.stopMusic
@@ -1750,7 +1806,7 @@ Private Sub HScroll1_Change()
     activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
     activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.width, activeBoard.height)
+    Call activeBoard.resizeForm(activeBoard.Width, activeBoard.Height)
 
     Exit Sub
 'Begin error handling code:
@@ -1867,7 +1923,7 @@ Private Sub VScroll1_Change()
     activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
     activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.width, activeBoard.height)
+    Call activeBoard.resizeForm(activeBoard.Width, activeBoard.Height)
 
     Exit Sub
 'Begin error handling code:

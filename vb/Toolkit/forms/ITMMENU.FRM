@@ -74,7 +74,7 @@ Begin VB.Form itmmenu
          EndProperty
          Height          =   1575
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   5
          Tag             =   "1534"
          Top             =   360
          Width           =   6615
@@ -90,7 +90,7 @@ Begin VB.Form itmmenu
             EndProperty
             Height          =   285
             Left            =   2160
-            TabIndex        =   8
+            TabIndex        =   7
             Text            =   "0"
             Top             =   840
             Width           =   495
@@ -107,7 +107,7 @@ Begin VB.Form itmmenu
             EndProperty
             Height          =   285
             Left            =   2160
-            TabIndex        =   7
+            TabIndex        =   6
             Text            =   "0"
             Top             =   480
             Width           =   495
@@ -126,7 +126,7 @@ Begin VB.Form itmmenu
             Height          =   255
             Index           =   3
             Left            =   2760
-            TabIndex        =   13
+            TabIndex        =   12
             Tag             =   "1504"
             Top             =   840
             Width           =   615
@@ -145,7 +145,7 @@ Begin VB.Form itmmenu
             Height          =   255
             Index           =   3
             Left            =   120
-            TabIndex        =   12
+            TabIndex        =   11
             Tag             =   "1541"
             Top             =   840
             Width           =   1935
@@ -164,7 +164,7 @@ Begin VB.Form itmmenu
             Height          =   255
             Index           =   0
             Left            =   2760
-            TabIndex        =   11
+            TabIndex        =   10
             Tag             =   "1504"
             Top             =   480
             Width           =   615
@@ -183,7 +183,7 @@ Begin VB.Form itmmenu
             Height          =   255
             Index           =   0
             Left            =   120
-            TabIndex        =   10
+            TabIndex        =   9
             Tag             =   "1540"
             Top             =   480
             Width           =   1935
@@ -202,7 +202,7 @@ Begin VB.Form itmmenu
             ForeColor       =   &H00808080&
             Height          =   255
             Left            =   120
-            TabIndex        =   9
+            TabIndex        =   8
             Tag             =   "1537"
             Top             =   1200
             Width           =   5415
@@ -225,23 +225,33 @@ Begin VB.Form itmmenu
          Tag             =   "1196"
          Top             =   2040
          Width           =   6615
-         Begin VB.CommandButton Command14 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   5400
-            TabIndex        =   4
-            Tag             =   "1021"
+         Begin VB.PictureBox Picture1 
+            BorderStyle     =   0  'None
+            Height          =   375
+            Left            =   5280
+            ScaleHeight     =   375
+            ScaleWidth      =   1215
+            TabIndex        =   14
             Top             =   360
-            Width           =   1095
+            Width           =   1215
+            Begin VB.CommandButton Command14 
+               Caption         =   "Browse..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   345
+               Left            =   0
+               TabIndex        =   15
+               Tag             =   "1021"
+               Top             =   0
+               Width           =   1095
+            End
          End
          Begin VB.TextBox equipped 
             BeginProperty Font 
@@ -274,7 +284,7 @@ Begin VB.Form itmmenu
             Height          =   375
             Index           =   0
             Left            =   120
-            TabIndex        =   5
+            TabIndex        =   4
             Tag             =   "1533"
             Top             =   360
             Width           =   2895
@@ -297,7 +307,7 @@ Begin VB.Form itmmenu
          Left            =   1080
          MouseIcon       =   "ITMMENU.frx":0CCA
          MousePointer    =   99  'Custom
-         TabIndex        =   14
+         TabIndex        =   13
          Tag             =   "1150"
          Top             =   3120
          Visible         =   0   'False
@@ -317,9 +327,9 @@ Attribute VB_Exposed = False
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -331,10 +341,10 @@ Private Sub Command14_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    equipped.text = antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    equipped.Text = antiPath$
     itemList(activeItemIndex).theData.mnuUse$ = antiPath$
 End Sub
 
@@ -345,20 +355,20 @@ End Sub
 
 Private Sub equipped_Change()
     On Error Resume Next
-    itemList(activeItemIndex).theData.mnuUse$ = equipped.text
+    itemList(activeItemIndex).theData.mnuUse$ = equipped.Text
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
-    hpup.text = str$(itemList(activeItemIndex).theData.mnuHPup)
-    smup.text = str$(itemList(activeItemIndex).theData.mnuSMup)
-    If itemList(activeItemIndex).theData.mnuUse$ <> "" Then equipped.text = itemList(activeItemIndex).theData.mnuUse$
+    hpup.Text = str$(itemList(activeItemIndex).theData.mnuHPup)
+    smup.Text = str$(itemList(activeItemIndex).theData.mnuSMup)
+    If itemList(activeItemIndex).theData.mnuUse$ <> "" Then equipped.Text = itemList(activeItemIndex).theData.mnuUse$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -370,35 +380,35 @@ End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub hpup_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.mnuHPup = val(hpup.text)
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.mnuHPup = val(hpup.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeRPGCode.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub smup_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.mnuSMup = val(smup.text)
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.mnuSMup = val(smup.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

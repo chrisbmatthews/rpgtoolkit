@@ -21,24 +21,24 @@ Begin VB.Form editstatus
       Top             =   120
       Width           =   5415
       Begin VB.Frame Frame1 
-         Caption         =   "General Info"
+         Caption         =   "General Info               "
          Height          =   1575
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   14
          Tag             =   "1484"
          Top             =   240
          Width           =   5175
          Begin VB.TextBox statusnamebox 
             Height          =   285
             Left            =   2160
-            TabIndex        =   17
+            TabIndex        =   16
             Top             =   360
             Width           =   2655
          End
          Begin VB.TextBox roundsbox 
             Height          =   285
             Left            =   2160
-            TabIndex        =   16
+            TabIndex        =   15
             Text            =   "0"
             Top             =   840
             Width           =   2655
@@ -47,7 +47,7 @@ Begin VB.Form editstatus
             Caption         =   "Status Effect Name:"
             Height          =   375
             Left            =   120
-            TabIndex        =   19
+            TabIndex        =   18
             Tag             =   "1486"
             Top             =   360
             Width           =   2055
@@ -56,25 +56,44 @@ Begin VB.Form editstatus
             Caption         =   "Number of Rounds Until Effect is Removed:"
             Height          =   615
             Left            =   120
-            TabIndex        =   18
+            TabIndex        =   17
             Tag             =   "1485"
             Top             =   840
             Width           =   2055
          End
       End
       Begin VB.Frame Frame2 
-         Caption         =   "Effects"
+         Caption         =   "Effects           "
          Height          =   3015
          Left            =   120
          TabIndex        =   2
          Tag             =   "1475"
          Top             =   2040
          Width           =   5175
+         Begin VB.PictureBox Picture1 
+            BorderStyle     =   0  'None
+            Height          =   375
+            Left            =   3720
+            ScaleHeight     =   375
+            ScaleWidth      =   1215
+            TabIndex        =   19
+            Top             =   2520
+            Width           =   1215
+            Begin VB.CommandButton Command14 
+               Caption         =   "Browse..."
+               Height          =   345
+               Left            =   0
+               TabIndex        =   20
+               Tag             =   "1021"
+               Top             =   0
+               Width           =   1095
+            End
+         End
          Begin VB.CheckBox speedupbox 
             Caption         =   "Speed Target Charge Time"
             Height          =   255
             Left            =   240
-            TabIndex        =   12
+            TabIndex        =   11
             Tag             =   "1481"
             Top             =   360
             Width           =   3975
@@ -83,7 +102,7 @@ Begin VB.Form editstatus
             Caption         =   "Slow Target Charge Time"
             Height          =   255
             Left            =   240
-            TabIndex        =   11
+            TabIndex        =   10
             Tag             =   "1480"
             Top             =   720
             Width           =   4095
@@ -92,7 +111,7 @@ Begin VB.Form editstatus
             Caption         =   "Remove HP"
             Height          =   255
             Left            =   240
-            TabIndex        =   10
+            TabIndex        =   9
             Tag             =   "1479"
             Top             =   1440
             Width           =   1575
@@ -101,7 +120,7 @@ Begin VB.Form editstatus
             Caption         =   "Remove SMP"
             Height          =   255
             Left            =   240
-            TabIndex        =   9
+            TabIndex        =   8
             Tag             =   "1478"
             Top             =   1800
             Width           =   1695
@@ -110,7 +129,7 @@ Begin VB.Form editstatus
             Caption         =   "Disable Target"
             Height          =   255
             Left            =   240
-            TabIndex        =   8
+            TabIndex        =   7
             Tag             =   "1477"
             Top             =   1080
             Width           =   3975
@@ -119,7 +138,7 @@ Begin VB.Form editstatus
             Caption         =   "Run RPGCode Program"
             Height          =   495
             Left            =   240
-            TabIndex        =   7
+            TabIndex        =   6
             Tag             =   "1476"
             Top             =   2160
             Width           =   2295
@@ -127,7 +146,7 @@ Begin VB.Form editstatus
          Begin VB.TextBox removehpamountbox 
             Height          =   285
             Left            =   4320
-            TabIndex        =   6
+            TabIndex        =   5
             Text            =   "0"
             Top             =   1440
             Width           =   615
@@ -135,7 +154,7 @@ Begin VB.Form editstatus
          Begin VB.TextBox removesmpamountbox 
             Height          =   285
             Left            =   4320
-            TabIndex        =   5
+            TabIndex        =   4
             Text            =   "0"
             Top             =   1800
             Width           =   615
@@ -143,24 +162,15 @@ Begin VB.Form editstatus
          Begin VB.TextBox rpgcodebox 
             Height          =   285
             Left            =   2530
-            TabIndex        =   4
+            TabIndex        =   3
             Top             =   2160
             Width           =   2400
-         End
-         Begin VB.CommandButton Command14 
-            Caption         =   "Browse..."
-            Height          =   345
-            Left            =   3840
-            TabIndex        =   3
-            Tag             =   "1021"
-            Top             =   2520
-            Width           =   1095
          End
          Begin VB.Label Label3 
             Caption         =   "Amount (neg values give hp)"
             Height          =   375
             Left            =   2040
-            TabIndex        =   14
+            TabIndex        =   13
             Tag             =   "1483"
             Top             =   1440
             Width           =   2055
@@ -169,7 +179,7 @@ Begin VB.Form editstatus
             Caption         =   "Amount (neg values give smp)"
             Height          =   375
             Left            =   2040
-            TabIndex        =   13
+            TabIndex        =   12
             Tag             =   "1482"
             Top             =   1800
             Width           =   2175

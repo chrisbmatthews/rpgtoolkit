@@ -39,26 +39,36 @@ Begin VB.Form editBackground
       EndProperty
       Height          =   855
       Left            =   120
-      TabIndex        =   18
+      TabIndex        =   13
       Top             =   120
       Width           =   6135
-      Begin VB.CommandButton Command1 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   375
          Left            =   4800
-         TabIndex        =   20
-         Tag             =   "1021"
+         ScaleHeight     =   375
+         ScaleWidth      =   1215
+         TabIndex        =   15
          Top             =   360
-         Width           =   1095
+         Width           =   1215
+         Begin VB.CommandButton Command1 
+            Caption         =   "Browse"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   16
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
       End
       Begin VB.TextBox Text2 
          BeginProperty Font 
@@ -72,7 +82,7 @@ Begin VB.Form editBackground
          EndProperty
          Height          =   285
          Left            =   240
-         TabIndex        =   19
+         TabIndex        =   14
          Top             =   360
          Width           =   4335
       End
@@ -90,81 +100,91 @@ Begin VB.Form editBackground
       EndProperty
       Height          =   2295
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   4
       Tag             =   "1028"
       Top             =   2400
       Width           =   6135
-      Begin VB.CommandButton Command2 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   4800
-         TabIndex        =   17
-         Tag             =   "1021"
+      Begin VB.PictureBox Picture3 
+         BorderStyle     =   0  'None
+         Height          =   1695
+         Left            =   4680
+         ScaleHeight     =   1695
+         ScaleWidth      =   1335
+         TabIndex        =   19
          Top             =   360
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command3 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   4800
-         TabIndex        =   16
-         Tag             =   "1021"
-         Top             =   720
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command4 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   4800
-         TabIndex        =   15
-         Tag             =   "1021"
-         Top             =   1440
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command5 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   4800
-         TabIndex        =   14
-         Tag             =   "1021"
-         Top             =   1080
-         Width           =   1095
+         Width           =   1335
+         Begin VB.CommandButton Command5 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   23
+            Tag             =   "1021"
+            Top             =   720
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command4 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   22
+            Tag             =   "1021"
+            Top             =   1080
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command3 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   21
+            Tag             =   "1021"
+            Top             =   360
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command2 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   20
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
       End
       Begin VB.TextBox clickbox 
          BeginProperty Font 
@@ -178,7 +198,7 @@ Begin VB.Form editBackground
          EndProperty
          Height          =   285
          Left            =   2640
-         TabIndex        =   13
+         TabIndex        =   12
          Text            =   "None"
          Top             =   360
          Width           =   1935
@@ -195,7 +215,7 @@ Begin VB.Form editBackground
          EndProperty
          Height          =   285
          Left            =   2640
-         TabIndex        =   12
+         TabIndex        =   11
          Text            =   "None"
          Top             =   1080
          Width           =   1935
@@ -212,7 +232,7 @@ Begin VB.Form editBackground
          EndProperty
          Height          =   285
          Left            =   2640
-         TabIndex        =   11
+         TabIndex        =   10
          Text            =   "None"
          Top             =   720
          Width           =   1935
@@ -229,7 +249,7 @@ Begin VB.Form editBackground
          EndProperty
          Height          =   285
          Left            =   2640
-         TabIndex        =   10
+         TabIndex        =   9
          Text            =   "None"
          Top             =   1440
          Width           =   1935
@@ -252,7 +272,7 @@ Begin VB.Form editBackground
          Height          =   255
          Index           =   0
          Left            =   240
-         TabIndex        =   9
+         TabIndex        =   8
          Tag             =   "1031"
          Top             =   360
          Width           =   2175
@@ -275,7 +295,7 @@ Begin VB.Form editBackground
          Height          =   255
          Index           =   1
          Left            =   240
-         TabIndex        =   8
+         TabIndex        =   7
          Tag             =   "1030"
          Top             =   720
          Width           =   2175
@@ -298,7 +318,7 @@ Begin VB.Form editBackground
          Height          =   255
          Index           =   2
          Left            =   240
-         TabIndex        =   7
+         TabIndex        =   6
          Tag             =   "1029"
          Top             =   1080
          Width           =   2175
@@ -321,7 +341,7 @@ Begin VB.Form editBackground
          Height          =   255
          Index           =   3
          Left            =   240
-         TabIndex        =   6
+         TabIndex        =   5
          Tag             =   "1027"
          Top             =   1440
          Width           =   2175
@@ -344,6 +364,34 @@ Begin VB.Form editBackground
       Tag             =   "1033"
       Top             =   1080
       Width           =   6135
+      Begin VB.PictureBox Picture2 
+         BorderStyle     =   0  'None
+         Height          =   615
+         Left            =   4680
+         ScaleHeight     =   615
+         ScaleWidth      =   1215
+         TabIndex        =   17
+         Top             =   360
+         Width           =   1215
+         Begin VB.CommandButton Command6 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   18
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+      End
       Begin VB.CommandButton Command9 
          Appearance      =   0  'Flat
          BeginProperty Font 
@@ -359,7 +407,7 @@ Begin VB.Form editBackground
          Left            =   600
          Picture         =   "editBackground.frx":0CCA
          Style           =   1  'Graphical
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   720
          Width           =   375
       End
@@ -378,27 +426,9 @@ Begin VB.Form editBackground
          Left            =   240
          Picture         =   "editBackground.frx":1994
          Style           =   1  'Graphical
-         TabIndex        =   3
+         TabIndex        =   2
          Top             =   720
          Width           =   375
-      End
-      Begin VB.CommandButton Command6 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   4800
-         TabIndex        =   2
-         Tag             =   "1021"
-         Top             =   360
-         Width           =   1095
       End
       Begin VB.TextBox Text1 
          BeginProperty Font 

@@ -25,7 +25,7 @@ Begin VB.Form EventAtom
       EndProperty
       Height          =   255
       Left            =   9120
-      TabIndex        =   27
+      TabIndex        =   21
       Tag             =   "1874"
       Top             =   3120
       Width           =   255
@@ -43,7 +43,7 @@ Begin VB.Form EventAtom
       EndProperty
       Height          =   255
       Left            =   9120
-      TabIndex        =   26
+      TabIndex        =   20
       Tag             =   "1875"
       Top             =   2760
       Width           =   255
@@ -52,7 +52,7 @@ Begin VB.Form EventAtom
       Caption         =   "OK"
       Height          =   345
       Left            =   7920
-      TabIndex        =   25
+      TabIndex        =   19
       Tag             =   "1022"
       Top             =   4200
       Width           =   1095
@@ -63,120 +63,130 @@ Begin VB.Form EventAtom
       TabIndex        =   6
       Top             =   840
       Width           =   4335
-      Begin VB.TextBox argVal 
-         Height          =   285
-         Index           =   5
-         Left            =   120
-         TabIndex        =   24
-         Top             =   4080
-         Width           =   2895
-      End
-      Begin VB.TextBox argVal 
-         Height          =   285
-         Index           =   4
-         Left            =   120
-         TabIndex        =   23
-         Top             =   3360
-         Width           =   2895
-      End
-      Begin VB.TextBox argVal 
-         Height          =   285
-         Index           =   3
-         Left            =   120
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   3975
+         Left            =   3120
+         ScaleHeight     =   3975
+         ScaleWidth      =   1095
          TabIndex        =   22
-         Top             =   2640
-         Width           =   2895
+         Top             =   480
+         Width           =   1095
+         Begin VB.CommandButton browsebutton 
+            Caption         =   "Browse"
+            Height          =   345
+            Index           =   0
+            Left            =   0
+            TabIndex        =   28
+            Tag             =   "1876"
+            Top             =   0
+            Width           =   1095
+         End
+         Begin VB.CommandButton browsebutton 
+            Caption         =   "Browse"
+            Height          =   345
+            Index           =   1
+            Left            =   0
+            TabIndex        =   27
+            Tag             =   "1876"
+            Top             =   720
+            Width           =   1095
+         End
+         Begin VB.CommandButton browsebutton 
+            Caption         =   "Browse"
+            Height          =   345
+            Index           =   2
+            Left            =   0
+            TabIndex        =   26
+            Tag             =   "1876"
+            Top             =   1440
+            Width           =   1095
+         End
+         Begin VB.CommandButton browsebutton 
+            Caption         =   "Browse"
+            Height          =   345
+            Index           =   3
+            Left            =   0
+            TabIndex        =   25
+            Tag             =   "1876"
+            Top             =   2160
+            Width           =   1095
+         End
+         Begin VB.CommandButton browsebutton 
+            Caption         =   "Browse"
+            Height          =   345
+            Index           =   4
+            Left            =   0
+            TabIndex        =   24
+            Tag             =   "1876"
+            Top             =   2880
+            Width           =   1095
+         End
+         Begin VB.CommandButton browsebutton 
+            Caption         =   "Browse"
+            Height          =   345
+            Index           =   5
+            Left            =   0
+            TabIndex        =   23
+            Tag             =   "1876"
+            Top             =   3600
+            Width           =   1095
+         End
       End
       Begin VB.TextBox argVal 
          Height          =   285
-         Index           =   2
-         Left            =   120
-         TabIndex        =   21
-         Top             =   1920
-         Width           =   2895
-      End
-      Begin VB.TextBox argVal 
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   20
-         Top             =   1200
-         Width           =   2895
-      End
-      Begin VB.CommandButton browsebutton 
-         Caption         =   "Browse"
-         Height          =   345
          Index           =   5
-         Left            =   3120
-         TabIndex        =   14
-         Tag             =   "1876"
+         Left            =   120
+         TabIndex        =   18
          Top             =   4080
-         Width           =   1095
+         Width           =   2895
       End
-      Begin VB.CommandButton browsebutton 
-         Caption         =   "Browse"
-         Height          =   345
+      Begin VB.TextBox argVal 
+         Height          =   285
          Index           =   4
-         Left            =   3120
-         TabIndex        =   13
-         Tag             =   "1876"
+         Left            =   120
+         TabIndex        =   17
          Top             =   3360
-         Width           =   1095
+         Width           =   2895
       End
-      Begin VB.CommandButton browsebutton 
-         Caption         =   "Browse"
-         Height          =   345
+      Begin VB.TextBox argVal 
+         Height          =   285
          Index           =   3
-         Left            =   3120
-         TabIndex        =   12
-         Tag             =   "1876"
+         Left            =   120
+         TabIndex        =   16
          Top             =   2640
-         Width           =   1095
+         Width           =   2895
       End
-      Begin VB.CommandButton browsebutton 
-         Caption         =   "Browse"
-         Height          =   345
+      Begin VB.TextBox argVal 
+         Height          =   285
          Index           =   2
-         Left            =   3120
-         TabIndex        =   11
-         Tag             =   "1876"
+         Left            =   120
+         TabIndex        =   15
          Top             =   1920
-         Width           =   1095
+         Width           =   2895
       End
-      Begin VB.CommandButton browsebutton 
-         Caption         =   "Browse"
-         Height          =   345
+      Begin VB.TextBox argVal 
+         Height          =   285
          Index           =   1
-         Left            =   3120
-         TabIndex        =   10
-         Tag             =   "1876"
+         Left            =   120
+         TabIndex        =   14
          Top             =   1200
-         Width           =   1095
+         Width           =   2895
       End
       Begin VB.TextBox argVal 
          Height          =   285
          Index           =   0
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   480
          Width           =   2895
-      End
-      Begin VB.CommandButton browsebutton 
-         Caption         =   "Browse"
-         Height          =   345
-         Index           =   0
-         Left            =   3120
-         TabIndex        =   7
-         Tag             =   "1876"
-         Top             =   480
-         Width           =   1095
       End
       Begin VB.Label argDesc 
          Caption         =   "Description"
          Height          =   255
          Index           =   5
          Left            =   120
-         TabIndex        =   19
+         TabIndex        =   13
          Tag             =   "1877"
          Top             =   3840
          Width           =   4095
@@ -186,7 +196,7 @@ Begin VB.Form EventAtom
          Height          =   255
          Index           =   4
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   12
          Tag             =   "1877"
          Top             =   3120
          Width           =   4095
@@ -196,7 +206,7 @@ Begin VB.Form EventAtom
          Height          =   255
          Index           =   3
          Left            =   120
-         TabIndex        =   17
+         TabIndex        =   11
          Tag             =   "1877"
          Top             =   2400
          Width           =   4095
@@ -206,7 +216,7 @@ Begin VB.Form EventAtom
          Height          =   255
          Index           =   2
          Left            =   120
-         TabIndex        =   16
+         TabIndex        =   10
          Tag             =   "1877"
          Top             =   1680
          Width           =   4095
@@ -216,7 +226,7 @@ Begin VB.Form EventAtom
          Height          =   255
          Index           =   1
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   9
          Tag             =   "1877"
          Top             =   960
          Width           =   4095
@@ -226,7 +236,7 @@ Begin VB.Form EventAtom
          Height          =   255
          Index           =   0
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   8
          Tag             =   "1877"
          Top             =   240
          Width           =   4095
@@ -358,8 +368,8 @@ Sub infofill()
     aDesc$ = DescribeEvent(evtToEdit, didDesc)
     If didDesc Then
         Frame1.Visible = True
-        commandName.caption = evtName$
-        commandDesc.caption = evtDescription$
+        commandName.Caption = evtName$
+        commandDesc.Caption = evtDescription$
         
         For t = 0 To 5
             argDesc(t).Visible = False
@@ -374,11 +384,11 @@ Sub infofill()
             argVal(t).Visible = True
                       
             aa$ = GetElement(bk$, t + 1)
-            If Mid$(aa$, 1, 1) = Chr$(34) Then
+            If Mid$(aa$, 1, 1) = chr$(34) Then
                 'remove quotes...
                 aa$ = Mid$(aa$, 2, Len(aa$) - 2)
             End If
-            argVal(t).text = aa$
+            argVal(t).Text = aa$
                         
             thedesc$ = evtArgDesc$(t)
             Select Case evtArgType$(t)
@@ -397,7 +407,7 @@ Sub infofill()
                 Case Else:
                     browsebutton(t).Visible = True
             End Select
-            argDesc(t).caption = thedesc$
+            argDesc(t).Caption = thedesc$
         Next
     Else
         Frame1.Visible = False
@@ -406,40 +416,40 @@ Sub infofill()
             browsebutton(t).Visible = False
             argVal(t).Visible = False
         Next t
-        commandName.caption = "#" + GetCommandName(evtToEdit)
-        commandDesc.caption = "No description."
+        commandName.Caption = "#" + GetCommandName(evtToEdit)
+        commandDesc.Caption = "No description."
     End If
     
     'fill in code section...
-    directedit.text = evtToEdit
+    directedit.Text = evtToEdit
     
     If evtToEditNum <> -1 Then
         pc$ = ""
         If evtToEditNum - 3 >= 0 Then pc$ = evtList$(evtToEditNum - 3)
-        If evtToEditNum - 2 >= 0 Then pc$ = pc$ + Chr$(10) + Chr$(13) + evtList$(evtToEditNum - 2)
-        If evtToEditNum - 1 >= 0 Then pc$ = pc$ + Chr$(10) + Chr$(13) + evtList$(evtToEditNum - 1)
-        preCode.caption = pc$
+        If evtToEditNum - 2 >= 0 Then pc$ = pc$ + chr$(10) + chr$(13) + evtList$(evtToEditNum - 2)
+        If evtToEditNum - 1 >= 0 Then pc$ = pc$ + chr$(10) + chr$(13) + evtList$(evtToEditNum - 1)
+        preCode.Caption = pc$
         
         ac$ = ""
         If evtToEditNum + 1 <= UBound(evtList) Then ac$ = evtList$(evtToEditNum + 1)
-        If evtToEditNum + 2 <= UBound(evtList) Then ac$ = ac$ + Chr$(10) + Chr$(13) + evtList$(evtToEditNum + 2)
-        If evtToEditNum + 3 <= UBound(evtList) Then ac$ = ac$ + Chr$(10) + Chr$(13) + evtList$(evtToEditNum + 3)
-        aftCode.caption = ac$
+        If evtToEditNum + 2 <= UBound(evtList) Then ac$ = ac$ + chr$(10) + chr$(13) + evtList$(evtToEditNum + 2)
+        If evtToEditNum + 3 <= UBound(evtList) Then ac$ = ac$ + chr$(10) + chr$(13) + evtList$(evtToEditNum + 3)
+        aftCode.Caption = ac$
     End If
 
     bIgnore = False
 End Sub
 
 
-Function VarType(text$) As String
+Function VarType(Text$) As String
     'determine if value text$ represents a variable or a constant
     'returns var type:
     '$ string
     '! num
     'nothing - it's a constant
     On Error Resume Next
-    a$ = text$
-    a$ = NoSpaces(a$)
+    a$ = Text$
+    a$ = noSpaces(a$)
     l = Len(a$)
     p$ = Mid$(a$, l, 1)
     If p$ = "$" Or p$ = "!" Then
@@ -458,7 +468,7 @@ Sub UpdateRPGCodeEquiv()
     eqiv$ = ""
     equiv$ = evtName$ + "("
     For t = 0 To evtNoArgs - 1
-        tempval$ = argVal(t).text
+        tempval$ = argVal(t).Text
         Select Case evtArgType$(t)
             Case "!":
                 v$ = VarType(tempval$)
@@ -490,7 +500,7 @@ Sub UpdateRPGCodeEquiv()
                     If v$ = "$" Then
                         equiv$ = equiv$ + tempval$
                     Else
-                        equiv$ = equiv$ + Chr$(34) + tempval$ + Chr$(34)
+                        equiv$ = equiv$ + chr$(34) + tempval$ + chr$(34)
                     End If
                 Else
                     'MsgBox "Argument" + Str$(t) + " is incorrect.  Either it is the wrong type or it is not optional"
@@ -510,7 +520,7 @@ Sub UpdateRPGCodeEquiv()
                     If v$ = "$" Then
                         equiv$ = equiv$ + tempval$
                     Else
-                        equiv$ = equiv$ + Chr$(34) + tempval$ + Chr$(34)
+                        equiv$ = equiv$ + chr$(34) + tempval$ + chr$(34)
                     End If
                 Else
                     'MsgBox "Argument" + Str$(t) + " is incorrect.  Either it is the wrong type or it is not optional"
@@ -522,7 +532,7 @@ Sub UpdateRPGCodeEquiv()
                     If v$ = "$" Then
                         equiv$ = equiv$ + tempval$
                     Else
-                        equiv$ = equiv$ + Chr$(34) + tempval$ + Chr$(34)
+                        equiv$ = equiv$ + chr$(34) + tempval$ + chr$(34)
                     End If
                 Else
                     'MsgBox "Argument" + Str$(t) + " is incorrect.  Either it is the wrong type or it is not optional"
@@ -535,18 +545,18 @@ Sub UpdateRPGCodeEquiv()
     Next t
     equiv$ = equiv$ + ")"
     bIgnore = True
-    directedit.text = equiv$
+    directedit.Text = equiv$
     bIgnore = False
 End Sub
 
 Private Sub argVal_Change(Index As Integer)
-    newArgs$(Index) = argVal(Index).text
+    newArgs$(Index) = argVal(Index).Text
     Call UpdateRPGCodeEquiv
 End Sub
 
 Private Sub browsebutton_Click(Index As Integer)
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + evtArgType$(Index)
     
@@ -560,8 +570,8 @@ Private Sub browsebutton_Click(Index As Integer)
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
-    argVal(Index).text = antiPath$
+    ChDir (currentDir$)
+    argVal(Index).Text = antiPath$
     newArgs(Index) = antiPath$
     bIgnore = False
     Call UpdateRPGCodeEquiv
@@ -571,9 +581,9 @@ End Sub
 Private Sub Command1_Click()
     On Error Resume Next
     If evtToEditNum <> -1 Then
-        evtList$(evtToEditNum) = directedit.text
+        evtList$(evtToEditNum) = directedit.Text
     End If
-    evtToEdit = directedit.text
+    evtToEdit = directedit.Text
     Call EventEdit.infofill
     Unload EventAtom
 End Sub
@@ -581,7 +591,7 @@ End Sub
 Private Sub Command2_Click()
     On Error Resume Next
     If evtToEditNum <> -1 Then
-        evtList$(evtToEditNum) = directedit.text
+        evtList$(evtToEditNum) = directedit.Text
         If evtToEditNum - 1 >= 0 Then
             evtToEditNum = evtToEditNum - 1
             evtToEdit = evtList$(evtToEditNum)
@@ -593,7 +603,7 @@ End Sub
 Private Sub Command3_Click()
     On Error Resume Next
     If evtToEditNum <> -1 Then
-        evtList$(evtToEditNum) = directedit.text
+        evtList$(evtToEditNum) = directedit.Text
         If evtToEditNum + 1 <= UBound(evtList) Then
             evtToEditNum = evtToEditNum + 1
             evtToEdit = evtList$(evtToEditNum)
@@ -606,8 +616,8 @@ End Sub
 Private Sub directedit_Change()
     On Error Resume Next
     If bIgnore Then Exit Sub
-    text$ = directedit.text
-    evtToEdit = text$
+    Text$ = directedit.Text
+    evtToEdit = Text$
     Call infofill
     bIgnore = False
 End Sub

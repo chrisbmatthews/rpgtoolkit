@@ -14,11 +14,58 @@ Begin VB.Form cutcorner
    ScaleWidth      =   3780
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1215"
+   Begin VB.PictureBox Picture1 
+      BorderStyle     =   0  'None
+      Height          =   1215
+      Left            =   360
+      ScaleHeight     =   1215
+      ScaleWidth      =   1815
+      TabIndex        =   4
+      Top             =   480
+      Width           =   1815
+      Begin VB.OptionButton Option1 
+         Caption         =   "North-East Corner"
+         Height          =   255
+         Left            =   0
+         TabIndex        =   8
+         Tag             =   "1220"
+         Top             =   0
+         Value           =   -1  'True
+         Width           =   1935
+      End
+      Begin VB.OptionButton Option2 
+         Caption         =   "North-West Corner"
+         Height          =   375
+         Left            =   0
+         TabIndex        =   7
+         Tag             =   "1219"
+         Top             =   240
+         Width           =   1935
+      End
+      Begin VB.OptionButton Option3 
+         Caption         =   "South-East Corner"
+         Height          =   255
+         Left            =   0
+         TabIndex        =   6
+         Tag             =   "1218"
+         Top             =   600
+         Width           =   1935
+      End
+      Begin VB.OptionButton Option4 
+         Caption         =   "South-West Corner"
+         Height          =   375
+         Left            =   0
+         TabIndex        =   5
+         Tag             =   "1217"
+         Top             =   840
+         Width           =   1935
+      End
+   End
    Begin VB.CheckBox chkPreview 
       Caption         =   "Preview"
       Height          =   255
       Left            =   2520
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   1200
       Width           =   1095
    End
@@ -26,7 +73,7 @@ Begin VB.Form cutcorner
       Caption         =   "Cancel"
       Height          =   345
       Left            =   2520
-      TabIndex        =   6
+      TabIndex        =   2
       Tag             =   "1008"
       Top             =   720
       Width           =   1095
@@ -48,43 +95,6 @@ Begin VB.Form cutcorner
       Tag             =   "1216"
       Top             =   120
       Width           =   2295
-      Begin VB.OptionButton Option4 
-         Caption         =   "South-West Corner"
-         Height          =   375
-         Left            =   240
-         TabIndex        =   5
-         Tag             =   "1217"
-         Top             =   1200
-         Width           =   1935
-      End
-      Begin VB.OptionButton Option3 
-         Caption         =   "South-East Corner"
-         Height          =   255
-         Left            =   240
-         TabIndex        =   4
-         Tag             =   "1218"
-         Top             =   960
-         Width           =   1935
-      End
-      Begin VB.OptionButton Option2 
-         Caption         =   "North-West Corner"
-         Height          =   375
-         Left            =   240
-         TabIndex        =   3
-         Tag             =   "1219"
-         Top             =   600
-         Width           =   1935
-      End
-      Begin VB.OptionButton Option1 
-         Caption         =   "North-East Corner"
-         Height          =   255
-         Left            =   240
-         TabIndex        =   2
-         Tag             =   "1220"
-         Top             =   360
-         Value           =   -1  'True
-         Width           =   1935
-      End
    End
 End
 Attribute VB_Name = "cutcorner"
@@ -111,7 +121,7 @@ Private Sub cmdOK_Click()
     Call Preview
     
     '!NEW! The user wants to save the changes
-    SaveChanges = True
+    saveChanges = True
     
     Unload Me
     Exit Sub
@@ -139,7 +149,7 @@ Private Sub chkPreview_Click()
         For x = 1 To 32
             For y = 1 To 32
                 'If tilemem(x, y) <> -1 Then
-                    tilemem(x, y) = tilepreview(x, y)
+                    tileMem(x, y) = tilePreview(x, y)
                 'End If
             Next y
         Next x
@@ -160,13 +170,13 @@ Private Sub Form_Load()
     For x = 1 To 32
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilepreview(x, y) = tilemem(x, y)
+                tilePreview(x, y) = tileMem(x, y)
             'End If
         Next y
     Next x
     
     '!NEW! Set the variable to False at the start
-    SaveChanges = False
+    saveChanges = False
 End Sub
 
 '========================================================================
@@ -175,13 +185,13 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     'If the user has pressed the X in the form, he doesn't wants to add the changes
 
-    If Not SaveChanges Then
+    If Not saveChanges Then
     'Use new undo
-    Call activeTile.SetUndo
+    Call activeTile.setUndo
     For x = 1 To 32
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+                tileMem(x, y) = tilePreview(x, y)
             'End If
         Next y
     Next x
@@ -218,7 +228,7 @@ Private Sub Preview()
     For x = 1 To 32
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+                tileMem(x, y) = tilePreview(x, y)
             'End If
         Next y
     Next x
@@ -229,7 +239,7 @@ Private Sub Preview()
         xin = 2
         For y = 1 To 32
             For x = xin To 32
-                tilemem(x, y) = -1
+                tileMem(x, y) = -1
             Next x
             xin = xin + 1
         Next y
@@ -240,7 +250,7 @@ Private Sub Preview()
         xin = 31
         For y = 1 To 32
             For x = xin To 1 Step -1
-                tilemem(x, y) = -1
+                tileMem(x, y) = -1
             Next x
             xin = xin - 1
         Next y
@@ -251,7 +261,7 @@ Private Sub Preview()
         xin = 2
         For y = 32 To 1 Step -1
             For x = xin To 32
-                tilemem(x, y) = -1
+                tileMem(x, y) = -1
             Next x
             xin = xin + 1
         Next y
@@ -262,7 +272,7 @@ Private Sub Preview()
         xin = 31
         For y = 32 To 1 Step -1
             For x = xin To 1 Step -1
-                tilemem(x, y) = -1
+                tileMem(x, y) = -1
             Next x
             xin = xin - 1
         Next y

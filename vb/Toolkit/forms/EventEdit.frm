@@ -20,6 +20,34 @@ Begin VB.Form EventEdit
       Tag             =   "1872"
       Top             =   120
       Width           =   7815
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   375
+         Left            =   5280
+         ScaleHeight     =   375
+         ScaleWidth      =   2415
+         TabIndex        =   5
+         Top             =   4080
+         Width           =   2415
+         Begin VB.CommandButton Command3 
+            Caption         =   "Delete Line"
+            Height          =   345
+            Left            =   1200
+            TabIndex        =   7
+            Tag             =   "1868"
+            Top             =   0
+            Width           =   1095
+         End
+         Begin VB.CommandButton Command2 
+            Caption         =   "Insert Line"
+            Height          =   345
+            Left            =   0
+            TabIndex        =   6
+            Tag             =   "1869"
+            Top             =   0
+            Width           =   1095
+         End
+      End
       Begin VB.ListBox List1 
          BeginProperty Font 
             Name            =   "Courier New"
@@ -32,33 +60,15 @@ Begin VB.Form EventEdit
          EndProperty
          Height          =   3375
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   2
          Top             =   600
          Width           =   7455
-      End
-      Begin VB.CommandButton Command2 
-         Caption         =   "Insert Line"
-         Height          =   345
-         Left            =   5280
-         TabIndex        =   3
-         Tag             =   "1869"
-         Top             =   4080
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command3 
-         Caption         =   "Delete Line"
-         Height          =   345
-         Left            =   6480
-         TabIndex        =   2
-         Tag             =   "1868"
-         Top             =   4080
-         Width           =   1095
       End
       Begin VB.Label Label2 
          Caption         =   "Current Event Contents:"
          Height          =   255
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   4
          Tag             =   "1871"
          Top             =   360
          Width           =   2895
@@ -68,7 +78,7 @@ Begin VB.Form EventEdit
          ForeColor       =   &H00808080&
          Height          =   255
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   3
          Tag             =   "1870"
          Top             =   4680
          Width           =   4215
@@ -254,5 +264,3 @@ Private Sub List1_DblClick()
         End If
     End If
 End Sub
-
-

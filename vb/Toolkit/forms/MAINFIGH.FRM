@@ -60,7 +60,7 @@ Begin VB.Form mainfight
       Top             =   120
       Width           =   7215
       Begin VB.Frame Frame1 
-         Caption         =   "Use Built In Fighting System?"
+         Caption         =   "Use Built In Fighting System?                   "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -72,46 +72,84 @@ Begin VB.Form mainfight
          EndProperty
          Height          =   1215
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   10
          Tag             =   "1557"
          Top             =   4080
          Width           =   6855
-         Begin VB.OptionButton Option4 
-            Caption         =   "No, Run Program"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   195
-            Left            =   240
-            TabIndex        =   15
-            Tag             =   "1558"
-            Top             =   480
-            Width           =   2535
+         Begin VB.PictureBox Picture3 
+            BorderStyle     =   0  'None
+            Height          =   375
+            Left            =   2640
+            ScaleHeight     =   375
+            ScaleWidth      =   1215
+            TabIndex        =   18
+            Top             =   720
+            Width           =   1215
+            Begin VB.CommandButton Command14 
+               Caption         =   "Browse..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   345
+               Left            =   0
+               TabIndex        =   19
+               Tag             =   "1021"
+               Top             =   0
+               Width           =   1095
+            End
          End
-         Begin VB.OptionButton Option3 
-            Caption         =   "Yes"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
+         Begin VB.PictureBox Picture2 
+            BorderStyle     =   0  'None
+            Height          =   495
             Left            =   240
-            TabIndex        =   16
-            Tag             =   "1100"
+            ScaleHeight     =   495
+            ScaleWidth      =   3135
+            TabIndex        =   15
             Top             =   240
-            Value           =   -1  'True
-            Width           =   1335
+            Width           =   3135
+            Begin VB.OptionButton Option3 
+               Caption         =   "Yes"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   0
+               TabIndex        =   17
+               Tag             =   "1100"
+               Top             =   0
+               Value           =   -1  'True
+               Width           =   1335
+            End
+            Begin VB.OptionButton Option4 
+               Caption         =   "No, Run Program"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   195
+               Left            =   0
+               TabIndex        =   16
+               Tag             =   "1558"
+               Top             =   240
+               Width           =   2535
+            End
          End
          Begin VB.TextBox fprg 
             BeginProperty Font 
@@ -125,32 +163,14 @@ Begin VB.Form mainfight
             EndProperty
             Height          =   285
             Left            =   480
-            TabIndex        =   14
+            TabIndex        =   11
             Text            =   "None"
-            Top             =   720
+            Top             =   840
             Width           =   2055
-         End
-         Begin VB.CommandButton Command14 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   2640
-            TabIndex        =   13
-            Tag             =   "1021"
-            Top             =   720
-            Width           =   1095
          End
       End
       Begin VB.Frame Frame5 
-         Caption         =   "Fighting Type:"
+         Caption         =   "Fighting Type:           "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -166,42 +186,52 @@ Begin VB.Form mainfight
          Tag             =   "1563"
          Top             =   2640
          Width           =   6855
-         Begin VB.OptionButton Option2 
-            Caption         =   "Planned"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
+         Begin VB.PictureBox Picture1 
+            BorderStyle     =   0  'None
+            Height          =   615
             Left            =   240
-            TabIndex        =   8
-            Tag             =   "1559"
-            Top             =   480
-            Width           =   1695
-         End
-         Begin VB.OptionButton Option1 
-            Caption         =   "Random"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   240
-            TabIndex        =   9
-            Tag             =   "1560"
+            ScaleHeight     =   615
+            ScaleWidth      =   2295
+            TabIndex        =   12
             Top             =   240
-            Value           =   -1  'True
-            Width           =   1695
+            Width           =   2295
+            Begin VB.OptionButton Option1 
+               Caption         =   "Random"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   0
+               TabIndex        =   14
+               Tag             =   "1560"
+               Top             =   0
+               Value           =   -1  'True
+               Width           =   1695
+            End
+            Begin VB.OptionButton Option2 
+               Caption         =   "Planned"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   0
+               TabIndex        =   13
+               Tag             =   "1559"
+               Top             =   240
+               Width           =   1695
+            End
          End
          Begin VB.TextBox Text1 
             BeginProperty Font 
@@ -215,7 +245,7 @@ Begin VB.Form mainfight
             EndProperty
             Height          =   285
             Left            =   3480
-            TabIndex        =   11
+            TabIndex        =   9
             Text            =   "50"
             Top             =   840
             Width           =   3255
@@ -233,14 +263,14 @@ Begin VB.Form mainfight
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   10
+            TabIndex        =   8
             Tag             =   "1562"
             Top             =   840
             Width           =   2655
          End
       End
       Begin VB.Frame Frame4 
-         Caption         =   "Enemy Skill Level"
+         Caption         =   "Enemy Skill Level                  "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25

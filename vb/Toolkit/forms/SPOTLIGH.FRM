@@ -42,6 +42,53 @@ Begin VB.Form spotlighting
       Tag             =   "1755"
       Top             =   120
       Width           =   3975
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   735
+         Left            =   240
+         ScaleHeight     =   735
+         ScaleWidth      =   3615
+         TabIndex        =   8
+         Top             =   360
+         Width           =   3615
+         Begin VB.OptionButton slightoff 
+            Caption         =   "Turn Spot Lighting Off"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   10
+            Tag             =   "1756"
+            Top             =   240
+            Value           =   -1  'True
+            Width           =   2295
+         End
+         Begin VB.OptionButton slighton 
+            Caption         =   "Turn Spot Lighting On"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   0
+            TabIndex        =   9
+            Tag             =   "1757"
+            Top             =   0
+            Width           =   2415
+         End
+      End
       Begin VB.Frame Frame2 
          Caption         =   "Spot Light Options"
          BeginProperty Font 
@@ -55,7 +102,7 @@ Begin VB.Form spotlighting
          EndProperty
          Height          =   855
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   3
          Tag             =   "1760"
          Top             =   1200
          Width           =   3735
@@ -71,7 +118,7 @@ Begin VB.Form spotlighting
             EndProperty
             Height          =   285
             Left            =   840
-            TabIndex        =   7
+            TabIndex        =   5
             Text            =   "2"
             Top             =   360
             Width           =   375
@@ -88,7 +135,7 @@ Begin VB.Form spotlighting
             EndProperty
             Height          =   285
             Left            =   2880
-            TabIndex        =   6
+            TabIndex        =   4
             Text            =   "100"
             Top             =   360
             Width           =   615
@@ -106,7 +153,7 @@ Begin VB.Form spotlighting
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   9
+            TabIndex        =   7
             Tag             =   "1759"
             Top             =   360
             Width           =   615
@@ -125,48 +172,11 @@ Begin VB.Form spotlighting
             EndProperty
             Height          =   255
             Left            =   1320
-            TabIndex        =   8
+            TabIndex        =   6
             Tag             =   "1758"
             Top             =   360
             Width           =   1335
          End
-      End
-      Begin VB.OptionButton slighton 
-         Caption         =   "Turn Spot Lighting On"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   120
-         TabIndex        =   4
-         Tag             =   "1757"
-         Top             =   360
-         Width           =   2415
-      End
-      Begin VB.OptionButton slightoff 
-         Caption         =   "Turn Spot Lighting Off"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   3
-         Tag             =   "1756"
-         Top             =   600
-         Value           =   -1  'True
-         Width           =   2295
       End
    End
    Begin VB.CommandButton Command2 
@@ -219,57 +229,57 @@ Attribute VB_Exposed = False
 
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If slighton.value = -1 Then boardList(activeBoardIndex).spotLight = 1
     If slightoff.value = -1 Then boardList(activeBoardIndex).spotLight = 0
-    boardList(activeBoardIndex).spotLightRadius = val(lightradius.text)
-    boardList(activeBoardIndex).percentFade = val(fadepercent.text)
+    boardList(activeBoardIndex).spotLightRadius = val(lightradius.Text)
+    boardList(activeBoardIndex).percentFade = val(fadepercent.Text)
     Unload spotlighting
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload spotlighting
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Activate()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If boardList(activeBoardIndex).spotLight = 1 Then slighton.value = -1: slightoff.value = 0
     If boardList(activeBoardIndex).spotLight = 0 Then slightoff.value = -1: slighton.value = 0
-    lightradius.text = str$(boardList(activeBoardIndex).spotLightRadius)
-    fadepercent.text = str$(boardList(activeBoardIndex).percentFade)
+    lightradius.Text = str$(boardList(activeBoardIndex).spotLightRadius)
+    fadepercent.Text = str$(boardList(activeBoardIndex).percentFade)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     If boardList(activeBoardIndex).spotLight = 1 Then slighton.value = -1: slightoff.value = 0
     If boardList(activeBoardIndex).spotLight = 0 Then slightoff.value = -1: slighton.value = 0
-    lightradius.text = str$(boardList(activeBoardIndex).spotLightRadius)
-    fadepercent.text = str$(boardList(activeBoardIndex).percentFade)
+    lightradius.Text = str$(boardList(activeBoardIndex).spotLightRadius)
+    fadepercent.Text = str$(boardList(activeBoardIndex).percentFade)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

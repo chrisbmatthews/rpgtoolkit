@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form tilesetedit 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Tile Set Editor"
@@ -18,7 +18,7 @@ Begin VB.Form tilesetedit
       Caption         =   "OK"
       Height          =   375
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   4920
       Width           =   1095
    End
@@ -32,89 +32,155 @@ Begin VB.Form tilesetedit
       _ExtentY        =   8281
       _Version        =   393216
       Style           =   1
+      Tab             =   1
       TabHeight       =   520
       TabCaption(0)   =   "Manually"
       TabPicture(0)   =   "tilesetedit.frx":0CCA
-      Tab(0).ControlEnabled=   -1  'True
+      Tab(0).ControlEnabled=   0   'False
       Tab(0).Control(0)=   "frmManual"
       Tab(0).Control(0).Enabled=   0   'False
-      Tab(0).ControlCount=   1
+      Tab(0).Control(1)=   "Picture1"
+      Tab(0).Control(1).Enabled=   0   'False
+      Tab(0).ControlCount=   2
       TabCaption(1)   =   "Visually"
       TabPicture(1)   =   "tilesetedit.frx":0CE6
-      Tab(1).ControlEnabled=   0   'False
+      Tab(1).ControlEnabled=   -1  'True
       Tab(1).Control(0)=   "frmVisual"
+      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Advanced"
       TabPicture(2)   =   "tilesetedit.frx":0D02
       Tab(2).ControlEnabled=   0   'False
       Tab(2).ControlCount=   0
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   975
+         Left            =   -74760
+         ScaleHeight     =   975
+         ScaleWidth      =   4935
+         TabIndex        =   13
+         Top             =   840
+         Width           =   4935
+         Begin VB.CommandButton cmdBrowse 
+            Caption         =   "Browse"
+            Height          =   255
+            Left            =   2640
+            TabIndex        =   16
+            Top             =   250
+            Width           =   1335
+         End
+         Begin VB.TextBox txtGPH 
+            Height          =   285
+            Left            =   0
+            TabIndex        =   15
+            Top             =   240
+            Width           =   2535
+         End
+         Begin VB.CommandButton cmdAddFiles 
+            Caption         =   "Add Files to Tileset"
+            Height          =   255
+            Left            =   0
+            TabIndex        =   14
+            Top             =   600
+            Width           =   2535
+         End
+         Begin VB.Label Label2 
+            Caption         =   "Wildcards are allowed (ie. *.gph, c*.gph, etc)."
+            Height          =   255
+            Left            =   0
+            TabIndex        =   17
+            Tag             =   "1569"
+            Top             =   0
+            Width           =   3255
+         End
+      End
       Begin VB.Frame frmVisual 
          Caption         =   "Visually Add Files"
          Height          =   4095
-         Left            =   -74880
-         TabIndex        =   9
+         Left            =   120
+         TabIndex        =   5
          Top             =   480
          Width           =   5175
-         Begin VB.CommandButton cmdStop 
-            Caption         =   "Stop!"
-            Enabled         =   0   'False
-            Height          =   345
-            Left            =   3720
+         Begin VB.PictureBox Picture3 
+            BorderStyle     =   0  'None
+            Height          =   1095
+            Left            =   2040
+            ScaleHeight     =   1095
+            ScaleWidth      =   735
+            TabIndex        =   22
+            Top             =   1320
+            Width           =   735
+            Begin VB.CommandButton cmdAdd 
+               Caption         =   "Add ->"
+               Height          =   375
+               Left            =   0
+               TabIndex        =   24
+               Tag             =   "1752"
+               Top             =   0
+               Width           =   735
+            End
+            Begin VB.CommandButton cmdCopy 
+               Caption         =   "<- Copy"
+               Height          =   375
+               Left            =   0
+               TabIndex        =   23
+               Tag             =   "1751"
+               Top             =   480
+               Width           =   735
+            End
+         End
+         Begin VB.PictureBox Picture2 
+            BorderStyle     =   0  'None
+            Height          =   975
+            Left            =   120
+            ScaleHeight     =   975
+            ScaleWidth      =   4935
             TabIndex        =   18
-            Tag             =   "1747"
-            Top             =   2880
-            Width           =   975
-         End
-         Begin VB.CommandButton cmdRemove 
-            Caption         =   "Remove Duplicates"
-            Height          =   345
-            Left            =   120
-            TabIndex        =   17
-            Tag             =   "1748"
-            Top             =   3480
-            Width           =   1575
-         End
-         Begin VB.CommandButton cmdDelete 
-            Caption         =   "Delete Selected File"
-            Height          =   345
-            Left            =   120
-            TabIndex        =   16
-            Tag             =   "1749"
             Top             =   3000
-            Width           =   1575
+            Width           =   4935
+            Begin VB.CommandButton cmdDelete 
+               Caption         =   "Delete Selected File"
+               Height          =   345
+               Left            =   0
+               TabIndex        =   21
+               Tag             =   "1749"
+               Top             =   120
+               Width           =   1575
+            End
+            Begin VB.CommandButton cmdRemove 
+               Caption         =   "Remove Duplicates"
+               Height          =   345
+               Left            =   0
+               TabIndex        =   20
+               Tag             =   "1748"
+               Top             =   600
+               Width           =   1575
+            End
+            Begin VB.CommandButton cmdStop 
+               Caption         =   "Stop!"
+               Enabled         =   0   'False
+               Height          =   345
+               Left            =   3600
+               TabIndex        =   19
+               Tag             =   "1747"
+               Top             =   0
+               Width           =   975
+            End
          End
          Begin VB.CheckBox chkDelete 
             Caption         =   "Delete file when moved"
             Height          =   255
             Left            =   120
-            TabIndex        =   15
+            TabIndex        =   9
             Tag             =   "1750"
             Top             =   2640
             Width           =   2535
-         End
-         Begin VB.CommandButton cmdCopy 
-            Caption         =   "<- Copy"
-            Height          =   375
-            Left            =   2040
-            TabIndex        =   14
-            Tag             =   "1751"
-            Top             =   1920
-            Width           =   735
-         End
-         Begin VB.CommandButton cmdAdd 
-            Caption         =   "Add ->"
-            Height          =   375
-            Left            =   2040
-            TabIndex        =   13
-            Tag             =   "1752"
-            Top             =   1440
-            Width           =   735
          End
          Begin VB.ListBox lstTileset 
             Appearance      =   0  'Flat
             Height          =   1980
             Left            =   2880
-            TabIndex        =   12
+            TabIndex        =   8
             Top             =   600
             Width           =   1815
          End
@@ -122,7 +188,7 @@ Begin VB.Form tilesetedit
             Appearance      =   0  'Flat
             Height          =   1980
             Left            =   120
-            TabIndex        =   11
+            TabIndex        =   7
             Top             =   600
             Width           =   1815
          End
@@ -136,14 +202,14 @@ Begin VB.Form tilesetedit
             ScaleHeight     =   32
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   32
-            TabIndex        =   10
+            TabIndex        =   6
             Top             =   600
             Width           =   505
          End
          Begin VB.Label lblProgress 
             Height          =   255
             Left            =   2880
-            TabIndex        =   21
+            TabIndex        =   12
             Top             =   2640
             Width           =   1815
          End
@@ -151,7 +217,7 @@ Begin VB.Form tilesetedit
             Caption         =   "Selected Tileset"
             Height          =   375
             Left            =   2880
-            TabIndex        =   20
+            TabIndex        =   11
             Tag             =   "1753"
             Top             =   360
             Width           =   1815
@@ -160,7 +226,7 @@ Begin VB.Form tilesetedit
             Caption         =   ".GPH Tiles In Directory"
             Height          =   255
             Left            =   120
-            TabIndex        =   19
+            TabIndex        =   10
             Tag             =   "1754"
             Top             =   360
             Width           =   2175
@@ -169,18 +235,10 @@ Begin VB.Form tilesetedit
       Begin VB.Frame frmManual 
          Caption         =   "Manually Add Files"
          Height          =   2055
-         Left            =   120
-         TabIndex        =   5
+         Left            =   -74880
+         TabIndex        =   2
          Top             =   480
          Width           =   5175
-         Begin VB.CommandButton cmdAddFiles 
-            Caption         =   "Add Files to Tileset"
-            Height          =   255
-            Left            =   120
-            TabIndex        =   2
-            Top             =   960
-            Width           =   2535
-         End
          Begin VB.PictureBox percdone 
             BackColor       =   &H00FFFFFF&
             Height          =   255
@@ -188,39 +246,15 @@ Begin VB.Form tilesetedit
             ScaleHeight     =   195
             ScaleMode       =   0  'User
             ScaleWidth      =   93.013
-            TabIndex        =   6
-            Top             =   1560
-            Width           =   3255
-         End
-         Begin VB.TextBox txtGPH 
-            Height          =   285
-            Left            =   120
-            TabIndex        =   1
-            Top             =   600
-            Width           =   2535
-         End
-         Begin VB.CommandButton cmdBrowse 
-            Caption         =   "Browse"
-            Height          =   255
-            Left            =   2760
             TabIndex        =   3
-            Top             =   610
-            Width           =   1335
-         End
-         Begin VB.Label Label2 
-            Caption         =   "Wildcards are allowed (ie. *.gph, c*.gph, etc)."
-            Height          =   255
-            Left            =   120
-            TabIndex        =   8
-            Tag             =   "1569"
-            Top             =   360
+            Top             =   1560
             Width           =   3255
          End
          Begin VB.Label cmdProgress 
             Caption         =   "Progress"
             Height          =   255
             Left            =   120
-            TabIndex        =   7
+            TabIndex        =   4
             Top             =   1320
             Width           =   615
          End
@@ -431,22 +465,22 @@ Private Sub cmdCopy_Click()
         If filename$(1) = "" Then Exit Sub
         
         'For the loop
-        Dim X, Y As Integer
+        Dim x, y As Integer
         
-        For X = 1 To 32
-            For Y = 1 To 32
-                bufTile(X, Y) = tileMem(X, Y)
-            Next Y
-        Next X
+        For x = 1 To 32
+            For y = 1 To 32
+                bufTile(x, y) = tileMem(x, y)
+            Next y
+        Next x
         
         Call openFromTileSet(projectPath$ + tilePath$ + tstFile$, idx)
         Call saveTile(filename$(1))
         lstFiles.Refresh
-        For X = 1 To 32
-            For Y = 1 To 32
-                tileMem(X, Y) = bufTile(X, Y)
-            Next Y
-        Next X
+        For x = 1 To 32
+            For y = 1 To 32
+                tileMem(x, y) = bufTile(x, y)
+            Next y
+        Next x
     End If
 End Sub
 '========================================================================
@@ -488,27 +522,27 @@ Private Sub lstFiles_Click()
     f$ = lstFiles.filename
     t$ = noPath(f$)
     
-    For X = 1 To 32
-        For Y = 1 To 32
-            bufTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            bufTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
     
     Call openTile2(projectPath$ + tilePath$ + f$)
     Call vbPicFillRect(pcbBrowse, 0, 0, 100, 100, vbQBColor(15))
-    For X = 0 To 31
-        For Y = 0 To 31
-            col = tileMem(X + 1, Y + 1)
+    For x = 0 To 31
+        For y = 0 To 31
+            col = tileMem(x + 1, y + 1)
                 If col = -1 Then col = vbQBColor(15)
-            Call vbPicPSet(pcbBrowse, X, Y, col)
-        Next Y
-    Next X
+            Call vbPicPSet(pcbBrowse, x, y, col)
+        Next y
+    Next x
 
-    For X = 1 To 32
-        For Y = 1 To 32
-            tileMem(X, Y) = bufTile(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            tileMem(x, y) = bufTile(x, y)
+        Next y
+    Next x
 End Sub
 '========================================================================
 ' When you click in the Tileset list
@@ -519,27 +553,27 @@ Private Sub lstTileset_Click()
     lstFiles.ListIndex = -1
     idx = lstTileset.ListIndex + 1
     
-    For X = 1 To 32
-        For Y = 1 To 32
-            bufTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            bufTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
 
     Call openFromTileSet(projectPath$ + tilePath$ + tstFile$, idx)
     Call vbPicFillRect(pcbBrowse, 0, 0, 100, 100, vbQBColor(15))
-    For X = 0 To 31
-        For Y = 0 To 31
-            col = tileMem(X + 1, Y + 1)
+    For x = 0 To 31
+        For y = 0 To 31
+            col = tileMem(x + 1, y + 1)
             If col = -1 Then col = vbQBColor(15)
-            Call vbPicPSet(pcbBrowse, X, Y, col)
-        Next Y
-    Next X
+            Call vbPicPSet(pcbBrowse, x, y, col)
+        Next y
+    Next x
     
-    For X = 1 To 32
-        For Y = 1 To 32
-            tileMem(X, Y) = bufTile(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            tileMem(x, y) = bufTile(x, y)
+        Next y
+    Next x
 End Sub
 '========================================================================
 ' When the tabs are changed
@@ -717,11 +751,11 @@ End Sub
 Sub backUpTile()
     On Error GoTo ErrorHandler
     
-    For X = 1 To 32
-        For Y = 1 To 32
-            bufTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            bufTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
     
     openTileEditorDocs(activeTile.indice).oldDetail = detail
 
@@ -798,20 +832,20 @@ Function compareTiles(ByVal f1 As String, ByVal f2 As String) As Boolean
     End If
     'both files exist.  now compare them
     Call openTile2(projectPath & tilePath & f1)
-    For X = 1 To 32
-        For Y = 1 To 32
-            myBuf(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            myBuf(x, y) = tileMem(x, y)
+        Next y
+    Next x
     Call openTile2(projectPath & tilePath & f2$)
-    For X = 1 To 32
-        For Y = 1 To 32
-            If Not (myBuf(X, Y) = tileMem(X, Y)) Then
+    For x = 1 To 32
+        For y = 1 To 32
+            If Not (myBuf(x, y) = tileMem(x, y)) Then
                 'found difference
                 Exit Function
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     compareTiles = True
 
 End Function

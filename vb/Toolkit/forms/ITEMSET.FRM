@@ -26,6 +26,53 @@ Begin VB.Form itemset
    ScaleWidth      =   6030
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1293"
+   Begin VB.PictureBox Picture1 
+      BorderStyle     =   0  'None
+      Height          =   615
+      Left            =   240
+      ScaleHeight     =   615
+      ScaleWidth      =   5535
+      TabIndex        =   17
+      Top             =   1800
+      Width           =   5535
+      Begin VB.OptionButton Option4 
+         Caption         =   "Player Presses Activation Key Beside Item"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Left            =   0
+         TabIndex        =   19
+         Tag             =   "1469"
+         Top             =   240
+         Width           =   5295
+      End
+      Begin VB.OptionButton Option3 
+         Caption         =   "Player Steps On This Item"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Left            =   0
+         TabIndex        =   18
+         Tag             =   "1468"
+         Top             =   0
+         Value           =   -1  'True
+         Width           =   4935
+      End
+   End
    Begin VB.CommandButton Command4 
       Caption         =   "Advanced >>"
       BeginProperty Font 
@@ -39,7 +86,7 @@ Begin VB.Form itemset
       EndProperty
       Height          =   375
       Left            =   120
-      TabIndex        =   29
+      TabIndex        =   16
       Tag             =   "1297"
       Top             =   960
       Width           =   2175
@@ -57,197 +104,207 @@ Begin VB.Form itemset
       EndProperty
       Height          =   1695
       Left            =   120
-      TabIndex        =   17
+      TabIndex        =   15
       Tag             =   "1457"
       Top             =   4680
       Width           =   5775
-      Begin VB.TextBox prgactivation 
-         Enabled         =   0   'False
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   2040
-         TabIndex        =   18
-         Text            =   "BoardName[XXYYLR]!"
-         Top             =   840
-         Width           =   2175
-      End
-      Begin VB.TextBox afteractivate 
-         Enabled         =   0   'False
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   4800
-         TabIndex        =   23
-         Text            =   "1"
-         Top             =   1200
-         Width           =   735
-      End
-      Begin VB.TextBox afterprgvar 
-         Enabled         =   0   'False
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   2280
-         TabIndex        =   22
-         Text            =   "BoardName[XXYYLR]!"
-         Top             =   1200
-         Width           =   2175
-      End
-      Begin VB.TextBox prgequals 
-         Enabled         =   0   'False
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   4800
-         TabIndex        =   21
-         Text            =   "0"
-         Top             =   840
-         Width           =   735
-      End
-      Begin VB.OptionButton Option2 
-         Caption         =   "Conditional Activation"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
+      Begin VB.PictureBox Picture2 
+         BorderStyle     =   0  'None
+         Height          =   1335
          Left            =   120
+         ScaleHeight     =   1335
+         ScaleWidth      =   5535
          TabIndex        =   20
-         Tag             =   "1458"
-         Top             =   600
-         Width           =   2295
-      End
-      Begin VB.OptionButton Option1 
-         Caption         =   "Always Active"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   120
-         TabIndex        =   19
-         Tag             =   "1459"
-         Top             =   360
-         Value           =   -1  'True
-         Width           =   2055
-      End
-      Begin VB.Label Label3 
-         Alignment       =   2  'Center
-         Caption         =   "Note:  If you only want to run the item once, click on Conditional Activation and leave the defaults."
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   6.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00808080&
-         Height          =   495
-         Left            =   2280
-         TabIndex        =   28
-         Tag             =   "1460"
          Top             =   240
-         Width           =   3255
-      End
-      Begin VB.Label Label4 
-         Alignment       =   2  'Center
-         Caption         =   "="
-         Enabled         =   0   'False
-         Height          =   255
-         Left            =   4440
-         TabIndex        =   27
-         Tag             =   "1461"
-         Top             =   1200
-         Width           =   375
-      End
-      Begin VB.Label Label2 
-         Alignment       =   1  'Right Justify
-         Caption         =   "Active If Variable"
-         Enabled         =   0   'False
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   26
-         Tag             =   "1462"
-         Top             =   840
-         Width           =   1815
-      End
-      Begin VB.Label Label5 
-         Caption         =   "="
-         Height          =   255
-         Left            =   4440
-         TabIndex        =   25
-         Tag             =   "1461"
-         Top             =   840
-         Width           =   255
-      End
-      Begin VB.Label Label6 
-         Alignment       =   1  'Right Justify
-         Caption         =   "After Activation,"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   24
-         Tag             =   "1463"
-         Top             =   1200
-         Width           =   1935
+         Width           =   5535
+         Begin VB.TextBox prgactivation 
+            Enabled         =   0   'False
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   1920
+            TabIndex        =   26
+            Text            =   "BoardName[XXYYLR]!"
+            Top             =   600
+            Width           =   2175
+         End
+         Begin VB.TextBox afteractivate 
+            Enabled         =   0   'False
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   4680
+            TabIndex        =   25
+            Text            =   "1"
+            Top             =   960
+            Width           =   735
+         End
+         Begin VB.TextBox afterprgvar 
+            Enabled         =   0   'False
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   2160
+            TabIndex        =   24
+            Text            =   "BoardName[XXYYLR]!"
+            Top             =   960
+            Width           =   2175
+         End
+         Begin VB.TextBox prgequals 
+            Enabled         =   0   'False
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Left            =   4680
+            TabIndex        =   23
+            Text            =   "0"
+            Top             =   600
+            Width           =   735
+         End
+         Begin VB.OptionButton Option2 
+            Caption         =   "Conditional Activation"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   0
+            TabIndex        =   22
+            Tag             =   "1458"
+            Top             =   360
+            Width           =   2295
+         End
+         Begin VB.OptionButton Option1 
+            Caption         =   "Always Active"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   0
+            TabIndex        =   21
+            Tag             =   "1459"
+            Top             =   120
+            Value           =   -1  'True
+            Width           =   2055
+         End
+         Begin VB.Label Label3 
+            Alignment       =   2  'Center
+            Caption         =   "Note:  If you only want to run the item once, click on Conditional Activation and leave the defaults."
+            BeginProperty Font 
+               Name            =   "Arial"
+               Size            =   6.75
+               Charset         =   0
+               Weight          =   700
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00808080&
+            Height          =   495
+            Left            =   2160
+            TabIndex        =   31
+            Tag             =   "1460"
+            Top             =   0
+            Width           =   3255
+         End
+         Begin VB.Label Label4 
+            Alignment       =   2  'Center
+            Caption         =   "="
+            Enabled         =   0   'False
+            Height          =   255
+            Left            =   4320
+            TabIndex        =   30
+            Tag             =   "1461"
+            Top             =   960
+            Width           =   375
+         End
+         Begin VB.Label Label2 
+            Alignment       =   1  'Right Justify
+            Caption         =   "Active If Variable"
+            Enabled         =   0   'False
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   29
+            Tag             =   "1462"
+            Top             =   600
+            Width           =   1815
+         End
+         Begin VB.Label Label5 
+            Caption         =   "="
+            Height          =   255
+            Left            =   4320
+            TabIndex        =   28
+            Tag             =   "1461"
+            Top             =   600
+            Width           =   255
+         End
+         Begin VB.Label Label6 
+            Alignment       =   1  'Right Justify
+            Caption         =   "After Activation,"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   27
+            Tag             =   "1463"
+            Top             =   960
+            Width           =   1935
+         End
       End
    End
    Begin VB.Frame Frame2 
@@ -263,7 +320,7 @@ Begin VB.Form itemset
       EndProperty
       Height          =   1935
       Left            =   120
-      TabIndex        =   9
+      TabIndex        =   7
       Tag             =   "1196"
       Top             =   2640
       Width           =   5775
@@ -279,7 +336,7 @@ Begin VB.Form itemset
          EndProperty
          Height          =   285
          Left            =   240
-         TabIndex        =   13
+         TabIndex        =   11
          Top             =   1200
          Width           =   3015
       End
@@ -295,7 +352,7 @@ Begin VB.Form itemset
          EndProperty
          Height          =   285
          Left            =   240
-         TabIndex        =   12
+         TabIndex        =   10
          Top             =   600
          Width           =   2895
       End
@@ -313,7 +370,7 @@ Begin VB.Form itemset
          EndProperty
          Height          =   345
          Left            =   3360
-         TabIndex        =   11
+         TabIndex        =   9
          Tag             =   "1021"
          Top             =   600
          Width           =   1095
@@ -331,7 +388,7 @@ Begin VB.Form itemset
          EndProperty
          Height          =   345
          Left            =   3360
-         TabIndex        =   10
+         TabIndex        =   8
          Tag             =   "1021"
          Top             =   1200
          Width           =   1095
@@ -350,7 +407,7 @@ Begin VB.Form itemset
          ForeColor       =   &H00808080&
          Height          =   255
          Left            =   360
-         TabIndex        =   16
+         TabIndex        =   14
          Tag             =   "1464"
          Top             =   1560
          Width           =   5055
@@ -368,7 +425,7 @@ Begin VB.Form itemset
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   15
+         TabIndex        =   13
          Tag             =   "1465"
          Top             =   960
          Width           =   3495
@@ -386,7 +443,7 @@ Begin VB.Form itemset
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   14
+         TabIndex        =   12
          Tag             =   "1466"
          Top             =   360
          Width           =   3375
@@ -404,7 +461,7 @@ Begin VB.Form itemset
       EndProperty
       Height          =   285
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   600
       Width           =   2775
    End
@@ -422,7 +479,7 @@ Begin VB.Form itemset
       EndProperty
       Height          =   351
       Left            =   3000
-      TabIndex        =   5
+      TabIndex        =   3
       Tag             =   "1021"
       Top             =   600
       Width           =   1095
@@ -444,43 +501,6 @@ Begin VB.Form itemset
       Tag             =   "1467"
       Top             =   1560
       Width           =   5775
-      Begin VB.OptionButton Option3 
-         Caption         =   "Player Steps On This Item"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   120
-         TabIndex        =   4
-         Tag             =   "1468"
-         Top             =   360
-         Value           =   -1  'True
-         Width           =   4935
-      End
-      Begin VB.OptionButton Option4 
-         Caption         =   "Player Presses Activation Key Beside Item"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   120
-         TabIndex        =   3
-         Tag             =   "1469"
-         Top             =   600
-         Width           =   5295
-      End
    End
    Begin VB.CommandButton Command3 
       Appearance      =   0  'Flat
@@ -514,7 +534,7 @@ Begin VB.Form itemset
       EndProperty
       Height          =   255
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   6
       Tag             =   "1470"
       Top             =   360
       Width           =   2055
@@ -535,7 +555,7 @@ Begin VB.Form itemset
       Left            =   4440
       MouseIcon       =   "ITEMSET.frx":0CCA
       MousePointer    =   99  'Custom
-      TabIndex        =   6
+      TabIndex        =   4
       Tag             =   "1471"
       Top             =   600
       Visible         =   0   'False
@@ -694,12 +714,12 @@ End Sub
 Private Sub Command4_Click()
     On Error GoTo ErrorHandler
 
-    If itemset.height = 1950 Then
+    If itemset.Height = 1950 Then
         Command4.Caption = LoadStringLoc(911, "Advanced <<")
-        itemset.height = 7005
+        itemset.Height = 7005
     Else
         Command4.Caption = LoadStringLoc(912, "Advanced >>")
-        itemset.height = 1950
+        itemset.Height = 1950
     End If
 
 
@@ -737,7 +757,7 @@ Private Sub Form_Load()
     On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
-    itemset.height = 1950
+    itemset.Height = 1950
         
     setat.Caption = str$(boardList(activeBoardIndex).infoX) + "," + str$(boardList(activeBoardIndex).infoY) + " Layer" + str$(boardList(activeBoardIndex).currentLayer)
     thevar$ = "BoardName[" + str$(boardList(activeBoardIndex).infoX) + str$(boardList(activeBoardIndex).infoY) + str$(boardList(activeBoardIndex).currentLayer) + "]!"

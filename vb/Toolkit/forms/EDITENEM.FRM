@@ -32,65 +32,122 @@ Begin VB.Form editenemy
       TabIndex        =   0
       Top             =   120
       Width           =   8295
-      Begin VB.CommandButton Command4 
-         Appearance      =   0  'Flat
-         Caption         =   "Rewards"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+      Begin VB.PictureBox Picture2 
+         BorderStyle     =   0  'None
          Height          =   375
-         Left            =   6480
-         TabIndex        =   13
-         Tag             =   "1335"
-         Top             =   1440
-         Width           =   1575
+         Left            =   6000
+         ScaleHeight     =   375
+         ScaleWidth      =   2175
+         TabIndex        =   25
+         Top             =   4440
+         Width           =   2175
+         Begin VB.CommandButton Command6 
+            Caption         =   "Add Enemy To Game"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   26
+            Tag             =   "1333"
+            Top             =   0
+            Width           =   1935
+         End
       End
-      Begin VB.CommandButton Command3 
-         Appearance      =   0  'Flat
-         Caption         =   "Tactics"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   6480
-         TabIndex        =   14
-         Tag             =   "1336"
-         Top             =   1080
-         Width           =   1575
-      End
-      Begin VB.CommandButton Command2 
-         Appearance      =   0  'Flat
-         Caption         =   "Special Moves"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   6480
-         TabIndex        =   15
-         Tag             =   "1337"
-         Top             =   720
-         Width           =   1575
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   1695
+         Left            =   6360
+         ScaleHeight     =   1695
+         ScaleWidth      =   1815
+         TabIndex        =   20
+         Top             =   360
+         Width           =   1815
+         Begin VB.CommandButton Command1 
+            Appearance      =   0  'Flat
+            Caption         =   "Graphics..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   24
+            Tag             =   "1300"
+            Top             =   0
+            Width           =   1575
+         End
+         Begin VB.CommandButton Command2 
+            Appearance      =   0  'Flat
+            Caption         =   "Special Moves"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   23
+            Tag             =   "1337"
+            Top             =   360
+            Width           =   1575
+         End
+         Begin VB.CommandButton Command3 
+            Appearance      =   0  'Flat
+            Caption         =   "Tactics"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   22
+            Tag             =   "1336"
+            Top             =   720
+            Width           =   1575
+         End
+         Begin VB.CommandButton Command4 
+            Appearance      =   0  'Flat
+            Caption         =   "Rewards"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   21
+            Tag             =   "1335"
+            Top             =   1080
+            Width           =   1575
+         End
       End
       Begin VB.Frame Frame1 
-         Caption         =   "Fighting Conditions"
+         Caption         =   "Fighting Conditions                "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -102,27 +159,37 @@ Begin VB.Form editenemy
          EndProperty
          Height          =   1815
          Left            =   120
-         TabIndex        =   17
+         TabIndex        =   12
          Tag             =   "1338"
          Top             =   2520
          Width           =   6135
-         Begin VB.CommandButton Command7 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
+         Begin VB.PictureBox Picture3 
+            BorderStyle     =   0  'None
+            Height          =   495
             Left            =   4920
-            TabIndex        =   25
-            Tag             =   "1021"
+            ScaleHeight     =   495
+            ScaleWidth      =   1095
+            TabIndex        =   27
             Top             =   480
             Width           =   1095
+            Begin VB.CommandButton Command7 
+               Caption         =   "Browse..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   345
+               Left            =   0
+               TabIndex        =   28
+               Tag             =   "1021"
+               Top             =   0
+               Width           =   1095
+            End
          End
          Begin VB.TextBox rprg 
             BeginProperty Font 
@@ -136,7 +203,7 @@ Begin VB.Form editenemy
             EndProperty
             Height          =   285
             Left            =   3360
-            TabIndex        =   18
+            TabIndex        =   13
             Text            =   "None"
             Top             =   480
             Width           =   1455
@@ -154,7 +221,7 @@ Begin VB.Form editenemy
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   21
+            TabIndex        =   16
             Tag             =   "1339"
             Top             =   240
             Value           =   1  'Checked
@@ -172,7 +239,7 @@ Begin VB.Form editenemy
             EndProperty
             Height          =   285
             Left            =   4080
-            TabIndex        =   20
+            TabIndex        =   15
             Text            =   "100"
             Top             =   960
             Width           =   735
@@ -189,7 +256,7 @@ Begin VB.Form editenemy
             EndProperty
             Height          =   285
             Left            =   4080
-            TabIndex        =   19
+            TabIndex        =   14
             Text            =   "100"
             Top             =   1320
             Width           =   735
@@ -207,7 +274,7 @@ Begin VB.Form editenemy
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   24
+            TabIndex        =   19
             Tag             =   "1342"
             Top             =   960
             Width           =   3495
@@ -225,7 +292,7 @@ Begin VB.Form editenemy
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   23
+            TabIndex        =   18
             Tag             =   "1341"
             Top             =   1320
             Width           =   3855
@@ -243,51 +310,14 @@ Begin VB.Form editenemy
             EndProperty
             Height          =   495
             Left            =   480
-            TabIndex        =   22
+            TabIndex        =   17
             Tag             =   "1340"
             Top             =   480
             Width           =   2775
          End
       End
-      Begin VB.CommandButton Command1 
-         Appearance      =   0  'Flat
-         Caption         =   "Graphics..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   6480
-         TabIndex        =   16
-         Tag             =   "1300"
-         Top             =   360
-         Width           =   1575
-      End
-      Begin VB.CommandButton Command6 
-         Caption         =   "Add Enemy To Game"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   6120
-         TabIndex        =   12
-         Tag             =   "1333"
-         Top             =   4440
-         Width           =   1935
-      End
       Begin VB.Frame Frame2 
-         Caption         =   "Basic Info"
+         Caption         =   "Basic Info               "
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25

@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "richtx32.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form frmColoringOptions 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
@@ -38,6 +38,7 @@ Begin VB.Form frmColoringOptions
       TabPicture(1)   =   "frmSyntaxColor.frx":001C
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "fraTab1"
+      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Common"
       TabPicture(2)   =   "frmSyntaxColor.frx":0038
@@ -57,12 +58,13 @@ Begin VB.Form frmColoringOptions
          Begin RichTextLib.RichTextBox codeForm 
             Height          =   1575
             Left            =   120
-            TabIndex        =   29
+            TabIndex        =   27
             Top             =   600
             Width           =   2415
             _ExtentX        =   4260
             _ExtentY        =   2778
             _Version        =   393217
+            Enabled         =   -1  'True
             ScrollBars      =   3
             Appearance      =   0
             TextRTF         =   $"frmSyntaxColor.frx":0054
@@ -81,7 +83,7 @@ Begin VB.Form frmColoringOptions
             Caption         =   "Text to place at the start of each newly created program file:"
             Height          =   495
             Left            =   120
-            TabIndex        =   28
+            TabIndex        =   26
             Top             =   120
             Width           =   2415
          End
@@ -105,35 +107,46 @@ Begin VB.Form frmColoringOptions
          Begin VB.Frame Frame1 
             Appearance      =   0  'Flat
             BackColor       =   &H80000005&
-            Caption         =   "Auto Indentor Style"
+            Caption         =   "Auto Indentor         "
             ForeColor       =   &H80000008&
             Height          =   855
             Left            =   120
             TabIndex        =   25
             Top             =   240
             Width           =   2415
-            Begin VB.OptionButton optTabs 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
-               Caption         =   "Tabs"
-               ForeColor       =   &H80000008&
-               Height          =   255
+            Begin VB.PictureBox Picture1 
+               BackColor       =   &H80000009&
+               BorderStyle     =   0  'None
+               Height          =   495
                Left            =   120
-               TabIndex        =   27
-               Top             =   480
-               Width           =   975
-            End
-            Begin VB.OptionButton optSpaces 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
-               Caption         =   "Spaces"
-               ForeColor       =   &H80000008&
-               Height          =   255
-               Left            =   120
-               TabIndex        =   26
+               ScaleHeight     =   495
+               ScaleWidth      =   2175
+               TabIndex        =   28
                Top             =   240
-               Value           =   -1  'True
-               Width           =   975
+               Width           =   2175
+               Begin VB.OptionButton optSpaces 
+                  Appearance      =   0  'Flat
+                  BackColor       =   &H80000005&
+                  Caption         =   "Spaces"
+                  ForeColor       =   &H80000008&
+                  Height          =   255
+                  Left            =   0
+                  TabIndex        =   30
+                  Top             =   0
+                  Value           =   -1  'True
+                  Width           =   975
+               End
+               Begin VB.OptionButton optTabs 
+                  Appearance      =   0  'Flat
+                  BackColor       =   &H80000005&
+                  Caption         =   "Tabs"
+                  ForeColor       =   &H80000008&
+                  Height          =   255
+                  Left            =   0
+                  TabIndex        =   29
+                  Top             =   240
+                  Width           =   975
+               End
             End
          End
          Begin VB.Shape Shape2 
@@ -299,8 +312,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   11
             Top             =   480
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -309,8 +322,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   12
             Top             =   840
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -319,8 +332,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   13
             Top             =   1200
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -329,8 +342,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   14
             Top             =   1560
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -339,8 +352,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   15
             Top             =   1920
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -349,8 +362,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   16
             Top             =   120
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin VB.Shape Shape1 
             Height          =   2295
@@ -480,10 +493,10 @@ Begin VB.Form frmColoringOptions
       TabIndex        =   2
       Top             =   0
       Width           =   3735
-      _extentx        =   6588
-      _extenty        =   847
-      Object.width           =   3735
-      caption         =   "Program Editor Options"
+      _ExtentX        =   6588
+      _ExtentY        =   847
+      Object.Width           =   3735
+      Caption         =   "Program Editor Options"
    End
    Begin Toolkit.TKButton cmdDefault 
       Height          =   495
@@ -491,10 +504,10 @@ Begin VB.Form frmColoringOptions
       TabIndex        =   1
       Top             =   1320
       Width           =   1215
-      _extentx        =   3440
-      _extenty        =   873
-      Object.width           =   1935
-      caption         =   "Default"
+      _ExtentX        =   3440
+      _ExtentY        =   873
+      Object.Width           =   1935
+      Caption         =   "Default"
    End
    Begin Toolkit.TKButton cmdSave 
       Height          =   495
@@ -502,10 +515,10 @@ Begin VB.Form frmColoringOptions
       TabIndex        =   0
       Top             =   840
       Width           =   1215
-      _extentx        =   3440
-      _extenty        =   873
-      Object.width           =   1935
-      caption         =   "Save"
+      _ExtentX        =   3440
+      _ExtentY        =   873
+      Object.Width           =   1935
+      Caption         =   "Save"
    End
    Begin VB.Shape Shape3 
       Height          =   3495

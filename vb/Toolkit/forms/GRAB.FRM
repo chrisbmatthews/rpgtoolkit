@@ -29,7 +29,7 @@ Begin VB.Form grab
    Begin VB.HScrollBar scrHorizontal 
       Height          =   255
       Left            =   120
-      TabIndex        =   19
+      TabIndex        =   17
       TabStop         =   0   'False
       Top             =   5280
       Width           =   8655
@@ -37,7 +37,7 @@ Begin VB.Form grab
    Begin VB.VScrollBar scrVertical 
       Height          =   5175
       Left            =   8760
-      TabIndex        =   18
+      TabIndex        =   16
       TabStop         =   0   'False
       Top             =   120
       Width           =   255
@@ -45,9 +45,53 @@ Begin VB.Form grab
    Begin VB.Frame grabFrame 
       Height          =   1335
       Left            =   120
-      TabIndex        =   16
+      TabIndex        =   14
       Top             =   5520
       Width           =   8895
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   375
+         Left            =   5520
+         ScaleHeight     =   375
+         ScaleWidth      =   3255
+         TabIndex        =   22
+         Top             =   240
+         Width           =   3255
+         Begin VB.CommandButton cmdBatch16 
+            Caption         =   "Batch Grab 16x16"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   1560
+            TabIndex        =   24
+            Top             =   0
+            Width           =   1695
+         End
+         Begin VB.CommandButton cmdBatch32 
+            Caption         =   "Batch Grab 32x32"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            TabIndex        =   23
+            Top             =   0
+            Width           =   1575
+         End
+      End
       Begin VB.CheckBox chkIgnoreBlanks 
          Caption         =   "Ignore blank tiles"
          BeginProperty Font 
@@ -61,7 +105,7 @@ Begin VB.Form grab
          EndProperty
          Height          =   255
          Left            =   3960
-         TabIndex        =   23
+         TabIndex        =   21
          ToolTipText     =   "Ignore blank tiles"
          Top             =   480
          Width           =   1575
@@ -98,7 +142,7 @@ Begin VB.Form grab
          Left            =   3960
          ScaleHeight     =   135
          ScaleWidth      =   135
-         TabIndex        =   22
+         TabIndex        =   20
          ToolTipText     =   "Click to select color"
          Top             =   750
          Width           =   200
@@ -108,7 +152,7 @@ Begin VB.Form grab
          Left            =   2520
          ScaleHeight     =   135
          ScaleWidth      =   135
-         TabIndex        =   21
+         TabIndex        =   19
          ToolTipText     =   "Click to select color"
          Top             =   750
          Width           =   200
@@ -116,7 +160,7 @@ Begin VB.Form grab
       Begin MSComctlLib.StatusBar grabStatus 
          Height          =   255
          Left            =   120
-         TabIndex        =   20
+         TabIndex        =   18
          Top             =   960
          Width           =   8655
          _ExtentX        =   15266
@@ -219,23 +263,6 @@ Begin VB.Form grab
          Top             =   600
          Width           =   375
       End
-      Begin VB.CommandButton cmdBatch32 
-         Caption         =   "Batch Grab 32x32"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   5520
-         TabIndex        =   14
-         Top             =   240
-         Width           =   1575
-      End
       Begin VB.PictureBox picTrans 
          Height          =   375
          Left            =   840
@@ -274,7 +301,7 @@ Begin VB.Form grab
          ScaleHeight     =   33
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   33
-         TabIndex        =   17
+         TabIndex        =   15
          TabStop         =   0   'False
          ToolTipText     =   "Tile preview"
          Top             =   360
@@ -298,23 +325,6 @@ Begin VB.Form grab
          ToolTipText     =   "Open graphic"
          Top             =   240
          Width           =   375
-      End
-      Begin VB.CommandButton cmdBatch16 
-         Caption         =   "Batch Grab 16x16"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   7080
-         TabIndex        =   15
-         Top             =   240
-         Width           =   1695
       End
       Begin VB.CommandButton cmdLoadTileEditor 
          Height          =   375

@@ -127,7 +127,7 @@ Attribute VB_Exposed = False
 Private Sub cmdOK_Click()
     On Error GoTo ErrorHandler
     
-    SaveChanges = True
+    saveChanges = True
     'Redraw
     activeTile.tileRedraw
     Unload import
@@ -152,18 +152,18 @@ End Sub
 Private Sub Form_Load()
     Call LocalizeForm(Me)
     '!NEW! Set the variable to False at the start...
-    SaveChanges = False
+    saveChanges = False
 End Sub
 '========================================================================
 ' Form_Unload
 '========================================================================
 Private Sub Form_Unload(Cancel As Integer)
    
-    If SaveChanges Then
+    If saveChanges Then
     For x = 1 To 32
         For y = 1 To 32
             pixel = vbFrmPoint(importpic, x - 1, y - 1)
-            tilemem(x, y) = pixel
+            tileMem(x, y) = pixel
         Next y
     Next x
     'Redraw
@@ -174,7 +174,7 @@ End Sub
 
 Private Sub opentoconvert_Click()
 On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     
     dlg.strTitle = "Open Tile"
@@ -182,7 +182,7 @@ On Error Resume Next
     dlg.strFileTypes = strFileDialogFilterGfx
     
     '!NEW! Added this line so that the Dialog opens in the bitmap folder (NEW for 3.0.4)
-    dlg.strDefaultFolder = projectPath$ + bmppath$
+    dlg.strDefaultFolder = projectPath$ + bmpPath$
     
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
@@ -197,9 +197,9 @@ On Error Resume Next
     'End If
     'importpic.Picture = LoadPicture(filename$(1))
     Call vbPicAutoRedraw(importpic, True)
-    Call DrawImage(filename$(1), 0, 0, vbPicHDC(importpic))
+    Call drawImage(filename$(1), 0, 0, vbPicHDC(importpic))
     Call vbPicRefresh(importpic)
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     '!NEW! Go back to the tile if the checkbox is checked (NEW for 3.0.4)
     If chkFast.value = 1 Then Call cmdOK_Click
