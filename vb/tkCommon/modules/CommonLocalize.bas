@@ -6,6 +6,12 @@ Attribute VB_Name = "CommonLocalize"
 'localizer
 Option Explicit
 
+Private Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
+Private Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
+Private Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, lpData As Any, ByVal cbData As Long) As Long
+Private Const REG_SZ = 1
+Public Const HKEY_CURRENT_USER = &H80000001
+
 Private m_LangDB As Long    'language database
 Public m_LangFile As String    'language db file
 Private m_LangNoneString As String  'since the word 'none' comes up so much, we'll cache it.
@@ -45,6 +51,13 @@ Public Const DB_Tutorial11 = 520
 Public Const DB_Tutorial12 = 521
 Public Const DB_LangName = 1000
 
+Private Sub decimalFix()
+    'Fix for decimals that occurs in some countries
+    Dim hKey As Long
+    Call RegOpenKey(HKEY_CURRENT_USER, "\Control Panel\International\", hKey)
+    Call RegSetValueEx(hKey, "sDecimal", 0, REG_SZ, ByVal ".", Len("."))
+    Call RegCloseKey(hKey)
+End Sub
 
 Function LangIndexOfTag(ByVal tagID As Long, lTable As LangTable) As Long
     'find the tagID in a langtable
@@ -158,6 +171,7 @@ End Sub
 Sub InitLocalizeSystem()
     'initialize localizer
     On Error Resume Next
+    Call decimalFix
     Call OpenLanguage("resources\0english.lng", m_LangTable)
     m_LangFile = "0english.lng"
 End Sub
@@ -174,8 +188,8 @@ Sub LocalizeForm(frm As VB.Form)
     End If
     
     Dim idx As Long
-    If IsNumeric(frm.tag) Then
-        idx = LangIndexOfTag(Int(frm.tag), m_LangTable)
+    If IsNumeric(frm.Tag) Then
+        idx = LangIndexOfTag(Int(frm.Tag), m_LangTable)
         If idx <> -1 Then
             frm.Caption = m_LangTable.theTable(idx).Caption
             If frm.Caption = " " Then frm.Caption = ""
@@ -183,8 +197,8 @@ Sub LocalizeForm(frm As VB.Form)
     End If
     
     For Each ctl In frm.Controls
-        If IsNumeric(ctl.tag) Then
-            idx = LangIndexOfTag(Int(ctl.tag), m_LangTable)
+        If IsNumeric(ctl.Tag) Then
+            idx = LangIndexOfTag(Int(ctl.Tag), m_LangTable)
             If idx <> -1 Then
                 ctl.Caption = m_LangTable.theTable(idx).Caption
                 If ctl.Caption = " " Then ctl.Caption = ""
@@ -312,7 +326,7 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     Dim t As Long, part As String, idx As Long
     For t = 1 To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = " " Or part$ = chr$(9) Then
+        If part$ = " " Or part$ = Chr$(9) Then
             'ok, we're starting in on the caption tag...
             tagID = Int(Temp)
             Temp = ""
@@ -326,12 +340,12 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     'gobble up whitespace...
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = chr$(9) Then
+        If part$ = Chr$(9) Then
             'tab. This means next entry is coming...
             idx = t + 1
             Exit For
         End If
-        If part$ <> " " And part$ <> chr$(9) Then
+        If part$ <> " " And part$ <> Chr$(9) Then
             'found start of new block
             idx = t
             Exit For
@@ -343,12 +357,12 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     firstOccur = True
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = chr$(9) Then
+        If part$ = Chr$(9) Then
             'next entry, please!
             idx = t
             Exit For
         End If
-        If part$ = chr$(34) Then
+        If part$ = Chr$(34) Then
             If firstOccur = True Then
                 firstOccur = False
             Else
@@ -370,12 +384,12 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     'gobble up whitespace...
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = chr$(9) Then
+        If part$ = Chr$(9) Then
             'tab. This means next entry is coming...
             idx = t + 1
             Exit For
         End If
-        If part$ <> " " And part$ <> chr$(9) Then
+        If part$ <> " " And part$ <> Chr$(9) Then
             'found start of new block
             idx = t
             Exit For
@@ -386,7 +400,7 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     firstOccur = True
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = chr$(34) Then
+        If part$ = Chr$(34) Then
             If firstOccur = True Then
                 firstOccur = False
             Else
