@@ -74,14 +74,11 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef pr
     Dim oldThis As Double, lit As String
     Call getVariable("this!", lit, oldThis, prg)
 
-    ' Change the value of "this!" in the call line
-    Text = replace(replace(Text, "this!", CStr(oldThis), , , vbTextCompare), "this", CStr(oldThis), , , vbTextCompare)
-
     ' Set the new this pointer
     Call SetVariable("this!", CStr(hClass), prg, True)
 
     ' Call the method
-    Call MethodCallRPG(Text, theClass.strName & "::" & methodName, prg, retval, True, True, hClass, bFromCopyConstructor)
+    Call MethodCallRPG(Text, theClass.strName & "::" & methodName, prg, retval, True, True, hClass, bFromCopyConstructor, CLng(oldThis))
 
     ' Decrease the nestle
     Call decreaseNestle(prg)
@@ -128,7 +125,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean, Optional ByVal hObject As Long, Optional ByVal bFromCopyConstructor As Boolean)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean, Optional ByVal hObject As Long, Optional ByVal bFromCopyConstructor As Boolean, Optional ByVal hOldThisObject As Long)
 
     On Error Resume Next
 
@@ -161,8 +158,17 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     ' Now to find that method name
     Dim theMethod As RPGCodeMethod, params() As parameters, number As Long
-    Dim lit As String, num As Double
+    Dim lit As String, num As Double, this As Long
+    this = topNestle(theProgram)
+    Call SetVariable("this!", CStr(hOldThisObject), theProgram, True)
+    Call increaseNestle(hOldThisObject, theProgram)
     params = getParameters(Text, theProgram, number)
+    Dim bOldInClass As Boolean
+    bOldInClass = theProgram.classes.insideClass
+    theProgram.classes.insideClass = False
+    Call SetVariable("this!", CStr(this), theProgram, True)
+    theProgram.classes.insideClass = bOldInClass
+    Call decreaseNestle(theProgram)
     theMethod.lngParams = number
     ReDim theMethod.dtParams(number - 1)
     ReDim theMethod.classTypes(number - 1)
