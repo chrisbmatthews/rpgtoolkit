@@ -6,13 +6,7 @@ Attribute VB_Name = "transLocate"
 '=========================================================================
 
 '=========================================================================
-' Manages board coordiantes
-'=========================================================================
-
-'=========================================================================
-' I've removed UsingPixelMovement(), and BoardIso() because they should
-' be inline and the overhead is not acceptable.
-' - Colin
+' Manages board co-ordinates
 '=========================================================================
 
 Option Explicit
@@ -26,7 +20,7 @@ Public movementSize As Double    'movement size (in tiles)
 ' Transform old-type isometric co-ordinates to new-type
 '=========================================================================
 Public Sub isoCoordTransform(ByVal oldX As Double, ByVal oldY As Double, _
-                                  ByRef newX As Double, ByRef newY As Double)
+                             ByRef newX As Double, ByRef newY As Double)
 
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         newX = oldX + Int((oldY - 1) / 2)
@@ -44,7 +38,7 @@ End Sub
 ' Inverse transform old-type isometric co-ordinates to new-type
 '=========================================================================
 Public Sub invIsoCoordTransform(ByVal newX As Double, ByVal newY As Double, _
-                                     ByRef oldX As Double, ByRef oldY As Double)
+                                ByRef oldX As Double, ByRef oldY As Double)
 
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
     
@@ -132,58 +126,61 @@ Public Sub incrementPosition( _
                                                                )
     On Error Resume Next
 
+    Dim yTarg As Double, xTarg As Double
+
     With pos
 
         If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
 
             'Co-ordinate transform!
             Call isoCoordTransform(.x, .y, .x, .y)
-
+            Call isoCoordTransform(pend.xTarg, pend.yTarg, xTarg, yTarg)
+            
             Select Case pend.direction
 
                 Case MV_NE
                     .y = .y - moveFraction
-                    If .y < pend.yTarg Then .y = pend.yTarg     'We need x,y as FRACTIONs
+                    If .y < yTarg Then .y = yTarg     'We need x,y as FRACTIONs
 
                 Case MV_NW
                     .x = .x - moveFraction
-                    If .x < pend.xTarg Then .x = pend.xTarg
+                    If .x < xTarg Then .x = xTarg
 
                 Case MV_SE
                     .x = .x + moveFraction
-                    If .x > pend.xTarg Then .x = pend.xTarg
+                    If .x > xTarg Then .x = xTarg
 
                 Case MV_SW
                     .y = .y + moveFraction
-                    If .y > pend.yTarg Then .y = pend.yTarg
+                    If .y > yTarg Then .y = yTarg
 
                 Case MV_NORTH
                     .x = .x - moveFraction
                     .y = .y - moveFraction
                     
-                    If .x < pend.xTarg Then .x = pend.xTarg
-                    If .y < pend.yTarg Then .y = pend.yTarg
+                    If .x < xTarg Then .x = xTarg
+                    If .y < yTarg Then .y = yTarg
 
                 Case MV_SOUTH
                     .x = .x + moveFraction
                     .y = .y + moveFraction
                     
-                    If .x > pend.xTarg Then .x = pend.xTarg
-                    If .y > pend.yTarg Then .y = pend.yTarg
+                    If .x > xTarg Then .x = xTarg
+                    If .y > yTarg Then .y = yTarg
                     
                 Case MV_EAST
                     .x = .x + moveFraction
                     .y = .y - moveFraction
                     
-                    If .x > pend.xTarg Then .x = pend.xTarg
-                    If .y < pend.yTarg Then .y = pend.yTarg
+                    If .x > xTarg Then .x = xTarg
+                    If .y < yTarg Then .y = yTarg
 
                 Case MV_WEST
                     .x = .x - moveFraction
                     .y = .y + moveFraction
                     
-                    If .x < pend.xTarg Then .x = pend.xTarg
-                    If .y > pend.yTarg Then .y = pend.yTarg
+                    If .x < xTarg Then .x = xTarg
+                    If .y > yTarg Then .y = yTarg
                     
             End Select
 
