@@ -424,6 +424,10 @@ Private Sub initActiveX()
             Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
         End If
     Next a
+    fullPath = projectPath & plugPath & mainMem.menuPlugin
+    Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
+    fullPath = projectPath & plugPath & mainMem.fightPlugin
+    Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
 End Sub
 
 '=======================================================================
@@ -439,6 +443,10 @@ Private Sub closeActiveX()
             Call ExecCmd("regsvr32 /s /u " & Chr(34) & fullPath & Chr(34))
         End If
     Next a
+    fullPath = projectPath & plugPath & mainMem.menuPlugin
+    Call ExecCmd("regsvr32 /s /u " & Chr(34) & fullPath & Chr(34))
+    fullPath = projectPath & plugPath & mainMem.fightPlugin
+    Call ExecCmd("regsvr32 /s /u " & Chr(34) & fullPath & Chr(34))
 End Sub
 
 '=======================================================================
