@@ -10682,12 +10682,10 @@ Public Function SwitchCase( _
                     Dim a As Long
 
                     'Determine type of variable in Switch()...
-                    Dim equ As RPGC_DT
-                    vtype = dataType(.item(.count), equ)
+                    vtype = dataType(.item(.count), prg, True)
                     Select Case vtype
                         Case 0, 3: vtype = DT_NUM
                         Case 1, 2: vtype = DT_LIT
-                        Case 5: vtype = equ
                     End Select
 
                     'Make sure all the passed variables are that type...
@@ -11939,7 +11937,6 @@ Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, By
         textHeight = fontSize
     Else
         ' Using a true type font!
-        hdc = CanvasOpenHDC(cnvRPGCodeScreen)
         Dim theAttrib As fontAttribs
         theAttrib.name = fontName
         theAttrib.size = fontSize
@@ -11947,6 +11944,7 @@ Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, By
         theAttrib.Bold = Bold
         theAttrib.Underline = Underline
         Dim hFontNew As Long, hFontOld As Long, textRectSize As size
+        hdc = CanvasOpenHDC(cnvRPGCodeScreen)
         hFontOld = SetDeviceFont(hdc, theAttrib, hFontNew)
         textRectSize.cx = 0: textRectSize.cy = 0
         Call GetTextExtentPoint32(hdc, stringin, Len(stringin), textRectSize)
