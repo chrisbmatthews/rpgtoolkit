@@ -1772,26 +1772,7 @@ Sub DXDrawSprites(ByVal cnvTarget As Long)
 
         End If
     Next t
-    
-    'Old code?
-    'Lay down player...
-    'For t = 0 To UBound(cnvPlayer)
-    '    If showPlayer(t) Then
-    '        Call putSpriteAt(cnvPlayer(t), _
-    '                ppos(t).x, _
-    '                ppos(t).y, _
-    '                ppos(t).l, _
-    '                cnvTarget)
-    '    End If
-    'Next t
-    
-    'Lay down items...
-    'For t = 0 To UBound(boardList(activeBoardIndex).theData.itmX)
-    '    If itemMem(t).bIsActive Then
-    '        Call putSpriteAt(cnvSprites(t), itmPos(t).x, itmPos(t).y, itmPos(t).l, cnvTarget)
-    '    End If
-    'Next t
-    
+
 End Sub
 
 Sub scrollLeft(ByVal movementFraction As Double)
@@ -2082,15 +2063,6 @@ Sub initGraphics(Optional ByVal testingPRG As Boolean) ' [KSNiloc]
         screenHeight = 768 * screen.TwipsPerPixelY
     End If
     
-    Dim y As Long
-    Dim x As Long
-    Dim xr As Double
-    Dim yr As Double
-    y = screenHeight
-    x = screenWidth
-    xr = x / screen.TwipsPerPixelX
-    yr = y / screen.TwipsPerPixelY
-
 End Sub
 
 Function usingDX() As Boolean

@@ -39,7 +39,7 @@ Private cursorMapTablesSize As Long 'number of entires in that list
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
-Function ShowPromptDialog(ByVal title As String, ByVal text As String, Optional ByVal initialValue As String = "") As String
+Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional ByVal initialValue As String = "") As String
     'text prompt dialog.
     'title - title string of dialog
     'text - question in dialog
@@ -86,7 +86,7 @@ Function ShowPromptDialog(ByVal title As String, ByVal text As String, Optional 
         'list is filled...  finish constructing the dialog...
         Call CanvasFill(cnv, 0)
         Call CanvasDrawText(cnv, title, "Arial", textSize, 1, 1, RGB(255, 255, 255))
-        Call CanvasDrawText(cnv, text, "Arial", textSize, 1, 2, RGB(255, 255, 255))
+        Call CanvasDrawText(cnv, Text, "Arial", textSize, 1, 2, RGB(255, 255, 255))
         Call Canvas2CanvasBlt(cnvTextBox, cnv, 10, 50)
             
         Call DXDrawCanvas(cnvAllPurpose, 0, 0)
@@ -498,7 +498,7 @@ Function max3(ByVal x As Long, ByVal y As Long, ByVal z As Long) As Long
     End If
 End Function
 
-Public Function MBox(ByVal text As String, Optional ByVal title As String = "", Optional ByVal mBoxType As Long = MBT_OK, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = "") As Integer
+Public Function MBox(ByVal Text As String, Optional ByVal title As String = "", Optional ByVal mBoxType As Long = MBT_OK, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = "") As Integer
     'calls the mbox function (pops up an eqivalent to mwin.)
     On Error Resume Next
 
@@ -509,7 +509,7 @@ Public Function MBox(ByVal text As String, Optional ByVal title As String = "", 
         Case MBT_OK:
             ReDim options(1)
             options(0) = LoadStringLoc(1022, "OK")
-            res = SelectionBox(text, options, textColor, bgColor, bgPic)
+            res = SelectionBox(Text, options, textColor, bgColor, bgPic)
             MBox = MBR_OK
             Exit Function
         
@@ -517,7 +517,7 @@ Public Function MBox(ByVal text As String, Optional ByVal title As String = "", 
             ReDim options(2)
             options(0) = LoadStringLoc(1100, "Yes")
             options(1) = LoadStringLoc(1099, "No")
-            res = SelectionBox(text, options, textColor, bgColor, bgPic)
+            res = SelectionBox(Text, options, textColor, bgColor, bgPic)
             If res = 0 Then
                 MBox = MBR_YES
             Else
@@ -527,7 +527,7 @@ Public Function MBox(ByVal text As String, Optional ByVal title As String = "", 
     End Select
 End Function
 
-Function SelectionBox(ByVal text As String, ByRef options() As String, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = "") As Long
+Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = "") As Long
     On Error Resume Next
     'display a message box.
     'text is the question
@@ -540,11 +540,11 @@ Function SelectionBox(ByVal text As String, ByRef options() As String, Optional 
     Dim subStrings As Long
     Dim t As Long
     'seperate the string on the newline character
-    subStrings = countSubStrings(text, Chr$(10))
+    subStrings = countSubStrings(Text, Chr$(10))
     
     ReDim textlist(subStrings) As String
     For t = 0 To subStrings - 1
-        textlist(t) = getSubString(text, Chr$(10), t)
+        textlist(t) = getSubString(Text, Chr$(10), t)
     Next t
     
     Dim maxWidth As Long

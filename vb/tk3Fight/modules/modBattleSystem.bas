@@ -64,7 +64,7 @@ Private noNewDeaths As Boolean
 
 Private menuGraphic As String
 
-Public Function fight( _
+Public Function Fight( _
                          ByVal enemyCount As Long, _
                          ByVal skillLevel As Long, _
                          ByVal backgroundFile As String, _
@@ -125,7 +125,7 @@ Public Function fight( _
     Call Load(frmMusicCheck)
 
     'Run the fight
-    fight = mainLoop()
+    Fight = mainLoop()
 
     Call Unload(frmMusicCheck)
 
@@ -141,15 +141,13 @@ Private Function mainLoop() As Long
     'Main fight execution loop
     '====================================================================================
 
-    Dim done As Boolean
-    Do Until done
+    Do While True
 
         'See if the fight is over
         Dim toRet As Long
         If fightHasEnded(toRet) Then
             'The fight has ended!
             mainLoop = toRet
-            done = True
             Call renderScene
             Exit Do
         End If
@@ -157,7 +155,6 @@ Private Function mainLoop() As Long
         'See if we ran away
         If ranAway Then
             mainLoop = FIGHT_RUN_AUTO
-            done = True
             Call renderScene
             Exit Do
         End If
