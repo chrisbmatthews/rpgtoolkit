@@ -931,7 +931,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
 
     'Get its handle
     If (object <> "THIS") Then
-        If (Right(object, 1) <> "!") Then object = object & "!"
+        If (Right(object, 1) <> "!" And Right(object, 1) <> "$") Then object = object & "!"
         Call getVariable(object, object, hClassDbl, prg)
         hClass = CLng(hClassDbl)
     Else

@@ -226,7 +226,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
                 dUse$ = lit$
             End If
             
-            If Left(destList$(pList), 1) <> "!" And Left(destList$(pList), 1) <> "$" Then
+            If Right(destList$(pList), 1) <> "!" And Right(destList$(pList), 1) <> "$" Then
                 destList$(pList) = destList$(pList) & "!"
             End If
             
@@ -333,7 +333,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
             If boardList(activeBoardIndex).theData.activationType(t) = 0 Then
             
                 'we step on it.
-                If val(boardList(activeBoardIndex).theData.progX(t)) = pos.X And _
+                If val(boardList(activeBoardIndex).theData.progX(t)) = pos.x And _
                     val(boardList(activeBoardIndex).theData.progY(t)) = pos.Y And _
                     val(boardList(activeBoardIndex).theData.progLayer(t)) = pos.l Then
                     'all right! we stepped on it!
@@ -343,7 +343,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
             ElseIf boardList(activeBoardIndex).theData.activationType(t) = 1 Then
             
                 'ah! we press the activation key!
-                xx = pos.X
+                xx = pos.x
                 yy = pos.Y
                 
                 'Check if we're facing in the right direction, and we're one step
@@ -354,7 +354,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 'Edit: now using passPos rather than the pos from RoundCoords()
                 Select Case UCase(pos.stance)
                     Case "WALK_N"
-                        xx = pos.X
+                        xx = pos.x
                         If usingPixelMovement Then
                             yy = Round(passPos.Y)
                         Else
@@ -362,15 +362,15 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                         End If
                         
                     Case "WALK_S"
-                        xx = pos.X
+                        xx = pos.x
                         yy = Int(passPos.Y) + 1
                         
                     Case "WALK_E"
-                        xx = Int(passPos.X) + 1
+                        xx = Int(passPos.x) + 1
                         yy = -Int(-passPos.Y)
                         
                     Case "WALK_W"
-                        xx = -Int(-passPos.X) - 1
+                        xx = -Int(-passPos.x) - 1
                         yy = -Int(-passPos.Y)
                 End Select
                 
@@ -379,7 +379,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                     And boardList(activeBoardIndex).theData.progY(t) = yy _
                     And boardList(activeBoardIndex).theData.progLayer(t) = pos.l) _
                 Or ( _
-                        boardList(activeBoardIndex).theData.progX(t) = pos.X _
+                        boardList(activeBoardIndex).theData.progX(t) = pos.x _
                     And boardList(activeBoardIndex).theData.progY(t) = pos.Y _
                     ) Then
                     
@@ -415,7 +415,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                     
                     If Not (usingPixelMovement) Then
                         If _
-                                itmPos(t).X = Int(passPos.X) _
+                                itmPos(t).x = Int(passPos.x) _
                             And itmPos(t).Y = Int(passPos.Y) _
                             And itmPos(t).l = passPos.l Then
                             
@@ -423,7 +423,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                         End If
                     Else
                         If _
-                                Abs(itmPos(t).X - passPos.X) < 1 _
+                                Abs(itmPos(t).x - passPos.x) < 1 _
                             And Abs(itmPos(t).Y - passPos.Y) <= movementSize _
                             And itmPos(t).l = passPos.l Then
                         
@@ -444,12 +444,12 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 ElseIf boardList(activeBoardIndex).theData.itmActivationType(t) = 1 Then
                 
                     'ah! we press the actiavtion key!
-                    xx = pos.X: yy = pos.Y
+                    xx = pos.x: yy = pos.Y
                     
                     'Edit: now using passPos rather than the pos from RoundCoords()
                     Select Case UCase(pos.stance)
                         Case "WALK_N"
-                            xx = pos.X
+                            xx = pos.x
                             If usingPixelMovement Then
                                 yy = Round(passPos.Y)
                             Else
@@ -457,20 +457,20 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                             End If
                             
                         Case "WALK_S"
-                            xx = pos.X
+                            xx = pos.x
                             yy = Int(passPos.Y) + 1
                             
                         Case "WALK_E"
-                            xx = Int(passPos.X) + 1
+                            xx = Int(passPos.x) + 1
                             yy = -Int(-passPos.Y)
                             
                         Case "WALK_W"
-                            xx = -Int(-passPos.X) - 1
+                            xx = -Int(-passPos.x) - 1
                             yy = -Int(-passPos.Y)
                             
                         End Select
 
-                    If tempItems(t).X = xx And tempItems(t).Y = yy And tempItems(t).l = pos.l Then
+                    If tempItems(t).x = xx And tempItems(t).Y = yy And tempItems(t).l = pos.l Then
                         If (lastKeyPressed() = mainMem.Key) Then
                             'yes, we pressed the right key
                             toRet = runItmYN(t)

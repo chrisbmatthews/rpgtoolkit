@@ -24,20 +24,20 @@ Public Declare Function RPGCInit Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCShutdown Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCCreateHeap Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCDestroyHeap Lib "actkrt3.dll" (ByVal heapID As Long) As Long
-Public Declare Function RPGCSetNumVar Lib "actkrt3.dll" (ByVal varName As String, ByVal value As Double, ByVal heapID As Long) As Long
-Public Declare Function RPGCSetLitVar Lib "actkrt3.dll" (ByVal varName As String, ByVal value As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCGetNumVar Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Double
-Public Declare Function RPGCGetLitVar Lib "actkrt3.dll" (ByVal varName As String, ByVal inSpaceAllocated As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCGetLitVarLen Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCSetNumVar Lib "actkrt3.dll" (ByVal varname As String, ByVal value As Double, ByVal heapID As Long) As Long
+Public Declare Function RPGCSetLitVar Lib "actkrt3.dll" (ByVal varname As String, ByVal value As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCGetNumVar Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Double
+Public Declare Function RPGCGetLitVar Lib "actkrt3.dll" (ByVal varname As String, ByVal inSpaceAllocated As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCGetLitVarLen Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCCountNum Lib "actkrt3.dll" (ByVal heapID As Long) As Long
 Public Declare Function RPGCCountLit Lib "actkrt3.dll" (ByVal heapID As Long) As Long
 Public Declare Function RPGCGetNumName Lib "actkrt3.dll" (ByVal nItrOffset As Long, ByVal pstrToVal As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCGetLitName Lib "actkrt3.dll" (ByVal nItrOffset As Long, ByVal pstrToVal As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCClearAll Lib "actkrt3.dll" (ByVal heapID As Long) As Long
-Public Declare Function RPGCKillNum Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCKillLit Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCNumExists Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCLitExists Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCKillNum Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCKillLit Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCNumExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCLitExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCEvaluate Lib "actkrt3.dll" (ByVal equation As String) As Double
 
 '=========================================================================
@@ -54,11 +54,11 @@ Public Declare Function RPGCCountRedirects Lib "actkrt3.dll" () As Long
 '=========================================================================
 ' Get the value of a variable - unattached to a program
 '=========================================================================
-Public Function getIndependentVariable(ByVal varName As String, ByRef lit As String, ByRef num As Double) As RPGC_DT
+Public Function getIndependentVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double) As RPGC_DT
     Dim aProgram As RPGCodeProgram
     aProgram.boardNum = -1
     Call InitRPGCodeProcess(aProgram)
-    getIndependentVariable = getVariable(varName$, lit$, num, aProgram)
+    getIndependentVariable = getVariable(varname$, lit$, num, aProgram)
     Call ClearRPGCodeProcess(aProgram)
 End Function
 
@@ -573,11 +573,11 @@ End Function
 '=========================================================================
 ' Determine if a literal variable exists
 '=========================================================================
-Public Function litVarExists(ByVal varName As String, ByVal heapID As Long) As Boolean
+Public Function litVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
     On Error Resume Next
     Dim r As Long
-    If varName <> "" Then
-        r = RPGCLitExists(UCase$(varName), heapID)
+    If varname <> "" Then
+        r = RPGCLitExists(UCase$(varname), heapID)
         If r = 1 Then
             litVarExists = True
         Else
@@ -591,9 +591,9 @@ End Function
 '=========================================================================
 ' Kill a literal variable
 '=========================================================================
-Public Sub KillLit(ByVal varName As String, ByVal heapID As Long)
+Public Sub KillLit(ByVal varname As String, ByVal heapID As Long)
     On Error Resume Next
-    Call RPGCKillLit(UCase$(varName), heapID)
+    Call RPGCKillLit(UCase$(varname), heapID)
 End Sub
 
 '=========================================================================
@@ -641,19 +641,19 @@ End Function
 '=========================================================================
 ' Kill the numerical variable passed in
 '=========================================================================
-Public Sub killNum(ByVal varName As String, ByVal heapID As Long)
+Public Sub killNum(ByVal varname As String, ByVal heapID As Long)
     On Error Resume Next
-    Call RPGCKillNum(UCase$(varName), heapID)
+    Call RPGCKillNum(UCase$(varname), heapID)
 End Sub
 
 '=========================================================================
 ' Determine if a numerical variable exists
 '=========================================================================
-Public Function numVarExists(ByVal varName As String, ByVal heapID As Long) As Boolean
+Public Function numVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
     On Error Resume Next
     Dim r As Long
-    If varName <> "" Then
-        r = RPGCNumExists(UCase$(varName), heapID)
+    If varname <> "" Then
+        r = RPGCNumExists(UCase$(varname), heapID)
         If r = 1 Then
             numVarExists = True
         Else
@@ -667,40 +667,40 @@ End Function
 '=========================================================================
 ' Return a numerical variable belonging to a program's value
 '=========================================================================
-Public Function SearchNumVar(ByVal varName As String, ByRef thePrg As RPGCodeProgram) As Double
+Public Function SearchNumVar(ByVal varname As String, ByRef thePrg As RPGCodeProgram) As Double
     On Error Resume Next
     'first search the local heap...
     If thePrg.currentHeapFrame >= 0 Then
-        If numVarExists(varName, thePrg.heapStack(thePrg.currentHeapFrame)) Then
+        If numVarExists(varname, thePrg.heapStack(thePrg.currentHeapFrame)) Then
             'try local heap...
-            SearchNumVar = GetNumVar(varName, thePrg.heapStack(thePrg.currentHeapFrame))
+            SearchNumVar = GetNumVar(varname, thePrg.heapStack(thePrg.currentHeapFrame))
         Else
             'try global heap...
-            SearchNumVar = GetNumVar(varName, globalHeap)
+            SearchNumVar = GetNumVar(varname, globalHeap)
         End If
     Else
         'obtain from global heap...
-        SearchNumVar = GetNumVar(varName, globalHeap)
+        SearchNumVar = GetNumVar(varname, globalHeap)
     End If
 End Function
 
 '=========================================================================
 ' Return a literal variable belonging to a program's value
 '=========================================================================
-Public Function SearchLitVar(ByVal varName As String, ByRef thePrg As RPGCodeProgram) As String
+Public Function SearchLitVar(ByVal varname As String, ByRef thePrg As RPGCodeProgram) As String
     On Error Resume Next
     'first search the local heap...
     If thePrg.currentHeapFrame >= 0 Then
-        If litVarExists(varName, thePrg.heapStack(thePrg.currentHeapFrame)) Then
+        If litVarExists(varname, thePrg.heapStack(thePrg.currentHeapFrame)) Then
             'try local heap...
-            SearchLitVar = GetLitVar(varName, thePrg.heapStack(thePrg.currentHeapFrame))
+            SearchLitVar = GetLitVar(varname, thePrg.heapStack(thePrg.currentHeapFrame))
         Else
             'try global heap...
-            SearchLitVar = GetLitVar(varName, globalHeap)
+            SearchLitVar = GetLitVar(varname, globalHeap)
         End If
     Else
         'obtain from global heap...
-        SearchLitVar = GetLitVar(varName, globalHeap)
+        SearchLitVar = GetLitVar(varname, globalHeap)
     End If
 End Function
 
@@ -751,29 +751,29 @@ End Function
 '=========================================================================
 ' Set a variable - unattached to a program
 '=========================================================================
-Public Sub setIndependentVariable(ByVal varName As String, ByVal value As String)
+Public Sub setIndependentVariable(ByVal varname As String, ByVal value As String)
     On Error Resume Next
     Dim aProgram As RPGCodeProgram
     aProgram.boardNum = -1
     Call InitRPGCodeProcess(aProgram)
-    Call SetVariable(varName$, value$, aProgram)
+    Call SetVariable(varname$, value$, aProgram)
     Call ClearRPGCodeProcess(aProgram)
 End Sub
 
 '=========================================================================
 ' Set a variable optionally forced to the global heap
 '=========================================================================
-Public Sub SetVariable(ByVal varName As String, ByVal value As String, ByRef theProgram As RPGCodeProgram, Optional ByVal bForceGlobal As Boolean = False)
+Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef theProgram As RPGCodeProgram, Optional ByVal bForceGlobal As Boolean = False)
 
     On Error Resume Next
 
     'Get the variable's name
     Dim theVar As String
-    theVar = parseArray(replace(varName, " ", ""), theProgram)
+    theVar = parseArray(replace(varname, " ", ""), theProgram)
 
     'Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
-        If (isVarMember(varName, topNestle(theProgram), theProgram)) Then
+        If (isVarMember(varname, topNestle(theProgram), theProgram)) Then
             theVar = getObjectVarName(theVar, topNestle(theProgram))
         End If
     End If
@@ -836,12 +836,12 @@ End Sub
 '=========================================================================
 ' Get the value of a variable
 '=========================================================================
-Public Function getVariable(ByVal varName As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
+Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
 
     On Error Resume Next
 
     'Check for reserved dynamically updating variables
-    Select Case Trim(LCase(varName))
+    Select Case Trim(LCase(varname))
 
         Case "gametime!"            'LENGTH OF GAME IN SECONDS
                                     '-------------------------
@@ -860,11 +860,11 @@ Public Function getVariable(ByVal varName As String, ByRef lit As String, ByRef 
 
     'Get the variable
     Dim theVar As String
-    theVar = parseArray(replace(varName, " ", ""), theProgram)
+    theVar = parseArray(replace(varname, " ", ""), theProgram)
 
     'Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
-        If (isVarMember(varName, topNestle(theProgram), theProgram)) Then
+        If (isVarMember(varname, topNestle(theProgram), theProgram)) Then
             theVar = getObjectVarName(theVar, topNestle(theProgram))
         End If
     End If
@@ -942,39 +942,39 @@ End Sub
 '=========================================================================
 ' Set a numerical variable
 '=========================================================================
-Public Function SetNumVar(ByVal varName As String, ByVal val As Double, ByVal heapID As Long) As Long
+Public Function SetNumVar(ByVal varname As String, ByVal val As Double, ByVal heapID As Long) As Long
     On Error Resume Next
-    SetNumVar = RPGCSetNumVar(UCase$(varName), val, heapID)
+    SetNumVar = RPGCSetNumVar(UCase$(varname), val, heapID)
 End Function
 
 '=========================================================================
 ' Set a literal variable
 '=========================================================================
-Public Function SetLitVar(ByVal varName As String, ByVal val As String, ByVal heapID As Long) As Long
+Public Function SetLitVar(ByVal varname As String, ByVal val As String, ByVal heapID As Long) As Long
     On Error Resume Next
-    SetLitVar = RPGCSetLitVar(UCase$(varName), val, heapID)
+    SetLitVar = RPGCSetLitVar(UCase$(varname), val, heapID)
 End Function
 
 '=========================================================================
 ' Get a numerical variable
 '=========================================================================
-Public Function GetNumVar(ByVal varName As String, ByVal heapID As Long) As Double
+Public Function GetNumVar(ByVal varname As String, ByVal heapID As Long) As Double
     On Error Resume Next
-    GetNumVar = RPGCGetNumVar(UCase$(varName), heapID)
+    GetNumVar = RPGCGetNumVar(UCase$(varname), heapID)
 End Function
 
 '=========================================================================
 ' Get a literal variable
 '=========================================================================
-Public Function GetLitVar(ByVal varName As String, ByVal heapID As Long) As String
+Public Function GetLitVar(ByVal varname As String, ByVal heapID As Long) As String
     On Error Resume Next
     Dim l As Long, Length As Long
     
-    l = RPGCGetLitVarLen(UCase$(varName), heapID)
+    l = RPGCGetLitVarLen(UCase$(varname), heapID)
     If l > 0 Then
         l = l + 1
         Dim getStr As String * 4048
-        Length = RPGCGetLitVar(UCase$(varName), getStr, heapID)
+        Length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
         GetLitVar = Mid$(getStr, 1, Length)
     Else
         GetLitVar = ""
