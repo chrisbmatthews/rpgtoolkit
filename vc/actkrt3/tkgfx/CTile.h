@@ -1,135 +1,182 @@
-//All contents copyright 2003, Christopher Matthews
-//All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-//Read LICENSE.txt for licensing info
+//-------------------------------------------------------------------
+// All contents copyright 2003, Christopher Matthews or Contributors
+// All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE
+// Read LICENSE.txt for licensing info
+//-------------------------------------------------------------------
 
-/////////////////////////////////////////////////
-// CTile.h
-// Definition for an rpgtoolkit tile
-// Developed for v2.19b (Dec 2001 - Jan 2002)
-// Copyright 2002 by Christopher B. Matthews
-/////////////////////////////////////////////////
+//-------------------------------------------------------------------
+// CTile - a tile
+//-------------------------------------------------------------------
 
-//===============================================
-// Alterations by Delano for 3.0.4
-// New isometric tile system.
-//
-// Added createIsometricMask prototype.
-// Altered prototypes for:
-//		createShading - new parameter.
-//		openTile - now returns.
-//===============================================
-
+//-------------------------------------------------------------------
+// Protect the header
+//-------------------------------------------------------------------
 #ifndef _CTILE_H_
 #define _CTILE_H_
+#pragma once
 
-//comment out if you want each tile to have its
-//own canvas (bad for the GDI resources!!!
+//-------------------------------------------------------------------
+// Definitions
+//-------------------------------------------------------------------
 #define CTILE_COMMONCANVAS
-
 #define TILE_CACHE_SIZE 256
 
-
+//-------------------------------------------------------------------
+// Inclusions
+//-------------------------------------------------------------------
 #include <string>
 #include <vector>
 #include "CTileCanvas.h"
 #include "../tkCanvas/CCanvasPool.h"
 
-typedef struct tilesetHeaderTag {		//6 bytes
-	WORD version;  						//20=2.0, 21=2.1, etc
-	WORD tilesInSet;					//number of tiles in set
-	WORD detail;						//detail level in set MUST BE UNIFORM!
-} tilesetHeader;
-
-class CTile
+//-------------------------------------------------------------------
+// A tileset header
+//-------------------------------------------------------------------
+struct tilesetHeader
 {
-	public:
-		CTile(int nCompatibleDC, bool bIsometric = false);
-		CTile(int nCompatibleDC, std::string strFilename, RGBSHADE rgb, int nShadeType, bool bIsometric = false);
-		//big 3...
-		~CTile();
-		CTile(const CTile& rhs);
-		CTile& operator=(const CTile& rhs);
-
-		//other operations...
-		int operator<(const CTile& rhs);
-
-		//methods...
-		void open(std::string strFilename, RGBSHADE rgb, int nShadeType);
-		void gdiDraw(int hdc, int x, int y);
-		void gdiDrawFG(int hdc, int x, int y);
-
-		void cnvDraw(CGDICanvas* pCanvas, int x, int y);
-
-		void gdiDrawAlpha(int hdc, int x, int y);
-		void gdiRenderAlpha(int hdc, int x, int y);
-
-		void cnvDrawAlpha(CGDICanvas* pCanvas, int x, int y);
-		void cnvRenderAlpha(CGDICanvas* pCanvas, int x, int y);
-
-
-		void prepAlpha();
-
-		//Altered for 3.0.4 by Delano - new nSetType
-		void createShading(int hdc, RGBSHADE rgb, int nShadeType, int nSetType);
-
-		bool isShadedAs(RGBSHADE rgb, int nShadeType);
-		
-		//accessor methods...
-		bool HasTransparency() { return m_bIsTransparent; }
-		std::string getFilename() { return m_strFilename; }
-		bool isIsometric() { return m_bIsometric; }
-
-		static unsigned int getDOSColor(unsigned char cColor);
-		static void KillPools();
-
-
-	private:
-
-		//Added/altered for 3.0.4 by Delano.
-		void createIsometricMask();
-		int openTile(std::string strFilename);
-
-		int openFromTileSet ( std::string strFilename, int number );
-		tilesetHeader getTilesetInfo(std::string strFilename) ;
-		long calcInsertionPoint ( int d, int number );
-		void increaseDetail();
-		//CTileCanvas* GetShadedCanvas(int hdc, std::vector<RGBSHADE> vShadeList, int nShadeType);
-
-	private:
-		//Regular information...
-		std::string m_strFilename;			//the filename of the tile (if in a tileset, the number of the tileset tile is appended at the end)
-		bool m_bIsTransparent;					//does it have transparent parts?  This is maintained for convenience.
-
-		//The tile in memory...
-		int m_pnTile[32][32];						//tile scaled tile, in memory
-		int m_pnAlphaChannel[32][32];		//tiel tile's alpha channel (255 = opaque part, 0 = tarnsparent part)
-		int m_nDetail;									//detail level for the tile
-
-		//std::vector<RGBSHADE> m_vShadeList;
-		RGBSHADE m_rgb;	//shading
-		int m_nShadeType;
-
-		bool m_bIsometric;					//is the tile isometric (44x22)
-
-		//GDI Stuff:
-		int m_nCompatibleDC;						//the compatible hdc that we use to create ofscreen DCs
-		
-		static CCanvasPool* m_pCnvForeground;	//canvas pool
-		static CCanvasPool* m_pCnvAlphaMask;	//canvas pool
-		static CCanvasPool* m_pCnvMaskMask;	//canvas pool
-
-		static CCanvasPool* m_pCnvForegroundIso;	//canvas pool
-		static CCanvasPool* m_pCnvAlphaMaskIso;	//canvas pool
-		static CCanvasPool* m_pCnvMaskMaskIso;	//canvas pool
-
-		//pool indicies of each canvas...
-		int m_nFgIdx, m_nAlphaIdx, m_nMaskIdx;
-		int m_nFgIdxIso, m_nAlphaIdxIso, m_nMaskIdxIso;
-
-		//Offscreen DCs to actually hold the tile.
-		//CGDICanvas* m_pcnvForeground;		//the drawn tile, foreground
-		//CGDICanvas* m_pcnvAlphaMask;		//the drawn tile, trnasparency mask
-		//CGDICanvas* m_pcnvMaskMask;			//mask for the mask!
+	WORD version;  		// 20=2.0, 21=2.1, etc
+	WORD tilesInSet;	// number of tiles in set
+	WORD detail;		// detail level in set MUST BE UNIFORM!
 };
 
+//-------------------------------------------------------------------
+// CTile - a tile
+//-------------------------------------------------------------------
+class CTile
+{
+
+	// Public visibility
+	public:
+
+		// Construct with little information
+		CTile(INT nCompatibleDC, BOOL bIsometric = FALSE);
+
+		// Construct with full set of information
+		CTile(INT nCompatibleDC, std::string strFilename, RGBSHADE rgb, INT nShadeType, BOOL bIsometric = FALSE);
+
+		// Deconstruct
+		~CTile();
+
+		// Copy constructor
+		CTile(const CTile &rhs);
+
+		// Assignment operator
+		CTile& operator = (const CTile &rhs);
+
+		// Open a tile
+		VOID open(std::string strFilename, RGBSHADE rgb, INT nShadeType);
+
+		// Draw the tile
+		VOID gdiDraw(INT hdc, INT x, INT y);
+
+		// Draw the tile in the foreground
+		VOID gdiDrawFG(INT hdc, INT x, INT y);
+
+		// Draw the tile to a canvas
+		VOID cnvDraw(CGDICanvas *pCanvas, INT x, INT y);
+
+		// Draw the tile's alpha portion
+		VOID gdiDrawAlpha(INT hdc, INT x, INT y);
+
+		// Render the tile's alpha's portion
+		VOID gdiRenderAlpha(INT hdc, INT x, INT y);
+
+		// Draw the tile's alpha portion to a canvas
+		VOID cnvDrawAlpha(CGDICanvas *pCanvas, INT x, INT y);
+
+		// Render the tile's alpha portion to a canvas
+		VOID cnvRenderAlpha(CGDICanvas *pCanvas, INT x, INT y);
+
+		// Prepare the tile's alpha portion
+		VOID prepAlpha(VOID);
+
+		// Create a shading mask for this tile
+		VOID createShading(INT hdc, RGBSHADE rgb, INT nShadeType, INT nSetType);
+
+		// Check if this tile is shaded in a certain manor
+		BOOL isShadedAs(RGBSHADE rgb, INT nShadeType);
+
+		// Does this tile has transparency?
+		BOOL hasTransparency(VOID) {return m_bIsTransparent;}
+
+		// Get the filename of the tile
+		std::string getFilename(VOID) {return m_strFilename;}
+
+		// Check if the tile is isometric
+		BOOL isIsometric(VOID) {return m_bIsometric;}
+
+		// Get a color from the dos palette of doom
+		static UINT getDOSColor(UCHAR cColor);
+
+		// Kill all canvases used
+		static VOID KillPools(VOID);
+
+	// Private visibility
+	private:
+
+		// Create an isometric mask
+		VOID createIsometricMask(VOID);
+
+		// Open a tile
+		INT openTile(std::string strFilename);
+
+		// Open a tile from a set
+		INT openFromTileSet(std::string strFilename, INT number);
+
+		// Get the tileset's header
+		tilesetHeader getTilesetInfo(std::string strFilename);
+
+		// Calculate the insertation position
+		long calcInsertionPoINT(INT idx, INT number);
+
+		// Increase this tile's detail
+		VOID increaseDetail(VOID);
+
+		// Filename of the tile
+		std::string m_strFilename;
+
+		// Is the tile transparent?
+		BOOL m_bIsTransparent;
+
+		// The tile
+		INT m_pnTile[32][32];			// Tile scaled tile, in memory
+		INT m_pnAlphaChannel[32][32];	// The tile's alpha channel (255 == opaque part, 0 == tarnsparent part)
+		INT m_nDetail;					// Detail level for the tile
+
+		// Shading on the tile
+		RGBSHADE m_rgb;
+		INT m_nShadeType;
+
+		// Is the tile isometric?
+		BOOL m_bIsometric;
+
+		// The HDC this tile was based on
+		INT m_nCompatibleDC;
+
+		// Canvas pools used for tiles
+		static CCanvasPool *m_pCnvForeground;
+		static CCanvasPool *m_pCnvAlphaMask;
+		static CCanvasPool *m_pCnvMaskMask;
+		static CCanvasPool *m_pCnvForegroundIso;
+		static CCanvasPool *m_pCnvAlphaMaskIso;
+		static CCanvasPool *m_pCnvMaskMaskIso;
+
+		// Has the iso mask been created?
+		static BOOL bCTileCreateIsoMaskOnce;
+
+		// The iso mask
+		static LONG isoMaskCTile[64][32];
+
+		// DOS palette
+		static UINT g_pnDosPalette[];
+
+		// Indices INTo canvas pools
+		INT m_nFgIdx, m_nAlphaIdx, m_nMaskIdx;
+		INT m_nFgIdxIso, m_nAlphaIdxIso, m_nMaskIdxIso;
+
+};
+
+//-------------------------------------------------------------------
+// End of the header
+//-------------------------------------------------------------------
 #endif
