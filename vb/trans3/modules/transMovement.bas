@@ -222,7 +222,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, _
                     pPos(i).l = pos.l And _
                     startingMove Then
 
-                    Call traceString("ChkObs:P:T:2")
+                    'Call traceString("ChkObs:P:T:2")
 
                     checkObstruction = SOLID
                     Exit Function
@@ -672,68 +672,87 @@ Private Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal
     EffectiveTileType = typetile
 End Function
 
-Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boolean
+Private Function checkBoardEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As Boolean
     '===============================================================================
-    'If player walks off the edge, checks to see if a link is present and if it's
-    'possible to go there. If so, then player is sent, and True returned, else False.
-    'thelink is a number from 1-4  1-North, 2-South, 3-East, 4-West.
-    'Code also present to check and run a program instead of a board.
-    'Called by CheckEdges only.
+    'Tests board links if a player reaches an edge.
+    'Returns True if:  movement was blocked, either by a solid target tile on next board,
+    '                  or there was no link, or the link file was a program.
+    'Returns False if: movement was allowed, either if the player was not at an edge, or
+    '                  if the player moved to a new board.
+    '3.0.6: Merged TestBoard, TestLink, LinkIso, CheckEdges into checkBoardEdges
+    'Called by movePlayers only.
     '===============================================================================
     On Error Resume Next
+    
+    Dim direction As Long
+    
+    'If this is just a party member we don't want to move boards if he moves to the edge.
+    If playerNum <> selectedPlayer Then Exit Function
+   
+    If pend.yTarg < 1 Then direction = MV_NORTH
+        'Top of the board.
+    If pend.yTarg > boardList(activeBoardIndex).theData.bSizeY Then direction = MV_SOUTH
+        'Bottom of the board.
+    If pend.xTarg < 1 Then direction = MV_WEST
+        'Left edge of the board.
+    If pend.xTarg > boardList(activeBoardIndex).theData.bSizeX Then direction = MV_EAST
+        'Right edge of the board.
 
-    'Screen co-ords held in temporary varibles in case true variables altered.
-    Dim topXtemp As Double, topYtemp As Double
-    topXtemp = topX
-    topYtemp = topY
+    'If we're not at an edge, exit with False signifying allowed movement.
+    If direction = 0 Then Exit Function
+    
+    'Now, if we Exit Function we will block movement.
+    checkBoardEdges = True
 
-    Dim targetBoard As String
-    targetBoard = boardList(activeBoardIndex).theData.dirLink(theLink)
+    Dim targetBoard As TKBoard
+    targetBoard.strFilename = boardList(activeBoardIndex).theData.dirLink(direction)
 
-    If (LenB(targetBoard) = 0) Then
-        ' No link exists
+    If (LenB(targetBoard.strFilename) = 0) Then
+        'No link exists.
         Exit Function
     End If
 
-    If (UCase$(GetExt(targetBoard)) = "PRG") Then
-        ' Simply run this program:
-        Call runProgram(projectPath & prgPath & targetBoard)
-        TestLink = True
+    If (UCase$(GetExt(targetBoard.strFilename)) = "PRG") Then
+        'This is a program, not a board!
+        Call runProgram(projectPath & prgPath & targetBoard.strFilename)
         Exit Function
     End If
 
-    Dim testX As Long, testY As Long, testLayer As Long
+    Dim testX As Long, testY As Long, testL As Long
     testX = pPos(playerNum).x
     testY = pPos(playerNum).y
-    testLayer = pPos(playerNum).l
+    testL = pPos(playerNum).l
 
-    'Isometric addition: sprites jump when moving to new boards.
-    'Y has to remain even or odd during transition, rather than just moving to the bottom row.
-    'New function: linkIso, to check if the target board is iso. If so, sends to different co-ords.
-
-    Dim targetX As Long, targetY As Long 'Target board dimensions
-
-    Select Case theLink
+    'Open the target board file and get some info from it.
+    Call openBoard(projectPath & brdPath & targetBoard.strFilename, targetBoard)
+   
+    'Check the target board extends to the player's location.
+    If testX > targetBoard.bSizeX Or testY > targetBoard.bSizeY Or testL > targetBoard.bSizeL Then
+        Exit Function
+    End If
+        
+    'Modifiers to offset target position when the player enters: causes player to walk onto
+    'the board from off-screen.
+    'Dim modifierX As Long, modifierY As Long
+        
+    'Determine the target co-ordinates from the direction and current location.
+    Select Case direction
 
         Case MV_NORTH
+            testY = targetBoard.bSizeY
+            'modifierY = movementSize
 
-            'Get dimensions of target board.
-            Call boardSize(projectPath & brdPath & targetBoard, targetX, targetY)
-            testY = targetY 'The bottom row of the board
-
-            'Only notice if you move from iso to normal boards
-            'Trial with new function. If bad then use (boardList(activeBoardIndex).theData.isIsometric = 1)
-            If linkIso(projectPath & brdPath & targetBoard) Then
-                If pPos(playerNum).y Mod 2 <> targetY Mod 2 Then
+            If targetBoard.isIsometric Then
+                If pPos(playerNum).y Mod 2 <> testY Mod 2 Then
                     testY = testY - 1
                 End If
             End If
 
         Case MV_SOUTH
-
             testY = 1
-            'Trial with new function. If bad then use (boardList(activeBoardIndex).theData.isIsometric = 1)
-            If linkIso(projectPath & brdPath & targetBoard) Then
+            'modifierY = -movementSize
+            
+            If targetBoard.isIsometric Then
                 testY = 3
                 If pPos(playerNum).y Mod 2 = 0 Then
                     testY = testY - 1
@@ -742,51 +761,37 @@ Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boo
 
         Case MV_EAST
             testX = 1
-
+            'modifierX = -movementSize
         Case MV_WEST
-            'Get the dimensions of the target board.
-            Call boardSize(projectPath & brdPath & targetBoard, targetX, targetY)
-            testX = targetX
-
+            testX = targetBoard.bSizeX
+            'modifierX = movementSize
     End Select
 
-    ' Now see if the space is ok
-    Dim targetTile As Long
-    targetTile = TestBoard(projectPath & brdPath & targetBoard, testX, testY, testLayer)
-
-    'If ((targetTile = -1) Or (targetTile = SOLID)) Then
-    If (targetTile = -1) Then
-        'If board doesn't exist or board smaller than target location (-1) OR target tile is solid.
-        'Stay at current position.
-        topX = topXtemp
-        topY = topYtemp
-        TestLink = False
+    If targetBoard.tiletype(testX, testY, testL) = SOLID Then
+        'If target tile is solid, stay at current position.
         Exit Function
     End If
 
-    'Else targetTile is passable.
-
-    'If we can go, then we will
-
+    'All the checks are done, so we can now move.
     With pPos(playerNum)
-        .x = testX
-        .y = testY
-        .l = testLayer
-        pendingPlayerMovement(selectedPlayer).xOrig = .x
-        pendingPlayerMovement(selectedPlayer).yOrig = .y
-        pendingPlayerMovement(selectedPlayer).xTarg = .x
-        pendingPlayerMovement(selectedPlayer).yTarg = .y
-        .loopFrame = -1
+        .x = testX '+ modifierX
+        .y = testY '+ modifierY
+        .l = testL
+        pendingPlayerMovement(playerNum).xOrig = .x
+        pendingPlayerMovement(playerNum).yOrig = .y
+        pendingPlayerMovement(playerNum).xTarg = .x '- modifierX
+        pendingPlayerMovement(playerNum).yTarg = .y '- modifierY
+        pendingPlayerMovement(playerNum).direction = MV_IDLE
     End With
 
     Call ClearNonPersistentThreads
     Call destroyItemSprites
-    Call openBoard(projectPath & brdPath & targetBoard, boardList(activeBoardIndex).theData)
+    Call openBoard(projectPath & brdPath & targetBoard.strFilename, boardList(activeBoardIndex).theData)
     Call clearAnmCache  'Delano. 3.0.4.
 
     'Clear the player's last frame render, to force a redraw directly on entering.
     '(Prevents players starting new boards with old frame).
-    lastPlayerRender(selectedPlayer).canvas = -1
+    lastPlayerRender(playerNum).canvas = -1
     scTopX = -1000
     scTopY = -1000
 
@@ -802,61 +807,10 @@ Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boo
         Call runProgram(projectPath & prgPath & boardList(activeBoardIndex).theData.enterPrg)
     End If
 
-    TestLink = True
+    'The target wasn't blocked and the send succeeded, return false to continue movement;
+    'i.e. player walks onto the next board from off-screen.
+    checkBoardEdges = False
 
-End Function
-
-Private Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As Boolean
-    'check if the player has gone off an edge
-    'if he has, we put him on the new board or in a new location and return true
-    'else return false
-    
-    On Error Resume Next
-    
-    Dim bWentThere As Boolean
-    
-    If pend.yTarg < 1 Then
-        'too far north
-        bWentThere = TestLink(playerNum, MV_NORTH)
-        If bWentThere Then
-            CheckEdges = True
-            Exit Function
-        Else
-            CheckEdges = True
-            Exit Function
-        End If
-    ElseIf pend.yTarg > boardList(activeBoardIndex).theData.bSizeY Then
-        'too far south!
-        bWentThere = TestLink(playerNum, MV_SOUTH)
-        If bWentThere Then
-            CheckEdges = True
-            Exit Function
-        Else
-            CheckEdges = True
-            Exit Function
-        End If
-    ElseIf pend.xTarg < 1 Then
-        'too far west!
-        bWentThere = TestLink(playerNum, MV_WEST)
-        If bWentThere Then
-            CheckEdges = True
-            Exit Function
-        Else
-            CheckEdges = True
-            Exit Function
-        End If
-    ElseIf pend.xTarg > boardList(activeBoardIndex).theData.bSizeX Then
-        'too far east!
-        bWentThere = TestLink(playerNum, MV_EAST)
-        If bWentThere Then
-            CheckEdges = True
-            Exit Function
-        Else
-            CheckEdges = True
-            Exit Function
-        End If
-    End If
-    CheckEdges = False
 End Function
 
 Public Function obtainTileType(ByVal testX As Double, _
@@ -1223,12 +1177,14 @@ Public Function obtainTileType(ByVal testX As Double, _
         underneath = 0
     End If
 
-    If typetile = EAST_WEST And (direction = MV_EAST Or direction = MV_WEST) Then
-        typetile = NORMAL   'if ew normal, carry on as if it were normal
+    If typetile = EAST_WEST Then
+        'If East-West normal / North-South blocked.
+        typetile = IIf((direction = MV_EAST Or direction = MV_WEST), NORMAL, SOLID)
     End If
 
-    If typetile = NORTH_SOUTH And (direction = MV_SOUTH Or direction = MV_NORTH) Then
-        typetile = NORMAL   'if ns normal, carry on as if it were normal
+    If typetile = NORTH_SOUTH Then
+        'If North-South normal / East-West blocked.
+        typetile = IIf((direction = MV_SOUTH Or direction = MV_NORTH), NORMAL, SOLID)
     End If
 
     If underneath = 1 And typetile <> SOLID Then
@@ -1525,22 +1481,22 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
 
                     ' Check for stationary items only (for tile mvt).
                     ' Check all items only now (for pixel mvt).
+                    ' Also check for the edge of the board.
                     If (checkObstruction(pPos(playerIdx), _
                                         pendingPlayerMovement(playerIdx), _
                                         playerIdx, _
                                         -1, _
                                         staticTileType(playerIdx), _
                                         True) _
-                                        = SOLID) Then
+                                        = SOLID) _
+                        Or _
+                        checkBoardEdges(pendingPlayerMovement(playerIdx), playerIdx) _
+                        Then
 
                         staticTileType(playerIdx) = SOLID
 
                     End If
                     
-Call traceString(" ")
-Call traceString("movePlayers: .dir=" & pendingPlayerMovement(playerIdx).direction & " static=" & staticTileType(playerIdx))
-                    
-
                     ' We can start movement!
                     pPos(playerIdx).loopFrame = 0
 
@@ -1557,8 +1513,6 @@ Call traceString("movePlayers: .dir=" & pendingPlayerMovement(playerIdx).directi
                         ' Check divide by zero
                         If (.loopSpeed <= 0) Then .loopSpeed = 1
                         
-Call traceString("movePlayers: .loopSpeed = " & .loopSpeed & " gAvgTime = " & Round(gAvgTime, 5))
-
                     End With
                     
                 Else
@@ -1647,14 +1601,6 @@ Private Function pushPlayer(ByVal pNum As Long, ByRef staticTileType As Byte) As
 
     fightInProgress = False
     stepsTaken = stepsTaken + 1
-
-    'Before doing anything, let's see if we are going off the board.
-    'Checks for links and will send to new board if a link is possible.
-    If CheckEdges(pendingPlayerMovement(pNum), pNum) Then
-        pendingPlayerMovement(pNum).direction = MV_IDLE
-        pPos(pNum).loopFrame = -1
-        Exit Function
-    End If
 
     'Change direction now in case we're going to be walking against a wall.
     Select Case pendingPlayerMovement(pNum).direction
@@ -2062,31 +2008,5 @@ Private Function checkScrollWest(ByVal playerNum As Long) As Boolean
                 checkScrollWest = False
         End If
     End If
-
-End Function
-
-Public Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY As Long, ByVal testL As Long) As Long
-'===========================================================
-'Tests if we can go to x,x,layer on specified board.
-'Returns -1 if we cannot, otherwise it returns the tiletype.
-'===========================================================
-'Called by: TestLink and Send.
-    On Error Resume Next
-    
-    TestBoard = -1
-    
-    If Not (pakFileRunning) Then
-        If Not fileExists(file) Then Exit Function
-    End If
-
-    Dim aBoard As TKBoard
-    Call openBoard(file, aBoard)
-    ' lastRender.canvas = -1
-    If _
-        testX > aBoard.bSizeX Or _
-        testY > aBoard.bSizeY Or _
-        testL > aBoard.bSizeL Then Exit Function
-        
-    TestBoard = aBoard.tiletype(testX, testY, testL)
 
 End Function

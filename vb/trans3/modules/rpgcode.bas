@@ -5902,40 +5902,35 @@ Public Sub Send(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
     End If
 
-    Dim targetBoardName As String, targetTileType As Long, targetBoardWidth As Long, targetBoardHeight As Long
-    Dim targetX As Long, targetY As Long, targetL As Long
-    Dim topXtemp As Double, topYtemp As Double
+    Dim targetX As Long, targetY As Long, targetL As Long, targetBoard As TKBoard
+    Call openBoard(projectPath & brdPath & addExt(paras(0).lit, ".brd"), targetBoard)
 
-    ' Add an extension if there isn't one
-    targetBoardName = addExt(paras(0).lit, ".brd")
-
-    ' Put the dimensions of the target board into targetBoardWidth, targetBoardHeight
-    Call boardSize(projectPath & brdPath & targetBoardName, targetBoardWidth, targetBoardHeight)
-
-    ' Check the target is valid.
-    targetX = inBounds(paras(1).num, 1, targetBoardWidth)
-    targetY = inBounds(paras(2).num, 1, targetBoardHeight)
+    ' Place the player in the bounds of the board.
+    targetX = paras(1).num
+    targetY = paras(2).num
     targetL = inBounds(paras(3).num, 1, 8)
-
-    ' TestBoard clears the screen co-ords (topX,topY) via openBoard so these need to be held in case sending fails
-    topXtemp = topX
-    topYtemp = topY
-
-    targetTileType = TestBoard(projectPath & brdPath & targetBoardName, targetX, targetY, targetL)
-
-    ' If we can't be sent to the board
-    If (targetTileType = -1) Then
-        ' Need to re-insert old topX,topY since TestBoard has cleared them via openBoard.
-        topX = topXtemp
-        topY = topYtemp
-        Exit Sub
+    If targetX > targetBoard.bSizeX Then
+        targetX = targetBoard.bSizeX
+        Call debugger("Error: Send() location exceeds target board x-dimension!--" & Text)
+    End If
+    If targetX < 1 Then
+        targetX = 1
+        Call debugger("Error: Send() x-location is less than 1!--" & Text)
+    End If
+    If targetY > targetBoard.bSizeY Then
+        targetY = targetBoard.bSizeY
+        Call debugger("Error: Send() location exceeds target board y-dimension!--" & Text)
+    End If
+    If targetY < 1 Then
+        targetY = 1
+        Call debugger("Error: Send() y-location is less than 1!--" & Text)
     End If
 
     ' Destroy this board's item sprites
     Call destroyItemSprites
 
     ' Open the board
-    Call openBoard(projectPath & brdPath & targetBoardName, boardList(activeBoardIndex).theData)
+    Call openBoard(projectPath & brdPath & targetBoard.strFilename, boardList(activeBoardIndex).theData)
 
     ' Clear non-persistent threads
     Call ClearNonPersistentThreads

@@ -188,10 +188,15 @@ Public Sub dimensionItemArrays(ByRef theBoard As TKBoard)
         ReDim Preserve .itemMulti(ub)
         ReDim Preserve .itemProgram(ub)
 
-        #If isToolkit = 0 Then
+#If isToolkit = 0 Then
+        'If we're just opening the board for other information, this isn't
+        'the activeboard and we don't need to do this (nor do we want to redim
+        'the itmPos and itmMem arrays! - items may disappear!).
+        If boardList(activeBoardIndex).theData.strFilename = .strFilename Then
             ReDim Preserve itemMem(ub)
             ReDim Preserve itmPos(ub)
-        #End If
+        End If
+#End If
 
     End With
 
@@ -499,7 +504,7 @@ ver2oldboard:
 End Sub
 
 '=========================================================================
-' Clear a board structure
+' Clear a board structure. Called by open board only (trans3).
 '=========================================================================
 Public Sub BoardClear(ByRef theBoard As TKBoard)
 
@@ -736,7 +741,7 @@ End Sub
 Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
 
     On Error GoTo loadBrdErr
-
+    
     Call BoardClear(theBoard)
     Call BoardSetSize(50, 50, 8, theBoard)
 
@@ -746,7 +751,6 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
         .bSizeY = 50
         .bSizeL = 8
     
-        topX = 0: topY = 0
         boardList(activeBoardIndex).boardNeedUpdate = False
 
         fileOpen = PakLocate(fileOpen)

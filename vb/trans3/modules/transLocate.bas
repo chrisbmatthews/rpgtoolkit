@@ -60,20 +60,6 @@ Public Sub invIsoCoordTransform(ByVal newX As Double, ByVal newY As Double, _
 End Sub
 
 '=========================================================================
-' Return if the board passed in is isometric
-'=========================================================================
-Public Function linkIso(ByVal linkBoard As String) As Boolean
-    On Error Resume Next
-    If Not fileExists(linkBoard) Then
-        Exit Function
-    End If
-    ' lastRender.canvas = -1
-    Dim brd As TKBoard
-    Call openBoard(linkBoard, brd)
-    linkIso = (brd.isIsometric = 1)
-End Function
-
-'=========================================================================
 ' Get the x coord at the bottom center of a board
 ' Called by putSpriteAt, checkScrollEast, checkScrollWest
 '=========================================================================
