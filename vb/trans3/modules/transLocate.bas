@@ -30,7 +30,7 @@ Public Sub isoCoordTransform(ByVal oldX As Double, ByVal oldY As Double, _
 
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         newX = oldX + (oldY - 1) \ 2
-        newY = Int(oldY / 2) + 1 - Int(oldX) + (oldY - Int(oldY))
+        newY = oldY \ 2 + 1 - Int(oldX) + (oldY - Int(oldY))
         
         newY = newY + boardList(activeBoardIndex).theData.bSizeX
     Else
