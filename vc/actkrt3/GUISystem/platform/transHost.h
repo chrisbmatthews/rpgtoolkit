@@ -35,10 +35,9 @@ typedef VOID (__stdcall *CBFourParams) (INT, INT, INT, INT);
 // Game states
 //-------------------------------------------------------------------
 CONST INT GS_IDLE = 0;				// Just re-renders the screen
-CONST INT GS_QUIT = 1;				// Shutdown sequence
-CONST INT GS_MOVEMENT = 2;			// Movement is occurring (players or items)
-CONST INT GS_DONEMOVE = 3;			// Movement is finished
-CONST INT GS_PAUSE = 4;				// Pause game (do nothing)
+CONST INT GS_MOVEMENT = 1;			// Movement is occurring (players or items)
+CONST INT GS_PAUSE = 2;				// Pause game (do nothing)
+CONST INT GS_QUIT = 3;				// Shutdown sequence
 
 //-------------------------------------------------------------------
 // Prototypes
@@ -53,6 +52,7 @@ VOID APIENTRY changeHostWindowCaption(LPSTR newCaption);
 VOID APIENTRY endProgram(VOID);
 LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 LRESULT CALLBACK endFormWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+VOID APIENTRY initCounter(double *ptrRenderTime,INT *ptrRenderCount);
 
 //-------------------------------------------------------------------
 // End of the header file

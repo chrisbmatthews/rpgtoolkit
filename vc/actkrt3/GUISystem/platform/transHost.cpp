@@ -17,7 +17,7 @@
 //-------------------------------------------------------------------
 // Definintions
 //-------------------------------------------------------------------
-#define FPS_CAP 120						// FPS cap
+#define FPS_CAP 120.0					// FPS cap
 
 //-------------------------------------------------------------------
 // Globals
@@ -26,6 +26,12 @@ static HWND hostHwnd = NULL;			// Handle of host window
 static INT endFormBackgroundHDC = 0;	// HDC to a background picture for end form
 static BOOL m_isActive = FALSE;			// We have the focus?
 static BOOL m_exitDo = FALSE;			// End form closed?
+
+//-------------------------------------------------------------------
+// Members
+//-------------------------------------------------------------------
+double *m_renderTime;					// Pointer to m_renderTime in transMain.
+INT *m_renderCount;						// Pointer to m_renderCount in transMain.
 
 //-------------------------------------------------------------------
 // Callbacks
@@ -128,14 +134,17 @@ VOID APIENTRY mainEventLoop(CONST INT gameLogicAddress)
 	typedef VOID (__stdcall *FUNCTIONPOINTER)();
 	CONST FUNCTIONPOINTER gameLogic = FUNCTIONPOINTER(gameLogicAddress);
 
-	// Calculate how long one frame should take
-	CONST DWORD dblOneFrame = 1000 / FPS_CAP;
+	// Calculate how long one frame should take, in milliseconds.
+	CONST DWORD dblOneFrame = DWORD(1000.0 / FPS_CAP);
 
 	// Define a structure to hold the messages we recieve
     MSG message;
 
 	while (TRUE)
 	{
+
+		// Get current time
+		DWORD dblTimeNow = GetTickCount();
 
 		if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
 		{
@@ -154,14 +163,22 @@ VOID APIENTRY mainEventLoop(CONST INT gameLogicAddress)
             }
         }
 
-		// Get current time
-		CONST DWORD dblTimeNow = GetTickCount();
 
-		// Run a frame of game logic
+		// Run a frame of game logic.
         gameLogic();
 
-		// Sleep for any remaining time
+		// Sleep for any remaining time.
 		while ((GetTickCount() - dblTimeNow) < dblOneFrame);
+
+		dblTimeNow = GetTickCount() - dblTimeNow;
+
+		// Add the time for this loop and increment the counter.
+		// Add only if this is a short loop.
+		if (dblTimeNow < 200)
+		{
+			(*m_renderTime) += double(dblTimeNow) / 1000.0;
+			(*m_renderCount)++;
+		}
 
     }
 
@@ -509,4 +526,14 @@ VOID APIENTRY changeHostWindowCaption(LPSTR newCaption)
 VOID APIENTRY endProgram(VOID)
 {
 	PostQuitMessage(0);
+}
+
+//-------------------------------------------------------------------
+// Receive the fps variables from trans3
+//-------------------------------------------------------------------
+VOID APIENTRY initCounter(double *ptrRenderTime, INT *ptrRenderCount)
+{
+	// Point the members to the variables.
+	m_renderTime = ptrRenderTime;
+	m_renderCount = ptrRenderCount;
 }

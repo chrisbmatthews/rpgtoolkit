@@ -191,3 +191,5 @@ EXPORTS
 	endProgram			@233
 
 	RPGCGetLitVarByteLen @ 246
+
+	initCounter			@251
