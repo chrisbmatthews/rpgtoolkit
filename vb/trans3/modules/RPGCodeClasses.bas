@@ -798,7 +798,7 @@ End Function
 '=========================================================================
 ' Check if a program can instance a class
 '=========================================================================
-Private Function canInstanceClass(ByVal theClass As String, ByRef prg As RPGCodeProgram) As Boolean
+Public Function canInstanceClass(ByVal theClass As String, ByRef prg As RPGCodeProgram) As Boolean
 
     On Error Resume Next
 

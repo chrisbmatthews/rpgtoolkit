@@ -1604,7 +1604,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     
         'button commands 9/14/99
         Case "SETBUTTON":
-            Call setbuttonRPG(splice$, theProgram) 'set button
+            Call SetButtonRPG(splice$, theProgram) 'set button
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -2380,10 +2380,32 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
 
         Case Else
-            'If we got this far, it's an unrecognised command and
-            'is probably a method call
-            Call MethodCallRPG(splice, testText, theProgram, retval) 'method called
+
+            ' Check for class creator
+            If (canInstanceClass(testText, theProgram)) Then
+
+                ' Call the new operator
+                Dim newLine As String, theBrackets As String
+                newLine = "(" & testText
+                theBrackets = GetBrackets(splice)
+                If (LenB(theBrackets) <> 0) Then
+                    newLine = newLine & "," & theBrackets & ")"
+                Else
+                    newLine = newLine & ")"
+                End If
+                Call newRPG(newLine, theProgram, retval)
+
+            Else
+
+                ' Try a method call
+                Call MethodCallRPG(splice, testText, theProgram, retval)
+
+            End If
+
+            ' Increment the program
             DoSingleCommand = increment(theProgram)
+
+            ' Bail
             Exit Function
 
     End Select
