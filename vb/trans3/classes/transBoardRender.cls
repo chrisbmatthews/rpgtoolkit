@@ -99,7 +99,7 @@ Public Sub Render()
     On Error Resume Next
 
     'first, get the shade color of the board
-    Call getAmbientLevel(m_shadeR, m_shadeG, m_shadeB)
+    Call getAmbientLevel(m_shadeR, m_shadeB, m_shadeG)
 
     'With the board to render
     With boardList(activeBoardIndex).theData
