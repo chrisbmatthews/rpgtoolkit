@@ -20,12 +20,42 @@
 // GFXDrawTstWindow
 //=====================================================
 
+//////////////////////////////////////////
+// GLOBALS
+long g_lCallbacks[60];		//array of visual basic function addresses (callbacks)
+int g_nNumCallbacks;			//number of elements in the above array.
+//board...
+	char board[50][50][9][255];
+	char boardback[255],borderback[255];
+	long boardcolor,bordercolor;
+	int ambienteffect;
+	int ambientred[50][50][9], ambientgreen[50][50][9], ambientblue[50][50][9];
+//tile...
+	long tile[33][33];
+	int detail;
+//
+	//std::set<std::string> gsetTransparentTiles;		//set listing what tiles are transparent
+//256 color palette
+	//int color256;		//256 color palette loaded? 0-no, 1-yes
+	//long rgbpal[256];	//the palette in question
+//tileset...
+
+//enemy
+	int sizeX, sizeY;	//enemy size.
+//general
+	double ddx,ddy;		//coord conversion
+	int addonr,addong,addonb;	//addon colors
+	int tilesX, tilesY;	//screen size, in tiles
+	int g_topX, g_topY;	//top x, y of board
+
 /*
  * Includes
  */
 #include "stdafx.h"
+#include "CBoard.h"
 #include "tkgfx.h"
 #include "CTile.h"
+tilesetHeader tileset;
 #include "CUtil.h"
 #include "tkpluglocalfns.h"
 #include <vector>
@@ -165,7 +195,7 @@ int APIENTRY GFXAbout()
 // Returns: 1 (TRUE)
 //
 ///////////////////////////////////////////////////////
-int APIENTRY GFXdrawboard ( int hdc,
+int APIENTRY GFXdrawboard ( CBoard *brd, int hdc,
 														int maskhdc,
 														int layer,
 														int topx, 
@@ -181,69 +211,8 @@ int APIENTRY GFXdrawboard ( int hdc,
 														int nIsometric )
 
 {
-	int nIsoEvenOdd = 0;
-	if ( topy % 2 == 0 ) 
-		nIsoEvenOdd = 1;
-	else
-		nIsoEvenOdd = 0;
-
-	//clear list of tiles with transparency...
-	//gsetTransparentTiles.clear();
-
-	int nLower, nUpper;	//bottom and top layers to draw
-	nLower=1;
-	nUpper=nBsizel;
-
-	if (layer > nBsizel)
-	{
-		layer = nBsizel;
-	}
-	if (layer < 0)
-	{
-		layer = 0;
-	}
-
-	if (layer!=0) {
-		nLower=layer;
-		nUpper=layer;
-	}
-
-	int nWidth, nHeight;
-	nWidth = tilesX;
-	nHeight = tilesY;
-	if (nWidth + topx > nBsizex)
-	{
-		nWidth = nBsizex - topx;
-	}
-	if (nHeight + topy > nBsizey)
-	{
-		nHeight= nBsizey - topy;
-	}
-
-	g_topX = topx;
-	g_topY = topy;
-	for ( layer=nLower; layer<=nUpper; layer++ ) 
-	{
-		for ( int y=1; y<=nHeight; y++ ) 
-		{
-			for ( int x=1; x<=nWidth; x++ ) 
-			{
-				drawBoardTile( x, 
-											 y, 
-											 layer,
-											 ar,
-											 ag,
-											 ab, 
-											 tilesX,
-											 tilesY,
-											 hdc,
-											 maskhdc,
-											 nIsometric,
-											 nIsoEvenOdd );
-			}
-		}
-	}
-	return 1;
+	brd->drawHdc(hdc, maskhdc, layer, topx, topy, tilesX, tilesY, nBsizex, nBsizey, nBsizel, ar, ag, ab, nIsometric);
+	return TRUE;
 }
 
 
@@ -272,7 +241,7 @@ int APIENTRY GFXdrawboard ( int hdc,
 // Returns: 1 (TRUE)
 //
 ///////////////////////////////////////////////////////
-int APIENTRY GFXDrawBoardCNV ( CNV_HANDLE cnv,
+int APIENTRY GFXDrawBoardCNV ( CBoard *brd, CNV_HANDLE cnv,
 														CNV_HANDLE maskcnv,
 														int layer,
 														int topx, 
@@ -288,60 +257,7 @@ int APIENTRY GFXDrawBoardCNV ( CNV_HANDLE cnv,
 														int nIsometric )
 
 {
-	const int nIsoEvenOdd = !(topy % 2);
-
-	int nLower = 1;
-	int nUpper = nBsizel;
-
-	if (layer > nBsizel)
-	{
-		layer = nBsizel;
-	}
-	if (layer < 0)
-	{
-		layer = 0;
-	}
-
-	if (layer)
-	{
-		nLower = layer;
-		nUpper = layer;
-	}
-
-	int nWidth = tilesX;
-	int nHeight = tilesY;
-	if (nWidth + topx > nBsizex)
-	{
-		nWidth = nBsizex - topx;
-	}
-	if (nHeight + topy > nBsizey)
-	{
-		nHeight= nBsizey - topy;
-	}
-
-	g_topX = topx;
-	g_topY = topy;
-	for (layer = nLower; layer <= nUpper; layer++) 
-	{
-		for (int y = 1; y <= nHeight; y++) 
-		{
-			for (int x = 1; x <= nWidth; x++) 
-			{
-				drawBoardTileCNV( x, 
-											 y, 
-											 layer,
-											 ar,
-											 ag,
-											 ab, 
-											 tilesX,
-											 tilesY,
-											 cnv,
-											 maskcnv,
-											 nIsometric,
-											 nIsoEvenOdd );
-			}
-		}
-	}
+	brd->draw(cnv, maskcnv, layer, topx, topy, tilesX, tilesY, nBsizex, nBsizey, nBsizel, ar, ag, ab, nIsometric);
 	return 1;
 }
 
@@ -626,7 +542,7 @@ int APIENTRY GFXDrawTileCNV ( const char* fname,
 // Returns: 1 (TRUE)
 //
 ///////////////////////////////////////////////////////
-int APIENTRY GFXdrawtilemask ( char fname[], 
+int APIENTRY GFXdrawtilemask ( const char *fname, 
 									 double x, 
 									 double y, 
 									 int rred, 
@@ -773,7 +689,7 @@ int APIENTRY GFXdrawtilemask ( char fname[],
 // Returns: 1 (TRUE)
 //
 ///////////////////////////////////////////////////////
-int APIENTRY GFXDrawTileMaskCNV ( char fname[], 
+int APIENTRY GFXDrawTileMaskCNV ( const char fname[], 
 									 double x, 
 									 double y, 
 									 int rred, 

@@ -32,38 +32,13 @@
 #ifndef TKGFX_H
 #define TKGFX_H
 
+#if !defined(CNV_HANDLE)
+typedef INT CNV_HANDLE;
+#endif
+
 /*
  * Structures...
  */
-
-//////////////////////////////////////////
-// GLOBALS
-long g_lCallbacks[60];		//array of visual basic function addresses (callbacks)
-int g_nNumCallbacks;			//number of elements in the above array.
-//board...
-	char board[50][50][9][255];
-	char boardback[255],borderback[255];
-	long boardcolor,bordercolor;
-	int ambienteffect;
-	int ambientred[50][50][9], ambientgreen[50][50][9], ambientblue[50][50][9];
-//tile...
-	long tile[33][33];
-	int detail;
-//
-	//std::set<std::string> gsetTransparentTiles;		//set listing what tiles are transparent
-//256 color palette
-	//int color256;		//256 color palette loaded? 0-no, 1-yes
-	//long rgbpal[256];	//the palette in question
-//tileset...
-	tilesetHeader tileset;
-
-//enemy
-	int sizeX, sizeY;	//enemy size.
-//general
-	double ddx,ddy;		//coord conversion
-	int addonr,addong,addonb;	//addon colors
-	int tilesX, tilesY;	//screen size, in tiles
-	int g_topX, g_topY;	//top x, y of board
 
 ///////////////////////////////////////////////
 //Exported functions...
@@ -81,7 +56,7 @@ int APIENTRY GFXdrawpixel	( long hdc,
 													long y, 
 													long col );
 
-int APIENTRY GFXdrawboard ( int hdc,
+int APIENTRY GFXdrawboard ( CBoard *brd, int hdc,
 														int maskhdc,
 														int layer,
 														int topx, 
@@ -107,7 +82,7 @@ int APIENTRY GFXdrawtile		( const char* fname,
 													int nIsometric = 0,
 													int nIsoEvenOdd = 0 );
 
-int APIENTRY GFXdrawtilemask( char fname[], 
+int APIENTRY GFXdrawtilemask( const char *fname, 
 									 double x, 
 									 double y, 
 									 int rred, 
@@ -178,7 +153,7 @@ int APIENTRY GFXDrawTileCNV ( const char* fname,
 													 int nIsometric,
 													 int nIsoEvenOdd );
 
-int APIENTRY GFXDrawTileMaskCNV ( char fname[], 
+int APIENTRY GFXDrawTileMaskCNV ( const char fname[], 
 									 double x, 
 									 double y, 
 									 int rred, 

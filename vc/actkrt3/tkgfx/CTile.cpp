@@ -1694,9 +1694,7 @@ BOOL FAST_CALL CTile::isShadedAs(CONST RGBSHADE rgb, CONST INT nShadeType)
 	if (nShadeType != m_nShadeType)
 		return FALSE;
 
-	RGBSHADE r1 = m_rgb;
-	RGBSHADE r2 = rgb;
-	return (r1.r == r2.r && r1.g == r2.g && r1.b == r2.b);
+	return (m_rgb.r == rgb.r && m_rgb.g == rgb.g && m_rgb.b == rgb.b);
 
 }
 
