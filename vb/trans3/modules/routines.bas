@@ -5,12 +5,35 @@ Attribute VB_Name = "Routines"
 
 Option Explicit
 
-Public Function FindFile(ByVal text As String) As String
-    FindFile = file
+Public Sub openMainFile(byval file as string)
+    'opens mainForm file
+    On Error Resume Next
+
+    Dim a As Byte
+
+    projectPath = ""
+    mainMem.mainResolution = 0
+           
+    a = openMain(file, mainMem)
+    Call ChangeLanguage(resourcePath & m_LangFile)
+    If mainMem.mainDisableProtectReg = 1 Then
+        nocodeYN = False
+    End If
+    
+    'set gfx mode...
+    If resX = 0 Then
+        resX = (screenWidth) / screen.TwipsPerPixelX
+        resY = screenHeight / screen.TwipsPerPixelY
+    End If
+
+End Sub
+
+Public Function FindFile(ByVal Text As String) As String
+    FindFile = Text
 End Function
 
-Function replaceChar(ByVal text As String, ByVal src As String, ByVal dest As String) As String
-    replaceChar = replace(text, src, dest)
+Function replaceChar(ByVal Text As String, ByVal src As String, ByVal dest As String) As String
+    replaceChar = replace(Text, src, dest)
 End Function
 
 Function toString(ByVal val As Variant) As String
