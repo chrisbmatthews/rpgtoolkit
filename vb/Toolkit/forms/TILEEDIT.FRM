@@ -448,7 +448,7 @@ Public Sub isoChange( _
     If isoCheck = openTileEditorDocs(indice).isometric Then Exit Sub
 
     If isoCheck Then
-        If openTileEditorDocs(indice).tileneedupdate Then
+        If openTileEditorDocs(indice).tileNeedUpdate Then
             If MsgBox("Conversion to a .iso isometric tile is permanent!" _
                        & " Note you can still use .tst tiles on isometric" _
                        & " boards without having to convert to .iso. Do you" _
@@ -479,7 +479,7 @@ Public Sub isoChange( _
         'Clear mirror in TkMainForm
         Call vbPicFillRect(tkMainForm.mirror, 0, 0, 100, 100, vbQBColor(15))
     Else
-        If openTileEditorDocs(indice).tileneedupdate Then
+        If openTileEditorDocs(indice).tileNeedUpdate Then
             If MsgBox("Conversion from isometric to 2D is not possible. The" _
                        & " current tile will be erased. Do you wish to continue?", vbOKCancel + vbExclamation, "Isometric Mode") = vbCancel Then
                 tkMainForm.tileIsoCheck.value = 1
@@ -1020,7 +1020,7 @@ Private Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
                 Call CanvasDrawLine(Canv, x1 - 1, y1 - 1, x2 - 1, y2 - 1, tc)
             End If
     End Select
-        
+
     'Copy the canvas back to the tilemem.
     For x = 1 To xRange
         For y = 1 To 32
@@ -1049,18 +1049,6 @@ Private Sub Form_Activate(): On Error GoTo ErrorHandler
     Set activeTile = Me
     Set activeForm = Me
     
-    Dim x As Integer, y As Integer
-    
-    If (Not (ignoreDeactivate)) Then
-        'Refresh data
-        For x = 0 To 64
-            For y = 0 To 32
-                tileMem(x, y) = openTileEditorDocs(indice).tileMem(x, y)
-            Next y
-        Next x
-        'openTileEditorDocs(indice) = theData
-    End If
-    
     filename(2) = ""
     ignoreDeactivate = False
 
@@ -1082,7 +1070,7 @@ Private Sub Form_Activate(): On Error GoTo ErrorHandler
     Call tileRedraw
     
     'Set the current tool
-    Call ToolSet(openTileEditorDocs(indice).tilemode)
+    Call ToolSet(openTileEditorDocs(indice).tileMode)
     
     'Set the selected color
     Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 1000, 1000, openTileEditorDocs(indice).currentColor)
@@ -1125,6 +1113,7 @@ Private Sub Form_Initialize()
     'Create a new indice
     indice = newTileEditIndice()
     Set openTileEditors(indice) = Me
+    Set activeTile = Me
     Call clearTileDoc(openTileEditorDocs(indice))
 End Sub
 
@@ -1263,7 +1252,7 @@ Public Sub ToolSet(ByVal Index As Byte): On Error Resume Next
     ignore = 1
     
     'Update current tool variable
-    openTileEditorDocs(indice).tilemode = Index
+    openTileEditorDocs(indice).tileMode = Index
     
     'Go through the tools
     Dim i As Integer
@@ -1360,7 +1349,7 @@ Private Sub drawGrid(): On Error Resume Next
 
     'Size of a pixel on the tileform
     Dim pixelWidth, pixelHeight As Integer
-    pixelWidth = (tfWidth / xRange)
+    pixelWidth = Round((tfWidth / xRange))
     pixelHeight = (tfHeight / 32)
     
     Dim x As Integer, y As Integer
@@ -1396,7 +1385,7 @@ End Sub
 ' When you click in the Tile Editor
 '========================================================================
 Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    openTileEditorDocs(indice).tileneedupdate = True
+    openTileEditorDocs(indice).tileNeedUpdate = True
 
     'Get current color
     Dim coloruse As Long
@@ -1409,7 +1398,7 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single,
         
     'Size of a pixel on the tileform
     Dim pixelWidth, pixelHeight As Integer
-    pixelWidth = (tfWidth / xRange)
+    pixelWidth = Round((tfWidth / xRange))
     pixelHeight = (tfHeight / 32)
         
     'Tile pixel co-ordinates (which pixel selected)
@@ -1423,22 +1412,22 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single,
     'If there's clicked in the not-available part, Exit Sub
     If isoMaskBmp(mouseX + 1, mouseY + 1) <> vbQBColor(0) And openTileEditorDocs(indice).isometric Then Exit Sub
         
-    Select Case openTileEditorDocs(indice).tilemode
+    Select Case openTileEditorDocs(indice).tileMode
         Case 0, 3
 
             'Undo
             Call setUndo
-                
+
             'If the user wants to erase, set colorUse to -1 (Transparent)
-            If openTileEditorDocs(indice).tilemode = 3 Then
+            If openTileEditorDocs(indice).tileMode = 3 Then
                 coloruse = -1
             End If
-                
+
             'Tile pixel co-ordinates (which pixel selected)
             Dim newX, newY As Integer
             newX = (mouseX * pixelWidth) + 1
             newY = (mouseY * pixelHeight) + 1
-            
+
             If (openTileEditorDocs(indice).isometric And isoMaskBmp(mouseX + 1, mouseY + 1) = vbQBColor(0)) Or Not (openTileEditorDocs(indice).isometric) Then
                 If coloruse = -1 Then
                     'Transparent; Erase
@@ -1493,8 +1482,8 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single,
             Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(indice).currentColor)
             
             'Change the selected tool
-            openTileEditorDocs(indice).tilemode = 0
-            Call ToolSet(openTileEditorDocs(indice).tilemode)
+            openTileEditorDocs(indice).tileMode = 0
+            Call ToolSet(openTileEditorDocs(indice).tileMode)
         Case 2 'Fill
             Call fillTile(mouseX + 1, mouseY + 1, coloruse)
     End Select
@@ -1516,7 +1505,7 @@ Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single,
         
     'Size of a pixel on the tileform
     Dim pixelWidth, pixelHeight As Integer
-    pixelWidth = (tfWidth / xRange)
+    pixelWidth = Round((tfWidth / xRange))
     pixelHeight = (tfHeight / 32)
         
     'Tile pixel co-ordinates (which pixel selected)
@@ -1550,7 +1539,7 @@ Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single,
     coluse = openTileEditorDocs(indice).currentColor
     If coluse = -1 Then coluse = 0
     
-    Select Case openTileEditorDocs(indice).tilemode
+    Select Case openTileEditorDocs(indice).tileMode
         Case 4:
             'Line
             If bDragBegin Then
@@ -1619,7 +1608,7 @@ Private Sub tileform_MouseUp(button As Integer, Shift As Integer, x As Single, y
     tfHeight = (tileform.height) / Screen.TwipsPerPixelY
     
     Dim pixelWidth As Integer, pixelHeight As Integer
-    pixelWidth = (tfWidth / xRange)
+    pixelWidth = Round((tfWidth / xRange))
     pixelHeight = (tfHeight / 32)
     
     Dim x2 As Integer, y2 As Integer
@@ -1631,7 +1620,7 @@ Private Sub tileform_MouseUp(button As Integer, Shift As Integer, x As Single, y
     
     If bDragBegin Then
         bDragBegin = False
-        Select Case openTileEditorDocs(indice).tilemode
+        Select Case openTileEditorDocs(indice).tileMode
             Case 4 'Line
                 Call tileAddShape(x1 + 1, y1 + 1, x2 + 1, y2 + 1, 5)
             Case 5 'Ellipse
@@ -1650,7 +1639,7 @@ End Sub
 ' Check if the file has changed an it needs to be saved
 '========================================================================
 Public Sub checkSave(): On Error GoTo ErrorHandler
-    If openTileEditorDocs(indice).tileneedupdate = True Then
+    If openTileEditorDocs(indice).tileNeedUpdate = True Then
         If MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo) = 6 Then Call saveFile
     End If
 
@@ -1667,7 +1656,7 @@ End Sub
 Public Sub saveFile(): On Error GoTo ErrorHandler
     
     filename(2) = openTileEditorDocs(indice).tileName
-    openTileEditorDocs(indice).tileneedupdate = False
+    openTileEditorDocs(indice).tileNeedUpdate = False
     If filename(2) = "" Then
         Call Show
         Call savenoquestions_Click
@@ -1687,12 +1676,13 @@ End Sub
 ' Opens the file
 '========================================================================
 Public Sub openFile(ByVal file As String): On Error Resume Next
-       
-    Call activeTile.Show
+
+    Set activeTile = Me
+    Call Show
     Call ChDir(currentDir)
     
     If tag <> 1 Then Call checkSave      'Check if a tile is already open and needs saving.
-    openTileEditorDocs(indice).tileneedupdate = False
+    openTileEditorDocs(indice).tileNeedUpdate = False
     
     Dim antiPath As String
     filename(1) = file
@@ -1723,6 +1713,8 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         Call Hide
         Call tilesetform.Show(vbModal)             'Show the tileset browser.
         Call Show
+        Set activeTile = Me
+        DoEvents
 
         'setFilename created in tilesetform. Contains the tilenumber.
         If setFilename = "" Then Exit Sub
@@ -1781,7 +1773,8 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         
     Else
         '.gph
-        
+
+        DoEvents
         Call openTile2(filename(1))
         Call highRedraw
         openTileEditorDocs(indice).tileName = antiPath
@@ -1969,7 +1962,7 @@ Private Sub savenoquestions_Click()
     
     'Else, the tile was opened, so update the file.
     Call saveTile(projectPath$ + tilePath$ + openTileEditorDocs(indice).tileName)
-    openTileEditorDocs(indice).tileneedupdate = False
+    openTileEditorDocs(indice).tileNeedUpdate = False
     
     Exit Sub
 'Begin error handling code:
@@ -2010,7 +2003,7 @@ Private Sub savetile2_Click(): On Error Resume Next
     End If
     
     ChDir (currentDir$)
-    openTileEditorDocs(indice).tileneedupdate = False
+    openTileEditorDocs(indice).tileNeedUpdate = False
     
     If filename$(1) = "" Then Exit Sub
     
@@ -2095,7 +2088,7 @@ Private Sub mnusts_Click(): On Error Resume Next
     
     ChDir (currentDir$)
     
-    openTileEditorDocs(indice).tileneedupdate = False
+    openTileEditorDocs(indice).tileNeedUpdate = False
     
     If filename$(1) = "" Then Exit Sub
     
@@ -2381,26 +2374,26 @@ End Sub
 
 'Pencil
 Private Sub mnuPencil_Click()
-    openTileEditorDocs(indice).tilemode = 0
-    Call ToolSet(openTileEditorDocs(indice).tilemode)
+    openTileEditorDocs(indice).tileMode = 0
+    Call ToolSet(openTileEditorDocs(indice).tileMode)
 End Sub
 
 'Color Capture
 Private Sub mnuColorCap_Click()
-    openTileEditorDocs(indice).tilemode = 1
-    Call ToolSet(openTileEditorDocs(indice).tilemode)
+    openTileEditorDocs(indice).tileMode = 1
+    Call ToolSet(openTileEditorDocs(indice).tileMode)
 End Sub
 
 'Flood Fill
 Private Sub mnuFloodfill_Click()
-    openTileEditorDocs(indice).tilemode = 2
-    Call ToolSet(openTileEditorDocs(indice).tilemode)
+    openTileEditorDocs(indice).tileMode = 2
+    Call ToolSet(openTileEditorDocs(indice).tileMode)
 End Sub
 
 'Eraser
 Private Sub mnuEraser_Click()
-    openTileEditorDocs(indice).tilemode = 3
-    Call ToolSet(openTileEditorDocs(indice).tilemode)
+    openTileEditorDocs(indice).tileMode = 3
+    Call ToolSet(openTileEditorDocs(indice).tileMode)
 End Sub
 
 '========================================================================

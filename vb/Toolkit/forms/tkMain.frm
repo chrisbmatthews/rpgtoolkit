@@ -96,13 +96,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   360
+      Height          =   570
       Left            =   0
       TabIndex        =   7
       Top             =   0
       Width           =   11880
       _ExtentX        =   20955
-      _ExtentY        =   635
+      _ExtentY        =   1005
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -858,12 +858,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   4200
+      Height          =   3990
       Left            =   465
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   3510
       TabIndex        =   99
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -1086,12 +1086,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
+      Height          =   3990
       Left            =   -1350
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   1815
       TabIndex        =   95
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   1815
       Begin VB.PictureBox newBar 
@@ -1131,12 +1131,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   4200
+      Height          =   3990
       Left            =   0
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   975
       TabIndex        =   50
-      Top             =   360
+      Top             =   570
       Width           =   975
       Begin VB.PictureBox leftbar 
          BorderStyle     =   0  'None
@@ -2047,12 +2047,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
+      Height          =   3990
       Left            =   11505
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   375
       TabIndex        =   22
-      Top             =   360
+      Top             =   570
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2251,12 +2251,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
+      Height          =   3990
       Left            =   3975
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   4800
       TabIndex        =   8
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2358,12 +2358,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
+      Height          =   3990
       Left            =   8775
-      ScaleHeight     =   4200
+      ScaleHeight     =   3990
       ScaleWidth      =   2730
       TabIndex        =   1
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   2730
       Begin VB.CommandButton exitbutton 
@@ -2470,7 +2470,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "1:31 PM"
+            TextSave        =   "3:57 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2483,7 +2483,6 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
-            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -2848,7 +2847,6 @@ Public Sub openFile(ByVal fName As String)
         Case "GPH", "TST", "ISO"
             Set frm = New tileedit
             Call frm.Show
-            frm.tag = 1
             Set activeTile = frm
             Call activeTile.openFile(fName)
 
@@ -3231,7 +3229,7 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
     Exit Sub
 End Sub
 
-Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '===========================================================
 'MouseDown event on the flyout tileset viewer.
 '===========================================================
@@ -3255,14 +3253,14 @@ Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, X 
     If iMetric = 0 Then
         'Not isometric.
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tileX = Int(X / 32)                                                        'x-tile clicked.
+        tileX = Int(x / 32)                                                        'x-tile clicked.
     Else
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(X / 64)
+        tileX = Int(x / 64)
     End If
     
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
-    tileY = Int(Y / 32)
+    tileY = Int(y / 32)
     
     'Alterations for the scroller. Now scrolls row by row.
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
@@ -3447,7 +3445,7 @@ Private Sub mnuShowSplashScreen_Click()
     End If
 End Sub
 
-Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -3532,20 +3530,6 @@ Private Sub ReadCommandLine_Timer()
             End If
         End With
     End If
-
-End Sub
-
-Private Sub theBardTimer_Timer()
-
-    '========================================================================
-    'See if the Bard still belongs to TKMainForm
-    '========================================================================
-
-    'If theBard.State = Visible Then
-    '    If Not GetParent(theBard.hwnd) = Me.hwnd Then
-    '        SetParent theBard.hwnd, Me.hwnd
-    '    End If
-    'End If
 
 End Sub
 
@@ -3875,8 +3859,8 @@ Private Sub Option5_Click(): On Error Resume Next
     Call activeAnimation.Option5_Click
 End Sub
 
-Private Sub palettebox_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeTile.palettebox_MouseDown(button, Shift, X, Y)
+Private Sub palettebox_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeTile.palettebox_MouseDown(button, Shift, x, y)
 End Sub
 
 Private Sub pausebar_Change(): On Error Resume Next
@@ -3971,7 +3955,7 @@ Private Sub rightbar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub rightbar_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rightbar_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
     'ignoreFocus = False
     'rightbar.SetFocus
     'If rightbar.width = 2730 Then
@@ -4245,8 +4229,8 @@ Private Sub tileTool_Click(Index As Integer): On Error Resume Next
     Call activeTile.ToolSet(Index)
 End Sub
 
-Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeBoard.ChangeTileType(button, Shift, X, Y)
+Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeBoard.ChangeTileType(button, Shift, x, y)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -4257,7 +4241,7 @@ Public Sub toggle_Click(): On Error Resume Next
     Call activeBoard.toggleTileType
 End Sub
 
-Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -4277,7 +4261,7 @@ Private Sub TreeView1_DblClick(): On Error Resume Next
     ignoreFocus = False
 End Sub
 
-Private Sub TreeView1_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TreeView1_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
     ignoreFocus = True
 End Sub
 

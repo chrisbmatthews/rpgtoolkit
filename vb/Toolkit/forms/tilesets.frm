@@ -120,7 +120,7 @@ Sub drawTstGrid(Optional ByVal autoRefresh As Boolean = False)
 '=============================================================
     On Error GoTo ErrorHandler
     
-    Dim X As Integer, Y As Integer, tilesWide As Integer, tilesHigh As Integer
+    Dim x As Integer, y As Integer, tilesWide As Integer, tilesHigh As Integer
     
     If drawGridCheck.value = 0 Then Exit Sub
     
@@ -132,20 +132,20 @@ Sub drawTstGrid(Optional ByVal autoRefresh As Boolean = False)
     'Draw vertical lines.
     If iso.value = 0 Then
         'Not isometric
-        For X = 0 To tilesWide * 32 Step 32
-            Call vbPicLine(tiles, X, 0, X, tilesHigh * 32, vbQBColor(1))
-        Next X
+        For x = 0 To tilesWide * 32 Step 32
+            Call vbPicLine(tiles, x, 0, x, tilesHigh * 32, vbQBColor(1))
+        Next x
     Else
-        For X = 0 To tilesWide * 32 Step 64
-            Call vbPicLine(tiles, X, 0, X, tilesHigh * 32, vbQBColor(1))
-        Next X
+        For x = 0 To tilesWide * 32 Step 64
+            Call vbPicLine(tiles, x, 0, x, tilesHigh * 32, vbQBColor(1))
+        Next x
         
     End If
     
     'Draw horizontal lines.
-    For Y = 0 To (tilesHigh + 1) * 32 Step 32
-        Call vbPicLine(tiles, 0, Y, tilesWide * 32, Y, vbQBColor(1))
-    Next Y
+    For y = 0 To (tilesHigh + 1) * 32 Step 32
+        Call vbPicLine(tiles, 0, y, tilesWide * 32, y, vbQBColor(1))
+    Next y
     
     If autoRefresh Then Call vbPicRefresh(tiles)
     
@@ -226,7 +226,7 @@ Private Sub Form_Load()
 
     On Error GoTo ErrorHandler
     
-    Dim X As Integer, Y As Integer, setType As Integer
+    Dim x As Integer, y As Integer, setType As Integer
     
     Call LocalizeForm(Me)
     
@@ -234,11 +234,11 @@ Private Sub Form_Load()
     If tstnum = 0 Then tstnum = 1
     
     'Put the current tilemem into the buffer.
-    For X = 1 To 32
-        For Y = 1 To 32
-            bufTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    'For x = 1 To 32
+    '    For y = 1 To 32
+    '        bufTile(x, y) = tileMem(x, y)
+    '    Next y
+    'Next x
     
     'Get the type and header of the selected set.
     setType = tilesetInfo(projectPath$ + tilePath$ + tstFile$)
@@ -366,13 +366,12 @@ Private Sub Form_Unload(Cancel As Integer)
 'Added clear code.
     On Error GoTo ErrorHandler
     
-    Dim X As Byte, Y As Byte
-    
-    For X = 1 To 32
-        For Y = 1 To 32
-            tileMem(X, Y) = bufTile(X, Y)
-        Next Y
-    Next X
+    'Dim x As Byte, y As Byte
+    'For x = 1 To 32
+    '    For y = 1 To 32
+    '        tileMem(x, y) = bufTile(x, y)
+    '    Next y
+    'Next x
 
     'Clear the picture box - moved from redraw.
     Call vbPicAutoRedraw(tiles, False)
@@ -409,7 +408,7 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub tiles_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub tiles_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
 '=========================================================
 'Mouse down on the tile area. Sets the global SetFilename$
 'which is used for opening tiles in the tile editor.
@@ -433,11 +432,11 @@ Private Sub tiles_MouseDown(button As Integer, Shift As Integer, X As Single, Y 
     'tileset.
     
     If iso.value = 0 Then
-        xx = Int(X / 32)
+        xx = Int(x / 32)
     Else
-        xx = Int(X / 64)
+        xx = Int(x / 64)
     End If
-    yy = Int(Y / 32)
+    yy = Int(y / 32)
     
     num = yy * tX + xx
     num = num + tilesetBrowserScroll.value * tX + 1

@@ -509,13 +509,13 @@ tabErr:
                 If detail = 1 Or detail = 3 Or detail = 5 Then
                     For x = 1 To 32
                         For y = 1 To 32
-                            tileMem(x, y) = fread(num) 'Pixel by pixel
+                            openTileEditorDocs(activeTile.indice).tileMem(x, y) = fread(num) 'Pixel by pixel
                         Next y
                     Next x
                 ElseIf detail = 2 Or detail = 4 Or detail = 6 Then
                     For x = 1 To 16
                         For y = 1 To 16
-                            tileMem(x, y) = fread(num)
+                            openTileEditorDocs(activeTile.indice).tileMem(x, y) = fread(num)
                         Next y
                     Next x
                 End If
@@ -532,7 +532,7 @@ tabErr:
                         Input #num, times
                         Input #num, colorTime
                         For loopIt = 1 To times
-                            tileMem(xx, yy) = colorTime
+                            openTileEditorDocs(activeTile.indice).tileMem(xx, yy) = colorTime
                             yy = yy + 1
                             If yy > 32 Then yy = 1: xx = xx + 1
                         Next loopIt
@@ -544,7 +544,7 @@ tabErr:
                         Input #num, times
                         Input #num, colorTime
                         For loopIt = 1 To times
-                            tileMem(xx, yy) = colorTime
+                            openTileEditorDocs(activeTile.indice).tileMem(xx, yy) = colorTime
                             yy = yy + 1
                             If yy > 16 Then yy = 1: xx = xx + 1
                         Next loopIt
@@ -578,7 +578,7 @@ Version1Tile:
                         Dim theValue As Long
                         theValue = Asc(part)
                         theValue = theValue - 33
-                        tileMem(xx, yy) = GFXGetDOSColor(theValue)
+                        openTileEditorDocs(activeTile.indice).tileMem(xx, yy) = GFXGetDOSColor(theValue)
                     Next xx
             Next yy
         Close num
