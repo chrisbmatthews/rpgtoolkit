@@ -520,7 +520,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
 error:
 
-    ' Start a position 0
+    ' Start at position 0
     classIdx = -1
 
 End Sub
