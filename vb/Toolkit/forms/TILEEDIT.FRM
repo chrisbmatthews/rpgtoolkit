@@ -1780,18 +1780,12 @@ Public Sub opentile_Click(): On Error Resume Next
     Call ChDir(currentDir)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath & tilePath
-    
-    If UCase(whichType) = "ISO" Then
-        'Set the mode to isometric.
-        tkMainForm.tileIsoCheck.value = 1
-    Else
-        tkMainForm.tileIsoCheck.value = 0
-    End If
 
     dlg.strTitle = "Open Tile"
     dlg.strDefaultExt = "tst"
     dlg.strFileTypes = "Supported Files|*.gph;*.tst;*.iso|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Tile (*.gph)|*.gph|RPG Toolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
     
+    Dim antiPath As String
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename(1) = dlg.strSelectedFile
         antiPath = dlg.strSelectedFileNoPath
@@ -1804,7 +1798,15 @@ Public Sub opentile_Click(): On Error Resume Next
 
     If filename(1) = "" Then Exit Sub
     Call FileCopy(filename(1), projectPath & tilePath & antiPath)
+    Dim whichType As String
     whichType = GetExt(filename(1))
+
+    If UCase(whichType) = "ISO" Then
+        'Set the mode to isometric.
+        tkMainForm.tileIsoCheck.value = 1
+    Else
+        tkMainForm.tileIsoCheck.value = 0
+    End If
 
     If UCase(whichType) = "TST" Or UCase(whichType) = "ISO" Then      'Yipes! we've selected an archive!
         tstnum = 0
@@ -1812,8 +1814,7 @@ Public Sub opentile_Click(): On Error Resume Next
         lastTileset = tstFile
         
         ignoreDeactivate = True
-        tilesetform.Show vbModal ', me
-        'MsgBox setFilename$
+        Call tilesetform.Show(vbModal)
         If setFilename$ <> "" Then
         
             Call openFromTileSet(projectPath$ + tilePath$ + tilesetFilename(setFilename$), getTileNum(setFilename$))
@@ -1823,8 +1824,6 @@ Public Sub opentile_Click(): On Error Resume Next
                 Call increaseDetail
             End If
             Call color_16million
-            
-<<<<<<< TILEEDIT.FRM
             Call highredraw
             publicTile.tileName = setFilename
             Caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
@@ -2010,7 +2009,8 @@ Private Sub savetile2_Click(): On Error Resume Next
         
         
         If a = TSTTYPE Or a = ISOTYPE Then
-            aa = addToTileSet(filename$(1))
+            Dim aa As Long
+            aa = addToTileSet(filename(1))
             If aa > 0 Then
                 'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
                 MsgBox ("Your tile has been added to the tileset: tile number " & aa & " in " & chr$(13) & filename(1) & ".")
@@ -2032,6 +2032,7 @@ Private Sub savetile2_Click(): On Error Resume Next
     
         '.gph
         If fileExists(filename(1)) Then
+            Dim bb As VbMsgBoxResult
             bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
             If bb = vbNo Then Exit Sub
         End If
@@ -2066,6 +2067,7 @@ Private Sub mnusts_Click(): On Error Resume Next
     
     If SaveFileDialog(dlg, Me.hwnd) Then
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub    'user pressed cancel
@@ -2082,6 +2084,7 @@ Private Sub mnusts_Click(): On Error Resume Next
     
     tstnum = 0
     'Altered to handle isometric.
+    Dim a As Long
     a = tilesetInfo(filename$(1))
     
     If a = TSTTYPE Or a = ISOTYPE Then
@@ -2098,19 +2101,22 @@ Private Sub mnusts_Click(): On Error Resume Next
         
         If setFilename$ = "" Then Exit Sub
 
-        tnum = getTileNum(setFilename$)     'Extract the number from the end of the set.
+        Dim tNum As Long
+        tNum = getTileNum(setFilename$)     'Extract the number from the end of the set.
         
-        If tnum > tileset.tilesInSet Then
+        If tNum > tileset.tilesInSet Then
             'If the selected tile is greater than the last tile number, add to end.
         
+            Dim aa As Long
             aa = addToTileSet(filename$(1))
             'MsgBox "Your tile has been added to the tileset", , "Save into tileset"
-            publicTile.tileName = antiPath$ + toString(tnum)
+            publicTile.tileName = antiPath$ + toString(tNum)
             Caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.tileName$ + ")"
             
         Else
             'Insert at the position indicated - overwrite the tile at that position!
             
+            Dim result As VbMsgBoxResult
             result = MsgBox("Warning! This will overwrite the tile at that position!", vbOKCancel)
             If result = vbCancel Then Exit Sub
             publicTile.tileName$ = setFilename$
@@ -2221,7 +2227,7 @@ End Sub
 
 'Rotate 180
 Private Sub mnuRotate180_Click()
-    Rotate OneHunderdEighty
+    Rotate OneHundredEighty
 End Sub
 
 'Flip Horizontal

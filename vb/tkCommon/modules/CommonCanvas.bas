@@ -137,16 +137,6 @@ Function Canvas2CanvasBltTranslucent(ByVal canvasSource As Long, ByVal canvasDes
     End If
 End Function
 
-Sub CanvasFloodFill(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long)
-    'flood fill the canvas starting from x,y, with crColor
-    If CanvasOccupied(canvasID) Then
-        Dim hdc As Long, a As Long
-        hdc = CanvasOpenHDC(canvasID)
-        a = ExtFloodFill(hdc, X, Y, crColor, FLOODFILLSURFACE)
-        Call CanvasCloseHDC(canvasID, hdc)
-    End If
-End Sub
-
 Sub CanvasSetPicture(ByVal canvasID As Long, picclp As PictureClip)
     'set the pixxlp picture into the canvas...
     On Error Resume Next
