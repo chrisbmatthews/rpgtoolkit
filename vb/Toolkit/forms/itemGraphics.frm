@@ -22,10 +22,10 @@ Begin VB.Form itemGraphics
       TabIndex        =   4
       Top             =   0
       Width           =   5175
-      _extentx        =   9128
-      _extenty        =   847
-      Object.width           =   5175
-      caption         =   "Item Sprite List"
+      _ExtentX        =   9128
+      _ExtentY        =   847
+      Object.Width           =   5175
+      Caption         =   "Item Sprite List"
    End
    Begin Toolkit.TKButton butOK 
       Height          =   375
@@ -33,10 +33,10 @@ Begin VB.Form itemGraphics
       TabIndex        =   3
       Top             =   720
       Width           =   735
-      _extentx        =   661
-      _extenty        =   661
-      Object.width           =   360
-      caption         =   "OK"
+      _ExtentX        =   661
+      _ExtentY        =   661
+      Object.Width           =   360
+      Caption         =   "OK"
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
@@ -80,10 +80,10 @@ Begin VB.Form itemGraphics
          TabIndex        =   10
          Top             =   3480
          Width           =   1095
-         _extentx        =   661
-         _extenty        =   661
-         Object.width           =   360
-         caption         =   "Delete"
+         _ExtentX        =   661
+         _ExtentY        =   661
+         Object.Width           =   360
+         Caption         =   "Delete"
       End
       Begin Toolkit.TKButton butNew 
          Height          =   375
@@ -91,10 +91,10 @@ Begin VB.Form itemGraphics
          TabIndex        =   9
          Top             =   3480
          Width           =   1215
-         _extentx        =   661
-         _extenty        =   661
-         Object.width           =   360
-         caption         =   "New"
+         _ExtentX        =   661
+         _ExtentY        =   661
+         Object.Width           =   360
+         Caption         =   "New"
       End
       Begin VB.ListBox lstCustom 
          Appearance      =   0  'Flat
@@ -354,7 +354,7 @@ Private Sub butDelete_click(): On Error Resume Next
     
     'See which animation the player wants to delete
     Dim dx As Long
-    dx = playerGetCustomHandleIdx(itemList(activeItemIndex).theData, lstCustom.ListIndex - UBound(itemList(activeItemIndex).theData.gfx))
+    dx = itemGetCustomHandleIdx(itemList(activeItemIndex).theData, lstCustom.ListIndex - UBound(itemList(activeItemIndex).theData.gfx))
     
     'Delete it
     itemList(activeItemIndex).theData.customGfx(dx) = ""
@@ -380,7 +380,7 @@ Private Sub butNew_click(): On Error Resume Next
     If (newName <> "") Then
     
         'Add it to the main data
-        Call playerAddCustomGfx(itemList(activeItemIndex).theData, newName$, "")
+        Call itemAddCustomGfx(itemList(activeItemIndex).theData, newName$, "")
         
         'Update
         Call fillInfo
@@ -461,7 +461,7 @@ Private Sub lstCustom_Click(): On Error Resume Next
 
     'Update the textbox
     Dim dx As Integer
-    dx = playerGetCustomHandleIdx(itemList(activeItemIndex).theData, lstCustom.ListIndex)
+    dx = itemGetCustomHandleIdx(itemList(activeItemIndex).theData, lstCustom.ListIndex)
     txtAnim.Text = itemList(activeItemIndex).theData.customGfx(dx)
     
     'Update the animation
@@ -593,7 +593,7 @@ Private Sub picBrowse_Click(): On Error Resume Next
         Else
             
             'A custom animation!
-            dx = playerGetCustomHandleIdx(itemList(activeItemIndex).theData, lstCustom.ListIndex - UBound(.gfx))
+            dx = itemGetCustomHandleIdx(itemList(activeItemIndex).theData, lstCustom.ListIndex - UBound(.gfx))
             .customGfx(dx) = noPath
             
         End If
