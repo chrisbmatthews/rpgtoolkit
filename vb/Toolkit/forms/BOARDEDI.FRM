@@ -1503,14 +1503,14 @@ Public Sub DrawBackground()
         ' if board has a background image
         If LenB(.brdBack) <> 0 Then
         
-            If .brdBackCNV = 0 Then
+            If .brdBackCnv = 0 Then
                 'Not yet opened, or we changed backgrounds.
-                .brdBackCNV = createCanvas(1, 1)
-                Call canvasLoadFullPicture(.brdBackCNV, projectPath & bmpPath & .brdBack, -1, -1)
+                .brdBackCnv = createCanvas(1, 1)
+                Call canvasLoadFullPicture(.brdBackCnv, projectPath & bmpPath & .brdBack, -1, -1)
             End If
             
             ' Blt the image from the canvas, if it's open. Much quicker!
-            If .brdBackCNV <> 0 Then Call canvasBlt(.brdBackCNV, x, y, vbPicHDC(boardform))
+            If .brdBackCnv <> 0 Then Call canvasBlt(.brdBackCnv, x, y, vbPicHDC(boardform))
             
         End If
         
@@ -2944,8 +2944,8 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     Set Scroll = Nothing
     
     'Destroy the background image canvas.
-    If boardList(activeBoardIndex).theData.brdBackCNV <> 0 Then
-        Call destroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
+    If boardList(activeBoardIndex).theData.brdBackCnv <> 0 Then
+        Call destroyCanvas(boardList(activeBoardIndex).theData.brdBackCnv)
     End If
     
     Call tkMainForm.refreshTabs
@@ -3203,7 +3203,7 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
     '    tY = tY * 2 + 1
     'End If
     
-    Call GFXdrawboard(vbPicHDC(boardform), -1, layer, _
+    Call GFXdrawboard(VarPtr(boardList(activeBoardIndex).theData), vbPicHDC(boardform), -1, layer, _
                     boardList(activeBoardIndex).topX, boardList(activeBoardIndex).topY, _
                     tX, tY, _
                     boardList(activeBoardIndex).theData.bSizeX, _
