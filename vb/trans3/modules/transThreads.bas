@@ -422,14 +422,8 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
         'Flag we've reached the end
         .end = True
 
-        'If the loop is over
-        If (.Over) Then
-            .prg.looping = False
-            Exit Sub
-        End If
-
-        'If we should force its end
-        If (force) Then
+        'If the loop is over or we should force its end
+        If (.Over) Or (force) Then
             .prg.looping = False
             Exit Sub
         End If
