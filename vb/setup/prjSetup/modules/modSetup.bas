@@ -36,7 +36,7 @@ Private Declare Function lClose Lib "kernel32" Alias "_lclose" (ByVal hFile As L
 Private Const REG_SZ = 1                        ' Registry string
 Private Const HKEY_LOCAL_MACHINE = &H80000002   ' Local machine registry section
 Private Const OF_SHARE_EXCLUSIVE = &H10         ' Exclusive access
-Private Const ZIP_CRC As Long = 65000474        ' CRC checksum ran on the ZIP
+Private Const ZIP_CRC As Long = -1861063040     ' CRC checksum ran on the ZIP
 Public Const RPGTOOLKIT_VERSION = "3.0.6"       ' Version of the toolkit
 
 '=========================================================================
@@ -159,16 +159,22 @@ End Function
 '=========================================================================
 Private Function isFileOpen(ByRef strFileName As String) As Boolean
 
-    On Error GoTo error
+    On Error Resume Next
 
     ' Directories cannot be opened
     If (RightB$(strFileName, 2) = "\") Then Exit Function
 
-    ' Try to open the file for writing
-    Dim ff As Integer
-    ff = FreeFile()
-    Open strFileName For Binary Access Write As ff
-    Close ff
+    If (LenB(Dir(strFileName))) Then
+
+        On Error GoTo error
+
+        ' Try to open the file for writing
+        Dim ff As Integer
+        ff = FreeFile()
+        Open strFileName For Binary Access Write As ff
+        Close ff
+
+    End If
 
     Exit Function
 
