@@ -510,7 +510,7 @@ Public Sub gameSpeed(ByVal speed As Integer)
         Case 1: walkDelay = 0.06
         Case 2: walkDelay = 0.03
         Case 3: walkDelay = 0.01
-        Case 4: walkDelay = 0.005
+        Case 4: walkDelay = 0
     End Select
 End Sub
 
