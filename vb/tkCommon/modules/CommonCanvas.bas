@@ -359,7 +359,7 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
                            w, h, _
                            SRCPAINT)
         Call canvasCloseHDC(cnvSource, hdcSource)
-
+ 
         Call canvasCloseHDC(cnvInt, hdcInt)
 
         ' Blt the intermediate canvas to the target canvas
@@ -857,15 +857,6 @@ Public Sub initCanvasEngine()
 
     ' Create an hdc for the canvases to be based upon
     m_canvasHost = CNVCreateCanvasHost(App.hInstance)
-
-    ' Check if we were successful
-    If (canvasHost = 0) Then
-        Call MsgBox("Failed to initiate the canvas engine! " & _
-                    "Make sure you are using the latest actkrt3.dll file! " & _
-                    "(September 8th, 2004)")
-        ' We can't proceed without the canvasHost, so just end
-        End
-    End If
 
     ' Init the canvas engine
     Call CNVInit
