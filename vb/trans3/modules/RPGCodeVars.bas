@@ -40,6 +40,7 @@ Public Declare Function RPGCKillNum Lib "actkrt3.dll" (ByVal varname As String, 
 Public Declare Function RPGCKillLit Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCNumExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCLitExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCEvaluate Lib "actkrt3.dll" (ByVal equation As String) As Double
 
 '=========================================================================
 ' Declarations for the actkrt3.dll redirection exports

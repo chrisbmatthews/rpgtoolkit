@@ -209,7 +209,7 @@ Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional B
     signs(15) = "^"
     signs(16) = "\"
     If comparison Then
-        ReDim Preserve signs(18)
+        ReDim Preserve signs(19)
         signs(17) = "<"
         signs(18) = ">"
         signs(19) = "~"
@@ -587,7 +587,7 @@ End Function
 ' Count the number of bracket elements in text
 '=========================================================================
 Public Function CountData(ByVal Text As String) As Long
-       
+
     On Error Resume Next
 
     'If there is no text, there are no elements
@@ -607,7 +607,7 @@ Public Function CountData(ByVal Text As String) As Long
 
     'Number of data elements will be one higher than the upper bound
     CountData = UBound(s) + 1
-    
+
 End Function
 
 '=========================================================================
@@ -970,7 +970,7 @@ Public Function ParseRPGCodeCommand( _
                                 Case "(": If Not ignore Then depth = depth - 1
                                 Case ")": If Not ignore Then depth = depth + 1
 
-                                Case " ", ",", "#", "=", "<", ">", "+", "-", ";"
+                                Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^"
 
                                     If (depth = 0) And (Not ignore) Then
                                         'We've found a space. This means that the name of the

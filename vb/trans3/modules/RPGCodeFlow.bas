@@ -438,7 +438,6 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
         'coordinates and backup the old ones
         ReDim tempitems(MAXITEM) As PLAYER_POSITION
         For t = 0 To MAXITEM
-            tempitems(t) = itmPos(t)
             tempitems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
         Next t
     End If
