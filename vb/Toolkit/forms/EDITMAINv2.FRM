@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.Form editmainfile 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Project Properties (Untitled)"
@@ -53,6 +53,7 @@ Begin VB.Form editmainfile
       _Version        =   393216
       Style           =   1
       Tabs            =   7
+      Tab             =   3
       TabsPerRow      =   7
       TabHeight       =   520
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -66,19 +67,15 @@ Begin VB.Form editmainfile
       EndProperty
       TabCaption(0)   =   "Project Settings"
       TabPicture(0)   =   "EDITMAINv2.frx":0CCA
-      Tab(0).ControlEnabled=   -1  'True
-      Tab(0).Control(0)=   "envframe"
-      Tab(0).Control(0).Enabled=   0   'False
-      Tab(0).Control(1)=   "prjframe"
-      Tab(0).Control(1).Enabled=   0   'False
+      Tab(0).ControlEnabled=   0   'False
+      Tab(0).Control(0)=   "prjframe"
+      Tab(0).Control(1)=   "envframe"
       Tab(0).ControlCount=   2
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "startframe"
-      Tab(1).Control(0).Enabled=   0   'False
-      Tab(1).Control(1)=   "fraSettings"
-      Tab(1).Control(1).Enabled=   0   'False
+      Tab(1).Control(0)=   "fraSettings"
+      Tab(1).Control(1)=   "startframe"
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
@@ -88,14 +85,14 @@ Begin VB.Form editmainfile
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
-      Tab(3).ControlEnabled=   0   'False
+      Tab(3).ControlEnabled=   -1  'True
       Tab(3).Control(0)=   "fightframe"
+      Tab(3).Control(0).Enabled=   0   'False
       Tab(3).ControlCount=   1
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
       Tab(4).ControlEnabled=   0   'False
       Tab(4).Control(0)=   "screenframe"
-      Tab(4).Control(0).Enabled=   0   'False
       Tab(4).ControlCount=   1
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
@@ -271,7 +268,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1335
-         Left            =   -74760
+         Left            =   240
          TabIndex        =   74
          Tag             =   "1186"
          Top             =   600
@@ -1503,7 +1500,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1695
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   12
          Tag             =   "1182"
          Top             =   600
@@ -1624,7 +1621,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1815
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   2
          Top             =   2520
          Width           =   6495
@@ -2548,7 +2545,7 @@ End Sub
 '=========================================================================
 Private Sub infofill()
     On Error Resume Next
-    optDisableFighting.value = True
+    optEnableFighting.value = True
     If mainMem.startupPrg$ <> "" Then
         startupbox.Text = mainMem.startupPrg$          'start up program
     Else
@@ -2595,7 +2592,7 @@ Private Sub infofill()
         initcharbox.Text = LoadStringLoc(1010, "None")
     End If
 
-    optEnableFighting.value = mainMem.fightgameYN             'fighting in game? 0-yes, 1-no
+    optDisableFighting.value = mainMem.fightgameYN             'fighting in game? 0-yes, 1-no
    
     gametitlebox.Text = mainMem.gameTitle$
     gametitlebox2.Text = mainMem.gameTitle$
@@ -2842,7 +2839,7 @@ End Sub
 '=========================================================================
 ' Disable fighting
 '=========================================================================
-Private Sub optDisableFighting_Click(): On Error Resume Next
+Private Sub optEnableFighting_Click(): On Error Resume Next
     mainNeedUpdate = True
     mainMem.fightgameYN = 0
     cmdEditFighting.Enabled = True
@@ -2851,7 +2848,7 @@ End Sub
 '=========================================================================
 ' Enable fighting
 '=========================================================================
-Private Sub optEnableFighting_Click(): On Error Resume Next
+Private Sub optDisableFighting_Click(): On Error Resume Next
     mainNeedUpdate = True
     mainMem.fightgameYN = 1
     cmdEditFighting.Enabled = False
