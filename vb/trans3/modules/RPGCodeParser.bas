@@ -12,25 +12,19 @@ Attribute VB_Name = "RPGCodeParser"
 Option Explicit
 
 '=========================================================================
-' Member declarations
+' Public declarations
 '=========================================================================
-Private Declare Sub RPGCInitParser Lib "actkrt3.dll" (ByVal stringFunction As Long)
-Private Declare Sub RPGCGetMethodName Lib "actkrt3.dll" (ByVal text As Long)
-Private Declare Sub RPGCParseAfter Lib "actkrt3.dll" (ByVal text As Long, ByVal startSymbol As Long)
-Private Declare Sub RPGCParseBefore Lib "actkrt3.dll" (ByVal text As Long, ByVal endSymbol As Long)
-Private Declare Sub RPGCGetVarList Lib "actkrt3.dll" (ByVal text As Long, ByVal number As Long)
-Private Declare Sub RPGCParseWithin Lib "actkrt3.dll" (ByVal text As Long, ByVal startSymbol As Long, ByVal endSymbol As Long)
-Private Declare Sub RPGCGetElement Lib "actkrt3.dll" (ByVal text As Long, ByVal elemNum As Long)
-Private Declare Sub RPGCReplaceOutsideQuotes Lib "actkrt3.dll" (ByVal text As Long, ByVal find As Long, ByVal replace As Long)
-Private Declare Sub RPGCGetBrackets Lib "actkrt3.dll" (ByVal text As Long)
-Private Declare Sub RPGCGetCommandName Lib "actkrt3.dll" (ByVal text As Long)
-Private Declare Function RPGCInStrOutsideQuotes Lib "actkrt3.dll" (ByVal startAt As Long, ByVal theString As Long, ByVal theSubString As Long) As Long
-Private Declare Function RPGCValueNumber Lib "actkrt3.dll" (ByVal theString As Long) As Long
-
-'=========================================================================
-' Member variables
-'=========================================================================
-Private m_lastStr As String     'string returned from parsing functions
+Public Declare Function GetMethodName Lib "actkrt3.dll" Alias "RPGCGetMethodName" (ByVal Text As String) As String
+Public Declare Function GetBrackets Lib "actkrt3.dll" Alias "RPGCGetBrackets" (ByVal Text As String) As String
+Public Declare Function ParseAfter Lib "actkrt3.dll" Alias "RPGCParseAfter" (ByVal Text As String, ByVal startSymbol As String) As String
+Public Declare Function ParseBefore Lib "actkrt3.dll" Alias "RPGCParseBefore" (ByVal Text As String, ByVal endSymbol As String) As String
+Public Declare Function GetVarList Lib "actkrt3.dll" Alias "RPGCGetVarList" (ByVal Text As String, ByVal number As Long) As String
+Public Declare Function ParseWithin Lib "actkrt3.dll" Alias "RPGCParseWithin" (ByVal Text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
+Public Declare Function GetElement Lib "actkrt3.dll" Alias "RPGCGetElement" (ByVal Text As String, ByVal elemNum As String) As String
+Public Declare Function ReplaceOutsideQuotes Lib "actkrt3.dll" Alias "RPGCReplaceOutsideQuotes" (ByVal Text As String, ByVal find As String, ByVal replace As String) As String
+Public Declare Function GetCommandName Lib "actkrt3.dll" Alias "RPGCGetCommandName" (ByVal Text As String) As String
+Public Declare Function InStrOutsideQuotes Lib "actkrt3.dll" Alias "RPGCInStrOutsideQuotes" (ByVal startAt As Long, ByVal theString As String, ByVal theSubString As String) As Long
+Public Declare Function ValueNumber Lib "actkrt3.dll" Alias "RPGCValueNumber" (ByVal theString As String) As Long
 
 '=========================================================================
 ' Integral strcutures
@@ -41,107 +35,6 @@ Public Type parameters          'rpgcode parmater structure
     dat As String               '  un-altered data
     dataType As RPGC_DT         '  type returned (lit or num)
 End Type
-
-'=========================================================================
-' Initiate the parser
-'=========================================================================
-Public Sub initRPGCodeParser()
-    Call RPGCInitParser(AddressOf setLastParseString)
-End Sub
-
-'=========================================================================
-' Allows actkrt3.dll to set the current string
-'=========================================================================
-Private Sub setLastParseString(ByVal theString As String)
-    'Set the string
-    m_lastStr = theString
-End Sub
-
-'=========================================================================
-' Returns the name of the method from a method delcaration
-'=========================================================================
-Public Function GetMethodName(ByVal text As String) As String
-    Call RPGCGetMethodName(StrPtr(text))
-    GetMethodName = m_lastStr
-End Function
-
-'=========================================================================
-' Return content in text after startSymbol is located
-'=========================================================================
-Public Function ParseAfter(ByVal text As String, ByVal startSymbol As String) As String
-    Call RPGCParseAfter(StrPtr(text), StrPtr(startSymbol))
-    ParseAfter = m_lastStr
-End Function
-
-'=========================================================================
-' Return content from text until startSymbol is located
-'=========================================================================
-Public Function ParseBefore(ByVal text As String, ByVal endSymbol As String) As String
-    Call RPGCParseBefore(StrPtr(text), StrPtr(endSymbol))
-    ParseBefore = m_lastStr
-End Function
-
-'=========================================================================
-' Get the variable at number in an equation
-'=========================================================================
-Public Function GetVarList(ByVal text As String, ByVal number As Long) As String
-    Call RPGCGetVarList(StrPtr(text), number)
-    GetVarList = m_lastStr
-End Function
-
-'=========================================================================
-' Return the content in text between the start and end symbols
-'=========================================================================
-Public Function ParseWithin(ByVal text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
-    Call RPGCParseWithin(StrPtr(text), StrPtr(startSymbol), StrPtr(endSymbol))
-    ParseWithin = m_lastStr
-End Function
-
-'=========================================================================
-' Count the number of values in an equation
-'=========================================================================
-Public Function ValueNumber(ByVal text As String) As Long
-    ValueNumber = RPGCValueNumber(StrPtr(text))
-End Function
-
-'=========================================================================
-' Get the bracket element at eleeNum
-'=========================================================================
-Public Function GetElement(ByVal text As String, ByVal eleeNum As Long) As String
-    Call RPGCGetElement(StrPtr(text), eleeNum)
-    GetElement = m_lastStr
-End Function
-
-'=========================================================================
-' Retrieve the text inside the brackets
-'=========================================================================
-Public Function GetBrackets(ByVal text As String) As String
-    Call RPGCGetBrackets(StrPtr(text))
-    GetBrackets = m_lastStr
-End Function
-
-'=========================================================================
-' Get the command name in the text passed in
-'=========================================================================
-Public Function GetCommandName(ByVal splice As String) As String
-    Call RPGCGetCommandName(StrPtr(splice))
-    GetCommandName = m_lastStr
-End Function
-
-'=========================================================================
-' Replace not within quotes
-'=========================================================================
-Public Function replaceOutsideQuotes(ByVal text As String, ByVal find As String, ByVal replace As String) As String
-    Call RPGCReplaceOutsideQuotes(StrPtr(text), StrPtr(find), StrPtr(replace))
-    replaceOutsideQuotes = m_lastStr
-End Function
-
-'=========================================================================
-' InStr outside quotes
-'=========================================================================
-Public Function inStrOutsideQuotes(ByVal start As Long, ByVal text As String, ByVal find As String) As Long
-    inStrOutsideQuotes = RPGCInStrOutsideQuotes(start, StrPtr(text), StrPtr(find))
-End Function
 
 '=========================================================================
 ' Return the lowest of a list of values
@@ -165,7 +58,7 @@ End Function
 '=========================================================================
 ' Returns the math function at pos num, optionally including comparsion
 '=========================================================================
-Public Function MathFunction(ByVal text As String, ByVal num As Long, Optional ByVal comparison As Boolean) As String
+Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional ByVal comparison As Boolean) As String
 
     On Error Resume Next
 
@@ -204,7 +97,7 @@ Public Function MathFunction(ByVal text As String, ByVal num As Long, Optional B
     start = 1
     For a = 1 To num
         For S = 0 To UBound(signs)
-            p(S) = inStrOutsideQuotes(start, text, signs(S))
+            p(S) = InStrOutsideQuotes(start, Text, signs(S))
         Next S
         start = lowest(p, whichSpot) + 1
         If a <> num Then
@@ -219,18 +112,18 @@ End Function
 '=========================================================================
 ' Evaluates if the text passed in is true (1) or false (0)
 '=========================================================================
-Public Function evaluate(ByVal text As String, ByRef theProgram As RPGCodeProgram) As Long
+Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
 
     On Error GoTo errorhandler
 
     Dim use As String, Length As Long, val1 As String, val2 As String, part As String, p As Long
     Dim eqtype As String, startAt As Long, equ As String, val1type As Long, val2type As Long, var1type As Long, var2type As Long
 
-    text = "Eval( " & text & " )"
-    text = ParseRPGCodeCommand(text, theProgram)
-    text = Trim(Mid(text, 7, Len(text) - 8))
+    Text = "Eval( " & Text & " )"
+    Text = ParseRPGCodeCommand(Text, theProgram)
+    Text = Trim(Mid(Text, 7, Len(Text) - 8))
    
-    use$ = text$
+    use$ = Text$
     Length = Len(use$)
     val1$ = ""
        
@@ -394,15 +287,15 @@ End Function
 '=========================================================================
 ' Count the number of bracket elements in text
 '=========================================================================
-Public Function CountData(ByVal text As String) As Long
+Public Function CountData(ByVal Text As String) As Long
 
     On Error Resume Next
 
     'If there is no text, there are no elements
-    If (Not (InStr(1, text, "("))) Then
-        If (Trim(text) = "") Then Exit Function
+    If (Not (InStr(1, Text, "("))) Then
+        If (Trim(Text) = "") Then Exit Function
     Else
-        If (Trim(GetBrackets(text)) = "") Then Exit Function
+        If (Trim(GetBrackets(Text)) = "") Then Exit Function
     End If
 
     'Setup delimiter array
@@ -413,7 +306,7 @@ Public Function CountData(ByVal text As String) As Long
     'Split at the delimiters
     Dim S() As String
     Dim uD() As String
-    S() = multiSplit(text, c, uD, True)
+    S() = multiSplit(Text, c, uD, True)
 
     'Number of data elements will be one higher than the upper bound
     CountData = UBound(S) + 1
@@ -423,7 +316,7 @@ End Function
 '=========================================================================
 ' Retrieve the parameters from the command passed in
 '=========================================================================
-Public Function GetParameters(ByVal text As String, ByRef theProgram As RPGCodeProgram) As parameters()
+Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As parameters()
 
     On Error Resume Next
 
@@ -437,8 +330,8 @@ Public Function GetParameters(ByVal text As String, ByRef theProgram As RPGCodeP
     Dim dataType As RPGC_DT
  
     'Get the parameters...
-    count = CountData(text)
-    brackets = GetBrackets(text)
+    count = CountData(Text)
+    brackets = GetBrackets(Text)
     For a = 1 To count
         dataType = getValue(GetElement(brackets, a), lit, num, theProgram)
         ReDim Preserve ret(a - 1)
@@ -636,27 +529,27 @@ End Function
 '=========================================================================
 ' Replace vars like <var!> with their values
 '=========================================================================
-Public Function MWinPrepare(ByVal text As String, ByRef prg As RPGCodeProgram) As String
+Public Function MWinPrepare(ByVal Text As String, ByRef prg As RPGCodeProgram) As String
 
     On Error Resume Next
 
     'Find the first <
     Dim firstLocation As Long
-    firstLocation = InStr(1, text, "<")
+    firstLocation = InStr(1, Text, "<")
 
     'If we found one
     If firstLocation > 0 Then
 
         'Find the associated >
         Dim secondLocation As Long
-        secondLocation = InStr(1, text, ">")
+        secondLocation = InStr(1, Text, ">")
 
         'If we found one
         If secondLocation > 0 Then
 
             'Get the name of the variable between them
             Dim theVar As String
-            theVar = Mid(text, firstLocation + 1, secondLocation - firstLocation - 1)
+            theVar = Mid(Text, firstLocation + 1, secondLocation - firstLocation - 1)
 
             'Put the variable in brackets
             Dim cLine As String
@@ -675,10 +568,10 @@ Public Function MWinPrepare(ByVal text As String, ByRef prg As RPGCodeProgram) A
             End If
 
             'Replace <var!> with the var's value
-            text = replace(text, "<" & theVar & ">", theValue)
+            Text = replace(Text, "<" & theVar & ">", theValue)
 
             'Recurse passing in the running text
-            MWinPrepare = MWinPrepare(text, prg)
+            MWinPrepare = MWinPrepare(Text, prg)
 
             Exit Function
 
@@ -687,7 +580,7 @@ Public Function MWinPrepare(ByVal text As String, ByRef prg As RPGCodeProgram) A
     End If
 
     'Return what we've done
-    MWinPrepare = text
+    MWinPrepare = Text
 
 End Function
 
@@ -707,8 +600,8 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
 
     Dim toParse As String
     'First remove spaces and tabs
-    toParse = replaceOutsideQuotes(variable, " ", "")
-    toParse = replaceOutsideQuotes(toParse, vbTab, "")
+    toParse = ReplaceOutsideQuotes(variable, " ", "")
+    toParse = ReplaceOutsideQuotes(toParse, vbTab, "")
 
     If InStr(1, toParse, "[") = 0 Then
         'There's not a [ so it's not an array and we're not needed

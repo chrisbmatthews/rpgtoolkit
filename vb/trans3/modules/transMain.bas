@@ -390,7 +390,6 @@ End Sub
 Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     On Error Resume Next
     Call initActiveX
-    Call initRPGCodeParser
     Call initEventProcessor
     Call initGraphics(testingPRG)
     Call correctPaths

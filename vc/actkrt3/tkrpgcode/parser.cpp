@@ -15,17 +15,12 @@
 #include "parser.h"				//contains stuff integral to this file
 
 //////////////////////////////////////////////////////////////////////////
-// Globals
-//////////////////////////////////////////////////////////////////////////
-CBOneParamStr setLastString;	//set the last parser string
-
-//////////////////////////////////////////////////////////////////////////
 // Get the command name in the text passed in
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCGetCommandName(VB_STRING pText)
+VB_STRING APIENTRY RPGCGetCommandName(const char* pText)
 {
 
-	inlineString splice = initVbString(pText);	//text to work with
+	inlineString splice = pText;				//text to work with
 	inlineString commandName;					//command name to return
 	inlineString part(1);						//a character
 	int depth = 0;								//depth in brackets
@@ -35,11 +30,8 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
 	int p = 0;									//loop control variable
 
 	if (splice == "")
-	{
 		//we got no text
-		returnVbString("");
-		return;
-	}
+		RETURN_VB_STRING("");
 
 	for (p = 1; p <= length; p ++)
 	{
@@ -63,11 +55,8 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
 		{
 			//if we're not within brackets
 			if (depth == 0)
-			{
 				//it's a variable
-				returnVbString("VAR");
-				return;
-			}
+				RETURN_VB_STRING("VAR");
 		}
 
     }
@@ -81,9 +70,9 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
         if (part == "[")
 		{
             //it's a vairable
-            returnVbString("VAR");
-			return;
+            RETURN_VB_STRING("VAR");
 		}
+
 		else if (part == "" || part == "#" || part == "(")
 			//*this* variable check fails (it still may be a variable, though)
 			break;
@@ -102,21 +91,18 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
             if ( part == "*" )
 			{
 				//it's a comment
-                returnVbString("*");
-                return;
+                RETURN_VB_STRING("*");
 			}
 
             else if ( part == ":" )
 			{
-                returnVbString("LABEL");
-                return;
+                RETURN_VB_STRING("LABEL");
 			}
 
             else if ( part == "@" )
 			{
-				returnVbString("@");
-                return;
-            }
+				RETURN_VB_STRING("@");
+			}
 
             foundIt = p;
             starting = p - 1;
@@ -154,9 +140,8 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
             else if (part == "@")
 			{
 				//it's an @ line
-				returnVbString("@");
-				return;
-            }
+				RETURN_VB_STRING("@");
+			}
 
         }
 
@@ -174,8 +159,7 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
 			if (part == "*")
 			{
 				//it's a comment
-				returnVbString("*");
-				return;
+				RETURN_VB_STRING("*");
 			}
 
 		}
@@ -194,8 +178,7 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
 			if (part == ":")
 			{
 				//it's a label
-				returnVbString("LABEL");
-				return;
+				RETURN_VB_STRING("LABEL");
 			}
 
 		}
@@ -214,8 +197,7 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
 			if (part == "<" || part == "{")
 			{
 				//it's an opening block
-				returnVbString("OPENBLOCK");
-				return;
+				RETURN_VB_STRING("OPENBLOCK");
 			}
 
 		}
@@ -234,16 +216,10 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
 			if (part == ">" || part == "}")
 			{
 				//it's an closing block
-				returnVbString("CLOSEBLOCK");
-				return;
+				RETURN_VB_STRING("CLOSEBLOCK");
 			}
 
 		}
-
-		//if we make it here, it *could* be a message box. However, since
-		//these types of message boxes are obsolete this may just serve as
-		//an unneeded delay.
-		returnVbString("MBOX");
 
     }
 
@@ -302,17 +278,17 @@ void APIENTRY RPGCGetCommandName(VB_STRING pText)
     }
 
 	//return the command's name
-    returnVbString(commandName);
+    RETURN_VB_STRING(commandName);
 
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Retrieve the text inside the brackets
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCGetBrackets(VB_STRING pText)
+VB_STRING APIENTRY RPGCGetBrackets(const char* pText)
 {
 
-	inlineString text = initVbString(pText);	//text to work with
+	inlineString text = pText;					//text to work with
 	inlineString toRet;							//string to return
 	inlineString part(1);						//a character
 	bool ignoreClosing = false;					//within quotes?
@@ -349,7 +325,7 @@ void APIENTRY RPGCGetBrackets(VB_STRING pText)
         }
     }
 
-    returnVbString(toRet);
+    RETURN_VB_STRING(toRet);
 
 }
 
@@ -384,12 +360,12 @@ inline int locateBrackets(inlineString text)
 //////////////////////////////////////////////////////////////////////////
 // Replace not within quotes
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCReplaceOutsideQuotes(VB_STRING pText, VB_STRING pFind, VB_STRING pReplace)
+VB_STRING APIENTRY RPGCReplaceOutsideQuotes(const char* pText, const char* pFind, const char* pReplace)
 {
 
-	inlineString text = initVbString(pText);			//text we're working with
-	inlineString find(initVbString(pFind), 1);			//character to find
-	inlineString replace(initVbString(pReplace), 1);	//character to replace it with
+	inlineString text = pText;							//text we're working with
+	inlineString find(pFind, 1);						//character to find
+	inlineString replace(pReplace, 1);					//character to replace it with
     inlineString toRet;									//string to return
     inlineString chr(1);								//a character
     bool ignore = false;								//within quotes?
@@ -414,18 +390,18 @@ void APIENTRY RPGCReplaceOutsideQuotes(VB_STRING pText, VB_STRING pFind, VB_STRI
     }
 
     //return what we've found
-	returnVbString(toRet);
+	RETURN_VB_STRING(toRet);
 
 }
 
 //////////////////////////////////////////////////////////////////////////
 // InStr outside quotes
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY RPGCInStrOutsideQuotes(int start, VB_STRING pText, VB_STRING pFind)
+int APIENTRY RPGCInStrOutsideQuotes(const int start, const char* pText, const char* pFind)
 {
 
-	inlineString text = initVbString(pText);	//text to look in
-	inlineString find = initVbString(pFind);	//sub-string to find
+	inlineString text = pText;					//text to look in
+	inlineString find = pFind;					//sub-string to find
 	inlineString chr(find.len());				//a character
 	inlineString part(1);						//another character
 	bool ignore = false;						//within quotes?
@@ -458,10 +434,10 @@ int APIENTRY RPGCInStrOutsideQuotes(int start, VB_STRING pText, VB_STRING pFind)
 //////////////////////////////////////////////////////////////////////////
 // Get the bracket element at elemNum
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCGetElement(VB_STRING pText, int elemNum)
+VB_STRING APIENTRY RPGCGetElement(const char* pText, const int elemNum)
 {
 
-	inlineString text = initVbString(pText);		//Text we're operating on
+	inlineString text = pText;						//Text we're operating on
 	inlineString returnVal;							//What we will return		
 	inlineString part(1);							//Character
 	int element = 0;								//Current element
@@ -488,8 +464,7 @@ void APIENTRY RPGCGetElement(VB_STRING pText, int elemNum)
 				if (element == elemNum)
 				{
 					//return what we found
-					returnVbString(returnVal);
-					return;
+					RETURN_VB_STRING(returnVal);
 				}
 				else
 					//not the correct element
@@ -505,17 +480,17 @@ void APIENTRY RPGCGetElement(VB_STRING pText, int elemNum)
 	}
 
 	//return what we've found
-	returnVbString(returnVal);
+	RETURN_VB_STRING(returnVal);
 
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Count the number of values in an equation
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY RPGCValueNumber(VB_STRING pText)
+int APIENTRY RPGCValueNumber(const char* pText)
 {
 
-	inlineString text = initVbString(pText);		//Text we're operating on
+	inlineString text = pText;						//Text we're operating on
 	inlineString part(1);							//Character
 	bool ignoreNext = false;						//Within quotes?
 	int length = text.len();						//Text length
@@ -542,12 +517,12 @@ int APIENTRY RPGCValueNumber(VB_STRING pText)
 //////////////////////////////////////////////////////////////////////////
 // Return the content in text between the start and end symbols
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCParseWithin(VB_STRING pText, VB_STRING startSymbol, VB_STRING endSymbol)
+VB_STRING APIENTRY RPGCParseWithin(const char* pText, const char* startSymbol, const char* endSymbol)
 {
 
-	inlineString text = initVbString(pText);				//Text we're operating on
-	inlineString symbolStart(initVbString(startSymbol), 1); //Starting symbol
-	inlineString symbolEnd(initVbString(endSymbol), 1);		//Ending symbol
+	inlineString text = pText;								//Text we're operating on
+	inlineString symbolStart(startSymbol, 1);				//Starting symbol
+	inlineString symbolEnd(endSymbol, 1);					//Ending symbol
 
 	int length = text.len();
 	int ignoreDepth = 0;									//Ignore
@@ -573,8 +548,7 @@ void APIENTRY RPGCParseWithin(VB_STRING pText, VB_STRING startSymbol, VB_STRING 
 					if (ignoreDepth == 0)
 					{
 						//Return what we found
-						returnVbString(toRet);
-						return;
+						RETURN_VB_STRING(toRet);
 					}
 					ignoreDepth--;
 				}
@@ -587,16 +561,16 @@ void APIENTRY RPGCParseWithin(VB_STRING pText, VB_STRING startSymbol, VB_STRING 
 	}
 
 	//Return what we found (If we got here, the 2 symbols weren't found)
-	returnVbString("");	
+	RETURN_VB_STRING("");	
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Get the variable at number in an equation
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCGetVarList(VB_STRING pText, int number)
+VB_STRING APIENTRY RPGCGetVarList(const char* pText, const int number)
 {
 
-	inlineString text = initVbString(pText);	//the text
+	inlineString text = pText;					//the text
 	inlineString part(1);						//a character
 	inlineString returnVal;						//value to return
 	bool ignoreNext = false;					//ignore quotes?
@@ -624,8 +598,7 @@ void APIENTRY RPGCGetVarList(VB_STRING pText, int number)
                 if (element == number)
 				{
 					//this one was the one we wanted
-                    returnVbString(returnVal);
-                    return;
+                    RETURN_VB_STRING(returnVal);
 				}
                 else
 					//not the one we wanted
@@ -641,20 +614,20 @@ void APIENTRY RPGCGetVarList(VB_STRING pText, int number)
 
     }
 
-    returnVbString(returnVal);
+    RETURN_VB_STRING(returnVal);
 
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Return content in text after startSymbol is located
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCParseAfter(VB_STRING pText, VB_STRING startSymbol)
+VB_STRING APIENTRY RPGCParseAfter(const char* pText, const char* startSymbol)
 {
 
-	inlineString text = initVbString(pText);			//Text we're operating on
+	inlineString text = pText;							//Text we're operating on
 	inlineString part(1);								//A character
 	inlineString toRet;									//The thing we'll return
-	inlineString symbol(initVbString(startSymbol), 1);	//symbol we're looking for
+	inlineString symbol(startSymbol, 1);				//symbol we're looking for
 	int length = text.len();							//Length of text
 	bool foundIt = false;								//found symbol yet?
 	int startAt = 0;									//char to start looking
@@ -677,20 +650,20 @@ void APIENTRY RPGCParseAfter(VB_STRING pText, VB_STRING startSymbol)
 	}
 
 	//Return what we found
-	returnVbString(toRet);
+	RETURN_VB_STRING(toRet);
 
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Return content from text until startSymbol is located
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCParseBefore(VB_STRING pText, VB_STRING startSymbol)
+VB_STRING APIENTRY RPGCParseBefore(const char* pText, const char* startSymbol)
 {
 
-	inlineString text = initVbString(pText);			//Text we're operating on
+	inlineString text = pText;							//Text we're operating on
 	inlineString part(1);								//A character
 	inlineString toRet;									//The thing we'll return
-	inlineString symbol(initVbString(startSymbol), 1);	//Symbol we're looking for
+	inlineString symbol(startSymbol, 1);				//Symbol we're looking for
 	int length = text.len();							//Length of text
 
 	for (int t = 1; t <= length; t++)
@@ -702,25 +675,24 @@ void APIENTRY RPGCParseBefore(VB_STRING pText, VB_STRING startSymbol)
 		if (part == symbol)
 		{
 			//Found it
-			returnVbString(toRet);
-			return;
+			RETURN_VB_STRING(toRet);
 		}
 		else
 			toRet += part;
 	}
 
 	//return empty string
-	returnVbString("");
+	RETURN_VB_STRING("");
 
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Get the name of a method
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCGetMethodName(VB_STRING pText)
+VB_STRING APIENTRY RPGCGetMethodName(const char* pText)
 {
 
-	inlineString text = initVbString(pText);	//Text we're operating on
+	inlineString text = pText;					//Text we're operating on
 	inlineString part(1);						//A character
 	inlineString mName;							//Name of the method
 	int t = 0;				 					//Loop control variables
@@ -788,157 +760,6 @@ void APIENTRY RPGCGetMethodName(VB_STRING pText)
     }
 
 	//return what we found
-	returnVbString(mName);
-
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Initiate the parser
-//////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCInitParser(int setStringAddress)
-{
-	setLastString = (CBOneParamStr)setStringAddress;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Return a VB string
-//////////////////////////////////////////////////////////////////////////
-inline void returnVbString(inlineString theString)
-{
-
-	//First change the char* string to vb string format
-	VB_STRING pVbString = charToVbString((char*)theString);
-
-	//Let the system know of its existence
-	VB_STRING theVbString = SysAllocString(pVbString);
-
-	//Set the string
-	setLastString(theVbString);
-
-	//Make the system forget about it
-	SysFreeString(theVbString);
-
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Init a VB string
-//////////////////////////////////////////////////////////////////////////
-inline char* initVbString(VB_STRING theString)
-{
-	//change the vb string to char*
-	return vbStringToChar(theString);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Convert a pointer to a string to a vb string
-//////////////////////////////////////////////////////////////////////////
-inline VB_STRING charToVbString(char* stringPointer)
-{
-
-	//get the length of the string passed in
-	int len = strlen(stringPointer);
-
-	//prepare a vb string string to return (one byte longer than char*
-	//because vb string strings know their own length)
-	VB_STRING bstrRet = new unsigned short[len + 1];
-
-	//loop over each character
-	for (int chrIdx = 0; chrIdx < len; chrIdx++)
-	{
-
-		//set in the character
-		char part = stringPointer[chrIdx];
-		bstrRet[chrIdx] = part;
-
-		//set in the escape sequence (will be overwritten if
-		//this is not the last character)
-		bstrRet[chrIdx + 1] = '\0';
-
-	}
-
-	if (len == 0) 
-	{
-		//if the string had no length, then just set it to nothing
-		bstrRet[0] = 0;
-	}
-
-	//return the vb string
-	return bstrRet;
-
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Convert a vb string to a pointer to a string
-//////////////////////////////////////////////////////////////////////////
-inline char* vbStringToChar(VB_STRING theVbString)
-{
-
-	//get the length of the vb string
-	int len = vbStringGetLen(theVbString);
-
-	//create a pointer to a string to return
-	char* pstrRet = new char[len + 1];
-
-	//set the string to "" (nothing)
-	strcpy(pstrRet, "");
-
-	//loop over each character
-	for (int chrIdx = 0; chrIdx < len; chrIdx++)
-	{
-
-		//set in the character
-		unsigned int part = theVbString[chrIdx];
-		pstrRet[chrIdx] = part;
-
-		//set in the escape sequence (will be overwritten if
-		//this is not the last character)
-		pstrRet[chrIdx + 1] = '\0';
-
-	}
-
-	//return the pointer to a string
-	return pstrRet;
-
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Get length of a VB string
-//////////////////////////////////////////////////////////////////////////
-inline int vbStringGetLen(VB_STRING theVbString)
-{
-
-	int len = 0;		//length to return
-	int pos = 0;		//position in string
-	bool done = false;	//done?
-
-	//if we don't have a string, then its length is 0
-	if (theVbString == NULL) 
-		return 0;
-
-	//until we're done
-	while (!done)
-	{
-
-		//get a part of the string
-		unsigned int part = theVbString[pos];
-
-		if (part == 0)
-		{
-			//no part-- end of string
-			return len;
-		}
-		else
-		{
-			//part-- increase length
-			len++;
-		}
-
-		//both cases, increment position
-		pos++;
-
-	}
-
-	//error out
-	return 0;
+	RETURN_VB_STRING(mName);
 
 }

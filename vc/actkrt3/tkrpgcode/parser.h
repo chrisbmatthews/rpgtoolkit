@@ -25,51 +25,64 @@
 #include <oleauto.h>						//for OLE automation
 
 //////////////////////////////////////////////////////////////////////////
-// Definitions
+// Special keys
 //////////////////////////////////////////////////////////////////////////
-#define TAB			"\t"					//the tab key
-#define QUOTE		"\""					//a quote
-#define BACKSLASH	"\\"					//a backslash
+#define TAB				"\t"				//the tab key
+#define QUOTE			"\""				//a quote
+#define BACKSLASH		"\\"				//a backslash
 
 //////////////////////////////////////////////////////////////////////////
-// Types
+// Macro to return a VB string
 //////////////////////////////////////////////////////////////////////////
 
-//all the parsing functions take in VB_STRING, to pass in a VB_STRING
-//from VB, use the StrPtr(theString) function
+//When a vb function called by Declare returns a string, VB will
+//change to it UNICODE *for you* whether it's in UNICODE, or not.
+//It won't make it a BSTR, however. So here, we return a pointer
+//to the char* array in BSTR format -- VB can take it from there.
+
+//However, if you thought it was that easy, you were wrong, my
+//friend. by the time VB gets the string it'll have four 16-bit
+//NULLs on the end. This is very much a problem. In a bid to
+//prevent this, we only allocate one byte per character.
+
+//SysAllocString will allocate memory as it sees fit, fortunately,
+//however, SysAllocStringLen doesn't do this. Rather it only copies
+//the maximum amount of characters you set. At two bytes pre char,
+//half the string's length ensures that only enough room is made
+//for the chars, and no NULLs -- which VB will add-on itself.
+
+#define RETURN_VB_STRING(theString)									\
+{																	\
+	return SysAllocStringLen(										\
+							  (const OLECHAR*)(char*)theString,		\
+							  strlen((char*)theString) / 2			\
+														   );		\
+}
+
+//////////////////////////////////////////////////////////////////////////
+// A VB string
+//////////////////////////////////////////////////////////////////////////
 typedef unsigned short* VB_STRING;
-
-//this type is used for calling back into setLastParseString() in
-//RPGCodeParser of trans3
-typedef void (__stdcall* CBOneParamStr) (VB_STRING);
 
 //////////////////////////////////////////////////////////////////////////
 // Prototypes
 //////////////////////////////////////////////////////////////////////////
 
-//for vb strings
-inline char* initVbString(VB_STRING);
-inline void returnVbString(inlineString);
-inline VB_STRING charToVbString(char*);
-inline char* vbStringToChar(VB_STRING);
-inline int vbStringGetLen(VB_STRING);
-
 //private parsing functions
 inline int locateBrackets(inlineString);
 
 //exports
-void APIENTRY RPGCInitParser(int);
-void APIENTRY RPGCGetMethodName(VB_STRING);
-void APIENTRY RPGCParseAfter(VB_STRING, VB_STRING);
-void APIENTRY RPGCParseBefore(VB_STRING, VB_STRING);
-void APIENTRY RPGCGetVarList(VB_STRING, int);
-void APIENTRY RPGCParseWithin(VB_STRING, VB_STRING, VB_STRING);
-void APIENTRY RPGCGetElement(VB_STRING, int);
-void APIENTRY RPGCReplaceOutsideQuotes(VB_STRING, VB_STRING, VB_STRING);
-void APIENTRY RPGCGetBrackets(VB_STRING);
-void APIENTRY RPGCGetCommandName(VB_STRING);
-int APIENTRY RPGCValueNumber(VB_STRING);
-int APIENTRY RPGCInStrOutsideQuotes(int, VB_STRING, VB_STRING);
+VB_STRING APIENTRY RPGCGetMethodName(const char*);
+VB_STRING APIENTRY RPGCParseAfter(const char*, const char*);
+VB_STRING APIENTRY RPGCParseBefore(const char*, const char*);
+VB_STRING APIENTRY RPGCGetVarList(const char*, const int);
+VB_STRING APIENTRY RPGCParseWithin(const char*, const char*, const char*);
+VB_STRING APIENTRY RPGCGetElement(const char*, const int);
+VB_STRING APIENTRY RPGCReplaceOutsideQuotes(const char*, const char*, const char*);
+VB_STRING APIENTRY RPGCGetBrackets(const char*);
+VB_STRING APIENTRY RPGCGetCommandName(const char*);
+int APIENTRY RPGCValueNumber(const char*);
+int APIENTRY RPGCInStrOutsideQuotes(const int, const char*, const char*);
 
 //////////////////////////////////////////////////////////////////////////
 // End of the file
