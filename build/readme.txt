@@ -28,7 +28,7 @@ method CTest::function(obj)
 	if (obj->getType() == CTEST)
 	{
 		// Copy over
-		m_myObject! = obj!
+		m_myObject = obj!
 	}
 }
 
