@@ -172,10 +172,6 @@ SOURCE=.\tkgfx\CUtil.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkgfx\Resource.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\tkgfx\Tkgfx.h
 # End Source File
 # Begin Source File

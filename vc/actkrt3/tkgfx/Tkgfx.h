@@ -24,7 +24,6 @@
  */
 
 #include "CBoard.h"
-#include "resource.h"		// main symbols
 #include "stdafx.h"
 #include <set>
 #include <string>

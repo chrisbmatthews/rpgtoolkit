@@ -34,7 +34,6 @@ Public Declare Function GFXdrawTstWindow Lib "actkrt3.dll" (ByVal fName As Strin
 Public Declare Function GFXBitBltTransparent Lib "actkrt3.dll" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal width As Long, ByVal height As Long, ByVal hdcSrc As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal transRed As Long, ByVal transGreen As Long, ByVal transBlue As Long) As Long
 Public Declare Function GFXBitBltTranslucent Lib "actkrt3.dll" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal width As Long, ByVal height As Long, ByVal hdcSrc As Long, ByVal xsrc As Long, ByVal ysrc As Long) As Long
 Public Declare Function GFXBitBltAdditive Lib "actkrt3.dll" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal width As Long, ByVal height As Long, ByVal hdcSrc As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nPercent As Long) As Long
-Public Declare Function GFXSetCurrentTileString Lib "actkrt3.dll" (ByVal stringToSet As String) As Long
 Public Declare Function GFXClearTileCache Lib "actkrt3.dll" () As Long
 Public Declare Function GFXGetDOSColor Lib "actkrt3.dll" (ByVal idx As Long) As Long
 Public Declare Function TKInit Lib "actkrt3.dll" () As Long
