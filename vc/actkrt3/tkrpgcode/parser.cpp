@@ -110,7 +110,7 @@ void APIENTRY RPGCGetMethodName(VB_STRING pText)
     for (t = 1; t <= length; t++)
 	{
         //Attempt to find #
-		part = (char*)text.mid(t, 1);
+		part = text.mid(t, 1);
         if ( (part != " ") && (part != TAB) && (part != "#") )
 		{
 			startHere = t - 1;
@@ -127,7 +127,7 @@ void APIENTRY RPGCGetMethodName(VB_STRING pText)
 	for (t = startHere; t <= length; t++)
 	{
 		//Find start of command name
-		part = (char*)text.mid(t, 1);
+		part = text.mid(t, 1);
         if (part != " ")
 		{
 			startHere = t;
@@ -138,7 +138,7 @@ void APIENTRY RPGCGetMethodName(VB_STRING pText)
     for (t = startHere; t <= length; t++)
 	{
         //Find end of command name
-        part = (char*)text.mid(t, 1);
+        part = text.mid(t, 1);
         if (part == " ")
 		{
 			startHere = t;
@@ -149,7 +149,7 @@ void APIENTRY RPGCGetMethodName(VB_STRING pText)
     for (t = startHere; t <= length; t++)
 	{
         //Find start of method
-        part = (char*)text.mid(t, 1);
+        part = text.mid(t, 1);
         if (part != " ")
 		{
 			startHere = t;
@@ -160,7 +160,7 @@ void APIENTRY RPGCGetMethodName(VB_STRING pText)
     for (t = startHere; t <= length; t++)
 	{
         //Find name  of method
-        part = (char*)text.mid(t, 1);
+        part = text.mid(t, 1);
 		if ( part == " " || part == "(" )
 		{
             t = length + 1;

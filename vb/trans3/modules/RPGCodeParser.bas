@@ -10,7 +10,6 @@ Attribute VB_Name = "RPGCodeParser"
 '=========================================================================
 
 Option Explicit
-Option Compare Text
 
 '=========================================================================
 ' Member declarations

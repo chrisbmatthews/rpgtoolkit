@@ -10,7 +10,6 @@ Attribute VB_Name = "RPGCodeClasses"
 '=========================================================================
 
 Option Explicit
-Option Compare Text
 
 '=========================================================================
 ' All classes
@@ -363,7 +362,7 @@ End Sub
 '=========================================================================
 ' Add a method to a scope
 '=========================================================================
-Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE)
+Private Sub addMethodToScope(ByVal theClass As String, ByVal text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE)
 
     On Error Resume Next
 
@@ -374,7 +373,7 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
     Dim pos As Long             'Pos we're using
 
     'Get the method's name
-    origName = GetMethodName(Text)
+    origName = GetMethodName(text)
     methodName = UCase(theClass) & "::" & UCase(origName)
 
     'Get line method starts on
@@ -382,7 +381,7 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
 
     'Check if we errored out
     If (theLine = -1) Then
-        Call debugger("Could not find method " & origName & " -- " & Text)
+        Call debugger("Could not find method " & origName & " -- " & text)
         Exit Sub
     End If
 
@@ -393,7 +392,7 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
     For idx = 0 To UBound(scope.methods)
         If (scope.methods(idx).name = UCase(origName)) Then
             'Illegal redifinition
-            Call debugger("Illegal redefinition of method " & origName & " -- " & Text)
+            Call debugger("Illegal redefinition of method " & origName & " -- " & text)
             Exit Sub
 
         ElseIf (scope.methods(idx).name = "") Then
@@ -420,26 +419,26 @@ End Sub
 '=========================================================================
 ' Remove class name from a function
 '=========================================================================
-Private Function removeClassName(ByVal Text As String) As String
+Private Function removeClassName(ByVal text As String) As String
 
     On Error Resume Next
 
     Dim idx As Long         'For loop var
     Dim char As String * 2  'Characters
 
-    For idx = 1 To Len(Text)
+    For idx = 1 To Len(text)
         'Get a character
-        char = Mid(Text, idx, 2)
+        char = Mid(text, idx, 2)
         'Check if it's the scope operator
         If (char = "::") Then
             'Found it
-            removeClassName = Mid(Text, idx + 2)
+            removeClassName = Mid(text, idx + 2)
             Exit Function
         End If
     Next idx
 
     'Didn't find it
-    removeClassName = Text
+    removeClassName = text
 
 End Function
 
@@ -845,7 +844,7 @@ End Function
 '=========================================================================
 ' Splice up a line for object things
 '=========================================================================
-Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgram) As String
+Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgram) As String
 
     On Error Resume Next
 
@@ -869,18 +868,18 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Dim a As Long                   'Loop var
 
     'Get location of first ->
-    begin = inStrOutsideQuotes(1, Text, "->")
+    begin = inStrOutsideQuotes(1, text, "->")
 
     If (begin = 0) Then
         'Contains no object manipulation
-        spliceForObjects = Text
+        spliceForObjects = text
         Exit Function
     End If
 
     'Loop over each charater, forwards
-    For a = (begin + 2) To Len(Text)
+    For a = (begin + 2) To Len(text)
         'Get a character
-        char = Mid(Text, a, 1)
+        char = Mid(text, a, 1)
         Select Case char
 
             Case "!", "$", "-"
@@ -923,7 +922,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Next a
 
     'Record the method's command line
-    cLine = ParseRPGCodeCommand(Trim(Mid(Text, begin + 2, lngEnd - begin - 1)), prg)
+    cLine = ParseRPGCodeCommand(Trim(Mid(text, begin + 2, lngEnd - begin - 1)), prg)
     If (Not var) Then
         cmdName = UCase(GetCommandName(cLine))
     Else
@@ -947,7 +946,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     'Loop over each charater, backwards
     For a = (begin - 1) To 1 Step -1
         'Get a character
-        char = Mid(Text, a, 1)
+        char = Mid(text, a, 1)
         If ((spacesOK) And (char = " ")) Then
             'Alter char
             char = ""
@@ -976,7 +975,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Next a
 
     'Record the object
-    object = parseArray(UCase(Trim(Mid(Text, start, begin - start))), prg)
+    object = parseArray(UCase(Trim(Mid(text, start, begin - start))), prg)
     If (object = "") Then object = GetWithPrefix()
 
     'Get its handle
@@ -1030,7 +1029,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             'It's a member
             value = getObjectVarName(cLine, hClass)
         Else
-            Call debugger("Error: Could not get/set " & cLine & " -- " & Text)
+            Call debugger("Error: Could not get/set " & cLine & " -- " & text)
         End If
     End If
 
@@ -1038,7 +1037,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     value = replace(value, ",", ".")
 
     'Complete the return string
-    spliceForObjects = Mid(Text, 1, start - 1) & value & Mid(Text, lngEnd + 1)
+    spliceForObjects = Mid(text, 1, start - 1) & value & Mid(text, lngEnd + 1)
     If (Trim(spliceForObjects) = "0") Then
         spliceForObjects = ""
     Else
