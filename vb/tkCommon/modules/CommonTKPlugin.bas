@@ -17,12 +17,12 @@ Declare Function PLUGExecute Lib "actkrt3.dll" (ByVal plugFilename As String, By
 Declare Sub PLUGEnd Lib "actkrt3.dll" (ByVal plugFilename As String)
 Declare Function PLUGVersion Lib "actkrt3.dll" (ByVal plugFilename As String) As Long
 Declare Function PLUGDescription Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal strBuffer As String, ByVal bufferSize As Long) As Long
-Declare Function PLUGType Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal requestedFeature As Long) As Long
+Declare Function plugType Lib "actkrt3.dll" Alias "PLUGType" (ByVal plugFilename As String, ByVal requestedFeature As Long) As Long
 Declare Function PLUGMenu Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal requestedMenu As Long) As Long
-Declare Function PLUGFight Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal enemyCount As Long, ByVal skillLevel As Long, ByVal backgroundFile As String, ByVal canrun As Long) As Long
+Declare Function PLUGFight Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal enemyCount As Long, ByVal skilllevel As Long, ByVal backgroundFile As String, ByVal canrun As Long) As Long
 Declare Function PLUGFightInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal sourceHPLost As Long, ByVal sourceSMPLost As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal strMessage As String, ByVal attackCode As Long) As Long
 Declare Function PLUGInputRequested Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal inputCode As Long) As Long
-Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal x As Long, ByVal y As Long, ByVal button As Long, ByVal shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
+Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal X As Long, ByVal Y As Long, ByVal button As Long, ByVal Shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
 
 Public Declare Function CreateProcessA Lib "kernel32" (ByVal _
    lpApplicationName As Long, ByVal lpCommandLine As String, ByVal _
@@ -37,6 +37,9 @@ Private Declare Function CloseHandle Lib "kernel32" _
 
 Public Declare Function WaitForSingleObject Lib "kernel32" (ByVal _
    hHandle As Long, ByVal dwMilliseconds As Long) As Long
+
+Private Declare Function GetExitCodeProcess Lib "kernel32" _
+   (ByVal hProcess As Long, lpExitCode As Long) As Long
 
 Public Const PT_RPGCODE = 1           'plugin type rpgcode
 Public Const PT_MENU = 2         'plugin type menu
@@ -65,6 +68,9 @@ Public Const FIGHT_WON_AUTO = 2                   'Player party won - have trans
 Public Const FIGHT_WON_MANUAL = 3                 'Player party won - tell trans that the plugin has already given rewards
 Public Const FIGHT_LOST = 4                       'Player party lost
 
+Private Const NORMAL_PRIORITY_CLASS = &H20&
+Private Const INFINITE = -1&
+
 Public Type STARTUPINFO
    cb As Long
    lpReserved As String
@@ -77,7 +83,7 @@ Public Type STARTUPINFO
    dwXCountChars As Long
    dwYCountChars As Long
    dwFillAttribute As Long
-   dwflags As Long
+   dwFlags As Long
    wShowWindow As Integer
    cbReserved2 As Integer
    lpReserved2 As Long
@@ -101,7 +107,7 @@ Function pluginDescription(ByVal plugFile As String) As String
 
     ' ! MODIFIED BY KSNiloc...
     If isVBPlugin(plugFile) Then
-        pluginDescription = VBPlugin(plugFile).Description
+        pluginDescription = VBPlugin(plugFile).description
     Else
         Dim ret As String * 1025
         Dim le As Long

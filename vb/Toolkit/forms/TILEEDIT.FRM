@@ -411,8 +411,6 @@ Public ignoreDeactivate As Boolean
 '!NEW! For the changecolor function
 Private bchangecolor As Integer
 
-Dim fromActivate As Boolean
-
 '========================================================================
 ' Enum declaration [KSNiloc]
 '========================================================================
@@ -428,9 +426,8 @@ Private Enum ROTATE_TYPE
     OneHunderdEighty = 3
 End Enum
 
-=======
 Private fromActivate As Boolean
->>>>>>> 1.6
+
 '========================================================================
 ' Identify type of form
 '========================================================================
@@ -2594,34 +2591,3 @@ Private Sub mnuAbout_Click()
     On Error Resume Next
     Call tkMainForm.aboutmnu_Click
 End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
