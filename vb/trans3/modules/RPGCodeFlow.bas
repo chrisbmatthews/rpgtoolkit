@@ -158,29 +158,24 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     Dim mName As String, includeFile As String, methodName As String, oldPos As Long, foundIt As Long
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
-    
+
     If (LenB(commandName) = 0) Then
-        mName = GetCommandName(Text)   'get command name without extra info
+        mName = GetCommandName(Text)
     Else
         mName = commandName
     End If
 
-    If QueryPlugins(mName, Text, retval) Then
+    If (QueryPlugins(mName, Text, retval)) Then
         'Found the command in a plugin, don't waste time checking for a method!
         Exit Sub
     End If
 
-    includeFile = ParseBefore(mName, ".")
-    methodName = ParseAfter(mName, ".")
-
-    If (LenB(methodName)) Then
-        'include file...
-        includeFile = addExt(includeFile, ".prg")
-        Call IncludeRPG("include(""" & includeFile & """)", theProgram)
-        mName = methodName
+    If (InStrB(1, mName, ".")) Then
+        Call IncludeRPG("include(""" & addExt(ParseBefore(mName, "."), ".prg") & """)", theProgram)
+        mName = ParseAfter(mName, ".")
     End If
 
-    If (theProgram.classes.insideClass And (Not doNotCheckForClasses)) Then
+    If ((theProgram.classes.insideClass) And (Not (doNotCheckForClasses))) Then
         If (isMethodMember(mName, topNestle(theProgram), theProgram)) Then
             Call callObjectMethod(topNestle(theProgram), Text, theProgram, retval, mName)
             Exit Sub
@@ -199,26 +194,23 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         End If
         Exit Sub
     Else
-        'Alright! we found this method!
-        'increment calldepth(total number of calls)
-        'DBCallDepth = DBCallDepth + 1
-        
+
         'Now pass variables.
         theProgram.programPos = foundIt
-        
+
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
-               
+
         'Get parameters from calling line
-        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
-        number = CountData(dataUse$)        'how many data elements are there?
+        dataUse$ = GetBrackets(Text)
+        number = CountData(dataUse)
         Dim running As Long
         For pList = 1 To number
             parameterList$(pList) = GetElement(dataUse$, pList)
         Next pList
-    
+
         'Get parameters from method line
-        dataUse$ = GetBrackets(theProgram.program(foundIt))   'Get text inside brackets (parameter list)
-        number2 = CountData(dataUse$)        'how many data elements are there?
+        dataUse$ = GetBrackets(theProgram.program(foundIt))
+        number2 = CountData(dataUse)
         For pList = 1 To number2
             destList$(pList) = GetElement(dataUse, pList)
         Next pList
@@ -242,13 +234,13 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             End If
         Next pList
 
-        'create a new local scope for this method...
+        ' Create a new local scope for this method
         Call AddHeapToStack(theProgram)
 
         Dim lit As String, num As Double
-        Dim dataG As Long, dUse As String
-        'Now to correspond the two lists
+        Dim dataG As RPGC_DT, dUse As String
 
+        'Now to correspond the two lists
         For pList = 1 To number
             'get the value from the previous stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
@@ -256,8 +248,8 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             'restore stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
 
-            If (dataG = 0) Then
-                dUse$ = CStr(num)
+            If (dataG = DT_NUM) Then
+                dUse = CStr(num)
             Else
                 Dim rl As String
                 rl = Right$(lit, 1)
@@ -281,14 +273,14 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             End If
 
             Dim rdl As String
-            rdl = Right$(destList(pList), 1)
-            If (rdl <> "!" And rdl <> "$") Then
+            rdl = RightB$(destList(pList), 2)
+            If ((rdl <> "!") And (rdl <> "$")) Then
                 destList(pList) = destList(pList) & "!"
             End If
 
-            Dim dummyRet As RPGCODE_RETURN
-            Call LocalRPG("local(" & destList$(pList) & ")", theProgram, dummyRet)
-            Call SetVariable(destList$(pList), dUse$, theProgram)
+            ' Declare this variable
+            Call declareVariable(destList(pList), theProgram)
+
         Next pList
 
         Dim theOne As Long, se As Long
@@ -540,21 +532,23 @@ Public Function runBlock( _
     Dim done As Boolean
     Dim depth As Long
 
-    Call moveToStartOfBlock(prg)
+    Do
+        prg.programPos = increment(prg)
+    Loop Until (LenB(prg.program(prg.programPos)))
 
-    Do Until done
+    Do Until (done)
 
-        Select Case LCase$(GetCommandName(prg.program(prg.programPos)))
+        Select Case prg.strCommands(prg.programPos)
 
-            Case "openblock"
+            Case "OPENBLOCK"
                 depth = depth + 1
                 prg.programPos = increment(prg)
 
-            Case "closeblock"
+            Case "CLOSEBLOCK"
                 depth = depth - 1
                 prg.programPos = increment(prg)
 
-            Case "end"
+            Case "END"
                 If Not (endCausesStop) Then
                     runCommands = 0
                     prg.programPos = increment(prg)
@@ -565,7 +559,7 @@ Public Function runBlock( _
             Case Else
 
                 If (runCommands) Then
-                    Call DoCommand(prg, retval)
+                    Call DoSingleCommand(prg.program(prg.programPos), prg, retval, True)
                 Else
                     prg.programPos = increment(prg)
                 End If
@@ -913,14 +907,21 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
 
     End If
 
-    If theProgram.program(0) & "*ERROR CHECKING FLAG" = errorKeep.program(0) Then
-        preErrorPos = theProgram.programPos
-        theProgram.programPos = errorKeep.programPos
+    If (LenB(errorBranch)) Then
+        If (theProgram.program(0) & "*ERROR CHECKING FLAG" = errorKeep.program(0)) Then
+            preErrorPos = theProgram.programPos
+            theProgram.programPos = errorKeep.programPos
+        End If
+        errorKeep = theProgram
     End If
 
-    errorKeep = theProgram
-
-    If (isMultiTasking() And theProgram.looping) And (multiRunStatus = 0) Then Exit Function
+    If (multiRunStatus = 0) Then
+        If (theProgram.looping) Then
+            If (isMultiTasking()) Then
+                Exit Function
+            End If
+        End If
+    End If
 
     Dim cLine As String 'current line
     cLine = rpgcodeCommand
@@ -946,8 +947,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             cType = GetCommandName(splice)
             testText = UCase$(cType)
         Else
-            cType = theProgram.strCommands(theProgram.programPos)
-            testText = cType
+            testText = theProgram.strCommands(theProgram.programPos)
         End If
 
         If (LenB(testText) = 0) Then
@@ -2387,6 +2387,12 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
 
         Case "DRAWCANVASTRANSPARENT"
             Call DrawCanvasTransparentRPG(splice, theProgram)
+            DoSingleCommand = increment(theProgram)
+            Exit Function
+
+        Case "GETTICKCOUNT"
+            retval.dataType = DT_NUM
+            retval.num = GetTickCount()
             DoSingleCommand = increment(theProgram)
             Exit Function
 

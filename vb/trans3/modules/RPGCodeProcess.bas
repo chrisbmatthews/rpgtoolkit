@@ -91,44 +91,6 @@ Public Sub addMethodToPrg(ByVal name As String, ByVal line As Long, ByRef prg As
 End Sub
 
 '=========================================================================
-' Add a local heap to a program
-'=========================================================================
-Public Sub AddHeapToStack(ByRef thePrg As RPGCodeProgram)
-    On Error Resume Next
-    thePrg.currentHeapFrame = thePrg.currentHeapFrame + 1
-    If (thePrg.currentHeapFrame + 1 > UBound(thePrg.heapStack)) Then
-        ' Resize heap stack
-        ReDim Preserve thePrg.heapStack(thePrg.currentHeapFrame * 2)
-    End If
-    thePrg.heapStack(thePrg.currentHeapFrame) = RPGCCreateHeap()
-End Sub
-
-'=========================================================================
-' Add a value to a stack
-'=========================================================================
-Public Sub PushCompileStack(ByRef thePrg As RPGCodeProgram, ByVal value As String)
-    On Error Resume Next
-    thePrg.currentCompileStackIdx = thePrg.currentCompileStackIdx + 1
-    If (thePrg.currentCompileStackIdx + 1 > UBound(thePrg.compilerStack)) Then
-        ' Resize stack
-        ReDim Preserve thePrg.compilerStack(thePrg.currentCompileStackIdx * 2)
-    End If
-    thePrg.compilerStack(thePrg.currentCompileStackIdx) = value
-End Sub
-
-'=========================================================================
-' Pop a value from a stack
-'=========================================================================
-Public Function PopCompileStack(ByRef thePrg As RPGCodeProgram) As String
-    On Error Resume Next
-    If (thePrg.currentCompileStackIdx = -1) Then
-        Exit Function
-    End If
-    PopCompileStack = thePrg.compilerStack(thePrg.currentCompileStackIdx)
-    thePrg.currentCompileStackIdx = thePrg.currentCompileStackIdx - 1
-End Function
-
-'=========================================================================
 ' Clear an rpgcode program structure
 '=========================================================================
 Public Sub InitRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
@@ -147,26 +109,6 @@ Public Sub InitRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
     ' Init the classes array
     ReDim thePrg.classes.classes(0)
     ReDim thePrg.classes.nestle(0)
-End Sub
-
-'=========================================================================
-' Remove all heaps from a program
-'=========================================================================
-Public Sub ClearRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
-    On Error GoTo skipheap
-    ' Clear the stack
-    ReDim thePrg.methods(0)
-    Dim t As Long
-    For t = 0 To UBound(thePrg.heapStack)
-        Call RPGCDestroyHeap(thePrg.heapStack(t))
-        thePrg.heapStack(t) = 0
-    Next t
-    For t = 0 To UBound(thePrg.included)
-        thePrg.included(t) = vbNullString
-    Next t
-skipheap:
-    thePrg.currentHeapFrame = -1
-    thePrg.currentCompileStackIdx = -1
 End Sub
 
 '=========================================================================
@@ -500,18 +442,4 @@ Public Function stripComments(ByVal Text As String) As String
         End If
     Next a
     stripComments = Text
-End Function
-
-'=========================================================================
-' Remove a heap from a stack
-'=========================================================================
-Public Function RemoveHeapFromStack(ByRef thePrg As RPGCodeProgram) As Boolean
-    On Error Resume Next
-    If thePrg.currentHeapFrame >= 0 Then
-        Call RPGCDestroyHeap(thePrg.heapStack(thePrg.currentHeapFrame))
-        thePrg.currentHeapFrame = thePrg.currentHeapFrame - 1
-        RemoveHeapFromStack = True
-        Exit Function
-    End If
-    RemoveHeapFromStack = False
 End Function

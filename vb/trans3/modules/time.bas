@@ -10,23 +10,27 @@ Attribute VB_Name = "transTime"
 '=========================================================================
 
 '=========================================================================
-'night begins to set at 4pm
-'night sets at 8pm
-'at that point, it is really nighttime
-'day begins to rise at 4am
-'day arrives at 8am
-'from 8pm-4am it is as dark as it can be
-'from 8am-4am is is as light as it can be
+' Night begins to set at 4pm
+' Night sets at 8pm
+' At that point, it is really nighttime
+' Day begins to rise at 4am
+' Day arrives at 8am
+' From 8pm-4am it is as dark as it can be
+' From 8am-4am is is as light as it can be
 '=========================================================================
 
 Option Explicit
 
 '=========================================================================
+' Declarations
+'=========================================================================
+Public Declare Function GetTickCount Lib "kernel32" () As Long
+
+'=========================================================================
 ' Integral variables
 '=========================================================================
-
-Public addTime As Long      'time to add onto mainForm timer (for continued games)
-Public initTime As Long     'time at start of game
+Public addTime As Long      ' Time to add onto mainForm timer (for continued games)
+Public initTime As Long     ' Time at start of game
 
 '=========================================================================
 ' Return the light level

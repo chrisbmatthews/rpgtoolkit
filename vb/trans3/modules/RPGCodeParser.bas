@@ -277,7 +277,8 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
     ' Declare a variable to work on
     Dim str As String
-    str = Trim$(ParseRPGCodeCommand(Text, prg))
+    str = ParseRPGCodeCommand(spliceForObjects("i(" & Text & ")", prg), prg)
+    str = Mid$(str, 3, Len(str) - 3)
 
     ' Check for logic
     Dim logic(3) As String
@@ -291,9 +292,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
         ' Split the text
         Dim parts() As String
-        parts = Split(str, logic(idx), , vbTextCompare) ' vbTextCompare makes things simple, though
-                                                        ' more coding could provide a better
-                                                        ' alternative here.
+        parts = Split(str, logic(idx), , vbTextCompare)
 
         ' Check if logic was found
         Dim partUb As Long
@@ -318,20 +317,16 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
                 ' Check how toRet should change
                 If Not (doneLoop) Then
-                    If (run = 1) Then
-                        Select Case idx
-                            Case 2, 3
-                                ' Fin
-                                toRet = 1
-                                doneLoop = True
-                        End Select
+                    If (run <> 0) Then
+                        If (idx = 2 Or idx = 3) Then
+                            toRet = 1
+                            doneLoop = True
+                        End If
                     Else
-                        Select Case idx
-                            Case 0, 1
-                                ' Fin
-                                toRet = 0
-                                doneLoop = True
-                        End Select
+                        If (idx = 0 Or idx = 1) Then
+                            toRet = 0
+                            doneLoop = True
+                        End If
                     End If
                 End If
 
@@ -404,6 +399,8 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
     End If
 
+    Dim bForceNum As Boolean
+
     ' Loop over each values
     For idx = 0 To valueUb
 
@@ -419,7 +416,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
             values(idx) = Mid$(values(idx), 2)
 
             ' Get its value
-            typeVal(idx) = getValue(values(idx), strVal(idx), numVal(idx), prg)
+            typeVal(idx) = getValue(values(idx), strVal(idx), numVal(idx), prg, , , bForceNum)
 
             ' Check for type problems
             If (typeVal(idx) <> DT_NUM) Then
@@ -438,7 +435,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
             values(idx) = Mid$(values(idx), 2)
 
             ' Get its value
-            typeVal(idx) = getValue(values(idx), strVal(idx), numVal(idx), prg)
+            typeVal(idx) = getValue(values(idx), strVal(idx), numVal(idx), prg, , , bForceNum)
 
             ' Check for type problems
             If (typeVal(idx) <> DT_NUM) Then
@@ -460,11 +457,11 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
         Else
 
             ' Get its value
-            typeVal(idx) = getValue(values(idx), strVal(idx), numVal(idx), prg)
+            typeVal(idx) = getValue(values(idx), strVal(idx), numVal(idx), prg, , , bForceNum)
 
         End If
 
-        If (idx) Then
+        If (idx <> 0) Then
 
             ' Check for type mismatch
             If (typeVal(idx) <> typeVal(0)) Then
@@ -474,6 +471,10 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                 Exit Function
 
             End If
+
+        Else
+
+            bForceNum = (typeVal(idx) = DT_NUM)
 
         End If
 
@@ -510,16 +511,21 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                 ' It's an object
                 Dim outside As Boolean, hClass As Long, op As String
                 hClass = CLng(numVal(idx))
-                outside = (topNestle(prg) <> hClass)
-                op = "operator" & signs(idx)
 
-                If (isMethodMember(op, hClass, prg, outside)) Then
+                If (hClass) Then
 
-                    ' It handles this operator
-                    Dim retval As RPGCODE_RETURN
-                    signSwitch = False
-                    retval.num = 0
-                    Call callObjectMethod(hClass, op & "(" & CStr(numVal(idx + 1)) & ")", prg, retval, op)
+                    outside = (topNestle(prg) <> hClass)
+                    op = "operator" & signs(idx)
+
+                    If (isMethodMember(op, hClass, prg, outside)) Then
+
+                        ' It handles this operator
+                        Dim retval As RPGCODE_RETURN
+                        signSwitch = False
+                        retval.num = 0
+                        Call callObjectMethod(hClass, op & "(" & CStr(numVal(idx + 1)) & ")", prg, retval, op)
+
+                    End If
 
                 End If
 
@@ -1083,7 +1089,8 @@ Public Function ParseRPGCodeCommand( _
 
     ' Some things don' t require parsing
     Select Case cmdName
-        Case "@", "*", vbNullString, "LABEL", "OPENBLOCK", "CLOSEBLOCK", "REDIRECT"
+        Case "@", "*", vbNullString, "LABEL", "OPENBLOCK", "CLOSEBLOCK", "REDIRECT", _
+             "IF", "WHILE", "UNTIL", "FOR"
             ParseRPGCodeCommand = line
             Exit Function
     End Select
@@ -1183,22 +1190,30 @@ Public Function ParseRPGCodeCommand( _
                                             prg.programPos = DoSingleCommand(cN, prg, rV)
                                             prg.programPos = oPP
 
-                                            ' Get the value it returned
-                                            If (theInlineCommand <> "WAIT") _
-                                             And (theInlineCommand <> "GET") Then
+                                            If (theInlineCommand <> "WAIT" And _
+                                                theInlineCommand <> "GET") Then
+
+                                                ' Get the value it returned
                                                 Select Case rV.dataType
                                                     Case DT_NUM: v = " " & CStr(rV.num)
                                                     Case DT_LIT: v = " """ & rV.lit & """"
                                                     Case DT_REFERENCE: v = " " & rV.ref
                                                 End Select
+
                                             Else
-                                                ' Wait/Get command-- don't add quotes!
+
+                                                ' Wait / Get command: don't add quotes
                                                 v = " " & rV.lit
+
                                             End If
 
                                         Else
-                                            ' Don't touch
-                                            v = cN
+
+                                            ' Evaluate this math subset
+                                            Dim lit As String, num As Double
+                                            Call getValue(replace(replace(cN, "(", vbNullString), ")", vbNullString), lit, num, prg)
+                                            v = "(" & CStr(num) & ")"
+
                                         End If
 
                                         ' Replace the command's name with

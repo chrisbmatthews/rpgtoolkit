@@ -311,17 +311,12 @@ Sub LocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
         useIt2 = GetElement(dataUse$, 1)
     End If
     
-    '! MODIFIED BY KSNiloc...
-    
+    Call declareVariable(useIt1, theProgram)
+
     Dim vtype As Long
     vtype = variType(useIt1, globalHeap)
     If vtype = DT_NUM Then
-        'numerical variable...
-        'first check if it's in the local scope...
-        If Not (numVarExists(useIt1, theProgram.heapStack(theProgram.currentHeapFrame))) Then
-            'the numerical var doesn't exist in the local scope-- add it...
-            Call SetNumVar(useIt1, 0, theProgram.heapStack(theProgram.currentHeapFrame))
-        End If
+        
         'get value...
         a = getValue(useIt1, lit1, num1, theProgram)
         retval.dataType = DT_NUM
@@ -331,12 +326,7 @@ Sub LocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
             Call SetVariable(useIt2, CStr(retval.num), theProgram)
         End If
     Else
-        'literal variable...
-        'first check if it's in the local scope...
-        If Not (litVarExists(useIt1, theProgram.heapStack(theProgram.currentHeapFrame))) Then
-            'the numerical var doesn't exist in the local scope-- add it...
-            Call SetLitVar(useIt1, vbNullString, theProgram.heapStack(theProgram.currentHeapFrame))
-        End If
+        
         'get value...
         a = getValue(useIt1, lit1, num1, theProgram)
         retval.dataType = DT_LIT
@@ -1733,7 +1723,7 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     dataUse$ = GetBrackets(theProgram.program(theProgram.programPos))    'Get text inside brackets
-    number = CountData(dataUse$)        'how many data elements are there?
+    number = CountData(GetBrackets(Text))        'how many data elements are there?
     Dim res As Long
     If number <> 3 Then
         Call debugger("Error: For must have 3 data elements!-- " + Text$)
@@ -1768,7 +1758,7 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     u2 = useIt2
     u3 = useIt3
     
-    theProgram.programPos = increment(theProgram)
+    ' theProgram.programPos = increment(theProgram)
     res = evaluate(u2, theProgram)
     
     If (res) Then
@@ -3138,12 +3128,12 @@ Public Function IfThen( _
     'Re-written by KSNiloc
     '==========================================================================
 
-    'if (this! == that!)
+    'if (x! == y!)
     '{
     '   ...
     '   ...
     '}
-    'elseif (this! == floomy!)
+    'elseif (y! == z!)
     '{
     '   ...
     '   ...
@@ -7871,7 +7861,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
     Dim curLine As Long
     u = use
     
-    theProgram.programPos = increment(theProgram)
+    ' theProgram.programPos = increment(theProgram)
     res = evaluate(dataUseWhile$, theProgram)
     
     Dim isUntil As Boolean

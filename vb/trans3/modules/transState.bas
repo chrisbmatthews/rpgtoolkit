@@ -310,34 +310,34 @@ Public Sub LoadState(ByVal file As String)
         'get num vars...
         nCount = BinReadLong(num)
         
-        Dim varname As String
+        Dim varName As String
         Dim varValue As Double
         Dim varString As String
         
         For t = 1 To nCount
-            varname = BinReadString(num)
+            varName = BinReadString(num)
             varValue = BinReadDouble(num)
-            If LenB(varname) Then
-                Call SetNumVar(varname, varValue, globalHeap)
+            If LenB(varName) Then
+                Call SetNumVar(varName, varValue, globalHeap)
             End If
         Next t
         
         nCount = BinReadLong(num)
         For t = 1 To nCount
-            varname = BinReadString(num)
+            varName = BinReadString(num)
             varString = BinReadString(num)
-            If LenB(varname) Then
-                Call SetLitVar(varname, varString, globalHeap)
+            If LenB(varName) Then
+                Call SetLitVar(varName, varString, globalHeap)
             End If
         Next t
         
         'get redirects...
         nCount = BinReadLong(num)
         For t = 1 To nCount
-            varname = BinReadString(num)
+            varName = BinReadString(num)
             varString = BinReadString(num)
-            If LenB(varname) Then
-                Call SetRedirect(varname, varString)
+            If LenB(varName) Then
+                Call SetRedirect(varName, varString)
             End If
         Next t
         
@@ -462,10 +462,10 @@ Public Sub LoadState(ByVal file As String)
 
                 Dim ttt As Long
                 For ttt = 1 To nCount
-                    varname = BinReadString(num)
+                    varName = BinReadString(num)
                     varValue = BinReadDouble(num)
-                    If ((LenB(varname) <> 0) And (LenB(f)) <> 0) Then
-                        Call SetNumVar(varname, varValue, Threads(t).thread.heapStack(tt))
+                    If ((LenB(varName) <> 0) And (LenB(f)) <> 0) Then
+                        Call SetNumVar(varName, varValue, Threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
 
@@ -473,10 +473,10 @@ Public Sub LoadState(ByVal file As String)
                 nCount = BinReadLong(num)
 
                 For ttt = 1 To nCount
-                    varname = BinReadString(num)
+                    varName = BinReadString(num)
                     varString = BinReadString(num)
-                    If ((LenB(varname) <> 0) And (LenB(f)) <> 0) Then
-                        Call SetLitVar(varname, varString, Threads(t).thread.heapStack(tt))
+                    If ((LenB(varName) <> 0) And (LenB(f)) <> 0) Then
+                        Call SetLitVar(varName, varString, Threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
             Next tt
@@ -526,7 +526,7 @@ Public Sub SaveState(ByVal file As String)
                    
         'print num vars...
         Dim nCount As Long
-        nCount = RPGCCountNum(globalHeap)
+        nCount = countNumVars(globalHeap)
         
         Call BinWriteLong(num, nCount)
         
@@ -537,7 +537,7 @@ Public Sub SaveState(ByVal file As String)
         Next t
         
         'print lit vars...
-        nCount = RPGCCountLit(globalHeap)
+        nCount = countLitVars(globalHeap)
         
         Call BinWriteLong(num, nCount)
         
@@ -547,7 +547,7 @@ Public Sub SaveState(ByVal file As String)
         Next t
         
         'print redirects...
-        nCount = RPGCCountRedirects()
+        nCount = countRedirects()
         
         Call BinWriteLong(num, nCount)
         
@@ -645,7 +645,7 @@ Public Sub SaveState(ByVal file As String)
             Dim tt As Long
             For tt = 0 To Threads(t).thread.currentHeapFrame
                 'print num vars...
-                nCount = RPGCCountNum(Threads(t).thread.heapStack(tt))
+                nCount = countNumVars(Threads(t).thread.heapStack(tt))
                 Call BinWriteLong(num, nCount)
                 
                 Dim ttt As Long
@@ -655,7 +655,7 @@ Public Sub SaveState(ByVal file As String)
                 Next ttt
                 
                 'print lit vars...
-                nCount = RPGCCountLit(Threads(t).thread.heapStack(tt))
+                nCount = countLitVars(Threads(t).thread.heapStack(tt))
                 Call BinWriteLong(num, nCount)
                 
                 For ttt = 1 To nCount
