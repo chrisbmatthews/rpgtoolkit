@@ -353,14 +353,10 @@ Public Sub gameLogic()
                     .direction = MV_IDLE
 
                     'Test for a fight
-                    If usingPixelMovement() Then
-                        checkFight = checkFight + 1
-                        If checkFight = 4 Then
-                            Call fightTest
-                            checkFight = 0
-                        End If
-                    Else
+                    checkFight = checkFight + 1
+                    If checkFight = (1 / movementSize) Then
                         Call fightTest
+                        checkFight = 0
                     End If
 
                 End If
