@@ -54,80 +54,109 @@ Public resY As Long
 Private cnvParty As Long
 Private cnvBackground As Long
 
-Private ENEMY_FRAMES_TO_DELAY() As Double
-Private PLAYER_FRAMES_TO_DELAY() As Double
-
+Private enemyFramesToDelay() As Double
+Private playerFramesToDelay() As Double
 Private ranAway As Boolean
 Private canRunAway As Boolean
-
 Private noNewDeaths As Boolean
-
 Private menuGraphic As String
+Public g_lngTranspColor As Long
 
-Public Function Fight( _
-                         ByVal enemyCount As Long, _
-                         ByVal skillLevel As Long, _
-                         ByVal backgroundFile As String, _
-                         ByVal canrun As Long _
-                                                ) As Long
+' Profile pictures
+Public g_cnvProfiles(4) As Long
 
-    '====================================================================================
-    'Fight entry point
-    '====================================================================================
+' Menu
+Private m_cnvMenu As Long
+Private m_cnvWideMenu As Long
+
+'====================================================================================
+' Fight entry point
+'====================================================================================
+Public Function fight( _
+    ByVal enemyCount As Long, _
+    ByVal skillLevel As Long, _
+    ByVal backgroundFile As String, _
+    ByVal canrun As Long _
+) As Long
 
     ranAway = False
-    If canrun = 1 Then
-        canRunAway = True
-    Else
-        canRunAway = False
-    End If
-
+    canRunAway = (canrun = 1)
     noNewDeaths = False
 
-    'Setup enemies
+    ' Setup enemies
     ReDim Enemies(enemyCount - 1)
-    ReDim ENEMY_FRAMES_TO_DELAY(enemyCount - 1)
+    ReDim enemyFramesToDelay(enemyCount - 1)
     Call loadEnemySprites
     Call positionEnemies
 
-    'Walking speed
-    Dim a As Long
-    For a = 0 To UBound(Enemies)
-        ENEMY_FRAMES_TO_DELAY(a) = 1
-    Next a
-    ReDim PLAYER_FRAMES_TO_DELAY(CBGetPartySize(PLAYER_PARTY))
-    For a = 0 To CBGetPartySize(PLAYER_PARTY)
-        PLAYER_FRAMES_TO_DELAY(a) = 1
-    Next a
+    ' Walking speed
+    Dim i As Long
+    For i = 0 To UBound(Enemies)
+        enemyFramesToDelay(i) = 1
+    Next i
+    Dim lngPlayerPartySize As Long
+    lngPlayerPartySize = CBGetPartySize(PLAYER_PARTY)
+    ReDim playerFramesToDelay(lngPlayerPartySize)
+    For i = 0 To lngPlayerPartySize
+        playerFramesToDelay(i) = 1
+    Next i
 
-    'Setup players
-    ReDim Players(CBGetPartySize(PLAYER_PARTY) - 1)
+    ' Setup players
+    ReDim Players(lngPlayerPartySize - 1)
     Call loadPlayerSprites
     Call positionPlayers
 
-    'Any dead players?
-    For a = 0 To UBound(Players)
-        If CBGetFighterHP(PLAYER_PARTY, a) <= 0 Then
-            chargeQueue.playerCharged(a) = -3
+    ' Draw player profiles
+    Dim strProfile As String
+    For i = 0 To 4
+        strProfile = CBGetPlayerString(PLAYER_PROFILE, 0, i)
+        If (CBFileExists("Bitmap\" & strProfile)) Then
+            Call CBCanvasLoadSizedImage(g_cnvProfiles(i), strProfile)
+        Else
+            Call CBCanvasFill(g_cnvProfiles(i), 0)
         End If
-    Next a
+    Next i
 
-    'Load bkg image
+    ' Any dead players?
+    For i = 0 To UBound(Players)
+        If CBGetFighterHP(PLAYER_PARTY, i) <= 0 Then
+            chargeQueue.playerCharged(i) = -3
+        End If
+    Next i
+
+    ' Load bkg image
     cnvBackground = CBCreateCanvas(resX, resY - 100)
     Call CBCanvasFill(cnvBackground, 0)
-    Call CBCanvasDrawBackground(cnvBackground, backgroundFile, 0, 0, resX, resY - 100)
+    If (CBFileExists("Bkrounds\" & backgroundFile)) Then
+        Call CBCanvasDrawBackground(cnvBackground, backgroundFile, 0, 0, resX, resY - 100)
+    Else
+        Call CBCanvasFill(cnvBackground, 0)
+    End If
 
-    'Load the bottom bar thingy
+    ' Load the bottom bar thingy
     cnvParty = CBCreateCanvas(resX, 100)
     menuGraphic = CBGetGeneralString(GEN_FIGHTMENUGRAPHIC, 0, 0)
-    Call CBCanvasLoadSizedImage(cnvParty, menuGraphic)
+    m_cnvMenu = CBCreateCanvas(100, 150)
+    m_cnvWideMenu = CBCreateCanvas(250, 150)
+    If (CBFileExists("Bitmap\" & menuGraphic)) Then
+        Call CBCanvasLoadSizedImage(cnvParty, menuGraphic)
+        Call CBCanvasLoadSizedImage(m_cnvMenu, menuGraphic)
+        Call CBCanvasLoadSizedImage(m_cnvWideMenu, menuGraphic)
+    Else
+        Call CBCanvasFill(cnvParty, 0)
+        Call CBCanvasFill(m_cnvMenu, 0)
+        Call CBCanvasFill(m_cnvWideMenu, 0)
+    End If
 
-    'Run the fight
-    Fight = mainLoop()
+    ' Run the fight
+    fight = mainLoop()
 
-    'Clean up
+    ' Clean up
+    Call CBDestroyCanvas(m_cnvWideMenu)
+    Call CBDestroyCanvas(m_cnvMenu)
     Call CBDestroyCanvas(cnvParty)
     Call CBDestroyCanvas(cnvBackground)
+    Call CBRpgCode("clearBuffer()")
 
 End Function
 
@@ -296,7 +325,7 @@ Private Sub loadPlayerSprites()
                     theAnim = CBGetFighterAnimation(PLAYER_PARTY, a, "DIE")
             End Select
 
-            If theAnim <> "" Then
+            If (LenB(theAnim)) Then
 
                 If b = 0 Then
                     Dim anim As Long
@@ -349,7 +378,7 @@ Private Sub loadEnemySprites()
                     theAnim = CBGetFighterAnimation(ENEMY_PARTY, a, "DIE")
             End Select
 
-            If theAnim <> "" Then
+            If (LenB(theAnim)) Then
 
                 Enemies(a).animations(b) = theAnim
                 If b = 0 Then
@@ -423,7 +452,7 @@ Private Sub renderScene(Optional ByVal pRefreshStats As Long = 0)
 
     Call CBCanvas2CanvasBlt(cnvBackground, cnvScene, 0, 0)
     Call renderState(cnvFieldState)
-    Call CBCanvas2CanvasBltTransparent(cnvFieldState, cnvScene, 0, 0, CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0))
+    Call CBCanvas2CanvasBltTransparent(cnvFieldState, cnvScene, 0, 0, g_lngTranspColor)
 
     If refreshStats Then
         Call renderParty(cnvPartyStats)
@@ -496,10 +525,11 @@ Private Sub renderParty(ByVal cnv As Long)
     For a = 0 To UBound(Players)
         If (members <> 5) Or (a <> 0) Then curX = curX + divy _
         Else: curX = 3
-        Call drawImageTransparent( _
-                                     cnv, _
-                                     CBGetPlayerString(PLAYER_PROFILE, 0, a), _
-                                     curX, 12.5, 75, 75, 0, 0, 0, 0)
+        Call CBCanvas2CanvasBltTransparent(g_cnvProfiles(a), cnv, curX, 12.5, 0)
+        ' Call drawImageTransparent( _
+        '                              cnv, _
+        '                              CBGetPlayerString(PLAYER_PROFILE, 0, a), _
+        '                              curX, 12.5, 75, 75, 0, 0, 0, 0)
         Call CBCanvasDrawText( _
                                  cnv, _
                                  CBGetPlayerString(PLAYER_NAME, 0, a), _
@@ -564,19 +594,18 @@ Private Sub renderPlayers(ByVal retCnv As Long, Optional ByVal a As Long = -1)
     '====================================================================================
 
     If a = -1 Then
-        Dim cnv() As Long
+        Dim cnv As Long
         Dim b As Long
         For b = 0 To UBound(Players)
-            ReDim Preserve cnv(b)
-            cnv(b) = CBCreateCanvas(resX, resY - 100)
-            Call renderPlayers(cnv(b), b)
-            Call CBCanvas2CanvasBltTransparent(cnv(b), retCnv, 0, 0, CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0))
-            Call CBDestroyCanvas(cnv(b))
+            cnv = CBCreateCanvas(resX, resY - 100)
+            Call renderPlayers(cnv, b)
+            Call CBCanvas2CanvasBltTransparent(cnv, retCnv, 0, 0, g_lngTranspColor)
+            Call CBDestroyCanvas(cnv)
         Next b
         Exit Sub
     End If
 
-    Call CBCanvasFill(retCnv, CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0))
+    Call CBCanvasFill(retCnv, g_lngTranspColor)
 
     If chargeQueue.playerCharged(a) = -5 Then
         'Don't draw this player
@@ -587,7 +616,7 @@ Private Sub renderPlayers(ByVal retCnv As Long, Optional ByVal a As Long = -1)
     Dim theFile As String
     If (CBGetFighterHP(PLAYER_PARTY, a) > 0) Or (noNewDeaths And chargeQueue.playerCharged(a) <> -3) Then
         theFile = Players(a).animations(0)
-        If theFile <> "" Then
+        If (LenB(theFile)) Then
             theAnim = CBCreateAnimation(theFile)
 
             Call CBCanvasDrawAnimationFrame( _
@@ -598,7 +627,7 @@ Private Sub renderPlayers(ByVal retCnv As Long, Optional ByVal a As Long = -1)
                                                Players(a).y, _
                                                1)
 
-            Players(a).restCurrentFrame = Players(a).restCurrentFrame + PLAYER_FRAMES_TO_DELAY(a)
+            Players(a).restCurrentFrame = Players(a).restCurrentFrame + playerFramesToDelay(a)
             If Players(a).restCurrentFrame > Players(a).restMaxFrame Then
                 Players(a).restCurrentFrame = 0
             End If
@@ -606,7 +635,7 @@ Private Sub renderPlayers(ByVal retCnv As Long, Optional ByVal a As Long = -1)
     ElseIf chargeQueue.playerCharged(a) = -3 Then
         'Long since dead...
         theFile = Players(a).animations(4)
-        If theFile <> "" Then
+        If (LenB(theFile)) Then
             theAnim = CBCreateAnimation(theFile)
             Call CBCanvasDrawAnimationFrame( _
                                                retCnv, _
@@ -632,19 +661,18 @@ Private Sub renderEnemies(ByVal retCnv As Long, Optional ByVal a As Long = -1)
     '====================================================================================
 
     If a = -1 Then
-        Dim cnv() As Long
+        Dim cnv As Long
         Dim b As Long
         For b = 0 To UBound(Enemies)
-            ReDim Preserve cnv(b)
-            cnv(b) = CBCreateCanvas(resX, resY - 100)
-            Call renderEnemies(cnv(b), b)
-            Call CBCanvas2CanvasBltTransparent(cnv(b), retCnv, 0, 0, CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0))
-            Call CBDestroyCanvas(cnv(b))
+            cnv = CBCreateCanvas(resX, resY - 100)
+            Call renderEnemies(cnv, b)
+            Call CBCanvas2CanvasBltTransparent(cnv, retCnv, 0, 0, g_lngTranspColor)
+            Call CBDestroyCanvas(cnv)
         Next b
         Exit Sub
     End If
 
-    Call CBCanvasFill(retCnv, CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0))
+    Call CBCanvasFill(retCnv, g_lngTranspColor)
 
     If enemyQueue.playerCharged(a) = -5 Then
         'Don't draw this enemy
@@ -655,7 +683,7 @@ Private Sub renderEnemies(ByVal retCnv As Long, Optional ByVal a As Long = -1)
     Dim theFile As String
     If (CBGetFighterHP(ENEMY_PARTY, a) > 0) Or (noNewDeaths And enemyQueue.playerCharged(a) <> -3) Then
         theFile = Enemies(a).animations(0)
-        If theFile <> "" Then
+        If (LenB(theFile)) Then
             theAnim = CBCreateAnimation(theFile)
     
             Call CBCanvasDrawAnimationFrame( _
@@ -668,14 +696,14 @@ Private Sub renderEnemies(ByVal retCnv As Long, Optional ByVal a As Long = -1)
 
             Call CBDestroyAnimation(theAnim)
 
-            Enemies(a).restCurrentFrame = Enemies(a).restCurrentFrame + ENEMY_FRAMES_TO_DELAY(a)
+            Enemies(a).restCurrentFrame = Enemies(a).restCurrentFrame + enemyFramesToDelay(a)
             If Enemies(a).restCurrentFrame > Enemies(a).restMaxFrame Then
                 Enemies(a).restCurrentFrame = 0
             End If
         End If
     ElseIf enemyQueue.playerCharged(a) = -3 Then
         theFile = Enemies(a).animations(4)
-        If theFile <> "" Then
+        If (LenB(theFile)) Then
             theAnim = CBCreateAnimation(theFile)
             Call CBCanvasDrawAnimationFrame( _
                                                retCnv, _
@@ -702,7 +730,7 @@ Private Sub renderState(ByVal cnv As Long)
     Dim retCnv As Long
     retCnv = CBCreateCanvas(resX, resY - 100)
 
-    Call CBCanvasFill(retCnv, CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0))
+    Call CBCanvasFill(retCnv, g_lngTranspColor)
 
     'Render players and enemies
     Call renderPlayers(retCnv)
@@ -783,11 +811,13 @@ Public Function fightInform( _
             Call playAnimation(target, , CBGetSpecialMoveString(SPC_ANIMATION), True)   'move ani
             Call CBRunProgram(CBGetSpecialMoveString(SPC_PRG_FILE))    'rpgcode prg
             'Apply status effect
-            If CBGetSpecialMoveString(SPC_STATUSFX) <> "" Then
+            Dim sfx As String
+            sfx = CBGetSpecialMoveString(SPC_STATUSFX)
+            If (LenB(sfx)) Then
                 Call CBFighterAddStatusEffect( _
                                                  targetPartyIndex, _
                                                  targetFighterIndex, _
-                                                 CBGetSpecialMoveString(SPC_STATUSFX))
+                                                 sfx)
             End If
             If targetHPLost <> 0 Or targetSMPLost <> 0 Then
                 If targetHPLost > 0 Or targetSMPLost > 0 Then
@@ -848,8 +878,8 @@ Private Sub playAnimation( _
     cnvFrame = CBCreateCanvas(resX, resY)
     cnvScene = CBCreateCanvas(resX, resY)
 
-    Call CBCanvasFill(cnvFrame, CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0))
-    Call CBCanvasFill(cnvScene, CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0))
+    Call CBCanvasFill(cnvFrame, g_lngTranspColor)
+    Call CBCanvasFill(cnvScene, g_lngTranspColor)
 
     Dim oldQueue As Long
 
@@ -873,12 +903,13 @@ Private Sub playAnimation( _
     Call CBCanvasGetScreen(cnvScene)
 
     Dim theFile As String
-    If file = "" Then
+    If (LenB(file) = 0) Then
         theFile = target.animations(num)
     Else
         theFile = file
     End If
-    If theFile <> "" Then
+
+    If (LenB(theFile)) Then
         Dim theAnim As Long
         theAnim = CBCreateAnimation(theFile)
         
@@ -903,7 +934,7 @@ Private Sub playAnimation( _
                                                   cnvFrame, _
                                                   cnvScene, _
                                                   0, 0, _
-                                                  CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0))
+                                                  g_lngTranspColor)
             Call CBDrawCanvas(cnvScene, 0, 0)
             Call CBRefreshScreen
             Call CBCanvas2CanvasBlt(cnvSave, cnvScene, 0, 0)
@@ -924,11 +955,7 @@ Private Sub playAnimation( _
     Call CBDestroyCanvas(cnvFrame)
     Call CBDestroyCanvas(cnvScene)
 
-    If noNewDeaths Then
-        Call renderScene(0)
-    Else
-        Call renderScene(1)
-    End If
+    Call renderScene(IIf(noNewDeaths, 0, 1))
 
 End Sub
 
@@ -1113,7 +1140,8 @@ Private Sub mainMenuScanKeys(ByRef player As Fighter)
     Do Until done
 
         Call CBCanvas2CanvasBlt(oldCnv, cnv, 0, 0)
-        Call drawImageTranslucent( _
+        Call CBCanvas2CanvasBltTranslucent(m_cnvMenu, cnv, (resX / 2) - (100 / 2), (resY / 2) - (150 / 2), 0.5, -1, -1)
+        ' Call drawImageTranslucent( _
                                      cnv, _
                                      menuGraphic, _
                                      (resX / 2) - (100 / 2), _
@@ -1233,6 +1261,7 @@ Private Sub mainMenuScanKeys(ByRef player As Fighter)
                         Dim rand As Long
                         Call Randomize(Timer())
                         rand = Int(Rnd(1) * 5) + 1
+                        Call CBRpgCode("clearBuffer()")
                         If rand > 3 Then
                             Call CBRpgCode("MWin(""Ran away successfully!"")")
                             ranAway = True
@@ -1467,7 +1496,7 @@ Private Function specialMoveMenuScanKeys(ByRef player As Fighter) As Boolean
     For a = 0 To CBDetermineSpecialMoves(player.handle)
         Dim filename As String
         filename = CBGetSpecialMoveListEntry(a)
-        If filename <> "" Then
+        If LenB(filename) Then
             Call CBLoadSpecialMove(filename)
             If CBGetSpecialMoveNum(SPC_BATTLEDRIVEN) = 0 Then
                 ReDim Preserve moves(b)
@@ -1497,7 +1526,8 @@ Private Function specialMoveMenuScanKeys(ByRef player As Fighter) As Boolean
     Do Until done
 
         Call CBCanvas2CanvasBlt(oldCnv, cnv, 0, 0)
-        Call drawImageTranslucent( _
+        Call CBCanvas2CanvasBltTranslucent(m_cnvWideMenu, cnv, (resX / 2) - (MOVE_BOX_WIDTH / 2), (resY / 2) - (150 / 2), 0.5, -1, -1)
+        ' Call drawImageTranslucent( _
                                      cnv, _
                                      menuGraphic, _
                                      (resX / 2) - (MOVE_BOX_WIDTH / 2), _
@@ -1586,7 +1616,7 @@ Private Function specialMoveMenuScanKeys(ByRef player As Fighter) As Boolean
         ElseIf isPressed("ENTER", "SPACE") Then
             Dim theMove As String
             theMove = moves(startGrab + menuPos).filename
-            If theMove <> "" Then
+            If LenB(theMove) Then
                 If CBGetFighterSMP(PLAYER_PARTY, player.idx) >= moves(startGrab + menuPos).mp Then
                     Dim tarParty As Long, tarMember As Long
                     Call characterSelect(tarParty, tarMember, ENEMY_PARTY)
@@ -1645,7 +1675,7 @@ Private Function itemMenuScanKeys(ByRef player As Fighter) As Boolean
     For a = 0 To 500
         Dim theFile As String
         theFile = CBGetGeneralString(GEN_INVENTORY_FILES, a, player.idx)
-        If theFile <> "" Then
+        If LenB(theFile) Then
             Call CBLoadItem(theFile, -1)
             If CBGetItemNum(ITM_FIGHT_YN, 0, -1) = 1 Then
                 ReDim Preserve items(b)
@@ -1672,7 +1702,8 @@ Private Function itemMenuScanKeys(ByRef player As Fighter) As Boolean
     Do Until done
 
         Call CBCanvas2CanvasBlt(oldCnv, cnv, 0, 0)
-        Call drawImageTranslucent( _
+        Call CBCanvas2CanvasBltTranslucent(m_cnvWideMenu, cnv, (resX / 2) - (MOVE_BOX_WIDTH / 2), (resY / 2) - (150 / 2), 0.5, -1, -1)
+        ' Call drawImageTranslucent( _
                                      cnv, _
                                      menuGraphic, _
                                      (resX / 2) - (MOVE_BOX_WIDTH / 2), _
@@ -1761,7 +1792,7 @@ Private Function itemMenuScanKeys(ByRef player As Fighter) As Boolean
         ElseIf isPressed("ENTER", "SPACE") Then
             Dim theItem As String
             theItem = items(startGrab + menuPos).filename
-            If theItem <> "" Then
+            If LenB(theItem) Then
                 Dim tarParty As Long, tarMember As Long
                 Call characterSelect(tarParty, tarMember, PLAYER_PARTY)
                 If tarMember <> -1 Then
@@ -1804,7 +1835,7 @@ End Function
 Private Sub cursorMoveSound()
     Dim theSound As String
     theSound = CBGetGeneralString(GEN_CURSOR_MOVESOUND, 0, 0)
-    If theSound <> "" Then
+    If LenB(theSound) Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
     Call CBRpgCode("Delay(0.1)")
@@ -1813,7 +1844,7 @@ End Sub
 Private Sub cursorCancelSound()
     Dim theSound As String
     theSound = CBGetGeneralString(GEN_CURSOR_CANCELSOUND, 0, 0)
-    If theSound <> "" Then
+    If LenB(theSound) Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
     Call CBRpgCode("Delay(0.1)")
@@ -1822,7 +1853,7 @@ End Sub
 Private Sub cursorSelSound()
     Dim theSound As String
     theSound = CBGetGeneralString(GEN_CURSOR_SELSOUND, 0, 0)
-    If theSound <> "" Then
+    If LenB(theSound) Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
     Call CBRpgCode("Delay(0.1)")

@@ -16,6 +16,18 @@ Option Explicit
 Public Sub Plugin_Initialize()
     resX = CBGetGeneralNum(GEN_RESX, 0, 0)
     resY = CBGetGeneralNum(GEN_RESY, 0, 0)
+    g_lngTranspColor = CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0)
+    Dim i As Long
+    For i = 0 To 4
+        g_cnvProfiles(i) = CBCreateCanvas(75, 75)
+    Next i
+End Sub
+
+Public Sub Plugin_Terminate()
+    Dim i As Long
+    For i = 0 To 4
+        Call CBDestroyCanvas(g_cnvProfiles(i))
+    Next i
 End Sub
 
 Public Function Plugin_Version() As String

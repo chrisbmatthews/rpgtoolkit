@@ -683,3 +683,7 @@ End Sub
 Public Sub CBFighterRemoveStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
     transPlugin.CBFighterRemoveStatusEffect partyIdx, fightIdx, statusFile
 End Sub
+
+Public Function CBFileExists(ByVal strFile As String) As Boolean
+    CBFileExists = transPlugin.CBFileExists(strFile)
+End Function

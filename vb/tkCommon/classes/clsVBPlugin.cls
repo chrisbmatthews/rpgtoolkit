@@ -657,4 +657,16 @@ Public Sub CBDrawSizedImageHDC(ByVal file As String, ByVal x As Long, ByVal y As
     Call transPlugin.CBDrawSizedImageHDC(file, x, y, width, height, hdc)
 End Sub
 
+Public Function CBCanvasOpenHdc(ByVal cnv As Long)
+    CBCanvasOpenHdc = canvasOpenHDC(cnv)
+End Function
+
+Public Sub CBCanvasCloseHdc(ByVal cnv As Long, ByVal hdc As Long)
+    Call canvasCloseHDC(cnv, hdc)
+End Sub
+
+Public Function CBFileExists(ByVal strFile As String) As Boolean
+    CBFileExists = fileExists(projectPath & strFile)
+End Function
+
 #End If

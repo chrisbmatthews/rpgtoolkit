@@ -37,17 +37,21 @@ Public Function Plugin_Description() As String
     Plugin_Description = modMisc.Plugin_Description
 End Function
 
+Public Sub Plugin_Terminate()
+    Call modMisc.Plugin_Terminate
+End Sub
+
 Public Function plugType(ByVal request As Long) As Boolean
     plugType = modMisc.plugType(request)
 End Function
 
-Public Function Fight( _
+Public Function fight( _
                          ByVal enemyCount As Long, _
                          ByVal skillLevel As Long, _
                          ByVal backgroundFile As String, _
                          ByVal canrun As Long _
                                                 ) As Long
-    Fight = modBattleSystem.Fight( _
+    fight = modBattleSystem.fight( _
                                      enemyCount, _
                                      skillLevel, _
                                      backgroundFile, _

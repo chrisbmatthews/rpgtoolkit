@@ -416,7 +416,7 @@ Private Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     
     If exp > 0 Or gp > 0 Then
         'give players experience...
-        Call canvasGetScreen(cnvRPGCodeScreen)
+        Call canvasGetScreen(cnvRpgCodeScreen)
         lineNum = 1
         If exp > 0 Then
             Call AddToMsgBox("Players gained " & CStr(exp) & " experience!", thePrg)
@@ -452,7 +452,7 @@ Public Sub gameOver()
     Dim theProgram As RPGCodeProgram
     Call InitRPGCodeProcess(theProgram)
     theProgram.boardNum = -1
-    Call canvasGetScreen(cnvRPGCodeScreen)
+    Call canvasGetScreen(cnvRpgCodeScreen)
     If (LenB(mainMem.gameOverPrg) = 0) Then
         Call DXClearScreen(0)
         Call DXDrawText(1, 1, "Game Over...", "Arial", 48, RGB(255, 255, 255), 1, 0, 0, 0, 0)
@@ -555,7 +555,7 @@ Public Sub runFight( _
 
             Select Case fightOutcome
 
-                Case FIGHT_RUN_AUTO     'R an away
+                Case FIGHT_RUN_AUTO     ' Ran away
                     Call runProgram(projectPath & prgPath & strRunProgram)
 
                 Case FIGHT_WON_AUTO     ' Players won
@@ -567,7 +567,7 @@ Public Sub runFight( _
             End Select
 
             ' Play old music
-            boardList(activeBoardIndex).theData.boardMusic = "..\..\..\" & oldSong
+            boardList(activeBoardIndex).theData.boardMusic = Mid$(oldSong, InStrRev(oldSong, "\") + 1)
             Call checkMusic(True)
 
             ' Flag the fight has ended

@@ -6966,14 +6966,14 @@ Sub TanRPG(ByVal Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
                 Exit Sub
             End If
             retval.dataType = DT_NUM
-            retval.num = Tan(radians(paras(0).num))
+            retval.num = tan(radians(paras(0).num))
         
         Case 2
             If Not paras(0).dataType = DT_NUM Then
                 debugger "Tan() requires a numerical data element-- " & Text
                 Exit Sub
             End If
-            SetVariable paras(1).dat, Tan(radians(paras(0).num)), theProgram
+            SetVariable paras(1).dat, tan(radians(paras(0).num)), theProgram
 
         Case Else
             debugger "Tan() requires one or two data elements-- " & Text

@@ -83,6 +83,6 @@ End Function
 '=========================================================================
 ' Obtain the top value
 '=========================================================================
-Public Function top() As Long
-    top = m_queue(m_len)
+Public Function Top() As Long
+    Top = m_queue(m_len)
 End Function
