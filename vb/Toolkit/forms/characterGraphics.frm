@@ -62,7 +62,7 @@ Begin VB.Form characterGraphics
          Appearance      =   0  'Flat
          Height          =   285
          Left            =   4200
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   5640
          Width           =   735
       End
@@ -70,7 +70,7 @@ Begin VB.Form characterGraphics
          Appearance      =   0  'Flat
          Height          =   285
          Left            =   1800
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   5640
          Width           =   735
       End
@@ -81,14 +81,14 @@ Begin VB.Form characterGraphics
          ItemData        =   "characterGraphics.frx":0CCE
          Left            =   3240
          List            =   "characterGraphics.frx":0CD0
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   435
          Width           =   3015
       End
       Begin Toolkit.TKButton butDelete 
          Height          =   375
          Left            =   1440
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   4920
          Width           =   1095
          _ExtentX        =   661
@@ -99,7 +99,7 @@ Begin VB.Form characterGraphics
       Begin Toolkit.TKButton butNew 
          Height          =   375
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   4920
          Width           =   1215
          _ExtentX        =   661
@@ -107,28 +107,13 @@ Begin VB.Form characterGraphics
          Object.Width           =   360
          Caption         =   "New"
       End
-      Begin VB.PictureBox picStop 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         ForeColor       =   &H80000008&
-         Height          =   435
-         Left            =   3840
-         MousePointer    =   99  'Custom
-         Picture         =   "characterGraphics.frx":0CD2
-         ScaleHeight     =   405
-         ScaleWidth      =   435
-         TabIndex        =   11
-         Top             =   4920
-         Width           =   465
-      End
       Begin VB.ListBox lstCustom 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
          Height          =   1005
-         ItemData        =   "characterGraphics.frx":41CA
+         ItemData        =   "characterGraphics.frx":0CD2
          Left            =   120
-         List            =   "characterGraphics.frx":41CC
+         List            =   "characterGraphics.frx":0CD4
          TabIndex        =   7
          Top             =   3840
          Width           =   3015
@@ -140,7 +125,7 @@ Begin VB.Form characterGraphics
          Height          =   442
          Left            =   3240
          MousePointer    =   99  'Custom
-         Picture         =   "characterGraphics.frx":41CE
+         Picture         =   "characterGraphics.frx":0CD6
          ScaleHeight     =   405
          ScaleWidth      =   435
          TabIndex        =   6
@@ -155,7 +140,7 @@ Begin VB.Form characterGraphics
          Height          =   375
          Left            =   5760
          MousePointer    =   99  'Custom
-         Picture         =   "characterGraphics.frx":4B58
+         Picture         =   "characterGraphics.frx":1660
          ScaleHeight     =   375
          ScaleWidth      =   615
          TabIndex        =   5
@@ -166,9 +151,9 @@ Begin VB.Form characterGraphics
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
          Height          =   1590
-         ItemData        =   "characterGraphics.frx":5142
+         ItemData        =   "characterGraphics.frx":1C4A
          Left            =   120
-         List            =   "characterGraphics.frx":5144
+         List            =   "characterGraphics.frx":1C4C
          TabIndex        =   2
          Top             =   435
          Width           =   3015
@@ -192,7 +177,7 @@ Begin VB.Form characterGraphics
          ScaleHeight     =   49
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   81
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   3480
          Width           =   1215
       End
@@ -201,7 +186,7 @@ Begin VB.Form characterGraphics
          Caption         =   "Seconds between each frame:"
          Height          =   495
          Left            =   2760
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   5520
          Width           =   1575
       End
@@ -210,7 +195,7 @@ Begin VB.Form characterGraphics
          Caption         =   "Seconds before player is considered idle:"
          Height          =   495
          Left            =   120
-         TabIndex        =   20
+         TabIndex        =   19
          Top             =   5520
          Width           =   1695
       End
@@ -221,7 +206,7 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   975
          Left            =   3360
-         TabIndex        =   19
+         TabIndex        =   18
          Top             =   2520
          Visible         =   0   'False
          Width           =   2175
@@ -240,7 +225,7 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3240
-         TabIndex        =   17
+         TabIndex        =   16
          Top             =   2160
          Width           =   2535
       End
@@ -251,7 +236,7 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   195
          Width           =   3015
       End
@@ -262,7 +247,7 @@ Begin VB.Form characterGraphics
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3240
-         TabIndex        =   14
+         TabIndex        =   13
          Top             =   195
          Width           =   3015
       End
@@ -460,7 +445,6 @@ Private Sub Form_Load(): On Error Resume Next
     
     'Set the mousecursor of the 2 buttons
     picPlay.MouseIcon = Images.MouseLink()
-    picStop.MouseIcon = Images.MouseLink()
     picBrowse.MouseIcon = Images.MouseLink()
     
     'Set the default selected item
@@ -699,13 +683,6 @@ Private Sub butOK_Click(): On Error Resume Next
 End Sub
 
 '========================================================================
-' Stop button
-'========================================================================
-Private Sub picStop_Click(): On Error Resume Next
-    picPlay.Visible = True
-End Sub
-
-'========================================================================
 ' The Play Button
 '========================================================================
 Private Sub picPlay_Click(): On Error Resume Next
@@ -743,6 +720,7 @@ Private Sub picPlay_Click(): On Error Resume Next
             'Un-enable some stuff
             picPlay.Visible = False
             ignore = 1
+            DoEvents
             
             'Animate it
             Call picAnim.cls
