@@ -30,7 +30,7 @@ EXPORTS
 	GFXBitBltTransparent @23
 	GFXBitBltTranslucent @24
 	GFXBitBltAdditive	 @25
-	GFXSetCurrentTileString	@26
+	; GFXSetCurrentTileString	@26
 	GFXClearTileCache	@27
 	GFXGetDOSColor		 @28
 	GFXKill				@29
