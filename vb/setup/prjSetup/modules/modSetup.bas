@@ -72,7 +72,7 @@ Private Function isFileOpen(ByRef strFileName As String) As Boolean
     Dim hFile As Long, lngError As Long
 
     ' Attempt to open exclusively
-    hFile = lOpen(strFileName, &H10)
+    hFile = lOpen(strFileName, OF_SHARE_EXCLUSIVE)
 
     If (hFile = -1) Then
 
