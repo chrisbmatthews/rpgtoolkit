@@ -239,11 +239,9 @@ Public Sub fightInformSpecialMove(ByVal sourcePartyIndex As Long, ByVal sourceFi
     If fightInProgress Then
         'yup-- send it
         If mainMem.fightPlugin <> "" Then
-            Dim code As Long
-            code = INFORM_SOURCE_SMP
+            Const code = INFORM_SOURCE_SMP
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
-            
             If isVBPlugin(plugName) Then
                 Call VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
             Else
@@ -264,8 +262,7 @@ Public Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
     If fightInProgress Then
         'yup-- send it
         If mainMem.fightPlugin <> "" Then
-            Dim code As Long
-            code = INFORM_SOURCE_PARTY_DEFEATED
+            Const code = INFORM_SOURCE_PARTY_DEFEATED
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             If isVBPlugin(plugName) Then
@@ -288,8 +285,7 @@ Public Sub fightInformCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
     If fightInProgress Then
         'yup-- send it
         If mainMem.fightPlugin <> "" Then
-            Dim code As Long
-            code = INFORM_SOURCE_CHARGED
+            Const code = INFORM_SOURCE_CHARGED
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             If isVBPlugin(plugName) Then

@@ -1,111 +1,100 @@
 Attribute VB_Name = "CommonItem"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'Item Editor:
+'=========================================================================
+' RPGToolkit item file format (*.itm)
+'=========================================================================
+
 Option Explicit
 
-''''''''''''''''''''''item data'''''''''''''''''''''''''
+'=========================================================================
+' Member constants
+'=========================================================================
+Private Const ITEM_WALK_S = 0
+Private Const ITEM_WALK_N = 1
+Private Const ITEM_WALK_E = 2
+Private Const ITEM_WALK_W = 3
+Private Const ITEM_WALK_NW = 4
+Private Const ITEM_WALK_NE = 5
+Private Const ITEM_WALK_SW = 6
+Private Const ITEM_WALK_SE = 7
+Private Const ITEM_REST = 8
 
-'indicies of char gfx
-Public Const ITEM_WALK_S = 0
-Public Const ITEM_WALK_N = 1
-Public Const ITEM_WALK_E = 2
-Public Const ITEM_WALK_W = 3
-Public Const ITEM_WALK_NW = 4
-Public Const ITEM_WALK_NE = 5
-Public Const ITEM_WALK_SW = 6
-Public Const ITEM_WALK_SE = 7
-Public Const ITEM_REST = 8
-
-Type TKItem
-    itemName As String            'Item name (handle)
-    ITMDescription As String     'description of item (one-line string)
-    EquipYN As Byte              'Equipable item? 0- No, 1- yes
-    MenuYN As Byte               'Menu item? 0-No, 1-Y
-    BoardYN As Byte              'Board item? 0-N, 1-Y
-    FightYN As Byte              'Battle item? 0-N, 1-Y
-
-    usedBy As Byte               'Item used by 0-all 1-defined
-    itmChars(50) As String       '50 characters who can use the item
-    buyPrice As Long          'price to buy at
-    sellPrice As Long         'price to sell at
-    keyItem As Byte              'is it a key item (0-no, 1-yes)
-
-'Equipable:
-    itemarmor(7) As Byte         'Equip on what body locations? 1-7 (head->accessory)
-    accessory As String          'Accessory name
-    equipHP As Long           'Hp increase when equipped
-    equipDP As Long           'dp increase when equipped
-    equipFP As Long           'fp increase when equipped
-    equipSM As Long           'sm increase when equipped
-    prgEquip As String           'prg to run when equipped
-    prgRemove As String          'prg to run when remobed
-'Menu-driven:
-    mnuHPup As Long           'HP increase when used from menu
-    mnuSMup As Long           'SMP increase wjen used from menu
-    mnuUse As String             'program to run when used from menu
-'battle-driven:
-    fgtHPup As Long           'HP increase when used from fight
-    fgtSMup As Long           'SMP increase wjen used from fight
-    fgtUse As String             'program to run when used from fight
-    itmAnimation As String       'animation for battle
-'board-driven:
-    itmPrgOnBoard As String      'Program to run while item is on board
-    itmPrgPickUp As String       'Program to run when picked up.
-    
-    itmSizeType As Byte          'graphics size type 0=32x32, 1=64x32
-
-    gfx(9) As String         'filenames of standard animations for graphics
-    customGfx() As String   'customized animations
-    customGfxNames() As String   'customized animations (handles)
-
+'=========================================================================
+' An item
+'=========================================================================
+Public Type TKItem
+    itemName As String          'Item name (handle)
+    itmDescription As String    'description of item (one-line string)
+    EquipYN As Byte             'Equipable item? 0- No, 1- yes
+    MenuYN As Byte              'Menu item? 0-No, 1-Y
+    BoardYN As Byte             'Board item? 0-N, 1-Y
+    FightYN As Byte             'Battle item? 0-N, 1-Y
+    usedBy As Byte              'Item used by 0-all 1-defined
+    itmChars(50) As String      '50 characters who can use the item
+    buyPrice As Long            'price to buy at
+    sellPrice As Long           'price to sell at
+    keyItem As Byte             'is it a key item (0-no, 1-yes)
+    itemArmor(7) As Byte        'Equip on what body locations? 1-7 (head->accessory)
+    accessory As String         'Accessory name
+    equipHP As Long             'Hp increase when equipped
+    equipDP As Long             'dp increase when equipped
+    equipFP As Long             'fp increase when equipped
+    equipSM As Long             'sm increase when equipped
+    prgEquip As String          'prg to run when equipped
+    prgRemove As String         'prg to run when remobed
+    mnuHPup As Long             'HP increase when used from menu
+    mnuSMup As Long             'SMP increase wjen used from menu
+    mnuUse As String            'program to run when used from menu
+    fgtHPup As Long             'HP increase when used from fight
+    fgtSMup As Long             'SMP increase wjen used from fight
+    fgtUse As String            'program to run when used from fight
+    itmAnimation As String      'animation for battle
+    itmPrgOnBoard As String     'Program to run while item is on board
+    itmPrgPickUp As String      'Program to run when picked up.
+    itmSizeType As Byte         'graphics size type 0=32x32, 1=64x32
+    gfx(9) As String            'filenames of standard animations for graphics
+    customGfx() As String       'customized animations
+    customGfxNames() As String  'customized animations (handles)
     #If isToolkit = 0 Then
-        'Not in file-- used by trans
         bIsActive As Boolean    'is item active?
     #End If
 End Type
 
-Type itemDoc
+'=========================================================================
+' An item document
+'=========================================================================
+Public Type itemDoc
     itemFile As String        'filename
-    itemNeedUpdate As Boolean
-    itmLayTile As Boolean   'about to lay a tile?
-    theData As TKItem
+    itemNeedUpdate As Boolean 'needs saving?
+    itmLayTile As Boolean     'about to lay a tile?
+    theData As TKItem         'the item data
 End Type
 
-Function canItemEquip(ByVal file As String) As Boolean
-    'sees if an item is equippable
-    'returns true or false
-    'opens item file
+'=========================================================================
+' Check if an item is equippable
+'=========================================================================
+Public Function canItemEquip(ByVal file As String) As Boolean
     On Error Resume Next
-    If file$ = "" Then canItemEquip = False: Exit Function
-    Dim anItem As TKItem
-    anItem = openItem(file$)
-    If anItem.EquipYN = 0 Then
-        canItemEquip = False
-    Else
+    If openItem(file$).EquipYN = 1 Then
         canItemEquip = True
     End If
 End Function
 
+'=========================================================================
+' Get an item stance
+'=========================================================================
 Public Function itemGetStanceAnm(ByVal stance As String, ByRef theItem As TKItem) As String
-    'obtain the animation filename of a specific stance
-    'built-in stances:
-    'WALK_S
-    'WALK_N
-    'WALK_E
-    'WALK_W
-    'WALK_NW
-    'WALK_NE
-    'WALK_SW
-    'WALK_SE
-    'REST
-    'Also searches custom stances
+
     On Error Resume Next
+
     Dim toRet As String
-    
-    stance = UCase$(stance)
+    stance = UCase(stance)
+
     Select Case stance
         Case "WALK_S":
             toRet = theItem.gfx(ITEM_WALK_S)
@@ -150,12 +139,12 @@ Public Function itemGetStanceAnm(ByVal stance As String, ByRef theItem As TKItem
     itemGetStanceAnm = toRet
 End Function
 
-Function itemGetCustomHandleIdx(ByRef theItem As TKItem, ByVal idx As Long) As Long
-    'return the handle of the idx-th custom gfx (not counting ones with "" as their handles)
+'=========================================================================
+' Get the handle of the idx-th custom stance
+'=========================================================================
+Public Function itemGetCustomHandleIdx(ByRef theItem As TKItem, ByVal idx As Long) As Long
     On Error Resume Next
-    
     Dim cnt As Long, t As Long
-    
     For t = 0 To UBound(theItem.customGfxNames)
         If theItem.customGfxNames(t) <> "" Then
             If cnt = idx Then
@@ -168,8 +157,11 @@ Function itemGetCustomHandleIdx(ByRef theItem As TKItem, ByVal idx As Long) As L
     Next t
 End Function
 
-Sub itemAddCustomGfx(ByRef theItem As TKItem, ByVal handle As String, ByVal anim As String)
-    'add a custom animation to the item
+'=========================================================================
+' Add a custom stance
+'=========================================================================
+Public Sub itemAddCustomGfx(ByRef theItem As TKItem, ByVal handle As String, ByVal anim As String)
+
     On Error Resume Next
     
     'search for empty slot...
@@ -193,73 +185,68 @@ Sub itemAddCustomGfx(ByRef theItem As TKItem, ByVal handle As String, ByVal anim
     theItem.customGfxNames(tt + 1) = handle
 End Sub
 
-Function getItemName(ByVal file$) As String
-    'gets an item name from a filename
+'=========================================================================
+' Get an item's name
+'=========================================================================
+Public Function getItemName(ByVal file As String) As String
     On Error Resume Next
-    Dim num As Long
-    num = FreeFile
-    If file$ = "" Then Exit Function
-    
-    Dim anItem As TKItem
-    anItem = openItem(file$)
-    getItemName = anItem.itemName
+    getItemName = openItem(file$).itemName
 End Function
 
-Sub ItemClear(ByRef theItem As TKItem)
-    'clear the item
+'=========================================================================
+' Clear an item
+'=========================================================================
+Public Sub ItemClear(ByRef theItem As TKItem)
     On Error Resume Next
-    theItem.itemName = ""
-    theItem.ITMDescription = ""
-    theItem.EquipYN = 0
-    theItem.MenuYN = 0
-    theItem.BoardYN = 0
-    theItem.FightYN = 0
-
-    theItem.usedBy = 0
-    Dim t As Long
-    For t = 0 To 50
-        theItem.itmChars(t) = ""
-    Next t
-    theItem.buyPrice = 0
-    theItem.sellPrice = 0
-    theItem.keyItem = 0
-
-'Equipable:
-    For t = 0 To 7
-        theItem.itemarmor(t) = 0
-    Next t
-    theItem.accessory = ""
-    theItem.equipHP = 0
-    theItem.equipDP = 0
-    theItem.equipFP = 0
-    theItem.equipSM = 0
-    theItem.prgEquip = ""
-    theItem.prgRemove = ""
-'Menu-driven:
-    theItem.mnuHPup = 0
-    theItem.mnuSMup = 0
-    theItem.mnuUse = ""
-'battle-driven:
-    theItem.fgtHPup = 0
-    theItem.fgtSMup = 0
-    theItem.fgtUse = ""
-    theItem.itmAnimation = ""
-'board-driven:
-    theItem.itmPrgOnBoard = ""
-    theItem.itmPrgPickUp = ""
-    
-    theItem.itmSizeType = 1
-
-    For t = 0 To UBound(theItem.gfx)
-        theItem.gfx(t) = ""
-    Next t
-    For t = 0 To UBound(theItem.customGfx)
-        theItem.customGfx(t) = ""
-    Next t
-    ReDim theItem.customGfx(5)
-    ReDim theItem.customGfxNames(5)
+    With theItem
+        .itemName = ""
+        .itmDescription = ""
+        .EquipYN = 0
+        .MenuYN = 0
+        .BoardYN = 0
+        .FightYN = 0
+        .usedBy = 0
+        Dim t As Long
+        For t = 0 To 50
+            .itmChars(t) = ""
+        Next t
+        .buyPrice = 0
+        .sellPrice = 0
+        .keyItem = 0
+        For t = 0 To 7
+            .itemArmor(t) = 0
+        Next t
+        .accessory = ""
+        .equipHP = 0
+        .equipDP = 0
+        .equipFP = 0
+        .equipSM = 0
+        .prgEquip = ""
+        .prgRemove = ""
+        .mnuHPup = 0
+        .mnuSMup = 0
+        .mnuUse = ""
+        .fgtHPup = 0
+        .fgtSMup = 0
+        .fgtUse = ""
+        .itmAnimation = ""
+        .itmPrgOnBoard = ""
+        .itmPrgPickUp = ""
+        .itmSizeType = 1
+        For t = 0 To UBound(.gfx)
+            .gfx(t) = ""
+        Next t
+        For t = 0 To UBound(.customGfx)
+            .customGfx(t) = ""
+        Next t
+        ReDim .customGfx(5)
+        ReDim .customGfxNames(5)
+    End With
 End Sub
 
+'=========================================================================
+' Open an item
+'=========================================================================
 Public Function openItem(ByVal file As String) As TKItem
 
     'opens item file
@@ -282,7 +269,6 @@ Public Function openItem(ByVal file As String) As TKItem
     Dim anm As TKAnimation
     ReDim itmwalkGfx(15, 1) As String  'walking graphics filenames for 64x32 gfx (x, 0 or 1) 0=top, 1=bottom
     ReDim itmrestGfx(1) As String      'at rest gfx for 64x32 gfx
-       
        
     'set us up for conversion of old-style embedded tiles
     'we'll take embedded tiles and spit them out as a tileset.
@@ -321,7 +307,7 @@ Public Function openItem(ByVal file As String) As TKItem
         If majorVer <> major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Function
         
         theItem.itemName = BinReadString(num)
-        theItem.ITMDescription = BinReadString(num)
+        theItem.itmDescription = BinReadString(num)
         theItem.EquipYN = BinReadByte(num)
         theItem.MenuYN = BinReadByte(num)
         theItem.BoardYN = BinReadByte(num)
@@ -342,7 +328,7 @@ Public Function openItem(ByVal file As String) As TKItem
 
         'Equipable:
         For t = 0 To 7
-            theItem.itemarmor(t) = BinReadByte(num)
+            theItem.itemArmor(t) = BinReadByte(num)
         Next t
         theItem.accessory = BinReadString(num)
         If minorVer >= 3 Then
@@ -495,7 +481,7 @@ ver2olditem:
         theItem.BoardYN = fread(num)      'Board item? 0-N, 1-Y
         theItem.FightYN = fread(num)      'Battle item? 0-N, 1-Y
         For t = 1 To 7
-            theItem.itemarmor(t) = fread(num) 'Equip on what body locations? 1-7 (head->accessory)
+            theItem.itemArmor(t) = fread(num) 'Equip on what body locations? 1-7 (head->accessory)
         Next t
         theItem.accessory = fread(num)   'Accessory name
         theItem.equipHP = fread(num)      'Hp increase when equipped
@@ -603,7 +589,7 @@ ver2olditem:
         theItem.buyPrice = fread(num)
         theItem.sellPrice = fread(num)
         theItem.keyItem = fread(num)             'is it a key item (0-no, 1-yes)
-        theItem.ITMDescription = fread(num)      'description (one-line)
+        theItem.itmDescription = fread(num)      'description (one-line)
         theItem.itmAnimation = fread(num)
     
         'create animations...
@@ -689,15 +675,19 @@ ver2olditem:
 
 End Function
 
-Sub saveitem(ByVal file As String, ByRef theItem As TKItem)
-    'saves item file
+'=========================================================================
+' Save an item
+'=========================================================================
+Public Sub saveItem(ByVal file As String, ByRef theItem As TKItem)
+
     On Error Resume Next
     
     Dim num As Long, t As Long
-    num = FreeFile
     If file$ = "" Then Exit Sub
     
-    Kill file$
+    num = FreeFile()
+    
+    Call Kill(file)
     
     Open file$ For Binary As #num
         Call BinWriteString(num, "RPGTLKIT ITEM")    'Filetype
@@ -705,7 +695,7 @@ Sub saveitem(ByVal file As String, ByRef theItem As TKItem)
         Call BinWriteInt(num, 4)    'Minor version (1= ie 2.1 = 64x32 cgfx allowed 2= binary, 3=longs used instead of ints, 4=Version 3 item-- use animations for gfx)
         
         Call BinWriteString(num, theItem.itemName)
-        Call BinWriteString(num, theItem.ITMDescription)
+        Call BinWriteString(num, theItem.itmDescription)
         Call BinWriteByte(num, theItem.EquipYN)
         Call BinWriteByte(num, theItem.MenuYN)
         Call BinWriteByte(num, theItem.BoardYN)
@@ -721,7 +711,7 @@ Sub saveitem(ByVal file As String, ByRef theItem As TKItem)
 
         'Equipable:
         For t = 0 To 7
-            Call BinWriteByte(num, theItem.itemarmor(t))
+            Call BinWriteByte(num, theItem.itemArmor(t))
         Next t
         Call BinWriteString(num, theItem.accessory)
         Call BinWriteLong(num, theItem.equipHP)

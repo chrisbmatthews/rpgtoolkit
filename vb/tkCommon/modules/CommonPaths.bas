@@ -1,63 +1,66 @@
 Attribute VB_Name = "CommonPaths"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
+
+'=========================================================================
+' Path related routines
+'=========================================================================
 
 Option Explicit
 
-Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
-Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
-Declare Function GetWindowsDirectory Lib "kernel32" Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
-Declare Function GetShortPathName Lib "kernel32" _
-    Alias "GetShortPathNameA" (ByVal lpszLongPath As String, _
-    ByVal lpszShortPath As String, ByVal cchBuffer As Long) As Long
+'=========================================================================
+' Win32 APIs
+'=========================================================================
+Private Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
+Private Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
+Private Declare Function GetWindowsDirectory Lib "kernel32" Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
+Private Declare Function GetShortPathName Lib "kernel32" Alias "GetShortPathNameA" (ByVal lpszLongPath As String, ByVal lpszShortPath As String, ByVal cchBuffer As Long) As Long
 
-Sub ChangeDir(newdir As String)
+'=========================================================================
+' Change current directory
+'=========================================================================
+Public Sub ChangeDir(ByVal newDir As String)
     On Error Resume Next
-    
-    'changes current diirectory (and drive) if it has to.
     Dim p As String
     Dim dr As String
-    p = GetPath(newdir)
-    'now get first few chars to see if we need to change drive...
+    p = GetPath(newDir)
     dr = Mid(p, 1, 2)
-
     If Mid(dr, 2, 1) = ":" Then
-        'yup-- the dirive is there.  let's change the drive!
         dr = Mid(p, 1, 3)
         Call ChDrive(dr$)
     End If
-    
-    ChDir (newdir)
-
+    Call ChDir(newDir)
 End Sub
 
+'=========================================================================
+' Return the path to the system directory
+'=========================================================================
 Public Function SystemDir() As String
-    'returns path of windows\system dir
-    ''returns path with the ending '\' on it
     On Error Resume Next
     Dim ret As String * 400
     Dim le As Long
     le = GetSystemDirectory(ret, 400)
-    SystemDir = Mid$(ret, 1, le) + "\"
-
-    Exit Function
+    SystemDir = Mid$(ret, 1, le) & "\"
 End Function
 
+'=========================================================================
+' Return the path to the windows directory
+'=========================================================================
 Public Function WindowsDir() As String
-    'returns path of windows dir
-    ''returns path with the ending '\' on it
     On Error Resume Next
     Dim ret As String * 400
     Dim le As Long
     le = GetWindowsDirectory(ret, 400)
-    WindowsDir = Mid$(ret, 1, le) + "\"
-
+    WindowsDir = Mid$(ret, 1, le) & "\"
 End Function
 
+'=========================================================================
+' Return the path to the temp directory
+'=========================================================================
 Public Function TempDir() As String
-    'returns path of temp dir
-    ''returns path with the ending '\' on it
     On Error Resume Next
     Dim ret As String * 400
     Dim le As Long
@@ -65,12 +68,12 @@ Public Function TempDir() As String
     TempDir = Mid$(ret, 1, le)
 End Function
 
-Public Function GetExt(inFile As String) As String
-    'returns the extention of a filename
+'=========================================================================
+' Get extension of a file (gotta be fifteen functions like this!)
+'=========================================================================
+Public Function GetExt(ByVal inFile As String) As String
     On Error Resume Next
     Dim theloc As Long, t As Long, part As String, theext As String
-    theloc = 0
-
     'step 1: search backwars for '.'
     For t = Len(inFile) To 1 Step -1
         part$ = Mid$(inFile, t, 1)
@@ -86,30 +89,26 @@ Public Function GetExt(inFile As String) As String
             Exit For
         End If
     Next t
-    
     'step 2: check if extention wasn't found...
     If theloc = 0 Then
         GetExt = ""
         Exit Function
     End If
-    
     'step 3: extract extention after the '.'
     theext$ = ""
     For t = theloc + 1 To Len(inFile)
         part$ = Mid$(inFile, t, 1)
         theext$ = theext & part$
     Next t
-    
     GetExt = theext$
 End Function
 
-Public Function GetPath(inFile As String) As String
-    'returns the path of a filename
-    'note: returns path *with* the '\' at end
+'=========================================================================
+' Get path of a file
+'=========================================================================
+Public Function GetPath(ByVal inFile As String) As String
     On Error Resume Next
     Dim theloc As Long, part As String, thept As String, t As Long
-    theloc = 0
-    
     'step 1: search backwars for '\' or '/'
     For t = Len(inFile) To 1 Step -1
         part$ = Mid$(inFile, t, 1)
@@ -119,27 +118,27 @@ Public Function GetPath(inFile As String) As String
             Exit For
         End If
     Next t
-    
     'step 2: check if path wasn't found...
     If theloc = 0 Then
         GetPath = ""
         Exit Function
     End If
-    
     'step 3: extract path before the '/' or '\'
     thept$ = ""
     For t = 1 To theloc
         part$ = Mid$(inFile, t, 1)
         thept$ = thept & part$
     Next t
-    
     GetPath = thept$
 End Function
 
-Public Function GetPathNoSlash(inFile As String) As String
-    'returns the path of a filename
-    'note: returns path *without* the '\' at end
+'=========================================================================
+' Get path of a file minus the \
+'=========================================================================
+Public Function GetPathNoSlash(ByVal inFile As String) As String
+
     On Error Resume Next
+
     Dim theloc As Long, t As Long, part As String, thept As String
     theloc = 0
     
@@ -169,12 +168,14 @@ Public Function GetPathNoSlash(inFile As String) As String
     GetPathNoSlash = thept$
 End Function
 
+'=========================================================================
+' Remove path from a file
+'=========================================================================
+Public Function RemovePath(ByVal inFile As String) As String
 
-Public Function RemovePath(inFile As String) As String
-    'returns the filename without it's path
     On Error Resume Next
+
     Dim theloc As Long, t As Long, part As String, thefn As String
-    theloc = 0
     
     'step 1: search backwars for '\' or '/'
     For t = Len(inFile) To 1 Step -1
@@ -202,19 +203,19 @@ Public Function RemovePath(inFile As String) As String
     RemovePath = thefn$
 End Function
 
+'=========================================================================
+' Determine if a file exists
+'=========================================================================
 Public Function fileExists(ByVal inFile As String) As Boolean
-    'checks if a file exists.
-    'returns t/f
-    On Error GoTo feerr
+    On Local Error GoTo feErr
     Dim num As Long, retval As Boolean
-    num = FreeFile
+    num = FreeFile()
     retval = True
-    Open inFile For Input As #num
-    Close #num
+    Open inFile For Input Access Read As num
+    Close num
     fileExists = retval
     Exit Function
-    
-feerr:
+feErr:
     retval = False
     Resume Next
 End Function

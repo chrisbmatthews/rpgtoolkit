@@ -6,7 +6,7 @@ Attribute VB_Name = "transMain"
 '=======================================================================
 
 '=======================================================================
-' Trans engine entry procedures
+' Trans engine entry (and exit) procedures
 ' Status: A-
 '=======================================================================
 
@@ -51,14 +51,14 @@ Public Sub Main()
     Call initDefaults
 
     'Get a main filename
-    Dim mainfile As String
-    mainfile = getMainFilename()
+    Dim mainFile As String
+    mainFile = getMainFilename()
 
     'If we got one
-    If mainfile <> "" Then
+    If mainFile <> "" Then
 
         'Open the main file
-        Call openMain(mainfile, mainMem)
+        Call openMain(mainFile, mainMem)
 
         'Startup
         Call openSystems
@@ -106,8 +106,8 @@ Private Function getMainFilename() As String
     ' + File dialog
 
     On Error Resume Next
-   
-    If Command <> "" Then
+
+    If (Command <> "") Then
 
         Dim args() As String
         args() = Split(Command, " ", , vbTextCompare)
@@ -139,8 +139,8 @@ Private Function getMainFilename() As String
         ElseIf UBound(args) = 1 Then
 
             'run program
-            mainfile = gamPath & args(0)
-            Call openMain(mainfile, mainMem)
+            mainFile = gamPath & args(0)
+            Call openMain(mainFile, mainMem)
             Call openSystems(True)
             Call DXClearScreen(0)
             Call DXRefresh
@@ -272,17 +272,20 @@ Public Sub gameLogic()
 
     Select Case gGameState
 
-        Case GS_IDLE
+        Case GS_IDLE            'IDLE STATE
+                                '----------
             Call renderNow          'render the scene
             Call checkMusic         'keep the music looping
             Call multiTaskNow       'run rpgcode multitasking
             Call scanKeys           'scan for important keys
             Call updateGameTime     'update time game has been running for
 
-        Case GS_PAUSE
+        Case GS_PAUSE           'PAUSE STATE
+                                '-----------
             Call checkMusic         'just keep the music looping
 
-        Case GS_MOVEMENT
+        Case GS_MOVEMENT        'MOVEMENT STATE
+                                '--------------
 
             Call moveItems          'move items
             Call movePlayers        'move players
@@ -307,7 +310,8 @@ Public Sub gameLogic()
                 movementCounter = 0
             End If
 
-        Case GS_DONEMOVE
+        Case GS_DONEMOVE        'DONE MOVEMENT STATE
+                                '-------------------
 
             'clear pending item movements...
             Dim cnt As Long
@@ -379,7 +383,8 @@ Public Sub gameLogic()
             'Back to idle state
             gGameState = GS_IDLE
 
-        Case GS_QUIT
+        Case GS_QUIT            'QUIT STATE
+                                '----------
             'Post quit message to break out of main event loop
             Call PostQuitMessage(0)
 
@@ -468,13 +473,14 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     mwinLines = 4                   'Lines MWin can hold
     textX = 1                       'Text location X
     textY = 1                       'Text location Y
+    lineNum = 1                     'First line in MWin
     saveFileLoaded = False          'Starting new game
 
     'Set initial game speed
     Call gameSpeed(mainMem.gameSpeed)
 
     'Set initial pixel movement value
-    If mainMem.pixelMovement = 1 Then
+    If (mainMem.pixelMovement = 1) Then
         movementSize = 0.25
     Else
         movementSize = 1
@@ -484,18 +490,18 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     Call LoadFontsFromFolder(projectPath & fontPath)
 
     'Change the DirectX host's caption to the game's title (for windowed mode)
-    If mainMem.gameTitle <> "" Then
+    If (mainMem.gameTitle <> "") Then
         host.Caption = mainMem.gameTitle
     End If
 
-    If mainMem.initChar <> "" Then
+    If (mainMem.initChar <> "") Then
         'If a main character has been specified, load it
         Call CreateCharacter(projectPath & temPath & mainMem.initChar, 0)
     End If
 
     'Unless we're testing a program from the PRG editor, run the
     'startup program
-    If Not testingPRG Then
+    If (Not testingPRG) Then
         Call runProgram(projectPath & prgPath & mainMem.startupPrg, , , True)
     End If
 

@@ -40,7 +40,7 @@ End Enum
 Private Type threadLoop                            'Thread loop structure
     start As Long                                  '  Line loop starts on
     depth As Long                                  '  Depth in loop
-    over As Boolean                                '  Loop over?
+    Over As Boolean                                '  Loop over?
     condition As String                            '  Condition to end loop
     increment As String                            '  Incrementation equation
     type As THREAD_LOOP_TYPE                       '  Type of thread loop
@@ -423,7 +423,7 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
         .end = True
 
         'If the loop is over
-        If (.over) Then
+        If (.Over) Then
             .prg.looping = False
             Exit Sub
         End If
@@ -557,12 +557,12 @@ Private Sub incrementThreadLoop(ByVal num As Long)
                 prg.programPos = increment(prg)
 
             Case "end"
-                .over = True
+                .Over = True
                 prg.programPos = increment(prg)
 
             Case Else
 
-                If (Not .over) Then
+                If (Not .Over) Then
                     prg.looping = False
                     Call ExecuteThread(prg)
                     prg.looping = True

@@ -1,44 +1,45 @@
 Attribute VB_Name = "CommonMainFile"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'mainForm file Editor:
+'=========================================================================
+' RPGToolkit project file format (*.gam)
+'=========================================================================
 
 Option Explicit
 
-Public mainfile As String                'filename
-Public mainNeedUpdate As Boolean
+'=========================================================================
+' Public constants
+'=========================================================================
+Public Const MAX_GAMESPEED = 4        'highest gamespeed settings
 
-Public Const MAX_GAMESPEED = 4
+Public mainFile As String             'main filename (redundant?)
+Public mainNeedUpdate As Boolean      'main file needs update?
+Public loadedMainFile As String       'main file that is loaded
 
-
-''''''''''''''''''''''project data'''''''''''''''''''''''''
-
-Public loadedMainFile As String
-
+'=========================================================================
+' A project file
+'=========================================================================
 Public Type TKMain
     gameTitle As String               'title of game
     mainScreenType As Integer         'screen type 2=windowed (GDI), 1=DirectX, 0- DirectX (not used)
     extendToFullScreen As Integer     'extend screen to maximum extents  (0=no, 1=yes)
     mainResolution As Integer         'resolution to use for optimal res 0=640x480, 1=800x600, 2=1024x768
     mainDisableProtectReg As Integer  'disable protect registered files (0=no, 1=yes)
-    
     startupPrg As String              'start up program
     initBoard As String               'initial board
     initChar As String                'initial character
-    
     runTime As String                 'run time program
     runKey As Integer                 'ascii code of run time key
     menuKey As Integer                'ascii code of menu key
     Key As Integer                    'ascii code of general run key
-    'extended run time keys...
     runTimeKeys(50) As Integer        '50 extended run time keys
     runTimePrg(50) As String          '50 extended run time programs
-    
     menuPlugin As String              'the main menu plugin
     fightPlugin As String             'the fighting plugin
-    
     fightgameYN As Integer            'fighting in game? 0-yes, 1-no
     enemy(500) As String              'list of 500 enemy files 0-500
     skill(500) As Integer             'list of enemy skill levels
@@ -47,35 +48,33 @@ Public Type TKMain
     fprgYN As Integer                 'use alt fight program YN 0-no, 1-yes
     fightPrg As String                'program to run for fighting.
     gameOverPrg As String             'game over program
-    'skin stuff...
     skinButton As String              'skin's button graphic
     skinWindow As String              'skin's window graphic
-    'plugin stuff...
     plugins() As String               'plugin list to use
-    'day/night stuff...
     mainUseDayNight As Integer        'game is affected by day and night 0=no, 1=yes
     mainDayNightType As Integer       'day/night type: 0=real world, 1=set time
     mainDayLength As Long             'day length, in minutes
-    'sound stuff...
     cursorMoveSound As String         'sound played when cursor moves
     cursorSelectSound As String       'sound played when cursor selects
     cursorCancelSound As String       'sound played when cursor cancels
-    'added for beta
     useJoystick As Byte               'allow joystick input? 0- no 1- yes
     colordepth As Byte                'color depth
-    
     gameSpeed As Byte                 'speed which game runs at
     pixelMovement As Byte             'pixel movement (1 / 0)
     mouseCursor As Byte               'show mouse cursor?
 End Type
 
+'=========================================================================
+' Color detail levels
+'=========================================================================
+Public Const COLOR16 As Byte = 0      '16-bit color
+Public Const COLOR24 As Byte = 1      '24-bit color
+Public Const COLOR32 As Byte = 2      '32-bit color
 
-Public Const COLOR16 As Byte = 0      '16-bit bolor
-Public Const COLOR24 As Byte = 1      '24-bit bolor
-Public Const COLOR32 As Byte = 2      '32-bit bolor
-
+'=========================================================================
+' Add a plugin to a project
+'=========================================================================
 Public Sub MainAddPlugin(ByRef theMain As TKMain, ByVal file As String)
-    'add a filename to the list of plugins...
     On Error Resume Next
     Dim t As Long
     For t = 0 To UBound(theMain.plugins)
@@ -84,8 +83,6 @@ Public Sub MainAddPlugin(ByRef theMain As TKMain, ByVal file As String)
             Exit Sub
         End If
     Next t
-    
-    'if we make it here, we need to resize plugin list
     Dim newSize As Long
     Dim oldSize As Long
     oldSize = UBound(theMain.plugins)
@@ -94,13 +91,12 @@ Public Sub MainAddPlugin(ByRef theMain As TKMain, ByVal file As String)
     theMain.plugins(oldSize + 1) = file
 End Sub
 
+'=========================================================================
+' Get the idx-th plugin in a project
+'=========================================================================
 Public Function MainGetNthPlugin(ByRef theMain As TKMain, ByVal idx As Long) As String
-    'get the n-th plugin in the list
     On Error Resume Next
-    Dim t As Long
-    Dim cnt As Long
-    
-    cnt = 0
+    Dim t As Long, cnt As Long
     For t = 0 To UBound(theMain.plugins)
         If theMain.plugins(t) <> "" Then
             If cnt = idx Then
@@ -112,13 +108,14 @@ Public Function MainGetNthPlugin(ByRef theMain As TKMain, ByVal idx As Long) As 
     Next t
 End Function
 
+'=========================================================================
+' Remove a plugin from a project
+'=========================================================================
 Public Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
-    'add a filename to the list of plugins...
     On Error Resume Next
     Dim t As Long, a As Long
     For t = 0 To UBound(theMain.plugins)
         If UCase$(theMain.plugins(t)) = UCase$(file) Then
-            'found it...
             If t = UBound(theMain.plugins) Then
                 If isVBPlugin(projectPath & plugPath & theMain.plugins(t)) Then
                     For a = 0 To UBound(vbPlugins)
@@ -148,12 +145,10 @@ Public Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
     Next t
 End Sub
 
-Public Sub upgradeBattleSystem()
-
-    '===============================================
-    'Checks if the default BS needs updating
-    'Assumes the main file is already loaded
-    '===============================================
+'=========================================================================
+' Upgrade v3 beta BS --> 3.04 BS
+'=========================================================================
+Private Sub upgradeBattleSystem()
 
     On Error Resume Next
 
@@ -200,14 +195,18 @@ Public Sub upgradeBattleSystem()
 
 End Sub
 
+'=========================================================================
+' Open a project file
+'=========================================================================
 Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
 
     On Error Resume Next
 
     Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long, t As Long
-    num = FreeFile
     If file = "" Then Exit Sub
-    
+
+    num = FreeFile()
+
     Call MainClear(theMain)
 
     mainNeedUpdate = False
@@ -496,8 +495,11 @@ openVersion1Main:
     
 End Sub
 
+'=========================================================================
+' Save a project file
+'=========================================================================
 Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
-    'saves mainForm file
+
     On Error Resume Next
     
     Dim num As Long, t As Long
@@ -579,59 +581,53 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
 
 End Sub
 
+'=========================================================================
+' Clear a project
+'=========================================================================
 Public Sub MainClear(ByRef theMain As TKMain)
     On Error Resume Next
-    theMain.gameTitle = ""              'title of game
-    theMain.mainScreenType = 0        'screen type 2=windowed, 1=optimal resolution (640x480), 0- actual window
-    theMain.extendToFullScreen = 0    'extend screen to maximum extents (0=no, 1=yes)
-    theMain.mainResolution = 0        'resolution to use for optimal res 0=640x480, 1=800x600, 2=1024x768
-    theMain.mainDisableProtectReg = 0 'disable protect registered files (0=no, 1=yes)
-    
-    theMain.startupPrg = ""            'start up program
-    theMain.initBoard = ""              'initial board
-    theMain.initChar = ""               'initial character
-    
-    theMain.runTime = ""                'run time program
-    theMain.runKey = 0                'ascii code of run time key
-    theMain.menuKey = 0               'ascii code of menu key
-    theMain.Key = 0                   'ascii code of general run key
-    'extended run time keys...
-    Dim t As Long
-    For t = 0 To UBound(theMain.runTimeKeys)
-        theMain.runTimeKeys(t) = 0      '50 extended run time keys
-        theMain.runTimePrg(t) = ""        '50 extended run time programs
-    Next t
-    
-    theMain.menuPlugin = ""
-    theMain.fightPlugin = ""
-    
-    theMain.fightgameYN = 0           'fighting in game? 0-yes, 1-no
-    For t = 0 To UBound(theMain.enemy)
-        theMain.enemy(t) = ""             'list of 500 enemy files 0-500
-        theMain.skill(t) = 0           'list of enemy skill levels
-    Next t
-    theMain.fightType = 0             'fight type: 0-random, 1- planned
-    theMain.chances = 0                  'chances of getting in fight (1 in x ) OR number of steps to take
-    theMain.fprgYN = 0                'use alt fight program YN 0-no, 1-yes
-    theMain.fightPrg = ""               'program to run for fighting.
-    theMain.gameOverPrg = ""            'game over program
-    'skin stuff...
-    theMain.skinButton = ""             'skin's button graphic
-    theMain.skinWindow = ""             'skin's window graphic
-    'plugin stuff...
-    ReDim theMain.plugins(4)
-    For t = 0 To UBound(theMain.plugins)
-        theMain.plugins(t) = ""
-    Next t
-    'day/night stuff...
-    theMain.mainUseDayNight = 0       'game is affected by day and night 0=no, 1=yes
-    theMain.mainDayNightType = 0      'day/night type: 0=real world, 1=set time
-    theMain.mainDayLength = 0            'day length, in minutes
-    
-    theMain.cursorMoveSound = ""
-    theMain.cursorSelectSound = ""
-    theMain.cursorCancelSound = ""
-    
-    theMain.useJoystick = 1
+    With theMain
+        .gameTitle = ""              'title of game
+        .mainScreenType = 0        'screen type 2=windowed, 1=optimal resolution (640x480), 0- actual window
+        .extendToFullScreen = 0    'extend screen to maximum extents (0=no, 1=yes)
+        .mainResolution = 0        'resolution to use for optimal res 0=640x480, 1=800x600, 2=1024x768
+        .mainDisableProtectReg = 0 'disable protect registered files (0=no, 1=yes)
+        .startupPrg = ""            'start up program
+        .initBoard = ""              'initial board
+        .initChar = ""               'initial character
+        .runTime = ""                'run time program
+        .runKey = 0                'ascii code of run time key
+        .menuKey = 0               'ascii code of menu key
+        .Key = 0                   'ascii code of general run key
+        Dim t As Long
+        For t = 0 To UBound(.runTimeKeys)
+            .runTimeKeys(t) = 0      '50 extended run time keys
+            .runTimePrg(t) = ""        '50 extended run time programs
+        Next t
+        .menuPlugin = ""
+        .fightPlugin = ""
+        .fightgameYN = 0           'fighting in game? 0-yes, 1-no
+        For t = 0 To UBound(.enemy)
+            .enemy(t) = ""             'list of 500 enemy files 0-500
+            .skill(t) = 0           'list of enemy skill levels
+        Next t
+        .fightType = 0             'fight type: 0-random, 1- planned
+        .chances = 0                  'chances of getting in fight (1 in x ) OR number of steps to take
+        .fprgYN = 0                'use alt fight program YN 0-no, 1-yes
+        .fightPrg = ""               'program to run for fighting.
+        .gameOverPrg = ""            'game over program
+        .skinButton = ""             'skin's button graphic
+        .skinWindow = ""             'skin's window graphic
+        ReDim .plugins(4)
+        For t = 0 To UBound(.plugins)
+            .plugins(t) = ""
+        Next t
+        .mainUseDayNight = 0       'game is affected by day and night 0=no, 1=yes
+        .mainDayNightType = 0      'day/night type: 0=real world, 1=set time
+        .mainDayLength = 0            'day length, in minutes
+        .cursorMoveSound = ""
+        .cursorSelectSound = ""
+        .cursorCancelSound = ""
+        .useJoystick = 1
+    End With
 End Sub
-

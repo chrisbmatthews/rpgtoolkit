@@ -11,15 +11,20 @@ Attribute VB_GlobalNameSpace = True
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'====================================================================================
-'VB Plugin Manager
-'Copyright 2004, Colin James Fitzpatrick (KSNiloc)
-'====================================================================================
+'=========================================================================
+'All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
+'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+'Read LICENSE.txt for licensing info
+'=========================================================================
+
+'=========================================================================
+' VB plugin manager
+'=========================================================================
 
 Option Explicit
 
 '============================================================
-'Class members
+' Class members
 '============================================================
 
 'The filename of the plugin
@@ -29,7 +34,7 @@ Public filename As String
 Public obj As Object
 
 '============================================================
-'Properties
+' Properties
 '============================================================
 
 Public Property Get version() As String: On Error Resume Next
@@ -37,13 +42,13 @@ Public Property Get version() As String: On Error Resume Next
     version = obj.Plugin_Version
 End Property
 
-Public Property Get description() As String ': On Error Resume Next
-   'The plugin's version
+Public Property Get description() As String: On Error Resume Next
+   'The plugin's description
     description = obj.Plugin_Description
 End Property
 
 '============================================================
-'Class methods
+' Class methods
 '============================================================
 
 #If isToolkit = 0 Then

@@ -12,7 +12,7 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '=========================================================================
-'All contents copyright 2003, 2004, Colin James Fitzpatrick (KSNiloc)
+'All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '=========================================================================
@@ -320,7 +320,7 @@ Private Sub updateItemInfo(ByVal pos As Long)
     With item(pos)
         If .itemName <> "" Then
             Call CanvasDrawText(cnv, .itemName, fontName, 25, 1, 1, 0, , , True)
-            Call CanvasDrawText(cnv, .ITMDescription, fontName, 20, 1, (3 * 25 - 25) / 20, 0)
+            Call CanvasDrawText(cnv, .itmDescription, fontName, 20, 1, (3 * 25 - 25) / 20, 0)
             If .MenuYN = 1 Then
                 Call CanvasDrawText(cnv, "Item can be used", fontName, 25, 1, 4 - 0.5, 0)
                 Call CanvasDrawText(cnv, "from the menu", fontName, 25, 1, 5 - 0.5, 0)
