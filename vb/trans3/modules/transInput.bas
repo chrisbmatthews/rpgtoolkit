@@ -711,56 +711,47 @@ End Sub
 '=========================================================================
 ' Scan for important keys (like arrows)
 '=========================================================================
-Public Sub scanKeys()
+Public Sub scanKeys(): On Error Resume Next
 
-    On Error GoTo arrayError
     Dim queue As Long
     Const useArrowKeys = True
     Const useNumberPad = True
 
     If (isPressed("RIGHT") And isPressed("UP") And useArrowKeys) Or (isPressed("NUMPAD9") And useNumberPad) Then
         'Move NorthEast
-        pendingPlayerMovement(selectedPlayer).direction = MV_NE
-        queue = 5
+        queue = MV_NE
 
     ElseIf (isPressed("LEFT") And isPressed("UP") And useArrowKeys) Or (isPressed("NUMPAD7") And useNumberPad) Then
         'Move NorthWest
-        pendingPlayerMovement(selectedPlayer).direction = MV_NW
-        queue = 6
+        queue = MV_NW
 
     ElseIf (isPressed("RIGHT") And isPressed("DOWN") And useArrowKeys) Or (isPressed("NUMPAD3") And useNumberPad) Then
         'Move SouthEast
-        pendingPlayerMovement(selectedPlayer).direction = MV_SE
-        queue = 7
+        queue = MV_SE
 
     ElseIf (isPressed("LEFT") And isPressed("DOWN") And useArrowKeys) Or (isPressed("NUMPAD1") And useNumberPad) Then
         'Move SouthWest
-        pendingPlayerMovement(selectedPlayer).direction = MV_SW
-        queue = 8
+        queue = MV_SW
 
     ElseIf (isPressed("UP") And useArrowKeys) Or _
         (isPressed("NUMPAD8") And useNumberPad) Or (isPressed("JOYUP") And useJoystick) Then
         'Move North
-        pendingPlayerMovement(selectedPlayer).direction = MV_NORTH
-        queue = 1
+        queue = MV_NORTH
 
     ElseIf (isPressed("DOWN") And useArrowKeys) Or _
         (isPressed("NUMPAD2") And useNumberPad) Or (isPressed("JOYDOWN") And useJoystick) Then
         'Move South
-        pendingPlayerMovement(selectedPlayer).direction = MV_SOUTH
-        queue = 2
+        queue = MV_SOUTH
 
     ElseIf (isPressed("RIGHT") And useArrowKeys) Or _
         (isPressed("NUMPAD6") And useNumberPad) Or (isPressed("JOYRIGHT") And useJoystick) Then
         'Move East
-        pendingPlayerMovement(selectedPlayer).direction = MV_EAST
-        queue = 3
+        queue = MV_EAST
 
     ElseIf (isPressed("LEFT") And useArrowKeys) Or _
         (isPressed("NUMPAD4") And useNumberPad) Or (isPressed("JOYLEFT") And useJoystick) Then
         'Move West
-        pendingPlayerMovement(selectedPlayer).direction = MV_WEST
-        queue = 4
+        queue = MV_WEST
 
     ElseIf isPressed("BUTTON1") Then
         'Let joystick button 1 act as the activation key.
@@ -780,14 +771,8 @@ Public Sub scanKeys()
         ' Overwrite any queued movements.
         pendingPlayerMovement(selectedPlayer).queue.lngSize = 1
         pendingPlayerMovement(selectedPlayer).queue.lngMovements(1) = queue
+        pendingPlayerMovement(selectedPlayer).direction = queue
         gGameState = GS_MOVEMENT
     End If
-
-    Exit Sub
-
-arrayError:
-
-    ReDim pendingPlayerMovement(selectedPlayer).queue.lngMovements(16)
-    Resume
 
 End Sub

@@ -437,7 +437,7 @@ Public Sub gameLogic()
     'End If
 
     ' Stick the fps in the title, for test purposes.
-    host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps (GS_M)]" '_
+    host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps]" '_
                  ' & " [" & CStr(Round(irc / irt, 1)) & " fps (GS_I)]"
 
 End Sub
@@ -568,7 +568,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     End If
 
     ' Set initial game speed
-    Call gameSpeed(CInt(mainMem.gameSpeed))
+    Call gameSpeed(getGameSpeed(mainMem.gameSpeed))
 
     ' Need a better method than this! Either more accurate estimate, or write last gAvgTime to file.
     m_renderTime = Timer()
@@ -584,7 +584,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     ' Change the DirectX host's caption to the game's title (for windowed mode)
     If (LenB(mainMem.gameTitle)) Then
-        host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps (GS_M)]"
+        host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps]"
     End If
 
     If (LenB(mainMem.initChar)) Then
@@ -602,6 +602,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         showPlayer(i) = (i = selectedPlayer)
         pPos(i).stance = "WALK_S"
         pPos(i).loopFrame = -1
+        ReDim pendingPlayerMovement(i).queue.lngMovements(16)
     Next i
 
     ' Unless we're testing a program from the PRG editor, run the startup program.
