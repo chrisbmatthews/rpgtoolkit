@@ -149,8 +149,8 @@ Option Explicit
 
 Public plugtest As Long
 Private specialMoveList() As String
+Private plugItems() As TKItem
 
-'
 Function CBGetHwnd() As Long
     'obtain the hwnd of the mainForm window
     'callback 43
@@ -391,6 +391,7 @@ Sub InitPlugins()
     'first, set up the callbacks...
     ReDim cbList(255) As Long
     Call generateCallbacks(cbList())
+    ReDim plugItems(0)
     
     'array length is max index + 1
     Call PLUGInitSystem(cbList(0), 133)
@@ -2132,19 +2133,34 @@ Sub CBLoadItem(ByVal file As String, ByVal itmSlot As Long)
     'loads an item into item slot 0-11
     'file should be *without* path info
     'callback 36
-    On Error GoTo errorhandler
-    
-    'MODIFIED BY KSNiloc...
-    Do While maxItem < itmSlot
-        dimensionItemArrays
-    Loop
-    itemMem(itmSlot) = openItem(projectPath$ & itmPath$ & file)
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    On Error Resume Next
+
+    If itmSlot < 0 Then
+
+        'Make itmSlot positive
+        itmSlot = -itmSlot
+
+        'Use special plug item array
+        If UBound(plugItems) < itmSlot Then
+            ReDim Preserve plugItems(itmSlot)
+        End If
+
+        'Open the item (WARNING: possible memory leak!!)
+        plugItems(itmSlot) = openItem(projectPath & itmPath & file)
+
+    Else
+
+        'Preform all actions associated with opening the item
+        Do While maxItem < itmSlot
+            Call dimensionItemArrays
+        Loop
+
+        'Open the item
+        itemMem(itmSlot) = openItem(projectPath & itmPath & file)
+
+    End If
+
 End Sub
 
 Function CBGetItemString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal itmSlot As Long) As String
@@ -2163,51 +2179,56 @@ Function CBGetItemString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal i
     '   8-  characters who can use the item (arrayPos 0-50)     itmChars$
     '   9-  item description
     '   10-  item animation
-    On Error GoTo errorhandler
-    itmSlot = inBounds(itmSlot, 0, 11)
+
+    On Error Resume Next
+
+    Dim theItem As TKItem
+
+    If itmSlot > 0 Then
+        itmSlot = inBounds(itmSlot, 0, UBound(itemMem))
+        theItem = itemMem(itmSlot)
+    Else
+        itmSlot = inBounds(-itmSlot, 0, UBound(plugItems))
+        theItem = plugItems(itmSlot)
+    End If
+
     Select Case infoCode
         Case 0:
-            CBGetItemString = itemMem(itmSlot).itemName$
+            CBGetItemString = theItem.itemName$
             Exit Function
         Case 1:
-            CBGetItemString = itemMem(itmSlot).accessory$
+            CBGetItemString = theItem.accessory$
             Exit Function
         Case 2:
-            CBGetItemString = itemMem(itmSlot).prgEquip$
+            CBGetItemString = theItem.prgEquip$
             Exit Function
         Case 3:
-            CBGetItemString = itemMem(itmSlot).prgRemove$
+            CBGetItemString = theItem.prgRemove$
             Exit Function
         Case 4:
-            CBGetItemString = itemMem(itmSlot).mnuUse$
+            CBGetItemString = theItem.mnuUse$
             Exit Function
         Case 5:
-            CBGetItemString = itemMem(itmSlot).fgtUse$
+            CBGetItemString = theItem.fgtUse$
             Exit Function
         Case 6:
-            CBGetItemString = itemMem(itmSlot).itmPrgOnBoard$
+            CBGetItemString = theItem.itmPrgOnBoard$
             Exit Function
         Case 7:
-            CBGetItemString = itemMem(itmSlot).itmPrgPickUp$
+            CBGetItemString = theItem.itmPrgPickUp$
             Exit Function
         Case 8:
             arrayPos = inBounds(arrayPos, 0, 10)
-            CBGetItemString = itemMem(itmSlot).itmChars$(arrayPos)
+            CBGetItemString = theItem.itmChars$(arrayPos)
             Exit Function
         Case 9:
-            CBGetItemString = itemMem(itmSlot).ITMDescription
+            CBGetItemString = theItem.ITMDescription
             Exit Function
         Case 10:
-            CBGetItemString = itemMem(itmSlot).itmAnimation
+            CBGetItemString = theItem.itmAnimation
             Exit Function
     End Select
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 
@@ -2233,69 +2254,74 @@ Function CBGetItemNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal itmS
     '   14- buying price        buyprice
     '   15- selling price       sellprice
     '   16- key item 0=no, 1=yes    keyitem
-    On Error GoTo errorhandler
-    itmSlot = inBounds(itmSlot, 0, 11)
+
+    On Error Resume Next
+
+    Dim theItem As TKItem
+
+    If itmSlot > 0 Then
+        itmSlot = inBounds(itmSlot, 0, UBound(itemMem))
+        theItem = itemMem(itmSlot)
+    Else
+        itmSlot = inBounds(-itmSlot, 0, UBound(plugItems))
+        theItem = plugItems(itmSlot)
+    End If
+
     Select Case infoCode
         Case 0:
-            CBGetItemNum = itemMem(itmSlot).EquipYN
+            CBGetItemNum = theItem.EquipYN
             Exit Function
         Case 1:
-            CBGetItemNum = itemMem(itmSlot).MenuYN
+            CBGetItemNum = theItem.MenuYN
             Exit Function
         Case 2:
-            CBGetItemNum = itemMem(itmSlot).BoardYN
+            CBGetItemNum = theItem.BoardYN
             Exit Function
         Case 3:
-            CBGetItemNum = itemMem(itmSlot).FightYN
+            CBGetItemNum = theItem.FightYN
             Exit Function
         Case 4:
             arrayPos = inBounds(arrayPos, 1, 7)
-            CBGetItemNum = itemMem(itmSlot).itemarmor(arrayPos)
+            CBGetItemNum = theItem.itemarmor(arrayPos)
             Exit Function
         Case 5:
-            CBGetItemNum = itemMem(itmSlot).equipHP
+            CBGetItemNum = theItem.equipHP
             Exit Function
         Case 6:
-            CBGetItemNum = itemMem(itmSlot).equipDP
+            CBGetItemNum = theItem.equipDP
             Exit Function
         Case 7:
-            CBGetItemNum = itemMem(itmSlot).equipFP
+            CBGetItemNum = theItem.equipFP
             Exit Function
         Case 8:
-            CBGetItemNum = itemMem(itmSlot).equipSM
+            CBGetItemNum = theItem.equipSM
             Exit Function
         Case 9:
-            CBGetItemNum = itemMem(itmSlot).mnuHPup
+            CBGetItemNum = theItem.mnuHPup
             Exit Function
         Case 10:
-            CBGetItemNum = itemMem(itmSlot).mnuSMup
+            CBGetItemNum = theItem.mnuSMup
             Exit Function
         Case 11:
-            CBGetItemNum = itemMem(itmSlot).fgtHPup
+            CBGetItemNum = theItem.fgtHPup
             Exit Function
         Case 12:
-            CBGetItemNum = itemMem(itmSlot).fgtSMup
+            CBGetItemNum = theItem.fgtSMup
             Exit Function
         Case 13:
-            CBGetItemNum = itemMem(itmSlot).usedBy
+            CBGetItemNum = theItem.usedBy
             Exit Function
         Case 14:
-            CBGetItemNum = itemMem(itmSlot).buyPrice
+            CBGetItemNum = theItem.buyPrice
             Exit Function
         Case 15:
-            CBGetItemNum = itemMem(itmSlot).sellPrice
+            CBGetItemNum = theItem.sellPrice
             Exit Function
         Case 16:
-            CBGetItemNum = itemMem(itmSlot).keyItem
+            CBGetItemNum = theItem.keyItem
             Exit Function
     End Select
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arrayPos2 As Long, ByVal arrayPos3 As Long) As Long
@@ -2801,13 +2827,13 @@ End Sub
 
 'VERSION 3.0
 
-Function CBCreateCanvas(ByVal Width As Long, ByVal height As Long) As Long
+Function CBCreateCanvas(ByVal width As Long, ByVal height As Long) As Long
     'callback 45
     'create an offscreen canvas, return it's id
     On Error Resume Next
-    If Width <= 0 Then Width = 1
+    If width <= 0 Then width = 1
     If height <= 0 Then height = 1
-    CBCreateCanvas = CreateCanvas(Width, height)
+    CBCreateCanvas = CreateCanvas(width, height)
 End Function
 
 Function CBDestroyCanvas(ByVal canvasID As Long) As Long
@@ -2830,12 +2856,12 @@ Function CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) 
     End If
 End Function
 
-Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long) As Long
+Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long) As Long
     'callback 48
     'display an offscreen canvas (partially)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, Width, height)
+        Call DXDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height)
         CBDrawCanvasPartial = 1
     Else
         CBDrawCanvasPartial = 0
@@ -2854,12 +2880,12 @@ Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal 
     End If
 End Function
 
-Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
+Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
     'callback 50
     'display an offscreen canvas (partially) with transparency
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, Width, height, crTransparentColor)
+        Call DXDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
         CBDrawCanvasTransparentPartial = 1
     Else
         CBDrawCanvasTransparentPartial = 0
@@ -2907,12 +2933,12 @@ Function CBCanvasFill(ByVal canvasID As Long, ByVal crColor As Long) As Long
     CBCanvasFill = 1
 End Function
 
-Function CBCanvasResize(ByVal canvasID As Long, ByVal Width As Long, ByVal height As Long) As Long
+Function CBCanvasResize(ByVal canvasID As Long, ByVal width As Long, ByVal height As Long) As Long
     'callback 55
     'resize canvas
     On Error Resume Next
     
-    Call SetCanvasSize(canvasID, Width, height)
+    Call SetCanvasSize(canvasID, width, height)
     CBCanvasResize = 1
 End Function
 
@@ -2924,12 +2950,12 @@ Function CBCanvas2CanvasBlt(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal x
     CBCanvas2CanvasBlt = Canvas2CanvasBlt(cnvSrc, cnvDest, xDest, yDest)
 End Function
 
-Function CBCanvas2CanvasBltPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long) As Long
+Function CBCanvas2CanvasBltPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long) As Long
     'callback 57
     'copy one canvas into another (partially)
     On Error Resume Next
     
-    CBCanvas2CanvasBltPartial = Canvas2CanvasBltPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, Width, height)
+    CBCanvas2CanvasBltPartial = Canvas2CanvasBltPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height)
 End Function
 
 Function CBCanvas2CanvasBltTransparent(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal crTransparentColor As Long) As Long
@@ -2940,12 +2966,12 @@ Function CBCanvas2CanvasBltTransparent(ByVal cnvSrc As Long, ByVal cnvDest As Lo
     CBCanvas2CanvasBltTransparent = Canvas2CanvasBltTransparent(cnvSrc, cnvDest, xDest, yDest, crTransparentColor)
 End Function
 
-Function CBCanvas2CanvasBltTransparentPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
+Function CBCanvas2CanvasBltTransparentPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
     'callback 59
     'copy one canvas into another, using transparency (partially)
     On Error Resume Next
     
-    CBCanvas2CanvasBltTransparentPartial = Canvas2CanvasBltTransparentPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, Width, height, crTransparentColor)
+    CBCanvas2CanvasBltTransparentPartial = Canvas2CanvasBltTransparentPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
 End Function
 
 Function CBCanvas2CanvasBltTranslucent(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
@@ -3355,11 +3381,11 @@ Sub CBSetEnemySMP(ByVal amount As Long, ByVal eneIdx As Long)
     Call setEnemySMP(amount, enemyMem(eneIdx))
 End Sub
 
-Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
+Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long)
     'callback 104
     'draw fight background to canvas
     On Error Resume Next
-    Call CanvasDrawBackground(canvasID, projectPath & bkgPath & bkgFile, x, y, Width, height)
+    Call CanvasDrawBackground(canvasID, projectPath & bkgPath & bkgFile, x, y, width, height)
 End Sub
 
 Function CBCreateAnimation(ByVal file As String) As Long
