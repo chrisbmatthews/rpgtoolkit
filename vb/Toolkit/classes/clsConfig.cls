@@ -84,7 +84,7 @@ End Property
 '=========================================================================
 Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
 
-    On Error GoTo skip
+    On Error Resume Next
     
     Dim num As Long, a As Long
     num = FreeFile()
@@ -138,7 +138,6 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
         wallpaper = ""
     End If
 
-skip:
 End Sub
 
 '=========================================================================

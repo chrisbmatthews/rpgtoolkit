@@ -122,10 +122,9 @@ Private Sub initLocalization()
     '=======================================================
     On Error Resume Next
     If m_LangFile = "" Then
-        Call selectLanguage.Show(vbModal)
-    Else
-        Call ChangeLanguage(resourcePath & m_LangFile)
+        m_LangFile = "0english.lng"
     End If
+    Call ChangeLanguage(resourcePath & m_LangFile)
     Call InitLocalizeSystem
     Call LocalizeForm(frmMain)
 End Sub
