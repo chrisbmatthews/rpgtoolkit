@@ -851,7 +851,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
         char = Mid(text, a, 1)
         Select Case char
 
-            Case "!", "$"
+            Case "!", "$", "-"
                 'Could be a public var
                 If (depth = 0) Then
                     lngEnd = a
@@ -884,7 +884,14 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
 
     'Record the method's command line
     cLine = ParseRPGCodeCommand(Trim(Mid(text, begin + 2, lngEnd - begin - 1)), prg)
-    If (Not var) Then cmdName = UCase(GetCommandName(cLine))
+    If (Not var) Then
+        cmdName = UCase(GetCommandName(cLine))
+    Else
+        If (Right(cLine, 1) <> "!" And Right(cLine, 1) <> "$") Then
+            'Assume object
+            cLine = replace(replace(cLine & "!", "-", ""), " ", "")
+        End If
+    End If
 
     'Flag we're not in quotes
     ignore = False
