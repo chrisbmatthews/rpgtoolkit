@@ -1739,7 +1739,8 @@ Public Sub runQueuedMovements(): On Error Resume Next
 'Called by ItemStepRPG, PlayerStepRPG, PushItemRPG, PushRPG, WanderRPG.
 
     Do While (movePlayers() Or moveItems())
-        Call renderNow
+        Call renderNow(cnvRPGCodeScreen, True)
+        Call renderRPGCodeScreen
         Call processEvent
     Loop
 
