@@ -485,7 +485,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 End If
                 inClass = False
                 inStruct = False
-                scope = vbNullString
+                scope = -1
             End If
 
         ElseIf (cmd = "CLASS" Or cmd = "STRUCT" Or cmd = "INTERFACE") Then
@@ -1266,15 +1266,15 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
 
     Dim hClass As Long              ' Handle to use
     Dim retval As RPGCODE_RETURN    ' Return value
-    Dim Class As RPGCODE_CLASS      ' The class
+    Dim cls As RPGCODE_CLASS        ' The class
 
     ' Obtain the class
-    Class = classFromName(theClass, prg)
+    cls = classFromName(theClass, prg)
 
     ' Check if we can instance this class
-    If (LenB(Class.strName)) Then
+    If (LenB(cls.strName)) Then
 
-        If Not (Class.bIsAbstract) Then
+        If Not (cls.bIsAbstract) Then
 
             ' Create a new handle
             hClass = newHandle()
@@ -1298,8 +1298,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
             hClass = address
 
             ' Call the constructor(s)
-            Dim i As Long, cls As RPGCODE_CLASS
-            cls = getClass(hClass, prg)
+            Dim i As Long
             For i = 0 To UBound(cls.strDerived)
                 If (LenB(cls.strDerived(i))) Then
                     Call callObjectMethod(hClass, cls.strDerived(i), prg, retval, cls.strDerived(i))
