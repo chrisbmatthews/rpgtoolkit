@@ -578,10 +578,28 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             Select Case equal
 
                 Case "++"
+                    If ((hClass <> 0) And (Not noVar)) Then
+                        ' If this class handles this operator
+                        If (isMethodMember("operator++", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                            ' Call the method
+                            Call callObjectMethod(hClass, "operator++", theProgram, retval, "operator++")
+                            ' Leave this procedure
+                            Exit Sub
+                        End If
+                    End If
                     Call SetVariable(Destination, destNum + 1, theProgram)
                     Exit Sub
 
                 Case "--"
+                    If ((hClass <> 0) And (Not noVar)) Then
+                        ' If this class handles this operator
+                        If (isMethodMember("operator--", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                            ' Call the method
+                            Call callObjectMethod(hClass, "operator--", theProgram, retval, "operator--")
+                            ' Leave this procedure
+                            Exit Sub
+                        End If
+                    End If
                     Call SetVariable(Destination, destNum - 1, theProgram)
                     Exit Sub
 
