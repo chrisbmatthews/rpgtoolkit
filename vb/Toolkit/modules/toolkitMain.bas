@@ -54,7 +54,6 @@ Public Sub Main()
     Call Randomize(timer)
     Call BoardInit(boardList(activeBoardIndex).theData)
     Call TileAnmClear(tileAnmList(activeTileAnmIndex).theData)
-    Call InitTkGfx
     Call initCanvasEngine
     Call initDirectories
     Call initBoardAndTileEditor
@@ -96,10 +95,10 @@ End Sub
 Private Sub initRuntimes()
     On Error Resume Next
     If Command$() <> "" Then Call ChDir(App.path)
-    If Not (InitRuntime()) Then
+    If Not (initRuntime()) Then
         Call ChDir("C:\Program Files\Toolkit3\")
         currentDir = CurDir()
-        If Not InitRuntime() Then
+        If Not initRuntime() Then
             Call MsgBox("Could not initialize actkrt3.dll.  Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
             End
         End If
