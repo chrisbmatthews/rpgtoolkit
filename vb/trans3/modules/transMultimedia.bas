@@ -1,6 +1,6 @@
 Attribute VB_Name = "transMultimedia"
 '=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
+'All contents copyright 2003, 2004, Christopher Matthews , Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '=========================================================================
@@ -63,21 +63,21 @@ Public Sub checkMusic(Optional ByVal forceNow As Boolean)
     
     On Error Resume Next
 
-    If Not (forceNow) Then
-        If bWaitingForInput Then Exit Sub
+    If (Not forceNow) Then
+        If (bWaitingForInput) Then Exit Sub
     End If
 
     Dim boardMusic As String
     boardMusic = projectPath & mediaPath & boardList(activeBoardIndex).theData.boardMusic
 
-    If boardMusic = "" Then
+    If (boardMusic = "") Then
 
         Call stopMedia
         musicPlaying = ""
 
-    ElseIf UCase(boardMusic) = UCase(musicPlaying) Then
+    ElseIf (UCase(boardMusic) = UCase(musicPlaying)) Then
 
-        If Not isMediaPlaying(boardMusic) Then
+        If (Not isMediaPlaying(boardMusic)) Then
             Call playMedia(boardMusic)
         End If
 
@@ -112,11 +112,11 @@ Public Function isMediaPlaying(ByVal file As String) As Boolean
    
     Select Case UCase(GetExt(file))
 
-        Case "MID" Or "MIDI" Or "WAV" Or "MLP"
+        Case "MID", "MIDI", "WAV", "MLP"
             'Ask MCI
             isMediaPlaying = IsPlayingMCI(MID_DEVICE)
 
-        Case "MP3" Or "MOD" Or "IT" Or "XM" Or "S3M" Or "669" Or "AMF" Or "AMS" Or "DBM" Or "DSM" Or "FAR" Or "MED" Or "MDL" Or "MTM" Or "NST" Or "OKT" Or "PTM" Or "STM" Or "ULT" Or "UMX" Or "WOW" Or "MID" Or "MIDI" Or "WAV" Or "MLP"
+        Case "MP3", "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "MID", "MIDI", "WAV", "MLP"
             'Ask Audiere
             isMediaPlaying = TKAudiereIsPlaying(bkgDevice)
 
@@ -149,11 +149,11 @@ Public Sub playMedia(ByVal file As String)
 
     Select Case GetExt(UCase(file))
 
-        Case "MID" Or "MIDI" Or "MPL"
+        Case "MID", "MIDI", "MPL"
             'Play through MCI
             Call PlayMCI(PakLocate(file), MID_DEVICE)
 
-        Case "MP3" Or "MOD" Or "IT" Or "XM" Or "S3M" Or "669" Or "AMF" Or "AMS" Or "DBM" Or "DSM" Or "FAR" Or "MED" Or "MDL" Or "MTM" Or "NST" Or "OKT" Or "PTM" Or "STM" Or "ULT" Or "UMX" Or "WOW" Or "MID" Or "MIDI" Or "WAV" Or "MLP"
+        Case "MP3", "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "MID", "MIDI", "WAV", "MLP"
             'play through audiere
             Call TKAudierePlay(bkgDevice, PakLocate(file), 1, 0)
             
@@ -174,11 +174,11 @@ Public Sub playSoundFX(ByVal file As String)
 
     Select Case GetExt(UCase(file))
 
-        Case "MID" Or "MIDI" Or "MPL"
+        Case "MID", "MIDI", "MPL"
             'play through MCI
             Call PlayMCI(PakLocate(file), SFX_DEVICE)
 
-        Case "MP3" Or "MOD" Or "IT" Or "XM" Or "S3M" Or "669" Or "AMF" Or "AMS" Or "DBM" Or "DSM" Or "FAR" Or "MED" Or "MDL" Or "MTM" Or "NST" Or "OKT" Or "PTM" Or "STM" Or "ULT" Or "UMX" Or "WOW" Or "MID" Or "MIDI" Or "WAV" Or "MLP"
+        Case "MP3", "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "MID", "MIDI", "WAV", "MLP"
             'play through audiere
             Call TKAudierePlay(fgDevice, PakLocate(file), 0, 0)
 
