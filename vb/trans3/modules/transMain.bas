@@ -451,6 +451,9 @@ Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     ' Initiate the event processor
     Call initEventProcessor
 
+    ' Initiate the sprite system
+    Call initSprites
+
     ' Initiate the graphics engine
     Call initGraphics(testingPRG)
 
@@ -606,7 +609,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         ' Nullify some variables
         scTopX = -1000
         scTopY = -1000
-        lastRender.canvas = -1
+        ' lastRender.canvas = -1
 
         ' Open up the starting board
         Call ClearNonPersistentThreads

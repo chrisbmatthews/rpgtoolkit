@@ -589,7 +589,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         End If
     End If
 
-    'C heck the fight plugin.
+    ' Check the fight plugin.
     If (LenB(mainMem.fightPlugin) <> 0) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then

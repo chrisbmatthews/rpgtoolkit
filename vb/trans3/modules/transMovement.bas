@@ -803,7 +803,7 @@ Private Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boo
     'Clear the player's last frame render, to force a redraw directly on entering.
     '(Prevents players starting new boards with old frame).
     lastPlayerRender(selectedPlayer).canvas = -1
-    lastRender.canvas = -1
+    ' lastRender.canvas = -1
     scTopX = -1000
     scTopY = -1000
     
@@ -1680,7 +1680,7 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
                 ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
                 ".loopFrame=" & pPos(pNum).loopFrame & _
                 " topX=" & topX & " topY=" & topY)
-    
+
     'Change direction now in case we're going to be walking against a wall.
     Select Case pendingPlayerMovement(pNum).direction
         Case MV_NORTH: pPos(pNum).stance = "walk_n"
@@ -2067,7 +2067,7 @@ Public Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY
 
     Dim aBoard As TKBoard
     Call openBoard(file, aBoard)
-    lastRender.canvas = -1
+    ' lastRender.canvas = -1
     If _
         testX > aBoard.bSizeX Or _
         testY > aBoard.bSizeY Or _

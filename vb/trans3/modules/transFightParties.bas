@@ -214,7 +214,7 @@ End Sub
 Public Function getPartyMemberCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
     On Error Resume Next
     If parties(partyIdx).fighterList(fighterIdx).maxChargeTime <> 0 Then
-        getPartyMemberCharge = parties(partyIdx).fighterList(fighterIdx).chargeCounter \ _
+        getPartyMemberCharge = parties(partyIdx).fighterList(fighterIdx).chargeCounter / _
                                parties(partyIdx).fighterList(fighterIdx).maxChargeTime * 100
     End If
 End Function

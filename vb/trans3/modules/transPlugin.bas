@@ -1571,7 +1571,7 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
             Call openBoard(projectPath$ & brdPath$ & newVal, boardList(activeBoardIndex).theData)
             'clear non-persistent threads...
             Call ClearNonPersistentThreads
-            lastRender.canvas = -1
+            ' lastRender.canvas = -1
             scTopX = -1
             scTopY = -1
             Call renderNow

@@ -3805,7 +3805,7 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call openBoard(currentBoard, boardList(activeBoardIndex).theData)
         'clear non-persistent threads...
         Call ClearNonPersistentThreads
-        lastRender.canvas = -1
+        ' lastRender.canvas = -1
         scTopX = -1
         scTopY = -1
         Call alignBoard(pPos(0).x, pPos(0).y)
@@ -4050,6 +4050,7 @@ Sub MidiPlayRPG(Text$, ByRef theProgram As RPGCodeProgram)
         boardList(activeBoardIndex).theData.boardMusic$ = lit$
         Call processEvent
         Call checkMusic(True)
+        Call SetVariable("music$", RemovePath(musicPlaying), theProgram, True)
     End If
 
     Exit Sub
@@ -6016,7 +6017,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     'Clear the player's last frame render, to force a redraw directly on entering.
     '(Prevents players starting new boards with old frame).
     lastPlayerRender(selectedPlayer).canvas = -1
-    lastRender.canvas = -1
+    ' lastRender.canvas = -1
     scTopX = -1000
     scTopY = -1000
        
@@ -6038,7 +6039,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     
     End With
     
-    Call renderNow
+    Call renderNow(-1, True)
     Call CanvasGetScreen(cnvRPGCodeScreen)
     
     facing = South              'Facing south
@@ -6132,7 +6133,7 @@ Public Sub setConstants()
     Dim ll As String, hh As String, cc As String
 
     Call setIndependentVariable("GameTime!", CStr(gameTime))
-    Call setIndependentVariable("Music$", musicPlaying$)
+    Call setIndependentVariable("Music$", RemovePath(musicPlaying))
     For t = 0 To 4
         xx$ = replace("playerX[""" & CStr(t) & """]!", " ", vbNullString)
         yy$ = replace("playerY[""" & CStr(t) & """]!", " ", vbNullString)
@@ -7453,7 +7454,7 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
         Dim boardTemp As TKBoard
         boardTemp = boardList(activeBoardIndex).theData
         Call openBoard(projectPath$ & brdPath$ & brd$, boardList(activeBoardIndex).theData)
-        lastRender.canvas = -1
+        ' lastRender.canvas = -1
         ChDir (projectPath$)
         If pakFileRunning Then
             Call ChangeDir(PakTempPath$)

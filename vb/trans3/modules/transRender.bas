@@ -69,6 +69,12 @@ Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Lon
 ' Move memory around
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 
+' Open a canvas' HDC
+Private Declare Function CNVOpenHDC Lib "actkrt3.dll" (ByVal handle As Long) As Long
+
+' Close a canvas' HDC
+Private Declare Function CNVCloseHDC Lib "actkrt3.dll" (ByVal handle As Long, ByVal hdc As Long) As Long
+
 '=========================================================================
 ' Globals
 '=========================================================================
@@ -229,20 +235,37 @@ End Type
 ' Flip the back buffer onto the screen
 '=========================================================================
 Public Sub DXRefresh()
-    ' Create a var to hold a pointer to a canvas
-    Dim cnv As Long
-    ' Create a canvas
-    cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
-    ' Copy the screen to that canvas
-    Call CanvasGetScreen(cnv)
-    ' Draw the mouse cursor
-    Call DXDrawCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
-    ' Actually make the flip
+
+    ' Colin: Is the new flicker here tolerable? The speed increease is
+    '        too great to not consider it.
+
+    ' Make the flip
     Call DXFlip
-    ' Render the screen sans mouse cursor to the back buffer
-    Call DXDrawCanvas(cnv, 0, 0)
-    ' Destroy the said canvas
-    Call DestroyCanvas(cnv)
+
+    ' Declare some variables
+    Dim hdc As Long, xdc As Long, x As Long, y As Long
+
+    ' Compute mouse x position
+    x = mouseMoveX - host.cursorHotSpotX
+
+    ' Compute mouse y position
+    y = mouseMoveY - host.cursorHotSpotY
+
+    ' Get the mouse pointer canvas' HDC
+    hdc = CNVOpenHDC(cnvMousePointer)
+
+    ' Get the window's HDC
+    xdc = GetDC(host.hwnd)
+
+    ' Blt the mouse onto the window
+    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
+
+    ' Release the window's DC
+    Call ReleaseDC(host.hwnd, xdc)
+
+    ' Close the canvas' HDC
+    Call CNVCloseHDC(cnvMousePointer, hdc)
+
 End Sub
 
 '=========================================================================
@@ -597,12 +620,12 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVa
 
     On Error Resume Next
 
-    Dim W As Long
+    Dim w As Long
     Dim h As Long
     Dim c As Long
     Dim cnt As Long
     If CanvasOccupied(cnv) Then
-        W = GetCanvasWidth(cnv)
+        w = GetCanvasWidth(cnv)
         h = GetCanvasHeight(cnv)
         Call CanvasGetScreen(cnvAllPurpose)
         Select Case popupType
@@ -615,8 +638,8 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVa
                 stepSize = -stepSize
                 For c = h \ 2 To 0 Step stepSize
                     Call DXDrawCanvas(cnvAllPurpose, 0, 0)
-                    Call DXDrawCanvasPartial(cnv, x, y + c, 0, 0, W, h / 2 - c)
-                    Call DXDrawCanvasPartial(cnv, x, y + h / 2, 0, h - cnt, W, h / 2 - c)
+                    Call DXDrawCanvasPartial(cnv, x, y + c, 0, 0, w, h / 2 - c)
+                    Call DXDrawCanvasPartial(cnv, x, y + h / 2, 0, h - cnt, w, h / 2 - c)
                     Call DXRefresh
                     cnt = cnt - stepSize
                     Call delay(walkDelay)
@@ -626,10 +649,10 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVa
         
             Case POPUP_HORIZONTAL:
                 stepSize = -stepSize
-                For c = W \ 2 To 0 Step stepSize
+                For c = w \ 2 To 0 Step stepSize
                     Call DXDrawCanvas(cnvAllPurpose, 0, 0)
-                    Call DXDrawCanvasPartial(cnv, x + c, y, 0, 0, W \ 2 - c, h)
-                    Call DXDrawCanvasPartial(cnv, x + W \ 2, y, W - cnt, 0, W \ 2 - c, h)
+                    Call DXDrawCanvasPartial(cnv, x + c, y, 0, 0, w \ 2 - c, h)
+                    Call DXDrawCanvasPartial(cnv, x + w \ 2, y, w - cnt, 0, w \ 2 - c, h)
                     Call DXRefresh
                     cnt = cnt - stepSize
                     Call delay(walkDelay)
@@ -671,13 +694,13 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
     If (boardList(activeBoardIndex).theData.hasAnmTiles) Then
         'there are animated tiles on this board...
         'cycle thru them...
-        
+
+        Dim shadeR As Long, shadeB As Long, shadeG As Long
+        Call getAmbientLevel(shadeR, shadeB, shadeG)
+
         For t = 0 To boardList(activeBoardIndex).theData.anmTileInsertIdx - 1
             If TileAnmShouldDrawFrame(boardList(activeBoardIndex).theData.animatedTile(t).theTile) Then
                 toRet = True
-                
-                Dim shadeR As Long, shadeB As Long, shadeG As Long
-                Call getAmbientLevel(shadeR, shadeB, shadeG)
                 
                 'now redraw the layers...
                 x = boardList(activeBoardIndex).theData.animatedTile(t).x
@@ -790,7 +813,8 @@ End Sub
 Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long, ByVal tY As Long)
     On Error Resume Next
     ' Create a new CBoardRender object
-    Dim currentRender As New CBoardRender
+    Dim currentRender As CBoardRender
+    Set currentRender = New CBoardRender
     ' With that object
     With currentRender
         ' Set in the canvas
@@ -1040,7 +1064,7 @@ Private Function renderPlayer(ByVal cnv As Long, _
         If pendingPlayerMovement(idx).direction = MV_IDLE And gGameState <> GS_MOVEMENT Then
             'We're idle, and we're not about to start moving.
 
-            If Timer() - .idleTime >= thePlayer.idleTime And Left$(UCase$(.stance), 5) <> "STAND" Then
+            If Timer() - .idleTime >= thePlayer.idleTime And LeftB$(UCase$(.stance), 10) <> "STAND" Then
                 'Push into idle graphics if not already.
 
                 'Check that a standing graphic for this direction exists.
@@ -1159,7 +1183,7 @@ Private Function renderItem(ByVal cnv As Long, _
         If pendingItemMovement(idx).direction = MV_IDLE Then
             'We're idle.
             
-            If Timer() - .idleTime >= theItem.idleTime And Left$(UCase$(.stance), 5) <> "STAND" Then
+            If Timer() - .idleTime >= theItem.idleTime And LeftB$(UCase$(.stance), 10) <> "STAND" Then
                 'Push into idle graphics if not already.
                 
                 Dim direction As Long
@@ -1349,9 +1373,9 @@ Private Function renderBoard() As Boolean
          tilesXTemp = tilesX            '= 20          = 25
     End If
 
-    'Same code *should* be valid for both board types...
-    'Added a "- 1" to the 4th check, since in 800res scTilesY = 37.5 which gets rounded up when
-    'the scrollcache is made, and should be rounded down (easiest way to correct it here!)
+    ' Same code *should* be valid for both board types...
+    ' Added a "- 1" to the 4th check, since in 800res scTilesY = 37.5 which gets rounded up when
+    ' the scrollcache is made, and should be rounded down (easiest way to correct it here!)
 
     If Not (topX >= scTopX And _
         topY >= scTopY And _
@@ -1382,83 +1406,83 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
 
     On Error Resume Next
 
-    Dim newBoard As Boolean         'update board?
-    Dim newSprites As Boolean       'update sprites?
-    Dim newTileAnm As Boolean       'update tile animations?
-    Dim newItem As Boolean          'update items?
-    Dim newBackground As Boolean    'update background?
-    Dim newMultiAnim As Boolean     'update multitasking animations?
-    Dim t As Long                   'for loop control variable
+    Dim newBoard As Boolean         ' update board?
+    Dim newSprites As Boolean       ' update sprites?
+    Dim newTileAnm As Boolean       ' update tile animations?
+    Dim newItem As Boolean          ' update items?
+    Dim newBackground As Boolean    ' update background?
+    Dim newMultiAnim As Boolean     ' update multitasking animations?
+    Dim t As Long                   ' for loop control variable
     
-    'Check if we need to render the background
+    ' Check if we need to render the background
     newBackground = renderBackground()
 
-    'Check if we need to render the board
+    ' Check if we need to render the board
     newBoard = renderBoard()
 
-    'Check if we need to render multitasking animations
+    ' Check if we need to render multitasking animations
     newMultiAnim = multiAnimRender()
 
-    'Check if we need to render the player sprites
+    ' Check if we need to render the player sprites
     For t = 0 To UBound(cnvPlayer)
         If (showPlayer(t)) Then
             If (renderPlayer(cnvPlayer(t), playerMem(t), pPos(t), t)) Then
-                'If we get here, something has changed since the last
-                'render and we have to re-render the player sprites.
+                ' If we get here, something has changed since the last
+                ' render and we have to re-render the player sprites.
                 newSprites = True
             End If
         End If
     Next t
 
-    'Check if we need to render the item sprites
+    ' Check if we need to render the item sprites
     For t = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
         If (itemMem(t).bIsActive) Then
             If (renderItem(cnvSprites(t), itemMem(t), itmPos(t), t)) Then
-                'If we get here, something has changed since the last
-                'render and we have to re-render the item sprites.
+                ' If we get here, something has changed since the last
+                ' render and we have to re-render the item sprites.
                 newItem = True
             End If
         End If
     Next t
 
-    'Check if we need to render animated tiles
+    ' Check if we need to render animated tiles
     newTileAnm = renderAnimatedTiles(cnvScrollCache, cnvScrollCacheMask)
 
-    'If *anything* is new, render it all
+    ' If *anything* is new, render it all
     If (newBoard Or newSprites Or newTileAnm Or newItem Or newMultiAnim Or renderRenderNowCanvas Or forceRender) Then
 
-        'Fill the target with the board's color
+        ' Fill the target with the board's color
         If (cnvTarget = -1) Then
-            'To the screen
+            ' To the screen
             Call DXClearScreen(boardList(activeBoardIndex).theData.brdColor)
         Else
-            'To a canvas
+            ' To a canvas
             Call CanvasFill(cnvTarget, boardList(activeBoardIndex).theData.brdColor)
         End If
 
-        'Render background
+        ' Render background
         Call DXDrawBackground(cnvTarget)
 
-        'Render board
+        ' Render board
         Call DXDrawBoard(cnvTarget)
 
-        'Render sprites
+        ' Render sprites
         Call DXDrawSprites(cnvTarget)
 
-        'Render multitasking animations
+        ' Render multitasking animations
         Call renderMultiAnimations(cnvTarget)
 
-        'Render the rpgcode renderNow canvas
+        ' Render the rpgcode renderNow canvas
         If (renderRenderNowCanvas) Then
             If (cnvTarget = -1) Then
-                'To the screen
+                ' To the screen
                 If (Not renderRenderNowCanvasTranslucent) Then
                     Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, 0)
                 Else
                     Call DXDrawCanvasTranslucent(cnvRenderNow, 0, 0)
                 End If
             Else
-                'To a canvas
+                ' To a canvas
                 If (Not renderRenderNowCanvasTranslucent) Then
                     Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, 0)
                 Else
@@ -1469,24 +1493,8 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
 
         If (cnvTarget = -1) Then
 
-            ' --- COPIED TO SAVE OVERHEAD ---
-
-            ' Create a var to hold a pointer to a canvas
-            Dim cnv As Long
-            ' Create a canvas
-            cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
-            ' Copy the screen to that canvas
-            Call CanvasGetScreen(cnv)
-            ' Draw the mouse cursor
-            Call DXDrawCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
-            ' Actually make the flip
-            Call DXFlip
-            ' Render the screen sans mouse cursor to the back buffer
-            Call DXDrawCanvas(cnv, 0, 0)
-            ' Destroy the said canvas
-            Call DestroyCanvas(cnv)
-
-            ' --- END COPY ---
+            ' Flip the back buffer onto the screen
+            Call DXRefresh
 
         End If
         
@@ -1501,33 +1509,43 @@ End Function
 '=========================================================================
 Public Sub renderRPGCodeScreen()
 
-    On Error Resume Next
+    ' Make the flip
+    Call DXFlip
 
-    ' Create a var to hold a pointer to a canvas
-    Dim cnv As Long
+    ' Declare some variables
+    Dim hdc As Long, xdc As Long, x As Long, y As Long
 
-    ' Create a canvas
-    cnv = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+    ' Compute mouse x position
+    x = mouseMoveX - host.cursorHotSpotX
 
-    ' Copy the screen to that canvas
-    Call CanvasGetScreen(cnv)
+    ' Compute mouse y position
+    y = mouseMoveY - host.cursorHotSpotY
 
-    ' Draw the mouse cursor
-    Call DXDrawCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
+    ' Get the window's HDC
+    xdc = GetDC(host.hwnd)
+
+    ' Get the mouse pointer canvas' HDC
+    hdc = CNVOpenHDC(cnvMousePointer)
+
+    ' Blt the mouse onto the window
+    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
+
+    ' Close the canvas' HDC
+    Call CNVCloseHDC(cnvMousePointer, hdc)
 
     ' Draw the message box if it's being shown
     If (bShowMsgBox) Then
-        Call DXDrawCanvasTranslucent(cnvMsgBox, (tilesX * 32 - 600) * 0.5, 0, 0.75, fontColor, -1)
+
+        ' Blt the message box opaque for now
+        Dim mdc As Long
+        mdc = CNVOpenHDC(cnvMsgBox)
+        Call BitBlt(xdc, (tilesX * 32 - 600) * 0.5, 0, 600, 100, mdc, 0, 0, vbSrcCopy)
+        Call CNVCloseHDC(cnvMsgBox, mdc)
+
     End If
 
-    ' Actually make the flip
-    Call DXFlip
-
-    ' Render the screen sans mouse cursor to the back buffer
-    Call DXDrawCanvas(cnv, 0, 0)
-
-    ' Destroy the said canvas
-    Call DestroyCanvas(cnv)
+    ' Release the window's DC
+    Call ReleaseDC(host.hwnd, xdc)
 
 End Sub
 
@@ -1624,8 +1642,6 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
     On Error Resume Next
 
     Dim depth As Long               ' Color depth
-    Dim pPrimarySurface As Long     ' Pointer to the primary surface
-    Dim pSecondarySurface As Long   ' Pointer to the secondary surface
 
     ' Use DirectX
     Const useDX = 1

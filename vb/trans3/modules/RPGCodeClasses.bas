@@ -11,7 +11,7 @@ Attribute VB_Name = "RPGCodeClasses"
 
 '=========================================================================
 ' Remaining to be done:
-'   + Protect the base classes private methods and members from the
+'   + Protect the base class' private methods and members from the
 '     inheriting class' methods
 '=========================================================================
 
