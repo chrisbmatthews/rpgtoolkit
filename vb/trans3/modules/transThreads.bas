@@ -282,6 +282,9 @@ End Sub
 Private Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
 
     On Error GoTo error
+    
+    Dim retval As RPGCODE_RETURN, bRunPrg As Boolean
+    bRunPrg = runningProgram
 
     If (Not ((theProgram.programPos = -1) Or (theProgram.programPos = -2))) Then
 
@@ -302,8 +305,6 @@ Private Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
 
         End If
 
-        Dim retval As RPGCODE_RETURN, bRunPrg As Boolean
-        bRunPrg = runningProgram
         runningProgram = True
 
         With Threads(theProgram.threadID).blockStack
@@ -393,6 +394,8 @@ Private Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
     End If
 
 error:
+    ' Restore the program state
+    runningProgram = bRunPrg
 End Function
 
 '=========================================================================
