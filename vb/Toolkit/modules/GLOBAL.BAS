@@ -24,37 +24,37 @@ Attribute VB_Name = "GLOBAL"
 Option Explicit
 
 'Misc Variables
-Public currentDir As String          'Current directory
-Public oldValue As Long              'oldvalue for RGB
-Public filename(30) As String        'Filename array
-Public projectPath As String         'path of current project
-Public mp3Path As String             'starting path for mp3 files (the bard)
+Public currentDir As String                    'Current directory
+Public oldValue As Long                        'oldValue for RGB
+Public filename(30) As String                  'Filename array
+Public projectPath As String                   'path of current project
+Public mp3Path As String                       'starting path for mp3 files (the bard)
 
 'Misc Constants
-Public Const compression = 1
-Public Const currentVersion = 2.1
-Public Const major = 2
-Public Const minor = 0
-Public Const gamePath = "Game\"               'game dir
-Public Const tilePath = "Tiles\"             'Tile dir path
-Public Const brdPath = "Boards\"              'board dir path
-Public Const temPath = "Chrs\"              'character dir path
-Public Const arcPath = "Archives\"              'archive dir path
-Public Const spcPath = "SpcMove\"          'spc move path
-Public Const bkgPath = "Bkrounds\"          'bkg path
-Public Const mediaPath = "Media\"          'media path
-Public Const prgPath = "Prg\"          'prg path
-Public Const fontPath = "Font\"        'Font path
-Public Const itmPath = "Item\"        'Item path
-Public Const enePath = "Enemy\"        'enemy path
-Public Const gamPath = "Main\"        'main file path
-Public Const bmpPath = "Bitmap\"        'bmp file path
-Public Const statusPath = "StatusE\"        'status effect
-Public Const helpPath = "Help\"        'help file path
-Public Const hashPath = "Hash\"        'hash file path
-Public Const miscPath = "Misc\"        'misc file path
-Public Const pluginPath = "Plugin\"        'plugin file path
-Public Const resourcePath = "Resources\"        'resource file path
+Public Const compression = 1                   'use compression where avaliable
+Public Const currentVersion = 2.1              '[now] arbitrary value
+Public Const major = 2                         '[now] arbitrary value
+Public Const minor = 0                         '[now] arbitrary value
+Public Const gamePath = "Game\"                'game dir
+Public Const tilePath = "Tiles\"               'Tile dir path
+Public Const brdPath = "Boards\"               'board dir path
+Public Const temPath = "Chrs\"                 'character dir path
+Public Const arcPath = "Archives\"             'archive dir path
+Public Const spcPath = "SpcMove\"              'spc move path
+Public Const bkgPath = "Bkrounds\"             'bkg path
+Public Const mediaPath = "Media\"              'media path
+Public Const prgPath = "Prg\"                  'prg path
+Public Const fontPath = "Font\"                'Font path
+Public Const itmPath = "Item\"                 'Item path
+Public Const enePath = "Enemy\"                'enemy path
+Public Const gamPath = "Main\"                 'main file path
+Public Const bmpPath = "Bitmap\"               'bmp file path
+Public Const statusPath = "StatusE\"           'status effect
+Public Const helpPath = "Help\"                'help file path
+Public Const hashPath = "Hash\"                'hash file path
+Public Const miscPath = "Misc\"                'misc file path
+Public Const pluginPath = "Plugin\"            'plugin file path
+Public Const resourcePath = "Resources\"       'resource file path
 
 'Top most form
 Public activeForm As Form   'the top most window
