@@ -15,17 +15,24 @@ Option Explicit
 ' Declarations
 '=======================================================================
 Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As Long)
+Private Declare Function initCounter Lib "actkrt3.dll" (ByVal ptrRenderTime As Long, ByVal ptrRenderCount As Long)
+Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 '=======================================================================
 ' Game state enumeration
 '=======================================================================
 Public Enum GAME_LOGIC_STATE
-    GS_IDLE = 0                         ' Just re-renders the screen
-    GS_QUIT = 1                         ' Shutdown sequence
-    GS_MOVEMENT = 2                     ' Movement is occurring (players or items)
-    GS_DONEMOVE = 3                     ' Movement is occurring (players or items)
-    GS_PAUSE = 4                        ' Pause game (do nothing)
+    GS_IDLE                             ' Just re-renders the screen
+    GS_MOVEMENT                         ' Movement is occurring (players or items)
+    GS_PAUSE                            ' Pause game (do nothing)
+    GS_QUIT                             ' Shutdown sequence
 End Enum
+
+'=======================================================================
+' Constants
+'=======================================================================
+Private Const FPS_CAP = 120                 ' Maximum frames per second
+Private Const AVGTIME_CAP = 1000 / FPS_CAP  ' Minimum gAvgTime, in milliseconds
 
 '=======================================================================
 ' Globals
@@ -277,147 +284,71 @@ Private Sub gameLogic()
     ' called until gGameState == GS_QUIT, the user closes the window, or
     ' a few other things.
 
-    Dim renderOccured As Boolean
-    Static loopTime As Double
-    loopTime = Timer()
-
-    Static checkFight As Long   ' Used to track number of times fighting
-                                ' *would* have been checked for if not
-                                ' in pixel movement. In pixel movement,
-                                ' only check every four steps (one tile).
-
     Select Case gGameState
-
-        Case GS_IDLE            'IDLE STATE
-                                '----------
-
-            ' Keep the music looping
-            Call checkMusic
-
-            ' Scan for important keys
-            Call scanKeys
-
-            ' Update time game has been running for
+    
+        Case GS_IDLE, GS_MOVEMENT       'NORMAL STATE
+                                        '------------
+        
+            '// = Moved to actkrt3
+            '//Dim tickCount As Long
+            '//tickCount = GetTickCount()
+        
+            'Don't need this every time!
             gameTime = (Timer() - initTime) + addTime
-
-            ' Check the player's queue to see if movement is about to start.
-            If (pendingPlayerMovement(selectedPlayer).queue.lngSize) Then
-                ' There is a queue.
-                gGameState = GS_MOVEMENT
+            
+            If gGameState = GS_IDLE Then
+                'Only accept input if we've finished moving the player.
+                'Or in scanKeys?
+                Call scanKeys
             End If
-
-            If (gGameState <> GS_MOVEMENT) Then
-                ' Check we're not about to start moving again.
-                Call multiTaskNow
-                Call moveItems
-            End If
-
-            ' Render the scene
-            renderOccured = renderNow()
-
-        Case GS_PAUSE           'PAUSE STATE
-                                '-----------
-
-            ' Just keep the music looping
+            
             Call checkMusic
-
-        Case GS_MOVEMENT        'MOVEMENT STATE
-                                '--------------
-
-            ' Make sure this runs for the duration of the player's move.
-            ' Run this before movePlayers since .loopFrame will be reset by it.
-            If (pPos(selectedPlayer).loopFrame + 1 < framesPerMove * playerMem(selectedPlayer).loopSpeed) Then
-                ' We're still moving
-                gGameState = GS_MOVEMENT
-            Else
-                ' We're done movement
-                gGameState = GS_DONEMOVE
-            End If
-
             Call multiTaskNow
             Call movePlayers
             Call moveItems
-
-            ' Re-render the scene
-            renderOccured = renderNow(-1, True)
-
-        Case GS_DONEMOVE        'DONE MOVEMENT STATE
-                                '-------------------
-
-            With pendingPlayerMovement(selectedPlayer)
-
-                ' Check if player moved
-                If (.direction <> MV_IDLE) Then
-                    ' We'll create a temporary player position which is based on
-                    ' the target location for that players' movement.
-                    ' lets us test solid tiles, etc.
-
-                    Dim tempPos As PLAYER_POSITION
-                    tempPos = pPos(selectedPlayer)
-                    tempPos.l = .lTarg
-                    tempPos.x = .xTarg
-                    tempPos.y = .yTarg
-
-                    ' Test for a program
-                    Call programTest(tempPos)
-
-                    ' Flag player is no longer moving
-                    .direction = MV_IDLE
-
-                    ' Test for a fight
-                    checkFight = checkFight + 1
-                    If (checkFight = (1 / movementSize)) Then
-                        Call fightTest
-                        checkFight = 0
-                    End If
-
-                End If
-
-            End With
-
-            ' Clear player movements
-            Dim i As Long
-            For i = 0 To UBound(pendingPlayerMovement)
-                pendingPlayerMovement(i).direction = MV_IDLE
-            Next i
-
-            ' Convert *STUPID* string positions to numerical
-            Select Case UCase$(pPos(selectedPlayer).stance)
-                Case "WALK_S": facing = SOUTH
-                Case "WALK_W": facing = WEST
-                Case "WALK_N": facing = NORTH
-                Case "WALK_E": facing = EAST
-            End Select
-
-            ' Back to idle state
-            gGameState = GS_IDLE
-
+            
+            ' Render the scene.
+            Call renderNow(, True)
+            
+            ' Show FPS in title bar if enabled.
+            If (mainMem.bFpsInTitleBar) Then
+                ' Build the string
+                host.Caption = mainMem.gameTitle & " [" & CStr(Round(m_renderCount / m_renderTime, 1)) & " fps]"
+            Else
+                ' Do nothing, but seems to have an effect.
+            End If
+    
+            '// = Moved to actkrt3
+            
+            'Cap the fps.
+            '//While (GetTickCount() - tickCount) < AVGTIME_CAP
+            '//    Call processEvent
+            '//Wend
+            
+            '//tickCount = GetTickCount() - tickCount
+            '//If tickCount < 200 Then
+            '//    m_renderTime = m_renderTime + tickCount / 1000
+            '//    m_renderCount = m_renderCount + 1
+            '//End If
+        
+            '//If m_renderTime > 2 Then
+            '//    'Next second.
+            '//    m_renderTime = m_renderTime / 2
+            '//    m_renderCount = m_renderCount \ 2
+            '//End If
+    
+        Case GS_PAUSE           'PAUSE STATE
+                                '-----------
+            ' Just keep the music looping
+            Call checkMusic
+            
         Case GS_QUIT            'QUIT STATE
                                 '----------
             ' End the program
             Call endProgram
-
+    
     End Select
-
-    ' Time a render
-    If (renderOccured) Then
-        loopTime = Timer() - loopTime
-        If (loopTime < 1 / 4) Then
-            ' No machine should render slower than this, so > 1/4 would be anomalous, and
-            ' would unbalance the average (at least early on).
-            m_renderTime = m_renderTime + loopTime
-            m_renderCount = m_renderCount + 1
-        End If
-    End If
-
-    ' Show FPS in title bar if enabled
-    If (mainMem.bFpsInTitleBar) Then
-
-        ' Build the string
-        host.Caption = mainMem.gameTitle & " [" & CStr(Round(m_renderCount / m_renderTime, 1)) & " fps]"
-
-    End If
-
+    
 End Sub
 
 '=======================================================================
@@ -428,6 +359,7 @@ Private Sub openSystems()
     Call initEventProcessor
     Call initSprites
     Call initGraphics(m_testingPRG) ' Creates host window
+    Call initCounter(VarPtr(m_renderTime), VarPtr(m_renderCount))   'Pass the variables to ackrt3.
     Call setupCOM(True)
     Call correctPaths
     Call InitPlugins
@@ -531,12 +463,20 @@ Public Sub setupMain(): On Error Resume Next
         ' Do a bad estimate of the fps.
         m_renderTime = Timer()
         Dim i As Long
-        For i = 0 To 20
+        For i = 0 To 50
             Call DXFlip
         Next i
         m_renderTime = Timer() - m_renderTime
-        m_renderCount = 15     ' Account for extra routine time in the movement loop
+        m_renderCount = 35     ' Account for extra routine time in the movement loop
+        
+        ' Cap the initial fps.
+        If gAvgTime < 1 / FPS_CAP Then
+            m_renderTime = m_renderCount / FPS_CAP
+        End If
+        
     End If
+
+    Call traceString("setupMain: Initial fps = " & CStr(Round(1 / gAvgTime, 1)))
 
     ' Register all fonts
     Call LoadFontsFromFolder(projectPath & fontPath)

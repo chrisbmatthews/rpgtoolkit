@@ -779,9 +779,6 @@ Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boo
     
     Call launchBoardThreads(boardList(activeBoardIndex).theData)
     
-    'Set the state to GS_DONEMOVE, rather than finishing the last frames (caused pause on moving to new board).
-    gGameState = GS_DONEMOVE
-    
     'Run the program to run on entering board.
     If LenB(boardList(activeBoardIndex).theData.enterPrg) Then
         Call runProgram(projectPath & prgPath & boardList(activeBoardIndex).theData.enterPrg)
@@ -1535,9 +1532,11 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
 
                         ' Check divide by zero
                         If (.loopSpeed <= 0) Then .loopSpeed = 1
+                        
+Call traceString("movePlayers: .loopSpeed = " & .loopSpeed & " gAvgTime = " & Round(gAvgTime, 5))
 
                     End With
-
+                    
                 Else
 
                     ' Get out of the mainloop state.
@@ -1566,8 +1565,7 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                         If .loopFrame = framesPerMove * (playerMem(playerIdx).loopSpeed) Then
                             ' Movement has ended, update origin, reset the counter
 
-                            ' Do not set the direction to idle, do it after prg check in main loop
-                            ' Round to deal with irrational fractions
+                            ' Do not set the direction to idle until after playerDoneMove call.
 
                             With pendingPlayerMovement(playerIdx)
                                 If staticTileType(playerIdx) <> SOLID Then
@@ -1580,11 +1578,16 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                                 End If
                             End With
 
-                            ' Start the idle timer:
+                            ' Start the idle timer.
                             .idle.time = Timer()
 
                             ' Set -1 temporarily to flag the next loop.
                             .loopFrame = -1
+                            
+                            ' Clear up selected player movement, check and run programs, battles.
+                            If playerIdx = selectedPlayer Then Call playerDoneMove
+                            
+                            pendingPlayerMovement(playerIdx).direction = MV_IDLE
 
                         End If ' loopFrame
 
@@ -1715,6 +1718,54 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
     pushPlayer = True
 
 End Function
+
+Private Sub playerDoneMove(): On Error Resume Next
+'=========================================================================
+' GS_DONEMOVE gamestate moved to here.
+' When player movement ends, check for programs and fights.
+'=========================================================================
+
+    Static checkfight As Long   ' Used to track number of times fighting
+                                ' *would* have been checked for if not
+                                ' in pixel movement. In pixel movement,
+                                ' only check every four steps (one tile).
+                                
+    With pendingPlayerMovement(selectedPlayer)
+
+        ' We'll create a temporary player position which is based on
+        ' the target location for that players' movement.
+        ' lets us test solid tiles, etc.
+
+        Dim tempPos As PLAYER_POSITION
+        tempPos = pPos(selectedPlayer)
+        tempPos.l = .lTarg
+        tempPos.x = .xTarg
+        tempPos.y = .yTarg
+
+        ' Test for a program
+        Call programTest(tempPos)
+
+        ' Test for a fight
+        checkfight = checkfight + 1
+        If (checkfight = (1 / movementSize)) Then
+            Call fightTest
+            checkfight = 0
+            End If
+
+    End With
+
+    ' Convert *STUPID* string positions to numerical
+    Select Case UCase$(pPos(selectedPlayer).stance)
+        Case "WALK_S": facing = SOUTH
+        Case "WALK_W": facing = WEST
+        Case "WALK_N": facing = NORTH
+        Case "WALK_E": facing = EAST
+    End Select
+
+    ' Back to idle state (accepting input)
+    gGameState = GS_IDLE
+    
+End Sub
 
 Public Function getQueuedMovement(ByRef queue As MOVEMENT_QUEUE) As Long
 '=========================================================================
