@@ -388,10 +388,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             End If
 
             ' Make sure this line isn't run
-            If (prg.program(methodCheckIdx) <> "{") Then
-                methodCheckIdx = -1
-                prg.program(lineIdx) = ""
-            End If
+            prg.program(lineIdx) = ""
 
         End If
 
