@@ -967,13 +967,13 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
         errorKeep = theProgram
     End If
 
-    If (multiRunStatus = MR_NOT_RUNNING) Then
-        If (theProgram.looping) Then
-            If (isMultiTasking()) Then
-                Exit Function
-            End If
-        End If
-    End If
+    ' If (multiRunStatus = MR_NOT_RUNNING) Then
+    '     If (theProgram.looping) Then
+    '         If (isMultiTasking()) Then
+    '             Exit Function
+    '         End If
+    '     End If
+    ' End If
 
     Dim cLine As String 'current line
     cLine = rpgcodeCommand

@@ -48,10 +48,15 @@ Private Type threadLoop                            'Thread loop structure
     end As Boolean                                 '  Loop ended?
 End Type
 
+Private Type THREAD_STACK                          'Thread stack structure
+    stack() As threadLoop                          '  Stack of thread loops
+    pos As Long                                    '  Position in stack
+End Type
+
 Private Type threadAnimation                       'Thread animation structure
     anm As TKAnimation                             '  Loaded animations
-    X As Long                                      '  X position of these animations
-    Y As Long                                      '  Y position of these animations
+    x As Long                                      '  X position of these animations
+    y As Long                                      '  Y position of these animations
     frame As Long                                  '  Current frame of these animations
     persistent As Boolean                          '  Animation run from a persistent thread?
 End Type
@@ -59,7 +64,7 @@ End Type
 '=========================================================================
 ' Thread looping declarations
 '=========================================================================
-Private threadLoops() As threadLoop                'All thread loops
+Private threadLoops() As THREAD_STACK               'All thread loops
 
 '=========================================================================
 ' Animation declarations
@@ -97,13 +102,18 @@ Public Sub multiTaskNow()
 
     On Error Resume Next
 
-    'Flag we're multitasking
+    ' Flag we're multitasking
     m_multiTasking = True
 
-    'Run all threads
+    If Not (runningProgram) Then
+        ' Update the RPGCode canvas if not in a prg
+        Call canvasGetScreen(cnvRPGCodeScreen)
+    End If
+
+    ' Run all threads
     Call ExecuteAllThreads
 
-    'Flag we're no longer multitasking
+    ' Flag we're no longer multitasking
     m_multiTasking = False
 
 End Sub
@@ -137,7 +147,7 @@ Public Sub ClearNonPersistentThreads()
     Next c
 
     For c = 0 To UBound(threadLoops)
-        If Not Threads(threadLoops(c).prg.threadID).bPersistent Then
+        If Not Threads(threadLoops(c).stack(threadLoops(c).pos).prg.threadID).bPersistent Then
             Call endThreadLoop(c, False)
         End If
     Next c
@@ -384,18 +394,42 @@ Public Sub startThreadLoop( _
                               Optional ByVal increment As String _
                                                                    )
 
-    'Make sure our array is dimensioned
+    ' Make sure our array is dimensioned
     On Error GoTo error
     Dim ub As Long
     ub = UBound(threadLoops)
-    ub = ub + 1
 
-    'Enlarge the array
-    ReDim Preserve threadLoops(ub)
+    ' If the program is already looping
+    If (prg.looping) Then
 
-    'Setup the loop
+        ' Find a thread loop with its ID
+        On Error GoTo tidError
+        Dim i As Long
+        For i = 0 To ub
+            Dim tid As Long
+            tid = threadLoops(i).stack(threadLoops(i).pos).prg.threadID
+            If (tid = prg.threadID) Then
+                ' Here it is!
+                ub = i
+                Exit For
+            End If
+        Next i
+
+    Else
+
+        ' Enlarge the array
+        ub = ub + 1
+        ReDim Preserve threadLoops(ub)
+
+    End If
+
+    On Error Resume Next
+
+    ' Setup the loop
     Call moveToStartOfBlock(prg)
-    With threadLoops(ub)
+    threadLoops(ub).pos = threadLoops(ub).pos + 1
+    ReDim Preserve threadLoops(ub).stack(threadLoops(ub).pos + 50)
+    With threadLoops(ub).stack(threadLoops(ub).pos)
         .start = prg.programPos
         .type = ttype
         .prg = prg
@@ -404,7 +438,7 @@ Public Sub startThreadLoop( _
         .prg.looping = True
     End With
 
-    'Flag we're looping
+    ' Flag we're looping
     threadLooping = True
 
     Exit Sub
@@ -413,6 +447,10 @@ error:
     ReDim threadLoops(0)
     Resume
 
+tidError:
+    tid = -1
+    Resume Next
+
 End Sub
 
 '=========================================================================
@@ -420,14 +458,17 @@ End Sub
 '=========================================================================
 Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
 
-    With threadLoops(num)
+    With threadLoops(num).stack(threadLoops(num).pos)
 
         'Flag we've reached the end
         .end = True
 
         'If the loop is over or we should force its end
         If (.Over) Or (force) Then
-            .prg.looping = False
+            If (threadLoops(num).pos = 1) Then
+                .prg.looping = False
+            End If
+            threadLoops(num).pos = threadLoops(num).pos - 1
             Exit Sub
         End If
 
@@ -454,7 +495,10 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
                     .prg.programPos = .start
                     .end = False
                 Else
-                    .prg.looping = False
+                    If (threadLoops(num).pos = 1) Then
+                        .prg.looping = False
+                    End If
+                    threadLoops(num).pos = threadLoops(num).pos - 1
                 End If
 
             Case TYPE_UNTIL             'UNTIL LOOP
@@ -463,7 +507,10 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
                     .prg.programPos = .start
                     .end = False
                 Else
-                    .prg.looping = False
+                    If (threadLoops(num).pos = 1) Then
+                        .prg.looping = False
+                    End If
+                    threadLoops(num).pos = threadLoops(num).pos - 1
                 End If
 
             Case TYPE_FOR               'FOR LOOP
@@ -477,7 +524,10 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
                     .prg.programPos = .start
                     .end = False
                 Else
-                    .prg.looping = False
+                    If (threadLoops(num).pos = 1) Then
+                        .prg.looping = False
+                    End If
+                    threadLoops(num).pos = threadLoops(num).pos - 1
                 End If
 
         End Select '(.type)
@@ -512,7 +562,7 @@ Private Sub handleThreadLooping(Optional ByVal runAll As Boolean = True)
 
     'See if there are threads to run
     For threadIdx = 1 To UBound(threadLoops)
-        If (Not threadLoops(threadIdx).end) Then
+        If Not (threadLoops(threadIdx).stack(threadLoops(threadIdx).pos).end) Then
             'This thread is alive and kicking!
             Exit For
         End If
@@ -526,8 +576,8 @@ Private Sub handleThreadLooping(Optional ByVal runAll As Boolean = True)
     'Find a thread to run
     Do
         currentlyLooping = currentlyLooping + 1
-        If (Not currentlyLooping > UBound(threadLoops)) Then
-            If (Not threadLoops(currentlyLooping).end) Then
+        If Not (currentlyLooping > UBound(threadLoops)) Then
+            If Not (threadLoops(currentlyLooping).stack(threadLoops(currentlyLooping).pos).end) Then
                 'Found a thread to run
                 Exit Do
             End If
@@ -536,7 +586,7 @@ Private Sub handleThreadLooping(Optional ByVal runAll As Boolean = True)
         End If
     Loop
 
-    If (Not Threads(threadLoops(currentlyLooping).prg.threadID).bIsSleeping) Then
+    If Not (Threads(threadLoops(currentlyLooping).stack(threadLoops(currentlyLooping).pos).prg.threadID).bIsSleeping) Then
         'This thread is awake, execute it
         Call incrementThreadLoop(currentlyLooping)
     End If
@@ -548,31 +598,36 @@ End Sub
 '=========================================================================
 Private Sub incrementThreadLoop(ByVal num As Long)
 
-    With threadLoops(num)
+    Dim bExec As Boolean
+    bExec = True
+
+    With threadLoops(num).stack(threadLoops(num).pos)
 
         Dim prg As RPGCodeProgram
         prg = .prg
 
-        Select Case LCase$(GetCommandName(prg.program(prg.programPos)))
+        Select Case prg.strCommands(prg.programPos)
 
-            Case "openblock"
+            Case "OPENBLOCK"
                 .depth = .depth + 1
                 prg.programPos = increment(prg)
 
-            Case "closeblock"
+            Case "CLOSEBLOCK"
                 .depth = .depth - 1
                 prg.programPos = increment(prg)
 
-            Case "end"
+            Case "END"
                 .Over = True
                 prg.programPos = increment(prg)
 
             Case Else
 
-                If (Not .Over) Then
-                    prg.looping = False
-                    Call ExecuteThread(prg)
-                    prg.looping = True
+                If Not (.Over) Then
+                    Dim bRunning As Boolean
+                    bRunning = runningProgram
+                    runningProgram = True
+                    bExec = ExecuteThread(prg)
+                    runningProgram = bRunning
                 Else
                     prg.programPos = increment(prg)
                 End If
@@ -589,7 +644,7 @@ Private Sub incrementThreadLoop(ByVal num As Long)
             Call endThreadLoop(num, False)
         End If
 
-        If (prg.programPos = -1) Or (prg.programPos = -2) Then
+        If (prg.programPos = -1) Or (prg.programPos = -2) Or (Not (bExec)) Then
             'We're at the end of the program
             Call endThreadLoop(num, True)
         End If
@@ -601,7 +656,7 @@ End Sub
 '=========================================================================
 ' Init an animation for multitasking
 '=========================================================================
-Public Function startMultitaskAnimation(ByVal X As Long, ByVal Y As Long, ByRef prg As RPGCodeProgram) As Double
+Public Function startMultitaskAnimation(ByVal x As Long, ByVal y As Long, ByRef prg As RPGCodeProgram) As Double
 
     'Make sure our array is dimensioned
     On Error GoTo dimensionArray
@@ -612,8 +667,8 @@ Public Function startMultitaskAnimation(ByVal X As Long, ByVal Y As Long, ByRef 
     Dim a As Long
     For a = 1 To ub
         If threadAnimations(a).anm.animFile = animationMem.animFile Then
-            If threadAnimations(a).X = X Then
-                If threadAnimations(a).Y = Y Then
+            If threadAnimations(a).x = x Then
+                If threadAnimations(a).y = y Then
                     'Already loaded!
                     Exit Function
                 End If
@@ -628,8 +683,8 @@ Public Function startMultitaskAnimation(ByVal X As Long, ByVal Y As Long, ByRef 
     With threadAnimations(ub + 1)
         .persistent = Threads(prg.threadID).bPersistent
         .anm = animationMem
-        .X = X
-        .Y = Y
+        .x = x
+        .y = y
     End With
 
     'Flag we're animating
@@ -659,8 +714,8 @@ Public Sub ceaseMultitaskAnimation(ByVal pos As Long)
         For a = pos To UBound(threadAnimations) - 1
             threadAnimations(a).anm = threadAnimations(a + 1).anm
             threadAnimations(a).frame = threadAnimations(a + 1).frame
-            threadAnimations(a).X = threadAnimations(a + 1).X
-            threadAnimations(a).Y = threadAnimations(a + 1).Y
+            threadAnimations(a).x = threadAnimations(a + 1).x
+            threadAnimations(a).y = threadAnimations(a + 1).y
         Next a
     End If
 
@@ -730,15 +785,15 @@ Public Sub renderMultiAnimations( _
         Dim frame As Long           'frame to render
         Dim num As Long             'slot in arrays
         Dim anim As TKAnimation     'the animation
-        Dim X As Long               'x screen coord
-        Dim Y As Long               'y screen coord
+        Dim x As Long               'x screen coord
+        Dim y As Long               'y screen coord
 
         'First see what we are to do
         num = multitaskCurrentlyAnimating
         frame = threadAnimations(num).frame
         anim = threadAnimations(num).anm
-        X = threadAnimations(num).X
-        Y = threadAnimations(num).Y
+        x = threadAnimations(num).x
+        y = threadAnimations(num).y
 
         'Draw the frame onto a canvas
         Dim cnv As Long
@@ -749,10 +804,10 @@ Public Sub renderMultiAnimations( _
         'Render the frame
         If cnvTarget <> -1 Then
             'To a canvas
-            Call canvas2CanvasBltTransparent(cnv, cnvTarget, X, Y, TRANSP_COLOR)
+            Call canvas2CanvasBltTransparent(cnv, cnvTarget, x, y, TRANSP_COLOR)
         Else
             'To the screen
-            Call DXDrawCanvasTransparent(cnv, X, Y, TRANSP_COLOR)
+            Call DXDrawCanvasTransparent(cnv, x, y, TRANSP_COLOR)
         End If
 
         'Destroy that canvas

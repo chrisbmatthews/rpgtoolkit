@@ -3143,7 +3143,7 @@ Public Function IfThen( _
     
             doneIf(UBound(doneIf)) = True
 
-            If isMultiTasking() And (Not prg.looping) Then
+            If isMultiTasking() Then
 
                 'Main loop time...
                 startThreadLoop prg, TYPE_IF
@@ -3154,7 +3154,11 @@ Public Function IfThen( _
     
         End If
 
+        Dim bRunningPrg As Boolean
+        bRunningPrg = runningProgram
+        runningProgram = True
         IfThen = runBlock(res, prg)
+        runningProgram = bRunningPrg
 
     End If
 
@@ -5583,17 +5587,17 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         Call debugger("Error: Thread data type must be literal, num!-- " + Text$)
     Else
         
-        Dim tID As Long
+        Dim tid As Long
         lit1$ = addExt(lit1$, ".prg")
-        tID = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
+        tid = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
         
         If number = 3 Then
             'save value in destination var...
-            Call SetVariable(useIt3$, CStr(tID), theProgram)
+            Call SetVariable(useIt3$, CStr(tid), theProgram)
         End If
         
         retval.dataType = DT_NUM
-        retval.num = tID
+        retval.num = tid
         Exit Sub
     End If
 End Sub
@@ -7840,7 +7844,11 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
     End If
 
     'If I'm here, then res=0, and we must run through once more.
+    Dim bRunningPrg As Boolean
+    bRunningPrg = runningProgram
+    runningProgram = True
     WhileRPG = runBlock(res, theProgram)
+    runningProgram = bRunningPrg
 
     Exit Function
 
@@ -10520,8 +10528,12 @@ Public Function SwitchCase( _
                     
                     End If
                 End If
-                
-                prg.programPos = runBlock(booleanToLong(run), prg)
+
+                Dim bRunningPrg As Boolean
+                bRunningPrg = runningProgram
+                runningProgram = True
+                prg.programPos = runBlock(CLng(run), prg)
+                runningProgram = bRunningPrg
                 SwitchCase = prg.programPos
       
         End Select
