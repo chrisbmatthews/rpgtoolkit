@@ -1216,7 +1216,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
+'All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
@@ -1553,7 +1553,7 @@ Private Sub Command6_Click(): On Error GoTo ErrorHandler
         Call BoardResize(bx, By, bl, boardList(activeBoardIndex).theData)
         
         ' Resize form
-        Call activeBoard.resizeForm(activeBoard.width, activeBoard.Height)
+        Call activeBoard.Form_Resize
         
         boardNeedUpdate = True
         
@@ -1813,7 +1813,7 @@ Private Sub HScroll1_Change()
     activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
     activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.width, activeBoard.Height)
+    Call activeBoard.Form_Resize
 
     Exit Sub
 'Begin error handling code:
@@ -1929,7 +1929,7 @@ Private Sub VScroll1_Change()
     activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
     activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.width, activeBoard.Height)
+    Call activeBoard.Form_Resize
 
     Exit Sub
 'Begin error handling code:

@@ -451,7 +451,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
+'All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '========================================================================
@@ -620,8 +620,6 @@ End Sub
 ' change selected tile {from tkMainForm: currentTilesetForm_MouseDown}
 '========================================================================
 Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
-'===================================================
-'Additions for .iso tiles, for 3.0.4 by Delano
 
     If (LenB(file) = 0) Then Exit Sub
 
@@ -882,8 +880,6 @@ End Sub
 ' change board state {2d/isometric}
 '========================================================================
 Sub boardIso(ByVal val As Integer): On Error Resume Next
-'=====================================================
-'Alterations for isometric sizing, for 3.0.4 by Delano
 
     If ignore = 1 Then Exit Sub
 
@@ -898,7 +894,7 @@ Sub boardIso(ByVal val As Integer): On Error Resume Next
     'Isometric settings
     If val = 1 Then
         'Isometric.
-        'Minimum *viewing* dimensions! Used in resizeForm.
+        'Minimum *viewing* dimensions! Used in Form_Resize.
         minBoardSizeX = 10
         minBoardSizeY = 23
         
@@ -921,7 +917,7 @@ Sub boardIso(ByVal val As Integer): On Error Resume Next
     boardList(activeBoardIndex).topX = 0
     boardList(activeBoardIndex).topY = 0
     Call boardRedraw
-    Call resizeForm(0, 0)
+    Call Form_Resize
         
     
 End Sub
@@ -2040,9 +2036,7 @@ End Sub
 '========================================================================
 ' !UPDATE! resize form
 '========================================================================
-Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
-'=====================================================
-'Alterations for isometric sizing, for 3.0.4 by Delano
+Public Sub Form_Resize(): On Error Resume Next
 
     If ignore = 1 Then Exit Sub
 
@@ -3071,9 +3065,6 @@ End Sub
 ' run on form activation
 '========================================================================
 Private Sub Form_Activate(): On Error Resume Next
-'=====================================================
-'Alterations for isometric sizing, for 3.0.4 by Delano
-'Added resizeForm.
 
     Set activeBoard = Me
     Set activeForm = Me
@@ -3109,8 +3100,7 @@ Private Sub Form_Activate(): On Error Resume Next
     ' if open, refresh board objects bar
     If tkMainForm.popButton(3).value = 1 Then tkMainForm.boardToolbar.Objects.Populate (activeBoardIndex)
     
-    'Added.
-    Call resizeForm(0, 0)
+    Call Form_Resize
     
     'Redraw the selected tile.
     tkMainForm.currenttile.Cls
@@ -3237,17 +3227,7 @@ Private Sub Form_Load(): On Error Resume Next
     minBoardSizeX = 19
     minBoardSizeY = 11
 
-    Call resizeForm(0, 0)
-    
-End Sub
-
-'========================================================================
-' run on form resize
-'========================================================================
-Private Sub Form_Resize()
-
-    ' call resize form routine
-    Call resizeForm(0, 0)
+    Call Form_Resize
     
 End Sub
 
@@ -3303,8 +3283,6 @@ End Sub
 ' !UPDATE! horizontal scroll
 '========================================================================
 Private Sub HScroll1_Change(): On Error Resume Next
-'=====================================================
-'Alterations for isometric sizing, for 3.0.4 by Delano
     
     ' exit if opening board
     If bOpeningBoard Then
@@ -3668,8 +3646,6 @@ End Sub
 ' display tile types - adapted to allow for individual tile redraw
 '========================================================================
 Public Sub viewtiletypes(Optional ByVal x As Long = 0, Optional ByVal y As Long = 0): On Error Resume Next
-'=====================================================
-'Alterations for isometric sizing, for 3.0.4 by Delano
 
     ' check if option selected
     If tkMainForm.boardTypeLock.value = 1 Then
@@ -3743,7 +3719,7 @@ End Sub
 '========================================================================
 ' display programs
 '========================================================================
-Sub drawPrograms(Optional ByVal fromTileType As Boolean = False)
+Sub drawPrograms(Optional ByVal fromTileType As Boolean = False): On Error Resume Next
 
     If fromTileType = True Or tkMainForm.boardToolbar.Display.Setting(eShowPrograms) = 1 Then
     
@@ -3813,7 +3789,7 @@ End Sub
 '========================================================================
 ' display warp tiles
 '========================================================================
-Sub drawWarps(Optional ByVal fromTileType As Boolean = False)
+Sub drawWarps(Optional ByVal fromTileType As Boolean = False): On Error Resume Next
 
     If fromTileType = True Or tkMainForm.boardToolbar.Display.Setting(eShowWarps) = 1 Then
     
@@ -3883,7 +3859,7 @@ End Sub
 '========================================================================
 ' display items
 '========================================================================
-Sub drawItems(Optional ByVal fromTileType As Boolean = False)
+Sub drawItems(Optional ByVal fromTileType As Boolean = False): On Error Resume Next
 
     If fromTileType = True Or tkMainForm.boardToolbar.Display.Setting(eShowItems) = 1 Then
 
@@ -3957,9 +3933,7 @@ End Sub
 ' !UPDATE! vertical scroll
 '========================================================================
 Private Sub VScroll1_Change(): On Error Resume Next
-'=====================================================
-'Alterations for isometric sizing, for 3.0.4 by Delano
-    
+   
     If bOpeningBoard Then
         Exit Sub
     End If
@@ -4047,17 +4021,17 @@ End Sub
 '========================================================================
 ' !NEW! get tiles amount from twips and vice versa + isometric versions.
 '========================================================================
-Private Function tilesX(ByVal twips As Long) As Long
-
+Private Function tilesX(ByVal twips As Long) As Long: On Error Resume Next
+    'Int(), not Round()!
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
-        tilesX = Round(((twips / Screen.TwipsPerPixelX) + 32) / 64)
+        tilesX = Int(((twips / Screen.TwipsPerPixelX) + 32) / 64)
     Else
-        tilesX = Round((twips / Screen.TwipsPerPixelX) / 32)
+        tilesX = Int((twips / Screen.TwipsPerPixelX) / 32)
     End If
     
 End Function
-Private Function tilesY(ByVal twips As Long) As Long
-    
+Private Function tilesY(ByVal twips As Long) As Long: On Error Resume Next
+    'Round(), not Int(), for the moment.
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
         tilesY = Round(((twips / Screen.TwipsPerPixelY) + 16) / 16)
     Else
@@ -4065,7 +4039,7 @@ Private Function tilesY(ByVal twips As Long) As Long
     End If
 
 End Function
-Private Function TwipsX(ByVal tiles As Long) As Long
+Private Function TwipsX(ByVal tiles As Long) As Long: On Error Resume Next
 
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
         TwipsX = Screen.TwipsPerPixelX * (tiles * 64 - 32)
@@ -4074,7 +4048,7 @@ Private Function TwipsX(ByVal tiles As Long) As Long
     End If
     
 End Function
-Private Function TwipsY(ByVal tiles As Long) As Long
+Private Function TwipsY(ByVal tiles As Long) As Long: On Error Resume Next
 
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
         TwipsY = Screen.TwipsPerPixelY * (tiles * 16 - 16)
@@ -4092,6 +4066,7 @@ End Function
 'returns the index of an autotst, or -1 if invalid
 'if its not presently an autotst, make it one now
 Private Function autoTileset(ByVal tileset As String, Optional ByVal allowAdd As Boolean = True) As Long
+    On Error Resume Next
     Dim i As Long, ub As Long ', sGrpCode As String
 
     ub = UBound(autoTilerSets)
@@ -4122,6 +4097,7 @@ End Function
 '   +autoTilerPutTile
 'change a tile and update surrounding autotiles to match it
 Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal tileY As Long, Optional ByVal iso As Boolean = False, Optional ByVal eo As Boolean = False, Optional ByVal ignoreOthers As Boolean = False)
+    On Error Resume Next
     Dim ix As Long, iy As Long, morphTileIndex As Byte, currentTileset As String, currentAutotileset As Long, thisAutoTileset As Long
     Dim brdWidth As Long, brdHeight As Long, startY As Long, endY As Long, startX As Long, endX As Long
 
