@@ -20,7 +20,7 @@ echo Therefore, this file is most useful if you have moved
 echo the toolkit to a new directory or you know of a reason
 echo why the installer would not have been able to register
 echo said components (ie. being logged under an account
-echo with insufficient capabilties). Regardless of your
+echo with insufficient capabilities). Regardless of your
 echo situation, running this file can do no harm, so you
 echo might as well try.
 echo.
