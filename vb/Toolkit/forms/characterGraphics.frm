@@ -33,10 +33,10 @@ Begin VB.Form characterGraphics
       TabIndex        =   4
       Top             =   0
       Width           =   5175
-      _ExtentX        =   9128
-      _ExtentY        =   847
-      Object.Width           =   5175
-      Caption         =   "Character Sprite List"
+      _extentx        =   9128
+      _extenty        =   847
+      Object.width           =   5175
+      caption         =   "Character Sprite List"
    End
    Begin Toolkit.TKButton butOK 
       Height          =   375
@@ -44,10 +44,10 @@ Begin VB.Form characterGraphics
       TabIndex        =   3
       Top             =   720
       Width           =   735
-      _ExtentX        =   661
-      _ExtentY        =   661
-      Object.Width           =   360
-      Caption         =   "OK"
+      _extentx        =   661
+      _extenty        =   661
+      Object.width           =   360
+      caption         =   "OK"
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
@@ -58,21 +58,6 @@ Begin VB.Form characterGraphics
       TabIndex        =   0
       Top             =   600
       Width           =   6495
-      Begin VB.PictureBox picAnim 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   735
-         Left            =   4320
-         ScaleHeight     =   49
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   81
-         TabIndex        =   18
-         Top             =   3480
-         Width           =   1215
-      End
       Begin VB.ListBox lstStand 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
@@ -90,10 +75,10 @@ Begin VB.Form characterGraphics
          TabIndex        =   13
          Top             =   4920
          Width           =   1095
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "Delete"
+         _extentx        =   661
+         _extenty        =   661
+         Object.width           =   360
+         caption         =   "Delete"
       End
       Begin Toolkit.TKButton butNew 
          Height          =   375
@@ -101,10 +86,10 @@ Begin VB.Form characterGraphics
          TabIndex        =   12
          Top             =   4920
          Width           =   1215
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "New"
+         _extentx        =   661
+         _extenty        =   661
+         Object.width           =   360
+         caption         =   "New"
       End
       Begin VB.PictureBox picStop 
          Appearance      =   0  'Flat
@@ -179,6 +164,21 @@ Begin VB.Form characterGraphics
          TabIndex        =   1
          Top             =   4560
          Width           =   2415
+      End
+      Begin VB.PictureBox picAnim 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   735
+         Left            =   4320
+         ScaleHeight     =   49
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   81
+         TabIndex        =   18
+         Top             =   3480
+         Width           =   1215
       End
       Begin VB.Label lblToBig 
          Appearance      =   0  'Flat
@@ -391,6 +391,7 @@ Private Sub butNew_click(): On Error Resume Next
     'Ask what handle the user wants
     Dim newName As String
     newName = InputBox(LoadStringLoc(2063, "Enter the handle for a new animation"))
+    
     If newName <> "" Then
     
         'Add it to the main data
@@ -427,21 +428,19 @@ Private Sub Form_Load(): On Error Resume Next
     
     'Set the default selected item
     lstMove.ListIndex = 0
+    
 End Sub
 
 '========================================================================
 ' When you click on the Walking Animations listbox
 '========================================================================
 Private Sub lstMove_Click(): On Error Resume Next
-
-    'Hide the textbox
-    lblToBig.Visible = False
     
     'Update the textbox
     txtAnim.Text = playerList(activePlayerIndex).theData.gfx(lstMove.ListIndex)
     
     'Update the animation
-    Call setAnim
+    If ignore = 0 Then Call setAnim
     
 End Sub
 
@@ -450,14 +449,11 @@ End Sub
 '========================================================================
 Private Sub lstStand_Click(): On Error Resume Next
 
-    'Hide the textbox
-    lblToBig.Visible = False
-    
     'Update the textbox
     txtAnim.Text = playerList(activePlayerIndex).theData.standingGfx(lstStand.ListIndex)
     
     'Update the animation
-    Call setAnim
+    If ignore = 0 Then Call setAnim
 
 End Sub
 
@@ -466,14 +462,11 @@ End Sub
 '========================================================================
 Private Sub lstBattle_Click(): On Error Resume Next
 
-    'Hide the textbox
-    lblToBig.Visible = False
-    
     'Update the textbox
     txtAnim.Text = playerList(activePlayerIndex).theData.gfx(lstBattle.ListIndex + 8)
     
     'Update the animation
-    Call setAnim
+    If ignore = 0 Then Call setAnim
 
 End Sub
 
@@ -482,16 +475,13 @@ End Sub
 '========================================================================
 Private Sub lstCustom_Click(): On Error Resume Next
 
-    'Hide the textbox
-    lblToBig.Visible = False
-    
     'Update the textbox
     Dim dx As Integer
     dx = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, lstCustom.ListIndex)
     txtAnim.Text = playerList(activePlayerIndex).theData.customGfx(dx)
     
     'Update the animation
-    Call setAnim
+    If ignore = 0 Then Call setAnim
 
 End Sub
 
@@ -536,6 +526,12 @@ End Sub
 '========================================================================
 Private Sub setAnim(): On Error Resume Next
     
+    'Firstly, clear the label
+    lblToBig.Visible = False
+    
+    'And, show the picturebox
+    picAnim.Visible = True
+    
     'First open the animation
     Dim anmFile As String
     
@@ -550,6 +546,7 @@ Private Sub setAnim(): On Error Resume Next
         If anm.animSizeX > (2000 / Screen.TwipsPerPixelX) Or anm.animSizeY > (1600 / Screen.TwipsPerPixelY) Then
             
             'To big for the animation picturebox, tell the user
+            picAnim.Visible = False
             lblToBig.Visible = True
         
         Else
@@ -563,13 +560,14 @@ Private Sub setAnim(): On Error Resume Next
             'Draw it
             picAnim.cls
             Call AnimDrawFrame(anm, 0, 0, 0, picAnim.hdc)
+            picAnim.Refresh
             
         End If
         
     Else
     
-        'There is no animation, clear the picturebox just to be sure
-        picAnim.cls
+        'There is no animation, hide the picturebox just to be sure
+        picAnim.Visible = False
         
     End If
     
@@ -637,6 +635,9 @@ Private Sub picBrowse_Click(): On Error Resume Next
     
     End With
     
+    'Redraw the picturebox
+    Call setAnim
+    
 End Sub
 
 '========================================================================
@@ -647,9 +648,16 @@ Private Sub butOK_Click(): On Error Resume Next
 End Sub
 
 '========================================================================
+' Stop button
+'========================================================================
+Private Sub picStop_Click(): On Error Resume Next
+    picPlay.Enabled = True
+End Sub
+
+'========================================================================
 ' The Play Button
 '========================================================================
-Private Sub picPlay_Click()
+Private Sub picPlay_Click(): On Error Resume Next
 
     'Open the animation
     Dim anmFile As String
@@ -679,51 +687,29 @@ Private Sub picPlay_Click()
             
             'Un-enable some stuff
             picPlay.Enabled = False
-        
+            ignore = 1
+            
             'Animate it
+            MsgBox anm.animFrame(0)
             picAnim.cls
             Do Until picPlay.Enabled = True
+            
                Call AnimateAt(anm, 0, 0, anm.animSizeX, anm.animSizeY, picAnim)
+               DoEvents
+               
             Loop
             
+            ignore = 0
         End If
 
     End If
-    
-End Sub
 
-'========================================================================
-' Play animation
-'========================================================================
-Private Sub Command8_Click()
-    'play animation...
-    
-    On Error Resume Next
-    
-    Dim idx As Long, anmFile As String, dx As Long
-    idx = lstMove.ListIndex
-    If idx = -1 Then idx = 0
-    
-    anmFile$ = ""
-    If idx < UBound(playerList(activePlayerIndex).theData.gfx) Then
-        anmFile$ = playerList(activePlayerIndex).theData.gfx(idx)
-    Else
-        dx = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, idx - UBound(playerList(activePlayerIndex).theData.gfx))
-        anmFile$ = playerList(activePlayerIndex).theData.customGfx(dx)
-    End If
-    
-    If anmFile$ <> "" And fileExists(projectPath$ + miscPath$ + anmFile$) Then
-        'play animation
-        animationHost.file = projectPath$ + miscPath$ + anmFile$
-        animationHost.repeats = 3
-        animationHost.Show vbModal
-    End If
 End Sub
 
 '========================================================================
 ' Get the animationfile
 '========================================================================
-Private Function getAnim() As String
+Private Function getAnim() As String: On Error Resume Next
 
     With playerList(activePlayerIndex).theData
     
@@ -743,47 +729,55 @@ Private Function getAnim() As String
             'Battle
             getAnim = .gfx(lstBattle.ListIndex + 8)
                 
-        Else
+        ElseIf lstCustom.ListIndex <> -1 Then
                     
             'Custom
             getAnim = .customGfx(lstCustom.ListIndex)
                     
+        Else
+        
+            'None - return emptyness
+            getAnim = ""
+            
         End If
     
     End With
-    
+     
 End Function
 
-
-
-
-
-Private Sub lstmove_DblClick()
-    On Error Resume Next
-    Call Command8_Click
-End Sub
-
-
-
-
-
-Private Sub picStop_Click()
-    picPlay.Enabled = True
-End Sub
-
-Private Sub txtanim_Change()
-    'On Error Resume Next
+'========================================================================
+' When you type something in the textbox
+'========================================================================
+Private Sub txtAnim_Change(): On Error Resume Next
     
-    'Dim idx As Long, dx As Long
-    'idx = lstMove.listIndex
-    'If idx = -1 Then idx = 0
+    With playerList(activePlayerIndex).theData
     
-    'If idx < UBound(playerList(activePlayerIndex).theData.gfx) Then
-        'playerList(activePlayerIndex).theData.gfx(idx) = txtAnim.Text
-    'Else
-        'dx = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, idx - UBound(playerList(activePlayerIndex).theData.gfx))
-        'playerList(activePlayerIndex).theData.customGfx(dx) = txtAnim.Text
-    'End If
+        'See in which listbox we are
+        If lstMove.ListIndex <> -1 Then
+                    
+            'Moves
+            .gfx(lstMove.ListIndex) = txtAnim.Text
+                    
+        ElseIf lstStand.ListIndex <> -1 Then
+                    
+            'Stands
+            .standingGfx(lstMove.ListIndex) = txtAnim.Text
+                    
+        ElseIf lstBattle.ListIndex <> -1 Then
+                    
+            'Battle
+            .gfx(lstBattle.ListIndex + 8) = txtAnim.Text
+                
+        ElseIf lstCustom.ListIndex <> -1 Then
+                    
+            'Custom
+            .customGfx(lstCustom.ListIndex) = txtAnim.Text
+            
+        End If
+        
+    End With
+    
+    'Also update the animation
+    Call setAnim
+    
 End Sub
-
-
