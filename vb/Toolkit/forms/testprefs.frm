@@ -288,31 +288,25 @@ Private Sub CloseX_Click()
  Unload Me
 End Sub
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
-'Global rpgcodelist(activerpgcodeindex).Ifont$           'initial font
-'Global rpgcodelist(activerpgcodeindex).Imwin$           'init message window gfx
-'Global rpgcodelist(activerpgcodeindex).Ichar$(4)        'initial chars (0-4)
-'Global rpgcodelist(activerpgcodeindex).Iboard$          'initial board
-
 Private Sub Combo1_Click()
-    On Error GoTo errorhandler
-    Text3.text = rpgcodeList(activeRPGCodeIndex).Ichar$(Combo1.ListIndex)
+    On Error GoTo ErrorHandler
+    Text3.Text = rpgcodeList(activeRPGCodeIndex).Ichar$(Combo1.ListIndex)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload testprefs
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -338,7 +332,7 @@ Private Sub Command2_Click()
     fName$ = filenamea$
     FileCopy filenamea$, projectPath$ + bmppath$ + antiPath$
     rpgcodeList(activeRPGCodeIndex).Imwin$ = antiPath$
-    Text2.text = rpgcodeList(activeRPGCodeIndex).Imwin$
+    Text2.Text = rpgcodeList(activeRPGCodeIndex).Imwin$
 End Sub
 
 Private Sub Command14_Click()
@@ -362,11 +356,11 @@ Private Sub Command14_Click()
     fName$ = filenamea$
     FileCopy filenamea$, projectPath$ + fontpath$ + antiPath$
     rpgcodeList(activeRPGCodeIndex).Ifont$ = antiPath$
-    Text1.text = rpgcodeList(activeRPGCodeIndex).Ifont$
+    Text1.Text = rpgcodeList(activeRPGCodeIndex).Ifont$
 End Sub
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If Combo1.ListIndex = -1 Then Combo1.ListIndex = 0
     On Error Resume Next
     ChDir (currentdir$)
@@ -388,11 +382,11 @@ Private Sub Command3_Click()
     fName$ = filenamea$
     FileCopy filenamea$, projectPath$ + tempath$ + antiPath$
     rpgcodeList(activeRPGCodeIndex).Ichar$(Combo1.ListIndex) = antiPath$
-    Text3.text = antiPath$
+    Text3.Text = antiPath$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -419,32 +413,32 @@ Private Sub Command4_Click()
     fName$ = filenamea$
     FileCopy filenamea$, projectPath$ + brdpath$ + antiPath$
     rpgcodeList(activeRPGCodeIndex).Iboard$ = antiPath$
-    Text4.text = rpgcodeList(activeRPGCodeIndex).Iboard$
+    Text4.Text = rpgcodeList(activeRPGCodeIndex).Iboard$
 End Sub
 
 
 Private Sub Command5_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     rpgcodeList(activeRPGCodeIndex).Iboard$ = ""
-    Text4.text = ""
+    Text4.Text = ""
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
-    Text1.text = rpgcodeList(activeRPGCodeIndex).Ifont$
-    Text2.text = rpgcodeList(activeRPGCodeIndex).Imwin$
-    Text3.text = rpgcodeList(activeRPGCodeIndex).Ichar$(0)
-    Text4.text = rpgcodeList(activeRPGCodeIndex).Iboard$
+    Text1.Text = rpgcodeList(activeRPGCodeIndex).Ifont$
+    Text2.Text = rpgcodeList(activeRPGCodeIndex).Imwin$
+    Text3.Text = rpgcodeList(activeRPGCodeIndex).Ichar$(0)
+    Text4.Text = rpgcodeList(activeRPGCodeIndex).Iboard$
     If rpgcodeList(activeRPGCodeIndex).IfontSize < 8 Then rpgcodeList(activeRPGCodeIndex).IfontSize = 8
-    Text5.text = str$(rpgcodeList(activeRPGCodeIndex).IfontSize)
+    Text5.Text = str$(rpgcodeList(activeRPGCodeIndex).IfontSize)
     Combo1.AddItem ("Player 1")
     Combo1.AddItem ("Player 2")
     Combo1.AddItem ("Player 3")
@@ -453,7 +447,7 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -465,38 +459,38 @@ End Sub
 
 Private Sub Text1_Change()
     On Error Resume Next
-    rpgcodeList(activeRPGCodeIndex).Ifont$ = Text1.text
+    rpgcodeList(activeRPGCodeIndex).Ifont$ = Text1.Text
 End Sub
 
 Private Sub Text2_Change()
     On Error Resume Next
-    rpgcodeList(activeRPGCodeIndex).Imwin$ = Text2.text
+    rpgcodeList(activeRPGCodeIndex).Imwin$ = Text2.Text
 End Sub
 
 Private Sub Text3_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If Combo1.ListIndex = -1 Then Combo1.ListIndex = 0
-    rpgcodeList(activeRPGCodeIndex).Ichar$(Combo1.ListIndex) = Text3.text
+    rpgcodeList(activeRPGCodeIndex).Ichar$(Combo1.ListIndex) = Text3.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Text4_Change()
     On Error Resume Next
-    rpgcodeList(activeRPGCodeIndex).Iboard$ = Text4.text
+    rpgcodeList(activeRPGCodeIndex).Iboard$ = Text4.Text
 End Sub
 
 Private Sub Text5_Change()
-    On Error GoTo errorhandler
-    rpgcodeList(activeRPGCodeIndex).IfontSize = val(Text5.text)
+    On Error GoTo ErrorHandler
+    rpgcodeList(activeRPGCodeIndex).IfontSize = val(Text5.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

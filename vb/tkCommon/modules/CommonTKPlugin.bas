@@ -154,10 +154,10 @@ Public Function VBPlugin(ByVal plugName As String) As clsVbPlugin
     'Used to access a VB plugin [KSNiloc]
     '=====================================================================================
 
-    On Error Resume Next
+    On Error GoTo skipError
 
     Set VBPlugin = Nothing
-   
+
     Dim a As Long
     For a = 0 To UBound(vbPlugins)
         If vbPlugins(a).filename = plugName Then
@@ -166,6 +166,7 @@ Public Function VBPlugin(ByVal plugName As String) As clsVbPlugin
         End If
     Next a
 
+skipError:
 End Function
 
 Public Function isVBPlugin(ByVal plugName As String) As Boolean

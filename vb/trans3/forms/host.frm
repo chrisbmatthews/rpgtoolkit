@@ -1,9 +1,9 @@
 VERSION 5.00
 Begin VB.Form host 
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   0  'None
    ClientHeight    =   2085
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   0
+   ClientTop       =   0
    ClientWidth     =   2850
    Icon            =   "host.frx":0000
    LinkTopic       =   "Form2"

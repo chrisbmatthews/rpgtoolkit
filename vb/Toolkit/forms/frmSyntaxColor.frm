@@ -65,7 +65,6 @@ Begin VB.Form frmColoringOptions
             _ExtentX        =   4260
             _ExtentY        =   2778
             _Version        =   393217
-            Enabled         =   -1  'True
             ScrollBars      =   3
             Appearance      =   0
             TextRTF         =   $"frmSyntaxColor.frx":0054

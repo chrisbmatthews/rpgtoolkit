@@ -180,7 +180,7 @@ Public Sub CBSetPlayerString(ByVal infoCode As Long, ByVal arrayPos As Long, ByV
     transPlugin.CBSetPlayerString infoCode, arrayPos, newVal, playerSlot
 End Sub
 
-Public Function CBGetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal playerSlot As Long)
+Public Function CBGetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal playerSlot As Long) As String
     CBGetGeneralString = transPlugin.CBGetGeneralString(infoCode, arrayPos, playerSlot)
 End Function
 

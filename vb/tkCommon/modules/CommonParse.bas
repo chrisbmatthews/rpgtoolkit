@@ -6,7 +6,7 @@ Attribute VB_Name = "CommonParse"
 'simple string parsing...
 Option Explicit
 
-Function countSubStrings(ByVal theString As String, ByVal stringSeperator As String) As Long
+Public Function countSubStrings(ByVal theString As String, ByVal stringSeperator As String) As Long
     'count the numbver of substrings contained in the string
     'seperated by stringSeperator
     On Error Resume Next
@@ -32,8 +32,7 @@ Function countSubStrings(ByVal theString As String, ByVal stringSeperator As Str
     countSubStrings = toRet
 End Function
 
-
-Function getSubString(ByVal theString As String, ByVal stringSeperator As String, ByVal idx As Long) As String
+Public Function getSubString(ByVal theString As String, ByVal stringSeperator As String, ByVal idx As Long) As String
     'return the substring at index idx (starting at 0)
     'seperated by stringSeperator
     Dim toRet As String
