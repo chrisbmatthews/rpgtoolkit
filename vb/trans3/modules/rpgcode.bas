@@ -3643,31 +3643,16 @@ Public Sub KillRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     'deletes one or more variables
     On Error GoTo errorhandler
     
-    '========================================================================
-    'Feature addition by KSNiloc
-    '========================================================================
-    
-    Dim a As Long
-    
-    If CountData(Text) > 1 Then
-        For a = 0 To CountData(Text) - 1
-            'Ooo... I love recursing... =P
-            KillRPG "Kill(" & GetElement(Text, a + 1) & ")", theProgram
-        Next a
-        Exit Sub
-    End If
-
-    '========================================================================
-    'End feature addition by KSNiloc
-    '========================================================================
-    
-    Dim typeVar As Long
-    
-    'NOTE: 'a' removed from this list...
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
+    Dim i As Long, a As Long, typeVar As Long, use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    num = CountData(dataUse$)        'how many data elements are there?
+    num = CountData(Text)        'how many data elements are there?
+    If num > 1 Then
+        For i = 0 To num - 1
+            Call KillRPG("kill(" & Trim$(GetElement(dataUse, i + 1)) & ")", theProgram)
+        Next i
+        Exit Sub
+    End If
     If num <> 1 Then
         Call debugger("Warning: Kill has more than 1 data element!-- " + Text$)
     End If
@@ -5731,17 +5716,17 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         Call debugger("Error: Thread data type must be literal, num!-- " + Text$)
     Else
         
-        Dim tid As Long
+        Dim tID As Long
         lit1$ = addExt(lit1$, ".prg")
-        tid = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
+        tID = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
         
         If number = 3 Then
             'save value in destination var...
-            Call SetVariable(useIt3$, CStr(tid), theProgram)
+            Call SetVariable(useIt3$, CStr(tID), theProgram)
         End If
         
         retval.dataType = DT_NUM
-        retval.num = tid
+        retval.num = tID
         Exit Sub
     End If
 End Sub
