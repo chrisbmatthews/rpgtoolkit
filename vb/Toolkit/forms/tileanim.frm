@@ -641,7 +641,7 @@ Private Sub saveasmnu_Click()
     ChDir (currentDir)
     ' tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
     If filename(1) = "" Then Exit Sub
-    animationList(activeAnimationIndex).animFile = antiPath
+    tileAnmList(activeTileAnmIndex).animTileFile = antiPath
     Call savemnu_Click
     ' Call saveTileAnm(filename(1), tileAnmList(activeTileAnmIndex).theData)
     Me.Caption = LoadStringLoc(1814, "Create Animated Tile") + " (" + antiPath$ + ")"
