@@ -3087,7 +3087,6 @@ Public Function IfThen( _
     '   ...
     '}
 
-
     'Static variables
     Static doneIf() As Boolean
 
@@ -3099,9 +3098,11 @@ Public Function IfThen( _
     'Allow the array to enlarge itself...
     On Error GoTo enlargeDoneIf
     
-    Dim res As Long
+    Dim res As Long, cmd As String
     
-    Select Case LCase$(GetCommandName(Text))
+    cmd = LCase$(GetCommandName(Text))
+    
+    Select Case cmd
 
         Case "else"
             If Not doneIf(ub) Then
@@ -3157,11 +3158,14 @@ Public Function IfThen( _
 
     End If
 
-    Dim i As Long
+    On Error Resume Next
+
+    Dim i As Long, Length As Long
+    Length = prg.Length
     i = prg.programPos
     Do
         i = i + 1
-    Loop Until (LenB(prg.program(i)) <> 0 And prg.program(i) <> "{" And prg.program(i) <> "}")
+    Loop Until (LenB(prg.program(i)) <> 0 And prg.program(i) <> "{" And prg.program(i) <> "}" Or i >= Length)
 
     Select Case prg.strCommands(i)
         Case "ELSE", "ELSEIF"
@@ -3529,6 +3533,8 @@ Public Sub KillRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: Kill cannot determine variable type!-- " + Text$)
         Exit Sub
     End If
+    useIt = UCase$(useIt)
+    If (useIt = "TRUE" Or useIt = "FALSE") Then Exit Sub
     If typeVar = 0 Then
         'numerical
         Call killNum(useIt$, globalHeap)
@@ -6632,7 +6638,7 @@ Sub SqrtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_R
     useIt1$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
     Dim aa As Long
-    aa = getValue(useIt$, lit$, num1, theProgram)
+    aa = getValue(useIt1$, lit$, num1, theProgram)
     If aa = 1 Then
         Call debugger("Error: Sqrt must have a numerical element!-- " + Text$)
         Exit Sub
