@@ -675,8 +675,8 @@ Private Sub cmdDelete_Click(index As Integer): On Error Resume Next
         
         For position = 1 To ts(index).selectedTileNum - 1
             
-            'byteOffset = (position - 1) * 3072 + 7              '7 for the header
-            byteOffset = calcInsertionPoint(ts(index).header, position)
+            byteOffset = (position - 1) * 3072 + 7              '7 for the header
+            'byteOffset = calcInsertionPoint(ts(index).header, position)
             
             Get #sourceNum, byteOffset, tileBlock
             Put #destNum, byteOffset, tileBlock
@@ -688,8 +688,8 @@ Private Sub cmdDelete_Click(index As Integer): On Error Resume Next
         For position = ts(index).selectedTileNum + 1 To ts(index).header.tilesInSet + 1
             'Loop to the tile count + 1, because we decreased it earlier!
         
-            'byteOffset = (position - 1) * 3072 + 7
-            byteOffset = calcInsertionPoint(ts(index).header, position)
+            byteOffset = (position - 1) * 3072 + 7
+            'byteOffset = calcInsertionPoint(ts(index).header, position)
 
             Get #sourceNum, byteOffset, tileBlock
             Put #destNum, byteOffset - 3072, tileBlock
@@ -742,7 +742,7 @@ Private Sub cmdInsertBlank_Click(index As Integer): On Error Resume Next
 
     Dim position As Long
     Dim Source As String, Destination As String, sourceNum As Integer, destNum As Integer
-    Dim rgbByte As Byte, element As Long, byteOffset As Long, tileoffset As Long
+    Dim rgbByte As Byte, element As Long, byteOffset As Long, tileOffset As Long
     
     If LenB(ts(index).filename) = 0 Then Exit Sub
     
@@ -778,22 +778,23 @@ Private Sub cmdInsertBlank_Click(index As Integer): On Error Resume Next
     Open Destination For Binary Access Write As #destNum
 
         'Calculate the byte position to insert the tile.
-        byteOffset = calcInsertionPoint(ts(index).header, position)
+        byteOffset = (position - 1) * 3072 + 7
+        'byteOffset = calcInsertionPoint(ts(index).header, position)
         
         'Write the tile:
         Put #destNum, byteOffset, tileBlock
     
         'Now, we add the rest of the tiles to the set after this tile.
         
-        For tileoffset = position To ts(index).header.tilesInSet
+        For tileOffset = position To ts(index).header.tilesInSet
         
-            'byteOffset = (tileOffset - 1) * 3072 + 7
-            byteOffset = calcInsertionPoint(ts(index).header, tileoffset)
+            byteOffset = (tileOffset - 1) * 3072 + 7
+            'byteOffset = calcInsertionPoint(ts(index).header, tileoffset)
             
             Get #sourceNum, byteOffset, tileBlock
             Put #destNum, byteOffset + 3072, tileBlock
         
-        Next tileoffset
+        Next tileOffset
         
         'Overwrite the header.
         ts(index).header.tilesInSet = ts(index).header.tilesInSet + 1
@@ -1386,7 +1387,7 @@ Private Sub insertTile(ByVal index As Integer, ByVal position As Integer): On Er
 '==============================================================================
 
     Dim Source As String, Destination As String, sourceNum As Integer, destNum As Integer
-    Dim byteOffset As Long, tileoffset As Long
+    Dim byteOffset As Long, tileOffset As Long
     Dim x As Integer, y As Integer
     Dim r As Byte, g As Byte, b As Byte
     Dim element As Long, xCount As Integer, yCount As Integer
@@ -1471,7 +1472,8 @@ Private Sub insertTile(ByVal index As Integer, ByVal position As Integer): On Er
         insertNum = FreeFile
         Open insert For Binary As #insertNum
         
-            byteOffset = calcInsertionPoint(ts(Abs(index - 1)).header, ts(Abs(index - 1)).selectedTileNum)
+            byteOffset = (ts(Abs(index - 1)).selectedTileNum - 1) * 3072 + 7
+            'byteOffset = calcInsertionPoint(ts(Abs(index - 1)).header, ts(Abs(index - 1)).selectedTileNum)
         
             Get #insertNum, byteOffset, tileBlock
             
@@ -1495,22 +1497,23 @@ Private Sub insertTile(ByVal index As Integer, ByVal position As Integer): On Er
     Open Destination For Binary As #destNum
 
         'Calculate the byte position to insert the tile.
-        byteOffset = calcInsertionPoint(ts(index).header, position)
+        byteOffset = (position - 1) * 3072 + 7
+        'byteOffset = calcInsertionPoint(ts(index).header, position)
         
         'Write the tile:
         Put #destNum, byteOffset, tileBlock
     
         'Now, we add the rest of the tiles to the set after this tile.
         
-        For tileoffset = position To ts(index).header.tilesInSet
+        For tileOffset = position To ts(index).header.tilesInSet
         
-            'byteOffset = (tileOffset - 1) * 3072 + 7
-            byteOffset = calcInsertionPoint(ts(index).header, tileoffset)
+            byteOffset = (tileOffset - 1) * 3072 + 7
+            'byteOffset = calcInsertionPoint(ts(index).header, tileOffset)
             
             Get #sourceNum, byteOffset, tileBlock
             Put #destNum, byteOffset + 3072, tileBlock
         
-        Next tileoffset
+        Next tileOffset
         
         'Overwrite the header.
         ts(index).header.tilesInSet = ts(index).header.tilesInSet + 1
@@ -1541,7 +1544,7 @@ Private Sub moveTile(ByVal index As Integer, ByVal position As Integer): On Erro
 '==============================================================================
 
     Dim x As Integer, y As Integer, Source As String, Destination As String
-    Dim byteOffset As Long, tileoffset As Long, direction As Long
+    Dim byteOffset As Long, tileOffset As Long, direction As Long
     Dim sourceNum As Integer, destNum As Integer
 
     'If we're trying to move past the end of the set, put it on the end.
@@ -1563,12 +1566,14 @@ Private Sub moveTile(ByVal index As Integer, ByVal position As Integer): On Erro
     Open Destination For Binary As #destNum
     
         'Load the selected tile into the block from the source.
-        byteOffset = calcInsertionPoint(ts(index).header, ts(index).selectedTileNum)
+        byteOffset = (ts(index).selectedTileNum - 1) * 3072 + 7
+        'byteOffset = calcInsertionPoint(ts(index).header, ts(index).selectedTileNum)
         
         Get #sourceNum, byteOffset, tileBlock
         
         'Calculate the byte position to insert the tile.
-        byteOffset = calcInsertionPoint(ts(index).header, position)
+        byteOffset = (position - 1) * 3072 + 7
+        'byteOffset = calcInsertionPoint(ts(index).header, position)
         
         'Write the tile:
         Put #destNum, byteOffset, tileBlock
@@ -1579,14 +1584,15 @@ Private Sub moveTile(ByVal index As Integer, ByVal position As Integer): On Erro
         'direction will equal 1 or -1
         direction = Sgn(ts(index).selectedTileNum - position)
         
-        For tileoffset = position To ts(index).selectedTileNum - direction Step direction
+        For tileOffset = position To ts(index).selectedTileNum - direction Step direction
         
-            byteOffset = calcInsertionPoint(ts(index).header, tileoffset)
+            byteOffset = (tileOffset - 1) * 3072 + 7
+            'byteOffset = calcInsertionPoint(ts(index).header, tileOffset)
         
             Get #sourceNum, byteOffset, tileBlock
             Put #destNum, byteOffset + 3072 * direction, tileBlock
             
-        Next tileoffset
+        Next tileOffset
 
     'Done!
     Close #sourceNum
