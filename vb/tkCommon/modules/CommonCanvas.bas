@@ -330,7 +330,7 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
         ' Get dimensions of canvas in question
         w = getCanvasWidth(cnvSource)
         h = getCanvasHeight(cnvSource)
-
+        
         ' Create an intermediate canvas
         cnvInt = createCanvas(newWidth, newHeight)
         Call canvasFill(cnvInt, crTranspColor)
@@ -343,7 +343,11 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
 
         ' Stretch the mask onto the intermediate canvas
         hdcMask = canvasOpenHDC(cnvMask)
-        Call StretchBlt(hdcInt, _
+        
+        If w = newWidth And h = newHeight Then
+            Call BitBlt(hdcInt, 0, 0, w, h, hdcMask, 0, 0, SRCAND)
+        Else
+            Call StretchBlt(hdcInt, _
                            0, 0, _
                            newWidth, _
                            newHeight, _
@@ -351,11 +355,16 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
                            0, 0, _
                            w, h, _
                            SRCAND)
+        End If
         Call canvasCloseHDC(cnvMask, hdcMask)
 
         ' Stretch the image onto the intermediate canvas
         hdcSource = canvasOpenHDC(cnvSource)
-        Call StretchBlt(hdcInt, _
+        
+        If w = newWidth And h = newHeight Then
+            Call BitBlt(hdcInt, 0, 0, w, h, hdcSource, 0, 0, SRCPAINT)
+        Else
+            Call StretchBlt(hdcInt, _
                            0, 0, _
                            newWidth, _
                            newHeight, _
@@ -363,6 +372,7 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
                            0, 0, _
                            w, h, _
                            SRCPAINT)
+        End If
         Call canvasCloseHDC(cnvSource, hdcSource)
  
         Call canvasCloseHDC(cnvInt, hdcInt)
