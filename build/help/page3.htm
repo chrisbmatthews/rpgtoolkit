@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Main File Editor</h2>
+
+<!-- Main File Editor rewrite 22 Feb 2005 by Delano -->
+
+<p>
+A game's main file (*.gam) contains the all the information and settings to start up your game. A game's main file is located separately from the rest of the game's folders in the \Toolkit3\Main folder, along with any others.
+</p>
+
+<img src="images/image46" alt="Main File Editor" />
+
+<h3>Project Settings</h3>
+<p>
+Project Name &mdash; The name of the game. This name appears in the title bar of the engine during gameplay.
+</p><p>
+Project Path &mdash; The location of the game files within the \Toolkit3 directory.
+</p><p>
+Enable Joystick &mdash; A joystick can be used to control the player and navigate the menus instead of or as well as the keyboard.
+</p><p>
+Cursor Sounds &mdash; You can assign sounds effects from the \Media folder to the listed cursor (mouse) actions.
+</p>
+
+<h3>Startup Info</h3>
+<p>
+Initial Board File &mdash; The first board the player appears on. This board is loaded immediately after the start program finishes running; if you wish to load a board during the start program (using the Send() command) that persists when it ends, you can leave this field empty.
+</p><p>
+Note: Make sure you set a start location for your player on the board, otherwise your player may not appear in the location you wish! (<a href="page4.htm">Board Editor</a> &gt; Board Settings &gt; Set Player Position).
+</p><p>
+Initial Character File &mdash; The main player in the game; the player that is controlled by the user at the start. This must be set before running the game or the game will not work!
+</p><p>
+Additional Speed Adjustment &mdash; This slider controls the overall speed of movement in the game, relative to the speeds assigned to each individual character or item. Since it is possible to give each object its own speed, you should not need to use this setting when testing your game; instead it is intended to be used by the player to adjust the speed on their machine during the game (for instance, through a run-time key or menu option).
+</p><p>
+The setting takes values from -4 to +4, where negative numbers decrease (-10% per step) and positive increase gamespeed (+10%).
+This setting is equivalent to the GameSpeed() command, which takes the same argument.
+</p><p>
+Note: if movement is slow even with low individual walk delays (or you have a low fps), increasing this value will <i><b>not</b></i> increase the movement speed, since your computer will already be running as fast as it can &mdash; to the contrary it can cause some adverse movement problems. More information can be found <a href="page23.htm#faq_4.2">here</a>.
+</p><p>
+Movement Style &mdash; The minimum step by which players and items move around the board. Tile movement refers to old-style block movement, where a single step takes a player to the next tile. Pixel movement reduces the minimum step &mdash; currently (as of <a href="page29.htm#3.0.6">3.0.6</a>) this is a quarter-tile, and in the future this will be reduced to true single-pixel movement.
+</p><p>
+If you select pixel movement, an option becomes available to use movement commands in pixel increments &mdash; that is, to move players and items in quarter-tile increments or full tile. This option is controlable through the PixelMovement() command.
+</p><p>
+Mouse Cursor &mdash; The Toolkit gives you the option to create a custom mouse icon
+from an image file or tile. First you must choose the required option from the radio buttons at the bottom of the window &mdash; "Default" (blue arrow), "None" (no cursor) or "Custom" &mdash; other buttons only become live when you select Custom. The text box specifies the file to be used.
+</p>
+
+<h3>RPGCode</h3>
+<p>
+Run-time Program &mdash; this a program that can be run at any point during the game by pressing a certain "run-time" key (see below). For instance, the main menu is a run-time program with a reserved key, that can be accessed at any time. (Optional)
+</p><p>
+Startup Program &mdash; the first program run in your game, every time it starts. A place to put start menus and intro sequences. (Required for the game to work!)
+</p><p>
+<a name="rpgcode.gameOver"></a>
+Game Over Program &mdash; This is run after a battle when your player's health reaches zero.
+</p><p>
+Run-time Program Activation Key &mdash; The key to press to run the program assigned in the above field. Selecting "More" will bring up a window of extended run-time keys &mdash; you can set up as many as 50 other run-time programs this way (not all keys on the keyboard can be used).
+</p><p>
+<a name="rpgcode.menuActivationKey"></a>
+Built-in Menu Activation Key &mdash; To launch the default menu.
+</p><p>
+General Activation Key &mdash; The key for interacting with objects in the game; for instance talking to an NPC or opening a chest (for which you need to select the "Player presses activation key beside item" option when setting an item on the board &mdash; see <a href="page4.htm">Board Editor</a>).
+</p>
+
+<h3>Fighting</h3>
+<p>
+The option here disables or enables fighting throughout the game (you also need to enable fighting on each board you want it on). The "More" button shows the window that controls the main aspects of fighting.
+</p><p>
+Enemy Skill Level &mdash; The listbox shows the enemies that can be randomly encountered in the game. To add an enemy (.ene file that must have been created &mdash; see <a href="page9.htm">Enemy Editor</a>), double-click an empty slot. For each enemy you must assign a Skill Level in the adjacent text box. This is the level that the player must achieve before he is able to encounter this type of enemy.
+</p><p>
+Fighting Type &mdash; This defines how often standard battles occur. "Planned" battles occur after an exact number of steps, as specified in the text box. "Random" battles do not have an exact gap in between, but every move there is a probability of fighting, again set in the text box.
+</p><p>
+Built-In Fighting System &mdash; The Toolkit comes with a <a href="page15.htm#bs">default battle system</a> (the "tk3fight.dll" plugin in the Game\Plugins folder and set in the Plugin tab &mdash; see below), but many people write their own or download them, either in <a href="page17.htm">RPGCode</a> or using the TK Plugin SDKs. If you have an RPGCode battle system you can specify it here.
+</p>
+
+<h3>Graphics</h3>
+<a name="graphics"></a>
+<p>
+Colour Depth &mdash; A higher bit depth corresponds to more a bigger range of colours. The game engine tends to run faster in 16- or 32-bit colour; note however that this setting only takes effect in full screen mode &mdash; in windowed mode the colour depth will not change from its "desktop" setting.
+</p><p>
+Screen Style &mdash; Generally, fullscreen mode is faster than windowed.
+</p><p>
+Resolution / Custom &mdash; Lower screen resolutions are generally faster. Note that custom resolutions may not be supported by all video cards, and may cause problems (especially in fullscreen mode).
+
+
+</p><p>
+Frames-per-second option &mdash; Tick this to display the fps (frames per second) in the title bar (only visible in full-screen mode). This is only a measure of the speed during movement (not during programs or menus). A low fps (&lt; 20) is indicative of slow movement and you may not notice an increase in walking speed above the default setting (nor will GameSpeed() help).
+</p>
+
+<h3>Plugins</h3>
+<p>
+If you have downloaded (or even written!) a plugin, it must be added here before it can be used. Plugins go in the Game\Plugins folder; a short description of the plugin appears when one is added. Additionally, you can specify plugins to be used in place of the default menu and fight plugins. For more information on Plugins, click <a href="page18.4.htm#adv.e">here</a>.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="pageed_environment.htm">previous</a>, <a href="page4.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

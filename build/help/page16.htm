@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page14.htm">Playing Your Game</a> &mdash; Distribution</h2>
+
+<p>
+After you complete and polish your Toolkit game, there are many ways that you can package it for distribution to the outside world. This page details the most commonly employed of those ways.
+</p>
+
+<a name="pak"></a>
+<h3>PakFile</h3>
+
+<p>
+Now largely unused, PakFiles (*.tpk) are archives that can be loaded like Main Files (*.gam), but contain all the information about a project. The obvious disadvantage of using this scheme is that the recipient must have the Toolkit in order to play your game. You can create a PakFile from a <a href="pageed_environment.htm#menus.pak">menu</a> in the <a href="pageed_environment.htm">main window</a>.
+</p>
+
+<a name="setup"></a>
+<h3>Native Setup Program</h3>
+
+<p>
+This feature builds you game into a *.zip file which includes a generic installer capable of copying the files to a pre-chosen directory. It too is available from a <a href="pageed_environment.htm#menus.setup">menu</a>. Depreciated in favour of standalone executables or third-party utilities.
+</p>
+
+<a name="exe"></a>
+<h3>Standalone Executable</h3>
+
+<p>
+Since <a href="page29.htm#3.0.4">3.0.4</a>, the Toolkit can compile your game to a single *.exe file. This file is void of all dependencies (except, of course, the VB runtimes like the TK itself&mdash;but these are on just about every Windows system today), and can be distributed with ease. Executables are also built from a <a href="pageed_environment.htm#menus.exe">menu</a>.
+</p>
+
+<a name="thirdParty"></a>
+<h3>Third-Party Utility</h3>
+
+<p>
+If you are planning to package your game using a third-party utility (e.g., <a href="http://clickteam.com" rel="external">Install Creator</a>), be aware that only a small set of files are required to be included in the directory used. They are as follows:
+</p>
+
+<ul>
+<li>Your main file, which should be located in \Main\Main.gam</li>
+<li>The game project itself, in \Game\YourGame</li>
+<li>trans3.exe&mdash;the game engine</li>
+<li>actkrt3.dll&mdash;game engine runtime library</li>
+<li>audiere.dll&mdash;<a href="http://audiere.sf.net" rel="external">Audiere</a> media player</li>
+<li>freeimage.dll&mdash;<a href="http://freeimage.sf.net" rel="external">FreeImage</a> image library</li>
+</ul>
+
+<hr />
+<p>
+<a href="page15.htm">previous</a>, <a href="page17.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page22.htm">Troubleshooting</a> &mdash; Technical Issues</h2>
+<p>
+If you're having problems running the Toolkit, first check the <a href="page26.htm">System Requirements</a> page to ensure you have the correct components; then have a look through the following questions. If you cannot find the solution here, you can post a message on the Toolkit Support forums at <a href="http://toolkitzone.com" rel="external">ToolkitZone</a>.
+</p><p>
+There are three specific issues that you should read before continuing!
+</p>
+<ul>
+	<li>
+		Firstly, ensure that you have DirectX version 8.0 or above installed. To find out which DirectX version you have, either:
+		<ul>
+			<li>
+				Open the Control Panel and navigate to the DirectX properties window.
+			</li><li>
+				Go to Start &gt; Run... and type "dxdiag" (without quotes) in the text field and hit return.
+			</li>
+		</ul>
+		If you have an earlier version, you can download the latest at <a href="http://microsoft.com/directx" rel="external">microsoft.com/directx</a>. Even if you have a version greater than or equal to 8, but the remainder of these steps cannot rectify your problem, consider downloading the most recent release.
+		<p></p>
+	</li><li>
+		Secondly, if you are a Windows 9x user (95, 98, 98SE, ME), and are experiencing the following graphical problems, then there are at present (<a href="page29.htm#3.0.6">3.0.6</a>) no solutions to these problems.
+		<ul>
+			<li>
+				Characters replaced by "fuzzy" or coloured squares.
+			</li><li>
+				Transparent areas of characters or images replaced by colours or random images (often the cursor map hand).
+			</li><li>
+				Horizontal lines across boards.
+			</li><li>
+				Distortions in the default menu background and images placed using the image commands.
+			</li>
+		</ul>
+		These problems are due to inconsistencies in the <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/gdi/wingdistart_9ezp.asp" rel="external">GDI</a> (Graphics Device Interface) of earlier Windows versions, which vary from machine to machine. Many Windows 9x users can run the Toolkit without any problems, and it's hit-and-miss whether a particular system will have these problems. However, the developers are working on solutions, and if you do encounter any of these problems please report them on the support forums, supplying as much information about your system specifications as possible.
+		<p></p>
+	</li><li>
+		Lastly, please ensure you have the <b>latest version</b> of the Toolkit installed before consulting this page or reporting bugs. The Toolkit is under constant development, and it is possible that any problems you are having have been fixed in subsequent releases.
+	</li>
+</ul>
+
+<hr />
+
+<!--           FAQ links start here             -->
+<h3>Common Issues</h3>	
+<ul>
+	<li><a href="#tech_1">Does the Toolkit support Linux, Solaris, or other Unix-based, Mac, or non-Windows operating systems?</a></li>
+	<li><a href="#tech_2">Is it possible to play TK games on a console or PDA? </a></li>
+	<li><a href="#tech_3">I get a very low frames-per-second rate (fps) and my players move very slowly. What can be done to improve this?</a></li>
+	<li><a href="#tech_4">I get the message, "A required .DLL file, MSVBVM60.DLL, was not found," when I try to install or run the Toolkit.</a></li>
+	<li><a href="#tech_5">I'm having trouble installing Toolkit 3.0.5+; the installer crashes half-way through or doesn't place all the files in the installed directory.</a></li>
+	<li><a href="#tech_6">When I use the flood fill tool in the Board or Tile Editors, tiles are erased or transparent pixels turn black.</a></li>
+	<li><a href="#tech_7">I'm not a Windows 9x user, but I still encounter graphical errors, including a flashing screen in fullscreen mode.</a></li>
+	<li><a href="#tech_8">My computer satisfies the system requirements, but the Toolkit still doesn't run properly!</a></li>
+
+</ul>
+
+<hr />
+
+<!--          Tech entries start here            -->
+<div class="indent">
+
+	<a name="tech_1"></a>	
+	<h4>Does the Toolkit support Linux, Solaris, or other Unix-based, Mac, or non-Windows operating systems?</h4>	
+		<p>Currently, no. The Toolkit is heavily dependent on Microsoft's DirectX and the Windows API, so ports to other OSs require reliance on Windows API implementations such as <a href="http://winehq.org" rel="external">Wine</a>, or a substantial rewriting. As of version 3, the Toolkit is an <a href="http://opensource.org" rel="external">Open Source</a> project, and so anyone is free to port the Toolkit to other platforms if they wish.</p>
+		
+	<a name="tech_2"></a>	
+	<h4>Is it possible to play TK games on a console or PDA?</h4>	
+		<p>Microsoft's <a href="http://microsoft.com/windowsce" rel="external">Windows CE</a> operating system included with some <a href="http://microsoft.com/pocketpc" rel="external">PocketPCs</a> has, albeit <i>very</i> little, support for the Windows API and may run the TK to a degree. Unfortunately, other PDAs such as Palm Pilots, as well as consoles, have no chance due to the dependency on Windows.</p>
+		
+	<a name="tech_3"></a>	
+	<h4>I get a very low frames-per-second rate (fps), and my players move very slowly. What can be done to improve this?</h4>	
+		<p>Fps is dependent on a number of factors, mainly memory and processor speed. The Toolkit requires both standard RAM and Video RAM (VRAM&mdash;as provided by a graphics card)&mdash;ideally you need around 64MB RAM and several MB of VRAM, which will be shared between all open applications you are running. Try closing any other open applications (for instance, media player or web browser) to free up system resources&mdash;both memory and processor.</p>
+		
+		<p>Speed is also dependent on the graphics mode you run your games in: in general, full-screen games run faster than windowed, and lower resolutions are faster than higher ones. Also, colour depth sometimes makes a difference; generally speaking 32-bit colour is slightly faster than 24- or 16-bit.</p>
+		
+	<a name="tech_4"></a>	
+	<h4>I get the message, "A required .DLL file, MSVBVM60.DLL, was not found," when I try to install or run the Toolkit.</h4>	
+		<p>You require the VB Runtimes, which have been removed from the download because of their size. Most users will have these installed anyway, but if you are a Windows 95 user, or you experience this problem, download these <a href="http://microsoft.com/downloads/details.aspx?FamilyID=bf9a24f9-b5c5-48f4-8edd-cdf2d29a79d5" rel="external">files</a> from Microsoft and install.
+</p>
+		
+	<a name="tech_5"></a>	
+	<h4>I'm having trouble installing Toolkit 3.0.6+; the installer crashes half-way through or doesn't place all the files in the installed directory.</h4>	
+		<p>Some people have this problem with installing; for workarounds, see this tkz library document: <a href="http://toolkitzone.com/library.php?mode=read&amp;doc=104" rel="external">toolkitzone.com/library.php?mode=read&amp;doc=104</a>
+</p>
+	
+	<a name="tech_6"></a>	
+	<h4>When I use the flood fill tool in the Board or Tile Editors, tiles are erased or transparent pixels turn black.</h4>	
+		<p>In the Board Settings menu of the <a href="page4.htm">Board Editor</a>, and the Draw menu of the <a href="page5.htm">Tile Editor</a> there are "Use Recursive Flood" options&mdash;enabling either of these should solve the problem. Note that with this enabled, you may not be able to flood large areas of large boards (approximately greater than 100x100).</p>
+	
+	<a name="tech_7"></a>	
+	<h4>I'm not a Windows 9x user, but I still encounter graphical errors, including a flashing screen in fullscreen mode.</h4>	
+		<p>Try turning on the Vertical Sync option in your graphics card settings (if it has one), or turning down hardware acceleration, in Control Panel &gt; Display &gt; Settings &gt; "Advanced" window.</p>
+
+	<a name="tech_8"></a>	
+	<h4>My computer satisfies the system requirements, but the Toolkit still doesn't run properly!</h4>	
+		<p>There are probably a lot of answers to such a broad question, but in terms of technical issues, make sure you have the latest drivers for all your hardware components (especially the graphics card).</p>
+
+</div>
+
+<hr />
+<p>
+<a href="page23.htm">previous</a>, <a href="page26.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

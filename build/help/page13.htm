@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Status Effect Editor</h2>
+
+<!-- Status Effect Editor rewrite 2 Mar 2005 by Delano -->
+
+<h3>Status Effect Basics</h3>
+<p>
+A Status Effect (*.ste) is a condition that alters the attributes a player or enemy in battle for a short period of time, as the result of a <a href="page12.htm">special move</a> or attack. For instance, it could be the result of a spell that reduces the enemy's response time or completely immobilises them for a number of turns. Several effects have options set up in the editor, whilst others can be crafted in RPGCode and run when the effect is applied.
+</p><p>
+Status effects can also be applied through RPGCode using the ApplyStatus() and RemoveStatus() commands (for instance, if you are writing your own battle system in RPGCode).
+</p>
+
+<img src="images/image60" alt="Status Effect Editor" />
+<h3>Around the Editor</h3>
+<p>
+Status Effect Name - Name that appears when the effect occurs.
+</p><p>
+Number of Rounds Until Effect is Removed - In turn-based fighting a round constitutes one attack by all participants, in real-time fighting this would be the number of turns the target takes.
+</p><p>
+Speed Target Charge Time - This effect decreases the "charge time", the time the target must wait (to recharge his strength) in between moves.
+</p><p>
+Slow Target Charge Time - This effect increases the "charge time".
+</p><p>
+Disable Target - Stops the target from charging, preventing them from taking a turn and effectively disabling them.
+</p><p>
+Remove HP - The amount of hit points (HP) the target loses (or gains if set negative) <i>each round</i>.
+</p><p>
+Remove SMP - The amount of SMP the target loses (or gains if set negative) each round.
+</p><p>
+Run RPGCode Program - You may want to apply more specialised or complex effects than those provided above, and you can do this through RPGCode by attaching a program here.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="page12.htm">previous</a>, <a href="pageed_background.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

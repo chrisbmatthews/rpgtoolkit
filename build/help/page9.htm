@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Enemy Editor</h2>
+
+<p style="text-transform: lowercase;">
+[ <a href="#editor">Around the Editor</a>  ]
+</p>
+
+<!-- Enemy editor rewrite - 8 Mar 2005 by Delano -->
+
+<h3>Enemy Basics</h3>
+<p>
+Enemies are the staple of most role-play games and are normally either encountered randomly or in planned scenes (for instance, the boss at the end of a level). In the Toolkit, random battles occur spontaneously when they are allowed; that is, enemies aren't visible on the board before a battle and players are transported to the battle system when a battle is triggered (unless, of course, you code your own battle system). This is a reflection of the idea that the players are confronted by enemies without warning whilst they move around the game.
+</p><p>
+In most RPGs, players increase their strengths and abilities as they progress through the game, and to compensate for this different kinds of enemies are encountered throughout the game with small increases in difficulty to match the increase in player strength. Hence you may wish to make a range of enemies for use in random encounters, with varying strengths. However, as the name implies, enemies in random battles are chosen by the computer randomly and there must be some mechanism to prevent the player encountering enemies that are disproportionately strong. This is mediated by levels - as discussed in the <a href="page7.htm">Character Editor</a> - when enemies are added to the random battle list (see <a href="page3.htm">Main File Editor</a> &gt; Fighting, or "Add Enemy To Game" below) they are assigned a skill level to reflect their difficulty. Then in each board where you have random fighting you must set the maximum skill level for enemies that can be fought on that board (<a href="page4.htm">Board Editor</a> &gt; Board Settings &gt; Board Information).
+</p>
+<a name="editor"></a>
+<img src="images/image57" alt="Enemy Editor" />
+<h3>Around the Editor</h3>
+<p>
+Basic Info
+</p><ul>
+	<li>
+		Name - Name of the enemy, that appears in the enemy list in battle.
+	</li><li>
+		Max Health Points - Starting and maximum HP.
+	</li><li>
+		Special Move Power - Starting and maximum SMP.
+	</li><li>
+		Fighting Power - Attack strength.
+	</li><li>
+		Defence Power - Defensive strength.
+	</li>
+</ul>
+<p>
+Fighting Conditions
+</p><ul>
+	<li>
+		Player can run from enemy - In most situations, you may want the player to be able to run from a battle rather than finishing it, but in planned battles (for instance with bosses) you may want to disable this option. If enabled, you can specify a program to be run when this happens, for instance to penalise the player for running instead of fighting (e.g., he could drop money).
+	</li><li>
+		Chances of critical hit on enemy - The probability that an attack by the player on this enemy causes maximum damage; that is, the enemy's defence is ineffective and the DP is not subtracted from the FP.
+	</li><li>
+		Chances of critical hit on player - As above, for the attacks by the enemy on the player.
+	</li>
+</ul>
+<p>
+Graphics - Shows a window where you can set <a href="page10.htm">animations</a> (*.anm) for several actions the enemy can make. Select the type from the list on the left, and hit "Browse" to select an animation. All enemy graphics must be saved as animations, even for single-frame images. Custom actions can be added using the "Add" and "Remove" buttons.
+</p><p>
+Special Moves - Enemies can also make <a href="page12.htm">special moves</a>, just like players. Create special moves for enemies in the same way as for characters and assign them in the left-hand list in this window. Enemies will use their special moves randomly, dependent on their AI and amount of SMP. Remember to give the enemy enough SMP for the moves he has! You can also make the enemy susceptible to certain moves; that is, such moves inflict more damage than they normally would. Add these to the "Weaknesses" list on the right.
+</p><p>
+Tactics - Enemies are controlled by the computer, and must be given some kind of instruction in order to act as enemies in battle and attack the players. Enemies use basic AI (artificial intelligence) from the Toolkit, which has four levels:
+</p>
+<ul>
+	<li>
+		Low - Enemy attacks random players with a random combination of standard (physical) attacks and special moves (if it can make these).
+	</li><li>
+		Medium - Enemy attacks random players, but uses special moves (if it has any) until its SMP is exhausted, at which point it reverts to normal attacks.
+	</li><li>
+		High - Enemy attacks the weakest player with a random combination of standard attacks and special moves.
+	</li><li>
+		Very High - Enemy attacks the weakest player with special moves until SMP is exhausted.<!-- [% NOTE: no enemy health checks %]-->
+	</li>
+</ul>
+<p>
+You may want to write your own AI instead of using the presets - if so, select the option here and specify the RPGCode program in the text box.
+</p><p>
+Rewards - One of the main reasons for fighting is so that the player can gain the experience required to earn him further abilities and skills needed to advance through the game. The amount of experience the player is rewarded with is normally proportional to the difficulty of the enemy and the scaling of the player's skill levels. As well as this players can also be rewarded with physical objects; money can be given via the GP text box and a program can be specified for other rewards such as items.
+</p><p>
+Add Enemy To Game - This opens the <a href="page3.htm">Main File Editor</a> edit fighting window.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="page8.htm">previous</a>, <a href="page10.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

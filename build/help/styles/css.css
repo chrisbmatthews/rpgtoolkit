@@ -1,0 +1,180 @@
+/*************************************************************
+ RPGTOOLKIT HELP -- STYLESHEET
+**************************************************************/
+
+/*************************************************************
+ GLOBAL STYLES
+**************************************************************/
+
+h1, h2
+{
+	text-transform: lowercase;
+}
+
+body
+{
+	font-family: Tahoma, Verdana, Arial, sans-serif;
+	color: #025;
+	margin: 0;
+	background: #000;
+	font-size: smaller;
+}
+
+a
+{
+	color: #369;
+}
+
+a:hover
+{
+	text-decoration: none;
+}
+
+div#document
+{
+	margin: 10px;
+	padding: 10px;
+	background: #fff;
+	border: solid 9px #036;
+}
+	
+h1
+{
+	margin: 0 -10px 0 0;
+	padding: 0 0 5px 0;
+	border-bottom: solid 1px #000;
+}
+
+pre
+{
+	font-size: 9pt;
+	margin-left: 10px;
+}
+
+div#links
+{
+	margin: 0 0 0 -10px;
+	text-align: center;
+}
+
+div.topLinks span
+{
+	background: #eee;
+	padding-top: 0;
+}
+
+h2, div.submenu div
+{
+	margin: -10px -10px 10px -10px;
+	padding: 5px 0 5px 10px;
+	font-size: 15pt;
+	border-bottom: solid 1px #ddd;
+	font-weight: normal;
+	background: #eee;
+}
+
+div.submenu div:hover
+{
+	background: #ccc;
+}
+
+div.topLinks span, div.submenu div
+{
+	font-size: 12pt;
+	padding-right: 4px;
+}
+
+h3
+{
+	margin: 0;
+	font-size: +12pt;
+	font-weight: normal;
+	font-style: italic;
+}
+
+h4
+{
+	font-size: 10pt;
+}
+
+div.topLinks
+{
+	padding: 2px 10px 4px 10px;
+	margin: 10px 0 0 0;
+	border: solid 1px #ddd;
+	background: #eee;
+}
+
+div#content, div.submenu
+{
+	padding: 10px 10px 0 10px;
+	margin: 10px 0 0 0;
+	border: solid 1px #ddd;
+}
+
+div#content
+{
+	padding-bottom: 5px;
+	min-height: 200px;
+}
+
+div.submenu
+{
+	position: absolute;
+	width: 170px;
+	display: none;
+}
+
+ul
+{
+	margin: 0 0 10px 0;
+	list-style-type: square;
+}
+
+ul ul
+{
+	list-style-type: circle;
+}
+
+div.indent p, div.indent ul
+{
+	margin-left: 30px;
+}
+
+/*************************************************************
+ PRIMER STYLES
+**************************************************************/
+
+div#primer pre
+{
+	background-color: #f9f9f9;
+	font-family: Courier New, monospace; 
+	font-size: 11px;
+	color: #000dd0;
+	text-decoration: none;
+	border: 1px solid #000000;
+	margin: 10px 10px 10px 10px;
+}
+
+div#primer .boxedText
+{
+	background-color: #dddddd;
+	border: 1px solid #000000;
+	margin: auto 10px auto 10px;
+
+}
+
+/*************************************************************
+ REFERENCE STYLES
+**************************************************************/
+
+div#primer div#reference h3
+{
+	font-style: normal;
+	margin-bottom: 7px;
+}
+
+div#primer div#reference hr
+{
+	margin-bottom: 15px;
+}

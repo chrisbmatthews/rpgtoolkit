@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page22.htm">Troubleshooting</a> &mdash; Frequently Asked Questions</h2>
+
+<!-- FAQ Last updated 15 Mar 2005 -->
+<p>
+This is a collection of common questions on the Toolkit and game-making. Technical problems can be found separately in <a href="page25.htm">Technical Issues</a>. If you can't find what you're looking for, then please post a question in the support forums at <a href="http://toolkitzone.com" rel="external">ToolkitZone</a>. This list is under constant revision; feel free to submit your questions (with answers) in the same forums.
+</p>
+
+<!--           FAQ links start here             -->	
+	
+<a href="#section_1">General</a><ul>	
+	<li><a href="#faq_1.1">Can I use the Toolkit to create an online game or MMORPG (massive, multiplayer online RPG)? </a></li>
+	<li><a href="#faq_1.2">Can I play/edit a Toolkit version 2 game with Toolkit version 3?</a></li>
+</ul>	
+<a href="#section_2">Editor</a><ul>	
+	<li><a href="#faq_2.1">I made a (insert object here) but it doesn't work!</a></li>
+	<li><a href="#faq_2.2">How do I make walking graphics for characters/items/enemies?</a></li>
+	<li><a href="#faq_2.3">How do I place more than one tile in an animation frame?</a></li>
+	<li><a href="#faq_2.4">How do I make an NPC walk around? </a></li>
+	<li><a href="#faq_2.5">How do I make a door that sends the player to another board? </a></li>
+	<li><a href="#faq_2.6">I've made a warp tile, but nothing happens when I walk on it!</a></li>
+</ul>	
+<a href="#section_3">RPGCode</a><ul>	
+	<li><a href="#faq_3.1">Is the TK2 * comment still valid?</a></li>
+	<li><a href="#faq_3.2">What's this I hear about not using branch?</a></li>
+</ul>	
+<a href="#section_4">Gameplay</a><ul>	
+	<li><a href="#faq_4.1">I've made a board and a player, but when I test-run my game, my player and/or board doesn't appear!</a></li>
+	<li><a href="#faq_4.2">My player moves really slowly; what's wrong?</a></li>
+	<li><a href="#faq_4.3">What's GameSpeed() for then, if it should be set at zero?</a></li>
+</ul>	
+<a href="#section_5">Open Source and Development</a><ul>	
+	<li><a href="#faq_5.1">Where can I download the source code? </a></li>
+	<li><a href="#faq_5.2">May I sell my game made with Toolkit 3? </a></li>
+</ul>	
+
+<a href="page25.htm">Technical Issues</a>	
+<br /><br />
+
+<hr />
+
+<!--          FAQ entries start here            -->		
+<div class="indent">
+
+<a name="section_1"></a><h3>General</h3>		
+	<a name="faq_1.1"></a>	
+	<h4>Can I use the Toolkit to create an online game or MMORPG (massive, multiplayer online RPG)? </h4>	
+		<p>Generally speaking, no. Technically it is possible through <a href="page18.4.htm#adv.e">plugins</a>, but it has not yet been achieved. More information can be found in a TKZ article <a href="http://toolkitzone.com/library.php?mode=read&amp;doc=88" rel="external">here</a>.</p>
+
+	<a name="faq_1.2"></a>	
+	<h4>Can I play/edit a Toolkit version 2 game with Toolkit version 3?</h4>	
+		<p>Yes&mdash;although you may have to edit some parts of your programs and remake some of your game files. </p>
+
+		<p>To start, copy your game files from your Toolkit2\Game folder to the Toolkit3\Game and the main game file from Toolkit2\Main to Toolkit3\Main&mdash;make sure you keep a copy of the old files in case anything goes wrong. As a precaution, open your game files in the TK3 editor and resave them to convert their format to TK3; specifically for character, item, board and animation files (tiles and programs do not require conversion). You may find in the case of characters and items you need to reconstruct the file completely.</p>
+
+		<p>With your programs, you will find that some commands have been removed or upgraded for TK3&mdash;watch for the debugger when testing them for information on upgrading.</p>
+
+<hr />
+
+<a name="section_2"></a><h3>Editor</h3>		
+	<a name="faq_2.1"></a>	
+	<h4>I made a (insert object here) but it doesn't work!</h4>	
+		<p>This is quite a common complaint, and a lot of the time it's due to the object not being saved before test-running the game. Try hitting "Save All" in the toolbar before testing. It might not always be the case though! Of course, you should consult the relevant editor help page too.</p>
+
+	<a name="faq_2.2"></a>	
+	<h4>How do I make walking graphics for characters/items/enemies?</h4>	
+		<p>In TK3, movement graphics have to be created using <a href="page10.htm">Animations</a> (*.anm). One animation has to be created for each direction (that you want the player/item to move in) or action. To make an animation, load its editor and click the white box to add an image for the first frame. Use the toolbar buttons to add more frames.</p>
+
+	<a name="faq_2.3"></a>	
+	<h4>How do I place more than one tile in an animation frame?</h4>	
+		<p>Each frame can only hold one "image", so you need to make an image out of the tiles you want in the frame&mdash;a <a href="page11.htm">Tile Bitmap</a>. To make a tile bitmap (*.tbm), load its editor and resize the image to the required dimensions. Then add tiles to it as you would the board editor. Tile bitmaps can be selected as images for animation frames.</p>
+
+	<a name="faq_2.4"></a>	
+	<h4>How do I make an NPC walk around? </h4>	
+		<p>In Tk3, an NPC (non-player character) is an Item with walking graphics. After creating and animating the NPC, check the "Board Driven" option to let this item be active on a board and click the corresponding "Edit". For "Program to run while item is on board" select "wander.prg" for basic wandering, or you can write a more complex routine using the PushItem() command and a loop. Then place the item on a board (RPGCode &gt; Set Item in the board editor).</p>
+
+	<a name="faq_2.5"></a>		
+	<h4>How do I make a door that sends the player to another board? </h4>		
+		<p>As well as directional links, players can also move between boards using Warp Tiles (and the Send() command). To make a door, first make the origin and target boards (e.g., the outside and inside areas of a house) and remember the location where you want the player to appear (x, y and layer). On the origin board, go to RPGCode &gt; Set Warp Tile and click the tile on the board that corresponds to the door, then fill out the details of the target location in the window that appears. Note that this is only a "one-way" connection and you must add another Warp Tile if you want the door to work in reverse.</p>	
+
+	<a name="faq_2.6"></a>		
+	<h4>I've made a warp tile, but nothing happens when I walk on it!</h4>		
+		<p>There are several possibilities:</p>	
+		<ul>	
+			<li>Check you saved the board before testing.</li>
+			<li>Check that the target board exists and the details were typed in correctly.</li>
+			<li>Check that the Warp Tile has been set <i>on the same layer</i> that the player is walking on.</li>
+			<li>If your player appears at the edge or corner of a board, check the target coordinates of the warp tile (warp tiles are just standard programs of the form warpxxx.prg where xxx is a number)</li>
+		</ul>	
+
+<hr />
+
+<a name="section_3"></a><h3>RPGCode</h3>			
+	<a name="faq_3.1"></a>		
+	<h4>Is the TK2 * comment still valid?</h4>
+		<p>To a degree.</p>
+		<p>The comment used in TK1&ndash;2, *, was picked by Christopher B. Matthews when long term development was not a consideration. It managed to stay throughout all TK2 releases because of that version's simple line-by-line RPGCode parser. With the introduction of a much more elaborate, less restrictive, parser in recent TK3 releases, the *, due to it being the multiplication operator, can no longer be successfully understood as well as in TK2. For whole-line comments, it will continue to function in the foreseeable future, but we recommend consistent usage of the far superior // comment.</p>
+
+	<a name="faq_3.2"></a>		
+	<h4>What's this I hear about not using branch?</h4>
+		<p>Because <em>branch</em> performs an unconditional jump to what could possibly be a whole other area of a program, it creates illogical, unreadable, and unmaintainable code. It is generally regarded as a very poor programming practice, and is never required in favour of more friendly language features (e.g., <a href="page18.2.htm#con.while"><em>while</em> loops</a>). A more detailed answer can be found in the famous essay <a href="http://acm.org/classics/oct95" rel="external"><i>Go To Statement Considered Harmful</i></a>, by Edsger W. Dijkstra.</p>
+
+<hr />
+
+<a name="section_4"></a><h3>Gameplay</h3>		
+	<a name="faq_4.1"></a>	
+	<h4>I've made a board and a player, but when I test-run my game, my player and/or board doesn't appear!</h4>	
+		<p>Make sure you've set the "Initial Board File" and "Initial Character File" options in the <a href="page3.htm">Main File Editor</a>, you've given your player graphics and you've set a starting location for the player to appear at, through Board Settings &gt; Set Player Position in the <a href="page4.htm">Board Editor</a>.</p>
+		
+	<a name="faq_4.2"></a>	
+	<h4>My player moves really slowly; what's wrong?</h4>	
+		<p>Player speeds are dependent on a number of factors. Firstly, as of <a href="page29.htm#3.0.5">3.0.5</a> all players and items can have individual speeds assigned to them in the Graphics window of their editors. The value here is a delay, in seconds, rather than a speed so lower numbers correspond to faster movement. A value of between 0.05 and 0.2 is recommended, but you can set any value you wish.</p>
+
+		<p>This is an absolute value and the Toolkit will endeavour to move the object as this speed on all machines. However, it may be the case that your pc is unable to match this speed, in which case it will run them as close to it as possible. A way to gauge the performance of your pc is through the frames-per-second rate (fps) of the engine. This can be seen in windowed mode by enabling the option in the <a href="page3.htm#graphics">graphics tab</a> of the <a href="page3.htm">Main File Editor</a>. A low fps (&lt; 20) is indicative of the pc running at maximum capacity.</p>
+
+		<p>One other option that you may be tempted to use is GameSpeed(), and its main file option. One cause of slow movement may be the fact this is set to a low value; set it at zero for unaffected gameplay. If your pc is running at capacity, increasing GameSpeed() won't have any affect on movement.</p>
+		
+	<a name="faq_4.3"></a>	
+	<h4>What's GameSpeed() for then, if it should be set at zero?</h4>	
+		<p>The idea of GameSpeed() is that it gives the players a mechanism for altering the speed of your game. For instance, you could create a menu option with a graphic slider, or a run-time program with associated keys to increase or decrease the setting.</p>
+
+<hr />
+
+<a name="section_5"></a><h3>Open Source and Development</h3>		
+	<a name="faq_5.1"></a>	
+	<h4>Where can I download the source code? </h4>	
+		<p>At the SourceForge page, <a href="http://sourceforge.net/projects/rpgtoolkit" rel="external">sourceforge.net/projects/rpgtoolkit</a>.</p>
+		
+	<a name="faq_5.2"></a>	
+	<h4>May I sell my game made with Toolkit 3? </h4>	
+		<p>You are free to sell games you make in the RPG Toolkit (Version 3.0.x), you must however give credit for the use of the RPG Toolkit itself. You must either own all resources used in your game or have full permission from the author of the resources to use them in a commercial product.</p>
+
+</div>
+
+<hr />
+<p>
+<a href="page22.htm">previous</a>, <a href="page25.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

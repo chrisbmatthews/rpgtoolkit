@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page17.htm">RPGCode</a> &mdash; <a href="page21.htm">Object Oriented Coding</a> &mdash; Returning References</h2>
+
+<div id="primer">
+
+<p>
+Arrays in RPGCode have very limited functionality. They do not have set upper bounds and there are no functions to manipulate arrays. While coding an array class exceeds the scope of this document, returning references does not.
+</p>
+
+<p>
+When you overload operator[] you can only take one parameter - the index in the array. People from structured programming backgrounds will find it impossible, therefore, to allow the creator to set items in the array. This, however, is not correct. When you return a reference, you make calling a function a synonym for the variable you return. Consider the following example:
+</p>
+
+<pre>
+method someString()
+{
+	returnMethod(&amp;g_str$)
+}
+
+someString() = "Hello, world!"
+show(someString())
+wait()
+</pre>
+
+<p>
+The syntax for using returnMethod in this fashion is as seen above:
+</p>
+
+<pre>
+method returnMethod(&amp;theVar)
+</pre>
+
+<p>
+Where theVar is a variable - not a value - that calling the function will become a synonym for.
+</p>
+
+<p>
+Using this knowledge we can create a simple array class, like so:
+</p>
+
+<pre>
+// An array
+class CArray
+{
+
+	// Public visibility
+	public:
+
+		// Constructor
+		method CArray(upperBound!)
+
+		// Subscript operator
+		method operator[](idx!)
+
+		// Get the upper bound
+		method getBound() { returnMethod(m_bound!) }
+
+		// Deconstructor
+		method ~CArray()
+
+	// Private visibility
+	private:
+
+		m_data[]	// Main data
+		m_bound!	// Upper bound of the array
+
+}
+
+// CArray - constructor
+method CArray::CArray(upperBound!)
+{
+	if (m_bound! &gt;= 0)
+	{
+		// Bound is okay
+		m_bound! = upperBound!
+	}
+	else
+	{
+		// Bound is no good
+		debugger("Invalid upper bound: " + CastLit(upperBound!))
+	}
+}
+
+// CArray - subscript operator
+method CArray::operator[](idx!)
+{
+	// Check bounds
+	if (idx! &lt;= m_bound! &amp;&amp; idx! &gt;= 0)
+	{
+		// Within bounds
+		returnMethod(&amp;m_data[idx!])
+	}
+	else
+	{
+		// Out of bounds
+		debugger("Out of array bounds: " + CastLit(idx!))
+		g_null! = 0
+		returnMethod(&amp;g_null!)
+	}
+}
+
+// CArray - deconstructor
+method CArray::~CArray()
+{
+	On Error Resume Next
+	local(i!)
+	for (i! = 0; i! &lt;= m_bound!; i!++)
+	{
+		this[i!]->release()
+		kill(this[idx!]!)
+	}
+}
+</pre>
+
+<p>
+You may notice the use of this. Said, this, is just the current object, and, as you'd expect, this! is a unique number representing the object.
+</p>
+
+<p>
+It's also worth nothing that the array index does not need to be numerical - it can be literal, or even an object.
+</p>
+
+<p>
+The CArray class also shows an example of composition, that is, having objects as members of classes. This example which makes an array of dates, illustrates this:
+</p>
+
+<pre>
+// Create a new array
+array = CArray(1)
+
+// Fill it with two CDates
+array[0] = CDate(2, 12, 1234)
+array[1] = CDate(1, 1, 1999)
+
+// Iterate over the array
+ub! = array->getBound()
+for (i! = 0; i! &lt;= ub!; i!++)
+{
+	// Show this date
+	text(1, 1 + i!, array[i!])
+}
+
+// Wait for a key
+wait()
+
+// Clean up
+array->release()
+kill(i!, ub!, array!)
+</pre>
+
+<p>
+If you'll check back at CArray's deconstructor, you'll see that it releases its members automatically so we don't need to release the two dates.
+</p>
+
+<p class="boxedText">
+Note: This class has a problem that would be experience when attempting to copy the object through and assignment or when passed as a parameter; we will explore this problem in <a href="page21_5.htm">Copy Constructors</a>.
+</p>
+
+<p>
+As you can see, returning references is a very powerful tool.
+</p>
+
+</div>
+
+<hr />
+<p>
+<a href="page21_3.htm">previous</a>, <a href="page21_5.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

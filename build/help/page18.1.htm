@@ -1,0 +1,370 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><div id="primer">
+
+<h2><a href="page17.htm">RPGCode</a> &mdash; <a href="page18.htm">Language Features</a> &mdash; Basics</h2>
+
+<h3 style="margin-bottom: 10px;">Contents</h3>
+
+<a href="#basics">Basics of Programming</a>
+<ul style="margin-bottom: 15px;">
+	<li><a href="#basics.com">Commands</a></li>
+	<li><a href="#basics.var">Variables</a></li>
+	<li><a href="#basics.varmath">Variables and math</a></li>
+	<li><a href="#basics.mwin">The Message Window</a></li>
+</ul>
+
+<hr />
+
+<a name="basics"></a>
+<h3>The Basics of Programming</h3>
+<p>
+In all programming languages (including RPGCode), your computer will do many different tasks just by your typing a command. A program is nothing more than a bunch of commands that tell the computer what to do. The computer is, however, dependent on your success in giving it instructions. If you don't tell the computer when to start, what to do, and when to stop, it won't understand what you want, and certainly won't work. So lets start by learning the most simple instruction you can give the computer through RPGCode: showing text on the screen. This is done with the 'Mwin' command (mwin stands for message window).
+</p>
+
+<pre>
+Mwin("This text goes inside of a message window!")
+Mwin("La la la, random messages!")
+</pre>
+
+<p>
+If you run that program, you will see that the message window shows up with the text inside of it, and then disappears almost instantly. This is because you need a way to wait for the user to do something before it disappears. This is where we introduce the next command...
+</p>
+
+
+<a name="basics.com"></a>
+<h4>Commands:</h4>
+
+<p>
+To make the Message Window stay on the screen, you'll need to use a command called 'Wait' (Wait()). The 'Wait' command makes the computer 'pause' itself until the user presses a button on the keyboard. This is how you make the message window stay on screen using Wait:
+</p>
+
+<pre>
+Mwin("Unlike the first example,")
+Mwin("this text will stay on the screen.")
+Wait(a$)
+</pre>
+
+<p>
+By the parentheses, you can already tell that it's a command named 'Wait'. But what does that '(a$)' mean, exactly? The parentheses (the '(' and ')') are attached to all of the commands. They hold "arguments" or "parameters" inside of them. The parameters of a command are just places where you put letters, numbers, or variables (more on this later). Some commands, however, don't take parameters (but it's always a good idea to include the parentheses anyway). 'a$' is the parameter that the wait command takes. You can also do the Wait() command another way. The example I've shown is not the prefered way to do the Wait command. This is:
+</p>
+
+<pre>
+Mwin("This example shows another way to do Wait()")
+Mwin("Isn't that cool?")
+a$ = Wait()
+</pre>
+
+<p class="boxedText">
+If you have trouble distinguishing commands from variables, look at it this way: A command has opening and closing parentheses (the '(' and ')'), and variables have literal or numeric marks (the '$' or '!')
+</p>
+
+
+<a name="basics.var"></a>
+<h4>Variables:</h4>
+
+<p>
+You probably already know that computers can store information. In programming, you can store different types of information through the use of 'variables'. A variable is a label. A name you can give to certain pieces of information in a program. You can store numbers (numeric values) and words (literal values) inside of variables. If you need a clearer understanding of what variables are, think of it this way: Let's say that a variable is a cardboard box. Well, you might want to put something in that box. I'll put a big '5' in that box, and slap a label on the front of the box that says "box". The RPGCode representation of that is like this:
+</p>
+
+<pre>
+box! = 5
+</pre>
+
+<p>
+Why is there a '!' after it? What does that do? That's what you call a 'numeric indicator'. What that does is tells the computer that you are storing a number in the variable. So, this is how you'd read it:
+</p><p>
+	'box' Alright. I know that the variable is named 'box'.<br />
+	'!' Now I know that we'll be storing a number in it.
+</p><p>
+Ok, so you understand how to initiate a numeric variable. As you'll probably notice, there's something else attached to the end of the variable. '= 5'. That just means that the variable equals 5.
+</p><p>
+Now you know how to create a variable and assign it a value. But one question remains, why does the 'a$' in the Wait command have a '$' instead of '!'? The answer is simple. As I said, the '!' is a numeric indicator, for variables that store numbers. So '$' is a literal indicator, for variables that store text. This is how you use it:
+</p>
+
+<pre>
+//Let's store the word "Hello" in box$.
+box$ = "Hello"
+</pre>
+
+<p>
+Hold on -- something's different there! Why is the a line of text that has two slashes ('//') before it? Well, that's called a commented line. A commented line is just text that the programmer can write into the program so others know what's happening. Comments are ignored by the computer, and are generally good to include in your programs. It's a good idea to comment your code because you might forget what some of it does.
+</p><p>
+Now, back to the variables. You already know that 'box$' means that it's a literal variable for storing text. Notice that "Hello" is in quotation marks. All text put into literal variables must have quotation marks around it. And just for reference later on in this help file, a literal variable is also called a "string".
+</p>
+
+<p class="boxedText">
+Remember to always use the Kill command to kill your variables, freeing up memory! If you don't, the variables will sit in memory and slow down your programs! You can find out how to use the Kill command in the command reference.
+</p><p>
+It is also good practice to use the 'Local' command when declaring a variable. For information on this, refer to the Advanced "Scope" section of this help file.
+</p>
+
+
+<a name="basics.varmath"></a>
+<h4>Variables and Math:</h4>
+
+<p>
+Some of you may dislike math, but you should still read this section! It teaches you some very useful things about variables.
+</p><p>
+In math, you can use variables to represent a number. The same is true with programming. You can also add, subtract, multiply, and devide. Again, the same is true with programming. Here is an example of multiplying a number by 2 in math (using 'x' as the variable to represent the number 10):
+</p><p>
+	x = 10 * 2
+</p><p>
+The end result, as you probably already know, is 20. The following is also allowed in math:
+</p><p>
+	y = 10<br />
+	x = y + 5
+</p>
+<p>
+And the end result would be 15 (10 + 5 = 15). The same thing can be done in programming. In  RPGCode, this is how you'd do the two representations of variables:
+</p>
+
+<pre>
+//Gives x! the value 20
+x! = 10 * 2
+
+//Gives x! the value 15
+y! = 10
+x! = y! + 5
+</pre>
+
+<p>
+Simple, eh? You can do some of the same things with literal variables that you can with numeric variables. There are limitations however, as you cannot multiply or devide from a literal variable. You can add two literal variables together the same way the add two numbers together. Here's how you do it:
+</p>
+
+<pre>
+box$ = "Jim"
+box2$ = "my"
+box3$ = box$ + box2$
+</pre>
+
+<p>
+That puts the text "Jimmy" together in the variable 'box3'.
+</p><p>
+Now that you know how to add and multiply in RPGCode, let's move on to subtracting and dividing. The way you subtract is exactly like adding, exept you use '-' instead of '+'. Let's take a look at some examples of subtracting and deviding:
+</p>
+
+<pre>
+//Let's subtract!
+y! = 3
+x! = 10 - y!
+
+//Now, let's divide
+x! = 10 / 2
+</pre>
+
+<p>
+The above example will put the value 7 into x! because we subtracted 3 from 10 (10 - 3 = 7). The second example will put the value 5 into x! because we devided 10 by 2, making it half the full number (10 / 2 = 5).
+</p><p>
+Congratulations! you 've learned enough about variables and how to manipulate them to last you for a while. Now, I'll show you some ways of actually showing what the values of the variables are...
+</p>
+
+<div class="boxedText">
+
+<p style="margin-top: 0;">
+Important note: Math calculations on variables follows the order of operations by precedence. This means that if you had a calculation like this: a! = 3-1*2, the multiplication will be evaluated before the subtraction. If you do not know the order of operations, you can use parentheses to nullify precedence. This means that the above calculation can work as needed by doing this:
+</p>
+
+<pre>
+a! = (3 - 1) * 2
+</pre>
+
+<p>Or a more complicated example:</p>
+
+<pre>
+a! = 10
+b! = 7
+c! = (a! + b!) * (10 / b!)
+</pre>
+
+</div>
+
+<a name="basics.mwin"></a>
+<p class="MinorHeader">The Message Window:</p>
+
+<p>
+You've already learned how to show text in the message window, but you never learned how to display variables with it. Well, in this section you will. First of all, I'll introduce you to a new command. The Show() command. What it does is takes a variable and shows it's value in the message window. Here's an example of how it works:
+</p>
+
+<pre>
+x! = 5
+Mwin("The value of x! is")
+Show(x!)
+Mwin("Cool!")
+Wait()
+Mwincls()
+</pre>
+
+<p>
+First, I create a variable called x! and assign it the value 5. After that, I show the message "The value of x! is 5 Cool!". However, since I'm using the Show() command, the result looks like this:
+</p><p>
+	The value of x! is<br />
+	5<br />
+	Cool!
+</p><p>
+Looks a little messed up! The draw back of using Show() to show a variables value is that it will show up on a line of its own. This is where the Mwin() command comes in handy again. You will also notice that I added in another command, Mwincls(). All that does is clears the message window from the screen.
+</p>
+
+<p>Here's how you would show the whole sentence on one line:</p>
+
+<pre>
+x! = 5
+Mwin("The value of x! is &#60;x!&#62;, cool!")
+Wait()
+Mwincls()
+</pre>
+
+<p>
+Much easier! The way you show the value of a variable with the Mwin() command is to enclose the variables name in left and right angle brackets (the &#60; and &#62;). This saves time and makes it look better.
+</p>
+
+</div>
+
+<hr />
+<p>
+<a href="page18.htm">previous</a>, <a href="page18.2.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page17.htm">RPGCode</a> &mdash; <a href="page21.htm">Object Oriented Coding</a> &mdash; Copy Constructors</h2>
+
+<div id="primer">
+
+<p>
+Constructors that take only one parameter are cast constructors. They are used to cast data to the type of your class. Cast constructors can be useful in making classes feel more "natural" without overloading operators that can sometimes produce ambiguous results. Consider the following example.
+</p>
+
+<pre>
+class CString
+{
+public:
+	method CString(str$) { m_str$ = str$ }
+	method operator$() { returnMethod(m_str$) }
+private:
+	m_str$
+}
+
+method test(CString str)
+{
+	show(str)
+	wait()
+	mwincls()
+}
+
+test("Hello, world!")
+</pre>
+
+<p>
+When test() is called, passing in a string literal, a temporary object-to be destroyed at the end of the line-of type CString is constructed from CString::CString() which saves the string passed in to its member. Later, it casts this object to type string in order to display it. Remember, this object will be destroyed when the line reaches its end, as it is only temporary. It is important to understand that all objects that are directly constructed are merely temporary. Consider the following:
+</p>
+
+<pre>
+test(CString("Hello, world!"))
+</pre>
+
+<p>
+That line is directly equivalent to the one seen earlier. Next, observe this line:
+</p>
+
+<pre>
+str = CString("Hello, world!")
+</pre>
+
+<p>
+Even the object created on the right-hand-side is temporary. The object on the left-hand-side is created by copying that on the right. First, it looks for a cast constructor that takes the type of the object itself-a copy constructor-and if one exists, it is called. However, if one doesn't exist, the left-hand-side's object is created by simply copying the values of the right-hand-side's members to a new object. In this case, that works. In many cases, it works. Do not trick yourself into coding redundant copy constructors.
+</p>
+
+<p>
+That said, there are indeed some cases in which a copy constructor is required for execution of copying to succeed. The following is an example of code which will not work:
+</p>
+
+<pre>
+class CCanvas
+{
+public:
+	method CCanvas(x!, y!)
+	{
+		m_cnv! = createCanvas(x!, y!)
+		m_width! = x!
+		m_height! = y!
+	}
+	method pixel(x!, y!) { setPixel(x!, y!, m_cnv!) }
+	method draw(x!, y!) { drawCanvas(m_cnv!, x!, y!) }
+	method ~CCanvas() { killCanvas(m_cnv!) }
+private:
+	m_cnv!
+	m_width!
+	m_height!
+}
+
+cnv = CCanvas(50, 50)
+cnv->pixel(5, 5)
+cnv->draw(0, 0)
+wait()
+</pre>
+
+<p>
+Running this code provides you with no error messages, but a blank screen. Why? In the line that creates the canvas object, the left-hand-side is created via copying (as seen above). The problem lies in the fact that the canvas handle is copied over, but when the right-hand-side is destroyed at the end of the line, that very same canvas handle is killed. This can be remedied by providing a copy constructor:
+</p>
+
+<pre>
+method CCanvas(CCanvas rhs!)
+{
+	m_width! = rhs->m_width!
+	m_height! = rhs->m_height!
+	m_cnv! = createCanvas(m_width!, m_height!)
+	drawCanvas(rhs->m_cnv!, 0, 0, m_width!, m_height!, m_cnv!)
+}
+</pre>
+
+<p>
+This function performs a deep-copy-one that uses logic (direct copies being shallow)-by creating a new canvas the size of the right-hand-side and then drawing its canvas onto our new one. Thus, copying the canvas, but leaving us with a new handle. If you code a copy constructor, you also need to provide an assignment operator. There are two integral differences between the two, however. The assignment operator must check to make sure it's not being to itself, and clean up before copying. An assignment operator for the above class could be coded like this:
+</p>
+
+<pre>
+method operator=(CCanvas rhs!)
+{
+	// Prevent setting to self
+	if (this! ~= rhs!)
+	{
+		// Clean up
+		killCanvas(m_cnv!)
+		// Now just copy over
+		m_width! = rhs->m_width!
+		m_height! = rhs->m_height!
+		m_cnv! = createCanvas(m_width!, m_height!)
+		drawCanvas(rhs->m_cnv!, 0, 0, m_width!, m_height!, m_cnv!)
+	}
+}
+</pre>
+
+<p>
+In conclusion, for many simple classes a shallow copy is more than sufficient. Whatever you do, don't add a copy constructor just because. Evaluate your logic to decide whether possible flaws exist. Look for code that allocates and frees memory (dynamic arrays have this behavior too, though it's not as apparent) for a sign that a copy constructor is needed.
+</p>
+
+</div>
+
+<hr />
+<p>
+<a href="page21_4.htm">previous</a>, <a href="page21_6.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

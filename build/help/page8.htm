@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Item Editor</h2>
+
+<p style="text-transform: lowercase;">
+[ <a href="#editor">Around the Editor</a>  ]
+</p>
+
+<!-- Item editor rewrite - 8 Mar 2005 by Delano -->
+
+<p>
+Items (*.itm) are the most versatile objects in the Toolkit, and have a range of uses including NPCs (non-player characters), inventory and trading items, clothing and equipment articles, and anything the player might need to use in the game. 
+</p>
+
+<h3>Item Basics</h3>
+<p>
+The first application is on the board: items can be represented on boards using tiles or images, and even given complete sets of movement graphics in order for them to be used as NPCs. In order for an item to be used on boards, the "Board-Driven" option must be selected in this editor (note items can still be placed on boards without this option selected, but they cannot be activated by the player), and with this comes options for dictating how the item behaves on the board by using RPGCode. Further RPGCode options are available when the item is set in the <a href="page4.htm">Board Editor</a>, such as how the player interacts with it.
+</p><p>
+Their second major use are as inventory items - objects that the player can pick up, carry and use. Any items that the player acquires (e.g., by the GiveItem() command) automatically appear in the Items page of the <a href="page15.htm#ms">default menu</a> - this is the player's inventory. Any type of item can be given to the player and the player can hold multiple copies of the same item at once, but only "Menu-Driven" items can be used from the (default) menu. When an item is used, either pre-defined effects can be applied (for instance a health boost with the classic potion) or a program can be run. Once an item is used, it is considered "used up" and removed from the inventory.
+</p><p>
+A subset of inventory items is equipable items - that is, items that the player can wear in order to alter his stats whilst he is wearing (or holding) them. By default, players are able to equip items to several parts of the body (see <a href="page7.htm">Character Editor</a> &gt; Equipment), and further areas can be created. In order for items the player carries to be used as equipment, the items must be "Equipable" (but not necessarily "Menu-Driven"). A range of effects can be selected in the Equipable Edit screen, as well as RPGCode programs. Also, you may want any equipment the player carries or wears to be depicted through their graphics - there is an option here to specify an alternative fighting animation, but you may also want the player's animations to be altered in normal gameplay. The way to achieve this is to create a new character file with a new set of graphics and use the NewPlyr() command to change the character's graphics to those of the new file's - this doesn't change any other data associated with the player.
+</p><p>
+Inventory items can also be used in <a href="page15.htm#bs">battle</a> if the "Battle-Driven" option is selected. Items used in battle have the same choices of effect as for items used from the menu; target stat alterations or RPGCode programs. Use of an item in battle takes one turn of the player, and after use it is removed from the inventory.
+</p><p>
+You will most likely want many inventory items to be bought and sold by the player during the game, and each item can be given buying and selling prices for use with the internal shop program, CallShop(). Note that prices can only be set in this editor, and not through CallShop(), although you could potentially set up any system with a custom written shop.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="editor"></a>
+<img src="images/image56" alt="Item Editor" />
+<h3>Around the Editor</h3>
+<p>
+Item Name (Handle) - The name by which the item is referred to in RPGCode. Note that items on boards are referred to by their item slot number on the current board, as set in the <a href="page4.htm">Board Editor</a>, or when they are placed in RPGCode.
+</p><p>
+Equipable - Enable this tick-box if the player is able to wear or hold this item. If equipable, the item will appear in a list in the default menu. The Equip submenu lists the available parts of the body that items can be equipped to, and lists of eligible items in the inventory will appear when a particular area is selected. The "Edit" button shows a window containing the following options:
+</p>
+<ul>
+	<li>
+		Equipable to - Select the areas of the body with which the item can be used. Choosing "Special Accessory", you can define a name for this in the corresponding textbox, to appear in the menu.
+	</li><li>
+		Effects of Equipping Item - Lists several player attributes that can be altered only whilst the player is wearing the item (stats return to their previous value when item is removed). For instance, a heavy sword might increase a player's fight power (FP) by a number of points, but reduce his defence power (DP) slightly because of its weight.
+	</li><li>
+		RPGCode - Programs can be run when the item is equipped or removed, and an animation can be specified to be used in battle if the item is equipped to a hand (for instance, for a special weapon).
+	</li>
+</ul>
+<p>
+Menu-Driven - Select if the item can be "Used" from the menu. Note all items the player acquires will appear in their inventory, but only those with this option can be used from it. Once an item is used it is removed from the inventory.
+</p>
+<ul>
+	<li>
+		Effects of Using - Lists a couple of the attributes of the target player that the item can boost with its use.
+	</li><li>
+		RPGCode - A program can also be run when the item is used, for a more complex result.
+	</li>
+</ul>
+<p>
+Board-Driven - Select in order for the player to be able to interact with the item if placed on the board. Items can still be placed on the board without this option, but linked RPGCode programs will not run.
+</p>
+<ul>
+	<li>
+		Program to run while item is on board - This specifies a multitasking program that controls the actions of the item for the whole time it is on the board when it is not interacting with the player. For instance, assign "wander.prg" to this slot for the item to walk randomly around the board. The program is launched as a Board Thread (non-persistent).	
+	</li><li>
+		Program to run when item is picked up - When the player interacts with the item (walks into or hits the activation key beside), this program is run.
+	</li>
+</ul>
+<p>
+Battle-Driven - Enable this option if the item can be used in battle. Enabled items appear in the "Items" submenu of the default battle system, if the item is in the player's possession.
+</p>
+<ul>
+	<li>
+		Effects of Using - Lists a couple of the attributes of the target player that the item can boost with its use.
+	</li><li>
+		RPGCode - A program can also be run when the item is used, for a more complex result.
+	</li>
+</ul>
+<p>
+Purchase Price - The price paid by the player when the item is bought from the shop (CallShop()).
+</p><p>
+Selling Price - The money the player receives for selling the item in the shop.
+</p><p>
+<a name="editor.description"></a>
+Description - A short description that appears when the "Info" option is selected in the default menu, along with the possible uses and effects of the item.
+</p><p>
+Key Item - Enable this option to prevent players from dropping this item (i.e., removing from the inventory).
+</p><p>
+Used By All Characters - All characters can use and equip this item.
+</p><p>
+Used By Defined Characters - Only certain characters can use or equip this item. Use the drop-down list that appears to choose up to 50 characters by writing their handles in the text box.
+</p><p>
+Graphics
+</p>
+<ul>
+	<li>
+		Walking / Idle Animations - You can assign <a href="page10.htm">animations</a> (*.anm) for each direction for movement and idling actions, as for characters. First select a direction, then hit the "..." button in the bottom right to bring up a file window or type the name of the animation file in the text box. If the animation exists, it will be shown in the preview window above the textbox. Use the Play button to preview the animation. Idle animations will run continuously if the item is not moving. 
+	</li><li>
+		Custom Animations - Custom actions can also be created - select "New" and enter a handle (name) for the animation (to refer to it in-game with the ItemStance() command), and then assign an animation as above.
+	</li><li>
+		Seconds before the item is considered idle - If the item is not moving for this period of time, the idle animation corresponding to the current direction will begin (if it exists) and loop until movement starts again.
+	</li><li>
+		Seconds between each step - Controls the walking speed of the current item (only!). This is an exact delay rather than a speed, so larger values correspond to slower movement. A value between 0.05s and 0.2s is recommended. For an in-depth discussion of character speeds and solutions to problems, see the <a href="page23.htm">FAQ page</a>.
+	</li>
+</ul>
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="page7.htm">previous</a>, <a href="page9.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+/*************************************************************
+ RPGTOOLKIT HELP -- INTERNET EXPLORER FIXES
+**************************************************************/
+
+div#content
+{
+	display: inline-block;
+}
+
+h1
+{
+	margin-bottom: 10px;
+}
+
+ul
+{
+	margin-left: 42px;
+}
+
+p
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+hr
+{
+	margin-bottom: -15px;
+}
+
+table, tr, td
+{
+	font-size: 10pt;
+}
+
+div#primer div#reference hr
+{
+	margin: auto;
+}

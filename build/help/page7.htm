@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Character Editor</h2>
+
+<p style="text-transform: lowercase;">
+[ <a href="#editor">Around the Editor</a>  ]
+</p>
+
+<!-- Character editor rewrite - 17 Mar 2005 by Delano -->
+<p>
+Players are the characters in your game that can be controlled by the user, make up party members and fight battles. The user can only direct one character at a time (by default others don't appear on the boards, but can follow the player with the likes of "caterpillar" programs). In many games, the user starts out with control of the main character, and as they progress they meet others characters that join the main character to form a party that moves and fights battles together. The difference between players (made in this editor) and players made from items is that items cannot be controlled by the user, join their team or fight battles.
+</p>
+
+<h3>Character Basics</h3>
+<p>
+The character file contains a lot of information about the player, covering the aspects of the game that are specific to each player; that is, their graphics and walking animations, physical attributes (statistics or stats), fighting abilities and experience progression.
+</p><p>
+The first thing to do when creating a character is to give them walking graphics, so that they can be used to move around in the game. Most character graphics are made using tiles, but tiles cannot be directly selected for player graphics - all the character's graphics are made using <a href="page10.htm">animations</a> (*.amn) - collections of tiles or images that have a wide range of uses. The basic set of player graphics consist of movement animations for North, South, East and West movement; these are required in order for the player to appear! This set can be supplemented with diagonal movements, idle, battle and custom animations. If these aren't created, the TK falls back to the first set. All these settings can be found in the "Graphics" option.
+</p><p>
+With nothing more than movement graphics, the character can get quite far in a game - he can interact with objects on boards, hold and use items and be manipulated using RPGCode. But if they were to get into a battle in this state, they would die straight away! 
+</p>
+<h3>Character Stats</h3>
+<p>
+The rest of the settings in the editor are devoted in some way or other to the character's fighting needs. The basic properties needed for battle are the player's attributes, such as health points and fighting power, which lie on the Stats tab of the editor. These are numerical values that represent the strengths, weaknesses and abilities of the player that dictate how they perform in a fight, and can be lost in battle, boosted by experience or by equipment, and altered by a plethora of RPGCode commands.
+</p><p>
+The most important stat is, unsurprisingly, the player's health or HP. Two values can be set here, a Starting Health and an Initial Max Health, for the case when you might want the player to be effectively injured at the beginning of the game. 
+</p><p>
+Second are the player's abilities to attack enemies and defend himself during battle; the fight points (FP) and defence points (DP), respectively. In the most basic case, the FP is directly equal to the amount of HP the enemy loses when the player attacks - and the same applies in reverse: an enemy's FP is equal to the number of HP the player loses when the enemy attacks. However, the effect of any attack is reduced since the player (and enemy) can defend themselves (and may be wearing armour, etc.), and so the amount of HP the player loses is reduced by their DP.
+</p><p>
+The next options are Special Move Power (SMP) settings - SMP points are required to make <a href="page12.htm">Special Moves</a>, and as with health, starting and initial maximum values can be set. The other options are experience settings - a player gains experience as he moves through the game, from fighting or from completing tasks to advance the plot (as determined by the designer). The player's level is a representation of their current experience, the idea being that the player's attributes increase and new abilities become available when they "level-up".
+</p><p>
+It is important when choosing values for all these settings that they are consistent and comparable throughout your game, as this will determine how easy or hard the game is. For instance, if you give your player an HP of 100, FP of 10 and a DP of 5, and your initial enemies HP of 80, FP of 30 and DP of 10, users will find themselves dying very quickly because the two combatants are unbalanced. Similarly, if enemies are too weak and the player too strong, fighting will be become easy and most probably boring. It is difficult to strike a good balance, but the results are worth it.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="editor"></a>
+<img src="images/image54" alt="Character Editor" />
+<h3>Around the Editor</h3>
+
+<h4>Stats</h4>
+
+<ul>
+	<li>
+		Character Name - The name of the player, which appears in the menu and in battle.
+	</li><li>
+		Starting Experience - Number of experience points the player has at the start of the game, often set to zero.
+	</li><li>
+		Starting Health - Health points at the beginning of the game, not necessarily the same as (but never greater than) the Initial Max Health, and always greater than zero!
+	</li><li>
+		Initial Max Health - The maximum health the player can have at the start of the game. If the player uses health potions to increase his health, it cannot exceed this value. Note this is only an <i>initial</i> value, and hence can (and in most cases should) increase as the player levels-up.
+	</li><li>
+		Starting DP - Defence points at the start of the game - this is the "intrinsic" defence ability of the player - it could represent their ability to dodge attacks (for instance), and can be temporarily increased with equipment, or <a href="page13.htm">Status Effects</a>.
+	</li><li>
+		Starting FP - Intrinsic fighting points at the start of the game ("bare fist fighting!"). You could set this zero and force your player to find a sword before he can attack enemies in battle!
+	</li><li>
+		Starting S Move Power - The SMP points at the start of the game.
+	</li><li>
+		Max Starting S Move Power - The maximum SMP the player can have at the beginning of the game, but can be increased as the player levels up.
+	</li><li>
+		Starting Level - Initial level of the character. While it is often set to zero or one, some people argue that a character will have had some experience fighting prior to the storyline and thus set it higher.
+	</li>
+</ul>
+
+<p>
+Note that if you have players join your party half way through the game, you may want to give them progressed attributes similar to what the main character might have when he reaches that point.
+</p><p>
+Advanced - This tab contains a list of RPGCode variables that can be used in-game to obtain their corresponding player stats. The variables have default names, corresponding to the player's name followed by the attribute in square brackets. You can replace these with your own variable names if you wish.
+</p><p>
+Profile - Sets the profile (portrait) picture of the player, which appears in the default menu and battle systems. The default size is 64x64 pixels; images are stretched or compressed to match this. Tiles and tile bitmaps can also be selected.
+</p>
+<h4>Special Moves</h4>
+<p>
+Assigns the <a href="page12.htm">Special Moves</a> that the player can use. The "Official name of special moves" is the name that this class of special moves has in your game; for instance they may be Spells. This name appears in the menu of the <a href="page15.htm#bs">default battle system</a>. To add special moves, double-click an empty slot, or select a slot and hit "Change Special Move" - the special moves must have been created separately. 
+</p><p>
+Most special moves should only become available to the player when they reach a certain level - this is set for each player in the "Special Move Info" window, (rather than in the special move file itself). Here you can set an experience or level value, or specify a variable that controls whether the player can use the move or not (for instance, they might only be able to use it whilst they possess a certain item or have completed a certain task).
+</p>
+<h4>Graphics</h4>
+
+<table>
+<tr>
+<td>
+
+<ul>
+	<li>
+		Walking / Idle Animations - You can assign animations (*.anm) for each direction for movement and idling actions, as for items. First select a direction, then hit the "..." button in the bottom right to bring up a file window or type the name of the animation file in the text box. If the animation exists, it will be shown in the preview window above the textbox. Use the Play button to preview the animation. Idle animations will run continuously if the player is not moving. 
+	</li><li>
+		Custom Animations - Custom actions can also be created - select "New" and enter a handle (name) for the animation (to refer to it in-game with the PlayerStance() command), and then assign an animation as above.
+	</li><li>
+		Seconds before the player is considered idle - If the player is not moving for this period of time, the idle animation corresponding to the current direction will begin (if it exists) and loop until movement starts again.
+	</li><li>
+		Seconds between each step - Controls the walking speed of the current player (only!). This is an exact delay rather than a speed, so larger values correspond to slower movement. A value between 0.05s and 0.2s is recommended. For an in-depth discussion of character speeds and solutions to problems, see the <a href="page23.htm">faq page</a>.
+	</li>
+</ul>
+
+</td><td>
+<img src="images/image55" alt="Character Graphics" />
+</td>
+</tr>
+</table>
+
+<h4>Equipment</h4>
+<p>
+A player can wear equipment or clothing in order to increase their stats or give them special moves. Pieces of equipment are items that must be made "Equippable" to their destined body part. All the effects the equipment has on the player are determined in the <a href="page8.htm">Item Editor</a>. In the current editor, you must choose which areas of the player can receive pieces of equipment - standard areas are given, and further areas can be created using the drop-down Accessories list.
+</p>
+<h4>Levels</h4>
+<p>
+As previously stated, levels are a measure of the experience that the player has, and used to reward the player with a steady increase in stats. The mathematical relationship between levels and experience must be set in this window - this will determine how often a player levels up. The numerical increments can be controlled either using percentages (Level-up type: exponentially) or using absolute values (Level-up type: linear)
+</p>
+<ul>
+	<li>
+		Initial exp for level up - The amount of experience required before the player levels up for the first time. A good value for this might be 100.
+	</li><li>
+		Experience required increases by (%) - If the "exponential" level-up type is selected, then this is the percent by which the difference between levels increases for each level. For instance, if the initial exp level is set to 100, and this to 20%, then the extra experience required for the second level would be 120, and for the third level it would be 144 (120 + 20%). The increase in experience requirement is designed to reflect the steadily increasing difficulty of the game, and also to accommodate the increasing experience points that get rewarded for increasingly difficult enemies.
+	</li><li>
+		Experience required increases by (pt) - If the "linear" level-up type is selected, then this is the number of points by which the difference between levels increases for each level. For instance, if the initial exp level is set to 100, and this to 20, then the extra experience required for the second level would be 120, and for the third level it would be 140.
+	</li><li>
+		Level-up type: exponential - All stats increase by percentages.
+	</li><li>
+		Level-up type: linear - All stats increase by absolute values.
+	</li><li>
+		Maximum level - The highest level the player can reach.
+	</li><li>
+		Max Health Increase By (%/pt) - The percentage or number of points by which the players maximum health increases with a level-up. Note that the player's actual health does not increase at level up!
+	</li><li>
+		DP Increase By (%/pt) - The percentage or number of points by which the player's defence points increases with a level-up.
+	</li><li>
+		FP Increase By (%/pt) - The percentage or number of points by which the player's fight points increases with a level-up.
+	</li><li>
+		Max SMP Increase By (%/pt) - The percentage or number of points by which the players maximum special move power increases with a level-up. Note that the player's actual SMP does not increase at level up!
+	</li><li>
+		Level-up RPGCode - If you want other things to happen at level up, such as the player's HP being totally restored or an MWin() message appearing, then you can specify a program to do it here.
+	</li>
+</ul>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="page6.htm">previous</a>, <a href="page8.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

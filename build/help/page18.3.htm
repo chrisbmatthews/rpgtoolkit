@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><div id="primer">
+
+<h2><a href="page17.htm">RPGCode</a> &mdash; <a href="page18.htm">Language Features</a> &mdash; Creating Functions</h2>
+
+<h3 style="margin-bottom: 10px;">Contents</h3>
+
+<a href="#funcs">Creating Functions</a>
+<ul style="margin-bottom: 15px">
+	<li><a href="#funcs.libraries">Creating Libraries</a></li>
+	<li><a href="#funcs.params">Passing in Parameters</a></li>
+	<li><a href="#funcs.return">Returning Values</a></li>
+	<li><a href="#funcs.overload">Overloading Methods</a></li>
+</ul>
+
+<hr />
+
+<a name="funcs"></a>
+<h3>Creating Your Own Commands</h3>
+
+<br />
+<p class="boxedText">
+<em>Editor's Note</em>: Often, for example in the title of this page, the word <em>function</em> will be used synonymously with <em>command</em>. The former is arguably a preferred term.
+</p>
+
+<p>
+Since TK2, you have been allowed to create your own commands. This makes RPGCode even more expandable and extensive. Although there are 220+ commands built into the Toolkit, you may wish to create your own to make specific tasks easier. With the use of these custom commands, you can group blocks of code together and reuse them. Apart from the built in commands, there is also a library of extended commands in the file 'system.prg', demonstrating the use of creating custom commands.
+</p>
+
+<p>
+In RPGCode, you define a new command with the Method keyword. Method defines a new method. A method (or 'function', if you're familiar with C++) is basically just a command -- it works the same and looks the same. The general form of Method is:
+</p>
+
+<pre>
+method methodName(parameter1, parameter2, ...)
+</pre>
+
+<p>
+Following the Method declaration is a block of commands that tell the method what to do.
+</p>
+
+<p>
+'methodName' is the name of the method. Basically, this is what the command will be called. If you want to make a command called 'Pause', then the method name would be Pause.
+The list of parameters allows you send variables to the method. We won't worry about that right now.
+The best way to understand methods is to actually see one. Here's what I'll use as an example: There is a problem with the wait() command. It will stop waiting for a keypress even if the user presses one of the arrow keys. This is usually ok, but when a player walks into a program, the buffer has a few more arrow presses, and the first few Waits() will be ignored. So I want to make a command that will just wait for the user to press a key, ignoring the arrow keys. So, I'll make a method called 'Pause()':
+</p>
+
+<pre>
+method pause()
+{
+	pauseDone! = false
+	while (!pauseDone!)
+	{
+		pauseWait$ = wait()
+		switch (pauseWait$)
+		{
+			case ("LEFT", "RIGHT", "UP", "DOWN")
+			{
+				// Nothing happens
+			}
+			case (else)
+			{
+				pauseDone! = true
+			}
+		}
+	}
+	returnMethod(pause_wait$)
+	kill(pauseDone!, pauseWait$)
+}
+</pre>
+
+<p>
+And there it is! Looks a little complicated, but it really isn't. I'll go over it step by step:
+</p>
+
+<ul>
+<li>First of all, the Method declaration tells us that the command name is Pause. It has no parameters (the empty brackets).</li>
+<li>Next, we set up a While loop. pauseDone! is the conditional variable -- the While loop will keep running as long as pause_done! is equal to false.</li>
+<li>Next, we wait for a key press.</li>
+<li>If the user did press an arrow key, the Wait command puts the text "UP/DOWN/LEFT/RIGHT" into the pauseWait$ variable. The Case command in the Switch statement checks if the key pressed was equal to "UP", "DOWN", "LEFT" or "RIGHT". If the key pressed was NOT one of those, pauseDone! becomes equal to true, which will break us out of the While loop.</li>
+<li>If the user did press an arrow, pauseDone! will not be set equal to true, and the while loop will start again, thus waiting for a key press again.</li>
+<li>Once the While loop is done, the last command (Kill) deletes the variables created by the method. It's a good idea to Kill method variables at the end of a method to free up memory. This way, the variables won't slow things down.</li>
+</ul>
+
+<p>
+Ok, so how do you use this newly created command? Simple. Just type in its name:
+</p>
+
+<pre>
+pause()
+</pre>
+
+<p>
+Just like a regular command. But if you were making a program, where would the method declaration go? Well, here's an example of a program which uses the Pause() command:
+</p>
+
+<pre>
+// First, let's declare the method 'Pause'
+// so we can use it in the program.
+method pause()
+{
+	pauseDone! = false
+	while (!pauseDone!)
+	{
+		pauseWait$ = wait()
+		switch (pauseWait$)
+		{
+			case ("LEFT","RIGHT","UP","DOWN")
+			{
+				// Nothing happens
+			}
+			case (else)
+				pauseDone! = true
+		}
+	}
+	returnMethod(pause_wait$)
+	kill(pauseDone!, pauseWait$)
+}
+
+// Now, I'll show some text and use the 'Pause' command:
+mwin("Try pressing an arrow key!")
+Pause() // Wait for the keypress, but ignore the arrow keys.
+mwincls()
+</pre>
+
+<p>
+The actual method declaration is ignored by the computer unless it is actually called. So, after the Pause() command has been executed, the program ends, because the computer ignores the entire method block. This however, is the least efficient way of using Methods. You'll learn how to make it better next...
+</p>
+
+<p class="boxedText">
+Remember: The way to use methods shown above is very inefficient. The efficient way will be explained next. However, if you do declare a method in the program you use it in, you should put the method at the top of the program. This is because the Toolkit searches through the entire program when a method is used. So, if the method is at the top of the program, the Toolkit won't have to search for it, thus speeding up your program.
+</p>
+
+<a name="funcs.libraries"></a>
+<h4>Creating Libraries:</h4>
+
+<p>
+As you can see, a method declaration can take up quite a bit of space in your program. Wouldn't you rather use your own methods without having to type them out every time they are to be used? Well, you can. You can do this by creating libraries.
+</p>
+
+<p>
+A method library is just a regular .prg file that simply contains method declarations for a number of commands. For example, we could put the method declaration for Pause() into a file called "pause.prg". We can call up this library from any program using the command #include. Here's an example of the same program but this time, the Pause() method declaration is in a file called "pause.prg":
+</p>
+
+<pre>
+#include "pause.prg" // Include the pause library
+
+// Now, I'll show some text and use the 'Pause' command:
+
+mwin("Try pressing an arrow key!")
+pause() // Wait for the keypress, but ignore the arrow keys.
+
+mwincls()
+</pre>
+
+<p>
+This program sure is a lot smaller and nicer looking. The Include command just opens up the file 'pause.prg' and gives you access to the methods in that file. We can then use the command Pause(), because the method declaration for Pause() is stored in 'pause.prg'.
+</p>
+
+<a name="funcs.params"></a>
+<h4>Passing in Parameters:</h4>
+
+<p>
+So far we've made a method that does not have any parameters (the brackets were empty). However, usually you will want to send information to your method. This is done by passing parameters to the method. As an example, let's consider a method called Add that just adds two numbers together:
+</p>
+
+<pre>
+method add(addNum!, addNum2!)
+{
+	addDest! = addNum! + addNum2!
+	returnMethod(addDest!)
+}
+
+// Now, let's use the new method called 'add'.
+mwin("This is a demonstration of the Add method")
+wait()
+dest! = add(4, 1)
+mwin("The result is &lt;dest!&gt;.")
+</pre>
+
+<p>
+This program demonstrates how to pass in parameters to your method. The method itself is sort of useless -- it only adds two numbers together. You can do that without a method. Take a look at the command itself:
+</p>
+
+<pre>
+dest! = add(4, 1)
+</pre>
+
+<p>
+This command passes two parameters to the method: 4, 1. It also returns a value to dest! (you'll learn about returning values later). What happens with these parameters? Well, let's take a look at the method declaration:
+</p>
+
+<pre>
+method add(addNum!, addNum2!)
+</pre>
+
+<p>
+As you can see, the parameters are variables. In a method declaration, the parameters must always be variables. The reason for that is so the user of the method can input their own values into those methods. So, when I used 4 and 1 as the values, you know that addNum! equals 4 and addNum2! equals 1. As you should notice, this is a handy way to send a method information.
+</p>
+
+<p class="boxedText">
+Keep in mind: It's always good to use the Kill() command to get rid of variables that were declared inside of a method. This frees up space. However, parameter variables are automatically killed once the method ends, so you don't need to Kill() those. This is because the parameters of a method are 'scoped' directly to that method (for information on what 'scope' is, check the Advanced Features > Scope section).<br />
+<br />
+<em>Editor's Note</em>: Using the local() function is the preferred way to manage method variables.
+</p>
+
+<p>
+Now, look at the command I used after I added the variables together: ReturnMethod(add_dest!). This command takes the parameter addDest! and returns the value to a variable. How do you return a value to a variable that isn't in the method declaration though? Let's discuss that...
+</p>
+
+<a name="funcs.return"></a>
+<h4>Returning Values:</h4>
+
+<p>
+If you're used to TK2's way of programming, you'll notice that some things have changed in commands. One change is the fact that you can now return values outside of commands (such as 'a$ = wait()'). This is a more efficient way of returning values to variables because you can now clearly distinguish between normal parameters and variables that hold returned values. In the last example used, I returned a value to the variable dest!. Let's look at the command once more:
+</p>
+
+<pre>
+dest! = add(4, 1)
+</pre>
+
+<p>
+You already know that 4 and 1 are the numbers to add together. So let's learn more about returning values.
+</p>
+
+<p>
+To return a value to a variable, you need to use the ReturnMethod() command with the variables name as the parameter (in this case, 'add_dest!'). So when we see the line 'ReturnMethod(add_dest!)', we know that we're returning a value. The variable that you use to store the returned value and the variable that's in the method itself don't have to be the same (as you may have noticed already). So, if the parameter in the ReturnMethod() command is 'add_dest!', and the variable you use when you call the method aren't the same, it'll still work.
+</p>
+
+<div class="boxedText">
+
+<p style="margin-top: 0;">
+Remember that if you are returning a value, the variable must not be in the parameter list of the method declaration. If you write the method declaration like this:
+</p>
+
+<pre>
+method add(addNum!, addNum2!, addDest!)
+</pre>
+
+<p>
+You can't call the method like this:
+</p>
+
+<pre>
+dest! = add(4, 1)
+</pre>
+
+<p style="margin-bottom: 0;">
+However, methods can have returned values passed back to the parameters. To do this, you must put the variable to hold the returned value in the method declaration.
+</p>
+
+</div>
+
+<a name="funcs.overload"></a>
+<h4>Overloading Methods</h4>
+
+<p>
+Imagine creating a method where you have parameters that you don't always need to use. Filling them in with certain values and checking if you need to use those values can get tedious (not to mention it's not efficient). Wouldn't it be ideal if you could have optional parameters in your methods, just like some of the commands have optional parameters? Of course it would! This is where method overloading comes in handy. When you overload a method, you basically recreate the method with a different parameter list, and make it do different things depending on that parameter list. Here's an example of overloading a method:
+</p>
+
+<pre>
+method value(val$)
+{
+	show(val$)
+}
+
+method value(val!)
+{
+	show(val!)
+}
+
+method value()
+{
+	debugger("No value supplied for Value()!")
+}
+
+value("Hello") // Shows: "Hello"
+value(92)      // Shows: 92
+value()        // Pops up the debugger
+</pre>
+
+<p>
+As you can see, all you need to do to achieve overloading a method is giving it the same name as another method, just with different parameters. While the given example isn't very useful, you can use method overloading for many different things (another basic, but more useful example is a custom message window. You could have optional parameters for a profile image, etc.).
+</p>
+
+</div>
+
+<hr />
+<p>
+<a href="page18.2.htm">previous</a>, <a href="page18.4.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page14.htm">Playing Your Game</a> &mdash; Default Systems</h2>
+
+<!-- <h3 style="margin-bottom: 10px;">Contents</h3> -->
+
+<p>
+While the RPGToolkit allows you to create your own systems via <a href="page17.htm">RPGCode</a>, or an external language, this may not be appropriate for all situations (e.g., your first game). As a result, competent default menu and battle<!--, and shop--> systems are included for your usage. This page covers the appearance and functionality of these systems within the trans3 game engine.
+</p>
+
+Systems
+<ul style="margin-bottom: 15px;">
+	<li><a href="#ms">Menu System</a></li>
+	<li><a href="#bs">Battle System</a></li>
+	<!-- <li><a href="#shop">Shop</a></li> -->
+</ul>
+
+<hr />
+
+<a name="ms"></a>
+<h3>The Menu System</h3>
+
+<p>
+If your game uses the default menu system, and you press the <a href="page3.htm#rpgcode.menuActivationKey">menu activation key</a> (generally ENTER), then you will be greeted with the main menu screen.
+</p>
+
+<img src="images/image38" alt="Main Menu Screen" />
+
+<p>
+In the centre of the screen, the stats of your active party are displayed, along with their profile pictures; the top-right features some miscellaneous information. To enter a new section of the menu, use your arrow keys, and press ENTER to choose an option.
+</p>
+
+<h4>Items</h4>
+
+<p>
+The <em>Items</em> sub-menu enables players to manage their inventories. A number in the corner informs users which page they are viewing.
+</p>
+
+<img src="images/image39" alt="Items Sub-Menu" />
+
+<ul>
+<li>Use &mdash; Using an item invokes its effects on a select player.</li>
+<li>Info &mdash; <a href="page8.htm#editor.description">Information</a> which is set in the <a href="page8.htm">Item Editor</a> can be viewed by using this option.</li>
+<li>Drop &mdash; Dropping an item permanently removes it from your inventory.</li>
+<li>Return &mdash; Choosing <em>Return</em> closes the menu, and returns you to the game.</li>
+<li>Back &mdash; The <em>Back</em> choice returns the player to the main menu.</li>
+</ul>
+
+<h4>Equip</h4>
+
+<p>
+After choosing equip, and selecting the player whom you plan to set up, you are whisked to the equipment sub-menu.
+</p>
+
+<img src="images/image40" alt="Equipment Sub-Menu" />
+
+<ul>
+<li>Equip &mdash; After selecting this option, select a slot, then the item to equip to that slot, and it will be equipt.</li>
+<li>Remove &mdash; Select a slot after choosing <em>Remove</em>, and the item will be removed from that slot, and returned to your inventory.</li>
+<li>Back &mdash; Returns you to the main menu.</li>
+</ul>
+
+<h4>Abilities</h4>
+
+<p>
+After choosing abilities and selecting the player whom you plan to set up, you are whisked to the abilities sub-menu.
+</p>
+
+<img src="images/image41" alt="Abilities Sub-Menu" />
+
+<ul>
+<li>Use &mdash; Use an ability.</li>
+<li>Info &mdash; Read the <a href="page12.htm#editor.description">blurb</a> set in the <a href="page12.htm">Special Move Editor</a> for a given abilty.</li>
+<li>Back &mdash; Returns you to the main menu.</li>
+</ul>
+
+<h4>Save</h4>
+
+<p>
+The <em>Save</em> option allows you to save your progress to a *.sav file, if progress saving is enabled on the current board.
+</p>
+
+<h4>Load</h4>
+
+<p>
+<em>Load</em> allows players to restore their progress from a previously saved file.
+</p>
+
+<h4>Quit</h4>
+
+<p>
+If players choose <em>Quit</em>, trans3 closes, and they are returned to Windows.
+</p>
+
+<hr />
+
+<a name="bs"></a>
+<h3>The Battle System</h3>
+
+<p>
+Based on the odds, pool, and other information set in the <a href="page3.htm">Main File Editor</a>, when walking around you will be thrust into a battle. The screen will look something like this:
+</p>
+
+<img src="images/image42" alt="Battle Diagram" />
+
+<p>
+The sections A, B, and C mark distinctive parts of the battle screen.
+</p>
+
+<ul>
+<li>A &mdash; The player's party</li>
+<li>B &mdash; The enemy party</li>
+<li>C &mdash; Party statistics (players get turns when their bars reach capacity)</li>
+</ul>
+
+<p>
+Enemies also have "charge bars", though you cannot see them, and when they fill, an enemy will attack you. When your bars fill, a menu appears in the centre of the screen.
+</p>
+
+<img src="images/image43" alt="Battle Menu" />
+
+<ul>
+<li>Fight &mdash; Perform a "normal" (conventionally physical) attack</li>
+<li>Special Move (Eagle Eye) &mdash; Use an ability available to the player; the name of this is set in the <a href="page7.htm">Character Editor</a></li>
+<li>Items &mdash; Use an item from your inventory on an enemy or fellow party member</li>
+<li>Run (aka <em>Flee</em>) &mdash; Attempt to escape the fight</li>
+</ul>
+
+<p>
+The fight continues until either party is completely dead, or you flee.
+</p>
+
+<ul>
+<li>Enemies dead &mdash; You win! Experience and gold are handed out; the game proceeds</li>
+<li>Players dead &mdash; The <a href="page3.htm#rpgcode.gameOver">game over program</a> runs, which typically restarts the game</li>
+<li>Fled successfully &mdash; The game proceeds, but you gain no experience or gold</li>
+</ul>
+
+<hr />
+<p>
+<a href="page14.htm">previous</a>, <a href="page16.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

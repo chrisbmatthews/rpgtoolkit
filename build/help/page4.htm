@@ -1,0 +1,396 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Board Editor</h2>
+
+<p style="text-transform: lowercase;">
+[ <a href="#toolbars">Toolbars</a> | <a href="#menus">Menus</a> ]
+</p>
+
+<!-- Board Editor rewrite - 24 Feb 2005 by Delano -->
+
+<p>
+Boards create the world in which virtually all of your game will take place (with the exception of battles - or possibly including battles depending on the battle system!). A board is composed of several layers of images that depict the scene, on which various objects can be placed for the player to interact with. 
+</p>
+
+<img src="images/image47" alt="Board Editor" />
+
+<h3>Board Basics</h3>
+<p>
+Getting started - The <a href="page1.htm">Quick-Start Guide</a> has a little introduction to <a href="page1.htm#boards">board making</a>, which you may find useful.
+</p><p>
+Boards are primarily made up of <i>tiles</i> - 32x32 pixel square images that are the building blocks of many types of game, not only RPGs. Tiles may depict parts of a building - windows, doors, walls - or treasure chests, or characters - everything in the Toolkit is based on tiles (although standard image types can also be used). The board is divided into a grid and objects constructed with combinations of tiles.
+</p> 
+
+<h3>Tile Types</h3>
+<p>
+Once a scene has been created from tiles, you'll want to make the objects you've created in images have some structure for the player to notice on the board. This is done through setting the <i>tile type</i> for each tile. Tile types default to "Normal", meaning players can move onto that tile. For tiles showing solid objects, you won't want the player to be able to walk on them, so you would set these tiles to "Solid". The options are:
+</p>
+<ul>	
+    <li>Normal - Allows the player to move onto the tile. (Grey)</li>
+    <li>Solid - Blocks the player from moving onto the tile. (Blue)</li>
+    <li>Under - "Under" tiles cause the player to be displayed semi-transparently when on the tile, to emulate the effect of being underneath the object in the tile. Useful for trees, pillars. (Pink)</li>
+    <li>North-South Normal - Allows movement onto the tile if the player is moving North or South, but prevents movement when approached from other directions. (Green)</li>
+    <li>East-West Normal - Allows movement onto the tile if the player is moving East or West, but prevents movement when approached from other directions. (Red)</li>
+    <li>Stairs to layer "n" - Moves a player to another layer on the board. This does not physically move the player around the board nor does it transport them to other boards! (Yellow)</li>
+</ul>
+<p>
+Tile types are shown as coloured arrows, which are only displayed when the Tile-Type tool is selected.
+</p>
+
+<h3>Layers</h3>
+<p>
+The last type describes movement between "layers". A board can have up to 8 layers, on each of which can be placed tiles and objects. Whilst all layers and their contents are displayed in-game, the player can only move and interact on one layer at a time. Layers can be used to build up complex scenes using partly transparent tiles - any tiles placed on higher levels are drawn directly on top of those on lower layers. If a player is at a point where there are tiles on higher layers he will be drawn translucently (as if he were on an "Under"-type tile).
+</p>
+
+<h3>Objects</h3>
+<p>
+After creating the scene from tiles and tiletypes, you'll want to populate it with objects for the player to interact with. These come in the form of programs, items and warp tiles (which are really just programs too). 
+</p><p>
+Programs are the main objects that players interact with - these are displayed as blue Xs. Use programs over items when you can display the items using tiles that aren't required to move - for instance chests.
+</p><p>
+Items are the likes of NPCs (non-player characters) and objects that the player can pick up or use; they often have programs attached to them to make them talk or work. Items are displayed in the editor as red Xs. Use items instead of programs if the object requires special graphics, or movement, or may be removed during the time on the board.
+</p><p>
+Warp tiles are special programs that are used for sending players to other boards, and are displayed as green Xs - see later. Players can also move to other boards when they reach the edges of a board via the directional links.
+</p>
+
+<h3>Isometric boards</h3>
+<p>
+Isometric boards are treated in exactly the same way as 2D boards; all tools work in the same way. The only differences occur in the co-ordinate systems of the types. Isometric boards retain vertical/horizontal co-ordinates; however, due to the shape of the tiles, each x co-ordinate spans two columns and as a consequence co-ordinates can seem strange - this is not a bug! Hopefully they shouldn't cause too many problems during game creation.
+</p>
+
+<img src="images/image48" alt="An isometric board in the editor" />
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<h3>Around the Editor</h3>
+
+<a name="toolbars"></a><h4>Toolbars</h4>
+<p>
+Different operations in the board editor are made using the tools found in the toolbar on the left-hand side of the screen.
+</p>
+
+<table>
+	<tr>
+		<td><img src="images/image0" alt="Grid Tool" /></td>
+		<td>
+			Grid On/Off - Draws a grid around the tiles on the board that may be useful for tile placement.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image1" alt="Redraw Tool" /></td>
+		<td>
+			Redraw - Redraws the board - occasionally this may be required when graphics are not automatically updated.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image2" alt="Select Tile" /></td>
+		<td>
+			Select Tile - Opens a window where you can select the tile or set you want to place. You can also select animated tiles (*.tan) here - note there are several ways of opening tilesets, but this is the only method that allows you to choose animated tiles. 
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image3" alt="Apply Lighting" /></td>
+		<td>
+			Apply Lighting Gradient - Use this to apply a linear lighting gradient to parts of your board. A window appears where you can set the direction (horizontal or vertical) of the gradient and the colours at the start and end of it. The "Retain Original Shades" option ensures any previous lighting effects on the tiles are added to the gradient. After setting these, you are prompted to choose the start and end tiles, and then the gradient is applied in the rectangle defined by these tiles.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image10" alt="Draw Tile Tool" /></td>
+		<td>
+			Draw Lock Tool - This is effectively the tile paintbrush - select this option for placing the selected tile.
+
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image4" alt="Tile Type Tool" /></td>
+		<td>
+			Tile Type Lock Tool - Allows you to set the tile-types for each tile on the board. Tile type triangles are only drawn with this option selected.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image5" alt="Eraser Tool" /></td>
+		<td>
+			Eraser - Erases tiles.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image6" alt="Flood Fill Tool" /></td>
+		<td>
+			Flood Fill - Floods regions with the selected tile.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image7" alt="Toggle Isometric View" /></td>
+		<td>
+			Isometric View - This converts a board into the isometric board format and changes the view of the board. Boards can be converted backwards and forwards without the loss or displacement of tiles or settings (except for some resizing issues), however converting 2D boards to isometric boards will most probably not create the desired visual result.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image8" alt="Toggle Autotiler" /></td>
+		<td>
+			Toggle Auto-Tiler - Auto-Tiling is an option found in some RPG makers that uses specially drawn tilesets to make the task of creating areas with special edge tiles. To use this feature you must have open an auto-tile tileset. This option turns auto-tiling on or off - turned off, you can place auto-tiles normally, when turned on any tiles placed form enclosed areas dependent on their neighbouring tiles. Auto-tilesets must either be downloaded or created using the "Auto-Tiler" tool - follow <a href="http://toolkitzone.com/fileman.php?id=3&amp;file=865" rel="external">this link</a> for information.
+		</td>
+	</tr>
+</table>
+<p>
+The current draw properties are displayed in the lower toolbar.
+</p>
+<img src="images/image49" alt="Lower Board Toolbar" />
+<p>
+Tile Shading - This sets the lightness (-255 to +255) and colour values for placed tiles. The colour can be chosen by clicking the display box. The Value box displays the lightness setting of the slider.
+</p><p>
+Layer ListBox - Use this drop-down box to switch between layers. Layers can be given titles in the Board Information window.
+</p><p>
+TileType - The long box shows the possible tiletypes, which can be selected by clicking. "Toggle" switches between them; the current tiletype is shown in next to this.
+</p><p>
+Draw All Layers - This causes all layers to be drawn; normally only the selected layer is shown. This option is mirrored in the right-hand board toolbar.
+</p><p>
+Current Tile - Displays the current tile in 2D and isometric form. Isometric tiles (*.iso) cannot be displayed in 2D form. You can change the tile by clicking the 2D tile. The currently selected tool and board co-ordinate are also displayed.
+</p><p>
+Further tools are available in the right-hand toolbar.
+</p>
+
+<table>
+	<tr>
+		<td><img src="images/image9" alt="Toggle Tileset Flyout" /></td>
+		<td>
+			Another method for selecting tiles, and probably the most useful, is the tileset browser in the Right Toolbar. This can be kept open whilst you place tiles on the board and is the quickest way of changing tiles.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image11" alt="Board Toolbar" /></td>
+		<td>
+			Below this is the Board Toolbar. This displays information about all the objects on the board (programs, items, warps) in terms of type or layer. Selecting an object produces a menu of editing options. The Display tab provides options for the drawing of these objects.
+		</td>
+	</tr>
+</table>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="menus"></a><h3>Menus</h3>
+<h4>Board Settings</h4>
+
+<h5>Board Information</h5>
+<p>
+Directional Links - You can specify the boards that the player moves to when he reaches an edge of the board - in this way you can connect your boards together to create the game world. The player moves to the co-ordinate on the target board that corresponds to his location on the original board; for instance, moving South from (4,15) would place the player at (4,1) - at the top of the next board. For a player to be able to move to the next board, the corresponding tile on the target board must not be solid the board must extend to that position - for instance, movement East from (20,25) to a board of size 20x15 would not work since the target co-ordinate would be (1,25) which exceeds these dimensions. You can also choose to run a program instead of sending the player to a new board by typing the program name here.
+</p><p>
+It is important to note that linking the origin board to a target board does not link the target board <i>back</i> to the original!
+</p><p>
+Program to run when entering board - Set this if you want a program to run as soon as the player steps onto the board, before he is allowed to move. Note that any board threads are launched before this program is run.
+</p><p>
+Battle Options - The select box must be enabled to allow random battles to take place on the board. The Board Skill field specifies the maximum level of enemy the player can encounter, and the Background field sets the battle system background image (*.bkg) that will be used for fighting on the board.
+</p><p>
+Title - You can give each layer a title (useful for complex boards), which will appear in the drop-down box in the lower toolbar.
+</p><p>
+Constants - Each board can hold 10 constants - pieces of information or data - that can be accessed in-game using the constant[x!]! reserved variables. The Number drop-down list corresponds to the index of the array, x!.
+</p><p>
+Progress - You can prevent players from saving their game on the current board by enabling this option - for instance if you don't want them to be able to save during a series of battles or such. With this option enabled, the "Save" option in the default menu is inactive<!--, and the Save() command is not functional-->.
+</p><p>
+Music - The music to be played whilst the player is on the board. The Toolkit supports a large number of sound formats, including MIDI, WAV, MP3, MOD and IT. If two boards have the same background music, the music does not restart when the player moves between them.
+</p><p>
+Size - Sets the dimensions of the board in tiles, and the number of layers (although there is no advantage in choosing 4 layers over 8). The corresponding pixel dimensions of the board are shown too. The minimum board sizes are 19x11 for 2D boards, and 10x30 for isometric boards. The maximum board size is 2048x2048, but it is recommended not to attempt to use boards this size as they can cause memory problems.
+</p>
+
+<h5>Board Background</h5>
+<p>
+Board Bitmap - You can specify an optional background image from the \Game\Bitmap folder for the board, which can be used to depict the scene instead of using tiles. If the image size does not match the board size in pixels, the image will be <i>parallaxed</i> - it will scroll at a different speed to the player movement. 
+</p><p>
+Board Colour - This is the base colour of the board onto which tiles are drawn. It defaults to white - if you have any white areas or borders during gameplay, it will most likely be this option.
+</p><p>
+Set Player Position - This sets the location at which the player appears on the start board when the game first loads - if this is the start board!
+</p><p>
+Delete Layer - Deletes all tiles, tiletypes, ambient effects, items, programs and warp tiles on the current layer.
+</p><p>
+Use Recursive Flooding - If you experience problems with the flood tool, such as tiles being erased rather than placed, enable this option. This may happen on earlier versions of Windows. Note that with this option enabled, you cannot flood large boards (approximately greater than 100x100). This option is linked to the option in the <a href="page5.htm">Tile Editor</a>.
+</p>
+
+<h4>Board Lighting</h4>
+<p>
+Light Colour - Sets the current lighting colour for placed tiles (same as clicking the current colour box).
+</p><p>
+Spot Light - A crude spot-lighting effect can be created where tiles around a source are shaded and faded out. To create a spot-light, select the "Turn Spot Lighting On" option and specify a radius (the number of tiles the spotlight covers in all directions) and a fade percentage (optimally 10%-20%). After hitting OK, select the spotlight colour and lightness (in the same way as for normal placement), and then when a placing tile a spotlight will be created around the new tile. Spotlights will continue to be created until you turn the setting off in the Spot Light window.
+</p><p>
+Ambient Effects - These apply a uniform shading to the whole board.
+</p>
+
+<h4>RPGCode</h4>
+<p>
+Set Program - Places a program on the current layer at chosen co-ordinates. After setting a location, a window appears showing the co-ordinates and a field in which to write the program filename. "Set Program" confirms the procedure and a blue X is drawn on the board representing the program. Clicking "Advanced" produces several options:
+</p>
+<ul>
+    <li>Activation Type - "Player steps on program" - the program is run when the player moves onto this tile. "Player presses activation key beside program" - The player must hit the general activation key (see <a href="page3.htm">Main File Editor</a>) when he is standing on or next to this tile to run the program.
+    </li><li>
+    Graphic - Programs can be represented on the board using tiles, or they can remain invisible!
+    </li><li>
+    Activation - By default a program is always active, that is the player will always run it by triggering it. Often you will want programs to only run if certain conditions or events have (or haven't) happened - one of the ways to achieve this is by Conditional Activation. Selecting this option, you can choose a variable from your game and a value that it must be equal to in order for the program to run when the player triggers it (the variable is tested before running). You can also choose to give a variable (not necessarily the same one) a value when the program ends. (Another way to conditionally run a program would be to add your own check on a variable inside the program).
+    </li>
+</ul>
+<p>
+Set Warp Tile - This places a warp program on the current layer at the chosen co-ordinates. After selection, a window appears where you can specify the target board and co-ordinates for the movement. Upon creation a green X is drawn on the board representing the warp tile, and a program of the form warp000x.prg is created in the \Game\Prg folder, where x is a number. Note that warp programs are only "one-way", i.e. no return warp tile is placed at the target location. Warp programs can be freely edited like normal programs, and you can create your own warp programs using the Send() command if you do not wish to use warp tiles.
+</p><p>
+Set Item - Places an item on the current layer at chosen co-ordinates. After setting a location, a window appears showing the co-ordinates and a field in which to write the item filename. "Set Item" confirms the procedure and a red X is drawn on the board representing the item. Clicking "Advanced" produces several options, similar to the program options.
+</p>
+<ul>
+    <li>Activation Type - The item is either "activated" when the player walks into the item, or when the player hits the general activation key beside the item.
+    </li><li>
+    RPGCode - The item is "activated" by running a program that is attached to the item (see Board-Driven in the <a href="page5.htm">Item Editor</a>) - for instance a program containing a conversation with an NPC. You can choose to run a different program from the default for this board by specifying an Activation Program. An item can also have a program attached to it that runs constantly whilst the item is on the board (for instance, the wander.prg). In the same way, the Multi-Task Program overrides this default.
+    </li><li>
+    Activation - As above for programs.
+    </li>
+</ul>
+<p>
+Program Menu - Lists the programs currently set on the board. The settings for each can be edited, or the program deleted here.
+</p><p>
+Item Menu - Lists the items currently set on the board. The number of item slots on a board is unlimited; entries (or "slots") are added as items are added. It is important to note which slots the items occupy, since it is these numbers that must be used to refer to the items in RPGCode, for instance the itemNum! in PushItem(itemNum!, "N") is the board slot for that item.
+</p><p>
+Threading - Programs to be run as threads whilst the board is open can be set here. Board threads are non-persistent (end when the board closes) and are launched as soon as the board loads. Setting a board thread here negates the need to launch the thread from another program. For more information on threads, click <a href="page18.2.htm#mul">here</a>.
+</p>
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="page3.htm">previous</a>, <a href="page5.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

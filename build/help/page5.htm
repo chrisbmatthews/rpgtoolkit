@@ -1,0 +1,517 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+
+<div class="topLinks">
+
+<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor<!-- guide--></a></span>
+|&nbsp;
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing<!-- your game--></a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+|&nbsp;
+
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about<!-- the toolkit--></a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+
+	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+</div>
+
+</div>
+
+<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Tile Editor</h2>
+
+<p style="text-transform: lowercase;">
+[ <a href="#toolbars">Toolbars</a> | <a href="#menus">Menus</a> | <a href="#tile_grabber">Tile Grabber</a> | <a href="#tileset">Tileset Editor</a> ]
+</p>
+
+<!-- Tile editor rewrite - 25 Feb 2005 by Delano -->
+
+<p>
+Tiles are an integral part of Toolkit games and many are available for download all over the internet. If you're feeling artistic, you may want to create your own or edit those you download. One place you can do this is the tile editor, which has a host of features for making and enhancing tiles. You can also create tiles in external graphics editors and import them into the Toolkit using the <a href="#tile_grabber">Tile Grabber</a>.
+</p>
+
+<img src="images/image50" alt="Tile Editor" />
+
+<h3>Tile Basics</h3>
+<p>
+Tiles are 32x32 pixel square images that are the building blocks of many types of game, not only RPGs. Tiles may depict parts of a building - windows, doors, walls - or treasure chests, or characters - everything in the Toolkit is based on tiles (although standard image types can also be used).
+</p><p>
+The tile editor is primarily composed of a picture box that represents an enlarged version the current tile. When the tile editor first loads each pixel appears to be a combination of small white and grey squares - this combination represents the transparent colour for pixels.
+</p>
+
+<h3>Isometric Tiles</h3>
+<p>
+Isometric tiles are diamond-shaped, 62x32 pixel tiles that can be used on isometric boards. The Toolkit has two methods of producing isometric tiles: 
+</p><p>
+Firstly, 2D tiles can be placed directly onto isometric boards. The 2D tile is rotated and stretched to give it the right dimensions - this happens 'on the fly' and the tile data is not altered in any way. The effect this generates can be desirable but in general it is very difficult to create tiles specifically for isometrics in this way.
+</p><p>
+Hence, the Toolkit has an isometric tile format, in which tiles are diamond-shaped and drawn exactly as they appear. They are edited in the same way as 2D tiles and are placed in their own tilesets (.iso). Isometric tiles can also be imported using the <a href="#tile_grabber">Tile Grabber</a>.
+</p>
+
+<img src="images/image51" alt="An isometric tile (by Caliber Mengsk)" />
+
+<h3>Tilesets</h3>
+<p>
+Tiles are stored in <i>tilesets</i> - a Toolkit format similar to chipsets that can hold a large number of tiles and can be easily edited using the <a href="#tileset">Tileset Editor</a>.
+</p><p>
+Tilesets can be viewed using the tileset browser on the right toolbar - you can load a tile into a new editor by clicking. Also, tiles can be loaded into the current editor using the "L" hotkey, which displays a windowed tileset browser. (Both these tools can be used for other editors too.)
+</p><p>
+It is also possible to store tiles individually in the .gph format, however this format is slower and larger than .tst and is only maintained for backwards compatibility.
+</p>
+
+<h3>Around the Editor</h3>
+
+<a name="toolbars"></a><h4>Toolbars</h4>
+<p>
+Different drawing techniques can be found in the toolbar on the left-hand side of the screen.
+</p>
+
+<table>
+	<tr>
+		<td><img src="images/image0" alt="Grid Tool" /></td>
+		<td>
+			Grid On/Off - Draws a grid around the pixels in the tile that may be useful for drawing.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image1" alt="Redraw Tool" /></td>
+		<td>
+			Redraw - Redraws the tiles - occasionally this may be required when graphics are not automatically updated. 
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image7" alt="Toggle Isometric View" /></td>
+		<td>
+			Isometric View - This switches the tile to/from isometric mode. If a tile is being edited it is rotated and stretched in the same way as it would be for placement on isometric boards. Note that this conversion is permanent! Isometric or converted tiles cannot be converted back to 2D tiles.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image12" alt="Colour Replacer" /></td>
+		<td>
+			Change Colour - This tool replaces pixels of a certain colour with the currently selected colour.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image14" alt="Pencil Tool" /></td>
+		<td>
+			Pencil Tool - The basic pixel drawing tool. Pixels are drawn using the currently selected colour.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image15" alt="Colour Capture" /></td>
+		<td>
+			Eyedropper Tool - Use this to set the current colour to that of a pixel on the tile.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image6" alt="Flood Fill Tool" /></td>
+		<td>
+			Flood Fill Tool - Floods an enclosed region with the current colour.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image5" alt="Eraser Tool" /></td>
+		<td>
+			Eraser Tool - Erases pixels.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image16" alt="Line Tool" /></td>
+		<td>
+			Line Tool - Draws a single-pixel thick line.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image17" alt="Ellipse Tool" /></td>
+		<td>
+			Ellipse Tool - Draws single-pixel thick ellipses or circles. 
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image18" alt="Filled Ellipse Tool" /></td>
+		<td>
+			Filled Ellipse Tool - Draws solid ellipses or circles. 		        </td>
+	</tr>
+	<tr>
+		<td><img src="images/image19" alt="Rectangle Tool" /></td>
+		<td>
+			Rectangle Tool - Draws single-pixel thick rectangles. 		        </td>
+	</tr>
+	<tr>
+		<td><img src="images/image20" alt="Filled Rectangle Tool" /></td>
+		<td>
+			Filled Rectangle Tool - Draws solid rectangles. 
+		</td>
+	</tr>
+</table>
+
+<p>
+The current draw properties are displayed in the lower toolbar.
+</p>
+<img src="images/image52" alt="Bottom Toolbar" />
+<p>
+Colour - Shows a bank of colours that can be selected by clicking. The tall button at the right end can be used to select the transparent colour. The "Select Colour" and "DOS Palette" are other methods of choosing colours. The "Shade Tile" button pops up a window allowing you to apply a uniform shade to the whole tile in terms of RGB (red, green, blue) components. The resulting colour is displayed in the box. Selecting "Preview" applies the effect to the tile, which is updated in real-time.
+</p><p>
+Current Colour/Tile - The first box shows the currently selected colour, which is used when pixels are placed on the tile; the second box shows a preview of the tile. In 2D mode, the third box shows a preview of the tile in isometric view, i.e. after rotation and stretching. In isometric mode this shows a direct preview of the tile and the 2D tile box is empty. The "Import" button is a quick method for importing single tile images (note this is not the tile grabber!) - the imported tile is taken from the first 32x32 pixels of the image file (selected through "Open Image"). With "Go back to tile after opening" selected, this window closes as soon as the image is chosen.
+</p><p>
+Scroll - The buttons allow you to move the tile in each of the 4 directions, one row of tiles at a time. Tiles that "disappear" off one side appear back on the other side!
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="menus"></a><h3>Menus</h3>
+<h4>File</h4>
+<p>
+Save Tile - Saves the current tile. If the tile is new, then you can choose to add it to an existing tileset by selecting it in the dialog window, or create a new one.
+</p><p>
+Save Tile As - You can choose to add the tile to an existing tileset or create a new one.
+</p><p>
+Save Into Tileset - Allows you to save the tile into a tileset at any position, by overwriting the tile at that position. When the chosen set is loaded into the tileset browser, click a tile to select the position to insert the new tile. Warning: this will overwrite the tile at that position! If you want to add a tile into a set without erasing other tiles, use the <a href="page?.htm">Tileset Editor</a>.
+</p>
+
+<h4>Edit</h4>
+<p>
+Undo - Causes last action to be undone or redone (subsequent undos are not currently supported).
+</p><p>
+Cut Corner - Removes half of the tile, split along a diagonal. A window appears listing the corners to be removed. Select preview to see the effect.
+</p><p>
+Skew - Slants the tile to the right at a 45 degree angle. A window appears listing the types of skew. A "Linear Continuous" skew places pixels that are shuffled off the tile to the right back in the space on the left. "Linear Broken" does not replace the lost pixels; half the tile becomes blank.
+</p><p>
+Clear - Clears the tile.
+</p><p>
+Rotate - Rotates the tile by 90, 180 or 270 degrees. Also has options to flip (top to bottom) or mirror (left to right) the tile.
+</p>
+
+<h4>Image</h4>
+<p>
+Import Image - As for the "Import" button in the lower toolbar.
+</p><p>
+Layer Tile - Allows a second tile to be superimposed on top of the current tile (useful for tiles with transparent areas). Tiles can be layered translucently - that is, the colour values of corresponding pixels are added together to give the final colour, the intensity of the layering tile can be set in the text box (as a percentage). Hit "Preview" to see the effect.
+</p><p>
+Grab Tiles - Launches the Tile Grabber - see below.
+</p><p>
+Select Colour - Loads a window for selecting the current colour.
+</p><p>
+DOS Palette - Loads a DOS colour palette window for selecting the current colour.
+</p><p>
+Greyscale - Converts the tile to a greyscale image.
+</p>
+
+<h4>Draw</h4>
+<p>
+Contains links to the tools in the left-hand toolbar.
+</p><p>
+Use Recursive Flooding - If you experience problems with the flood tool, such as transparent pixels turning black, enable this option. This may happen on earlier versions of Windows. This option is linked to the option in the <a href="page4.htm">Board Editor</a>.
+</p>
+
+<h4>Effects</h4>
+<p>
+Blur - Creates a motion blur effect from left to right.
+</p><p>
+Light Source - Allows you to create shadows on the tile by selecting pixels to block light from a source. A window appears showing the tile and a dial in the corner. Define pixels that will "cause" the shadow by clicking them in this window - they become highlighted to indicate this. Select the direction and length of the shadows by varying the length and angle of the line on the dial. To see the effect on the tile in the editor (i.e. not in the current window) hit "Preview".
+</p><p>
+Texturise - Applies a dithered texture by randomly varying the lightness (but not the hue) of certain pixels. Use the slider to increase or decrease the effect. This effect is useful for creating variation in earth, grass or wall tiles.
+</p><p>
+Translucentise - Gives the tile a pseudo-translucent effect (not true translucency) by removing pixels (when viewed at real size). Patterns of pixels are removed with an slider to vary the amount of pixels that are removed. This may be useful for making tiles to place on higher layers on boards.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<hr />
+
+<a name="tile_grabber"></a><h3>Tile Grabber</h3>
+<p>
+The tile grabber allows you to convert parts of or entire images to tilesets. Both 2D and isometric tiles can be grabbed, and also 16x16 tiles (for backwards compatibility).
+</p><p>
+To grab tiles from an image, first load the image using the first button in the toolbar and turn on the grid. You can select individual tiles by clicking the image - a blue box appears around the tile and it is previewed in the toolbar box. A selection of tiles can be made by clicking and dragging. The status bar at the bottom shows the dimensions and number of tiles in the selection. To save the tiles in the selection, hit the "Batch Grab 32x32" button, after which you will be prompted to create or select a tileset for the tiles to be placed in.
+</p><p>
+To convert the whole image, clear any current selection using the blue arrow button and hit the "Batch Grab 32x32" button. If the image is not exactly divisible into tiles, transparent pixels will pad the edge tiles.
+</p><p>
+Right click on the image to move the grid to the mouse point (useful for when images are offset).
+</p><p>
+The currently selected tile is loaded into the active tile editor for fast grabbing - save any open tiles before grabbing!
+</p>
+
+<img src="images/image53" alt="Tile Grabber" />
+
+<table>
+	<tr>
+		<td><img src="images/image21" alt="Open Graphic" /></td>
+		<td>
+			Open graphic - Loads an image file to be grabbed.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image1" alt="Reset" /></td>
+		<td>
+			Reset grid and selection - Clears any selection and realigns the grid to the corner.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image15" alt="Get Transparent Colour" /></td>
+		<td>
+			Get transparent colour - Chooses the transparent colour on the image, which appears in the box below this icon.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image0" alt="Toggle grid" /></td>
+		<td>
+			Draw gridlines - Turn the grid on or off.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image7" alt="Toggle isometric mode" /></td>
+		<td>
+			Set isometric mode - Switches the editor to grab isometric tiles and alters the grid.
+		</td>
+	</tr>
+</table>
+<p>
+Tile preview - A preview of the currently selected tile, or the first tile in a selection.
+</p><p>
+Welcome note - Enables/disables the help window that appears when the grabber loads.
+</p><p>
+Ignore edge tiles - In isometric mode this causes the grabber to miss the half- or quarter-tiles created by a rectangular selection around an isometric tile. Disabled in 2D mode.
+</p><p>
+Grid offset - Shifts the grid vertically by 16 pixels - useful for isometric mode.
+</p><p>
+Ignore blank tiles - When grabbing, tiles containing pixels of only the transparent colour are missed (blank tiles are still counted in the status bar).
+</p><p>
+Grid colour - Click the box to alter the colour of the grid lines.
+</p><p>
+Selection colour - Click the box to alter the colour of the selection box.
+</p><p>
+Batch Grab 32x32 (Batch Isometric) - Grabs the tiles in the current selection and saves them in a tileset, or the whole image if no selection is made.
+</p><p>
+Batch Grab 16x16 - Tiles are saved in 16x16 squares rather than 32x32; however when used these tiles are doubled in size.
+</p>
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+
+<a name="tileset"></a><h3>Tileset Editor</h3>
+<p>
+The Tileset Editor has several features that can be used to edit and arrange your tilesets. Two of these are "backwards compatibility" functions for adding individual tiles (*.gphs) to tilesets. Although single tiles are still supported, they are superseded by tilesets and you'll probably never come across them whilst making your game.
+</p>
+<h4>Manually (*.gph &gt; *.tst)</h4>
+<p>
+A somewhat redundant function; gph files are added to a set by entering their name in the text field and hitting "Add Files to Tileset". Multiple gphs can be added by using the * wildcard, for instance "forest*.gph".
+</p>
+<h4>Visually (*.gph &lt; &gt; *.tst)</h4>
+<p>
+Allows the conversion from tst tiles to gphs, as well as adding gphs to tilesets. Tiles can also be viewed one at a time. Gphs added to tilesets are added at the end of the set. There are options to delete the gphs once added, or manually delete the gphs ("Delete Selected File" - note this does not delete tiles in the set). The "Remove Duplicates" button searches the tileset for duplicate tiles, and removes any it finds.
+</p>
+<h4>Advanced (*.tst &lt; &gt; *.tst, *.tst &gt; *.iso, *.iso &lt; &gt; *.iso)</h4>
+<p>
+The "advanced" tileset editor is the update to the editor, which allows two tilesets to be opened at a time, and tiles exchanged between them, along with the ability to rearrange and delete tiles and create new sets. Each of the two tilesets has a set of tools next to it's window that can be used to manipulate that set. Information about the set is displayed above it. As well as using the tools, tiles can be <i>dragged</i> around or between sets.
+</p>
+
+<img src="images/image62" alt="Advanced Tileset Editor" />
+
+<table>
+	<tr>
+		<td><img src="images/image21" alt="Open Tileset" /></td>
+		<td>
+			Open Tileset
+		</td>
+	</tr><tr>
+		<td><img src="images/image63" alt="Save Tileset" /></td>
+		<td>
+		Save Tileset - all changes made in the editor are made to copies of the current tilesets, so there is never a danger of losing data from the tilesets.
+		</td>
+	</tr><tr>
+		<td><img src="images/image64" alt="Save Tileset As" /></td>
+		<td>
+		Save Tileset As
+		</td>
+	</tr><tr>
+		<td><img src="images/image0" alt="Enable Grid" /></td>
+		<td>
+		Enable Grid
+		</td>
+	</tr><tr>
+		<td><img src="images/image7" alt="Isometric View" /></td>
+		<td>
+		Isometric View - Tst tilesets can be viewed either isometrically or normally (the actual data is not changed, only the view), but isometric tilesets (*.iso) can only be viewed isometrically.
+		</td>
+	</tr><tr>
+		<td><img src="images/image65" alt="Insert current tile" /></td>
+		<td>
+		Insert current tile - Inserts the selected tile from the other set into the position in front of the selected tile in the current set. If no tile is selected, then the tile is inserted at the end of the set.
+		</td>
+	</tr><tr>
+		<td><img src="images/image66" alt="Delete current tile" /></td>
+		<td>
+		Delete current tile - Deletes the selected tile and shifts the remaining tiles in the set up.
+		</td>
+	</tr><tr>
+		<td><img src="images/image65" alt="Insert blank tile" /></td>
+		<td>
+		Insert blank tile - Inserts a transparent tile in front of the selected tile. If no tile is selected, the tile is added to the end of the set.
+		</td>
+	</tr><tr>
+		<td><img src="images/image67" alt="Move up" /></td>
+		<td>
+		Move up - Shifts the selected tile up one entry. Note you can also rearrange tiles by clicking and dragging any tile around the set.
+		</td>
+	</tr><tr>
+		<td><img src="images/image68" alt="Move down" /></td>
+		<td>
+		Move down - Shifts the selected tile down one entry.
+		</td>
+	</tr><tr>
+		<td></td>
+		<td>
+		OK - Saves changes to the sets and exits.
+		</td>
+	</tr><tr>
+		<td></td>
+		<td>
+		Cancel - Leaves without saving changes.
+		</td>
+	</tr><tr>
+		<td></td>
+		<td>
+		Show welcome note - Displays a help window when the editor loads.
+		</td>
+	</tr><tr>
+		<td></td>
+		<td>
+		Width - Alters the viewing width of the set. By default, sets are displayed with a width of 9 tiles. You may find it useful to resize sets in order to better display collections of tiles.
+		</td>
+	</tr>
+</table>
+<p>
+<b>Warning:</b> Altering the order of tilesets can cause problems in files where the tiles are already in use. When tiles are used in other files, they are referenced by their index in the tileset, hence if you change the order of the tiles after using the set to create (say, a board) when you return to that board, different tiles will be displayed!
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="page4.htm">previous</a>, <a href="page6.htm">forward</a>
+</p></div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>
