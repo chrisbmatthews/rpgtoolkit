@@ -29,3 +29,9 @@ End Function
 Public Function plugType(ByVal request As Long) As Boolean
     If request = PT_FIGHT Then plugType = True
 End Function
+
+Public Function getGamePath() As String
+    'Returns the path this game is running from
+    'IE: C:\Program Files\Toolkit3\Game\MyGame
+    getGamePath = Replace(App.Path & "-", "\plugin-", "", , , vbTextCompare)
+End Function

@@ -157,7 +157,7 @@ Private Function mainLoop() As Long
 
         'Draw a frame
         Call renderScene
-        
+
         'Check if anyone has been revived
         Call checkRevivals
 
@@ -807,12 +807,12 @@ Public Function fightInform( _
             oldCnv = CBCreateCanvas(resX, resY)
             Call playAnimation(source, 3)  'spc move ani
             Call CBCanvasGetScreen(oldCnv)
-            Call CBLoadItem(strMessage, 11)    'load the itm
-            Call playAnimation(target, , CBGetItemString(ITM_ANIMATION, 0, 11), True)   'itm ani
+            Call CBLoadItem(strMessage, -1)    'load the itm
+            Call playAnimation(target, , CBGetItemString(ITM_ANIMATION, 0, -1), True)   'itm ani
             Call CBDrawCanvas(oldCnv, 0, 0)
             Call CBRefreshScreen
             Call CBDestroyCanvas(oldCnv)
-            Call CBRunProgram(CBGetItemString(ITM_FIGHT_PRG, 0, 11))   'rpgcode prg
+            Call CBRunProgram(CBGetItemString(ITM_FIGHT_PRG, 0, -1))   'rpgcode prg
             Call showDamage(targetHPLost, targetSMPLost, target)
             noNewDeaths = False
             Call renderScene
@@ -1029,7 +1029,7 @@ Private Sub drawImageTransparent( _
     
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
-    If fileExists(image) Then
+    If image <> "" Then
         Call CBCanvasLoadSizedImage(cnv, image)
     Else
         Call CBCanvasFill(cnv, 0)
@@ -1058,7 +1058,7 @@ Private Sub drawImageTranslucent( _
     
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
-    If fileExists(image) Then
+    If image <> "" Then
         Call CBCanvasLoadSizedImage(cnv, image)
     Else
         Call CBCanvasFill(cnv, 0)
@@ -1083,7 +1083,7 @@ Private Sub drawImage( _
 
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
-    If fileExists(image) Then
+    If image <> "" Then
         Call CBCanvasLoadSizedImage(cnv, image)
     Else
         Call CBCanvasFill(cnv, 0)
@@ -1657,8 +1657,8 @@ Private Function itemMenuScanKeys(ByRef player As Fighter) As Boolean
         Dim theFile As String
         theFile = CBGetGeneralString(GEN_INVENTORY_FILES, a, player.idx)
         If theFile <> "" Then
-            Call CBLoadItem(theFile, 11)
-            If CBGetItemNum(ITM_FIGHT_YN, 0, 11) = 1 Then
+            Call CBLoadItem(theFile, -1)
+            If CBGetItemNum(ITM_FIGHT_YN, 0, -1) = 1 Then
                 ReDim Preserve items(b)
                 items(b).filename = theFile
                 items(b).handle = CBGetGeneralString(GEN_INVENTORY_HANDLES, a, _
@@ -1815,7 +1815,7 @@ End Function
 Private Sub cursorMoveSound()
     Dim theSound As String
     theSound = CBGetGeneralString(GEN_CURSOR_MOVESOUND, 0, 0)
-    If fileExists(theSound) Then
+    If theSound <> "" Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
     Call CBRpgCode("Delay(0.1)")
@@ -1824,7 +1824,7 @@ End Sub
 Private Sub cursorCancelSound()
     Dim theSound As String
     theSound = CBGetGeneralString(GEN_CURSOR_CANCELSOUND, 0, 0)
-    If fileExists(theSound) Then
+    If theSound <> "" Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
     Call CBRpgCode("Delay(0.1)")
@@ -1833,7 +1833,7 @@ End Sub
 Private Sub cursorSelSound()
     Dim theSound As String
     theSound = CBGetGeneralString(GEN_CURSOR_SELSOUND, 0, 0)
-    If fileExists(theSound) Then
+    If theSound <> "" Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
     Call CBRpgCode("Delay(0.1)")
@@ -1851,19 +1851,4 @@ Private Function isPressed(ParamArray keys() As Variant) As Boolean
             Exit Function
         End If
     Next keyIdx
-End Function
-
-'====================================================================================
-' Determine if a file exists
-'====================================================================================
-Private Function fileExists(ByVal file As String) As Boolean
-    On Error GoTo nonExistent
-    fileExists = True
-    Dim ff As Long
-    ff = FreeFile()
-    Open file For Input Access Read As ff
-    Close ff
-nonExistent:
-    fileExists = False
-    Resume Next
 End Function
