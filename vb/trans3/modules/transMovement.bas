@@ -1985,7 +1985,7 @@ Public Function roundCoords( _
     Dim dx As Double, dy As Double
     dx = 0      'Set zeros in case we don't find anything.
     dy = 0
-    
+
     If boardIso() Then
     
     Else
@@ -2006,6 +2006,7 @@ Public Function roundCoords( _
                 End If
                 
         End Select
+
         Select Case linkDirection
                 
             'Now check North-South. Overwrite dx for diagonals if found.
