@@ -70,9 +70,14 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef pr
     ' Increase the nestle
     Call increaseNestle(hClass, prg)
 
-    ' Set "this" pointer
+    ' Get the old this pointer
     Dim oldThis As Double, lit As String
     Call getVariable("this!", lit, oldThis, prg)
+
+    ' Change the value of "this!" in the call line
+    Text = replace(replace(Text, "this!", CStr(oldThis), , , vbTextCompare), "this", CStr(oldThis), , , vbTextCompare)
+
+    ' Set the new this pointer
     Call SetVariable("this!", CStr(hClass), prg, True)
 
     ' Call the method
@@ -156,6 +161,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     ' Now to find that method name
     Dim theMethod As RPGCodeMethod, params() As parameters, number As Long
+    Dim lit As String, num As Double
     params = getParameters(Text, theProgram, number)
     theMethod.lngParams = number
     ReDim theMethod.dtParams(number - 1)
