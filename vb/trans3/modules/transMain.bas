@@ -372,8 +372,8 @@ Public Sub gameLogic()
                     Dim tempPos As PLAYER_POSITION
                     tempPos = pPos(selectedPlayer)
                     tempPos.l = .lTarg
-                    tempPos.x = .xTarg
-                    tempPos.y = .yTarg
+                    tempPos.X = .xTarg
+                    tempPos.Y = .yTarg
 
                     ' Test for a program
                     Call programTest(tempPos)
@@ -636,11 +636,11 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         ' Setup player position, only if an initial board has been specified.
         If (LenB(mainMem.initBoard)) Then
             With pPos(selectedPlayer)
-                .x = boardList(activeBoardIndex).theData.playerX
-                .y = boardList(activeBoardIndex).theData.playerY
+                .X = boardList(activeBoardIndex).theData.playerX
+                .Y = boardList(activeBoardIndex).theData.playerY
                 .l = boardList(activeBoardIndex).theData.playerLayer
-                pendingPlayerMovement(selectedPlayer).xOrig = .x
-                pendingPlayerMovement(selectedPlayer).yOrig = .y
+                pendingPlayerMovement(selectedPlayer).xOrig = .X
+                pendingPlayerMovement(selectedPlayer).yOrig = .Y
                 pendingPlayerMovement(selectedPlayer).lOrig = .l
             End With
         End If

@@ -85,15 +85,15 @@ Public Function GetMethodName(ByRef Text As String) As String
     '// Passing Text ByRef for preformance related reasons
 
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    Dim Length As Long
+    Dim length As Long
     Dim t As Long
     Dim startHere As Long
     Dim mName As String
 
     dataUse$ = Text$
-    Length = Len(dataUse$)
+    length = Len(dataUse$)
     Dim part As String
-    For t = 1 To Length
+    For t = 1 To length
         'Find #
         part$ = Mid$(dataUse$, t, 1)
         If part$ <> " " And part$ <> vbTab And part$ <> "#" Then
@@ -106,26 +106,26 @@ Public Function GetMethodName(ByRef Text As String) As String
             Exit For
         End If
     Next t
-    For t = startHere To Length
+    For t = startHere To length
         'Find start of command name
         part$ = Mid$(dataUse$, t, 1)
-        If part$ <> " " Then startHere = t: t = Length
+        If part$ <> " " Then startHere = t: t = length
     Next t
-    For t = startHere To Length
+    For t = startHere To length
         'Find end of command name
         part$ = Mid$(dataUse$, t, 1)
-        If part$ = " " Then startHere = t: t = Length
+        If part$ = " " Then startHere = t: t = length
     Next t
-    For t = startHere To Length
+    For t = startHere To length
         'Find start  of method
         part$ = Mid$(dataUse$, t, 1)
-        If part$ <> " " Then startHere = t: t = Length
+        If part$ <> " " Then startHere = t: t = length
     Next t
-    For t = startHere To Length
+    For t = startHere To length
         'Find name  of method
         part$ = Mid$(dataUse$, t, 1)
         If part$ = " " Or part$ = "(" Then
-            t = Length
+            t = length
         Else
             mName$ = mName & part$
         End If
@@ -143,17 +143,17 @@ Public Function ParseAfter(ByRef Text As String, ByRef startSymbol As String) As
 
     '// Passing Text and startSymbol ByRef for preformance related reasons
 
-    Dim Length As Integer
+    Dim length As Integer
     Dim t As Integer
     Dim part As String
     Dim toRet As String
     
-    Length = Len(Text)
+    length = Len(Text)
     Dim foundIt As Boolean, startAt As Long
     
     foundIt = False
     'find opening symbol...
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid$(Text, t, 1)
         If part = startSymbol Then
             'found start symbol.
@@ -164,7 +164,7 @@ Public Function ParseAfter(ByRef Text As String, ByRef startSymbol As String) As
     Next t
     
     If foundIt Then
-        For t = startAt + 1 To Length
+        For t = startAt + 1 To length
             part = Mid$(Text, t, 1)
             toRet = toRet & part
         Next t
@@ -182,14 +182,14 @@ Public Function ParseBefore(ByRef Text As String, ByRef startSymbol As String) A
 
     '// Passing Text and startSymbol ByRef for preformance related reasons
 
-    Dim Length As Integer
+    Dim length As Integer
     Dim t As Integer
     Dim part As String
     Dim toRet As String
     
-    Length = Len(Text)
+    length = Len(Text)
     'find opening symbol...
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid$(Text, t, 1)
         If part = startSymbol Then
             'found start symbol.
@@ -509,10 +509,10 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                 ' Assignment operator
                 Call SetVariable(values(idx), CStr(numVal(idx + 1)), prg)
                 idx = idx + 1
-                Dim X As Long
-                For X = idx To valueUb
-                    typeVal(X) = getValue(values(X), strVal(X), numVal(X), prg)
-                Next X
+                Dim x As Long
+                For x = idx To valueUb
+                    typeVal(x) = getValue(values(x), strVal(x), numVal(x), prg)
+                Next x
                 If (idx = valueUb) Then Exit For
 
             End If
@@ -579,10 +579,10 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                 ' Assignment operator
                 Call SetVariable(values(idx), strVal(idx + 1), prg)
                 idx = idx + 1
-                Dim Y As Long
-                For Y = idx To valueUb
-                    typeVal(Y) = getValue(values(Y), strVal(Y), numVal(Y), prg)
-                Next Y
+                Dim y As Long
+                For y = idx To valueUb
+                    typeVal(y) = getValue(values(y), strVal(y), numVal(y), prg)
+                Next y
                 If (idx = valueUb) Then Exit For
 
             End If
@@ -673,21 +673,21 @@ Public Function ParseWithin(ByRef Text As String, ByRef startSymbol As String, B
 
     '// Passing string(s) ByRef for preformance related reasons
 
-    Dim Length As Integer
+    Dim length As Integer
     Dim t As Integer
     Dim l As Integer
     Dim part As String
     Dim toRet As String
     Dim ignoreDepth As Integer
     
-    Length = Len(Text)
+    length = Len(Text)
     'find opening symbol...
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid$(Text, t, 1)
         If part = startSymbol Then
             'founf start symbol.
             'now locate end symbol...
-            For l = t + 1 To Length
+            For l = t + 1 To length
                 part = Mid$(Text, l, 1)
                 If part = startSymbol Then
                     ignoreDepth = ignoreDepth + 1
@@ -718,12 +718,12 @@ Public Function ValueNumber(ByRef Text As String) As Long
 
     '// Passing string(s) ByRef for preformance related reasons
 
-    Dim ignoreNext As Long, Length As Long, ele As Long, p As Long, part As String, part2 As String
+    Dim ignoreNext As Long, length As Long, ele As Long, p As Long, part As String, part2 As String
     
     ignoreNext = 0
-    Length = Len(Text$)
+    length = Len(Text$)
     ele = 1
-    For p = 1 To Length
+    For p = 1 To length
         part = Mid$(Text, p, 1)
         part2 = Mid$(Text, p, 2)
         If part = ("""") Then
@@ -754,10 +754,10 @@ Public Function GetElement(ByRef Text As String, ByVal eleeNum As Long) As Strin
 
     '// Passing string(s) ByRef for preformance related reasons
 
-    Dim Length As Long, element As Long, part As String, ignore As Boolean, returnVal As String, p As Long
+    Dim length As Long, element As Long, part As String, ignore As Boolean, returnVal As String, p As Long
     
-    Length = Len(Text$)
-    For p = 1 To Length + 1
+    length = Len(Text$)
+    For p = 1 To length + 1
         part = Mid$(Text, p, 1)
         If part = ("""") Then
             'A quote
@@ -838,7 +838,7 @@ Public Function GetBrackets(ByRef Text As String) As String
     '// Passing string(s) ByRef for preformance related reasons
 
     Dim ignoreClosing As Boolean
-    Dim use As String, location As Long, Length As Long, bracketDepth As Long, p As Long, part As String
+    Dim use As String, location As Long, length As Long, bracketDepth As Long, p As Long, part As String
     Dim fullUse As String
     
     use = Text
@@ -846,9 +846,9 @@ Public Function GetBrackets(ByRef Text As String) As String
 
     If (location = 0) Then Exit Function
 
-    Length = Len(Text)
+    length = Len(Text)
 
-    For p = location + 1 To Length
+    For p = location + 1 To length
         part$ = Mid$(Text$, p, 1)
         If ((part = ")") And (Not ignoreClosing) And bracketDepth <= 0) Or (LenB(part) = 0) Then
             Exit For
@@ -880,12 +880,12 @@ Public Function GetCommandName(ByRef splice As String) As String
 
     If (LenB(splice) = 0) Then Exit Function
 
-    Dim Length As Long, foundIt As Long, p As Long, part As String, starting As Long, commandName As String
+    Dim length As Long, foundIt As Long, p As Long, part As String, starting As Long, commandName As String
     Dim testIt As String, depth As Long, part2 As String
     
-    Length = Len(splice)
+    length = Len(splice)
 
-    For p = 1 To Length
+    For p = 1 To length
         part = Mid$(splice, p, 1)
         part2 = Mid$(splice, p, 2)
         If (part = "(") Then depth = depth + 1
@@ -898,7 +898,7 @@ Public Function GetCommandName(ByRef splice As String) As String
         End If
     Next p
 
-    For p = 1 To Length
+    For p = 1 To length
         part = Mid$(splice, p, 1)
         If (part = "[") Then
             GetCommandName = "VAR"
@@ -909,7 +909,7 @@ Public Function GetCommandName(ByRef splice As String) As String
     Next p
 
     'Look for #
-    For p = 1 To Length
+    For p = 1 To length
         part = Mid$(splice, p, 1)
         If part <> " " And part <> "#" And part <> vbTab Then
             If part$ = "*" Then
@@ -937,7 +937,7 @@ Public Function GetCommandName(ByRef splice As String) As String
     Next p
     If foundIt = 0 Then
         'Yipes- didn't find a #.  Maybe it's a @ command
-        For p = 1 To Length
+        For p = 1 To length
             part$ = Mid$(splice$, p, 1)
             If part$ <> " " And part$ <> "@" And part$ <> vbTab Then
                 foundIt = 0
@@ -951,33 +951,33 @@ Public Function GetCommandName(ByRef splice As String) As String
         If foundIt = 0 Then
             'Oh oh- still can't find it!  Probably a message
             'maybe a comment?
-            For p = 1 To Length
+            For p = 1 To length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> "*" And part$ <> vbTab Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> "*" And part$ <> vbTab Then foundIt = 0: p = length
                 If part$ = "*" Then GetCommandName$ = "*": Exit Function
             Next p
         End If
         If foundIt = 0 Then
             'Maybe a label
-            For p = 1 To Length
+            For p = 1 To length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> ":" And part$ <> vbTab Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> ":" And part$ <> vbTab Then foundIt = 0: p = length
                 If part$ = ":" Then GetCommandName$ = "LABEL": Exit Function
             Next p
         End If
         If foundIt = 0 Then
             'Maybe an if then start/stop
-            For p = 1 To Length
+            For p = 1 To length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> "<" And part$ <> "{" And part$ <> vbTab Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> "<" And part$ <> "{" And part$ <> vbTab Then foundIt = 0: p = length
                 If part$ = "<" Or part$ = "{" Then GetCommandName$ = "OPENBLOCK": Exit Function
             Next p
         End If
         If foundIt = 0 Then
             'Maybe an if then start/stop
-            For p = 1 To Length
+            For p = 1 To length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> ">" And part$ <> "}" And part$ <> vbTab Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> ">" And part$ <> "}" And part$ <> vbTab Then foundIt = 0: p = length
                 If part$ = ">" Or part$ = "}" Then GetCommandName$ = "CLOSEBLOCK": Exit Function
             Next p
         End If
@@ -989,7 +989,7 @@ Public Function GetCommandName(ByRef splice As String) As String
         End If
     End If
     'OK, if I'm here, that means that it is a # command
-    For p = starting + 1 To Length
+    For p = starting + 1 To length
         part$ = Mid$(splice$, p, 1)
         If part$ <> " " Then
             starting = p
@@ -999,9 +999,9 @@ Public Function GetCommandName(ByRef splice As String) As String
     
     commandName$ = vbNullString
     'now find command
-    For p = starting To Length
+    For p = starting To length
         part$ = Mid$(splice$, p, 1)
-        If part$ = " " Or part$ = "(" Or part$ = "=" Then p = Length: part$ = vbNullString
+        If part$ = " " Or part$ = "(" Or part$ = "=" Then p = length: part$ = vbNullString
         commandName$ = commandName & part$
     Next p
     'Now, before sending this back, let's see if it's a varibale
@@ -1009,8 +1009,8 @@ Public Function GetCommandName(ByRef splice As String) As String
     If commandName$ = "}" Then commandName$ = "CLOSEBLOCK"
 
     testIt$ = commandName$
-    Length = Len(testIt$)
-    For p = 1 To Length
+    length = Len(testIt$)
+    For p = 1 To length
         part$ = Mid$(testIt$, p, 1)
         If part$ = "!" Or part$ = "$" Then commandName$ = "VAR"
     Next p

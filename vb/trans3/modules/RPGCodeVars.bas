@@ -1423,7 +1423,7 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
     'Get the variable's name
     Dim theVar As String
     theVar = parseArray(replace(varname, " ", vbNullString), theProgram)
-
+    
     'Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
         If (isVarMember(theVar, topNestle(theProgram), theProgram)) Then
