@@ -147,6 +147,10 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 	// Destroy existing canvas
 	if (m_hdcMem || m_lpddsSurface) Destroy();
 
+	// Record width and height
+	m_nWidth = width;
+	m_nHeight = height;
+
 	// If a DirectDraw object exists
 	if (g_pDirectDraw)
 	{
@@ -178,10 +182,6 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 
 	// Select the bitmap into the device context
 	m_hOldBitmap = HBITMAP(SelectObject(m_hdcMem, m_hBitmap));
-
-	// Record width and height
-	m_nWidth = width;
-	m_nHeight = height;
 
 }
 
