@@ -573,7 +573,7 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
 #If (isToolkit = 1) Then
                 thePlayer.speed = 0.01
 #Else
-                thePlayer.speed = walkDelay
+                thePlayer.speed = MISC_DELAY
 #End If
             End If
 

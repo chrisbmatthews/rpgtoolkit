@@ -636,7 +636,7 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVa
                     Call DXDrawCanvasPartial(cnv, x, y + h / 2, 0, h - cnt, w, h / 2 - c)
                     Call DXRefresh
                     cnt = cnt - stepSize
-                    Call delay(walkDelay)
+                    Call delay(MISC_DELAY)
                 Next c
                 Call DXDrawCanvas(cnv, x, y)
                 Call DXRefresh
@@ -649,7 +649,7 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVa
                     Call DXDrawCanvasPartial(cnv, x + w \ 2, y, w - cnt, 0, w \ 2 - c, h)
                     Call DXRefresh
                     cnt = cnt - stepSize
-                    Call delay(walkDelay)
+                    Call delay(MISC_DELAY)
                 Next c
                 Call DXDrawCanvas(cnv, x, y)
                 Call DXRefresh
@@ -1084,6 +1084,7 @@ Private Function renderPlayer(ByVal cnv As Long, _
                     If LenB(thePlayer.standingGfx(direction)) Then
                         'If so, change the stance to STANDing.
                         .stance = "stand" & Right$(.stance, Len(.stance) - 4)
+
                         bIdleGfx = True
 
                         'Start the loop counter for idleness.
@@ -1205,6 +1206,7 @@ Private Function renderItem(ByVal cnv As Long, _
                     If LenB(theItem.standingGfx(direction)) Then
                         'If so, change the stance to STANDing.
                         .stance = "stand" & Right$(.stance, Len(.stance) - 4)
+
                         bIdleGfx = True
 
                         'Start the loop counter for idleness.

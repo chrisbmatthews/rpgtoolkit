@@ -40,10 +40,11 @@ Public underlineYN As Long                'uline on/off 0-off, 1-on
 Public italicsYN As Long                  'ital on/off 0-off 1-on
 Public gameTime As Long                   'length of game, in seconds
 Public stepsTaken As Long                 'number of steps taken
-Public walkDelay As Double                'delay to insert between walking moves.  Also used for general pausing in loops (like #Zoom)
 Public menuGraphic As String              'graphic of main menu
 Public fightMenuGraphic As String         'graphic of fight menu
 Public newPlyrName As String              'what newplyr has done
+
+Public Const MISC_DELAY = 0.05             'For general pausing in loops (like #Zoom)
 
 '=========================================================================
 ' Restore a character
