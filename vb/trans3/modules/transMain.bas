@@ -321,9 +321,9 @@ Private Sub gameLogic()
             ' // = Moved to actkrt3
 
             ' Cap the fps
-            ' //While ((GetTickCount() - tickCount) < AVGTIME_CAP)
+            ' //Do While ((GetTickCount() - tickCount) < AVGTIME_CAP)
             ' //    Call processEvent
-            ' //Wend
+            ' //Loop
 
             ' //tickCount = GetTickCount() - tickCount
             ' //If (tickCount < 200) Then

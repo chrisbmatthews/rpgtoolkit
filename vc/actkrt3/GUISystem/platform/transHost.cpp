@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------
 // All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
-// All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+// All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
 // Read LICENSE.txt for licensing info
 //-------------------------------------------------------------------
 
@@ -15,7 +15,7 @@
 										// and prototypes for this file
 
 //-------------------------------------------------------------------
-// Definintions
+// Definitions
 //-------------------------------------------------------------------
 #define FPS_CAP 120.0					// FPS cap
 
@@ -26,12 +26,8 @@ static HWND hostHwnd = NULL;			// Handle of host window
 static INT endFormBackgroundHDC = 0;	// HDC to a background picture for end form
 static BOOL m_isActive = FALSE;			// We have the focus?
 static BOOL m_exitDo = FALSE;			// End form closed?
-
-//-------------------------------------------------------------------
-// Members
-//-------------------------------------------------------------------
-double *m_renderTime;					// Pointer to m_renderTime in transMain.
-INT *m_renderCount;						// Pointer to m_renderCount in transMain.
+static double *m_renderTime = NULL;		// Pointer to m_renderTime in transMain.
+static INT *m_renderCount = NULL;		// Pointer to m_renderCount in transMain.
 
 //-------------------------------------------------------------------
 // Callbacks
@@ -97,7 +93,7 @@ INT APIENTRY createHostWindow(
     RegisterClassEx(&wnd);
 
     // Make sure we have a caption
-    if (caption == NULL) caption = "RPGToolkit Version 3 Translator";
+    if (!caption) caption = "RPGToolkit Version 3 Translator";
 
 	// Create the window
 	hostHwnd = CreateWindowEx( 
@@ -131,7 +127,7 @@ VOID APIENTRY mainEventLoop(CONST INT gameLogicAddress)
     // to break out of this loop is to call PostQuitMessage().
 
 	// Create a pointer to the gameLogic procedure
-	typedef VOID (__stdcall *FUNCTIONPOINTER)();
+	typedef VOID (__stdcall *FUNCTIONPOINTER)(VOID);
 	CONST FUNCTIONPOINTER gameLogic = FUNCTIONPOINTER(gameLogicAddress);
 
 	// Calculate how long one frame should take, in milliseconds.
@@ -162,7 +158,6 @@ VOID APIENTRY mainEventLoop(CONST INT gameLogicAddress)
                 DispatchMessage(&message);
             }
         }
-
 
 		// Run a frame of game logic.
         gameLogic();
@@ -531,7 +526,7 @@ VOID APIENTRY endProgram(VOID)
 //-------------------------------------------------------------------
 // Receive the fps variables from trans3
 //-------------------------------------------------------------------
-VOID APIENTRY initCounter(double *ptrRenderTime, INT *ptrRenderCount)
+VOID APIENTRY initCounter(double *CONST ptrRenderTime, INT *CONST ptrRenderCount)
 {
 	// Point the members to the variables.
 	m_renderTime = ptrRenderTime;

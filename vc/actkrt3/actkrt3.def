@@ -169,11 +169,6 @@ EXPORTS
 	TKAudiereGetPosition	@218
 	TKAudiereSetPosition	@219
 
-	;transClock
-	initClock			@221
-	clockStart			@222
-	clockSync			@223
-
 	;transHost
 	mainEventLoop		@224
 	createHostWindow	@225

@@ -25,8 +25,8 @@
 //-------------------------------------------------------------------
 // Type definitions
 //-------------------------------------------------------------------
-typedef VOID (__stdcall *CBNoParams) ();
-typedef INT (__stdcall *CBNoParamsRet) ();
+typedef VOID (__stdcall *CBNoParams) (VOID);
+typedef INT (__stdcall *CBNoParamsRet) (VOID);
 typedef VOID (__stdcall *CBOneParam) (INT);
 typedef VOID (__stdcall *CBTwoParams) (INT, INT);
 typedef VOID (__stdcall *CBFourParams) (INT, INT, INT, INT);
@@ -52,7 +52,7 @@ VOID APIENTRY changeHostWindowCaption(LPSTR newCaption);
 VOID APIENTRY endProgram(VOID);
 LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 LRESULT CALLBACK endFormWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-VOID APIENTRY initCounter(double *ptrRenderTime,INT *ptrRenderCount);
+VOID APIENTRY initCounter(double *CONST ptrRenderTime,INT *CONST ptrRenderCount);
 
 //-------------------------------------------------------------------
 // End of the header file
