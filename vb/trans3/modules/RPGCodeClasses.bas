@@ -50,6 +50,7 @@ End Type
 '=========================================================================
 Private Type RPGCODE_CLASS_SCOPE
     strVars() As String                     ' Variables in this scope
+    isDynamicArray() As Boolean             ' Are these vars dynamic arrays?
     methods() As RPGCodeMethod              ' Methods in this scope
 End Type
 
@@ -348,8 +349,10 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             ReDim Preserve prg.classes.classes(classIdx)
             ReDim prg.classes.classes(classIdx).scopePrivate.methods(0)
             ReDim prg.classes.classes(classIdx).scopePrivate.strVars(0)
+            ReDim prg.classes.classes(classIdx).scopePrivate.isDynamicArray(0)
             ReDim prg.classes.classes(classIdx).scopePublic.methods(0)
             ReDim prg.classes.classes(classIdx).scopePublic.strVars(0)
+            ReDim prg.classes.classes(classIdx).scopePublic.isDynamicArray(0)
             If (cmd = "INTERFACE") Then
                 ' It's an interface
                 prg.classes.classes(classIdx).isInterface = True
@@ -386,7 +389,8 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                         If (LenB(prg.program(methodCheckIdx)) <> 0) Then
                             ' Check if the method is here
                             methodHere = (prg.program(methodCheckIdx) = "{")
-                            ignoreCheck = methodCheckIdx - lineIdx
+                            ignoreCheck = methodCheckIdx - lineIdx + 2 ' + 2 to compensate for
+                                                                       ' block opening and closing
                             ' Leave this loop
                             Exit Do
                         End If
@@ -500,7 +504,16 @@ Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS
     tEnd = Len(toParse) - tEnd + 1
 
     ' Just keep what's inbetween the two
-    toParse = Mid$(toParse, start + 1, tEnd - start - 1)
+    toParse = Trim$(Mid$(toParse, start + 1, tEnd - start - 1))
+
+    ' Check if it's a dynamic array
+    If (LenB(toParse) = 0) Then
+
+        ' Add var to the scope as is
+        Call addVarToScope(variableName & variableType, scope, True)
+        Exit Sub
+
+    End If
 
     ' Split it at '][' (bewteen elements)
     parseArrayD() = Split(toParse, "][")
@@ -518,7 +531,7 @@ End Sub
 '=========================================================================
 ' Add a variable to a scope
 '=========================================================================
-Private Sub addVarToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_SCOPE)
+Private Sub addVarToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal isDynamicArray As Boolean)
 
     On Error Resume Next
 
@@ -557,11 +570,13 @@ Private Sub addVarToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_S
     If (pos = -1) Then
         ' Didn't find a position
         ReDim Preserve scope.strVars(UBound(scope.strVars) + 1)
+        ReDim Preserve scope.isDynamicArray(UBound(scope.isDynamicArray) + 1)
         pos = UBound(scope.strVars)
     End If
 
     ' Write in the data
     scope.strVars(pos) = theVar
+    scope.isDynamicArray(pos) = isDynamicArray
 
 End Sub
 
@@ -775,6 +790,7 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
 
     ' For each scope
     For scopeIdx = 0 To 1
+
         ' Get the scope
         If (scopeIdx = 1) Then
             ' Private scope
@@ -783,18 +799,36 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
             ' Public scope
             scope = theClass.scopePublic
         End If
+
         ' For each var within that scope
         For idx = 0 To UBound(scope.strVars)
-            If (scope.strVars(idx) = var) Then
+
+            If (scope.isDynamicArray(idx)) Then
+                ' Check this dynamic array
+                Dim istr As Long
+                istr = InStr(1, var, "[")
+                If (istr) Then
+                    If (scope.strVars(idx) = (Left$(var, istr - 1) & Right$(var, 1))) Then
+                        ' It is a member
+                        isVarMember = True
+                        Exit Function
+                    End If
+                End If
+
+            ElseIf (scope.strVars(idx) = var) Then
                 ' Found it
                 isVarMember = True
                 Exit Function
+
             End If
+
         Next idx
+
         If (outside) Then
             ' Don't check private scope
             Exit Function
         End If
+
     Next scopeIdx
 
     ' It we get here, then this variable is not a member of the class
