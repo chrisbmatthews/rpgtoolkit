@@ -456,6 +456,43 @@ Public Property Get indice() As Long
 End Property
 
 '========================================================================
+' Create a random colour that isn't on the tile
+'========================================================================
+Private Function getTransparentColor(ByVal crColor As Long) As Long: On Error Resume Next
+
+    Dim a As Long, b As Long, trColor As Long, found As Boolean
+    
+    found = True
+
+    Do Until found = False
+    
+        found = False
+        
+        trColor = RGB(CLng(Int(256 * Rnd)), CLng(Int(256 * Rnd)), CLng(Int(256 * Rnd)))
+        
+        For a = 0 To xRange
+            For b = 0 To 32
+            
+                If trColor = tileMem(a, b) Or trColor = crColor Then
+                    'Colour is on the tile or on brush; break and make another.
+                    found = True
+                    Exit For
+                End If
+                
+            Next b
+        Next a
+        
+    Loop
+
+    
+    'We have a colour code that isn't on the tile.
+    getTransparentColor = trColor
+    
+        
+
+End Function
+
+'========================================================================
 ' Change the mode to normal/ISO
 '========================================================================
 Public Sub isoChange( _
@@ -905,6 +942,24 @@ Private Sub fillTile( _
 
     'Make this 'undoable'
     Call setUndo
+    
+    'ExtFloodFill doesn't like -1 for a colour, so alter the transparent colour.
+    Dim transparentColor As Long, isoColor As Long, floodTrans As Boolean
+    transparentColor = getTransparentColor(crColor)
+    Do
+        isoColor = getTransparentColor(crColor)
+    Loop Until isoColor <> transparentColor
+    
+    If crColor = -1 Then
+        'Flooding transparently.
+        crColor = transparentColor
+        floodTrans = True
+    End If
+    If clickColor = -1 Then
+        'Flooding a transparent region.
+        clickColor = transparentColor
+        floodTrans = True
+    End If
 
     'Create a canvas
     Dim cnv As Long
@@ -914,7 +969,19 @@ Private Sub fillTile( _
     Dim a As Long, b As Long
     For a = 1 To xRange
         For b = 1 To 32
-            Call CanvasSetPixel(cnv, a, b, tileMem(a, b))
+        
+            If openTileEditorDocs(indice).isometric And isoMaskBmp(a, b) <> 0 Then
+                'Mask the corners with another "transparent" color.
+                Call CanvasSetPixel(cnv, a, b, isoColor)
+                
+            ElseIf tileMem(a, b) = -1 Then
+                'Change to the transparent color.
+                Call CanvasSetPixel(cnv, a, b, transparentColor)
+                
+            Else
+                Call CanvasSetPixel(cnv, a, b, tileMem(a, b))
+            End If
+            
         Next b
     Next a
     
@@ -942,6 +1009,12 @@ Private Sub fillTile( _
     For a = 1 To xRange
         For b = 1 To 32
             tileMem(a, b) = CanvasGetPixel(cnv, a, b)
+            
+            'Restore the transparent colour.
+            If floodTrans Then
+                If tileMem(a, b) = transparentColor Then tileMem(a, b) = -1
+            End If
+            
         Next b
     Next a
 
