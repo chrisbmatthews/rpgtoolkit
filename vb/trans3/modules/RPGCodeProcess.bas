@@ -79,7 +79,6 @@ Public Sub InitRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
     thePrg.programPos = 0
     thePrg.Length = 0
     thePrg.currentHeapFrame = -1
-    errorBranch = ""
     preErrorPos = 0
     ReDim thePrg.heapStack(1)
     'create local heap...
