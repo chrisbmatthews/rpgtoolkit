@@ -104,6 +104,7 @@ Public Sub stopMidi()
     If Not (m_segment Is Nothing) Then
 
         ' Stop the segment
+        Call m_segment.SetRepeats(0)
         Call m_performance.Stop(m_segment, m_segmentState, 0, 0)
 
         ' Kill the segment
