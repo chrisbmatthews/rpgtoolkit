@@ -14,7 +14,7 @@ Option Explicit
 '=========================================================================
 ' Proprocessor flags
 '=========================================================================
-#Const USE_REGSVR32 = True  ' Call regsvr32 ?
+#Const USE_REGSVR32 = False  ' Call regsvr32 ?
 
 '=========================================================================
 ' Declarations
@@ -121,7 +121,7 @@ Private m_comPlugins() As CComPlugin
 ' Run a command
 '=========================================================================
 #If (USE_REGSVR32) Then
-Private Sub execute(ByRef strCmdLine As String)
+Private Sub Execute(ByRef strCmdLine As String)
 
     Dim proc As PROCESS_INFORMATION, start As STARTUPINFO
 
@@ -152,7 +152,7 @@ Public Sub registerServer(ByRef strServer As String, ByVal hwnd As Long, Optiona
 #If (USE_REGSVR32) Then
 
     ' Just call regsvr32
-    Call execute("regsvr32 /s " & IIf(bRegister, vbNullString, "/u ") & """" & strServer & """")
+    Call Execute("regsvr32 /s " & IIf(bRegister, vbNullString, "/u ") & """" & strServer & """")
 
 #Else
 
