@@ -54,6 +54,7 @@ Private Type AnimationFrame
     file As String                  ' Animation filename
     frame As Long                   ' Frame number
     maxFrames As Long               ' Max frames in this anim
+    strSound As String              ' Sound played on this frame
 End Type
 
 '========================================================================
@@ -383,6 +384,7 @@ Public Sub clearAnmCache(): On Error Resume Next
         anmCache(i).file = vbNullString
         anmCache(i).frame = 0
         anmCache(i).maxFrames = 0
+        anmCache(i).strSound = vbNullString
     Next i
 
     ' Flag to use first position again
@@ -462,6 +464,9 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
 
                 ' Blt contents over
                 Call canvas2CanvasBlt(anmCache(t).cnv, cnv, x, y, SRCCOPY)
+
+                ' Play the frame's sound
+                Call sndPlaySound(anmCache(t).strSound, SND_ASYNC Or SND_NODEFAULT)
 
                 ' All done!
                 Exit Sub
@@ -544,6 +549,11 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
 
         End If 'ext = TBM
 
+        ' Play the frame's sound
+        Dim strSound As String
+        strSound = projectPath & mediaPath & anm.animSound(frame)
+        Call sndPlaySound(strSound, SND_ASYNC Or SND_NODEFAULT)
+
         ' Now place this frame in the sprite cache
         t = nextAnmCacheIdx
         If (anm.animSizeX <> getCanvasWidth(anmCache(t).cnv) Or anm.animSizeY <> getCanvasHeight(anmCache(t).cnv)) Then
@@ -561,6 +571,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
         anmCache(nextAnmCacheIdx).file = file
         anmCache(nextAnmCacheIdx).frame = frame
         anmCache(nextAnmCacheIdx).maxFrames = maxF
+        anmCache(nextAnmCacheIdx).strSound = strSound
         nextAnmCacheIdx = nextAnmCacheIdx + 1
 
         Dim ub As Long
