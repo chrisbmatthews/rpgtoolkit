@@ -516,7 +516,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
             Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
 
             hdc = canvasOpenHDC(cnv)
-            Call canvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
+            Call canvasMaskBltStretchTransparent(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc, anm.animTransp(frame))
             Call canvasCloseHDC(cnv, hdc)
 
             Call destroyCanvas(cnvTbm)
@@ -539,7 +539,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
             Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
 
             hdc = canvasOpenHDC(cnv)
-            Call canvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
+            Call canvasMaskBltStretchTransparent(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc, anm.animTransp(frame))
             Call canvasCloseHDC(cnv, hdc)
 
             Call destroyCanvas(cnvTbm)

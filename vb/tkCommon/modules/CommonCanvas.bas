@@ -45,8 +45,8 @@ Private Declare Function CNVShiftLeft Lib "actkrt3.dll" (ByVal handle As Long, B
 Private Declare Function CNVShiftRight Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftUp Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftDown Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
-Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
+Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
 Private Declare Function CNVCreateCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long) As Long
 Private Declare Sub CNVKillCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long, ByVal hCanvasHostDC As Long)
 
@@ -285,6 +285,52 @@ Public Function canvasMaskBltStretch(ByVal canvasIDSource As Long, ByVal canvasI
         Call canvasCloseHDC(canvasIDSource, hdcSource)
     Else
         canvasMaskBltStretch = -1
+    End If
+End Function
+
+'=========================================================================
+' Transparently stretch a mask over a canvas
+'=========================================================================
+Public Function canvasMaskBltStretchTransparent(ByVal canvasIDSource As Long, ByVal canvasIDMask As Long, ByVal destX As Long, ByVal destY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal hdc As Long, ByVal crTranspColor As Long) As Long
+    On Error Resume Next
+    If canvasOccupied(canvasIDSource) Then
+        Dim w As Long, h As Long, hdcMask As Long, hdcSource As Long
+        Dim destPicHdc As Long, cnv As Long
+        w = getCanvasWidth(canvasIDSource)
+        h = getCanvasHeight(canvasIDSource)
+        cnv = createCanvas(newWidth, newHeight)
+        Call canvasFill(cnv, crTranspColor)
+        destPicHdc = canvasOpenHDC(cnv)
+        hdcMask = canvasOpenHDC(canvasIDMask)
+        hdcSource = canvasOpenHDC(canvasIDSource)
+        canvasMaskBltStretchTransparent = StretchBlt(destPicHdc, _
+                           0, _
+                           0, _
+                           newWidth, _
+                           newHeight, _
+                           hdcMask, _
+                           0, 0, _
+                           w, _
+                           h, _
+                           SRCAND)
+        canvasMaskBltStretchTransparent = StretchBlt(destPicHdc, _
+                           0, _
+                           0, _
+                           newWidth, _
+                           newHeight, _
+                           hdcSource, _
+                           0, 0, _
+                           w, _
+                           h, _
+                           SRCPAINT)
+        Call canvasCloseHDC(canvasIDSource, hdcSource)
+        Call canvasCloseHDC(canvasIDMask, hdcMask)
+        Call canvasCloseHDC(cnv, destPicHdc)
+        ' Now blt to dest hdc
+        Call canvasTransBlt2(cnv, newWidth, newHeight, destX, destY, 0, 0, newWidth, newHeight, hdc, crTranspColor)
+        Call destroyCanvas(cnv)
+    Else
+        canvasMaskBltStretchTransparent = -1
     End If
 End Function
 

@@ -132,8 +132,8 @@ Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long,
                 End If
             Else
                 If cnv <> -1 And cnvMask <> -1 Then
-                    Call CanvasFillBox(cnv, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, RGB(0, 0, 0))
-                    Call CanvasFillBox(cnvMask, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, RGB(255, 255, 255))
+                    Call canvasFillBox(cnv, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, TRANSP_COLOR_ALT)
+                    Call canvasFillBox(cnvMask, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, TRANSP_COLOR)
                 End If
             End If
         Next y
@@ -195,14 +195,14 @@ Sub DrawSizedTileBitmap(ByRef tbm As TKTileBitmap, ByVal x As Long, ByVal y As L
     Dim cnv As Long
     Dim cnvMask As Long
     
-    cnv = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
-    cnvMask = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
+    cnv = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
+    cnvMask = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
     
     Call DrawTileBitmapCNV(cnv, cnvMask, 0, 0, tbm)
     
-    Call CanvasMaskBltStretch(cnv, cnvMask, x, y, sizex, sizey, hdc)
-    Call DestroyCanvas(cnv)
-    Call DestroyCanvas(cnvMask)
+    Call canvasMaskBltStretch(cnv, cnvMask, x, y, sizex, sizey, hdc)
+    Call destroyCanvas(cnv)
+    Call destroyCanvas(cnvMask)
 End Sub
 
 

@@ -620,6 +620,7 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                 tbm.tiles(0, 1) = walkGfx(x, 1)
                 Call SaveTileBitmap(tbmName$, tbm)
                 anm.animFrame(xx) = RemovePath(tbmName$)
+                anm.animTransp(xx) = RGB(255, 255, 255)
                 
                 If x = 3 Then
                     walkFix$ = "E"
@@ -685,18 +686,22 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                 tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + CStr(x) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmFight)
                 anmFight.animFrame(x) = tbmName$
+                anmFight.animTransp(x) = RGB(255, 255, 255)
             
                 tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + CStr(x) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDef)
                 anmDef.animFrame(x) = tbmName$
+                anmDef.animTransp(x) = RGB(255, 255, 255)
             
                 tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + CStr(x) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmSPC)
                 anmSPC.animFrame(x) = tbmName$
+                anmSPC.animTransp(x) = RGB(255, 255, 255)
             
                 tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" & CStr(x) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDead)
                 anmDead.animFrame(x) = tbmName$
+                anmDead.animTransp(x) = RGB(255, 255, 255)
             Next x
             'now save the animations...
             anmName$ = replace(RemovePath(file$), ".", "_") + "_fight" + ".anm"
@@ -753,6 +758,7 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                     tbmName$ = replace(RemovePath(file$), ".", "_") & "_custom_" & CStr(x) & ".tbm"
                     Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
                     anm.animFrame(0) = tbmName$
+                    anm.animTransp(0) = RGB(255, 255, 255)
                     anmName$ = replace(RemovePath(file$), ".", "_") & "_custom_" & CStr(x) & ".anm"
                     Call saveAnimation(projectPath & miscPath & anmName$, anm)
                     'thePlayer.customgfx(x) = anmname$
@@ -1026,6 +1032,7 @@ ver2oldchar:
         tbm.tiles(0, 1) = walkGfx(x, 1)
         Call SaveTileBitmap(tbmName$, tbm)
         anm.animFrame(xx) = RemovePath(tbmName$)
+        anm.animTransp(xx) = RGB(255, 255, 255)
         
         If x = 3 Then
             walkFix$ = "E"
@@ -1085,18 +1092,22 @@ ver2oldchar:
         tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + CStr(x) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmFight)
         anmFight.animFrame(x) = tbmName$
+        anmFight.animTransp(x) = RGB(255, 255, 255)
     
         tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + CStr(x) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDef)
         anmDef.animFrame(x) = tbmName$
+        anmDef.animTransp(x) = RGB(255, 255, 255)
     
         tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + CStr(x) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmSPC)
         anmSPC.animFrame(x) = tbmName$
+        anmSPC.animTransp(x) = RGB(255, 255, 255)
     
         tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" + CStr(x) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDead)
         anmDead.animFrame(x) = tbmName$
+        anmDead.animTransp(x) = RGB(255, 255, 255)
     Next x
     'now save the animations...
     anmName$ = replace(RemovePath(file$), ".", "_") + "_fight" + ".anm"
@@ -1132,6 +1143,7 @@ ver2oldchar:
     tbmName$ = replace(RemovePath(file$), ".", "_") & "_rest" & ".tbm"
     Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
     anm.animFrame(0) = tbmName$
+    anm.animTransp(0) = RGB(255, 255, 255)
     anmName$ = replace(RemovePath(file$), ".", "_") & "_rest" & ".anm"
     Call saveAnimation(projectPath & miscPath & anmName$, anm)
     thePlayer.gfx(PLYR_REST) = anmName$
@@ -1152,6 +1164,7 @@ ver2oldchar:
             tbmName$ = replace(RemovePath(file$), ".", "_") & "_custom_" & CStr(x) & ".tbm"
             Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
             anm.animFrame(0) = tbmName$
+            anm.animTransp(0) = RGB(255, 255, 255)
             anmName$ = replace(RemovePath(file$), ".", "_") & "_custom_" & CStr(x) & ".anm"
             Call saveAnimation(projectPath & miscPath & anmName$, anm)
             Call playerAddCustomGfx(thePlayer, "Custom " & CStr(x), anmName$)

@@ -488,6 +488,7 @@ Public Function openItem(ByVal file As String) As TKItem
                 Next y
                 Call SaveTileBitmap(tbmName$, tbm)
                 anm.animFrame(xx) = RemovePath(tbmName$)
+                anm.animTransp(xx) = RGB(255, 255, 255)
             
                 If x = 3 Then
                     walkFix$ = "E"
@@ -532,6 +533,7 @@ Public Function openItem(ByVal file As String) As TKItem
             Next y
             Call SaveTileBitmap(tbmName$, tbm)
             anm.animFrame(0) = RemovePath(tbmName$)
+            anm.animTransp(0) = RGB(255, 255, 255)
             Call saveAnimation(anmName$, anm)
             theItem.standingGfx(ITEM_WALK_S) = RemovePath(anmName$)
             
@@ -686,6 +688,7 @@ ver2olditem:
             Next y
             Call SaveTileBitmap(tbmName$, tbm)
             anm.animFrame(xx) = RemovePath(tbmName$)
+            anm.animTransp(xx) = RGB(255, 255, 255)
         
             If x = 3 Then
                 walkFix$ = "E"
@@ -730,6 +733,7 @@ ver2olditem:
         Next y
         Call SaveTileBitmap(tbmName$, tbm)
         anm.animFrame(0) = RemovePath(tbmName$)
+        anm.animTransp(0) = RGB(255, 255, 255)
         Call saveAnimation(anmName$, anm)
         theItem.standingGfx(ITEM_WALK_S) = RemovePath(anmName$)
         

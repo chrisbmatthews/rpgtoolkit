@@ -180,7 +180,7 @@ Public cnvRPGCodeAccess As Long
 Public cnvRPGCode() As Long
 
 ' Transparent color
-Public Const TRANSP_COLOR = 16777215
+Public Const TRANSP_COLOR = 16711935
 
 ' Alternate transparent color
 Public Const TRANSP_COLOR_ALT = 0
@@ -284,7 +284,6 @@ End Function
 ' Black out the screen
 '=========================================================================
 Public Function DXClearScreen(ByVal crColor As Long) As Long
-
 
     ' Draw to the back buffer
     Call canvasFill(m_cnvBack, crColor)
@@ -1447,9 +1446,9 @@ Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     cnvRPGCodeAccess = createCanvas(width, height)
     cnvRenderNow = createCanvas(width, height)
     Call canvasFill(cnvRPGCodeScreen, 0)
-    Call canvasFill(cnvRenderNow, TRANSP_COLOR)
+    Call canvasFill(cnvRenderNow, TRANSP_COLOR_ALT)
     cnvMousePointer = createCanvas(32, 32)
-    Call canvasFill(cnvMousePointer, TRANSP_COLOR)
+    Call canvasFill(cnvMousePointer, mainMem.transpcolor)
     globalCanvasHeight = height
     globalCanvasWidth = width
 End Sub
