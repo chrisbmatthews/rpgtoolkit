@@ -1078,7 +1078,6 @@ Ver1Board:
             .playerY = fread(num)             ' PULL IN PLAYER Y POSITION (unsuppt)
             .boardTitle$(1) = fread(num)      ' PULL IN TITLE (filename)
             Call fread(num)
-            Dim loopControl As Long
             For loopControl = 1 To 4
                 .dirLink$(loopControl) = fread(num)       ' PULL IN DIRECTION LINKS
             Next loopControl
