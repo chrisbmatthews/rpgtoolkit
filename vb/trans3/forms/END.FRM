@@ -112,8 +112,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-    Call Unload(Me)
-    DoEvents
     End
 End Sub
 

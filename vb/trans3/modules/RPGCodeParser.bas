@@ -43,7 +43,7 @@ Public Type Parameters
  dataType As dtType
 End Type
 
-Function GetMethodName(ByVal text$, ByRef thePrg As RPGCodeProgram) As String
+Function GetMethodName(ByVal Text$, ByRef thePrg As RPGCodeProgram) As String
     'Return name of a method from a method statement.
     On Error GoTo errorhandler
     
@@ -53,13 +53,13 @@ Function GetMethodName(ByVal text$, ByRef thePrg As RPGCodeProgram) As String
     Dim startHere As Long
     Dim mName As String
     
-    dataUse$ = text$
+    dataUse$ = Text$
     Length = Len(dataUse$)
     Dim part As String
     For t = 1 To Length
         'Find #
         part$ = Mid$(dataUse$, t, 1)
-        If part$ <> " " And part$ <> chr$(9) And part$ <> "#" Then
+        If part$ <> " " And part$ <> Chr$(9) And part$ <> "#" Then
             If thePrg.autoCommand Then
                 startHere = t - 1
                 If startHere = 0 Then startHere = 1
@@ -105,7 +105,7 @@ errorhandler:
     Resume Next
 End Function
 
-Function ParseAfter(ByVal text As String, ByVal startSymbol As String) As String
+Function ParseAfter(ByVal Text As String, ByVal startSymbol As String) As String
     On Error Resume Next
     'parse out text after startSymbol
     '(ie, get stuff before a [ pair)
@@ -114,13 +114,13 @@ Function ParseAfter(ByVal text As String, ByVal startSymbol As String) As String
     Dim part As String
     Dim toRet As String
     
-    Length = Len(text)
+    Length = Len(Text)
     Dim foundIt As Boolean, startAt As Long
     
     foundIt = False
     'find opening symbol...
     For t = 1 To Length
-        part = Mid$(text, t, 1)
+        part = Mid$(Text, t, 1)
         If part = startSymbol Then
             'found start symbol.
             startAt = t
@@ -131,7 +131,7 @@ Function ParseAfter(ByVal text As String, ByVal startSymbol As String) As String
     
     If foundIt Then
         For t = startAt + 1 To Length
-            part = Mid$(text, t, 1)
+            part = Mid$(Text, t, 1)
             toRet = toRet + part
         Next t
     End If
@@ -139,7 +139,7 @@ Function ParseAfter(ByVal text As String, ByVal startSymbol As String) As String
     ParseAfter = toRet
 End Function
 
-Function ParseBefore(ByVal text As String, ByVal startSymbol As String) As String
+Function ParseBefore(ByVal Text As String, ByVal startSymbol As String) As String
     On Error Resume Next
     'parse out text before startSymbol
     '(ie, get stuff before a [ pair)
@@ -148,10 +148,10 @@ Function ParseBefore(ByVal text As String, ByVal startSymbol As String) As Strin
     Dim part As String
     Dim toRet As String
     
-    Length = Len(text)
+    Length = Len(Text)
     'find opening symbol...
     For t = 1 To Length
-        part = Mid$(text, t, 1)
+        part = Mid$(Text, t, 1)
         If part = startSymbol Then
             'found start symbol.
             ParseBefore = toRet
@@ -188,7 +188,7 @@ Public Function lowest(ByRef values() As Long, _
 End Function
 
 Public Function MathFunction _
-    (ByVal text As String, ByVal num As Long, Optional ByVal comparison As Boolean) _
+    (ByVal Text As String, ByVal num As Long, Optional ByVal comparison As Boolean) _
         As String
     
     'Returns math function type in variable expression
@@ -243,7 +243,7 @@ Public Function MathFunction _
     start = 1
     For a = 1 To num
         For S = 0 To UBound(signs)
-            p(S) = InStr(start, text, signs(S), vbTextCompare)
+            p(S) = InStr(start, Text, signs(S), vbTextCompare)
         Next S
         start = lowest(p, whichSpot) + 1
         If Not a = num Then
@@ -266,7 +266,7 @@ enlargeP:
     
 End Function
 
-Function Evaluate(text$, ByRef theProgram As RPGCodeProgram) As Long
+Function Evaluate(Text$, ByRef theProgram As RPGCodeProgram) As Long
     'Evaluates condition.
     'returns 0 for false, 1 for true
     On Error GoTo errorhandler
@@ -276,11 +276,11 @@ Function Evaluate(text$, ByRef theProgram As RPGCodeProgram) As Long
     '=====================================================================================
     'Allow for commands in the condition... [KSNiloc]
     '=====================================================================================
-    text = "Eval( " & text & " )"
-    text = ParseRPGCodeCommand(text, theProgram)
-    text = Trim(Mid(text, 7, Len(text) - 8))
+    Text = "Eval( " & Text & " )"
+    Text = ParseRPGCodeCommand(Text, theProgram)
+    Text = Trim(Mid(Text, 7, Len(Text) - 8))
    
-    use$ = text$
+    use$ = Text$
     Length = Len(use$)
     val1$ = ""
     
@@ -463,7 +463,7 @@ errorhandler:
 End Function
 
 
-Function CheckBlockStart(ByVal text$, ByVal returnText$, ByVal openings As Long) As Long
+Function CheckBlockStart(ByVal Text$, ByVal returnText$, ByVal openings As Long) As Long
     'Checks text$ for the beginning of a block
     'If the block starts here, then the command
     'contained within is returned as returntext$
@@ -471,12 +471,12 @@ Function CheckBlockStart(ByVal text$, ByVal returnText$, ByVal openings As Long)
     'On Error GoTo errorhandler
     Dim use As String, Length As Long, BeginHere As Long, p As Long, part As String, returnVal As String
     
-    use$ = text$
+    use$ = Text$
     Length = Len(use$)
     
     BeginHere = 0
     For p = 1 To Length
-        part$ = Mid$(text$, p, 1)
+        part$ = Mid$(Text$, p, 1)
         If part$ = ")" Then
             BeginHere = p + 1
             p = Length
@@ -486,7 +486,7 @@ Function CheckBlockStart(ByVal text$, ByVal returnText$, ByVal openings As Long)
     'Check for the beginning of the Block (</{):
     'The starting pos will be placed in BeginHere
     For p = BeginHere To Length
-        part$ = Mid$(text$, p, 1)
+        part$ = Mid$(Text$, p, 1)
         If part$ = "<" Or part$ = "{" Then
             BeginHere = p + 1
             p = Length
@@ -534,18 +534,18 @@ errorhandler:
 End Function
 
 
-Function GetVarList(ByVal text$, ByVal number As Long) As String
+Function GetVarList(ByVal Text$, ByVal number As Long) As String
 'Gets a variable from an expression.
 'ie: joey!=1+fifty! has joey! as #1, 1 as #2, and fifty as #3
     On Error GoTo errorhandler
     Dim Length As Long, ignoreNext As Long, element As Long, part As String, p As Long, returnVal As String
     
-    Length = Len(text$)
+    Length = Len(Text$)
     ignoreNext = 0
     element = 0
     For p = 1 To Length + 1
-        part$ = Mid$(text$, p, 1)
-        If part$ = chr$(34) Then
+        part$ = Mid$(Text$, p, 1)
+        If part$ = Chr$(34) Then
             If ignoreNext = 0 Then
                 ignoreNext = 1
             Else
@@ -577,7 +577,7 @@ errorhandler:
     Resume Next
 End Function
 
-Function ParseWithin(ByVal text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
+Function ParseWithin(ByVal Text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
     On Error Resume Next
     'parse out text enclosed by startSymbol and endSymbol
     '(ie, get stuff between a [] pair)
@@ -588,15 +588,15 @@ Function ParseWithin(ByVal text As String, ByVal startSymbol As String, ByVal en
     Dim toRet As String
     Dim ignoreDepth As Integer
     
-    Length = Len(text)
+    Length = Len(Text)
     'find opening symbol...
     For t = 1 To Length
-        part = Mid$(text, t, 1)
+        part = Mid$(Text, t, 1)
         If part = startSymbol Then
             'founf start symbol.
             'now locate end symbol...
             For l = t + 1 To Length
-                part = Mid$(text, l, 1)
+                part = Mid$(Text, l, 1)
                 If part = startSymbol Then
                     ignoreDepth = ignoreDepth + 1
                 End If
@@ -632,17 +632,17 @@ Function stringContains(ByVal theString As String, ByVal theChar As String) As B
     
 End Function
 
-Function ValueNumber(ByVal text$) As Long
+Function ValueNumber(ByVal Text$) As Long
 'Gets numver of values in a variable expression
     On Error GoTo errorhandler
     Dim ignoreNext As Long, Length As Long, ele As Long, p As Long, part As String
     
     ignoreNext = 0
-    Length = Len(text$)
+    Length = Len(Text$)
     ele = 1
     For p = 1 To Length
-        part$ = Mid$(text$, p, 1)
-        If part$ = chr$(34) Then
+        part$ = Mid$(Text$, p, 1)
+        If part$ = Chr$(34) Then
             If ignoreNext = 1 Then
                 ignoreNext = 0
             Else
@@ -663,14 +663,14 @@ errorhandler:
     Resume Next
 End Function
 
-Function removeChar(ByVal text As String, ByVal char As String) As String
+Function removeChar(ByVal Text As String, ByVal char As String) As String
 'remove char from text
     On Error GoTo errorhandler
     Dim Length As Long, p As Long, part As String, ret As String
     
-    Length = Len(text$)
+    Length = Len(Text$)
     For p = 1 To Length
-        part$ = Mid$(text$, p, 1)
+        part$ = Mid$(Text$, p, 1)
         If part$ <> char$ Then ret$ = ret$ + part$
     Next p
     removeChar = ret$
@@ -684,16 +684,16 @@ errorhandler:
 End Function
 
 
-Function GetElement(ByVal text$, ByVal eleeNum As Long) As String
+Function GetElement(ByVal Text$, ByVal eleeNum As Long) As String
     'gets element number from struing
     On Error GoTo errorhandler
     Dim Length As Long, element As Long, part As String, ignore As Long, returnVal As String, p As Long
     
-    Length = Len(text$)
+    Length = Len(Text$)
     element = 0
     For p = 1 To Length + 1
-        part$ = Mid$(text$, p, 1)
-        If part$ = chr$(34) Then
+        part$ = Mid$(Text$, p, 1)
+        If part$ = Chr$(34) Then
             'A quote
             If ignore = 0 Then
                 ignore = 1
@@ -727,7 +727,7 @@ errorhandler:
 End Function
 
 
-Public Function CountData(ByVal text As String) As Long
+Public Function CountData(ByVal Text As String) As Long
     'Counts data elements in text
     'Elements are seperated by ,'s or ;'s
     'On Error GoTo errorhandler
@@ -739,7 +739,7 @@ Public Function CountData(ByVal text As String) As Long
     On Error Resume Next
 
     Dim gB As String
-    gB = GetBrackets(text, True)
+    gB = GetBrackets(Text, True)
     If gB = "" Then Exit Function
 
     Dim c(1) As String
@@ -748,13 +748,13 @@ Public Function CountData(ByVal text As String) As Long
 
     Dim S() As String
     Dim uD() As String
-    S() = multiSplit(text, c, uD, True)
+    S() = multiSplit(Text, c, uD, True)
 
     CountData = UBound(S) + 1
     
 End Function
 
-Function LocateBrackets(ByVal text As String) As Long
+Function LocateBrackets(ByVal Text As String) As Long
     'returns position of first bracket/space after the RPGCode
     'Command.
     On Error GoTo errorhandler
@@ -762,25 +762,25 @@ Function LocateBrackets(ByVal text As String) As Long
     Dim Length As Long, p As Long, part As String, posat As Long
     
     'First look for brackets--make it easy:
-    Length = Len(text$)
+    Length = Len(Text$)
     For p = 1 To Length
-        part$ = Mid$(text$, p, 1)
+        part$ = Mid$(Text$, p, 1)
         If part$ = "(" Then posat = p: p = Length
     Next p
     If posat <> 0 Then LocateBrackets = posat: Exit Function
 
     'OK- no brackets.  Find position of first space after command.
     For p = 1 To Length
-        part$ = Mid$(text$, p, 1)
+        part$ = Mid$(Text$, p, 1)
         If part$ = "#" Then posat = p: p = Length
     Next p
     If posat = 0 Then LocateBrackets = 0: Exit Function 'couldn't find a command!
     For p = posat To Length     'Find first occurrence of command name
-        part$ = Mid$(text$, p, 1)
+        part$ = Mid$(Text$, p, 1)
         If part$ <> " " Then posat = p: p = Length
     Next p
     For p = posat To Length     'Find where command name ends.
-        part$ = Mid$(text$, p, 1)
+        part$ = Mid$(Text$, p, 1)
         If part$ = " " Then posat = p: p = Length
     Next p
     LocateBrackets = posat: Exit Function
@@ -794,7 +794,7 @@ errorhandler:
 End Function
 
 
-Public Function GetBrackets(ByVal text As String, Optional ByVal doNotCheckForBrackets As Boolean) As String
+Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBrackets As Boolean) As String
     'Takes a command and gets all the data that occurs after
     'The command itself (what's in the brackets).
     On Error GoTo errorhandler
@@ -802,14 +802,14 @@ Public Function GetBrackets(ByVal text As String, Optional ByVal doNotCheckForBr
     Dim use As String, location As Long, Length As Long, bracketDepth As Long, p As Long, part As String
     Dim fullUse As String
     
-    use$ = text$
+    use$ = Text$
     location = LocateBrackets(use$)
-    Length = Len(text$)
+    Length = Len(Text$)
     
     ' ! ADDED BY KSNiloc...
     If Not doNotCheckForBrackets Then
-        If Not stringContains(text, "(") Then
-            If Not stringContains(text, ")") Then
+        If Not stringContains(Text, "(") Then
+            If Not stringContains(Text, ")") Then
                 'No (s or )s here!
                 Exit Function
             End If
@@ -819,14 +819,14 @@ Public Function GetBrackets(ByVal text As String, Optional ByVal doNotCheckForBr
     bracketDepth = 0
     ignoreClosing = False
     For p = location + 1 To Length
-        part$ = Mid$(text$, p, 1)
+        part$ = Mid$(Text$, p, 1)
         If ((part$ = ")") And ignoreClosing = False And bracketDepth <= 0) Or part$ = "" Then
             Exit For
         Else
             If part$ = ")" Then
                 bracketDepth = bracketDepth - 1
             End If
-            If part$ = chr$(34) Then
+            If part$ = Chr$(34) Then
                 'quote-- ignore stuff inside quotes.
                 If ignoreClosing = True Then
                     'clsing quote...
@@ -872,7 +872,7 @@ Function GetCommandName$( _
     foundIt = 0
     For p = 1 To Length
         part$ = Mid$(splice$, p, 1)
-        If part$ <> " " And part$ <> "#" And part$ <> chr$(9) Then
+        If part$ <> " " And part$ <> "#" And part$ <> Chr$(9) Then
             If thePrg.autoCommand Then
                 If part$ = "*" Then
                     GetCommandName = "*"
@@ -907,7 +907,7 @@ Function GetCommandName$( _
         'Yipes- didn't find a #.  Maybe it's a @ command
         For p = 1 To Length
             part$ = Mid$(splice$, p, 1)
-            If part$ <> " " And part$ <> "@" And part$ <> chr$(9) Then
+            If part$ <> " " And part$ <> "@" And part$ <> Chr$(9) Then
                 foundIt = 0
                 Exit For
             End If
@@ -921,7 +921,7 @@ Function GetCommandName$( _
             'maybe a comment?
             For p = 1 To Length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> "*" And part$ <> chr$(9) Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> "*" And part$ <> Chr$(9) Then foundIt = 0: p = Length
                 If part$ = "*" Then GetCommandName$ = "*": Exit Function
             Next p
         End If
@@ -929,7 +929,7 @@ Function GetCommandName$( _
             'Maybe a label
             For p = 1 To Length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> ":" And part$ <> chr$(9) Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> ":" And part$ <> Chr$(9) Then foundIt = 0: p = Length
                 If part$ = ":" Then GetCommandName$ = "LABEL": Exit Function
             Next p
         End If
@@ -937,7 +937,7 @@ Function GetCommandName$( _
             'Maybe an if then start/stop
             For p = 1 To Length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> "<" And part$ <> "{" And part$ <> chr$(9) Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> "<" And part$ <> "{" And part$ <> Chr$(9) Then foundIt = 0: p = Length
                 If part$ = "<" Or part$ = "{" Then GetCommandName$ = "OPENBLOCK": Exit Function
             Next p
         End If
@@ -945,7 +945,7 @@ Function GetCommandName$( _
             'Maybe an if then start/stop
             For p = 1 To Length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> ">" And part$ <> "}" And part$ <> chr$(9) Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> ">" And part$ <> "}" And part$ <> Chr$(9) Then foundIt = 0: p = Length
                 If part$ = ">" Or part$ = "}" Then GetCommandName$ = "CLOSEBLOCK": Exit Function
             Next p
         End If
@@ -993,7 +993,7 @@ errorhandler:
     Resume Next
 End Function
 
-Public Function GetParameters(ByVal text As String, ByRef theProgram As RPGCodeProgram) As Parameters()
+Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Parameters()
 
  ''''''''''''''''''''''''''
  '    Added by KSNiloc    '
@@ -1027,8 +1027,8 @@ Public Function GetParameters(ByVal text As String, ByRef theProgram As RPGCodeP
  Dim dataType As dtType
  
  'Get the parameters...
- count = CountData(text)
- brackets = GetBrackets(text)
+ count = CountData(Text)
+ brackets = GetBrackets(Text)
  For a = 1 To count
   dataType = getValue(GetElement(brackets, a), lit, num, theProgram)
   ReDim Preserve ret(a - 1)
@@ -1102,9 +1102,7 @@ Public Function ParseRPGCodeCommand( _
     Dim prefix As String
     prefix = LCase(GetCommandName(line, prg))
  
-    Dim bl As Long
     Dim bT As String
-    bl = LocateBrackets(line)
     bT = " " & GetBrackets(line)
     If GetCommandName(line, prg) = "VAR" Then bT = line
     
@@ -1204,15 +1202,15 @@ Public Function ParseRPGCodeCommand( _
         
 End Function
 
-Public Function replaceOutsideQuotes(ByVal text As String, ByVal find As String, ByVal replace As String)
+Public Function replaceOutsideQuotes(ByVal Text As String, ByVal find As String, ByVal replace As String)
 
     Dim ignore As Boolean
     Dim build As String
     Dim char As String
     Dim a As Long
 
-    For a = 1 To Len(text)
-        char = Mid(text, a, 1)
+    For a = 1 To Len(Text)
+        char = Mid(Text, a, 1)
         Select Case char
             Case """"
                 If ignore Then

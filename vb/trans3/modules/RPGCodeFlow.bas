@@ -66,14 +66,14 @@ End Property
 '=========================================================================
 ' Pops up the rpgcode debugger
 '=========================================================================
-Public Sub debugger(ByVal text As String)
+Public Sub debugger(ByVal Text As String)
 
     On Error Resume Next
 
     If Not checkErrorHandling() Then
         If debugYN = 1 Then
             Call debugwin.Show
-            debugwin.buglist.text = debugwin.buglist.text & text & vbCrLf
+            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
             DoEvents
         Else
             Call Unload(debugwin)
@@ -83,7 +83,7 @@ Public Sub debugger(ByVal text As String)
 End Sub
 
 '=========================================================================
-' Checks is the user has error handling in place
+' Checks if the user has error handling in place
 '=========================================================================
 Private Function checkErrorHandling() As Boolean
     If Not errorBranch = "" Then
@@ -113,7 +113,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error GoTo errorhandler
 
@@ -124,7 +124,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If commandName$ = "" Then
-        mName = GetCommandName(text, theProgram)   'get command name without extra info
+        mName = GetCommandName(Text, theProgram)   'get command name without extra info
     Else
         mName = commandName
     End If
@@ -134,7 +134,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
 
     If Not InClass.DoNotCheckForClass Then
         If Not methodName = "" Then
-            If IsClassRPG(includeFile, methodName, text, theProgram, retval) Then
+            If IsClassRPG(includeFile, methodName, Text, theProgram, retval) Then
                 Exit Sub
             End If
         End If
@@ -145,7 +145,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     If methodName <> "" Then
         'include file...
         includeFile = addExt(includeFile, ".prg")
-        Call IncludeRPG("include(" + chr$(34) + includeFile$ + chr$(34) + ")", theProgram)
+        Call IncludeRPG("include(" + Chr$(34) + includeFile$ + Chr$(34) + ")", theProgram)
         mName = methodName
     End If
 
@@ -165,11 +165,11 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     InClass.MethodWasFound = True
     If foundIt = -1 Then
         'didn't find it in prg code, but it may exist in a plugin...
-        canDoIt = QueryPlugins(mName$, text$, retval)
+        canDoIt = QueryPlugins(mName$, Text$, retval)
         If canDoIt = False Then
             'InClass.MethodWasFound = False
             If InClass.PopupMethodNotFound = True Then
-                Call debugger("Error: Method not found!-- " + text$)
+                Call debugger("Error: Method not found!-- " + Text$)
             End If
         Else
             Exit Sub
@@ -185,7 +185,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
         
         'Get parameters from calling line
-        dataUse$ = GetBrackets(text$)    'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
         For pList = 1 To number
             parameterList$(pList) = GetElement(dataUse$, pList)
@@ -207,7 +207,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
         For pList = 1 To number
             'get the value from the previous stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
-            dataG = GetValue(parameterList$(pList), lit$, num, theProgram)
+            dataG = getValue(parameterList$(pList), lit$, num, theProgram)
             'restore stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
             
@@ -329,7 +329,6 @@ End Sub
 Public Sub openMulti()
     On Error Resume Next
     Dim t As Long
-    ReDim program(UBound(multilist))
     For t = 0 To UBound(multilist)
         If multilist(t) <> "" Then
             If multiopen(t) = 0 Then
@@ -488,7 +487,7 @@ End Sub
 ' Runs a block of code (or skips it if res = 0)
 '=========================================================================
 Public Function runBlock( _
-                            ByVal text As String, _
+                            ByVal Text As String, _
                             ByVal res As Long, _
                             ByRef prg As RPGCodeProgram _
                                                           ) As Long
@@ -566,7 +565,7 @@ Public Function runItmYN(ByVal itmNum As Long) As Boolean
     ElseIf boardList(activeBoardIndex).theData.itmActivate(t) = 1 Then
         'conditional activation
         runIt = 0
-        checkIt = GetIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(t), lit$, num)
+        checkIt = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(t), lit$, num)
         If checkIt = 0 Then
             'it's a numerical variable
             valueTest = num
@@ -592,7 +591,7 @@ Public Function runItmYN(ByVal itmNum As Long) As Boolean
             
             'now check if it's still active...
             runIt = 0
-            checkIt = GetIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(t), lit$, num)
+            checkIt = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(t), lit$, num)
             If checkIt = 0 Then
                 'it's a numerical variable
                 valueTest = num
@@ -647,7 +646,7 @@ Public Function runprgYN(ByVal prgnum As Long) As Boolean
     If boardList(activeBoardIndex).theData.progActivate(t) = 1 Then
         'conditional activation
         runIt = 0
-        checkIt = GetIndependentVariable(boardList(activeBoardIndex).theData.progVarActivate$(t), lit$, num)
+        checkIt = getIndependentVariable(boardList(activeBoardIndex).theData.progVarActivate$(t), lit$, num)
         If checkIt = 0 Then
             'it's a numerical variable
             valueTest = num
@@ -674,7 +673,7 @@ Public Function runprgYN(ByVal prgnum As Long) As Boolean
             
                 'now check if the program is still active...
                 runIt = 0
-                checkIt = GetIndependentVariable(boardList(activeBoardIndex).theData.progVarActivate$(t), lit$, num)
+                checkIt = getIndependentVariable(boardList(activeBoardIndex).theData.progVarActivate$(t), lit$, num)
                 If checkIt = 0 Then
                     'it's a numerical variable
                     valueTest = num
@@ -894,8 +893,8 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
     testText$ = UCase$(cType$)
 
     'check for redirects...
-    If RedirectExists(testText) Then
-        testText = GetRedirect(testText)
+    If redirectExists(testText) Then
+        testText = getRedirect(testText)
     End If
 
     If Left(testText, 1) = "." Then testText = UCase(GetWithPrefix() & testText)

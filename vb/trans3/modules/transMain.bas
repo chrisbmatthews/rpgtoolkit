@@ -97,7 +97,7 @@ Public Function getMainFilename() As String
             Call openSystems(True)
             Call runProgram(projectPath & prgPath & args(1))
             Call closeSystems
-            gGameState = GS_QUIT
+            End
 
         End If
 
@@ -153,7 +153,7 @@ Private Sub initgame()
     Call Randomize(Timer)
     currentDir = CurDir()
     Call InitThreads
-    Call InitVarSystem
+    Call initVarSystem
     Call InitInventory(inv)
     menuColor = RGB(0, 0, 0)
     MWinSize = 90
@@ -215,7 +215,7 @@ Public Sub mainLoop()
 
     Dim bDone As Boolean
 
-    #Const isRelease = 0
+    #Const isRelease = 1
 
     #If Not isRelease = 1 Then
         Dim framesDrawn As Long
@@ -233,7 +233,7 @@ Public Sub mainLoop()
 
                 Call checkMusic
                 Call renderNow
-                Call MultiTaskNow
+                Call multiTaskNow
                 Call scanKeys
                 Call updateGameTime
                 DoEvents
@@ -408,7 +408,7 @@ Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
 
         'Calculate the slack
         slackTime = ((endTime - startTime) / 5) + 1
-    
+
     End If
 
     'We now have an approximate idea of this CPU's speed
@@ -428,7 +428,7 @@ Private Sub initActiveX()
         If mainMem.plugins(a) <> "" Then
             Dim fullPath As String
             fullPath = projectPath & plugPath & mainMem.plugins(a)
-            Call ExecCmd("regsvr32 /s " & chr(34) & fullPath & chr(34))
+            Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
         End If
     Next a
 
@@ -454,8 +454,8 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     fontColor = vbQBColor(15)       'White
     MWinBkg = vbQBColor(0)          'Black
     mwinLines = 4
-    textx = 1                       'Text location
-    texty = 1
+    textX = 1                       'Text location
+    textY = 1
     
     loaded = 0
 

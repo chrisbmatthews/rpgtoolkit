@@ -90,7 +90,7 @@ Public Property Let animationDelay(ByVal newVal As Double)
 End Property
 
 Public Property Get framesPerMove() As Double
-    framesPerMove = 4 / slackTime
+    framesPerMove = Round(4 / slackTime)
 End Property
 
 Public Function onlyDecimal(ByVal number As Double) As Double
@@ -170,7 +170,7 @@ Function CheckObstruction(ByVal x As Double, ByVal y As Double, ByVal l As Long)
             If boardList(activeBoardIndex).theData.itmActivate(xx) = 1 Then
                 'conditional activation
                 runIt = 0
-                checkIt = GetIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(xx), lit$, num)
+                checkIt = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(xx), lit$, num)
                 If checkIt = 0 Then
                     'it's a numerical variable
                     valueTest = num
@@ -486,7 +486,7 @@ End Function
 
 
 
-Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
+Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boolean
     '=====================================
     'EDITED: [Isometrics - Delano 3/05/04]
     'Renamed variables: tx,ty >> topXTemp,topYTemp [Altered type also; Long >> Double]
@@ -509,7 +509,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     topYtemp = topY
         
     Dim targetBoard As String
-    targetBoard$ = boardList(activeBoardIndex).theData.dirLink$(thelink)
+    targetBoard$ = boardList(activeBoardIndex).theData.dirLink$(theLink)
         
     If targetBoard$ = "" Then
         'no link exists...
@@ -540,7 +540,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     Dim targetX As Long 'Target board dimensions
     Dim targetY As Long
     
-    If thelink = LINK_NORTH Then
+    If theLink = LINK_NORTH Then
         'Get dimensions of target board.
         Call boardSize(projectPath$ + brdPath$ + targetBoard$, targetX, targetY)
 
@@ -555,7 +555,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
         End If
         
     End If
-    If thelink = LINK_SOUTH Then
+    If theLink = LINK_SOUTH Then
         
         testY = 1
         
@@ -570,12 +570,12 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
         End If
         
     End If
-    If thelink = LINK_EAST Then
+    If theLink = LINK_EAST Then
     
         testX = 1
     
     End If
-    If thelink = LINK_WEST Then
+    If theLink = LINK_WEST Then
     
         'Get the dimensions of the target board.
         Call boardSize(projectPath$ + brdPath$ + targetBoard$, targetX, targetY)
@@ -604,8 +604,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     ppos(playerNum).y = testY
     ppos(playerNum).l = testLayer
     
-    ' ADDED BY KSNiloc...
-    ClearNonPersistentThreads
+    Call ClearNonPersistentThreads
     
     Call openboard(projectPath$ + brdPath$ + targetBoard$, boardList(activeBoardIndex).theData)
     lastRender.canvas = -1
@@ -617,8 +616,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     Call renderNow
     Call CanvasGetScreen(cnvRPGCodeScreen)
     
-    ' ! ADDED BY KSNiloc...
-    launchBoardThreads boardList(activeBoardIndex).theData
+    Call launchBoardThreads(boardList(activeBoardIndex).theData)
     
     'Set the mainLoop movementCounter to the end of the move.
     'Goes straight into GS_DONEMOVE state, rather than finishing the last 3 frames (caused pause on moving to new board).
@@ -626,8 +624,6 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     
     TestLink = True
 End Function
-
-
 
 Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As Boolean
     'check if the player has gone off an edge
@@ -648,8 +644,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
             CheckEdges = True
             Exit Function
         End If
-    End If
-    If pend.yTarg > boardList(activeBoardIndex).theData.Bsizey Then
+    ElseIf pend.yTarg > boardList(activeBoardIndex).theData.Bsizey Then
         'too far south!
         bWentThere = TestLink(playerNum, LINK_SOUTH)
         If bWentThere Then
@@ -659,8 +654,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
             CheckEdges = True
             Exit Function
         End If
-    End If
-    If pend.xTarg < 1 Then
+    ElseIf pend.xTarg < 1 Then
         'too far west!
         bWentThere = TestLink(playerNum, LINK_WEST)
         If bWentThere Then
@@ -670,8 +664,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
             CheckEdges = True
             Exit Function
         End If
-    End If
-    If pend.xTarg > boardList(activeBoardIndex).theData.Bsizex Then
+    ElseIf pend.xTarg > boardList(activeBoardIndex).theData.Bsizex Then
         'too far east!
         bWentThere = TestLink(playerNum, LINK_EAST)
         If bWentThere Then
@@ -684,8 +677,6 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
     End If
     CheckEdges = False
 End Function
-
-
 
 Sub pushItemNorth(ByVal itemNum As Long, ByVal moveFraction As Double)
     '==========================
@@ -2014,22 +2005,14 @@ Public Function roundCoords( _
 End Function
 
 Public Function ObtainTileType( _
-                                  ByVal testX As Long, _
-                                  ByVal testY As Long, _
+                                  ByVal testX As Double, _
+                                  ByVal testY As Double, _
                                   ByVal testLayer As Long, _
-                                  ByVal thelink As Long, _
+                                  ByVal theLink As Long, _
                                   ByRef passPos As PLAYER_POSITION, _
                                   ByRef didItem As Boolean _
                                                              ) As Integer
-    
-    '=====================================================================================
-    'Modified by KSNiloc
-    '
-    'NOTES: Modified to work with pixel movement
-    '
-    'BUG FIX: You can no longer walk 'onto' NPCs.
-    '=====================================================================================
-    
+
     'look at testX, testY, testLayer
     'to find the tile type (also based upon the theLink direction to which we are moving)
     'if there's an item or something we return solid.
@@ -2053,7 +2036,7 @@ Public Function ObtainTileType( _
     
     Dim first As Byte, second As Byte
     With boardList(activeBoardIndex).theData
-        Select Case thelink
+        Select Case theLink
             Case LINK_NORTH:
                 first = .tiletype(Int(testX), Int(testY), testLayer)
                 second = .tiletype(-Int(-testX), Int(testY), testLayer)
@@ -2108,11 +2091,11 @@ Public Function ObtainTileType( _
         underneath = 0
     End If
     
-    If typetile = EAST_WEST And (thelink = LINK_EAST Or thelink = LINK_WEST) Then
+    If typetile = EAST_WEST And (theLink = LINK_EAST Or theLink = LINK_WEST) Then
         typetile = NORMAL   'if ew normal, carry on as if it were normal
     End If
     
-    If typetile = NORTH_SOUTH And (thelink = LINK_SOUTH Or thelink = LINK_NORTH) Then
+    If typetile = NORTH_SOUTH And (theLink = LINK_SOUTH Or theLink = LINK_NORTH) Then
         typetile = NORMAL   'if ns normal, carry on as if it were normal
     End If
     
@@ -2135,7 +2118,7 @@ Public Function ObtainTileType( _
     If boardIso() Then
         'Check if the tiles above and below the movement are solid.
         'We get the location with respect to the *test* (target) co-ordinates.
-        Select Case thelink
+        Select Case theLink
             Case LINK_NORTH:
                 If testY Mod 2 = 0 Then
                     'Even y
@@ -2194,7 +2177,6 @@ Sub moveItems()
     'move all pending items
     On Error Resume Next
     
-    ' ! MODIFIED BY KSNiloc...
     If MAXITEM = -1 Then Exit Sub
     
     Dim maxP As Long
@@ -2250,8 +2232,7 @@ Public Sub movePlayers()
     Dim moveFraction As Double
     moveFraction = movementSize / framesPerMove
 
-    ' ! ADDED BY KSNiloc...
-    incrementFrame
+    Call incrementFrame(-1)
     
     For t = 0 To maxP
         Select Case pendingPlayerMovement(t).direction
@@ -2275,9 +2256,8 @@ Public Sub movePlayers()
                 Call pushPlayerSouthWest(t, moveFraction)
         End Select
     Next t
-    
-    ' ! ADDED BY KSNiloc...
-    incrementFrame -2
+
+    Call incrementFrame(-2)
     
 End Sub
 
