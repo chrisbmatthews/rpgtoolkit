@@ -166,7 +166,9 @@ Private Sub initgame()
     mainMem.mainScreenType = 2
     savPath = "Saved\"
     Call MkDir(Mid(savPath, 1, Len(savPath) - 1))
-    activeBoardIndex = VectBoardNewSlot()
+    ReDim boardList(0)
+    ReDim boardListOccupied(0)
+    boardListOccupied(0) = True
     Call InitLocalizeSystem
 End Sub
 
@@ -287,15 +289,15 @@ Public Sub mainLoop()
                     pendingItemMovement(cnt).direction = MV_IDLE
                     
                     'Isometric fix:
-                    pendingItemMovement(cnt).xOrig = itmPos(cnt).x
-                    pendingItemMovement(cnt).yOrig = itmPos(cnt).y
+                    pendingItemMovement(cnt).xOrig = itmPos(cnt).X
+                    pendingItemMovement(cnt).yOrig = itmPos(cnt).Y
                 Next cnt
                 
                 'The pending movements have to be cleared *before* any programs are run,
                 'whereas the movement direction can only be cleared afterwards.
                 For cnt = 0 To UBound(pendingPlayerMovement)
-                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).x
-                    pendingPlayerMovement(cnt).yOrig = ppos(cnt).y
+                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).X
+                    pendingPlayerMovement(cnt).yOrig = ppos(cnt).Y
                 Next cnt
                 
                 'check if player moved...
@@ -307,8 +309,8 @@ Public Sub mainLoop()
                     tempPos = ppos(selectedPlayer)
 
                     tempPos.l = pendingPlayerMovement(selectedPlayer).lTarg
-                    tempPos.x = pendingPlayerMovement(selectedPlayer).xTarg
-                    tempPos.y = pendingPlayerMovement(selectedPlayer).yTarg
+                    tempPos.X = pendingPlayerMovement(selectedPlayer).xTarg
+                    tempPos.Y = pendingPlayerMovement(selectedPlayer).yTarg
 
                     Call programTest(tempPos)
                     pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
@@ -521,8 +523,8 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
 
         'Setup player position.
-        ppos(0).x = boardList(activeBoardIndex).theData.playerX
-        ppos(0).y = boardList(activeBoardIndex).theData.playerY
+        ppos(0).X = boardList(activeBoardIndex).theData.playerX
+        ppos(0).Y = boardList(activeBoardIndex).theData.playerY
         ppos(0).l = boardList(activeBoardIndex).theData.playerLayer
         ppos(0).stance = "WALK_S"
         ppos(0).frame = 0

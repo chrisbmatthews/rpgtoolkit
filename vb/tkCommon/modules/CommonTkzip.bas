@@ -388,7 +388,7 @@ End Sub
 ' Return the number of files this project consists of
 '=========================================================================
 Public Function CountProjectFiles() As Integer
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'returns the total number of files in the project
     Dim count As Long, a As String
     count = 1 'the mainForm file counts as 1
@@ -495,7 +495,7 @@ Public Function CountProjectFiles() As Integer
 
     Exit Function
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 
@@ -695,7 +695,7 @@ Public Function PakLocate(ByVal file As String) As String
         PakLocate = file
         Exit Function
     End If
-            
+
     'first, look for the file in the cache.
     'if it's found in the cache, return it's location.
     'else, obtain it from the pakfile, put it in the cache and
@@ -703,8 +703,8 @@ Public Function PakLocate(ByVal file As String) As String
     
     #If isToolkit = 0 Then
     
-        If fileExists(PakTempPath + file) Then
-            PakLocate = PakTempPath + file
+        If fileExists(PakTempPath & file) Then
+            PakLocate = PakTempPath & file
         Else
             Call ZIPExtract(file, PakTempPath & file)
             PakLocate = PakTempPath & file

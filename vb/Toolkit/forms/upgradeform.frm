@@ -151,16 +151,16 @@ Private Sub Command1_Click()
     antiPath = getMainFilename()
     Call openMainFile(filename(1))
     mainfile = antiPath
-    lastProject = antiPath
+    configfile.lastProject = antiPath
     Do While mainMem.gameTitle = ""
         mainMem.gameTitle = InputBox("Please choose a name for your game", "Your game must have a name!", "My Game")
     Loop
     Dim tt As String
     tt = mainMem.gameTitle
-    tt = Replace(tt, "\", "")
-    tt = Replace(tt, "/", "")
-    tt = Replace(tt, ":", "")
-    tt = Replace(tt, " ", "")
+    tt = replace(tt, "\", "")
+    tt = replace(tt, "/", "")
+    tt = replace(tt, ":", "")
+    tt = replace(tt, " ", "")
     projectPath = gamePath & tt & "\"
     MsgBox "Your project will be placed in " & projectPath, , "Upgrade File System"
     Call saveMain(gamPath & antiPath, mainMem)

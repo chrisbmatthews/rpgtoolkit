@@ -93,7 +93,7 @@ End Sub
 Private Sub Command3_Click()
     On Error Resume Next
     Call Unload(Me)
-    tutCurrentLesson = 1
+    configfile.tutCurrentLesson = 1
     Call MsgBox(LoadStringLoc(993, "You can always run the tutorial by selecting Tutorial from the Help menu."))
 End Sub
 

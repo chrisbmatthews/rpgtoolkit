@@ -552,7 +552,7 @@ Private Sub arena_MouseDown(button As Integer, Shift As Integer, X As Single, Y 
                     tstnum = 0
                     tstFile$ = antiPath
                     'Update teh last tileset variable
-                    lastTileset$ = tstFile$
+                    configfile.lastTileset$ = tstFile$
                     tilesetform.Show vbModal
                     'If the filename is empty, exit sub
                     If setFilename$ = "" Then Exit Sub
@@ -923,12 +923,12 @@ End Sub
 Private Sub Form_KeyPress(KeyAscii As Integer)
     On Error Resume Next
     If UCase$(chr$(KeyAscii)) = "L" Then
-        If lastTileset = "" Then
+        If configfile.lastTileset = "" Then
             Call arena_MouseDown(0, 0, 0, 0)
             Exit Sub
         End If
-        If lastTileset$ <> "" Then
-            tstFile$ = lastTileset$
+        If configfile.lastTileset$ <> "" Then
+            tstFile$ = configfile.lastTileset$
             tilesetform.Show vbModal ', me
             Call changeSelectedTile(setFilename)
         End If

@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
 Begin VB.Form tiletexturize 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Texturize"
@@ -73,8 +73,10 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '========================================================================
+
 Option Explicit
-Dim x, y As Integer
+
+Private X As Integer, Y As Integer
 
 '========================================================================
 ' sldTexturize_Scroll
@@ -100,13 +102,13 @@ End Sub
 Private Sub chkPreview_Click()
     'If they uncheck it, we should turn the tile back to how it was at the start
     If chkPreview.value = 0 Then
-        For x = 1 To xrange
-            For y = 1 To 32
-                If tilemem(x, y) <> -1 Then
-                    tilemem(x, y) = tilepreview(x, y)
+        For X = 1 To xRange
+            For Y = 1 To 32
+                If tileMem(X, Y) <> -1 Then
+                    tileMem(X, Y) = tilePreview(X, Y)
                 End If
-            Next y
-        Next x
+            Next Y
+        Next X
     activeTile.tileRedraw
     'If they check it, preview the tile!
     Else
@@ -130,7 +132,7 @@ Private Sub cmdOK_Click()
     End If
     
     'The user wants to save the changes
-    SaveChanges = True
+    saveChanges = True
     
     Unload Me
     Exit Sub
@@ -157,16 +159,16 @@ Private Sub Form_Activate()
     Call LocalizeForm(Me)
     
     'Used to store the current tile for when the "preview" function is used
-    For x = 1 To xrange
-        For y = 1 To 32
-            If tilemem(x, y) <> -1 Then
-                tilepreview(x, y) = tilemem(x, y)
+    For X = 1 To xRange
+        For Y = 1 To 32
+            If tileMem(X, Y) <> -1 Then
+                tilePreview(X, Y) = tileMem(X, Y)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
     'Set the variable to False at the start
-    SaveChanges = False
+    saveChanges = False
     
     Exit Sub
     
@@ -182,16 +184,16 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     'If the user has pressed the X in the form, he doesn't wants to add the changes
 
-    If Not SaveChanges Then
+    If Not saveChanges Then
     'Use new undo
-    Call activeTile.SetUndo
-    For x = 1 To xrange
-        For y = 1 To 32
-            If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+    Call activeTile.setUndo
+    For X = 1 To xRange
+        For Y = 1 To 32
+            If tileMem(X, Y) <> -1 Then
+                tileMem(X, Y) = tilePreview(X, Y)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     activeTile.tileRedraw
     End If
 End Sub
@@ -213,23 +215,23 @@ Sub Preview(level As Integer)
     End If
     
     'First we need to to set the tile back to how it was at the start
-    For x = 1 To xrange
-        For y = 1 To 32
-            If tilemem(x, y) <> -1 Then
-                tilemem(x, y) = tilepreview(x, y)
+    For X = 1 To xRange
+        For Y = 1 To 32
+            If tileMem(X, Y) <> -1 Then
+                tileMem(X, Y) = tilePreview(X, Y)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
 
     'Ok that's done, let's preview!
-    For x = 1 To xrange Step level
-        For y = 1 To 32 Step level
-            If tilemem(x, y) <> -1 Then
-                aa = tilemem(x, y)
+    For X = 1 To xRange Step level
+        For Y = 1 To 32 Step level
+            If tileMem(X, Y) <> -1 Then
+                aa = tileMem(X, Y)
                 redd = red(aa)
-                aa = tilemem(x, y)
+                aa = tileMem(X, Y)
                 greenn = green(aa)
-                aa = tilemem(x, y)
+                aa = tileMem(X, Y)
                 bluee = blue(aa)
                 sr = Int(Rnd(1) * 80) - 40
                 sg = Int(Rnd(1) * 60) - 30
@@ -243,10 +245,10 @@ Sub Preview(level As Integer)
                 If greenn < 0 Then greenn = 0
                 If bluee > 255 Then bluee = 255
                 If bluee < 0 Then bluee = 0
-                tilemem(x, y) = RGB(redd, greenn, bluee)
+                tileMem(X, Y) = RGB(redd, greenn, bluee)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     'Redraw
     Call activeTile.tileRedraw
 End Sub

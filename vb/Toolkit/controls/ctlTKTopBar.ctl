@@ -81,32 +81,22 @@ Private draggingWindow As Boolean
 'Properties'
 ''''''''''''
 
-Public Property Get Width()
- Width = TopBar.Width
+Public Property Get Width() As Long
+    Width = topBar.Width
 End Property
 
-Public Property Set Width(new_width)
- TopBar.Width = new_width
- UserControl.Width = new_width
- resizeMe
+Public Property Let Width(ByVal new_width As Long)
+    topBar.Width = new_width
+    UserControl.Width = new_width
+    Call resizeMe
 End Property
 
-Public Property Let Width(new_width)
- TopBar.Width = new_width
- UserControl.Width = new_width
- resizeMe
+Public Property Get Caption() As String
+    Caption = Label1.Caption
 End Property
 
-Public Property Get Caption()
- Caption = Label1.Caption
-End Property
-
-Public Property Set Caption(new_caption)
- Label1.Caption = new_caption
-End Property
-
-Public Property Let Caption(new_caption)
- Label1.Caption = new_caption
+Public Property Let Caption(ByVal new_caption As String)
+    Label1.Caption = new_caption
 End Property
 
 '''''''''
@@ -122,14 +112,14 @@ Private Sub UserControl_Initialize()
  Call GFXBitBltTransparent(CloseX.hdc, 0, 0, 10, 10, frmCommonImages.picNewX.hdc, 0, 0, 0, 255, 0)
  CloseX.Width = 310
  CloseX.height = 300
- TopBar.Picture = Images.Corner
+ topBar.Picture = Images.Corner
  resizeMe
  CloseX.MouseIcon = Images.MouseLink
 End Sub
 
 Public Sub resizeMe()
  UserControl.Width = Me.Width
- TopBar.Width = Me.Width
+ topBar.Width = Me.Width
  'Corner.Left = TopBar.Width - Corner.Width
 End Sub
 
@@ -144,7 +134,7 @@ End Sub
 
 Private Sub UserControl_Resize()
  UserControl.height = 480
- TopBar.Width = UserControl.Width
+ topBar.Width = UserControl.Width
  resizeMe
 End Sub
 
@@ -161,43 +151,43 @@ End Sub
 
 'First, make actions that are part of the window drag work...
 
-Private Sub Corner_Mouseup(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Corner_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub Label1_Mouseup(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Label1_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub TopBar_Mouseup(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub TopBar_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub Corner_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
- mouseDownEvent button, x, y
+Private Sub Corner_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseDownEvent button, X, Y
 End Sub
 
-Private Sub Label1_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
- mouseDownEvent button, x, y
+Private Sub Label1_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseDownEvent button, X, Y
 End Sub
 
-Private Sub TopBar_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
- mouseDownEvent button, x, y
+Private Sub TopBar_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseDownEvent button, X, Y
 End Sub
 
-Private Sub Corner_Mousemove(button As Integer, Shift As Integer, x As Single, y As Single)
- mouseMoveEvent x, y
+Private Sub Corner_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseMoveEvent X, Y
 End Sub
 
-Private Sub Label1_Mousemove(button As Integer, Shift As Integer, x As Single, y As Single)
- mouseMoveEvent x, y
+Private Sub Label1_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseMoveEvent X, Y
 End Sub
 
-Private Sub TopBar_Mousemove(button As Integer, Shift As Integer, x As Single, y As Single)
- mouseMoveEvent x, y
+Private Sub TopBar_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseMoveEvent X, Y
 End Sub
 
-Private Sub mouseDownEvent(ByVal button As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub mouseDownEvent(ByVal button As Integer, ByVal X As Single, ByVal Y As Single)
 
 End Sub
 
@@ -205,6 +195,6 @@ Private Sub mouseUpEvent()
 
 End Sub
 
-Private Sub mouseMoveEvent(ByVal x As Single, ByVal y As Single)
+Private Sub mouseMoveEvent(ByVal X As Single, ByVal Y As Single)
 
 End Sub

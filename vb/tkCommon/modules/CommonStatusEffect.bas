@@ -30,54 +30,10 @@ Type statusEffectDoc
     theData As TKStatusEffect
 End Type
 
-'array of statusEffects used in the MDI children
-Public statusEffectList() As statusEffectDoc
-Public statusEffectListOccupied() As Boolean
-
 Public Type FighterStatus
     statusFile As String
     roundsLeft As Long
 End Type
-
-Sub VectStatusEffectKillSlot(ByVal idx As Long)
-    On Error Resume Next
-    'free up memory in the ste list vector
-    statusEffectListOccupied(idx) = False
-End Sub
-
-Function VectStatusEffectNewSlot() As Long
-    On Error GoTo vecterr
-       
-    'test size of array
-    Dim test As Long, t As Long, oldSize As Long, newSize As Long
-    test = UBound(statusEffectList)
-    
-    'find a new slot in the list of boards and return an index we can use
-    For t = 0 To UBound(statusEffectList)
-        If statusEffectListOccupied(t) = False Then
-            statusEffectListOccupied(t) = True
-            VectStatusEffectNewSlot = t
-            Exit Function
-        End If
-    Next t
-    
-    'must resize the vector...
-    oldSize = UBound(statusEffectList)
-    newSize = UBound(statusEffectList) * 2
-    ReDim Preserve statusEffectList(newSize)
-    ReDim Preserve statusEffectListOccupied(newSize)
-    
-    statusEffectListOccupied(oldSize + 1) = True
-    VectStatusEffectNewSlot = oldSize + 1
-    
-    Exit Function
-
-vecterr:
-    ReDim statusEffectList(1)
-    ReDim statusEffectListOccupied(1)
-    Resume Next
-    
-End Function
 
 Sub openStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
     'open status effect file
@@ -88,7 +44,9 @@ Sub openStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
     Call StatusClear(theEffect)
     file$ = PakLocate(file$)
     
-    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
+    #If isToolkit = 1 Then
+        statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
+    #End If
     
     Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long
     num = FreeFile
@@ -162,7 +120,9 @@ Sub saveStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
     num = FreeFile
     If file = "" Then Exit Sub
     
-    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
+    #If isToolkit = 1 Then
+        statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
+    #End If
     
     Kill file
     Open file$ For Binary As #num

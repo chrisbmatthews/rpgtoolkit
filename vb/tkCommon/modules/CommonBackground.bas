@@ -26,11 +26,6 @@ Type bkgDoc
     theData As TKBackground
 End Type
 
-'array used in the MDI children
-Public bkgList() As bkgDoc
-Public bkgListOccupied() As Boolean
-
-
 Sub BackgroundClear(ByRef theBkg As TKBackground)
     'clear fight background
     On Error Resume Next
@@ -43,15 +38,14 @@ Sub BackgroundClear(ByRef theBkg As TKBackground)
     theBkg.bkgCantDoWav = ""
 End Sub
 
-
-Sub DrawBackground(ByRef theBkg As TKBackground, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long, ByVal hdc As Long)
+Sub DrawBackground(ByRef theBkg As TKBackground, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal height As Long, ByVal hdc As Long)
     On Error Resume Next
     'draw the fight background
     Dim file As String
     file = projectPath$ + bmpPath$ + theBkg.image
     file = PakLocate(file)
     If fileExists(file) Then
-        Call DrawSizedImage(file, x, y, Width, height, hdc)
+        Call DrawSizedImage(file, X, Y, Width, height, hdc)
     End If
 End Sub
 
@@ -62,7 +56,9 @@ Sub saveBackground(ByVal file As String, ByRef theBkg As TKBackground)
     num = FreeFile
     If file$ = "" Then Exit Sub
     
-    bkgList(activeBkgIndex).needUpdate = False
+    #If isToolkit = 1 Then
+        bkgList(activeBkgIndex).needUpdate = False
+    #End If
 
     Call Kill(file)
     
@@ -88,7 +84,9 @@ Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
     
     num = FreeFile
     If file$ = "" Then Exit Sub
-    bkgList(activeBkgIndex).needUpdate = False
+    #If isToolkit = 1 Then
+        bkgList(activeBkgIndex).needUpdate = False
+    #End If
     
     Call BackgroundClear(theBkg)
     
@@ -123,7 +121,7 @@ Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
 ver2bkg:
     'open background (ver 2)
         
-    Dim x As Long, y As Long, user As Long
+    Dim X As Long, Y As Long, user As Long
     
     Dim tbm As TKTileBitmap
     Call TileBitmapClear(tbm)
@@ -141,11 +139,11 @@ ver2bkg:
             user = MsgBox("This Background was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
-        For x = 1 To 19
-            For y = 1 To 11
-                tbm.tiles(x - 1, y - 1) = fread(num)
-            Next y
-        Next x
+        For X = 1 To 19
+            For Y = 1 To 11
+                tbm.tiles(X - 1, Y - 1) = fread(num)
+            Next Y
+        Next X
         theBkg.bkgMusic = fread(num)
         theBkg.bkgSelWav = fread(num)
         theBkg.bkgChooseWav = fread(num)
@@ -153,61 +151,18 @@ ver2bkg:
         theBkg.bkgCantDoWav = fread(num)
         Call fread(num) 'dummy
         
-        For x = 1 To 19
-            For y = 1 To 11
-                tbm.redS(x - 1, y - 1) = fread(num)
-                tbm.greenS(x - 1, y - 1) = fread(num)
-                tbm.blueS(x - 1, y - 1) = fread(num)
-            Next y
-        Next x
+        For X = 1 To 19
+            For Y = 1 To 11
+                tbm.redS(X - 1, Y - 1) = fread(num)
+                tbm.greenS(X - 1, Y - 1) = fread(num)
+                tbm.blueS(X - 1, Y - 1) = fread(num)
+            Next Y
+        Next X
     
         Dim tbmName As String
-        tbmName$ = Replace(RemovePath(file$), ".", "_") + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + ".tbm"
         theBkg.image = tbmName
         tbmName$ = projectPath$ + bmpPath$ + tbmName$
         Call SaveTileBitmap(tbmName, tbm)
     Close #num
 End Sub
-
-
-Sub VectBackgroundKillSlot(ByVal idx As Long)
-    On Error Resume Next
-    'free up memory in the ste list vector
-    bkgListOccupied(idx) = False
-End Sub
-
-Function VectBackgroundNewSlot() As Long
-    On Error GoTo vecterr
-       
-    'test size of array
-    Dim test As Long
-    Dim oldSize As Long, newSize As Long, t As Long
-    test = UBound(bkgList)
-    
-    'find a new slot in the list of boards and return an index we can use
-    For t = 0 To UBound(bkgList)
-        If bkgListOccupied(t) = False Then
-            bkgListOccupied(t) = True
-            VectBackgroundNewSlot = t
-            Exit Function
-        End If
-    Next t
-    
-    'must resize the vector...
-    oldSize = UBound(bkgList)
-    newSize = UBound(bkgList) * 2
-    ReDim Preserve bkgList(newSize)
-    ReDim Preserve bkgListOccupied(newSize)
-    
-    bkgListOccupied(oldSize + 1) = True
-    VectBackgroundNewSlot = oldSize + 1
-    
-    Exit Function
-
-vecterr:
-    ReDim bkgList(1)
-    ReDim bkgListOccupied(1)
-    Resume Next
-    
-End Function
-

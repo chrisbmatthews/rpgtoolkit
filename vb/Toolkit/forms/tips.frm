@@ -123,48 +123,48 @@ Option Explicit
 Private Sub Check1_Click()
     On Error Resume Next
     If Check1.value = 1 Then
-        tipsOnOff = 0
+        configfile.tipsOnOff = 0
     Else
-        tipsOnOff = 1
+        configfile.tipsOnOff = 1
     End If
-    Call saveConfig("toolkit.cfg")
+    Call configfile.saveConfig("toolkit.cfg")
 End Sub
 
 Private Sub Command1_Click()
     On Error Resume Next
-    tipNum = tipNum + 1
+    configfile.tipNum = configfile.tipNum + 1
     Dim maxTip As Long
-    maxTip = getTipCount(helppath & ObtainCaptionFromTag(DB_TipFile, resourcePath & m_LangFile))
-    If tipNum > maxTip Then tipNum = 1
+    maxTip = getTipCount(helpPath & ObtainCaptionFromTag(DB_tipFile, resourcePath & m_LangFile))
+    If configfile.tipNum > maxTip Then configfile.tipNum = 1
     Dim cTip As String
-    cTip = getTipNum(helppath & ObtainCaptionFromTag(DB_TipFile, resourcePath & m_LangFile), tipNum)
+    cTip = getTipNum(helpPath & ObtainCaptionFromTag(DB_tipFile, resourcePath & m_LangFile), configfile.tipNum)
     Label2.Caption = cTip
-    Call saveConfig("toolkit.cfg")
+    Call configfile.saveConfig("toolkit.cfg")
 End Sub
 
 Private Sub Command2_Click()
-    tipNum = tipNum + 1
+    configfile.tipNum = configfile.tipNum + 1
     Call Unload(Me)
 End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
-    If tipsOnOff = 1 Then
+    If configfile.tipsOnOff = 1 Then
         Check1.value = 0
     Else
         Check1.value = 1
     End If
     Dim maxTip As Long
-    maxTip = getTipCount(helppath & ObtainCaptionFromTag(DB_TipFile, resourcePath & m_LangFile))
-    If tipNum > maxTip Then tipNum = 1
+    maxTip = getTipCount(helpPath & ObtainCaptionFromTag(DB_tipFile, resourcePath & m_LangFile))
+    If configfile.tipNum > maxTip Then configfile.tipNum = 1
     Dim cTip As String
-    cTip = getTipNum(helppath & ObtainCaptionFromTag(DB_TipFile, resourcePath & m_LangFile), tipNum)
+    cTip = getTipNum(helpPath & ObtainCaptionFromTag(DB_tipFile, resourcePath & m_LangFile), configfile.tipNum)
     Label2.Caption = cTip
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
-    tipNum = tipNum + 1
-    Call saveConfig("toolkit.cfg")
+    configfile.tipNum = configfile.tipNum + 1
+    Call configfile.saveConfig("toolkit.cfg")
     Call Unload(Me)
 End Sub

@@ -185,16 +185,16 @@ Private Sub Command1_Click()
         mainMem.gameTitle$ = gamett.Text             'title of game
         mainoption.Caption = "RPG Toolkit Development System, Version 2.2 (" + gamett.Text + ")"
         tt$ = gamett.Text
-        tt$ = Replace(tt$, "\", "")
-        tt$ = Replace(tt$, "/", "")
-        tt$ = Replace(tt$, ":", "")
-        tt$ = Replace(tt$, " ", "")
-        tt$ = Replace(tt$, ".", "")
+        tt$ = replace(tt$, "\", "")
+        tt$ = replace(tt$, "/", "")
+        tt$ = replace(tt$, ":", "")
+        tt$ = replace(tt$, " ", "")
+        tt$ = replace(tt$, ".", "")
         tt$ = tt$ + ".gam"
         mainMem.mainScreenType = 1
         Call saveMain(gamPath$ + tt$, mainMem)
         mainfile$ = tt$
-        lastProject$ = mainfile$
+        configfile.lastProject$ = mainfile$
         Call CopyDir(gamePath$ + "Basic\" + fontPath$, projectPath$ + fontPath$)
         If Check1.value = 1 Then
             'copy default files
@@ -242,11 +242,11 @@ End Sub
 Private Sub gamett_Change()
     On Error GoTo ErrorHandler
     tt$ = gamett.Text
-    tt$ = Replace(tt$, "\", "")
-    tt$ = Replace(tt$, "/", "")
-    tt$ = Replace(tt$, ":", "")
-    tt$ = Replace(tt$, " ", "")
-    tt$ = Replace(tt$, ".", "")
+    tt$ = replace(tt$, "\", "")
+    tt$ = replace(tt$, "/", "")
+    tt$ = replace(tt$, ":", "")
+    tt$ = replace(tt$, " ", "")
+    tt$ = replace(tt$, ".", "")
     folder.Text = gamePath$ + tt$ + "\"
 
     Exit Sub

@@ -77,46 +77,42 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'=========================================================================
 'All contents copyright 2004, Colin James Fitzpatrick
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'Portable bold/italic/underline chooser
+'=========================================================================
+' Portable bold/italic/underline chooser
+'=========================================================================
 
 Option Explicit
 
 Public Property Get Bold() As Boolean
     Bold = integerToBoolean(chkBold.value)
 End Property
-
 Public Property Let Bold(ByVal bol As Boolean)
-    chkBold.value = CInt(BooleanToLong(bol))
+    chkBold.value = CInt(booleanToLong(bol))
 End Property
-
 Public Property Get Italics() As Boolean
     Italics = integerToBoolean(chkItalics.value)
 End Property
-
 Public Property Let Italics(ByVal bol As Boolean)
-    chkItalics.value = CInt(BooleanToLong(bol))
+    chkItalics.value = CInt(booleanToLong(bol))
 End Property
-
 Public Property Get Underline() As Boolean
     Underline = integerToBoolean(chkUnderline.value)
 End Property
-
 Public Property Let Underline(ByVal bol As Boolean)
-    chkUnderline.value = CInt(BooleanToLong(bol))
+    chkUnderline.value = CInt(booleanToLong(bol))
 End Property
-
 Private Sub chkBold_Click()
     Bold = Not Bold
 End Sub
-
 Private Sub chkItalics_Click()
     Italics = Not Italics
 End Sub
-
 Private Sub chkUnderline_Click()
     Underline = Not Underline
 End Sub

@@ -85,7 +85,7 @@ Option Explicit
 'Events'
 ''''''''
 
-Event mouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Event mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
 
 ''''''''''''''''''
 'Public Variables'
@@ -103,32 +103,22 @@ Private draggingWindow As Boolean
 'Properties'
 ''''''''''''
 
-Public Property Get Width()
- Width = TopBar.Width
+Public Property Get Width() As Long
+    Width = TopBar.Width
 End Property
 
-Public Property Set Width(new_width)
- TopBar.Width = new_width
- UserControl.Width = new_width
- resizeMe
+Public Property Let Width(ByVal new_width As Long)
+    TopBar.Width = new_width
+    UserControl.Width = new_width
+    Call resizeMe
 End Property
 
-Public Property Let Width(new_width)
- TopBar.Width = new_width
- UserControl.Width = new_width
- resizeMe
+Public Property Get Caption() As String
+    Caption = Label1.Caption
 End Property
 
-Public Property Get Caption()
- Caption = Label1.Caption
-End Property
-
-Public Property Set Caption(new_caption)
- Label1.Caption = new_caption
-End Property
-
-Public Property Let Caption(new_caption)
- Label1.Caption = new_caption
+Public Property Let Caption(ByVal new_caption As String)
+    Label1.Caption = new_caption
 End Property
 
 '''''''''
@@ -180,20 +170,20 @@ End Sub
 
 'First, make actions that are part of the window drag work...
 
-Private Sub Corner_Mouseup(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Corner_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub Label1_Mouseup(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Label1_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub TopBar_Mouseup(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TopBar_Mouseup(button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseUpEvent
 End Sub
 
-Private Sub Corner_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseDownEvent Button, X, Y
+Private Sub Corner_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseDownEvent button, X, Y
 End Sub
 
 Private Sub Label1_dblClick()
@@ -201,23 +191,23 @@ Private Sub Label1_dblClick()
  RaiseEvent mouseDown(1, 1, 1, 1)
 End Sub
 
-Private Sub TopBar_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
- mouseDownEvent Button, X, Y
+Private Sub TopBar_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+ mouseDownEvent button, X, Y
 End Sub
 
-Private Sub Corner_Mousemove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Corner_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseMoveEvent X, Y
 End Sub
 
-Private Sub Label1_Mousemove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Label1_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseMoveEvent X, Y
 End Sub
 
-Private Sub TopBar_Mousemove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TopBar_Mousemove(button As Integer, Shift As Integer, X As Single, Y As Single)
  mouseMoveEvent X, Y
 End Sub
 
-Private Sub mouseDownEvent(ByVal Button As Integer, ByVal X As Single, _
+Private Sub mouseDownEvent(ByVal button As Integer, ByVal X As Single, _
  ByVal Y As Single)
 
  'Only the left button can drag the window...

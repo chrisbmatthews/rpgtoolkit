@@ -350,7 +350,7 @@ Sub infofill()
     Call vbPicFillRect(tkMainForm.tilebmpColor, 0, 0, 1000, 1000, RGB(tileBmpList(activeTileBmpIndex).ambientR, tileBmpList(activeTileBmpIndex).ambientG, tileBmpList(activeTileBmpIndex).ambientB))
     
     If tileBmpList(activeTileBmpIndex).selectedTile <> "" Then
-        Call drawtile(vbPicHDC(tkMainForm.tileBmpSelectedTile), tilePath$ + tileBmpList(activeTileBmpIndex).selectedTile, 1, 1, 0, 0, 0, False)
+        Call drawTile(vbPicHDC(tkMainForm.tileBmpSelectedTile), tilePath$ + tileBmpList(activeTileBmpIndex).selectedTile, 1, 1, 0, 0, 0, False)
         Call vbPicRefresh(tkMainForm.tileBmpSelectedTile)
         tkMainForm.tilebmpCurrentTile.Caption = tileBmpList(activeTileBmpIndex).selectedTile$
     Else
@@ -480,7 +480,7 @@ Public Sub tilebmpSelectTile()
         
         FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
         tstFile$ = antiPath$
-        lastTileset$ = tstFile$
+        configfile.lastTileset$ = tstFile$
         tilesetform.Show vbModal ', me
         
         'MsgBox setFilename$
@@ -552,7 +552,7 @@ Private Sub arena_MouseDown(button As Integer, Shift As Integer, X As Single, Y 
         Case 0:
             'draw lock
             If tileBmpList(activeTileBmpIndex).selectedTile <> "" Then
-                Call drawtile(vbPicHDC(arena), _
+                Call drawTile(vbPicHDC(arena), _
                                 tilePath$ + tileBmpList(activeTileBmpIndex).selectedTile, _
                                 x2 + 1, _
                                 y2 + 1, _

@@ -61,42 +61,15 @@ Option Explicit
     Public oldpath As String     'old path in file explorer.
 
     'config options
-    Public tipsOnOff As Integer            'tip window on/off (0=off, 1=on)
-    Public tipFile As String              'tipfilename
-    Public tipNum As Long               'current tip number
-    Public commandsDocked As Integer       'command buttons docked (hidden) 0=no, 1=yes
-    Public filesDocked As Integer         'file dialog docked?
-    Public lastProject As String         'last project opened.
-    Public wallpaper As String           'wallpaper file
-    Public quickEnabled(4) As Integer   'quick launch enabled 1-yes, 0-no
-    Public quickTarget(4) As String      'quick launch targets
-    Public quickIcon(4) As String        'quick launch icons
-    Public tutCurrentLesson As Integer  'current tuorial lesson (0=never run)
-    Public gTranspColor As Long 'not used
+    Public configfile As New clsConfig
 
+    Public gTranspColor As Long 'not used
     Public topX As Long
     Public topY As Long
     Public fontName As String
     Public screenWidth As Long, screenHeight As Long
 
-    'Form types
-    Public Const FT_BOARD = 11
-    Public Const FT_ANIMATION = 12
-    Public Const FT_CHARACTER = 13
-    Public Const FT_BACKGROUND = 14
-    Public Const FT_ENEMY = 15
-    Public Const FT_ITEM = 16
-    Public Const FT_MAINFILE = 17
-    Public Const FT_SM = 18
-    Public Const FT_STATUS = 19
-    Public Const FT_TILEBITMAP = 20
-    Public Const FT_RPGCODE = 21
-    Public Const FT_TILEANIM = 22
-    Public Const FT_TILE = 23
-    Public Const FT_GRAB = 24
-
     'Misc
-    Public activeForm As Form   'the top most window
     Public askedAboutProject As Boolean            'have you already asked about the project existing?
     Public needsReColor As Boolean
     Public programEditorCount As Long
@@ -104,21 +77,7 @@ Option Explicit
     Public Images As New clsImages
     Public lockIndice As Long
     Public useLockIndice As Boolean
-    
-    'Active forms
-    Public activeTileBmp As editTileBitmap     'active mdi child form
-    Public activeTileAnm As tileanim     'active mdi child form
-    Public activeAnimation As animationeditor
-    Public activeStatusEffect As editstatus     'active mdi child form
-    Public activeBackground As editBackground     'active mdi child form
-    Public activeSpecialMove As editsm     'active mdi child form
-    Public activeEnemy As editenemy     'active mdi child form
-    Public activeRPGCode As rpgcodeedit 'active mdi child form
-    Public activeItem As EditItem     'active mdi child form
-    Public activePlayer As characteredit     'active mdi child form
-    Public activeBoard As boardedit     'active mdi child form
-    Public activeTile As tileedit
-    
+      
     'Form indexes
     Public activeRPGCodeIndex As Long   'index for active rpgcode
     
@@ -127,9 +86,6 @@ Option Explicit
 '=======================================================
 'Common globals
 '=======================================================
-
-'Last opened tileset
-Public lastTileset As String
 
 'Misc variables
 Public currentDir As String                    'Current directory
@@ -162,38 +118,15 @@ Public Const miscPath = "Misc\"                'misc file path
 Public Const resourcePath = "Resources\"       'resource file path
 Public Const plugPath = "Plugin\"              'plugin path
 
-'Tile Editor
 Public bufTile(64, 32) As Long
-
-'tile bitmap editor
-Public activeTileBmpIndex As Long     'index for active tile bitmap
-
-'board editor
-Public activeBoardIndex As Long     'index for active board
-
-'Character Editor
-Public activePlayerIndex As Long     'index for active board
-
-'Item Editor
-Public activeItemIndex As Long     'index for active item
-
-'Main File editor
-Public mainMem As TKMain    'main file
-
-'enemy editor
-Public activeEnemyIndex As Long     'index for active enemy
-
-'Special move editor
-Public activeSpecialMoveIndex As Long     'index for active special move
-
-'Background editor
-Public activeBkgIndex As Long     'index for active bkg
-
-'status effect editor
-Public activeStatusEffectIndex As Long     'index for active status effect
-
-'animation editor
-Public activeAnimationIndex As Long
-
-'animated tile editor
-Public activeTileAnmIndex As Long     'index for active tile anm
+Public activeTileBmpIndex As Long              'index for active tile bitmap
+Public activeBoardIndex As Long                'index for active board
+Public activePlayerIndex As Long               'index for active board
+Public activeItemIndex As Long                 'index for active item
+Public mainMem As TKMain                       'main file
+Public activeEnemyIndex As Long                'index for active enemy
+Public activeSpecialMoveIndex As Long          'index for active special move
+Public activeBkgIndex As Long                  'index for active bkg
+Public activeStatusEffectIndex As Long         'index for active status effect
+Public activeAnimationIndex As Long            'index for active animation
+Public activeTileAnmIndex As Long              'index for active tile anm

@@ -136,10 +136,10 @@ Sub fillQuick(num)
 On Error Resume Next
     
     'num-th quick launch item
-    qltarget.text = quickTarget(num)
-    qlenabled.value = quickEnabled(num)
-    If FileExists(quickIcon$(num)) Then
-        qlicon.Picture = LoadPicture(quickIcon$(num))
+    qltarget.Text = configfile.quickTarget(num)
+    qlenabled.value = configfile.quickEnabled(num)
+    If fileExists(configfile.quickIcon$(num)) Then
+        qlicon.Picture = LoadPicture(configfile.quickIcon$(num))
     Else
         qlicon.Picture = LoadPicture("")
     End If
@@ -149,11 +149,11 @@ End Sub
 Sub ShowPic()
     'loads a file into a picture box and resizes it.
 On Error Resume Next
-    If FileExists(resourcePath$ + wallpaper$) Then
-        f$ = resourcePath$ + wallpaper$
+    If fileExists(resourcePath$ + configfile.wallpaper$) Then
+        f$ = resourcePath$ + configfile.wallpaper$
     Else
-        If FileExists(wallpaper$) Then
-            f$ = wallpaper$
+        If fileExists(configfile.wallpaper$) Then
+            f$ = configfile.wallpaper$
         Else
             f$ = ""
         End If
@@ -164,50 +164,48 @@ On Error Resume Next
         'mainoption.PicClip1.ClipY = 0
         'mainoption.PicClip1.ClipHeight = mainoption.PicClip1.height
         'mainoption.PicClip1.ClipWidth = mainoption.PicClip1.width
-        'mainoption.PicClip1.StretchX = wallpaperthumb.width / Screen.TwipsPerPixelX
-        'mainoption.PicClip1.StretchY = wallpaperthumb.height / Screen.TwipsPerPixelY
-        'wallpaperthumb.Picture = mainoption.PicClip1.Clip
-        Call DrawSizedImage(f$, 0, 0, wallpaperthumb.width / Screen.TwipsPerPixelX, wallpaperthumb.height / Screen.TwipsPerPixelY, vbPicHDC(wallpaperthumb))
+        'mainoption.PicClip1.StretchX = configfile.wallpaperthumb.width / Screen.TwipsPerPixelX
+        'mainoption.PicClip1.StretchY = configfile.wallpaperthumb.height / Screen.TwipsPerPixelY
+        'configfile.wallpaperthumb.Picture = mainoption.PicClip1.Clip
+        Call DrawSizedImage(f$, 0, 0, wallpaperthumb.Width / Screen.TwipsPerPixelX, wallpaperthumb.height / Screen.TwipsPerPixelY, vbPicHDC(wallpaperthumb))
         Call vbPicRefresh(wallpaperthumb)
     Else
     End If
 End Sub
 
-
-
 Sub infofill()
     'fill in info for this form
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
-    'wallpaper infofill...
+    'configfile.wallpaper infofill...
     Call ShowPic
-    wallpath.caption = wallpaper$
+    wallpath.Caption = configfile.wallpaper$
     
     'quicklaunch
     Combo1.Clear
     For t = 0 To 4
         Combo1.AddItem ("Button" + str$(t))
     Next t
-    Combo1.text = "Button 0"
+    Combo1.Text = "Button 0"
     Call fillQuick(0)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Combo1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     i = Combo1.ListIndex
     If i = -1 Then i = 0
     Call fillQuick(i)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -215,7 +213,7 @@ End Sub
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = resourcePath$
     dlg.strTitle = "Select Image"
@@ -227,18 +225,18 @@ Private Sub Command1_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    wallpaper$ = filename$(1)
-    wallpath.caption = wallpaper$
+    configfile.wallpaper$ = filename$(1)
+    wallpath.Caption = configfile.wallpaper$
     Call ShowPic
-    Call tkMainForm.ShowPic(wallpaper$)
+    Call tkMainForm.ShowPic(configfile.wallpaper$)
 End Sub
 
 
 Private Sub Command2_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strTitle = "Select Target"
     dlg.strDefaultExt = "exe"
@@ -247,48 +245,48 @@ Private Sub Command2_Click()
         filename$(1) = dlg.strSelectedFile
         antiPath$ = dlg.strSelectedFileNoPath
     Else
-        ChDir (currentdir$)
+        ChDir (currentDir$)
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     i = Combo1.ListIndex
     If i = -1 Then i = 0
-    quickTarget(i) = filename$(1)
-    qltarget.text = quickTarget(i)
+    configfile.quickTarget(i) = filename$(1)
+    qltarget.Text = configfile.quickTarget(i)
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Call infofill
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub qlenabled_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     i = Combo1.ListIndex
     If i = -1 Then i = 0
-    quickEnabled(i) = qlenabled.value
+    configfile.quickEnabled(i) = qlenabled.value
     Call mainoption.fillQuick
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub qlicon_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = resourcePath$
     dlg.strTitle = "Select Image"
@@ -300,12 +298,12 @@ Private Sub qlicon_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     i = Combo1.ListIndex
     If i = -1 Then i = 0
-    quickIcon$(i) = filename$(1)
-    qlicon.Picture = LoadPicture(quickIcon$(i))
+    configfile.quickIcon$(i) = filename$(1)
+    qlicon.Picture = LoadPicture(configfile.quickIcon$(i))
     Call mainoption.fillQuick
 End Sub
 
@@ -313,6 +311,6 @@ Private Sub qltarget_Change()
     On Error Resume Next
     i = Combo1.ListIndex
     If i = -1 Then i = 0
-    quickTarget(i) = qltarget.text
+    configfile.quickTarget(i) = qltarget.Text
 End Sub
 

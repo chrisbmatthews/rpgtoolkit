@@ -2470,7 +2470,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "3:52 PM"
+            TextSave        =   "6:48 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2740,13 +2740,13 @@ Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On Error Re
     Dim iMetric As Integer
     Dim tilesWide As Long, tilesHigh As Long
     
-    If lastTileset$ = "" Then Exit Sub
+    If configfile.lastTileset$ = "" Then Exit Sub
     If tstnum = 0 Then tstnum = 1
     
     Call vbPicAutoRedraw(currentTilesetForm, autoRefresh)
     
     'Added: Check the tileset type. Required for GFXdrawTstWindow!!
-    If UCase$(GetExt(lastTileset$)) = "ISO" Then iMetric = 2
+    If UCase$(GetExt(configfile.lastTileset$)) = "ISO" Then iMetric = 2
     
     
     Call GFXInitScreen(640, 480)
@@ -2762,7 +2762,7 @@ Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On Error Re
     
     'This export requires iMetric = 2 for .iso tiles!!
     'tstnum is the tile to start drawing at.
-    Call GFXdrawTstWindow(projectPath$ + tilePath$ + lastTileset$, vbPicHDC(currentTilesetForm), tstnum, tilesWide, tilesHigh, iMetric)
+    Call GFXdrawTstWindow(projectPath$ + tilePath$ + configfile.lastTileset$, vbPicHDC(currentTilesetForm), tstnum, tilesWide, tilesHigh, iMetric)
     
     If autoRefresh Then
         Call vbPicRefresh(currentTilesetForm)
@@ -2792,13 +2792,13 @@ Private Sub fillTilesetBar(): On Error Resume Next
     Call vbPicAutoRedraw(currentTilesetForm, False)
     currentTilesetForm.Picture = LoadPicture("")
     
-    If lastTileset$ <> "" Then
+    If configfile.lastTileset$ <> "" Then
     
-        setType = tilesetInfo(projectPath$ + tilePath$ + lastTileset$)
+        setType = tilesetInfo(projectPath$ + tilePath$ + configfile.lastTileset$)
         If setType = TSTTYPE Or setType = ISOTYPE Then
             'tilesetInfo now returns 2 for isometric tilesets. Set type constants introduced.
             
-            currentTilesetInfo.Caption = LoadStringLoc(2035, "Tileset") + " " + lastTileset + LoadStringLoc(2036, ": Contains") + str$(tileset.tilesInSet) + " Tiles"
+            currentTilesetInfo.Caption = LoadStringLoc(2035, "Tileset") + " " + configfile.lastTileset + LoadStringLoc(2036, ": Contains") + str$(tileset.tilesInSet) + " Tiles"
     
             'Set the scroller depending on the tileset type.
             If setType = ISOTYPE Then
@@ -3215,11 +3215,11 @@ Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, X 
     Dim iMetric As Integer, tileNumber As Integer
     Dim tilesWide As Integer, tilesHigh As Integer, tileX As Integer, tileY As Integer
     
-    If lastTileset$ = "" Then Exit Sub
+    If configfile.lastTileset$ = "" Then Exit Sub
     
-    'Added:If the current tilset (lastTileset$) is isometric.
+    'Added:If the current tilset (configfile.lastTileset$) is isometric.
     'Same return as for getTileInfo on a .iso.
-    If UCase$(GetExt(lastTileset$)) = "ISO" Then iMetric = 2
+    If UCase$(GetExt(configfile.lastTileset$)) = "ISO" Then iMetric = 2
     
     'Determine the tile that has been clicked on by considering the
     'size of the form, the position of the scroller, and the type of
@@ -3563,7 +3563,6 @@ Private Sub MDIForm_Activate()
     Set NewBarTop.theForm = newBarContainerContainer
     tilesetContainer.height = Me.height - 50
     Call MDIForm_Resize
-    Call addCommonIcons(Me)
 End Sub
 
 Private Sub MDIForm_Load(): On Error Resume Next
@@ -3598,19 +3597,19 @@ Private Sub MDIForm_Load(): On Error Resume Next
         ChDir currentDir
     End If
     
-    If lastProject <> "" And Command = "" Then
-        Call traceString("Opening project..." + gamPath$ + lastProject$)
+    If configfile.lastProject <> "" And Command = "" Then
+        Call traceString("Opening project..." + gamPath$ + configfile.lastProject$)
         
-        Call openMainFile(gamPath$ + lastProject$)
+        Call openMainFile(gamPath$ + configfile.lastProject$)
         
-        Call traceString("Done opening project..." + gamPath$ + lastProject$)
-        mainfile$ = lastProject$
+        Call traceString("Done opening project..." + gamPath$ + configfile.lastProject$)
+        mainfile$ = configfile.lastProject$
         loadedMainFile = mainfile
-        tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" + lastProject$ + ")"
+        tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" + configfile.lastProject$ + ")"
         Call fillTree("", projectPath$)
     Else
-        loadedMainFile = lastProject
-        mainfile = lastProject
+        loadedMainFile = configfile.lastProject
+        mainfile = configfile.lastProject
     End If
     
 End Sub
@@ -3658,10 +3657,10 @@ Public Sub mnuOpenProject_Click(): On Error Resume Next
     FileCopy filename$(1), gamPath$ + antiPath$
     Call openMainFile(filename$(1))
     editmainfile.Show
-    lastProject$ = antiPath$
+    configfile.lastProject$ = antiPath$
     tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" + antiPath$ + ")"
     Call tkMainForm.fillTree("", projectPath$)
-    loadedMainFile = lastProject ' [KSNiloc]
+    loadedMainFile = configfile.lastProject ' [KSNiloc]
 End Sub
 
 Public Sub newanimationmnu_Click(): On Error Resume Next
@@ -4185,7 +4184,7 @@ Public Sub tileverticallymnu_Click(): On Error Resume Next
 End Sub
 
 Private Sub timerIconRefresh_Timer()
-    Call addCommonIcons(lastIconForm)
+    'Call addCommonIcons(lastIconForm)
 End Sub
 
 Public Sub toggle_Click(): On Error Resume Next
@@ -4242,7 +4241,7 @@ Sub refreshPic()
         
         Call CanvasBlt(cnvBkgImage, 0, 0, hdc)
     Else
-        'Call ShowPic(wallpaper)
+        'Call ShowPic(configfile.wallpaper)
     End If
     
 End Sub
@@ -4399,7 +4398,7 @@ Private Sub changedSelectedTileset_Click(): On Error Resume Next
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     
-    lastTileset$ = antiPath$                    'The current tileset, without path.
+    configfile.lastTileset$ = antiPath$                    'The current tileset, without path.
     tstFile$ = antiPath$
     tstnum = 0
     

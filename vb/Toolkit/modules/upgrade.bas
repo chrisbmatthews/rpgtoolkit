@@ -2,10 +2,10 @@ Attribute VB_Name = "upgrade"
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
-'
+
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 Function checkForArcPath() As Boolean
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     tt$ = Dir(path$ + "*.", vbDirectory)
     t = 0
     Do While tt$ <> ""
@@ -20,18 +20,18 @@ Function checkForArcPath() As Boolean
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 
-Sub CopyDir(source$, dest$)
+Sub CopyDir(Source$, dest$)
     'copies files in directory source$ into dest$
 On Error GoTo errcopy
-    f$ = Dir$(source$ + "*.*")
+    f$ = Dir$(Source$ + "*.*")
     Do While f$ <> ""
-        FileCopy source$ + f$, dest$ + f$
+        FileCopy Source$ + f$, dest$ + f$
         f$ = Dir$
     Loop
     Exit Sub
@@ -41,23 +41,23 @@ End Sub
 
 Sub DeleteOldFiles()
     'deletes files in old directory structure...
-    On Error GoTo errorhandler
-    Call KillDir(tilepath$)
-    Call KillDir(brdpath$)
-    Call KillDir(tempath$)
-    Call KillDir(spcpath$)
-    Call KillDir(bkgpath$)
-    Call KillDir(mediapath$)
-    Call KillDir(prgpath$)
-    Call KillDir(fontpath$)
-    Call KillDir(itmpath$)
-    Call KillDir(enepath$)
-    Call KillDir(bmppath$)
+    On Error GoTo ErrorHandler
+    Call KillDir(tilePath$)
+    Call KillDir(brdPath$)
+    Call KillDir(temPath$)
+    Call KillDir(spcPath$)
+    Call KillDir(bkgPath$)
+    Call KillDir(mediaPath$)
+    Call KillDir(prgPath$)
+    Call KillDir(fontPath$)
+    Call KillDir(itmPath$)
+    Call KillDir(enePath$)
+    Call KillDir(bmpPath$)
     Call KillDir("Archives\")
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -83,45 +83,45 @@ On Error Resume Next
     MkDir (thepath$)
     Call makeFolders(thepath$)
     'now to propogate the files into the new folders...
-    upgradeform.status.caption = "Upgrading " + tilepath$
+    upgradeform.status.Caption = "Upgrading " + tilePath$
     DoEvents
-    Call CopyDir(tilepath$, thepath$ + tilepath$)
-    upgradeform.status.caption = "Upgrading " + brdpath$
+    Call CopyDir(tilePath$, thepath$ + tilePath$)
+    upgradeform.status.Caption = "Upgrading " + brdPath$
     DoEvents
-    Call CopyDir(brdpath$, thepath$ + brdpath$)
-    upgradeform.status.caption = "Upgrading " + tempath$
+    Call CopyDir(brdPath$, thepath$ + brdPath$)
+    upgradeform.status.Caption = "Upgrading " + temPath$
     DoEvents
-    Call CopyDir(tempath$, thepath$ + tempath$)
-    upgradeform.status.caption = "Upgrading " + spcpath$
+    Call CopyDir(temPath$, thepath$ + temPath$)
+    upgradeform.status.Caption = "Upgrading " + spcPath$
     DoEvents
-    Call CopyDir(spcpath$, thepath$ + spcpath$)
-    upgradeform.status.caption = "Upgrading " + bkgpath$
+    Call CopyDir(spcPath$, thepath$ + spcPath$)
+    upgradeform.status.Caption = "Upgrading " + bkgPath$
     DoEvents
-    Call CopyDir(bkgpath$, thepath$ + bkgpath$)
-    upgradeform.status.caption = "Upgrading " + mediapath$
+    Call CopyDir(bkgPath$, thepath$ + bkgPath$)
+    upgradeform.status.Caption = "Upgrading " + mediaPath$
     DoEvents
-    Call CopyDir(mediapath$, thepath$ + mediapath$)
-    upgradeform.status.caption = "Upgrading " + prgpath$
+    Call CopyDir(mediaPath$, thepath$ + mediaPath$)
+    upgradeform.status.Caption = "Upgrading " + prgPath$
     DoEvents
-    Call CopyDir(prgpath$, thepath$ + prgpath$)
-    upgradeform.status.caption = "Upgrading " + fontpath$
+    Call CopyDir(prgPath$, thepath$ + prgPath$)
+    upgradeform.status.Caption = "Upgrading " + fontPath$
     DoEvents
-    Call CopyDir(fontpath$, thepath$ + fontpath$)
-    upgradeform.status.caption = "Upgrading " + itmpath$
+    Call CopyDir(fontPath$, thepath$ + fontPath$)
+    upgradeform.status.Caption = "Upgrading " + itmPath$
     DoEvents
-    Call CopyDir(itmpath$, thepath$ + itmpath$)
-    upgradeform.status.caption = "Upgrading " + enepath$
+    Call CopyDir(itmPath$, thepath$ + itmPath$)
+    upgradeform.status.Caption = "Upgrading " + enePath$
     DoEvents
-    Call CopyDir(enepath$, thepath$ + enepath$)
-    upgradeform.status.caption = "Upgrading " + bmppath$
+    Call CopyDir(enePath$, thepath$ + enePath$)
+    upgradeform.status.Caption = "Upgrading " + bmpPath$
     DoEvents
-    Call CopyDir(bmppath$, thepath$ + bmppath$)
-    upgradeform.status.caption = ""
+    Call CopyDir(bmpPath$, thepath$ + bmpPath$)
+    upgradeform.status.Caption = ""
    
     'mainoption.fileTree1.setPath (thepath$)
     'mainoption.fileTree1.pathRefresh
 
-    oldpath$ = currentdir$ + "\" + projectPath$
+    oldpath$ = currentDir$ + "\" + projectPath$
     'mainoption.Dir1.path = currentdir$ + "\" + projectPath$
     Call mainoption.TreeView1.Nodes.Clear
     Call tkMainForm.fillTree("", projectPath$)

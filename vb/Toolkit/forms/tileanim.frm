@@ -397,7 +397,7 @@ Public Sub openFile(ByVal file As String)
     antiPath = absNoPath(file)
     Call FileCopy(filename(1), projectPath & tilePath & antiPath)
     Call openTileAnm(filename(1), tileAnmList(activeTileAnmIndex).theData)
-    Call infoFill
+    Call infofill
     tileAnmList(activeTileAnmIndex).animTileFile = antiPath
     Me.Caption = LoadStringLoc(1814, "Create Animated Tile") + "  (" + antiPath$ + ")"
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
@@ -421,7 +421,7 @@ Private Sub animateTileFrames()
     tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = t
 End Sub
 
-Private Sub fillFrameNum(ByVal frameNum As Long)
+Private Sub fillFrameNum(ByVal framenum As Long)
     On Error Resume Next
     Dim t As Long, mf As Long
     For t = 0 To UBound(tileAnmList(activeTileAnmIndex).theData.animTileFrame)
@@ -429,7 +429,7 @@ Private Sub fillFrameNum(ByVal frameNum As Long)
             mf = mf + 1
         End If
     Next t
-    framecount.Caption = str(frameNum + 1) & " of"
+    framecount.Caption = str(framenum + 1) & " of"
     If tileAnmList(activeTileAnmIndex).theData.animTileFrames = 0 Then
         framecount.Caption = framecount.Caption & " 1"
     Else
@@ -437,7 +437,7 @@ Private Sub fillFrameNum(ByVal frameNum As Long)
     End If
 End Sub
 
-Private Sub infoFill()
+Private Sub infofill()
     On Error Resume Next
     Dim bf As Boolean
     bf = tileAnmList(activeTileAnmIndex).animTileNeedUpdate
@@ -446,19 +446,19 @@ Private Sub infoFill()
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = bf
 End Sub
 
-Private Sub drawTileFrame(ByVal frameNum As Long)
+Private Sub drawTileFrame(ByVal framenum As Long)
     'draw the frame number.
     On Error Resume Next
     Call GFXClearTileCache
     Call vbPicCls(tform)
     Call vbPicCls(isotForm)
-    If TileAnmGet(tileAnmList(activeTileAnmIndex).theData, frameNum) <> "" Then
-        Call drawtile(vbPicHDC(tform), projectPath$ + tilePath$ + TileAnmGet(tileAnmList(activeTileAnmIndex).theData, frameNum), 1, 1, 0, 0, 0, False)
-        Call drawtile(vbPicHDC(isotForm), projectPath$ + tilePath$ + TileAnmGet(tileAnmList(activeTileAnmIndex).theData, frameNum), 1, 2, 0, 0, 0, False, True, True, True)
+    If TileAnmGet(tileAnmList(activeTileAnmIndex).theData, framenum) <> "" Then
+        Call drawTile(vbPicHDC(tform), projectPath$ + tilePath$ + TileAnmGet(tileAnmList(activeTileAnmIndex).theData, framenum), 1, 1, 0, 0, 0, False)
+        Call drawTile(vbPicHDC(isotForm), projectPath$ + tilePath$ + TileAnmGet(tileAnmList(activeTileAnmIndex).theData, framenum), 1, 2, 0, 0, 0, False, True, True, True)
     End If
     Call vbPicRefresh(tform)
     Call vbPicRefresh(isotForm)
-    Call fillFrameNum(frameNum)
+    Call fillFrameNum(framenum)
 End Sub
 
 Private Sub animTimer_Timer()
@@ -543,7 +543,7 @@ End Sub
 Private Sub Form_KeyPress(KeyAscii As Integer)
     On Error Resume Next
     If UCase(chr(KeyAscii)) = "L" Then
-        If lastTileset = "" Then
+        If configfile.lastTileset = "" Then
             ChDir (currentDir)
             Dim dlg As FileDialogInfo
             With dlg
@@ -566,12 +566,12 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
             If whichType = "TST" Or whichType = "ISO" Then      'Yipes! we've selected an archive!
                 tstnum = 0
                 tstFile = antiPath
-                lastTileset = tstFile
+                configfile.lastTileset = tstFile
                 Call tilesetform.Show(vbModal)
                 Call changeSelectedTile(setFilename)
             End If
         Else
-            tstFile = lastTileset
+            tstFile = configfile.lastTileset
             Call tilesetform.Show(vbModal)
             If setFilename = "" Then Exit Sub
             Call TileAnmInsert(setFilename, tileAnmList(activeTileAnmIndex).theData, tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
@@ -588,7 +588,7 @@ Private Sub Form_Load()
     activeTileAnmIndex = dataIndex
     Call TileAnmClear(tileAnmList(dataIndex).theData)
     animTimer.Enabled = False
-    Call infoFill
+    Call infofill
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -627,7 +627,7 @@ Private Sub saveasmnu_Click()
     ChDir (currentDir)
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
     If filename(1) = "" Then Exit Sub
-    If FileExists(filename(1)) Then
+    If fileExists(filename(1)) Then
         Dim result As VbMsgBoxResult
         result = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
         If result = vbNo Then Exit Sub
@@ -670,7 +670,7 @@ Private Sub tform_Click()
     If whichType = "TST" Or whichType = "ISO" Then      'Yipes! we've selected an archive!
         tstnum = 0
         tstFile = antiPath
-        lastTileset = tstFile
+        configfile.lastTileset = tstFile
         tilesetform.Show vbModal
         If setFilename = "" Then Exit Sub
         Call TileAnmInsert(setFilename, tileAnmList(activeTileAnmIndex).theData, tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)

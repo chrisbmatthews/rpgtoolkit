@@ -55,8 +55,8 @@ Type TKEnemy
     eneMaxSMP As Long       'max smp
     eneFileName As String   'filename
     status(10) As FighterStatus
-    x As Long
-    y As Long    'x and y location in fight
+    X As Long
+    Y As Long    'x and y location in fight
 End Type
 
 Type enemyDoc
@@ -66,10 +66,6 @@ Type enemyDoc
     
     theData As TKEnemy
 End Type
-
-'array of enemies used in the MDI children
-Public enemylist() As enemyDoc
-Public enemyListOccupied() As Boolean
 
 Sub EnemyClearAllStatus(ByRef theEnemy As TKEnemy)
     'clear all status effect
@@ -217,51 +213,11 @@ Function enemyGetCustomHandleIdx(ByRef theEnemy As TKEnemy, ByVal idx As Long) A
     Next t
 End Function
 
-Sub VectEnemyKillSlot(ByVal idx As Long)
-    On Error Resume Next
-    'free up memory in the enemy list vector
-    enemyListOccupied(idx) = False
-End Sub
-
-Function VectEnemyNewSlot() As Long
-    On Error GoTo vecterr
-       
-    'test size of array
-    Dim test As Long, oldSize As Long, newSize As Long, t As Long
-    test = UBound(enemylist)
-    
-    'find a new slot in the list of boards and return an index we can use
-    For t = 0 To UBound(enemylist)
-        If enemyListOccupied(t) = False Then
-            enemyListOccupied(t) = True
-            VectEnemyNewSlot = t
-            Exit Function
-        End If
-    Next t
-    
-    'must resize the vector...
-    oldSize = UBound(enemylist)
-    newSize = UBound(enemylist) * 2
-    ReDim Preserve enemylist(newSize)
-    ReDim Preserve enemyListOccupied(newSize)
-    
-    enemyListOccupied(oldSize + 1) = True
-    VectEnemyNewSlot = oldSize + 1
-    
-    Exit Function
-
-vecterr:
-    ReDim enemylist(1)
-    ReDim enemyListOccupied(1)
-    Resume Next
-    
-End Function
-
 Sub saveEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
     'saves enemy in memory.
     On Error Resume Next
     
-    Dim num As Long, x As Long, y As Long, t As Long
+    Dim num As Long, X As Long, Y As Long, t As Long
     num = FreeFile
     If file = "" Then Exit Sub
     
@@ -321,12 +277,14 @@ Sub openEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
     
     On Error Resume Next
     
-    Dim num As Long, x As Long, y As Long, t As Long, user As Long
+    Dim num As Long, X As Long, Y As Long, t As Long, user As Long
     Dim fileHeader As String, majorVer As Long, minorVer As Long
     
     num = FreeFile
     If file$ = "" Then Exit Sub
-    enemylist(activeEnemyIndex).eneNeedUpdate = False
+    #If isToolkit = 1 Then
+        enemylist(activeEnemyIndex).eneNeedUpdate = False
+    #End If
     
     Call EnemyClear(theEnemy)
     
@@ -348,7 +306,7 @@ Sub openEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
         If fileHeader$ <> "RPGTLKIT ENEMY" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Enemy": Exit Sub
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit", , "Unable to open Enemy": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit", , "Unable to open Enemy": Close #num: Exit Sub
         
         theEnemy.eneName$ = BinReadString(num)
         theEnemy.eneHP = BinReadLong(num)
@@ -406,9 +364,9 @@ ver2oldenemy:
         If fileHeader$ <> "RPGTLKIT ENEMY" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Enemy": Exit Sub
         majorVer = val(fread(num))         'Version
         minorVer = val(fread(num))         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit " + file$, , "Unable to open Enemy": Close #num: Exit Sub
-        If minorVer <> Minor Then
-            user = MsgBox("This Enemy was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + CurrentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
+        If majorVer <> major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit " + file$, , "Unable to open Enemy": Close #num: Exit Sub
+        If minorVer <> minor Then
+            user = MsgBox("This Enemy was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
         theEnemy.eneName$ = fread(num)  'Name
@@ -425,11 +383,11 @@ ver2oldenemy:
         Dim eneSizeX As Long, eneSizeY As Long
         eneSizeX = fread(num)       'size horizontally
         eneSizeY = fread(num)       'size vertically
-        For x = 1 To 19
-            For y = 1 To 7
-                enemyGraphic$(x, y) = fread(num) 'Enemy graphics filenames
-            Next y
-        Next x
+        For X = 1 To 19
+            For Y = 1 To 7
+                enemyGraphic$(X, Y) = fread(num) 'Enemy graphics filenames
+            Next Y
+        Next X
         'create tile bitmap...
         Dim tbmName As String, anmName As String
         tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
@@ -437,11 +395,11 @@ ver2oldenemy:
         Dim tbm As TKTileBitmap
         Call TileBitmapClear(tbm)
         Call TileBitmapResize(tbm, eneSizeX, eneSizeY)
-        For x = 1 To eneSizeX
-            For y = 1 To eneSizeY
-                tbm.tiles(x - 1, y - 1) = enemyGraphic(x, y)
-            Next y
-        Next x
+        For X = 1 To eneSizeX
+            For Y = 1 To eneSizeY
+                tbm.tiles(X - 1, Y - 1) = enemyGraphic(X, Y)
+            Next Y
+        Next X
         Call SaveTileBitmap(tbmName$, tbm)
         'create animation...
         anmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
@@ -509,20 +467,20 @@ Sub EnemyClear(ByRef theEnemy As TKEnemy)
     theEnemy.eneSneakUp = 0
     theEnemy.eneSizeX = 1
     theEnemy.eneSizeY = 1
-    Dim x As Long, y As Long
-    For x = 0 To 19
-        For y = 0 To 7
-            theEnemy.enemyGraphic(x, y) = ""
-        Next y
-    Next x
+    Dim X As Long, Y As Long
+    For X = 0 To 19
+        For Y = 0 To 7
+            theEnemy.enemyGraphic(X, Y) = ""
+        Next Y
+    Next X
     ReDim theEnemy.eneSpecialMove(100)
     ReDim theEnemy.eneWeakness(100)
     ReDim theEnemy.eneStrength(100)
-    For x = 0 To 100
-        theEnemy.eneSpecialMove(x) = ""
-        theEnemy.eneWeakness(x) = ""
-        theEnemy.eneStrength(x) = ""
-    Next x
+    For X = 0 To 100
+        theEnemy.eneSpecialMove(X) = ""
+        theEnemy.eneWeakness(X) = ""
+        theEnemy.eneStrength(X) = ""
+    Next X
     theEnemy.eneAI = 0
     theEnemy.eneUseRPGCode = 0
     theEnemy.eneRPGCode = ""

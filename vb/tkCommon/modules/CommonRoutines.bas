@@ -195,19 +195,6 @@ tabErr:
         extention = Left(strArray(UBound(strArray)), 3)
     End Function
 
-    Public Sub addCommonIcons(ByRef frm As Form)
-        '=======================================================
-        ' Add icons to common menus [TBD]
-        '=======================================================
-        'With tkMainForm.graphicMenus
-        '    .Visible = False
-        '    .ImageList = tkMainForm.mainToolbarImages
-        '    .Form = frm
-        '    Call .Init
-        'End With
-        'Set tkMainForm.lastIconForm = frm
-    End Sub
-
     Public Function getTipCount(ByVal file As String) As Long
         '=======================================================
         'Returns number of tips in tip file
@@ -216,7 +203,7 @@ tabErr:
         Dim num As Long
         num = FreeFile()
         Open file For Input As num
-            Input #num, getTipCount
+            getTipCount = fread(num)
         Close num
     End Function
 
@@ -413,41 +400,6 @@ tabErr:
         End If
 
     End Function
-
-    Public Sub openConfig(ByVal file As String)
-        '=======================================================
-        'Opens the config file passed in
-        '=======================================================
-        On Error Resume Next
-        Dim num As Long
-        num = FreeFile()
-        m_LangFile = ""
-        Open file For Input As num
-            Call fread(num)
-            Input #num, tipsOnOff             'tip window on/off (0=off, 1=on)
-            Input #num, tipFile               'tipfilename
-            Input #num, tipNum                'tip number
-            Call fread(num)
-            Input #num, commandsDocked        'command buttons docked (hidden) 0=no, 1=yes
-            Input #num, filesDocked           'file dialog docked?
-            Input #num, lastProject
-            Input #num, mp3Path               'path of mp3 files
-            Input #num, wallpaper             'wallpaper file
-            Dim t As Long
-            For t = 0 To 4
-                Input #num, quickEnabled(t)   'quick launch enabled 1-yes, 0-no
-                Input #num, quickTarget(t)    'quick launch targets
-                Input #num, quickIcon(t)      'quick launch icons
-            Next t
-            Input #num, tutCurrentLesson
-            Input #num, m_LangFile
-            If wallpaper = "" Then
-                wallpaper = "bkg.jpg"
-            ElseIf wallpaper = "NONE" Then
-                wallpaper = ""
-            End If
-        Close num
-    End Sub
 
     Public Sub openMainFile(ByVal file As String)
         '=======================================================
@@ -676,43 +628,6 @@ loadtileerr:
 
     End Function
 
-    Public Sub saveConfig(ByVal file As String)
-        '=======================================================
-        'Save configuration to the file passed in
-        '=======================================================
-
-        On Error Resume Next
-
-        Dim num As Long
-        num = FreeFile()
-    
-        If wallpaper = "" Then
-            wallpaper = "NONE"
-        End If
-
-        Open file For Output As num
-            Print #num, 0
-            Print #num, tipsOnOff             'tip window on/off (0=off, 1=on)
-            Print #num, tipFile               'tipfilename
-            Print #num, tipNum                'tip number
-            Print #num, 0
-            Print #num, commandsDocked        'command buttons docked (hidden) 0=no, 1=yes
-            Print #num, filesDocked           'file dialog docked?
-            Print #num, lastProject
-            Print #num, mp3Path               'path of mp3 files
-            Print #num, wallpaper             'wallpaper file
-            Dim t As Long
-            For t = 0 To 4
-                Print #num, quickEnabled(t)   'quick launch enabled 1-yes, 0-no
-                Print #num, quickTarget(t)    'quick launch targets
-                Print #num, quickIcon(t)      'quick launch icons
-            Next t
-            Print #num, tutCurrentLesson
-            Print #num, m_LangFile
-        Close num
-
-    End Sub
-
     Public Sub saveProgram(ByVal file As String)
         '=======================================================
         'Saves the text in the open prg editor to the file
@@ -819,11 +734,11 @@ loadtileerr:
         'Saves configuration to the file passed in and exit
         '=======================================================
         On Error Resume Next
-        Call saveConfig(file)
         Call StopTracing
         Call CloseCanvasEngine
         Call GFXKill
-        End
+        Call Unload(configfile)
+        Set configfile = Nothing
     End Sub
 
     Public Function toColor(ByVal longColor As Long, ByVal level As Long) As Long

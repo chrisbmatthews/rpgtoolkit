@@ -12,8 +12,8 @@ Public Sub Main()
     'Toolkit main entry point
     '=======================================================
     On Error Resume Next
+    Call Load(configFile)
     Call initRuntimes
-    Call openConfig("toolkit.cfg")
     Call initTimer
     Call createFileAssociations
     Call StartTracing("tktrace.txt")
@@ -134,7 +134,7 @@ Private Sub displayTip()
     'Display a tip if they are enabled
     '=======================================================
     On Error Resume Next
-    If tipsOnOff = 1 Then
+    If configFile.tipsOnOff = 1 Then
         Call tips.Show(vbModal)
     End If
 End Sub
@@ -144,7 +144,7 @@ Private Sub askTutorial()
     'Ask to show the tutorial if we haven't before
     '=======================================================
     On Error Resume Next
-    If tutCurrentLesson = 0 Then
+    If configFile.tutCurrentLesson = 0 Then
         Call tutorialask.Show(vbModal)
     End If
 End Sub

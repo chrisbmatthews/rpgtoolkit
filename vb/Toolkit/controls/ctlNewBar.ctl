@@ -213,32 +213,19 @@ Private Sub CommandDock_Click(Index As Integer)
     With tkMainForm
         .ignoreFocus = False
         Select Case Index
-            Case 0
-                Call editmainfile.Show
-            Case 1
-                Call .newtilemnu_Click
-            Case 15
-                Call .newanimtilemnu_Click
-            Case 2
-                Call .newboardmnu_Click
-            Case 4
-                Call .newrpgcodemnu_Click
-            Case 3
-                Call .newplayermnu_Click
-            Case 5
-                Call .newitemmnu_Click
-            Case 8
-                Call .newenemymnu_Click
-            Case 9
-                Call .mnuNewFightBackground_Click
-            Case 7
-                Call .newspecialmovemnu_Click
-            Case 12
-                Call .newstatuseffectmnu_Click
-            Case 14
-                Call .newanimationmnu_Click
-            Case 6
-                Call tilesetedit.Show(vbModal)
+            Case 0: Call editmainfile.Show
+            Case 1: Call .newtilemnu_Click
+            Case 15: Call .newanimtilemnu_Click
+            Case 2: Call .newboardmnu_Click
+            Case 4: Call .newrpgcodemnu_Click
+            Case 3: Call .newplayermnu_Click
+            Case 5: Call .newitemmnu_Click
+            Case 8: Call .newenemymnu_Click
+            Case 9: Call .mnuNewFightBackground_Click
+            Case 7: Call .newspecialmovemnu_Click
+            Case 12: Call .newstatuseffectmnu_Click
+            Case 14: Call .newanimationmnu_Click
+            Case 6: Call tilesetedit.Show(vbModal)
         End Select
     End With
     

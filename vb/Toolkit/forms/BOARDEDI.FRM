@@ -463,7 +463,9 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '========================================================================
+
 Option Explicit
+
 '========================================================================
 ' BOARD EDITOR
 '========================================================================
@@ -507,6 +509,9 @@ Private Type udtTileType
     color As Integer
     name As String
 End Type
+
+' Scrolling object
+Private scroll As New clsScrollBoard
 
 '========================================================================
 ' get tiletype details (color, name) returned as UDT
@@ -1623,7 +1628,7 @@ Public Sub boardSelectTile(): On Error Resume Next
         FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
         
         tstFile$ = antiPath$
-        lastTileset$ = tstFile$
+        configfile.lastTileset$ = tstFile$
         
         ' open tileset form
         tilesetform.Show vbModal
@@ -1645,7 +1650,7 @@ Public Sub boardSelectTile(): On Error Resume Next
         If UCase$(whichType$) = "ISO" Then
             Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, ISODETAIL)
         Else
-        Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
+            Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
         End If
         
         ' update current board tile
@@ -2151,7 +2156,7 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
                 End If
                 
                 ' draw new tile
-                Call drawtile(vbPicHDC(boardform), _
+                Call drawTile(vbPicHDC(boardform), _
                                      tilePath$ + boardList(activeBoardIndex).selectedTile$, _
                                      xx - boardList(activeBoardIndex).topX, _
                                      yy - boardList(activeBoardIndex).topY, _
@@ -2738,7 +2743,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
     If UCase$(chr$(KeyAscii)) = "L" Then
     
         ' if no previous tileset opened
-        If lastTileset = "" Then
+        If configfile.lastTileset = "" Then
         
             Call boardSelectTile
             Exit Sub
@@ -2746,9 +2751,9 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
         End If
         
         ' if previous tileset opened then open once more
-        If lastTileset$ <> "" Then
+        If configfile.lastTileset$ <> "" Then
         
-            tstFile$ = lastTileset$
+            tstFile$ = configfile.lastTileset$
             
             ' open tileset form
             tilesetform.Show vbModal
@@ -2862,6 +2867,9 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
 
     Call hideAllTools
     
+    Call Unload(scroll)
+    Set scroll = Nothing
+    
 End Sub
 
 '========================================================================
@@ -2916,7 +2924,7 @@ Private Sub HScroll1_Change(): On Error Resume Next
         boardList(activeBoardIndex).topX = HScroll1.value - 1
         
         ' shift to left
-        Call shiftLeft
+        Call scroll.shiftLeft
         
         Call boardRedraw
         
@@ -2930,7 +2938,7 @@ Private Sub HScroll1_Change(): On Error Resume Next
         boardList(activeBoardIndex).topX = HScroll1.value - 1
         
         ' shift to right
-        Call shiftRight
+        Call scroll.shiftRight
         
         Call boardRedraw
         
@@ -3568,7 +3576,7 @@ Private Sub VScroll1_Change(): On Error Resume Next
     
         boardList(activeBoardIndex).topY = VScroll1.value - 1
         
-        Call shiftUp
+        Call scroll.shiftUp
     
         Call boardRedraw
         
@@ -3580,7 +3588,7 @@ Private Sub VScroll1_Change(): On Error Resume Next
     
         boardList(activeBoardIndex).topY = VScroll1.value - 1
         
-        Call shiftDown
+        Call scroll.shiftDown
         
         Call boardRedraw
         

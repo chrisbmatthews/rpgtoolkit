@@ -1,4 +1,16 @@
-Attribute VB_Name = "Scroll"
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+  Persistable = 0  'NotPersistable
+  DataBindingBehavior = 0  'vbNone
+  DataSourceBehavior  = 0  'vbNone
+  MTSTransactionMode  = 0  'NotAnMTSObject
+END
+Attribute VB_Name = "clsScrollBoard"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
 '=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
@@ -6,7 +18,7 @@ Attribute VB_Name = "Scroll"
 '=========================================================================
 
 '=========================================================================
-' Scrolling routines for the board editor
+' Scrolling procedures for the board editor
 '=========================================================================
 
 '=========================================================================

@@ -29,7 +29,7 @@ Public Const DB_QuickRefFile = 501
 Public Const DB_Help1 = 502
 Public Const DB_Help2 = 503
 Public Const DB_Help3 = 504
-Public Const DB_TipFile = 505
+Public Const DB_tipFile = 505
 Public Const DB_RegInfo = 506
 Public Const DB_Tutorial1 = 510
 Public Const DB_Tutorial2 = 511
@@ -220,7 +220,7 @@ Function ObtainCaptionFromTag(ByVal tagID As Long, ByVal dbfile As String) As St
                 ObtainCaptionFromTag = "help2.htm"
             Case DB_Help3:
                 ObtainCaptionFromTag = "help3.htm"
-            Case DB_TipFile:
+            Case DB_tipFile:
                 ObtainCaptionFromTag = "tipEN.tip"
             Case DB_RegInfo:
                 ObtainCaptionFromTag = "registration.htm"
@@ -273,7 +273,7 @@ Sub OpenLanguage(ByVal file As String, lTable As LangTable)
     Dim idx As Long
     idx = 0
     
-    If Not (FileExists(file)) Then
+    If Not (fileExists(file)) Then
         Exit Sub
     End If
     

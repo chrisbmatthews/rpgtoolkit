@@ -506,9 +506,9 @@ Attribute VB_Exposed = False
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Program Filename"
     dlg.strDefaultExt = "prg"
@@ -520,18 +520,18 @@ Private Sub Command1_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
 '        dirlink$(1) = antipath$
-    prgfilename.text = antiPath$
+    prgfilename.Text = antiPath$
 End Sub
 
 Private Sub Command2_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tilepath$
+    dlg.strDefaultFolder = projectPath$ + tilePath$
     
     dlg.strTitle = "Program Graphic"
     dlg.strDefaultExt = "gph"
@@ -543,61 +543,61 @@ Private Sub Command2_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + tiles$ + antiPath$
     whichType$ = extention(filename$(1))
     If UCase$(whichType$) = "TST" Then      'Yipes! we've selected an archive!
         tstFile$ = antiPath$
-        lastTileset$ = tstFile$
+        configfile.lastTileset$ = tstFile$
         tilesetform.Show 1
         'MsgBox setFilename$
         If setFilename$ = "" Then Exit Sub
         antiPath$ = setFilename$
     End If
-    prggraphic.text = antiPath$
+    prggraphic.Text = antiPath$
 End Sub
 
 Private Sub Command3_Click()
 'search for a free program space.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 thisProgram = -1
 For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
     If boardList(activeBoardIndex).theData.programName$(t) = "" Then thisProgram = t: t = UBound(boardList(activeBoardIndex).theData.programName)
 Next t
 If boardList(activeBoardIndex).prgCondition <> -1 Then thisProgram = boardList(activeBoardIndex).prgCondition
 If thisProgram = -1 Then MsgBox LoadStringLoc(975, "This board already has 500 programs.  This is the set limit."), , LoadStringLoc(976, "Too many programs."): Exit Sub
-If prgfilename.text = LoadStringLoc(1010, "None") Or prgfilename.text = "" Then
+If prgfilename.Text = LoadStringLoc(1010, "None") Or prgfilename.Text = "" Then
     Unload programset
     Exit Sub
 End If
-boardList(activeBoardIndex).theData.programName$(thisProgram) = prgfilename.text
+boardList(activeBoardIndex).theData.programName$(thisProgram) = prgfilename.Text
 boardList(activeBoardIndex).theData.progX(thisProgram) = boardList(activeBoardIndex).infoX              'program x
 boardList(activeBoardIndex).theData.progY(thisProgram) = boardList(activeBoardIndex).infoY              'program y
 boardList(activeBoardIndex).theData.progLayer(thisProgram) = boardList(activeBoardIndex).currentLayer   'program layer
-boardList(activeBoardIndex).theData.progGraphic$(thisProgram) = prggraphic.text  'program graphic
+boardList(activeBoardIndex).theData.progGraphic$(thisProgram) = prggraphic.Text  'program graphic
 If Option1.value = True Then
     boardList(activeBoardIndex).theData.progActivate(thisProgram) = 0   'program activation: 0- always active, 1- conditional activation.
     Else
     boardList(activeBoardIndex).theData.progActivate(thisProgram) = 1
 End If
 If Option2.value = True Then
-    boardList(activeBoardIndex).theData.progVarActivate$(thisProgram) = prgactivation.text 'activation variable
+    boardList(activeBoardIndex).theData.progVarActivate$(thisProgram) = prgactivation.Text 'activation variable
     Else
     boardList(activeBoardIndex).theData.progVarActivate$(thisProgram) = ""
 End If
 If Option2.value = True Then
-    boardList(activeBoardIndex).theData.progDoneVarActivate$(thisProgram) = afterprgvar.text 'activation variable at end of prg.
+    boardList(activeBoardIndex).theData.progDoneVarActivate$(thisProgram) = afterprgvar.Text 'activation variable at end of prg.
     Else
     boardList(activeBoardIndex).theData.progDoneVarActivate$(thisProgram) = ""
 End If
 If Option2.value = True Then
-    boardList(activeBoardIndex).theData.activateInitNum$(thisProgram) = prgequals.text 'initial number of activation
+    boardList(activeBoardIndex).theData.activateInitNum$(thisProgram) = prgequals.Text 'initial number of activation
     Else
     boardList(activeBoardIndex).theData.activateInitNum$(thisProgram) = ""
 End If
 If Option2.value = True Then
-    boardList(activeBoardIndex).theData.activateDoneNum$(thisProgram) = afteractivate.text    'what to make variable at end of activation.
+    boardList(activeBoardIndex).theData.activateDoneNum$(thisProgram) = afteractivate.Text    'what to make variable at end of activation.
     Else
     boardList(activeBoardIndex).theData.activateDoneNum$(thisProgram) = ""
 End If
@@ -606,19 +606,19 @@ If Option3.value = True Then
     Else
     boardList(activeBoardIndex).theData.activationType(thisProgram) = 1
 End If
-boardList(activeBoardIndex).theData.progGraphic$(thisProgram) = prggraphic.text
+boardList(activeBoardIndex).theData.progGraphic$(thisProgram) = prggraphic.Text
 
 Unload programset
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
     If programset.height = 2010 Then
         Command4.Caption = LoadStringLoc(911, "Advanced <<")
@@ -630,13 +630,13 @@ Private Sub Command4_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     programset.height = 2010
@@ -644,25 +644,25 @@ Private Sub Form_Load()
     setat.Caption = str$(boardList(activeBoardIndex).infoX) + "," + str$(boardList(activeBoardIndex).infoY) + " Layer" + str$(boardList(activeBoardIndex).currentLayer)
 
     thevar$ = "BoardName[" + str$(boardList(activeBoardIndex).infoX) + str$(boardList(activeBoardIndex).infoY) + str$(boardList(activeBoardIndex).currentLayer) + "]!"
-    thevar$ = NoSpaces(thevar$)
-    prgactivation.text = thevar$
-    afterprgvar.text = thevar$
+    thevar$ = noSpaces(thevar$)
+    prgactivation.Text = thevar$
+    afterprgvar.Text = thevar$
     If boardList(activeBoardIndex).prgCondition = -1 Then Exit Sub     'we are starting a new prg.
     'If we are here, that means we are looking at a previously set prg.
     thisProgram = boardList(activeBoardIndex).prgCondition
-    prgfilename.text = boardList(activeBoardIndex).theData.programName$(thisProgram)
+    prgfilename.Text = boardList(activeBoardIndex).theData.programName$(thisProgram)
     If boardList(activeBoardIndex).theData.progX(thisProgram) <> 0 Then boardList(activeBoardIndex).infoX = boardList(activeBoardIndex).theData.progX(thisProgram)
     If boardList(activeBoardIndex).theData.progY(thisProgram) <> 0 Then boardList(activeBoardIndex).infoY = boardList(activeBoardIndex).theData.progY(thisProgram)
     prglayer = boardList(activeBoardIndex).theData.progLayer(thisProgram)
-    prggraphic.text = boardList(activeBoardIndex).theData.progGraphic$(thisProgram)
+    prggraphic.Text = boardList(activeBoardIndex).theData.progGraphic$(thisProgram)
     If boardList(activeBoardIndex).theData.progActivate(thisProgram) = 0 Then
         Option1.value = True
         Else
         Option2.value = True
-        prgactivation.text = boardList(activeBoardIndex).theData.progVarActivate$(thisProgram)
-        afterprgvar.text = boardList(activeBoardIndex).theData.progDoneVarActivate$(thisProgram)
-        prgequals.text = boardList(activeBoardIndex).theData.activateInitNum$(thisProgram)
-        afteractivate.text = boardList(activeBoardIndex).theData.activateDoneNum$(thisProgram)
+        prgactivation.Text = boardList(activeBoardIndex).theData.progVarActivate$(thisProgram)
+        afterprgvar.Text = boardList(activeBoardIndex).theData.progDoneVarActivate$(thisProgram)
+        prgequals.Text = boardList(activeBoardIndex).theData.activateInitNum$(thisProgram)
+        afteractivate.Text = boardList(activeBoardIndex).theData.activateDoneNum$(thisProgram)
     End If
 If boardList(activeBoardIndex).theData.activationType(thisProgram) = 0 Then
     Option3.value = True
@@ -674,7 +674,7 @@ End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -688,18 +688,18 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
 End Sub
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeRPGCode.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Label2.Enabled = False
     prgactivation.Enabled = False
     prgequals.Enabled = False
@@ -710,13 +710,13 @@ Private Sub Option1_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Label2.Enabled = True
     prgactivation.Enabled = True
     prgequals.Enabled = True
@@ -727,7 +727,7 @@ Private Sub Option2_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -735,12 +735,12 @@ End Sub
 Private Sub Option3_Click()
     'check2.Enabled = False
     'check3.Enabled = False
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

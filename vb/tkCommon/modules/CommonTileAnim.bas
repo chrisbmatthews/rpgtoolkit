@@ -27,50 +27,6 @@ Type tileAnmDoc
     theData As TKTileAnm
 End Type
 
-'array of tile anms used in the MDI children
-Public tileAnmList() As tileAnmDoc
-Public tileAnmListOccupied() As Boolean
-
-Sub VectTileAnmKillSlot(ByVal idx As Long)
-    On Error Resume Next
-    'free up memory in the tile anm list vector
-    tileAnmListOccupied(idx) = False
-End Sub
-
-Function VectTileAnmNewSlot() As Long
-    On Error GoTo vecterr
-       
-    'test size of array
-    Dim test As Long, t As Long, oldSize As Long, newSize As Long
-    test = UBound(tileAnmList)
-    
-    'find a new slot in the list of boards and return an index we can use
-    For t = 0 To UBound(tileAnmList)
-        If tileAnmListOccupied(t) = False Then
-            tileAnmListOccupied(t) = True
-            VectTileAnmNewSlot = t
-            Exit Function
-        End If
-    Next t
-    
-    'must resize the vector...
-    oldSize = UBound(tileAnmList)
-    newSize = UBound(tileAnmList) * 2
-    ReDim Preserve tileAnmList(newSize)
-    ReDim Preserve tileAnmListOccupied(newSize)
-    
-    tileAnmListOccupied(oldSize + 1) = True
-    VectTileAnmNewSlot = oldSize + 1
-    
-    Exit Function
-
-vecterr:
-    ReDim tileAnmList(1)
-    ReDim tileAnmListOccupied(1)
-    Resume Next
-    
-End Function
-
 Sub saveTileAnm(ByVal file As String, ByRef theAnm As TKTileAnm)
     'save animated tile
     On Error Resume Next
@@ -78,7 +34,9 @@ Sub saveTileAnm(ByVal file As String, ByRef theAnm As TKTileAnm)
     num = FreeFile
     If file = "" Then Exit Sub
     
-    tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
+    #If isToolkit = 1 Then
+        tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
+    #End If
     
     Dim cnt As Long
     cnt = TileAnmFrameCount(theAnm)
@@ -105,8 +63,10 @@ Sub openTileAnm(ByVal file As String, ByRef theAnm As TKTileAnm)
         
     Call TileAnmClear(theAnm)
     file = PakLocate(file)
-   
-    tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
+
+    #If isToolkit = 1 Then
+        tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
+    #End If
     
     Dim cnt As Long
     
@@ -164,10 +124,10 @@ Sub TileAnmDrawNextFrame(ByRef theAnm As TKTileAnm, ByVal hdc As Long, ByVal X A
     
     On Error Resume Next
     If DrawFrame Then
-        Call drawtile(hdc, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y, r, g, b, drawMask, False)
+        Call drawTile(hdc, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y, r, g, b, drawMask, False)
         
         If hdcIso <> -1 Then
-            Call drawtile(hdcIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y + 1, r, g, b, drawMask, False, True, True)
+            Call drawTile(hdcIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y + 1, r, g, b, drawMask, False, True, True)
         End If
     End If
     
@@ -186,10 +146,10 @@ Sub TileAnmDrawNextFrameCNV(ByRef theAnm As TKTileAnm, ByVal cnv As Long, ByVal 
     
     On Error Resume Next
     If DrawFrame Then
-        Call drawtileCNV(cnv, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y, r, g, b, drawMask, False)
+        Call drawTileCNV(cnv, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y, r, g, b, drawMask, False)
         
         If cnvIso <> -1 Then
-            Call drawtileCNV(cnvIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y + 1, r, g, b, drawMask, False, True, True)
+            Call drawTileCNV(cnvIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y + 1, r, g, b, drawMask, False, True, True)
         End If
     End If
     

@@ -58,38 +58,29 @@ Option Explicit
 'Events'
 ''''''''
 
-Public Event Click()
-Public Event MouseDown(cmdButton As Integer, Shift As Integer, X As Single, Y As Single)
+Public Event click()
+Public Event mouseDown(cmdButton As Integer, Shift As Integer, X As Single, Y As Single)
 Public Event MouseUp(cmdButton As Integer, Shift As Integer, X As Single, Y As Single)
 
 ''''''''''''
 'Properties'
 ''''''''''''
 
-Public Property Get Width()
- Width = cmdButton.Width
+Public Property Get Width() As Long
+    Width = cmdButton.Width
 End Property
 
-Public Property Set Width(new_width)
- cmdButton.Width = new_width
- UserControl.Width = new_width + 20
+Public Property Let Width(ByVal new_width As Long)
+    cmdButton.Width = new_width
+    UserControl.Width = new_width + 20
 End Property
 
-Public Property Let Width(new_width)
- cmdButton.Width = new_width
- UserControl.Width = new_width + 20
+Public Property Get Caption() As String
+    Caption = lblCaption.Caption
 End Property
 
-Public Property Get Caption()
- Caption = lblCaption.Caption
-End Property
-
-Public Property Set Caption(new_caption)
- lblCaption.Caption = new_caption
-End Property
-
-Public Property Let Caption(new_caption)
- lblCaption.Caption = new_caption
+Public Property Let Caption(ByVal new_caption As String)
+    lblCaption.Caption = new_caption
 End Property
 
 '''''''''
@@ -97,11 +88,11 @@ End Property
 '''''''''
 
 Private Sub cmdbutton_Click()
- RaiseEvent Click
+ RaiseEvent click
 End Sub
 
 Private Sub cmdbutton_MouseDown(cmdButton As Integer, Shift As Integer, X As Single, Y As Single)
- RaiseEvent MouseDown(cmdButton, Shift, X, Y)
+ RaiseEvent mouseDown(cmdButton, Shift, X, Y)
 End Sub
 
 Private Sub cmdbutton_MouseMove(cmdButton As Integer, Shift As Integer, X As Single, Y As Single)
@@ -113,10 +104,10 @@ Private Sub cmdbutton_MouseUp(cmdButton As Integer, Shift As Integer, X As Singl
 End Sub
 
 Private Sub lblCaption_MouseDown(cmdButton As Integer, Shift As Integer, X As Single, Y As Single)
- RaiseEvent MouseDown(cmdButton, Shift, X, Y)
+ RaiseEvent mouseDown(cmdButton, Shift, X, Y)
 End Sub
 
-Private Sub lblCaption_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblCaption_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
  swapState True
 End Sub
 
@@ -125,7 +116,7 @@ Private Sub lblCaption_MouseUp(cmdButton As Integer, Shift As Integer, X As Sing
 End Sub
 
 Private Sub lblCaption_Click()
- RaiseEvent Click
+ RaiseEvent click
 End Sub
 
 Private Sub UserControl_Initialize()

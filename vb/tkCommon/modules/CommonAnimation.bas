@@ -51,10 +51,6 @@ End Type
 ' Other variables
 '========================================================================
 
-'Array of animations
-Public animationList() As animationDoc
-Public animationListOccupied() As Boolean
-
 'array of animations that can be created by a plugin
 Public anmList() As animationDoc
 Public anmListOccupied() As Boolean
@@ -216,7 +212,9 @@ Sub openAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
     'Get the file
     file$ = PakLocate(file$)
     'No need to update
-    animationList(activeAnimationIndex).animNeedUpdate = False
+    #If isToolkit = 1 Then
+        animationList(activeAnimationIndex).animNeedUpdate = False
+    #End If
     
     Dim num As Long, t As Long
     Dim fileHeader As String
@@ -331,7 +329,7 @@ End Function
 ' Delays for x numbers of seconds
 '========================================================================
 Sub animDelay(ByVal sec As Double)
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     Dim aa As Long
     aa = Timer
     Dim bWaitingForInput As Boolean
@@ -343,7 +341,7 @@ Sub animDelay(ByVal sec As Double)
 
     Exit Sub
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Sub
@@ -352,7 +350,7 @@ End Sub
 ' Animate at xx, yy (Animation is presumed to be loaded)
 '========================================================================
 Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As Long, ByVal pixelsMaxX As Long, ByVal pixelsMaxY As Long, ByRef pic As PictureBox)
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     
     'Initialize
     Dim allPurposeC2 As Long, apHDC As Long
@@ -406,7 +404,7 @@ Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As Long, 
 
     Exit Sub
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Sub
@@ -415,7 +413,7 @@ Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, ByVal X 
     'draw the frame referenced by framenum
     'loads a file into a picture box and resizes it.
     'On Error Resume Next
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     Dim ex As String, f As String, a As Long
     
     ex$ = GetExt(theAnim.animFrame(framenum))
@@ -513,7 +511,7 @@ Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, ByVal X 
 
     Exit Sub
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Sub
@@ -551,7 +549,7 @@ End Sub
 
 Public Function animGetMaxFrame(ByRef theAnim As TKAnimation) As Long
     'return the number of frames in the anim
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     Dim mf As Long, t As Long
     mf = 0
     For t = 0 To 50
@@ -564,7 +562,7 @@ Public Function animGetMaxFrame(ByRef theAnim As TKAnimation) As Long
     Exit Function
 
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Function
@@ -654,52 +652,11 @@ Sub DrawAnimationIndexCanvasFrame(ByVal idx As Long, ByVal frame As Long, ByVal 
     End If
 End Sub
 
-Sub VectAnimationKillSlot(ByVal idx As Long)
-    On Error Resume Next
-    'free up memory in the ste list vector
-    animationListOccupied(idx) = False
-End Sub
-
 Sub DestroyAnimation(ByVal idx As Long)
     On Error Resume Next
     'free up memory in the ste list vector
     anmListOccupied(idx) = False
 End Sub
-
-Function VectAnimationNewSlot() As Long
-    On Error GoTo vecterr
-       
-    'test size of array
-    Dim test As Long
-    Dim oldSize As Long, newSize As Long, t As Long
-    test = UBound(animationList)
-    
-    'find a new slot in the list of boards and return an index we can use
-    For t = 0 To UBound(animationList)
-        If animationListOccupied(t) = False Then
-            animationListOccupied(t) = True
-            VectAnimationNewSlot = t
-            Exit Function
-        End If
-    Next t
-    
-    'must resize the vector...
-    oldSize = UBound(animationList)
-    newSize = UBound(animationList) * 2
-    ReDim Preserve animationList(newSize)
-    ReDim Preserve animationListOccupied(newSize)
-    
-    animationListOccupied(oldSize + 1) = True
-    VectAnimationNewSlot = oldSize + 1
-    
-    Exit Function
-
-vecterr:
-    ReDim animationList(1)
-    ReDim animationListOccupied(1)
-    Resume Next
-    
-End Function
 
 Function CreateAnimation(ByVal file As String) As Long
     On Error GoTo vecterr
@@ -750,7 +707,9 @@ Sub saveAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
     num = FreeFile
     If file = "" Then Exit Sub
     
-    animationList(activeAnimationIndex).animNeedUpdate = False
+    #If isToolkit = 1 Then
+        animationList(activeAnimationIndex).animNeedUpdate = False
+    #End If
 
     Call Kill(file)
     Open file For Output As #num
