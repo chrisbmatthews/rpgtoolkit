@@ -87,10 +87,6 @@ Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long,
     oldX = x
     oldY = y
     
-    'Edit: Add the ambient levels.
-    Dim ambientR As Long, ambientB As Long, ambientG As Long
-    Call getAmbientLevel(ambientR, ambientB, ambientG)
-    
     xx = x / 32 + 1
     yy = y / 32 + 1
     For x = 0 To theTileBmp.sizex - 1
@@ -98,13 +94,16 @@ Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long,
             If theTileBmp.tiles(x, y) <> "" Then
                 If cnv <> -1 Then
                 
+                    'Ambient levels determined in renderAnimationFrame *before*
+                    'opening DC.
+                    
                     Call drawTileCNV(cnv, _
                                     tilePath$ & theTileBmp.tiles(x, y), _
                                     x + xx, _
                                     y + yy, _
-                                    theTileBmp.redS(x, y) + ambientR, _
-                                    theTileBmp.greenS(x, y) + ambientG, _
-                                    theTileBmp.blueS(x, y) + ambientB, _
+                                    theTileBmp.redS(x, y) + addOnR, _
+                                    theTileBmp.greenS(x, y) + addOnG, _
+                                    theTileBmp.blueS(x, y) + addOnB, _
                                     False, _
                                     True, _
                                     False, _
