@@ -119,7 +119,7 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
     Dim effectiveTilesX As Long
     Dim effectiveTilesY As Long
     
-    If boardIso() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         effectiveSizeX = boardList(activeBoardIndex).theData.bSizeX
         effectiveSizeY = boardList(activeBoardIndex).theData.bSizeY
         effectiveTilesX = tilesX / 2 '= isoTilesX
@@ -141,7 +141,7 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
         
         'NOTE: Bug in iso board drawing where negative topYs are not properly placed!!
         topY = -1 * Int((effectiveTilesY - effectiveSizeY) / 2)
-        If boardIso() Then topY = 0 'Take this line out when bug fixed!!
+        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then topY = 0 'Take this line out when bug fixed!!
     End If
     
     Dim tempx As Double
@@ -160,7 +160,7 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
         'If player is on right more than half a screen from the edge.
         tempx = effectiveSizeX - effectiveTilesX
         'Isometric fix:
-        If boardIso() Then tempx = tempx - 0.5 - (tilesX Mod 2) / 2
+        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then tempx = tempx - 0.5 - (tilesX Mod 2) / 2
     End If
     
     If tempy < 0 Then 'If player at top of board less than half a screen from the edge.
@@ -169,7 +169,7 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
     
     'If player is at bottom more than half a screen from the edge.
     'Isometric fix:
-    If boardIso() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         '[board]sizeY - [screen]tilesY = amount board is taller than screen
         If tempy + 1 >= effectiveSizeY - effectiveTilesY Then
             tempy = effectiveSizeY - effectiveTilesY - 1
@@ -207,31 +207,31 @@ Public Sub openItems()
     Dim multiPrg As String              'the multitasking program
 
     'Destroy old item canvases
-    For itemNum = 0 To maxItem
+    For itemNum = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
         Call DestroyCanvas(cnvSprites(itemNum))
     Next itemNum
 
-    ReDim pendingItemMovement(maxItem)  'pending item movements
-    ReDim lastItemRender(maxItem)       'last item renders
-    ReDim itmPos(maxItem)               'position of items
-    ReDim itemMem(maxItem)              'item data
-    ReDim cnvSprites(maxItem)           'item sprites
+    ReDim pendingItemMovement((UBound(boardList(activeBoardIndex).theData.itmActivate)))  'pending item movements
+    ReDim lastItemRender((UBound(boardList(activeBoardIndex).theData.itmActivate)))       'last item renders
+    ReDim itmPos((UBound(boardList(activeBoardIndex).theData.itmActivate)))               'position of items
+    ReDim itemMem((UBound(boardList(activeBoardIndex).theData.itmActivate)))              'item data
+    ReDim cnvSprites((UBound(boardList(activeBoardIndex).theData.itmActivate)))           'item sprites
 
     'Create new item canvases
-    For itemNum = 0 To maxItem
+    For itemNum = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
         cnvSprites(itemNum) = CreateCanvas(1, 1)
     Next itemNum
 
     'Loop over each item
-    For itemNum = 0 To maxItem
+    For itemNum = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
 
         'With the active board
         With boardList(activeBoardIndex).theData
 
             'Copy item values to itmPos() array
             itmPos(itemNum).frame = 0
-            itmPos(itemNum).X = .itmX(itemNum)
-            itmPos(itemNum).Y = .itmY(itemNum)
+            itmPos(itemNum).x = .itmX(itemNum)
+            itmPos(itemNum).y = .itmY(itemNum)
             itmPos(itemNum).l = .itmLayer(itemNum)
             itmPos(itemNum).stance = "stand_s"  'I am now depreciating the item
                                                 'REST graphic into the southern
@@ -244,9 +244,9 @@ Public Sub openItems()
 
             'Copy values to pending item movements
             With pendingItemMovement(itemNum)
-                .xOrig = itmPos(itemNum).X
+                .xOrig = itmPos(itemNum).x
                 .xTarg = .xOrig
-                .yOrig = itmPos(itemNum).Y
+                .yOrig = itmPos(itemNum).y
                 .yTarg = .yOrig
                 .lOrig = itmPos(itemNum).l
                 .lTarg = .lOrig

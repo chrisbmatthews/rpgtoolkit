@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "clsScrollBoard"
+Attribute VB_Name = "CScrollBoard"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -112,9 +112,9 @@ Private Sub scrollDown(ByVal isIsometric As Long)
             lay = boardList(activeBoardIndex).currentLayer
     
             tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+            ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
             If Y Mod 2 = 0 Then
                 eo = False
             Else
@@ -133,9 +133,9 @@ Private Sub scrollDown(ByVal isIsometric As Long)
         lay = boardList(activeBoardIndex).currentLayer
 
         tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+        ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
         If Y Mod 2 = 0 Then
             eo = True
         Else
@@ -204,9 +204,9 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
             lay = boardList(activeBoardIndex).currentLayer
 
             tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+            ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
             Call drawTile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName$, tX - 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
@@ -220,9 +220,9 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
         lay = boardList(activeBoardIndex).currentLayer
 
         tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+        ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
         Call drawTile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, tX, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
@@ -285,9 +285,9 @@ Private Sub scrollRight(ByVal isIsometric As Long)
             lay = boardList(activeBoardIndex).currentLayer
     
             tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+            ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
             Call drawTile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName$, 2, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
@@ -301,9 +301,9 @@ Private Sub scrollRight(ByVal isIsometric As Long)
         lay = boardList(activeBoardIndex).currentLayer
 
         tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+        ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
         Call drawTile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
@@ -360,9 +360,9 @@ Private Sub scrollUp(ByVal isIsometric As Long)
             lay = boardList(activeBoardIndex).currentLayer
     
             tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+            ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
             If Y Mod 2 = 0 Then
                 eo = False
             Else
@@ -381,9 +381,9 @@ Private Sub scrollUp(ByVal isIsometric As Long)
         lay = boardList(activeBoardIndex).currentLayer
 
         tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+        ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
         If Y Mod 2 = 0 Then
             eo = True
         Else

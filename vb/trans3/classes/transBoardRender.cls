@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "BoardRender"
+Attribute VB_Name = "CBoardRender"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -123,7 +123,7 @@ Public Sub Render()
         End If
 
         'If board is isometric, render twice as much
-        If boardIso() Then
+        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
             m_tilesY = m_tilesY * 2
             topY = topY * 2
         End If
@@ -163,7 +163,7 @@ End Sub
 '=========================================================================
 ' Was this the same render as another object?
 '=========================================================================
-Public Function equal(ByVal anotherBoardRender As BoardRender) As Boolean
+Public Function equal(ByVal anotherBoardRender As CBoardRender) As Boolean
     With anotherBoardRender
         equal = ( _
              .canvas = canvas _

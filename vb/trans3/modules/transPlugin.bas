@@ -1497,10 +1497,10 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
             CBGetGeneralNum = equipFPadd(playerSlot)
             Exit Function
         Case 5:
-            CBGetGeneralNum = pPos(playerSlot).X
+            CBGetGeneralNum = pPos(playerSlot).x
             Exit Function
         Case 6:
-            CBGetGeneralNum = pPos(playerSlot).Y
+            CBGetGeneralNum = pPos(playerSlot).y
             Exit Function
         Case 7:
             CBGetGeneralNum = pPos(playerSlot).l
@@ -1555,11 +1555,11 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
             Exit Function
         Case 24:
             playerSlot = inBounds(playerSlot, 0, 3)
-            CBGetGeneralNum = enemyMem(playerSlot).X
+            CBGetGeneralNum = enemyMem(playerSlot).x
             Exit Function
         Case 25:
             playerSlot = inBounds(playerSlot, 0, 3)
-            CBGetGeneralNum = enemyMem(playerSlot).Y
+            CBGetGeneralNum = enemyMem(playerSlot).y
             Exit Function
         Case 26:
             CBGetGeneralNum = 0
@@ -1703,10 +1703,10 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
             equipFPadd(playerSlot) = newVal
             Exit Sub
         Case 5:
-            pPos(playerSlot).X = newVal
+            pPos(playerSlot).x = newVal
             Exit Sub
         Case 6:
-            pPos(playerSlot).Y = newVal
+            pPos(playerSlot).y = newVal
             Exit Sub
         Case 7:
             pPos(playerSlot).l = newVal
@@ -1767,11 +1767,11 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
             Exit Sub
         Case 24:
             playerSlot = inBounds(playerSlot, 0, 3)
-            enemyMem(playerSlot).X = newVal
+            enemyMem(playerSlot).x = newVal
             Exit Sub
         Case 25:
             playerSlot = inBounds(playerSlot, 0, 3)
-            enemyMem(playerSlot).X = newVal
+            enemyMem(playerSlot).x = newVal
             Exit Sub
         Case 26:
             'fwOffsetX = newVal
@@ -2133,7 +2133,7 @@ Sub CBLoadItem(ByVal file As String, ByVal itmSlot As Long)
     Else
 
         'Preform all actions associated with opening the item
-        Do While maxItem < itmSlot
+        Do While (UBound(boardList(activeBoardIndex).theData.itmActivate)) < itmSlot
             Call dimensionItemArrays
         Loop
 
@@ -2383,7 +2383,7 @@ Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal ar
             CBGetBoardNum = boardList(activeBoardIndex).theData.fightingYN
             Exit Function
         Case 10:
-            arrayPos1 = inBounds(arrayPos1, 1, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 1, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardNum = boardList(activeBoardIndex).theData.brdConst(arrayPos1)
             Exit Function
         Case 11:
@@ -2407,23 +2407,23 @@ Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal ar
             CBGetBoardNum = boardList(activeBoardIndex).theData.activationType(arrayPos1)
             Exit Function
         Case 16:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmX(arrayPos1)
             Exit Function
         Case 17:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmY(arrayPos1)
             Exit Function
         Case 18:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmLayer(arrayPos1)
             Exit Function
         Case 19:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmActivate(arrayPos1)
             Exit Function
         Case 20:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardNum = boardList(activeBoardIndex).theData.activationType(arrayPos1)
             Exit Function
         Case 21:
@@ -2527,31 +2527,31 @@ Function CBGetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal
             CBGetBoardString = boardList(activeBoardIndex).theData.activateDoneNum$(arrayPos1)
             Exit Function
         Case 13:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardString = boardList(activeBoardIndex).theData.itmName$(arrayPos1)
             Exit Function
         Case 14:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardString = boardList(activeBoardIndex).theData.itmVarActivate$(arrayPos1)
             Exit Function
         Case 15:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardString = boardList(activeBoardIndex).theData.itmDoneVarActivate$(arrayPos1)
             Exit Function
         Case 16:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardString = boardList(activeBoardIndex).theData.itmActivateInitNum$(arrayPos1)
             Exit Function
         Case 17:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardString = boardList(activeBoardIndex).theData.itmActivateDoneNum$(arrayPos1)
             Exit Function
         Case 18:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardString = boardList(activeBoardIndex).theData.itemProgram$(arrayPos1)
             Exit Function
         Case 19:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             CBGetBoardString = boardList(activeBoardIndex).theData.itemMulti$(arrayPos1)
             Exit Function
     End Select
@@ -2654,27 +2654,27 @@ Sub CBSetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arrayPo
             boardList(activeBoardIndex).theData.activationType(arrayPos1) = nValue
             Exit Sub
         Case 16:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.itmX(arrayPos1) = nValue
             Exit Sub
         Case 17:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.itmY(arrayPos1) = nValue
             Exit Sub
         Case 18:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             nValue = inBounds(nValue, 1, 8)
             boardList(activeBoardIndex).theData.itmLayer(arrayPos1) = nValue
             Exit Sub
         Case 19:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.itmActivate(arrayPos1) = nValue
             Exit Sub
         Case 20:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.activationType(arrayPos1) = nValue
             Exit Sub
@@ -2770,31 +2770,31 @@ Sub CBSetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arra
             boardList(activeBoardIndex).theData.activateDoneNum$(arrayPos1) = newVal
             Exit Sub
         Case 13:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             boardList(activeBoardIndex).theData.itmName$(arrayPos1) = newVal
             Exit Sub
         Case 14:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             boardList(activeBoardIndex).theData.itmVarActivate$(arrayPos1) = newVal
             Exit Sub
         Case 15:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             boardList(activeBoardIndex).theData.itmDoneVarActivate$(arrayPos1) = newVal
             Exit Sub
         Case 16:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             boardList(activeBoardIndex).theData.itmActivateInitNum$(arrayPos1) = newVal
             Exit Sub
         Case 17:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             boardList(activeBoardIndex).theData.itmActivateDoneNum$(arrayPos1) = newVal
             Exit Sub
         Case 18:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             boardList(activeBoardIndex).theData.itemProgram$(arrayPos1) = newVal
             Exit Sub
         Case 19:
-            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
+            arrayPos1 = inBounds(arrayPos1, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
             boardList(activeBoardIndex).theData.itemMulti$(arrayPos1) = newVal
             Exit Sub
     End Select
@@ -2825,12 +2825,12 @@ Function CBDestroyCanvas(ByVal canvasID As Long) As Long
     CBDestroyCanvas = 1
 End Function
 
-Function CBDrawCanvas(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long) As Long
+Function CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) As Long
     'callback 47
     'display an offscreen canvas
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvas(canvasID, X, Y)
+        Call DXDrawCanvas(canvasID, x, y)
         CBDrawCanvas = 1
     Else
         CBDrawCanvas = 0
@@ -2849,12 +2849,12 @@ Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal 
     End If
 End Function
 
-Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crTransparentColor As Long) As Long
+Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTransparentColor As Long) As Long
     'callback 49
     'display an offscreen canvas with transparency
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTransparent(canvasID, X, Y, crTransparentColor)
+        Call DXDrawCanvasTransparent(canvasID, x, y, crTransparentColor)
         CBDrawCanvasTransparent = 1
     Else
         CBDrawCanvasTransparent = 0
@@ -2873,13 +2873,13 @@ Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As L
     End If
 End Function
 
-Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
+Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
     'callback 51
     'display an offscreen canvas with translucency
     On Error Resume Next
     
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTranslucent(canvasID, X, Y, dIntensity, crUnaffectedColor, crTransparentColor)
+        Call DXDrawCanvasTranslucent(canvasID, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
         CBDrawCanvasTranslucent = 1
     Else
         CBDrawCanvasTranslucent = 0
@@ -2979,20 +2979,20 @@ Function CBLoadString(ByVal id As Long, ByVal defaultString As String) As String
     CBLoadString = LoadStringLoc(id, defaultString)
 End Function
 
-Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Double, ByVal Y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
+Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
     'callback 63
     'draw text to a canvas
     On Error Resume Next
-    Call CanvasDrawText(canvasID, Text, font, size, X, Y, crColor, (isBold = 1), (isItalics = 1), (isUnderline = 1), (isCentred = 1), (isOutlined = 1))
+    Call CanvasDrawText(canvasID, Text, font, size, x, y, crColor, (isBold = 1), (isItalics = 1), (isUnderline = 1), (isCentred = 1), (isOutlined = 1))
     CBCanvasDrawText = 1
 End Function
 
-Function CBCanvasPopup(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal stepSize As Long, ByVal popupType As Long) As Long
+Function CBCanvasPopup(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal stepSize As Long, ByVal popupType As Long) As Long
     'callback 64
     'draw canvas (but pop it up)
     On Error Resume Next
     stepSize = inBounds(stepSize, 1, 100)
-    Call PopupCanvas(canvasID, X, Y, stepSize, popupType)
+    Call PopupCanvas(canvasID, x, y, stepSize, popupType)
     CBCanvasPopup = 1
 End Function
 
@@ -3013,29 +3013,29 @@ Function CBCanvasHeight(ByVal canvasID As Long) As Long
 End Function
 
 
-Function CBCanvasDrawLine(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long) As Long
+Function CBCanvasDrawLine(ByVal canvasID As Long, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal crColor As Long) As Long
     'callback 67
     'draw a line to a canvas
     On Error Resume Next
-    Call CanvasDrawLine(canvasID, x1, y1, x2, y2, crColor)
+    Call CanvasDrawLine(canvasID, X1, Y1, X2, Y2, crColor)
     CBCanvasDrawLine = 1
 End Function
 
 
-Function CBCanvasDrawRect(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long) As Long
+Function CBCanvasDrawRect(ByVal canvasID As Long, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal crColor As Long) As Long
     'callback 68
     'draw a rect to a canvas
     On Error Resume Next
-    Call CanvasBox(canvasID, x1, y1, x2, y2, crColor)
+    Call CanvasBox(canvasID, X1, Y1, X2, Y2, crColor)
     CBCanvasDrawRect = 1
 End Function
 
 
-Function CBCanvasFillRect(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long) As Long
+Function CBCanvasFillRect(ByVal canvasID As Long, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal crColor As Long) As Long
     'callback 69
     'draw a filled rect to a canvas
     On Error Resume Next
-    Call CanvasFillBox(canvasID, x1, y1, x2, y2, crColor)
+    Call CanvasFillBox(canvasID, X1, Y1, X2, Y2, crColor)
     CBCanvasFillRect = 1
 End Function
 
@@ -3341,11 +3341,11 @@ Sub CBSetEnemySMP(ByVal amount As Long, ByVal eneIdx As Long)
     Call setEnemySMP(amount, enemyMem(eneIdx))
 End Sub
 
-Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal X As Long, ByVal Y As Long, ByVal width As Long, ByVal height As Long)
+Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long)
     'callback 104
     'draw fight background to canvas
     On Error Resume Next
-    Call CanvasDrawBackground(canvasID, projectPath & bkgPath & bkgFile, X, Y, width, height)
+    Call CanvasDrawBackground(canvasID, projectPath & bkgPath & bkgFile, x, y, width, height)
 End Sub
 
 Function CBCreateAnimation(ByVal file As String) As Long
@@ -3362,20 +3362,20 @@ Sub CBDestroyAnimation(ByVal idx As Long)
     Call DestroyAnimation(idx)
 End Sub
 
-Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal X As Long, ByVal Y As Long, ByVal forceDraw As Long, ByVal forceTranspFill As Long)
+Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal forceDraw As Long, ByVal forceTranspFill As Long)
     'callback 107
     'draw a loaded animation inot a canvas -- advance the frame if necissary
     'if forcedraw = 1 then it will force the frma eot be re-drawn
     On Error Resume Next
-    Call DrawAnimationIndexCanvas(idx, X, Y, canvasID, (forceDraw = 1), (forceTranspFill = 1))
+    Call DrawAnimationIndexCanvas(idx, x, y, canvasID, (forceDraw = 1), (forceTranspFill = 1))
 End Sub
 
-Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal frame As Long, ByVal X As Long, ByVal Y As Long, ByVal forceTranspFill As Long)
+Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal frame As Long, ByVal x As Long, ByVal y As Long, ByVal forceTranspFill As Long)
     'callback 108
     'draw a loaded animation inot a canvas (specific frame)
     On Error Resume Next
     
-    Call DrawAnimationIndexCanvasFrame(idx, frame, X, Y, canvasID, (forceTranspFill = 1))
+    Call DrawAnimationIndexCanvasFrame(idx, frame, x, y, canvasID, (forceTranspFill = 1))
 End Sub
 
 
@@ -3495,11 +3495,11 @@ Sub CBFightTick()
     Call fightTick
 End Sub
 
-Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
+Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
     'callback 125
     'draw text directly to the screen at x, y (pixels)
     On Error Resume Next
-    CBDrawTextAbsolute = DXDrawText(X, Y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
+    CBDrawTextAbsolute = DXDrawText(x, y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
 End Function
 
 Sub CBReleaseFighterCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
@@ -3552,12 +3552,12 @@ Sub CBFighterRemoveStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As Long, 
     Call partyMemberRemoveStatus(partyIdx, fightIdx, statusFile)
 End Sub
 
-Public Sub CBDrawImageHDC(ByVal file As String, ByVal X As Long, ByVal Y As Long, ByVal hdc As Long)
+Public Sub CBDrawImageHDC(ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal hdc As Long)
     On Error Resume Next
-    Call drawImage(PakLocate(projectPath & bmpPath & file), X, Y, hdc)
+    Call drawImage(PakLocate(projectPath & bmpPath & file), x, y, hdc)
 End Sub
 
-Public Sub CBDrawSizedImageHDC(ByVal file As String, ByVal X As Long, ByVal Y As Long, ByVal width As Long, ByVal height As Long, ByVal hdc As Long)
+Public Sub CBDrawSizedImageHDC(ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal hdc As Long)
     On Error Resume Next
-    Call DrawSizedImage(PakLocate(projectPath & bmpPath & file), X, Y, width, height, hdc)
+    Call DrawSizedImage(PakLocate(projectPath & bmpPath & file), x, y, width, height, hdc)
 End Sub

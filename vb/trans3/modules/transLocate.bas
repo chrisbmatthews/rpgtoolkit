@@ -7,7 +7,12 @@ Attribute VB_Name = "transLocate"
 
 '=========================================================================
 ' Manages board coordiantes
-' Status: B+
+'=========================================================================
+
+'=========================================================================
+' I've removed UsingPixelMovement(), and BoardIso() because they should
+' be inline and the overhead is not acceptable.
+' - Colin
 '=========================================================================
 
 Option Explicit
@@ -17,14 +22,13 @@ Option Explicit
 '=========================================================================
 Public movementSize As Double    'movement size (in tiles)
 
-Public Function isoCoordTransform(ByVal oldX As Double, ByVal oldY As Double, _
+'=========================================================================
+'Transform old-type isometric co-ordinates to new-type
+'=========================================================================
+Public Sub isoCoordTransform(ByVal oldX As Double, ByVal oldY As Double, _
                                   ByRef newX As Double, ByRef newY As Double)
-'======================================================
-'Transform old-type isometric co-ordinates to new-type.
-'======================================================
-'By Delano for 3.0.5
 
-    If boardIso() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         newX = oldX + Int((oldY - 1) / 2)
         newY = Int(oldY / 2) + 1 - Int(oldX) + (oldY - Int(oldY))
         
@@ -34,16 +38,15 @@ Public Function isoCoordTransform(ByVal oldX As Double, ByVal oldY As Double, _
         newY = oldY
     End If
                                 
-End Function
+End Sub
 
-Public Function invIsoCoordTransform(ByVal newX As Double, ByVal newY As Double, _
+'=========================================================================
+'Inverse transform old-type isometric co-ordinates to new-type
+'=========================================================================
+Public Sub invIsoCoordTransform(ByVal newX As Double, ByVal newY As Double, _
                                      ByRef oldX As Double, ByRef oldY As Double)
-'==============================================================
-'Inverse transform old-type isometric co-ordinates to new-type.
-'==============================================================
-'By Delano for 3.0.5
 
-    If boardIso() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
     
         newY = newY - boardList(activeBoardIndex).theData.bSizeX
     
@@ -60,21 +63,7 @@ Public Function invIsoCoordTransform(ByVal newX As Double, ByVal newY As Double,
         oldY = newY
     End If
                                 
-End Function
-
-'=========================================================================
-' Return if we are using pixel movement
-'=========================================================================
-Public Property Get usingPixelMovement() As Boolean
-    usingPixelMovement = (movementSize <> 1)
-End Property
-
-'=========================================================================
-' Return if we're on an isometric board
-'=========================================================================
-Public Property Get boardIso() As Boolean
-    boardIso = (boardList(activeBoardIndex).theData.isIsometric = 1)
-End Property
+End Sub
 
 '=========================================================================
 ' Return if the board passed in is isometric
@@ -95,13 +84,13 @@ End Function
 ' Called by putSpriteAt, checkScrollEast, checkScrollWest
 '=========================================================================
 Public Function getBottomCentreX(ByVal boardX As Double, ByVal boardY As Double) As Long
-                                 
+
     On Error Resume Next
-    
+
     'Co-ordinate transforms for isometrics from 3.0.5!
-    
-    If boardIso() Then
-    
+
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+
         Call isoCoordTransform(boardX, boardY, boardX, boardY)
         getBottomCentreX = Int((boardX - (boardY - boardList(activeBoardIndex).theData.bSizeX) - topX * 2) * 32)
 
@@ -121,20 +110,16 @@ End Function
 Public Function getBottomCentreY(ByVal boardX As Double, ByVal boardY As Double) As Long
 
     On Error Resume Next
-    
+
     'Co-ordinate transforms for isometrics from 3.0.5!
-    
-    If boardIso() Then
-    
+
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         Call isoCoordTransform(boardX, boardY, boardX, boardY)
         getBottomCentreY = Int((boardX + (boardY - boardList(activeBoardIndex).theData.bSizeX) - (topY * 2 + 1)) * 16)
-    
     Else
-    
         getBottomCentreY = Int((boardY - topY) * 32)
-        
     End If
-    
+
 End Function
 
 '=========================================================================
@@ -149,11 +134,11 @@ Public Sub incrementPosition( _
 
     With pos
 
-        If boardIso() Then
-        
+        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+
             'Co-ordinate transform!
             Call isoCoordTransform(.x, .y, .x, .y)
-            
+
             Select Case pend.direction
 
                 Case MV_NE
@@ -215,24 +200,20 @@ Public Sub incrementPosition( _
 
                 Case MV_NORTH
                     .y = .y - moveFraction
-                    
                     If .y < pend.yTarg Then .y = pend.yTarg
             
                 Case MV_SOUTH
                     .y = .y + moveFraction
-                    
                     If .y > pend.yTarg Then .y = pend.yTarg
-            
+
                 Case MV_EAST
                     .x = .x + moveFraction
-                    
                     If .x > pend.xTarg Then .x = pend.xTarg
-                
+
                 Case MV_WEST
                     .x = .x - moveFraction
-                    
                     If .x < pend.xTarg Then .x = pend.xTarg
-                    
+
             End Select
 
         End If 'boardIso
@@ -246,9 +227,6 @@ End Sub
 '=========================================================================
 Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
 
-    'Called by moveItems and movePlayers only.
-    'Called once in a movement cycle.
-
     On Error Resume Next
 
     'Catch the movementSize property (speed reasons)
@@ -257,12 +235,12 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
 
     With pend
 
-        If boardIso() Then
-        
+        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+
             'Co-ordinate transform!!
             '============================================================
             Call isoCoordTransform(.xOrig, .yOrig, .xOrig, .yOrig)
-            
+
             Select Case .direction
 
                 Case MV_NE
@@ -302,11 +280,11 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
                     .yTarg = .yOrig
 
             End Select
-            
+
             Call invIsoCoordTransform(.xTarg, .yTarg, .xTarg, .yTarg)
             Call invIsoCoordTransform(.xOrig, .yOrig, .xOrig, .yOrig)       'Don't forget these!
             '========================================================
-        
+
         Else
             '2D.
             Select Case .direction
@@ -350,21 +328,19 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
             End Select
 
         End If 'boardIso
-        
+
        .lTarg = .lOrig
-    
+
     End With 'pend
 
 End Sub
 
-Public Function roundCoords(ByRef passpos As PLAYER_POSITION, _
+'=========================================================================
+' Round player coords
+'=========================================================================
+Public Function roundCoords(ByRef passPos As PLAYER_POSITION, _
                             ByVal direction As Long) As PLAYER_POSITION
-    '==================================================================
-    'Rounds player coordinates [KSNiloc/Delano]
-    '==================================================================
-    
-    'Called by programTest, passing in the target co-ordinates after (pixel) movement.
-    
+
     'We want programs to trigger when it *appears* that the sprite is in far enough onto the
     'tile to trigger it.
     'Sprite size will vary widely, but we assume 32px wide, with "feet" at the very base of
@@ -387,82 +363,82 @@ Public Function roundCoords(ByRef passpos As PLAYER_POSITION, _
     '   Decimal checks on the co-ords ensure this.
 
     Dim rx As Double, ry As Double, pos As PLAYER_POSITION
-    
-    If Not usingPixelMovement() Then
-        roundCoords = passpos
+
+    If Not (movementSize <> 1) Then
+        roundCoords = passPos
         Exit Function
     End If
-    
-    pos = passpos                                           'Copy across to a local.
+
+    pos = passPos                                           'Copy across to a local.
     With pos
-        
-        If boardIso() Then
+
+        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
             'The conditions are slightly different because the sprite's base is a different
             'shape. Also, directions have rotated.
-            
+
             Call isoCoordTransform(.x, .y, .x, .y)
-            
+
             Select Case direction
-            
+
                 'First, check technical East-West. Directions have rotated, so North is now
                 'NorthEast, SouthEast is now South etc.
                 Case MV_EAST, MV_SE, MV_SOUTH
-                
+
                     If .x - Int(.x) = 1 - movementSize Then
                         rx = -Int(-.x)
                         If Abs(.y - Round(.y)) <= movementSize Then    '<= 1/4 [sprite width / 2]
                             ry = Round(.y)
                         End If
                     End If
-                    
+
                 Case MV_NORTH, MV_NW, MV_WEST
-                
+
                     If .x - Int(.x) = movementSize Then
                         rx = Int(.x)
                         If Abs(.y - Round(.y)) <= movementSize Then    '<= 1/4
                             ry = Round(.y)
                         End If
                     End If
-                    
+
             End Select
-    
+
             Select Case direction
-    
+
                 'Now check technical North-South. Overwrite rx for diagonals if found.
                 Case MV_NORTH, MV_NE, MV_EAST
-    
+
                     If .y - Int(.y) = movementSize Then
                         ry = Int(.y)
                         If Abs(.x - Round(.x)) <= movementSize Then    '<= 1/4
                             rx = Round(.x)
                         End If
                     End If
-    
+
                 Case MV_WEST, MV_SW, MV_SOUTH
-    
+
                     If .y - Int(.y) = 1 - movementSize Then
                         ry = -Int(-.y)
                         If Abs(.x - Round(.x)) <= movementSize Then    '<= 1/4
                             rx = Round(.x)
                         End If
                     End If
-                    
+
                 Case MV_SE, MV_NW
+                    ' Prevent "Case Else"
+
                 Case Else
-                
+
                     rx = Round(.x)
                     ry = Round(.y)
     
             End Select
-            
+
             'All cases, assign what we've calculated.
             'Most of the time these will be zero, and no prg will trigger, which prevents
             'multiple runnings whilst walking over a tile.
             .x = rx
             .y = ry
-            
-'Call traceString("passPos.x=" & passPos.x & " passpos.y=" & passPos.y & " .x=" & .x & " .y=" & .y)
-        
+
             Call invIsoCoordTransform(.x, .y, .x, .y)
     
         Else
@@ -501,47 +477,49 @@ Public Function roundCoords(ByRef passpos As PLAYER_POSITION, _
                     End If
                     
                 Case MV_EAST, MV_WEST
+                    ' Prevent "Case Else"
+
                 Case Else
                 
                     rx = Round(.x)
                     ry = Round(.y)
     
             End Select
-            
+
             'All cases, assign what we've calculated.
             .x = rx
             .y = -Int(-.y)
-    
+
         End If 'boardIso
-        
+
     End With 'pos
 
     roundCoords = pos
 
 End Function
 
-Public Function activationCoords(ByRef passpos As PLAYER_POSITION, _
-                                 ByRef roundPos As PLAYER_POSITION) As PLAYER_POSITION
-'=====================================================================================
+'=========================================================================
 'Increment the player co-ords one tile from the direction they are facing, to test
 'if items or programs lie directly in front of them.
 'Called by programTest only.
-'=====================================================================================
-'By Delano for 3.0.5
+'=========================================================================
+Public Function activationCoords(ByRef passPos As PLAYER_POSITION, _
+                                 ByRef roundPos As PLAYER_POSITION) As PLAYER_POSITION
 
-Dim passX As Double, passY As Double
-Dim ret As PLAYER_POSITION
+    Dim passX As Double, passY As Double
+    Dim ret As PLAYER_POSITION
 
-    Call isoCoordTransform(passpos.x, passpos.y, passX, passY)
-    
-    If boardIso() Then
-    
+    Call isoCoordTransform(passPos.x, passPos.y, passX, passY)
+
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+
         'For iso px/tile we can't get closer than a tile (if solid).
         'If .y not integer (px}, it won't trigger, which is good because
         'we don't want it to unless we're right next to it.
-        Select Case LCase$(passpos.stance)
+        Select Case LCase$(passPos.stance)
+
             Case "walk_n", "stand_n"
-            
+
                 If passX = Int(passX) Then 'Pushing against a right-hand edge.
                     ret.x = passX - 1
                 Else
@@ -552,9 +530,9 @@ Dim ret As PLAYER_POSITION
                 Else
                     ret.y = Round(passY)
                 End If
-            
+
             Case "walk_s", "stand_s"
-            
+
                 If passX = Int(passX) Then 'Pushing against a right-hand edge.
                     ret.x = passX + 1
                 Else
@@ -565,9 +543,9 @@ Dim ret As PLAYER_POSITION
                 Else
                     ret.y = Round(passY)
                 End If
-                
+
             Case "walk_e", "stand_e"
-            
+
                 If passX = Int(passX) Then 'Pushing against an upper edge.
                     ret.x = passX + 1
                 Else
@@ -578,9 +556,9 @@ Dim ret As PLAYER_POSITION
                 Else
                     ret.y = Round(passY)
                 End If
-            
+
             Case "walk_w", "stand_w"
-            
+
                 If passX = Int(passX) Then 'Pushing against an upper edge.
                     ret.x = passX - 1
                 Else
@@ -591,81 +569,86 @@ Dim ret As PLAYER_POSITION
                 Else
                     ret.y = Round(passY)
                 End If
-                
+
             Case "walk_ne", "stand_ne"
                 ret.y = passY - 1
                 ret.x = Round(passX)
+
             Case "walk_nw", "stand_nw"
                 ret.x = passX - 1
                 ret.y = Round(passY)
+
             Case "walk_se", "stand_se"
                 ret.x = passX + 1
                 ret.y = Round(passY)
+
             Case "walk_sw", "stand_sw"
                 ret.y = passY + 1
                 ret.x = Round(passX)
+
         End Select
-        
+
     Else
-    
+
         'Using .stance because pend.direction could be mv_idle.
-        Select Case LCase$(passpos.stance)
+        Select Case LCase$(passPos.stance)
+
             Case "walk_n", "stand_n"
-            
+
                 ret.x = roundPos.x
-                If usingPixelMovement Then
-                    ret.y = Round(passpos.y)
+                If (movementSize <> 1) Then
+                    ret.y = Round(passPos.y)
                 Else
-                    ret.y = passpos.y - 1
+                    ret.y = passPos.y - 1
                 End If
-                
+
             Case "walk_s", "stand_s"
-            
+
                 ret.x = roundPos.x
-                ret.y = Int(passpos.y) + 1
-                
+                ret.y = Int(passPos.y) + 1
+
             Case "walk_e", "stand_e"
-            
-                ret.x = Int(passpos.x) + 1
-                ret.y = -Int(-passpos.y)
-                
+
+                ret.x = Int(passPos.x) + 1
+                ret.y = -Int(-passPos.y)
+
             Case "walk_w", "stand_w"
-            
-                ret.x = -Int(-passpos.x) - 1
-                ret.y = -Int(-passpos.y)
-                
+
+                ret.x = -Int(-passPos.x) - 1
+                ret.y = -Int(-passPos.y)
+
             Case "walk_ne", "stand_ne"
-            
-                ret.x = Int(passpos.x) + 1
-                If usingPixelMovement Then
-                    ret.y = Round(passpos.y) - 1
+
+                ret.x = Int(passPos.x) + 1
+                If (movementSize <> 1) Then
+                    ret.y = Round(passPos.y) - 1
                 Else
-                    ret.y = passpos.y - 1
+                    ret.y = passPos.y - 1
                 End If
-                
+
             Case "walk_nw", "stand_nw"
-            
-                ret.x = -Int(-passpos.x) - 1
-                If usingPixelMovement Then
-                    ret.y = Round(passpos.y) - 1
+
+                ret.x = -Int(-passPos.x) - 1
+                If (movementSize <> 1) Then
+                    ret.y = Round(passPos.y) - 1
                 Else
-                    ret.y = passpos.y - 1
+                    ret.y = passPos.y - 1
                 End If
-                
+
             Case "walk_se", "stand_se"
-            
-                ret.x = Int(passpos.x) + 1
-                ret.y = Int(passpos.y) - 1
-                
+
+                ret.x = Int(passPos.x) + 1
+                ret.y = Int(passPos.y) - 1
+
             Case "walk_sw", "stand_sw"
-            
-                ret.x = -Int(-passpos.x) - 1
-                ret.y = Int(passpos.y) + 1
-                
+
+                ret.x = -Int(-passPos.x) - 1
+                ret.y = Int(passPos.y) + 1
+
        End Select
-        
+
     End If 'boardIso
-    
+
     activationCoords = ret
 
 End Function

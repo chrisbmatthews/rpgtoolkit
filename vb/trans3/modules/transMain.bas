@@ -16,32 +16,46 @@ Option Explicit
 ' Declarations
 '=======================================================================
 
-'Clock sync procedures
-Private Declare Sub initClock Lib "actkrt3.dll" (ByVal fps As Long)
-Private Declare Sub clockStart Lib "actkrt3.dll" ()
-Private Declare Sub clockSync Lib "actkrt3.dll" ()
-
-'Main loop procedure
+' Main loop procedure
 Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As Long)
 
-Public gGameState As GAME_LOGIC_STATE   'current state of logic
+' Current state of logic
+Public gGameState As GAME_LOGIC_STATE
 
-'3.0.5 - testing.
-Public gAvgTime As Double               'Average loop time in GS_MOVEMENT state.
+' Average loop time in GS_MOVEMENT state
+Public gAvgTime As Double
 
-Public Enum GAME_LOGIC_STATE            'state of gameLogic() procedure
-    GS_IDLE = 0                         '  just re-renders the screen
-    GS_QUIT = 1                         '  shutdown sequence
-    GS_MOVEMENT = 2                     '  movement is occurring (players or items)
-    GS_DONEMOVE = 3                     '  movement is finished
-    GS_PAUSE = 4                        '  pause game (do nothing)
+' State of gameLogic() procedure
+Public Enum GAME_LOGIC_STATE
+
+    ' Just re-renders the screen
+    GS_IDLE = 0
+
+    ' Shutdown sequence
+    GS_QUIT = 1
+
+    ' Movement is occurring (players or items)
+    GS_MOVEMENT = 2
+
+    ' Movement is finished
+    GS_DONEMOVE = 3
+
+    ' Pause game (do nothing)
+    GS_PAUSE = 4
+
 End Enum
 
-'Public movementCounter As Long         'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
-Public saveFileLoaded As Boolean        'was the game loaded from start menu?
-Public runningAsEXE As Boolean          'are we running as an exe file?
-Public gShuttingDown As Boolean         'Has the shutdown process been initiated?
-Public host As New clsDirectXHost       'DirectX host window
+' Was the game loaded from start menu?
+Public saveFileLoaded As Boolean
+
+' Are we running as an exe file?
+Public runningAsEXE As Boolean
+
+' Has the shutdown process been initiated?
+Public gShuttingDown As Boolean
+
+' DirectX host window
+Public host As New CDirectXHost
 
 '=======================================================================
 ' Main entry point
@@ -101,10 +115,10 @@ End Sub
 '=======================================================================
 Private Function getMainFilename() As String
 
-    'Precedurence is as follows:
-    ' + Command line
-    ' + Main.gam
-    ' + File dialog
+    ' Precedurence is as follows:
+    '  + Command line
+    '  + Main.gam
+    '  + File dialog
 
     On Error Resume Next
 
@@ -139,7 +153,7 @@ Private Function getMainFilename() As String
 
         ElseIf (UBound(args) = 1) Then
 
-            'run program
+            ' Run program
             mainFile = gamPath & args(0)
             Call openMain(mainFile, mainMem)
             Call openSystems(True)
@@ -154,7 +168,7 @@ Private Function getMainFilename() As String
 
         If (fileExists(gamPath & "main.gam")) Then
 
-            'main.gam exists.
+            ' Main.gam exists.
             getMainFilename = gamPath & "main.gam"
 
         Else
@@ -168,7 +182,7 @@ Private Function getMainFilename() As String
                 .strTitle = "Open Main File"
                 .strDefaultExt = "gam"
                 .strFileTypes = "Supported Files|*.gam;*.tpk|RPG Toolkit Main File (*.gam)|*.gam|RPG Toolkit PakFile (*.tpk)|*.tpk|All files(*.*)|*.*"
-                If Not (OpenFileDialog(dlg)) Then 'user pressed cancel
+                If Not (OpenFileDialog(dlg)) Then ' User pressed cancel
                     Exit Function
                 End If
                 loadedMainFile = .strSelectedFile
@@ -202,13 +216,13 @@ Private Sub correctPaths()
 
     On Error Resume Next
 
-    'If we're running from a single file, the project is in this directory
+    ' If we're running from a single file, the project is in this directory
     If ((runningAsEXE) Or (pakFileRunning)) Then
         projectPath = ""
         currentDir = TempDir() & "TKCache\"
     End If
 
-    'Make sure we're still in the right directory
+    ' Make sure we're still in the right directory
     Call ChDir(currentDir)
 
 End Sub
@@ -258,66 +272,63 @@ End Sub
 Public Sub gameLogic()
 
     On Local Error Resume Next
-    
-    'This procedure contains all of the engine's logic. It is constantly
-    'called until gGameState == GS_QUIT, the user closes the window, or
-    'a few other things.
-    
+
+    ' This procedure contains all of the engine's logic. It is constantly
+    ' called until gGameState == GS_QUIT, the user closes the window, or
+    ' a few other things.
+
     Static renderTime As Double, renderCount As Long, renderPile As Double
     renderTime = Timer()
 
-    'Start the sync clock
-    Call clockStart
-
-    Static checkFight As Long   'Used to track number of times fighting
-                                '*would* have been checked for if not
-                                'in pixel movement. In pixel movement,
-                                'only check every four steps (one tile).
+    Static checkFight As Long   ' Used to track number of times fighting
+                                ' *would* have been checked for if not
+                                ' in pixel movement. In pixel movement,
+                                ' only check every four steps (one tile).
 
     Select Case gGameState
 
         Case GS_IDLE            'IDLE STATE
                                 '----------
-            Call checkMusic         'keep the music looping
-            Call scanKeys           'scan for important keys
-            Call updateGameTime     'update time game has been running for
+            Call checkMusic         ' Keep the music looping
+            Call scanKeys           ' Scan for important keys
+            Call updateGameTime     ' Update time game has been running for
             
-            'Check the player's queue to see if movement is about to start.
+            'C heck the player's queue to see if movement is about to start.
             If LenB(pendingPlayerMovement(selectedPlayer).queue) <> 0 Then
-                'There is a queue.
+                ' There is a queue.
                 gGameState = GS_MOVEMENT
             End If
-            
+
             If gGameState <> GS_MOVEMENT Then
-                'Check we're not about to start moving again.
-                Call multiTaskNow       'run rpgcode multitasking
+                ' Check we're not about to start moving again.
+                Call multiTaskNow
                 Call moveItems
             End If
-            
-            Call renderNow          'render the scene
+
+            Call renderNow          ' Render the scene
 
         Case GS_PAUSE           'PAUSE STATE
                                 '-----------
-            Call checkMusic         'just keep the music looping
+            Call checkMusic         ' Just keep the music looping
 
         Case GS_MOVEMENT        'MOVEMENT STATE
                                 '--------------
 
-            'Make sure this runs for the duration of the player's move.
-            'Run this before movePlayers since .loopFrame will be reset by it.
-            If pPos(selectedPlayer).loopFrame + 1 < FRAMESPERMOVE * (playerMem(selectedPlayer).loopSpeed + loopOffset) Then
-                'We're still moving
+            ' Make sure this runs for the duration of the player's move.
+            ' Run this before movePlayers since .loopFrame will be reset by it.
+            If (pPos(selectedPlayer).loopFrame + 1 < FRAMESPERMOVE * (playerMem(selectedPlayer).loopSpeed + loopOffset)) Then
+                ' We're still moving
                 gGameState = GS_MOVEMENT
             Else
-                'We're done movement
+                ' We're done movement
                 gGameState = GS_DONEMOVE
             End If
 
-            Call multiTaskNow       'run rpgcode multitasking
-            Call movePlayers        'move players
-            Call moveItems          'move items
+            Call multiTaskNow       ' Run rpgcode multitasking
+            Call movePlayers        ' Move players
+            Call moveItems          ' Move items
 
-            'Re-render the scene
+            ' Re-render the scene
             Call renderNow(-1, True)
 
         Case GS_DONEMOVE        'DONE MOVEMENT STATE
@@ -325,27 +336,27 @@ Public Sub gameLogic()
 
             With pendingPlayerMovement(selectedPlayer)
 
-                'check if player moved...
+                ' Check if player moved
                 If (.direction <> MV_IDLE) Then
-                    'will create a temporary player position which is based on
-                    'the target location for that players' movement.
-                    'lets us test solid tiles, etc
+                    ' We'll create a temporary player position which is based on
+                    ' the target location for that players' movement.
+                    ' lets us test solid tiles, etc.
                     Dim tempPos As PLAYER_POSITION
                     tempPos = pPos(selectedPlayer)
 
                     tempPos.l = .lTarg
-                    tempPos.X = .xTarg
-                    tempPos.Y = .yTarg
+                    tempPos.x = .xTarg
+                    tempPos.y = .yTarg
 
-                    'Test for a program
+                    ' Test for a program
                     Call programTest(tempPos)
 
-                    'Flag player is no longer moving
+                    ' Flag player is no longer moving
                     .direction = MV_IDLE
 
-                    'Test for a fight
+                    ' Test for a fight
                     checkFight = checkFight + 1
-                    If checkFight = (1 / movementSize) Then
+                    If (checkFight = (1 / movementSize)) Then
                         Call fightTest
                         checkFight = 0
                     End If
@@ -354,13 +365,13 @@ Public Sub gameLogic()
 
             End With
 
-            'clear player movements
+            ' Clear player movements
             Dim i As Long
             For i = 0 To UBound(pendingPlayerMovement)
                 pendingPlayerMovement(i).direction = MV_IDLE
             Next i
 
-            'Convert *STUPID* string positions to numerical
+            ' Convert *STUPID* string positions to numerical
             Select Case UCase$(pPos(selectedPlayer).stance)
                 Case "WALK_S": facing = South
                 Case "WALK_W": facing = West
@@ -368,26 +379,23 @@ Public Sub gameLogic()
                 Case "WALK_E": facing = East
             End Select
 
-            'Back to idle state
+            ' Back to idle state
             gGameState = GS_IDLE
 
         Case GS_QUIT            'QUIT STATE
                                 '----------
-            'End the program
+            ' End the program
             Call endProgram
 
     End Select
 
-    'Time a render.
-    If gGameState = GS_MOVEMENT Then
+    ' Time a render.
+    If (gGameState = GS_MOVEMENT) Then
         renderTime = Timer() - renderTime
         renderPile = renderPile + renderTime
         renderCount = renderCount + 1
         gAvgTime = renderPile / renderCount
     End If
-
-    'Sync the clock
-    Call clockSync
 
 End Sub
 
@@ -408,7 +416,6 @@ Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call DXClearScreen(0)
     Call DXRefresh
     Call setupMain(testingPRG)
-    Call initClock(RENDER_FPS)
 End Sub
 
 '=======================================================================
@@ -456,105 +463,105 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     On Error Resume Next
 
-    'Setup the cursor
+    ' Setup the cursor
     host.cursorHotSpotX = mainMem.hotSpotX
     host.cursorHotSpotY = mainMem.hotSpotY
     host.mousePointer = mainMem.mouseCursor
 
-    'Nulify top x/y vars
+    ' Nulify top x/y vars
     topX = 0
     topY = 0
 
-    'Set default shop colors
+    ' Set default shop colors
     shopColors(0) = -1
 
-    'If we're running as an exe, don't show the debug window!
+    ' If we're running as an exe, don't show the debug window!
     If (Not runningAsEXE) Then
         debugYN = 1
     Else
         debugYN = 0
     End If
 
-    fontName = "Arial"              'Default true type font
-    fontSize = 20                   'Default font ize
-    fontColor = vbQBColor(15)       'White
-    MWinBkg = vbQBColor(0)          'Black
-    mwinLines = 4                   'Lines MWin can hold
-    textX = 1                       'Text location X
-    textY = 1                       'Text location Y
-    lineNum = 1                     'First line in MWin
-    saveFileLoaded = False          'Starting new game
+    fontName = "Arial"              ' Default true type font
+    fontSize = 20                   ' Default font ize
+    fontColor = vbQBColor(15)       ' White
+    MWinBkg = vbQBColor(0)          ' Black
+    mwinLines = 4                   ' Lines MWin can hold
+    textX = 1                       ' Text location X
+    textY = 1                       ' Text location Y
+    lineNum = 1                     ' First line in MWin
+    saveFileLoaded = False          ' Starting new game
 
-    'Set initial pixel movement value
+    ' Set initial pixel movement value
     If (mainMem.pixelMovement = 1) Then
         movementSize = 0.25
     Else
         movementSize = 1
     End If
 
-    'Set initial game speed
+    ' Set initial game speed
     Call gameSpeed(mainMem.gameSpeed)
 
-    'Register all fonts
+    ' Register all fonts
     Call LoadFontsFromFolder(projectPath & fontPath)
 
-    'Change the DirectX host's caption to the game's title (for windowed mode)
+    ' Change the DirectX host's caption to the game's title (for windowed mode)
     If (mainMem.gameTitle <> "") Then
         host.Caption = mainMem.gameTitle
     End If
 
     If (mainMem.initChar <> "") Then
-        'If a main character has been specified, load it
+        ' If a main character has been specified, load it
         Call CreateCharacter(projectPath & temPath & mainMem.initChar, 0)
     End If
 
-    'Unless we're testing a program from the PRG editor, run the
-    'startup program
+    ' Unless we're testing a program from the PRG editor, run the
+    ' startup program
     If (Not testingPRG) Then
         Call runProgram(projectPath & prgPath & mainMem.startupPrg, , , True)
     End If
 
-    'Unless we loaded a game (using Load()) or we're testing a PRG from
-    'the program editor, send the player to the initial board
+    ' Unless we loaded a game (using Load()) or we're testing a PRG from
+    ' the program editor, send the player to the initial board
     If (Not saveFileLoaded) And (Not testingPRG) Then
 
-        'Nullify some variables
+        ' Nullify some variables
         scTopX = -1000
         scTopY = -1000
         lastRender.canvas = -1
 
-        'Open up the starting board
+        ' Open up the starting board
         Call ClearNonPersistentThreads
         Call openBoard(projectPath & brdPath & mainMem.initBoard, boardList(activeBoardIndex).theData)
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)
         Call openItems
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
         
-        'Set to use player 0 as walking graphics
+        ' Set to use player 0 as walking graphics
         selectedPlayer = 0
 
-        'Setup player position
+        ' Setup player position
         With pPos(selectedPlayer)
-            .X = boardList(activeBoardIndex).theData.playerX
-            .Y = boardList(activeBoardIndex).theData.playerY
+            .x = boardList(activeBoardIndex).theData.playerX
+            .y = boardList(activeBoardIndex).theData.playerY
             .l = boardList(activeBoardIndex).theData.playerLayer
             .stance = "WALK_S"
             .frame = 0
-            pendingPlayerMovement(selectedPlayer).xOrig = .X
-            pendingPlayerMovement(selectedPlayer).yOrig = .Y
+            pendingPlayerMovement(selectedPlayer).xOrig = .x
+            pendingPlayerMovement(selectedPlayer).yOrig = .y
             pendingPlayerMovement(selectedPlayer).lOrig = .l
             .loopFrame = -1
             playerMem(selectedPlayer).loopSpeed = 1
         End With
 
 
-        'Hide all players except the walking graphic one
+        ' Hide all players except the walking graphic one
         Dim pNum As Long
         For pNum = 0 To UBound(showPlayer)
             showPlayer(pNum) = (pNum = selectedPlayer)
         Next pNum
 
-        'Start him facing south
+        ' Start him facing south
         facing = South
 
     End If

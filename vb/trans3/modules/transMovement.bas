@@ -159,7 +159,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
     Call isoCoordTransform(pos.x, pos.y, posX, posY)
     Call isoCoordTransform(pend.xTarg, pend.yTarg, xTarg, yTarg)
     
-    If boardIso() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         pMovementSize = 1       '"Sprite depth"
     Else
         pMovementSize = movementSize
@@ -177,7 +177,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                                    txTarg, _
                                    tyTarg)
         
-            If Not usingPixelMovement Then
+            If Not (movementSize <> 1) Then
                 'Tile movement.
                 
                 'Current (test!) location against player current location.
@@ -264,7 +264,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
         
 
     'Items.
-    For i = 0 To maxItem
+    For i = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
     
         If LenB(itemMem(i).itemName) <> 0 And i <> currentItem Then
     
@@ -274,7 +274,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                                    txTarg, _
                                    tyTarg)
                                    
-            If Not (usingPixelMovement) Then
+            If Not ((movementSize <> 1)) Then
                 'Tile movement.
             
                 'Current locations.
@@ -624,7 +624,7 @@ Private Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal
     On Error Resume Next
     
     Dim typetile As Long
-    typetile = boardList(activeBoardIndex).theData.tileType(x, y, l)
+    typetile = boardList(activeBoardIndex).theData.tiletype(x, y, l)
     
     If bFast Then
         EffectiveTileType = typetile
@@ -720,7 +720,7 @@ Private Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boo
         testY = targetY 'The bottom row of the board
         
         'Only notice if you move from iso to normal boards
-        'Trial with new function. If bad then use boardIso()
+        'Trial with new function. If bad then use (boardList(activeBoardIndex).theData.isIsometric = 1)
         If linkIso(projectPath & brdPath & targetBoard$) Then
             If pPos(playerNum).y Mod 2 <> targetY Mod 2 Then
                 testY = testY - 1
@@ -732,7 +732,7 @@ Private Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boo
         
         testY = 1
         
-        'Trial with new function. If bad then use boardIso()
+        'Trial with new function. If bad then use (boardList(activeBoardIndex).theData.isIsometric = 1)
         If linkIso(projectPath & brdPath & targetBoard$) Then
             
             testY = 3 'This fixes sprites starting off top of screen also!
@@ -872,7 +872,7 @@ Public Function obtainTileType(ByVal testX As Double, _
                                ByVal testY As Double, _
                                ByVal testL As Long, _
                                ByVal direction As Long, _
-                               ByRef passpos As PLAYER_POSITION, _
+                               ByRef passPos As PLAYER_POSITION, _
                                Optional ByVal activeItem As Long = -1) As Byte
 
     '===========================================================
@@ -893,20 +893,20 @@ Public Function obtainTileType(ByVal testX As Double, _
     
     If testX < 1 Or testY < 1 Then Exit Function
     
-    If Not (usingPixelMovement) Then
+    If Not ((movementSize <> 1)) Then
     'If True Then
     
         'Tiletype at the target.
-        If boardIso Then
+        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
             'Call invIsoCoordTransform(testX, testY, testX, testY)
-            typetile = boardList(activeBoardIndex).theData.tileType(testX, testY, testL)
+            typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testL)
         Else
-            typetile = boardList(activeBoardIndex).theData.tileType(testX, testY, testL)
+            typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testL)
         End If
         
     Else
     
-        If boardIso() Then
+        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         
             '========================================================================
             ' Co-ordinate transform! New type to old.
@@ -933,9 +933,9 @@ Public Function obtainTileType(ByVal testX As Double, _
                      
                      'Inverse transform: [to stay away - different to 2D]
                      Call invIsoCoordTransform(Int(testX), Int(testY), trX, trY)
-                     first = .tileType(trX, trY, testL)
+                     first = .tiletype(trX, trY, testL)
                      Call invIsoCoordTransform(-Int(-testX), Int(testY), trX, trY)
-                     second = .tileType(trX, trY, testL)
+                     second = .tiletype(trX, trY, testL)
                      
                      
                  Case MV_SW
@@ -944,9 +944,9 @@ Public Function obtainTileType(ByVal testX As Double, _
                  
                      'Transform:
                      Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                     first = .tileType(trX, trY, testL)
+                     first = .tiletype(trX, trY, testL)
                      Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
-                     second = .tileType(trX, trY, testL)
+                     second = .tiletype(trX, trY, testL)
                  
                  
                  Case MV_SE
@@ -955,9 +955,9 @@ Public Function obtainTileType(ByVal testX As Double, _
                  
                      'Transform: [to approach]
                      Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
-                     first = .tileType(trX, trY, testL)
+                     first = .tiletype(trX, trY, testL)
                      Call invIsoCoordTransform(-Int(-testX), Int(testY), trX, trY)
-                     second = .tileType(trX, trY, testL)
+                     second = .tiletype(trX, trY, testL)
                  
                  Case MV_NW
                      '#first = .tileType(Int(testX), -Int(-testY), testL)
@@ -965,9 +965,9 @@ Public Function obtainTileType(ByVal testX As Double, _
                      
                      'Transform: [to stay away]
                      Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                     first = .tileType(trX, trY, testL)
+                     first = .tiletype(trX, trY, testL)
                      Call invIsoCoordTransform(Int(testX), Int(testY), trX, trY)
-                     second = .tileType(trX, trY, testL)
+                     second = .tiletype(trX, trY, testL)
                 
                  
                  'Problems if approaching walls.
@@ -979,7 +979,7 @@ Public Function obtainTileType(ByVal testX As Double, _
                          
                      'Transform: [to approach]
                      Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                     typetile = .tileType(trX, trY, testL)
+                     typetile = .tiletype(trX, trY, testL)
                          
                          
                      If testX > Int(testX) Then
@@ -988,7 +988,7 @@ Public Function obtainTileType(ByVal testX As Double, _
                          
                          'Transform: [to approach]
                          Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
-                         typetile = .tileType(trX, trY, testL)
+                         typetile = .tiletype(trX, trY, testL)
                          
                      End If
                      If testY > Int(testY) Then
@@ -998,9 +998,9 @@ Public Function obtainTileType(ByVal testX As Double, _
                          
                          'Transform: [to approach]
                          Call invIsoCoordTransform(Int(testX), Int(testY), trX, trY)
-                         first = .tileType(trX, trY, testL)
+                         first = .tiletype(trX, trY, testL)
                          Call invIsoCoordTransform(-Int(-testX), Int(testY), trX, trY)
-                         second = .tileType(trX, trY, testL)
+                         second = .tiletype(trX, trY, testL)
                          
                      End If
                      
@@ -1013,15 +1013,15 @@ Public Function obtainTileType(ByVal testX As Double, _
                       
                      'Transform: [to approach]
                      Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                     typetile = .tileType(trX, trY, testL)
+                     typetile = .tiletype(trX, trY, testL)
                          
                      If testX > Int(testX) Then
                          'We're crossing two tiles horizontally. Test the tile to the left.
-                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         typetile = .tiletype(Int(testX), -Int(-testY), testL)
                          
                          'Transform: [to approach]
                          Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                         typetile = .tileType(trX, trY, testL)
+                         typetile = .tiletype(trX, trY, testL)
                          
                      End If
                      If testY > Int(testY) Then
@@ -1031,9 +1031,9 @@ Public Function obtainTileType(ByVal testX As Double, _
                          
                          'Transform: [to approach]
                          Call invIsoCoordTransform(Int(testX), Int(testY), trX, trY)
-                         first = .tileType(trX, trY, testL)
+                         first = .tiletype(trX, trY, testL)
                          Call invIsoCoordTransform(-Int(-testX), Int(testY), trX, trY)
-                         second = .tileType(trX, trY, testL)
+                         second = .tiletype(trX, trY, testL)
                          
                      End If
                      
@@ -1046,7 +1046,7 @@ Public Function obtainTileType(ByVal testX As Double, _
                      
                      'Transform: [to approach]
                      Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                     typetile = .tileType(trX, trY, testL)
+                     typetile = .tiletype(trX, trY, testL)
                      
                      If testX > Int(testX) Then
                          ''We're crossing two tiles horizontally. Test the tile to the right.
@@ -1054,7 +1054,7 @@ Public Function obtainTileType(ByVal testX As Double, _
                          
                          'Transform: [to approach]
                          Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
-                         typetile = .tileType(trX, trY, testL)
+                         typetile = .tiletype(trX, trY, testL)
                          
                      End If
                      If testY - movementSize = Int(testY) Then
@@ -1064,9 +1064,9 @@ Public Function obtainTileType(ByVal testX As Double, _
                      
                          'Transform: [to approach]
                          Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                         first = .tileType(trX, trY, testL)
+                         first = .tiletype(trX, trY, testL)
                          Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
-                         second = .tileType(trX, trY, testL)
+                         second = .tiletype(trX, trY, testL)
                          
                      End If
                      
@@ -1079,7 +1079,7 @@ Public Function obtainTileType(ByVal testX As Double, _
                      
                      'Transform: [to approach]
                      Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                     typetile = .tileType(trX, trY, testL)
+                     typetile = .tiletype(trX, trY, testL)
                      
                      If testX > Int(testX) Then
                          ''We're crossing two tiles horizontally. Test the tile to the left.
@@ -1087,7 +1087,7 @@ Public Function obtainTileType(ByVal testX As Double, _
                          
                          'Transform: [to approach]
                          Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                         typetile = .tileType(trX, trY, testL)
+                         typetile = .tiletype(trX, trY, testL)
                          
                          
                      End If
@@ -1098,9 +1098,9 @@ Public Function obtainTileType(ByVal testX As Double, _
                          
                          'Transform: [to approach]
                          Call invIsoCoordTransform(Int(testX), -Int(-testY), trX, trY)
-                         first = .tileType(trX, trY, testL)
+                         first = .tiletype(trX, trY, testL)
                          Call invIsoCoordTransform(-Int(-testX), -Int(-testY), trX, trY)
-                         second = .tileType(trX, trY, testL)
+                         second = .tiletype(trX, trY, testL)
     
                      End If
                      
@@ -1120,16 +1120,16 @@ Public Function obtainTileType(ByVal testX As Double, _
                      Case MV_NORTH
                          'first = .tiletype(Int(testX), Int(testY), testL)  'To stay away!
                          'second = .tiletype(-Int(-testX), Int(testY), testL)
-                         first = .tileType(Int(testX), -Int(-testY), testL) 'To approach walls.
-                         second = .tileType(-Int(-testX), -Int(-testY), testL)
+                         first = .tiletype(Int(testX), -Int(-testY), testL) 'To approach walls.
+                         second = .tiletype(-Int(-testX), -Int(-testY), testL)
                      Case MV_SOUTH
-                         first = .tileType(Int(testX), -Int(-testY), testL)
-                         second = .tileType(-Int(-testX), -Int(-testY), testL)
+                         first = .tiletype(Int(testX), -Int(-testY), testL)
+                         second = .tiletype(-Int(-testX), -Int(-testY), testL)
                      Case MV_EAST
-                         first = .tileType(-Int(-testX), -Int(-testY), testL)
+                         first = .tiletype(-Int(-testX), -Int(-testY), testL)
                          'second = .tiletype(-Int(-testX), Int(testY), testL)    'To stay away!
                      Case MV_WEST
-                         first = .tileType(Int(testX), -Int(-testY), testL)
+                         first = .tiletype(Int(testX), -Int(-testY), testL)
                          'second = .tiletype(Int(testX), Int(testY), testL)      'To stay away!
                          
                      'Problems if approaching walls.
@@ -1137,17 +1137,17 @@ Public Function obtainTileType(ByVal testX As Double, _
                          'typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
                          
                          'The current type.
-                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         typetile = .tiletype(Int(testX), -Int(-testY), testL)
                              
                          If testX > Int(testX) Then
                              'We're crossing two tiles horizontally. Test the tile to the right.
-                             typetile = .tileType(-Int(-testX), -Int(-testY), testL)
+                             typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
                              
                          End If
                          If testY = Int(testY) Then
                              'We're moving to two tiles vertically. Test tiles above and to the right.
-                             first = .tileType(Int(testX), Int(testY), testL)
-                             second = .tileType(-Int(-testX), Int(testY), testL)
+                             first = .tiletype(Int(testX), Int(testY), testL)
+                             second = .tiletype(-Int(-testX), Int(testY), testL)
                              
                          End If
                          
@@ -1156,17 +1156,17 @@ Public Function obtainTileType(ByVal testX As Double, _
                          'typetile = .tiletype(Int(testX), -Int(-testY), testL)
                          
                          'The current type.
-                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         typetile = .tiletype(Int(testX), -Int(-testY), testL)
                           
                          If testX > Int(testX) Then
                              'We're crossing two tiles horizontally. Test the tile to the left.
-                             typetile = .tileType(Int(testX), -Int(-testY), testL)
+                             typetile = .tiletype(Int(testX), -Int(-testY), testL)
                              
                          End If
                          If testY = Int(testY) Then
                              'We're moving up to two tiles. Test tiles above and to the left.
-                             first = .tileType(Int(testX), Int(testY), testL)
-                             second = .tileType(-Int(-testX), Int(testY), testL)
+                             first = .tiletype(Int(testX), Int(testY), testL)
+                             second = .tiletype(-Int(-testX), Int(testY), testL)
                          End If
                          
                          
@@ -1174,17 +1174,17 @@ Public Function obtainTileType(ByVal testX As Double, _
                          'typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
                          
                          'The current type.
-                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         typetile = .tiletype(Int(testX), -Int(-testY), testL)
                          
                          If testX > Int(testX) Then
                              'We're crossing two tiles horizontally. Test the tile to the right.
-                             typetile = .tileType(-Int(-testX), -Int(-testY), testL)
+                             typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
                              
                          End If
                          If testY - movementSize = Int(testY) Then
                              'We're moving down to two tiles. Test tiles above and to the right.
-                             first = .tileType(Int(testX), -Int(-testY), testL)
-                             second = .tileType(-Int(-testX), -Int(-testY), testL)
+                             first = .tiletype(Int(testX), -Int(-testY), testL)
+                             second = .tiletype(-Int(-testX), -Int(-testY), testL)
                          
                          End If
                          
@@ -1193,17 +1193,17 @@ Public Function obtainTileType(ByVal testX As Double, _
                          'typetile = .tiletype(Int(testX), -Int(-testY), testL)
                          
                          'The current type.
-                         typetile = .tileType(Int(testX), -Int(-testY), testL)
+                         typetile = .tiletype(Int(testX), -Int(-testY), testL)
                          
                          If testX > Int(testX) Then
                              'We're crossing two tiles horizontally. Test the tile to the left.
-                             typetile = .tileType(Int(testX), -Int(-testY), testL)
+                             typetile = .tiletype(Int(testX), -Int(-testY), testL)
                              
                          End If
                          If testY - movementSize = Int(testY) Then
                              'We're moving down to two tiles. Test tiles above and to the left.
-                             first = .tileType(Int(testX), -Int(-testY), testL)
-                             second = .tileType(-Int(-testX), -Int(-testY), testL)
+                             first = .tiletype(Int(testX), -Int(-testY), testL)
+                             second = .tiletype(-Int(-testX), -Int(-testY), testL)
         
                          End If
                          
@@ -1227,7 +1227,7 @@ Public Function obtainTileType(ByVal testX As Double, _
     
     'if we're sitting on stairs, forget about tiles above.
     If typetile >= STAIRS1 And typetile <= STAIRS8 Then
-        passpos.l = typetile - 10
+        passPos.l = typetile - 10
         typetile = NORMAL
         underneath = 0
     End If
@@ -1247,7 +1247,7 @@ Public Function obtainTileType(ByVal testX As Double, _
     'Added: Prevent players from crossing corners of solid tiles on isometric boards:
     Dim leftTile As Byte, rightTile As Byte, aboveTile As Byte, belowTile As Byte
     
-    If boardIso() And Not usingPixelMovement() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) And Not (movementSize <> 1) Then
         'Check if the tiles above and below the movement are solid.
         'We get the location with respect to the *test* (target) co-ordinates.
         With boardList(activeBoardIndex).theData
@@ -1255,42 +1255,42 @@ Public Function obtainTileType(ByVal testX As Double, _
                 Case MV_NORTH:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        leftTile = .tileType(testX - 1, testY + 1, testL)
-                        rightTile = .tileType(testX, testY + 1, testL)
+                        leftTile = .tiletype(testX - 1, testY + 1, testL)
+                        rightTile = .tiletype(testX, testY + 1, testL)
                     Else
                         'Odd y
-                        leftTile = .tileType(testX, testY + 1, testL)
-                        rightTile = .tileType(testX + 1, testY + 1, testL)
+                        leftTile = .tiletype(testX, testY + 1, testL)
+                        rightTile = .tiletype(testX + 1, testY + 1, testL)
                     End If
                 Case MV_SOUTH:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        leftTile = .tileType(testX - 1, testY - 1, testL)
-                        rightTile = .tileType(testX, testY - 1, testL)
+                        leftTile = .tiletype(testX - 1, testY - 1, testL)
+                        rightTile = .tiletype(testX, testY - 1, testL)
                     Else
                         'Odd y
-                        leftTile = .tileType(testX, testY - 1, testL)
-                        rightTile = .tileType(testX + 1, testY - 1, testL)
+                        leftTile = .tiletype(testX, testY - 1, testL)
+                        rightTile = .tiletype(testX + 1, testY - 1, testL)
                     End If
                 Case MV_EAST:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        aboveTile = .tileType(testX - 1, testY - 1, testL)
-                        belowTile = .tileType(testX - 1, testY + 1, testL)
+                        aboveTile = .tiletype(testX - 1, testY - 1, testL)
+                        belowTile = .tiletype(testX - 1, testY + 1, testL)
                     Else
                         'Odd y
-                        aboveTile = .tileType(testX, testY - 1, testL)
-                        belowTile = .tileType(testX, testY + 1, testL)
+                        aboveTile = .tiletype(testX, testY - 1, testL)
+                        belowTile = .tiletype(testX, testY + 1, testL)
                     End If
                  Case MV_WEST:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        aboveTile = .tileType(testX, testY - 1, testL)
-                        belowTile = .tileType(testX, testY + 1, testL)
+                        aboveTile = .tiletype(testX, testY - 1, testL)
+                        belowTile = .tiletype(testX, testY + 1, testL)
                     Else
                         'Odd y
-                        aboveTile = .tileType(testX + 1, testY - 1, testL)
-                        belowTile = .tileType(testX + 1, testY + 1, testL)
+                        aboveTile = .tiletype(testX + 1, testY - 1, testL)
+                        belowTile = .tiletype(testX + 1, testY + 1, testL)
                     End If
             End Select
         End With
@@ -1817,7 +1817,7 @@ Public Sub setQueuedMovements(ByRef queue As String, ByRef path As String): On E
         
     Next element
         
-    If usingPixelMovement() Then
+    If (movementSize <> 1) Then
         'We still want to push in tile units, so queue up 1/movementSize entries
         'per move.
         ReDim largeArray((UBound(smallArray) + 1) / movementSize - 1)
@@ -1868,7 +1868,7 @@ Private Function checkScrollNorth(ByVal playerNum As Long) As Boolean
     Dim y As Double
     checkScrollNorth = True
 
-    If boardIso() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         
         '3.0.5
         y = getBottomCentreY(pPos(playerNum).x, pPos(playerNum).y)
@@ -1908,7 +1908,7 @@ Private Function checkScrollSouth(ByVal playerNum As Long) As Boolean
     Dim y As Double
     checkScrollSouth = True
 
-    If boardIso() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         '3.0.5
         y = getBottomCentreY(pPos(playerNum).x, pPos(playerNum).y)
         
@@ -1946,7 +1946,7 @@ Private Function checkScrollEast(ByVal playerNum As Long) As Boolean
     Dim x As Double
     checkScrollEast = True
 
-    If boardIso() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         
         x = getBottomCentreX(pPos(playerNum).x, pPos(playerNum).y)
 
@@ -1985,7 +1985,7 @@ Private Function checkScrollWest(ByVal playerNum As Long) As Boolean
     Dim x As Double
     checkScrollWest = True
     
-    If boardIso() Then
+    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         
         '3.0.5
         x = getBottomCentreX(pPos(playerNum).x, pPos(playerNum).y)
@@ -2037,6 +2037,6 @@ Public Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY
         testY > aBoard.bSizeY Or _
         testL > aBoard.bSizeL Then Exit Function
         
-    TestBoard = aBoard.tileType(testX, testY, testL)
+    TestBoard = aBoard.tiletype(testX, testY, testL)
 
 End Function

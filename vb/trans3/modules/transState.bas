@@ -19,7 +19,7 @@ Public playerListAr(4) As String          '"Handles" of 5 (0-4) characters on te
 Public playerFile(4) As String            'Filenames of 5 chars
 Public otherPlayers(25) As String         'filenames of 25 other players that used to be equipped (0-25)
 Public otherPlayersHandle(25) As String   'handles of 25 other players that used to be equipped (0-25)
-Public inv As New clsInventory            'global inventory
+Public inv As New CInventory            'global inventory
 Public playerEquip(16, 4) As String       'What is equipped on each player (filename)
 Public equipList(16, 4) As String         'What is equipped on each player (handle)
 Public equipHPadd(4) As Long              'amount of HP added because of equipment.
@@ -254,8 +254,8 @@ Public Sub LoadState(ByVal file As String)
             currentBoard$ = projectPath & brdPath & fn$
             'Current x, y and layer:
             For t = 0 To 4
-                pPos(t).X = fread(num)
-                pPos(t).Y = fread(num)
+                pPos(t).x = fread(num)
+                pPos(t).y = fread(num)
                 pPos(t).l = fread(num)
             Next t
             For t = 0 To 4
@@ -387,8 +387,8 @@ Public Sub LoadState(ByVal file As String)
         
         'Current x, y and layer:
         For t = 0 To 4
-            pPos(t).X = BinReadDouble(num)
-            pPos(t).Y = BinReadDouble(num)
+            pPos(t).x = BinReadDouble(num)
+            pPos(t).y = BinReadDouble(num)
             pPos(t).l = BinReadLong(num)
         Next t
         For t = 0 To 4
@@ -594,8 +594,8 @@ Public Sub SaveState(ByVal file As String)
         Call BinWriteString(num, currentBoard$)
         'Current x, y and layer:
         For t = 0 To 4
-            Call BinWriteDouble(num, pPos(t).X)
-            Call BinWriteDouble(num, pPos(t).Y)
+            Call BinWriteDouble(num, pPos(t).x)
+            Call BinWriteDouble(num, pPos(t).y)
             Call BinWriteLong(num, pPos(t).l)
         Next t
         For t = 0 To 4

@@ -106,7 +106,7 @@ End Type
 '=========================================================================
 ' VB plugins manager
 '=========================================================================
-Public vbPlugins() As New clsVbPlugin
+Public vbPlugins() As New CVbPlugin
 
 '=========================================================================
 ' Get description of a plugin
@@ -160,13 +160,13 @@ Public Sub setupVBPlugin(ByVal plugName As String)
 
         'Create the object
         Set .obj = CreateObject(getObjectFromFile(plugName))
-       
+
         'Setup the callbacks
-        .obj.setCallbacks = New clsVbPlugin
+        .obj.setCallbacks = New CVbPlugin
 
         'Record the filename
         .filename = plugName
-       
+
     End With
 
 End Sub
@@ -174,7 +174,7 @@ End Sub
 '=========================================================================
 ' Access a VB plugin by name (rather than index)
 '=========================================================================
-Public Function VBPlugin(ByVal plugName As String) As clsVbPlugin
+Public Function VBPlugin(ByVal plugName As String) As CVbPlugin
 
     On Error GoTo skipError
 

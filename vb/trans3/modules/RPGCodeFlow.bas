@@ -98,8 +98,8 @@ Public Sub debugger(ByVal Text As String)
 
     If (Not checkErrorHandling()) Then
         If (debugYN = 1) Then
-            Call debugWin.Show
-            debugWin.buglist.Text = debugWin.buglist.Text & Text & vbCrLf
+            Call debugwin.Show
+            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
             Call processEvent
         End If
     End If
@@ -281,7 +281,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             Call LocalRPG("#local(" + destList$(pList) + ")", theProgram, dummyRet)
             Call SetVariable(destList$(pList), dUse$, theProgram)
         Next pList
-        
+    
         Dim theOne As Long, se As Long
         'find the spot where the pointer list is first empty...
         theOne = 1
@@ -291,7 +291,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
                 Exit For
             End If
         Next se
-        
+    
         Dim topList As Long
         'Put the variables in global pointer list
         topList = theOne
@@ -305,7 +305,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
                 End If
             Next se
         Next t
-
+    
         'set up method return value...
         methodReturn = retval
 
@@ -350,7 +350,7 @@ End Sub
 '=========================================================================
 ' Tests if a program is to be run and returns whether it was
 '=========================================================================
-Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
+Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
 
 'Called after a movement loop, or during idling when the activation key is pressed.
 'If after movement loop, the passPos is the target co-ords: if movement was blocked,
@@ -366,11 +366,11 @@ Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
     Dim toRet As Boolean, t As Long
     
     'Create rounded co-ords for pixel movement.
-    roundPos = roundCoords(passpos, pendingPlayerMovement(selectedPlayer).direction)
+    roundPos = roundCoords(passPos, pendingPlayerMovement(selectedPlayer).direction)
     'Create incremented co-ords for activation checks.
-    actPos = activationCoords(passpos, roundPos)
+    actPos = activationCoords(passPos, roundPos)
     'Create isometrically converted versions of the passed pos.
-    Call isoCoordTransform(passpos.x, passpos.y, passX, passY)
+    Call isoCoordTransform(passPos.x, passPos.y, passX, passY)
     
     'Call traceString("PRGTest: ply.x=" & pPos(selectedPlayer).x & _
                                " ply.y=" & pPos(selectedPlayer).y & _
@@ -388,7 +388,7 @@ Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
                 If _
                     boardList(activeBoardIndex).theData.progX(t) = roundPos.x And _
                     boardList(activeBoardIndex).theData.progY(t) = roundPos.y And _
-                    boardList(activeBoardIndex).theData.progLayer(t) = passpos.l Then
+                    boardList(activeBoardIndex).theData.progLayer(t) = passPos.l Then
                     
                     'The locations match - run prg, if its' conditions are right.
                     
@@ -409,16 +409,16 @@ Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
                                        
                 'Check against the activation-altered co-ords and the converted passed co-ords.
                 
-                If boardIso() Then
+                If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
                 
                     If ( _
                         objX = actPos.x And _
                         objY = actPos.y And _
-                        boardList(activeBoardIndex).theData.progLayer(t) = passpos.l) _
+                        boardList(activeBoardIndex).theData.progLayer(t) = passPos.l) _
                     Or ( _
                         Abs(objX - passX) <= 1 / 2 And _
                         Abs(objY - passY) <= 1 / 2 And _
-                        boardList(activeBoardIndex).theData.progLayer(t) = passpos.l) _
+                        boardList(activeBoardIndex).theData.progLayer(t) = passPos.l) _
                     Then
                         'If [Next to] Or [On] tile.
                             
@@ -433,11 +433,11 @@ Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
                     If ( _
                         objX = actPos.x And _
                         objY = actPos.y And _
-                        boardList(activeBoardIndex).theData.progLayer(t) = passpos.l) _
+                        boardList(activeBoardIndex).theData.progLayer(t) = passPos.l) _
                     Or ( _
                         objX = roundPos.x And _
                         objY = roundPos.y And _
-                        boardList(activeBoardIndex).theData.progLayer(t) = passpos.l) _
+                        boardList(activeBoardIndex).theData.progLayer(t) = passPos.l) _
                     Then
                         'If [Next to] Or [On] tile.
                             
@@ -454,7 +454,7 @@ Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
     Next t
 
     'Ouch.  Now test for items:
-    For t = 0 To maxItem
+    For t = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
     
         Call isoCoordTransform(itmPos(t).x, itmPos(t).y, objX, objY)
     
@@ -465,11 +465,11 @@ Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
                 If boardList(activeBoardIndex).theData.itmActivationType(t) = 0 Then
                     'We step on it.
                     
-                    If (Not usingPixelMovement) Or boardIso() Then
+                    If (Not (movementSize <> 1)) Or (boardList(activeBoardIndex).theData.isIsometric = 1) Then
                         If _
                             Abs(objX - passX) < 1 And _
                             Abs(objY - passY) < 1 And _
-                            itmPos(t).l = passpos.l Then
+                            itmPos(t).l = passPos.l Then
                             
                             toRet = runItmYN(t)
                         End If
@@ -478,7 +478,7 @@ Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
                         If _
                             Abs(objX - passX) < 1 And _
                             Abs(objY - passY) < movementSize And _
-                            itmPos(t).l = passpos.l Then
+                            itmPos(t).l = passPos.l Then
                         
                             toRet = runItmYN(t)
                         End If
@@ -489,7 +489,7 @@ Public Function programTest(ByRef passpos As PLAYER_POSITION) As Boolean
                     If _
                         Abs(objX - actPos.x) <= 1 And _
                         Abs(objY - actPos.y) <= 1 And _
-                        itmPos(t).l = passpos.l Then
+                        itmPos(t).l = passPos.l Then
                     
                         If (lastKeyPressed() = mainMem.Key) Then
                             'Yes, we pressed the right key.

@@ -511,7 +511,7 @@ Private Type udtTileType
 End Type
 
 ' Scrolling object
-Private Scroll As New clsScrollBoard
+Private Scroll As New CScrollBoard
 
 '========================================================================
 ' get tiletype details (color, name) returned as UDT
@@ -2476,30 +2476,30 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single
         ' make sure all menu items are enabled
         With mnuPop_Type_T
             For i = 0 To 5
-                .item(i).Enabled = True
+                .Item(i).Enabled = True
             Next i
         End With
         With mnuPop_Type_L
             For i = 11 To 18
-                .item(i).Enabled = True
+                .Item(i).Enabled = True
             Next i
         End With
         
         ' disable current tile type
-        If boardList(activeBoardIndex).currentTileType < 11 Then mnuPop_Type_T.item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
-        If boardList(activeBoardIndex).currentTileType >= 11 Then mnuPop_Type_L.item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
+        If boardList(activeBoardIndex).currentTileType < 11 Then mnuPop_Type_T.Item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
+        If boardList(activeBoardIndex).currentTileType >= 11 Then mnuPop_Type_L.Item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
         
         ' setup popup menu
         If boardList(activeBoardIndex).theData.bSizeL = 4 Then
             With mnuPop_Type_L
                 For i = 15 To 18
-                    .item(i).Visible = False
+                    .Item(i).Visible = False
                 Next i
             End With
         Else
             With mnuPop_Type_L
                 For i = 15 To 18
-                    .item(i).Visible = True
+                    .Item(i).Visible = True
                 Next i
             End With
         End If
@@ -3754,7 +3754,7 @@ End Function
 
 '   +autoTilerPutTile
 'change a tile and update surrounding autotiles to match it
-Private Sub autoTilerPutTile(ByVal tst As String, ByVal tilex As Long, ByVal tiley As Long, Optional ByVal iso As Boolean = False, Optional ByVal eo As Boolean = False, Optional ByVal ignoreOthers As Boolean = False)
+Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal tileY As Long, Optional ByVal iso As Boolean = False, Optional ByVal eo As Boolean = False, Optional ByVal ignoreOthers As Boolean = False)
     Dim ix As Long, iy As Long, morphTileIndex As Byte, currentTileset As String, currentAutotileset As Long, thisAutoTileset As Long
     Dim brdWidth As Long, brdHeight As Long, startY As Long, endY As Long, startX As Long, endX As Long
 
@@ -3763,36 +3763,36 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tilex As Long, ByVal til
     If autoTileset(currentTileset, True) = -1 Then
         'not an autotileset! set it down to close off surrounding autotiles
         Call drawTile(boardform.hdc, tilePath$ & tst, _
-                    tilex - boardList(activeBoardIndex).topX, tiley - boardList(activeBoardIndex).topY, _
+                    tileX - boardList(activeBoardIndex).topX, tileY - boardList(activeBoardIndex).topY, _
                     boardList(activeBoardIndex).ambientR, boardList(activeBoardIndex).ambientG, _
                     boardList(activeBoardIndex).ambientB, False, False, iso, eo)
                    
-        Call BoardSetTile(tilex, tiley, boardList(activeBoardIndex).currentLayer, tst, boardList(activeBoardIndex).theData)
+        Call BoardSetTile(tileX, tileY, boardList(activeBoardIndex).currentLayer, tst, boardList(activeBoardIndex).theData)
     Else
         'valid autotileset! set down tile 51 (arbitrary) to link to surrounding autotiles
         Call drawTile(boardform.hdc, tilePath$ & currentTileset & CStr(51), _
-                         tilex - boardList(activeBoardIndex).topX, tiley - boardList(activeBoardIndex).topY, _
+                         tileX - boardList(activeBoardIndex).topX, tileY - boardList(activeBoardIndex).topY, _
                          boardList(activeBoardIndex).ambientR, boardList(activeBoardIndex).ambientG, _
                          boardList(activeBoardIndex).ambientB, False, False, iso, eo)
                    
-        Call BoardSetTile(tilex, tiley, boardList(activeBoardIndex).currentLayer, currentTileset & CStr(51), boardList(activeBoardIndex).theData)
+        Call BoardSetTile(tileX, tileY, boardList(activeBoardIndex).currentLayer, currentTileset & CStr(51), boardList(activeBoardIndex).theData)
     End If
     
     brdWidth = boardList(activeBoardIndex).theData.bSizeX
     brdHeight = boardList(activeBoardIndex).theData.bSizeY
     
-    currentAutotileset = autoTileset(tilesetFilename(BoardGetTile(tilex, tiley, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)))
+    currentAutotileset = autoTileset(tilesetFilename(BoardGetTile(tileX, tileY, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)))
     
     If iso Then
         'iso board
         'loop through each surrounding tile to check if it should be morphed
         'known issue: this loop has a few unneeded iterations
         
-        startY = tiley - 2: If startY < 1 Then startY = 1
-        endY = tiley + 2: If endY > brdHeight Then endY = brdHeight
+        startY = tileY - 2: If startY < 1 Then startY = 1
+        endY = tileY + 2: If endY > brdHeight Then endY = brdHeight
         
-        startX = tilex - 1: If startX < 1 Then startX = 1
-        endX = tilex + 1: If endX > brdWidth Then endX = brdWidth
+        startX = tileX - 1: If startX < 1 Then startX = 1
+        endX = tileX + 1: If endX > brdWidth Then endX = brdWidth
         
         For iy = startY To endY
             For ix = startX To endX
@@ -3844,11 +3844,11 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tilex As Long, ByVal til
         '2d board
         'loop through each surrounding tile to check if it should be morphed
         
-        startY = tiley - 1: If startY < 1 Then startY = 1
-        endY = tiley + 1: If endY > brdHeight Then endY = brdHeight
+        startY = tileY - 1: If startY < 1 Then startY = 1
+        endY = tileY + 1: If endY > brdHeight Then endY = brdHeight
         
-        startX = tilex - 1: If startX < 1 Then startX = 1
-        endX = tilex + 1: If endX > brdWidth Then endX = brdWidth
+        startX = tileX - 1: If startX < 1 Then startX = 1
+        endX = tileX + 1: If endX > brdWidth Then endX = brdWidth
         
         For iy = startY To endY
             For ix = startX To endX

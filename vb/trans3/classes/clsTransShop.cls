@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "clsShop"
+Attribute VB_Name = "CShop"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -57,8 +57,8 @@ Private Const OPTION3 As Double = 6.4   'third option on main menu
 '=========================================================================
 ' Member variables
 '=========================================================================
-Private m_items As clsInventory         'the items this shop sells
-Private m_player As clsInventory        'the inventory this shop can buy
+Private m_items As CInventory         'the items this shop sells
+Private m_player As CInventory        'the inventory this shop can buy
 Private m_oldView As Long               'saved screen of before the shop opened
 Private m_commonDisplay As Long         'saved common translucent rectangle
 Private m_indices() As Long             'indices that map positions in invs to the menu
@@ -68,23 +68,23 @@ Private m_itemInfo As Long              'information about the item
 '=========================================================================
 ' Selection of items to sell
 '=========================================================================
-Public Property Let saleItems(ByVal inventory As clsInventory)
+Public Property Let saleItems(ByVal inventory As CInventory)
     Set m_items = inventory
 End Property
-Public Property Set saleItems(ByVal inventory As clsInventory)
+Public Property Set saleItems(ByVal inventory As CInventory)
     m_items = inventory
 End Property
 
 '=========================================================================
 ' Player's inventroy
 '=========================================================================
-Public Property Let playerItems(ByVal inventory As clsInventory)
+Public Property Let playerItems(ByVal inventory As CInventory)
     Set m_player = inventory
 End Property
-Public Property Get playerItems() As clsInventory
+Public Property Get playerItems() As CInventory
     Set playerItems = m_player
 End Property
-Public Property Set playerItems(ByVal inventory As clsInventory)
+Public Property Set playerItems(ByVal inventory As CInventory)
     m_player = inventory
 End Property
 
@@ -302,7 +302,7 @@ End Property
 '=========================================================================
 ' Get an inventory
 '=========================================================================
-Private Property Get inventory(ByVal theType As SHOP_TYPE) As clsInventory
+Private Property Get inventory(ByVal theType As SHOP_TYPE) As CInventory
     If theType = Buy Then
         Set inventory = m_items
     ElseIf theType = Sell Then

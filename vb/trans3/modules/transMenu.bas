@@ -13,9 +13,11 @@ Attribute VB_Name = "transMenu"
 Option Explicit
 
 '=========================================================================
-' Integral variables
+' Globals
 '=========================================================================
-Public bInMenu As Boolean     'currently running a menu?
+
+' Currently running a menu?
+Public bInMenu As Boolean
 
 '=========================================================================
 ' Shows the menu passed in
@@ -24,7 +26,7 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
 
     On Error Resume Next
 
-    'Quit if we're already showing the menu
+    ' Quit if we're already showing the menu
     If ((bInMenu) Or (fightInProgress)) Then Exit Sub
    
     If mainMem.menuPlugin <> "" Then
@@ -33,14 +35,14 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
 
-        'Determine if we have a menu plugin
+        ' Determine if we have a menu plugin
         If isVBPlugin(plugName) Then
             isMenuPlugin = VBPlugin(plugName).plugType(PT_MENU)
         Else
             isMenuPlugin = plugType(plugName, PT_MENU)
         End If
 
-        'Yep-- we do
+        ' Yep-- we do
         If isMenuPlugin = 1 Then
             bInMenu = True
             If isVBPlugin(plugName) Then

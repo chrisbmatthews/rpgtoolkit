@@ -60,7 +60,7 @@ Option Explicit
     Public oldpath As String     'old path in file explorer.
 
     'config options
-    Public configfile As New clsConfig
+    Public configfile As New CConfig
 
     Public TRANSP_COLOR As Long 'not used
     Public topX As Long
@@ -73,7 +73,7 @@ Option Explicit
     Public needsReColor As Boolean
     Public programEditorCount As Long
     Public programEditorCountDown As Long
-    Public Images As New clsImages
+    Public Images As New CImages
     Public lockIndice As Long
     Public useLockIndice As Boolean
       
