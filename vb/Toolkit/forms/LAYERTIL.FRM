@@ -15,7 +15,7 @@ Begin VB.Form frmLayerTile
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
    Begin VB.VScrollBar scrOffsetX 
-      Height          =   255
+      Height          =   285
       Left            =   2760
       Max             =   -32
       Min             =   32
@@ -57,7 +57,7 @@ Begin VB.Form frmLayerTile
       Top             =   120
       Width           =   3675
       Begin VB.VScrollBar scrOffsetY 
-         Height          =   255
+         Height          =   285
          Left            =   3360
          Max             =   -32
          Min             =   32
@@ -119,6 +119,7 @@ Begin VB.Form frmLayerTile
          Left            =   120
          TabIndex        =   2
          Top             =   960
+         Value           =   1  'Checked
          Width           =   975
       End
       Begin VB.PictureBox picPreview 
@@ -177,7 +178,7 @@ End Sub
 Private Sub butOK_Click(): On Error Resume Next
     
     'Change the tile.
-    Call Preview
+    Call Preview(True)
     
     'Change the tile back during unload.
     saveChanges = True
@@ -395,11 +396,11 @@ End Sub
 '========================================================================
 ' Previews the tile
 '========================================================================
-Private Sub Preview(): On Error Resume Next
+Private Sub Preview(Optional ByVal ignoreChk As Boolean = False): On Error Resume Next
 
     Dim x As Long, y As Long, r As Integer, g As Integer, b As Integer
 
-    If chkPreview.value = 0 Then Exit Sub
+    If chkPreview.value = 0 And (Not ignoreChk) Then Exit Sub
     
     For x = 1 To xRange
         For y = 1 To 32

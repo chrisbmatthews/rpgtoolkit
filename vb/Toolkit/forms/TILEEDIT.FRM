@@ -2472,42 +2472,22 @@ End Sub
 ' Image Menu
 '========================================================================
 'Import
-Public Sub convert_Click()
-    On Error GoTo ErrorHandler
+Public Sub convert_Click(): On Error Resume Next
     ignoreDeactivate = True
-    import.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    import.Show vbModal
 End Sub
 
 'Layer Tile
-Private Sub layer_Click()
-    On Error GoTo ErrorHandler
+Private Sub layer_Click(): On Error Resume Next
     ignoreDeactivate = True
-    frmLayerTile.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call setUndo
+    frmLayerTile.Show vbModal
 End Sub
 
 'Grab Tile
-Private Sub gtilemnu_Click()
-    On Error GoTo ErrorHandler
+Private Sub gtilemnu_Click(): On Error Resume Next
     ignoreDeactivate = True
-    grab.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    grab.Show vbModal
 End Sub
 
 'Color
@@ -2641,8 +2621,6 @@ Private Sub mnuBlur_Click(): On Error Resume Next
     
 End Sub
 
-
-
 'Motion Blur
 Private Sub mnuMotionBlur_Click(): On Error Resume Next
     
@@ -2678,42 +2656,24 @@ Private Sub mnuMotionBlur_Click(): On Error Resume Next
 End Sub
 
 'Light Source
-Private Sub lsrc_Click()
-    On Error GoTo ErrorHandler
+Private Sub lsrc_Click(): On Error Resume Next
+    Call setUndo
     ignoreDeactivate = True
-    light.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    light.Show vbModal
 End Sub
 
 'Texturize
-Public Sub mnuTexturize_Click()
-    On Error GoTo ErrorHandler
+Public Sub mnuTexturize_Click(): On Error Resume Next
+    Call setUndo
     ignoreDeactivate = True
     tiletexturize.Show vbModal
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 'Translucentize
-Private Sub mnuTranslucentize_Click()
-    On Error GoTo ErrorHandler
+Private Sub mnuTranslucentize_Click(): On Error Resume Next
+    Call setUndo
     ignoreDeactivate = True
     tiletranslucentize.Show vbModal
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 '========================================================================
