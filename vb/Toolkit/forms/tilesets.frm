@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form tilesetform 
+Begin VB.Form tilesetForm 
    Caption         =   "Tiles"
    ClientHeight    =   3375
    ClientLeft      =   60

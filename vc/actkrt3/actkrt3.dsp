@@ -471,6 +471,10 @@ SOURCE=.\transClock.cpp
 
 SOURCE=.\GUISystem\platform\transHost.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\GUISystem\platform\transHost.h
+# End Source File
 # End Group
 # End Target
 # Begin Group "tkzip"

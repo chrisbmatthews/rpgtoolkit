@@ -129,6 +129,10 @@ Public useJoystick As Boolean       'Using joystick.
 Public useArrowKeys As Boolean
 Public useNumberPad As Boolean
 
+Public Sub setAsciiKeyState(ByVal state As Long)
+    On Error Resume Next
+    keyAsciiState = state
+End Sub
 
 Sub FlushKB()
     '=============================
@@ -150,13 +154,13 @@ Public Sub DoEventsFor(ByVal milliSeconds As Long)
     'Do events for a certain period of time [KSNiloc]
     '================================================
 
-    Dim startTime As Long
+    Dim StartTime As Long
     Dim done As Boolean
 
-    startTime = Timer()
+    StartTime = Timer()
     Do Until done
         Call processEvent
-        If Timer() - startTime >= milliSeconds / 1000 Then
+        If Timer() - StartTime >= milliSeconds / 1000 Then
             done = True
         End If
     Loop

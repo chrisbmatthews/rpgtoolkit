@@ -14,15 +14,16 @@ Attribute VB_Name = "CommonTileset"
 '===============================================
 
 'Tileset module-- defines a tileset
+
 Option Explicit
 
-Type tilesetHeader              '6 bytes
+Public Type tilesetHeader              '6 bytes
     version As Integer          '20=2.0, 21=2.1, etc
     tilesInSet As Integer       'number of tiles in set
     detail As Integer           'detail level in set MUST BE UNIFORM!
 End Type
 
-Global tileset As tilesetHeader    'current tileset file
+Public tileset As tilesetHeader    'current tileset file
 
 '==============================================
 ' .iso Isometric Tileset File Format

@@ -7,7 +7,6 @@ Begin VB.Form tips
    ClientTop       =   330
    ClientWidth     =   6555
    Icon            =   "tips.frx":0000
-   LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MDIChild        =   -1  'True
    MinButton       =   0   'False
@@ -182,6 +181,6 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub size_Timer()
-    If Width <> 6645 Then Width = 6645
+    If width <> 6645 Then width = 6645
     If height <> 3540 Then height = 3540
 End Sub

@@ -18,14 +18,8 @@ Attribute VB_Exposed = False
 '=========================================================================
 
 '=========================================================================
-' DirectX host class
+' Interface with actkrt3.dll :: host window
 ' Status: A-
-'=========================================================================
-
-'=========================================================================
-' This class replaces the host form with more more correct and rebust
-' code. It also harbours the engine's main loop (mainEventLoop). Keyboard
-' and mouse input are now picked up in transEvents.
 '=========================================================================
 
 Option Explicit
@@ -49,7 +43,15 @@ Private m_createY As Long           'y position window should start at
 '=========================================================================
 ' Member declarations
 '=========================================================================
-Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal wndProc As Long, ByVal className As String, ByVal hCursor As Long) As Long
+Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal X As Long, ByVal Y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal className As String, ByVal hCursor As Long) As Long
+Private Declare Sub killHostWindow Lib "actkrt3.dll" (ByVal className As String, ByVal hInstance As Long)
+Private Declare Sub changeHostWindowCaption Lib "actkrt3.dll" (ByVal newCaption As String)
+
+'=========================================================================
+' Member Win32 APIs
+'=========================================================================
+Private Declare Function ShowWindow Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Long) As Long
+Private Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
 
 '=========================================================================
 ' Member enumerations
@@ -72,13 +74,20 @@ Public Property Get hdc() As Long
 End Property
 
 '=========================================================================
+' Destroy the window
+'=========================================================================
+Public Sub Destroy()
+    Call killHostWindow(WINDOWS_CLASS, App.hInstance)
+End Sub
+
+'=========================================================================
 ' Style of window
 '=========================================================================
 Public Property Let style(ByVal newValue As STYLE_ENUM)
     If newValue = FullScreenMode Then
-        m_createStyle = WS_POPUP
+        m_createStyle = &H80000000
     ElseIf newValue = windowed Then
-        m_createStyle = WS_OVERLAPPEDWINDOW Or WS_MINIMIZEBOX
+        m_createStyle = &H0& Or &HC00000 Or &H80000 Or &H20000
     End If
 End Property
 
@@ -86,18 +95,11 @@ End Property
 ' Window's caption
 '=========================================================================
 Public Property Let Caption(ByVal newValue As String)
-    If Not m_created Then
+    If (Not m_created) Then
         m_createCaption = newValue
     Else
-        Call SetWindowText(hwnd, newValue)
+        Call changeHostWindowCaption(newValue)
     End If
-End Property
-
-'=========================================================================
-' Window's class
-'=========================================================================
-Public Property Get className() As String
-    className = WINDOWS_CLASS
 End Property
 
 '=========================================================================
@@ -176,7 +178,7 @@ Public Sub Create()
     On Error Resume Next
 
     Dim cursor As Long
-    If mainMem.mouseCursor = 1 Then
+    If (mainMem.mouseCursor = 1) Then
         'Show the cursor
         cursor = 0
     Else
@@ -192,7 +194,6 @@ Public Sub Create()
                                m_createStyle, _
                                m_createCaption, _
                                App.hInstance, _
-                               AddressOf wndProc, _
                                WINDOWS_CLASS, _
                                cursor _
                                         )

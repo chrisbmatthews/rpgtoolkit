@@ -209,7 +209,7 @@ Public Sub CreatePakFile(ByVal file As String)
     'now add the files to the pakfile...
 
     'first add the mainForm file...
-    l = ZIPAdd(gamPath & mainfile$, "main.gam")
+    l = ZIPAdd(gamPath & mainFile$, "main.gam")
     count = count + 1
     p = Int(count / numFiles * 100)
     Call statusbar.setStatus(p, "Adding main.gam")

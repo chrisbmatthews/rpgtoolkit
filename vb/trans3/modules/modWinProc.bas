@@ -6,149 +6,105 @@ Attribute VB_Name = "transEvents"
 '=========================================================================
 
 '=========================================================================
-' Event handler
+' Interface with actkrt3.dll :: event processor
 ' Status: A+
 '=========================================================================
 
 Option Explicit
 
 '=========================================================================
-' Win32 structures
-'=========================================================================
-
-'Region to re-paint
-Public Type PAINTSTRUCT
-    hdc As Long
-    fErase As Long
-    rcPaint As RECT
-    fRestore As Long
-    fIncUpdate As Long
-    rgbReserved(32) As Byte
-End Type
-
-'WinProc message
-Public Type msg
-    hwnd As Long
-    message As Long
-    wParam As Long
-    lParam As Long
-    time As Long
-    pt As POINTAPI
-End Type
-
-'=========================================================================
-' Win32 constants
-'=========================================================================
-Public Const WM_QUIT = &H12
-Public Const WM_PAINT = &HF
-Public Const WM_DESTROY = &H2
-Public Const WM_CREATE = &H1
-Public Const WM_CHAR = &H102
-Public Const WM_KEYDOWN = &H100
-Public Const WM_MOUSEMOVE = &H200
-Public Const WM_LBUTTONDOWN = &H201
-Public Const WM_ACTIVATE = &H6
-Public Const WA_INACTIVE = 0
-Public Const PM_REMOVE = &H1
-
-'=========================================================================
-' Win32 APIs
-'=========================================================================
-Public Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Public Declare Function ValidateRgn Lib "user32" (ByVal hwnd As Long, ByVal hRgn As Long) As Long
-Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
-Public Declare Function BeginPaint Lib "user32" (ByVal hwnd As Long, lpPaint As PAINTSTRUCT) As Long
-Public Declare Function EndPaint Lib "user32" (ByVal hwnd As Long, lpPaint As PAINTSTRUCT) As Long
-Public Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As msg, ByVal hwnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
-Public Declare Function TranslateMessage Lib "user32" (lpMsg As msg) As Long
-Public Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As msg) As Long
-Public Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
-Public Declare Function UnregisterClass Lib "user32" Alias "UnregisterClassA" (ByVal lpClassName As String, ByVal hInstance As Long) As Long
-Public Declare Function DestroyWindow Lib "user32" (ByVal hwnd As Long) As Long
-Public Declare Sub PostQuitMessage Lib "user32" (ByVal nExitCode As Long)
-Public Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hdc As Long) As Long
-
-'=========================================================================
 ' Public declarations
 '=========================================================================
-Public Declare Sub initEventProcessor Lib "actkrt3.dll" (ByVal closeSystemsAddress As Long)
+Public Declare Sub endProgram Lib "actkrt3.dll" ()
 Public Declare Sub processEvent Lib "actkrt3.dll" ()
 
 '=========================================================================
-' Event handler
+' Mmeber declarations
 '=========================================================================
-Public Function wndProc( _
-                           ByVal hwnd As Long, _
-                           ByVal msg As Long, _
-                           ByVal wParam As Long, _
-                           ByVal lParam As Long _
-                                                  ) As Long
+Private Declare Sub TKShowEndForm Lib "actkrt3.dll" Alias "showEndForm" (ByVal endFormBackHdc As Long, ByVal X As Long, ByVal Y As Long, ByVal hIcon As Long, ByVal hInstance As Long)
+Private Declare Sub createEventCallbacks Lib "actkrt3.dll" (ByVal forceRender As Long, ByVal closeSystems As Long, ByVal setAsciiKeyState As Long, ByVal keyDownEvent As Long, ByVal mouseMoveEvent As Long, ByVal mouseDownEvent As Long, ByVal isShuttingDown As Long, ByVal getGameState As Long, ByVal setGameState As Long)
 
-    Static prevGameState As GAME_LOGIC_STATE    'Previous game state
+'=========================================================================
+' Public variables
+'=========================================================================
+Public bShowEndForm As Boolean      'Show the end form?
 
-    Select Case msg
+'=========================================================================
+' Initiate the event processor
+'=========================================================================
+Public Sub initEventProcessor()
+    On Error GoTo failed
+    Call createEventCallbacks( _
+                                 AddressOf forceRender, _
+                                 AddressOf closeSystems, _
+                                 AddressOf setAsciiKeyState, _
+                                 AddressOf keyDownEvent, _
+                                 AddressOf mouseMoveEvent, _
+                                 AddressOf mouseDownEvent, _
+                                 AddressOf isShuttingDown, _
+                                 AddressOf getGameState, _
+                                 AddressOf setGameState _
+                                                          )
+    Exit Sub
+failed:
+    Call MsgBox("Failed to initiate the trans3 event processor! Make sure you have the latest actkrt3.dll file! (September 17, 2004)")
+    End
+End Sub
 
-        Case WM_PAINT
-            'Window needs to be repainted
-            Dim ps As PAINTSTRUCT
-            Call BeginPaint(hwnd, ps)
-            If (Not runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
-                Call renderNow(-1, True)
-            ElseIf (runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
-                Call renderRPGCodeScreen
-            End If
-            Call EndPaint(hwnd, ps)
+'=========================================================================
+' Allows actkrt3.dll to force a render
+'=========================================================================
+Public Sub forceRender()
+    If (Not runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
+        Call renderNow(-1, True)
+    ElseIf (runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
+        Call renderRPGCodeScreen
+    End If
+End Sub
 
-        Case WM_DESTROY
-            'Window was closed-- bail!
-            If Not gShuttingDown Then
-                Call closeSystems
-            End If
-
-        Case WM_CHAR
-            'Key was pressed
-            keyAsciiState = wParam
-
-        Case WM_KEYDOWN
-            'Key down
-            Call keyDownEvent(wParam, 0)
-
-        Case WM_MOUSEMOVE
-            'Mouse was moved
-            Call mouseMoveEvent(LoWord(lParam), HiWord(lParam))
-
-        Case WM_LBUTTONDOWN
-            'Left mouse button pressed
-            Call mouseDownEvent(LoWord(lParam), HiWord(lParam), LoWord(wParam), 1)
-
-        Case WM_ACTIVATE
-            If wParam <> WA_INACTIVE Then
-                'Window is being *activated*
-                gGameState = prevGameState
-            Else
-                'Window is being *deactivated*
-                prevGameState = gGameState
-                gGameState = GS_PAUSE
-            End If
-
-        Case Else
-            'Let windows deal with the rest
-            wndProc = DefWindowProc(hwnd, msg, wParam, lParam)
-
-    End Select
-
+'=========================================================================
+' Allows actkrt3.dll to check if we're shutting down
+'=========================================================================
+Public Function isShuttingDown() As Long
+    If (gShuttingDown) Then isShuttingDown = 1
 End Function
 
 '=========================================================================
-' Get low word
+' Allows actkrt3.dll to get the game state
 '=========================================================================
-Public Function LoWord(ByRef LongIn As Long) As Integer
-   Call CopyMemory(LoWord, LongIn, 2)
+Public Function getGameState() As Long
+    getGameState = gGameState
 End Function
 
 '=========================================================================
-' Get high word
+' Allows actkrt3.dll to set the game state
 '=========================================================================
-Public Function HiWord(ByRef LongIn As Long) As Integer
-   Call CopyMemory(HiWord, ByVal (VarPtr(LongIn) + 2), 2)
-End Function
+Public Sub setGameState(ByVal newState As Long)
+    gGameState = newState
+End Sub
+
+'=========================================================================
+' Show the end form
+'=========================================================================
+Public Sub showEndForm(Optional ByVal endProgram As Boolean = True)
+
+    On Error Resume Next
+
+    If (bShowEndForm) Then
+        'Show the end form
+        Call TKShowEndForm( _
+                              endFormBackgroundHDC, _
+                              ((Screen.width - (340 * Screen.TwipsPerPixelX)) / 2) / Screen.TwipsPerPixelX, _
+                              ((Screen.height - (140 * Screen.TwipsPerPixelY)) / 2) / Screen.TwipsPerPixelY, _
+                              statusbar.Icon.handle, _
+                              App.hInstance _
+                                              )
+    End If
+
+    If (endProgram) Then
+        'End the program!
+        Call DeleteDC(endFormBackgroundHDC)
+        End
+    End If
+
+End Sub

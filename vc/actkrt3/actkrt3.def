@@ -173,9 +173,15 @@ EXPORTS
 	;transHost
 	mainEventLoop		@224
 	createHostWindow	@225
-	initEventProcessor	@226
+	createEventCallbacks	@226
 	processEvent		@227
 
 	;canvasHost
 	CNVCreateCanvasHost	@228
 	CNVKillCanvasHost	@229
+
+	;more transHost
+	showEndForm			@230
+	killHostWindow		@231
+	changeHostWindowCaption	@232
+	endProgram			@233

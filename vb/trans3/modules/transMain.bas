@@ -87,9 +87,7 @@ Public Sub closeSystems()
     Call ClearAllThreads
     Call killMedia
     Call DeletePakTemp
-    Call CloseWindow(host.hwnd)
-    Call DestroyWindow(host.hwnd)
-    Call UnregisterClass(host.className, App.hInstance)
+    Call host.Destroy
     Call Unload(debugwin)
     Call closeActiveX
     Call showEndForm
@@ -318,8 +316,8 @@ Public Sub gameLogic()
             For cnt = 0 To UBound(pendingItemMovement)
                 With pendingItemMovement(cnt)
                     .direction = MV_IDLE
-                    .xOrig = itmPos(cnt).x
-                    .yOrig = itmPos(cnt).y
+                    .xOrig = itmPos(cnt).X
+                    .yOrig = itmPos(cnt).Y
                 End With
             Next cnt
 
@@ -327,8 +325,8 @@ Public Sub gameLogic()
             'whereas the movement direction can only be cleared afterwards.
             For cnt = 0 To UBound(pendingPlayerMovement)
                 With pendingPlayerMovement(cnt)
-                    .xOrig = pPos(cnt).x
-                    .yOrig = pPos(cnt).y
+                    .xOrig = pPos(cnt).X
+                    .yOrig = pPos(cnt).Y
                 End With
             Next cnt
 
@@ -343,8 +341,8 @@ Public Sub gameLogic()
                     tempPos = pPos(selectedPlayer)
 
                     tempPos.l = .lTarg
-                    tempPos.x = .xTarg
-                    tempPos.y = .yTarg
+                    tempPos.X = .xTarg
+                    tempPos.Y = .yTarg
 
                     'Test for a program
                     Call programTest(tempPos)
@@ -381,8 +379,8 @@ Public Sub gameLogic()
 
         Case GS_QUIT            'QUIT STATE
                                 '----------
-            'Post quit message to break out of main event loop
-            Call PostQuitMessage(0)
+            'End the program
+            Call endProgram
 
     End Select
 
@@ -397,6 +395,7 @@ End Sub
 Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     On Error Resume Next
     Call initActiveX
+    Call initEventProcessor
     Call initGraphics(testingPRG)
     Call correctPaths
     Call InitPlugins
@@ -408,7 +407,6 @@ Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call DXRefresh
     Call setupMain(testingPRG)
     Call initClock(RENDER_FPS)
-    Call initEventProcessor(AddressOf closeSystems)
 End Sub
 
 '=======================================================================
@@ -527,8 +525,8 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
         'Setup player position
         With pPos(0)
-            .x = boardList(activeBoardIndex).theData.playerX
-            .y = boardList(activeBoardIndex).theData.playerY
+            .X = boardList(activeBoardIndex).theData.playerX
+            .Y = boardList(activeBoardIndex).theData.playerY
             .l = boardList(activeBoardIndex).theData.playerLayer
             .stance = "WALK_S"
             .frame = 0
