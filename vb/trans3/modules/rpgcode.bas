@@ -3446,7 +3446,7 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         '====================================================================
         'Bug fix by KSNiloc
         '====================================================================
-        
+
         'Declarations...
         Dim tempPRG As RPGCodeProgram
         Dim fileN As String
@@ -3458,37 +3458,37 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Else
             fileN = PakLocate(prgPath & lit)
         End If
-        
+
         If Not fileExists(fileN) Then
             debugger "Error: File " & fileN & " does not exist!"
             Exit Sub
         End If
-        
+
         'Retrieve the code from the program...
         tempPRG = openProgram(fileN)
-        
+
         With theProgram
-        
+
             'Make the program large enough for the code we're adding...
             ReDim Preserve .program(UBound(.program) + 2 + tempPRG.Length)
-            
+
             'Don't let any loose code in the .prg file be run...
-            .program(.Length + 1) = "End()"
-            
+            .program(.Length + 1) = "Stop()"
+
             'Add each line from the included file to the main file...
             For count = 0 To UBound(tempPRG.program)
                 .program(.Length + 2 + count) = tempPRG.program(count)
             Next count
-            
+
             'Update the length of the program...
             .Length = .Length + 2 + UBound(tempPRG.program)
-            
+
         End With
-        
+
         '====================================================================
         'End bug fix by KSNiloc
         '====================================================================
-        
+
     End If
 Exit Sub
 

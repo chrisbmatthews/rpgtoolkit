@@ -255,6 +255,10 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
     Close num
 
+    'Add stop to end of RPG
+    thePrg.program(p) = "Stop()"
+    p = p + 1
+
     'Now remove all #s because they are evil...
     For a = 0 To UBound(thePrg.program)
         thePrg.program(a) = replaceOutsideQuotes(thePrg.program(a), "#", "")
