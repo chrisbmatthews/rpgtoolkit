@@ -22,6 +22,7 @@ Private Declare Sub RPGCGetVarList Lib "actkrt3.dll" (ByVal Text As Long, ByVal 
 Private Declare Function RPGCStringContains Lib "actkrt3.dll" (ByVal theString As Long, ByVal theChar As Long) As Long
 Private Declare Sub RPGCParseWithin Lib "actkrt3.dll" (ByVal Text As Long, ByVal startSymbol As Long, ByVal endSymbol As Long)
 Private Declare Function RPGCValueNumber Lib "actkrt3.dll" (ByVal theString As Long) As Long
+
 '=========================================================================
 ' Member variables
 '=========================================================================
@@ -351,7 +352,7 @@ End Function
 ' Count the number of values in an equation
 '=========================================================================
 Public Function ValueNumber(ByVal Text As String) As Long
-    Call RPGCValueNumber(StrPtr(Text))
+    ValueNumber = RPGCValueNumber(StrPtr(Text))
 End Function
 
 '=========================================================================
