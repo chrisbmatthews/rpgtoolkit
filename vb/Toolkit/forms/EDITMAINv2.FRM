@@ -2394,8 +2394,8 @@ Private Sub Form_Load()
     editmainfile.height = 6270
     editmainfile.width = 7600
     filename(2) = ""
-    Call infofill
     sliGameSpeed.max = MAX_GAMESPEED
+    Call infofill
 End Sub
 
 '=========================================================================

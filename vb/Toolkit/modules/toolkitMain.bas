@@ -26,6 +26,7 @@ Public Sub Main()
     Call initBoardAndTileEditor
     Call initPlayers
     Call initLocalization
+    Call ExecCmd("regsvr32 /s TABCTL32.OCX")
     Call frmMain.Show(vbModal)
     Call tkMainForm.Show
     Call displayTip
