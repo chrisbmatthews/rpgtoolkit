@@ -25,16 +25,16 @@ int APIENTRY createHostWindow(int x, int y, int width, int height, int style, ch
 // Create the DirectX host window
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY createHostWindow(
-                               int x,
-							   int y, 
-							   int width, 
-							   int height,
-							   int style,
-							   char* caption, 
-							   int instance, 
-							   int wndProc, 
-							   char* className,
-							   int hCursor 
+                               int x,			//x coord
+							   int y,			//y coord
+							   int width,		//width
+							   int height,		//height
+							   int style,		//style
+							   char* caption,	//caption
+							   int instance,	//instance
+							   int wndProc,		//window process
+							   char* className,	//name of class
+							   int hCursor		//cursor
 										   )
 {
 
