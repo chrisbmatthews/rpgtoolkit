@@ -651,7 +651,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '=========================================================================
-' All contents copyright 2004, Colin James Fitzpatrick
+' All contents copyright 2004, 2005, Colin James Fitzpatrick
 ' All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '=========================================================================
@@ -798,9 +798,7 @@ Private Sub changeStep(ByVal lngNewStep As Long)
         ' Move to next step
         Call changeStep(6)
 
-    End If
-
-    If (m_lngStep = 6) Then
+    ElseIf (m_lngStep = 6) Then
 
         ' Hide buttons
         cmdNext.Caption = "Exit"
@@ -817,7 +815,7 @@ End Sub
 Private Sub Form_Load()
     Width = 7650
     Height = 6000
-    lblInfo.Caption = "Welcome to the RPGToolkit 3 installation program; this program will enable you to install RPGToolkit3 on your computer." & vbCrLf & vbCrLf & "Before proceeding, it is highly advised that you close all other applications to ensure a successful installation." & vbCrLf & vbCrLf & "If you do not wish to continue, press 'Exit', otherwise, press 'Next' to continue."
+    lblInfo.Caption = "Welcome to the RPGToolkit 3 installation program; this program will enable you to install RPGToolkit3 on your computer." & vbCrLf & vbCrLf & "Before proceeding, it is highly advised that you close all other applications to ensure a successful installation." & vbCrLf & vbCrLf & "If you do not wish to continue, press 'Exit'; otherwise, press 'Next' to continue."
     txtGroupName.Text = GetSetting("RPGToolkit3", "Settings", "Group", "RPG Toolkit 3")
     Label1.Caption = "RPGToolkit, Version " & RPGTOOLKIT_VERSION
     Call changeStep(0)
