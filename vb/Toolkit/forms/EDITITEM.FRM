@@ -776,12 +776,13 @@ Public Sub openFile(ByVal file As String)
     On Error Resume Next
     Call activeItem.Show
     filename$(1) = file$
+    Dim antiPath As String
     antiPath$ = absNoPath(file$)
     FileCopy filename$(1), projectPath$ + itmPath$ + antiPath$
     itemList(activeItemIndex).theData = openItem(filename$(1))
     itemList(activeItemIndex).itemFile$ = antiPath$
     activeItem.Caption = LoadStringLoc(805, "Item Editor") + "  (" + antiPath$ + ")"
-    Call infoFill
+    Call infofill
     itemList(activeItemIndex).itemNeedUpdate = False
 End Sub
 
@@ -854,7 +855,7 @@ Private Sub Form_Activate()
     
     Call hideAllTools
     
-    Call infoFill
+    Call infofill
 
     Exit Sub
 'Begin error handling code:
@@ -876,7 +877,7 @@ Private Sub Form_Load()
     Call ItemClear(itemList(dataIndex).theData)
     
     filename(2) = ""
-    Call infoFill
+    Call infofill
 
     Exit Sub
 'Begin error handling code:
@@ -888,7 +889,7 @@ End Sub
 '=========================================================================
 ' Fill in form
 '=========================================================================
-Private Sub infoFill()
+Private Sub infofill()
     On Error GoTo ErrorHandler
     itemnamebox.Text = itemList(activeItemIndex).theData.itemName
     equipable.value = itemList(activeItemIndex).theData.EquipYN
@@ -916,11 +917,6 @@ Private Sub infoFill()
     Check1.value = itemList(activeItemIndex).theData.keyItem
     
     Text3.Text = itemList(activeItemIndex).theData.ITMDescription
-    If itemList(activeItemIndex).theData.itmSizeType = 0 Then
-        Option4.value = True
-    Else
-        Option3.value = True
-    End If
 
     Exit Sub
 'Begin error handling code:
@@ -959,7 +955,7 @@ End Sub
 '=========================================================================
 ' Close dialog
 '=========================================================================
-Private Sub mnuClose_Click()
+Private Sub mnuCLose_Click()
     On Error Resume Next
     Call Unload(itmequip)
     Call Unload(itmmenu)

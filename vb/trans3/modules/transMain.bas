@@ -460,7 +460,9 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     topX = 0
     topY = 0
-    debugYN = 1
+    If Not runningAsEXE Then
+        debugYN = 1
+    End If
     
     fontName$ = "Arial"             'Default true type font; or "base.fnt"
     fontSize = 20

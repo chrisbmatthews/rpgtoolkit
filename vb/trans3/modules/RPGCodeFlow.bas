@@ -66,14 +66,14 @@ End Property
 '=========================================================================
 ' Pops up the rpgcode debugger
 '=========================================================================
-Public Sub debugger(ByVal Text As String)
+Public Sub debugger(ByVal text As String)
 
     On Error Resume Next
 
     If Not checkErrorHandling() Then
         If debugYN = 1 Then
             Call debugwin.Show
-            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
+            debugwin.buglist.text = debugwin.buglist.text & text & vbCrLf
             DoEvents
         Else
             Call Unload(debugwin)
@@ -113,7 +113,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error GoTo errorhandler
 
@@ -124,7 +124,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If commandName$ = "" Then
-        mName = GetCommandName(Text, theProgram)   'get command name without extra info
+        mName = GetCommandName(text, theProgram)   'get command name without extra info
     Else
         mName = commandName
     End If
@@ -134,7 +134,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     If Not InClass.DoNotCheckForClass Then
         If Not methodName = "" Then
-            If IsClassRPG(includeFile, methodName, Text, theProgram, retval) Then
+            If IsClassRPG(includeFile, methodName, text, theProgram, retval) Then
                 Exit Sub
             End If
         End If
@@ -165,11 +165,11 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     InClass.MethodWasFound = True
     If foundIt = -1 Then
         'didn't find it in prg code, but it may exist in a plugin...
-        canDoIt = QueryPlugins(mName$, Text$, retval)
+        canDoIt = QueryPlugins(mName$, text$, retval)
         If canDoIt = False Then
             'InClass.MethodWasFound = False
             If InClass.PopupMethodNotFound Then
-                Call debugger("Error: Method not found!-- " + Text$)
+                Call debugger("Error: Method not found!-- " + text$)
             End If
         Else
             Exit Sub
@@ -185,7 +185,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
         
         'Get parameters from calling line
-        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
         For pList = 1 To number
             parameterList$(pList) = GetElement(dataUse$, pList)
@@ -541,7 +541,7 @@ End Sub
 ' Runs a block of code (or skips it if res = 0)
 '=========================================================================
 Public Function runBlock( _
-                            ByVal Text As String, _
+                            ByVal text As String, _
                             ByVal res As Long, _
                             ByRef prg As RPGCodeProgram _
                                                           ) As Long
@@ -928,7 +928,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
 
     'Parse this line like it has never been parsed before... [KSNiloc]
     rpgcodeCommand = ParseRPGCodeCommand(rpgcodeCommand, theProgram)
-       
+
     Dim cLine As String 'current line
     cLine = rpgcodeCommand
     

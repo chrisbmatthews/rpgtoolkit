@@ -128,7 +128,7 @@ End Sub
 '=========================================================================
 Public Sub drawTileCNV(ByVal cnv As Long, ByVal file As String, ByVal x As Double, ByVal y As Double, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal bMask As Boolean, Optional ByVal bNonTransparentMask As Boolean = True, Optional ByVal bIsometric As Boolean = False, Optional ByVal isoEvenOdd As Boolean = False)
 
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim anm As TKTileAnm
     
@@ -203,7 +203,7 @@ Public Sub drawTileCNV(ByVal cnv As Long, ByVal file As String, ByVal x As Doubl
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

@@ -96,13 +96,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   570
+      Height          =   360
       Left            =   0
       TabIndex        =   7
       Top             =   0
       Width           =   11880
       _ExtentX        =   20955
-      _ExtentY        =   1005
+      _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -858,12 +858,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3990
+      Height          =   4200
       Left            =   465
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   3510
       TabIndex        =   99
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -908,8 +908,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -1086,12 +1086,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   -1350
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   1815
       TabIndex        =   95
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   1815
       Begin VB.PictureBox newBar 
@@ -1131,12 +1131,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   3990
+      Height          =   4200
       Left            =   0
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   975
       TabIndex        =   50
-      Top             =   570
+      Top             =   360
       Width           =   975
       Begin VB.PictureBox leftbar 
          BorderStyle     =   0  'None
@@ -2047,12 +2047,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   11505
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   375
       TabIndex        =   22
-      Top             =   570
+      Top             =   360
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2251,12 +2251,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   3975
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   4800
       TabIndex        =   8
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2358,12 +2358,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   8775
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   2730
       TabIndex        =   1
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   2730
       Begin VB.CommandButton exitbutton 
@@ -2464,13 +2464,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "15/08/2004"
+            TextSave        =   "17/08/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "1:42 PM"
+            TextSave        =   "5:41 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2483,6 +2483,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
+            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -2932,7 +2933,7 @@ Public Sub openFile(ByVal fName As String)
             Close ff
             Open TempDir & "temp" For Input As ff
                 Dim theApp As String
-                theApp = Replace(Replace(fread(ff), vbCrLf, ""), " ", "")
+                theApp = replace(replace(fread(ff), vbCrLf, ""), " ", "")
             Close ff
             Dim commandLine As String
             commandLine = theApp & " " & """" & resolve(CurDir) & fName & """"
@@ -2973,46 +2974,46 @@ Public Sub fillTree(ByVal parentNode As String, ByVal folder As String): On Erro
     
     'first fill with folders...
     
-    Dim A As String
+    Dim a As String
     Dim b As String
     Dim ex As String
     
-    A$ = Dir$(folder + "*.*", vbDirectory)
-    A$ = Dir$()
-    A$ = Dir$()
-    Do While A$ <> ""
-        If (isFolder(folder + A$)) Then
+    a$ = Dir$(folder + "*.*", vbDirectory)
+    a$ = Dir$()
+    a$ = Dir$()
+    Do While a$ <> ""
+        If (isFolder(folder + a$)) Then
             If parentNode <> "" Then
-                Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, A$, A$, 1)
+                Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, a$, a$, 1)
                 'do subtrees...
-                Call fillTree(A$, folder + A$ + "\")
+                Call fillTree(a$, folder + a$ + "\")
                 
                 'reset dir counter
                 b$ = Dir$(folder + "*.*", vbDirectory)
-                Do While b$ <> A$
+                Do While b$ <> a$
                     b$ = Dir$()
                 Loop
             Else
-                Call tkMainForm.TreeView1.Nodes.Add(, , A$, A$, 1)
+                Call tkMainForm.TreeView1.Nodes.Add(, , a$, a$, 1)
                 'do subtrees...
-                Call fillTree(A$, folder + A$ + "\")
+                Call fillTree(a$, folder + a$ + "\")
                 
                 'reset dir counter
                 b$ = Dir$(folder + "*.*", vbDirectory)
-                Do While b$ <> A$
+                Do While b$ <> a$
                     b$ = Dir$()
                 Loop
             End If
         End If
-        A$ = Dir$()
+        a$ = Dir$()
     Loop
     
     'now fill with files...
-    A$ = Dir$(folder + "*.*")
-    Do While A$ <> ""
+    a$ = Dir$(folder + "*.*")
+    Do While a$ <> ""
         Dim gfx As Long
         gfx = 2
-        ex$ = UCase$(GetExt(A$))
+        ex$ = UCase$(GetExt(a$))
         Select Case ex$
             Case "GAM":
                 gfx = 3
@@ -3047,11 +3048,11 @@ Public Sub fillTree(ByVal parentNode As String, ByVal folder As String): On Erro
         End Select
         
         If parentNode <> "" Then
-            Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, A$, A$, gfx)
+            Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, a$, a$, gfx)
         Else
-            Call tkMainForm.TreeView1.Nodes.Add(, , A$, A$, gfx)
+            Call tkMainForm.TreeView1.Nodes.Add(, , a$, a$, gfx)
         End If
-        A$ = Dir$()
+        a$ = Dir$()
     Loop
 
 End Sub
@@ -3209,9 +3210,9 @@ End Sub
 
 Public Sub createpakfilemnu_Click(): On Error GoTo ErrorHandler
     
-    Dim A As Boolean
-    A = PAKTestSystem()
-    If A = False Then Exit Sub
+    Dim a As Boolean
+    a = PAKTestSystem()
+    If a = False Then Exit Sub
     
     pakfile.Show
     
@@ -3223,8 +3224,8 @@ ErrorHandler:
 End Sub
 
 Public Sub createsetupmnu_Click(): On Error Resume Next
-    Dim A As Long
-    A = Shell("setupkit.exe", 1)
+    Dim a As Long
+    a = Shell("setupkit.exe", 1)
     'mainoption.ZOrder 1
     Exit Sub
 End Sub
@@ -3305,10 +3306,10 @@ ErrorHandler:
 End Sub
 
 Public Sub installupgrademnu_Click(): On Error Resume Next
-    Dim aa As Long, A As Long
+    Dim aa As Long, a As Long
     aa = MsgBox(LoadStringLoc(929, "In order to install an upgrade, the Toolkit must be shut down.  You will lose unsaved info.  Do you wish to close the Toolkit now?"), vbYesNo, LoadStringLoc(930, "Install Upgrade"))
     If aa = 6 Then
-        A = Shell("tkupdate.exe")
+        a = Shell("tkupdate.exe")
         Call exitmnu_Click
         End
         Exit Sub
@@ -3500,13 +3501,13 @@ Private Sub ReadCommandLine_Timer()
         With Edit
             .tag = "1"
             .mnuNewProject.Visible = False
-            .mnunew.Visible = False
+            .mnuNew.Visible = False
             .mnuNewPRG.Visible = True
             .mnuOpenProject.Visible = False
             .mnuSaveAll.Visible = False
             .closemnu.Visible = False
             .mnuToolkit.Visible = False
-            .mnubuild.Visible = False
+            .mnuBuild.Visible = False
             .mnuWindow.Visible = False
             .Show
             Dim fCaption As String
@@ -3571,9 +3572,9 @@ End Sub
 
 Public Sub makeexemnu_Click(): On Error GoTo ErrorHandler
 
-    Dim A As Boolean
-    A = PAKTestSystem()
-    If A = False Then Exit Sub
+    Dim a As Boolean
+    a = PAKTestSystem()
+    If a = False Then Exit Sub
 
     makeexe.Show
     
@@ -3613,9 +3614,9 @@ Private Sub MDIForm_Load(): On Error Resume Next
     'check if we have top upgrade...
     upgradeYN = checkForArcPath()
     If upgradeYN = True Then
-        Dim A As Long
-        A = MsgBox("It appears that you have upgraded from version 2.06b or lower.  This version of the Toolkit uses a new filesystem.  Would you like to upgrade your filesystem? (if you have already upgraded it, you still need to delete the old file system.  In this case, goto File/Delete Old File System)", vbYesNo, "Upgrade Your Game")
-        If A = 6 Then
+        Dim a As Long
+        a = MsgBox("It appears that you have upgraded from version 2.06b or lower.  This version of the Toolkit uses a new filesystem.  Would you like to upgrade your filesystem? (if you have already upgraded it, you still need to delete the old file system.  In this case, goto File/Delete Old File System)", vbYesNo, "Upgrade Your Game")
+        If a = 6 Then
             'show as modal form
             upgradeform.Show (1)
             Exit Sub
@@ -4092,38 +4093,17 @@ End Sub
 
 
 Public Sub testgamemnu_Click()
-    '==========================
-    'EDITED: [Delano - 29/04/04]
-    'FIXED: trans3 crashes when this button is pressed!
-    'CAUSE: the Shell call windowstyle was set to default, which caused trans3 to be minimized,
-    '       which caused trans3 to crash.
-
-    On Error GoTo ErrorHandler
-    
-    Dim Command As String, A As Long
-    
+    On Error Resume Next
+    Dim Command As String
     'Checks to see if there is a .gam file.
     If mainfile$ = "" Then
-    
         MsgBox LoadStringLoc(926, "Cannot test run-- no project is loaded!")
-    
     Else
-        
         'Construct the call with the .gam file as the parameter.
-        Command$ = "trans3 " + mainfile$
-        
+        Command = "trans3 " & mainfile
         'Run trans3 through the Shell. Fix: Added second argument, to give trans3 the focus.
-        A = Shell(Command$, vbNormalFocus)
-    
+        Call Shell(Command$, vbNormalFocus)
     End If
-
-    Exit Sub
-    
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-
 End Sub
 
 Private Sub tileBmpAmbientSlider_Change(): On Error Resume Next

@@ -651,14 +651,13 @@ End Sub
 Public Sub openFile(ByVal filename As String)
     On Error Resume Next
     Dim antiPath As String
-    Call checkSave
     activeBackground.Show
     If filename$ = "" Then Exit Sub
     Call openBackground(filename$, bkgList(activeBkgIndex).theData)
     antiPath$ = absNoPath(filename$)
     bkgList(activeBkgIndex).filename = antiPath$
     Me.Caption = LoadStringLoc(1435, "Edit Background") + "  (" + antiPath$ + ")"
-    Call infoFill
+    Call infofill
     bkgList(activeBkgIndex).needUpdate = False
 End Sub
 
@@ -876,7 +875,7 @@ End Sub
 ' Form load
 '=========================================================================
 Private Sub Form_Load()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Call LocalizeForm(Me)
     Set activeBackground = Me
     dataIndex = VectBackgroundNewSlot()
@@ -895,7 +894,7 @@ End Sub
 '=========================================================================
 ' Fill in this form
 '=========================================================================
-Private Sub infoFill()
+Private Sub infofill()
     On Error Resume Next
     If bkgList(activeBkgIndex).theData.image <> "" Then
         Text2.Text = bkgList(activeBkgIndex).theData.image
@@ -920,7 +919,7 @@ End Sub
 '=========================================================================
 ' Close this form
 '=========================================================================
-Private Sub mnuClose_Click()
+Private Sub mnuCLose_Click()
     Call Unload(Me)
 End Sub
 

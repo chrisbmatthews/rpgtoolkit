@@ -111,7 +111,7 @@ Private Sub commands_Click()
             End If
         Loop
     Close num
-    description.Text = Desc & vbCrLf & Desc2
+    description.Text = dest & vbCrLf & dest2
 End Sub
 
 Private Sub Form_Load()

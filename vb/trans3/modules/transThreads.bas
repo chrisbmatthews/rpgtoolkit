@@ -17,7 +17,6 @@ Public Type RPGCODE_THREAD
        
 End Type
 
-' ! ADDED BY KSNiloc...
 Public Enum THREAD_LOOP_TYPE
     TYPE_IF = 1
     TYPE_WHILE = 2

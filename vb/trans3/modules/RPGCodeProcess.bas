@@ -131,7 +131,7 @@ Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
         'Dimension the .program() array...
         ReDim thePrg.program(0)
 
-        Do While Not EOF(num)
+        Do Until EOF(num)
 
             'Read a line from the file
             theLine = fread(num)

@@ -32,9 +32,9 @@ Global Const DSTINVERT = &H550009       ' (DWORD) dest = (NOT dest)
 Global Const BLACKNESS = &H42&  ' (DWORD) dest = BLACK
 Global Const WHITENESS = &HFF0062       ' (DWORD) dest = WHITE
 
-Declare Function BitBlt Lib "gdi32" (ByVal hDestDC&, ByVal X&, ByVal Y&, ByVal nWidth&, ByVal nHeight&, ByVal hSrcDC&, ByVal xsrc&, ByVal ysrc&, ByVal dwrop&) As Long
-Declare Function SetPixelV& Lib "gdi32" (ByVal hdc As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long)
-Public Declare Function GetPixel Lib "gdi32" (ByVal hdc As Long, ByVal X As Long, ByVal Y As Long) As Long
+Declare Function BitBlt Lib "gdi32" (ByVal hDestDC&, ByVal x&, ByVal y&, ByVal nWidth&, ByVal nHeight&, ByVal hSrcDC&, ByVal xsrc&, ByVal ysrc&, ByVal dwrop&) As Long
+Declare Function SetPixelV& Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long)
+Public Declare Function GetPixel Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
 Public Declare Function SetBkColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
 Public Declare Function FillRgn Lib "gdi32" (ByVal hdc As Long, ByVal hRgn As Long, ByVal hBrush As Long) As Long
 Public Declare Function CreateRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
@@ -44,7 +44,7 @@ Public Declare Function PaintRgn Lib "gdi32" (ByVal hdc As Long, ByVal hRgn As L
 'Declare Function SetPixel& Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crcolor As Long)
 
 Declare Function StretchBlt& Lib "gdi32" _
-    (ByVal hdc&, ByVal X&, ByVal Y&, ByVal nWidth&, ByVal nHeight&, _
+    (ByVal hdc&, ByVal x&, ByVal y&, ByVal nWidth&, ByVal nHeight&, _
      ByVal hSrcDC&, ByVal xsrc&, ByVal ysrc&, ByVal SrcWidth&, ByVal SrcHeight&, _
      ByVal dwrop&)
 
@@ -55,12 +55,12 @@ Public Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Public Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
 
 Public Type POINTAPI
-    X As Long
-    Y As Long
+    x As Long
+    y As Long
 End Type
 
-Public Declare Function MoveToEx Lib "gdi32" (ByVal hdc As Long, ByVal X As Long, ByVal Y As Long, lpPoint As POINTAPI) As Long
-Public Declare Function LineTo Lib "gdi32" (ByVal hdc As Long, ByVal X As Long, ByVal Y As Long) As Long
+Public Declare Function MoveToEx Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, lpPoint As POINTAPI) As Long
+Public Declare Function LineTo Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
 Public Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 
 Public Declare Function Ellipse Lib "gdi32" (ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
@@ -113,24 +113,24 @@ Sub vbFrmLine(ByRef pic As Form, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As
     pic.Line (x1, y1)-(x2, y2), crColor
 End Sub
 
-Function vbPicPoint(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long) As Long
+Function vbPicPoint(ByRef pic As PictureBox, ByVal x As Long, ByVal y As Long) As Long
     'get point
-    vbPicPoint = pic.point(X, Y)
+    vbPicPoint = pic.point(x, y)
 End Function
 
-Function vbFrmPoint(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long) As Long
+Function vbFrmPoint(ByRef pic As PictureBox, ByVal x As Long, ByVal y As Long) As Long
     'get point
-    vbFrmPoint = pic.point(X, Y)
+    vbFrmPoint = pic.point(x, y)
 End Function
 
-Sub vbPicPSet(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long)
+Sub vbPicPSet(ByRef pic As PictureBox, ByVal x As Long, ByVal y As Long, ByVal crColor As Long)
     'pset
-    pic.PSet (X, Y), crColor
+    pic.PSet (x, y), crColor
 End Sub
 
-Sub vbFrmPSet(ByRef pic As Form, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long)
+Sub vbFrmPSet(ByRef pic As Form, ByVal x As Long, ByVal y As Long, ByVal crColor As Long)
     'pset
-    pic.PSet (X, Y), crColor
+    pic.PSet (x, y), crColor
 End Sub
 
 Sub vbPicRect(ByRef pic As PictureBox, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
@@ -222,19 +222,19 @@ Sub vbFrmCls(ByRef pic As Form)
     Call pic.Cls
 End Sub
 
-Sub vbPicCircle(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long, ByVal radius As Long, ByVal crColor As Long, Optional ByVal startangle As Double = -1, Optional ByVal endangle As Double = -1, Optional ByVal aspect As Double = -1)
+Sub vbPicCircle(ByRef pic As PictureBox, ByVal x As Long, ByVal y As Long, ByVal radius As Long, ByVal crColor As Long, Optional ByVal startangle As Double = -1, Optional ByVal endangle As Double = -1, Optional ByVal aspect As Double = -1)
     'draw circle
     If startangle = -1 And endangle = -1 Then
         If aspect = -1 Then
-            pic.Circle (X, Y), radius, crColor
+            pic.Circle (x, y), radius, crColor
         Else
-            pic.Circle (X, Y), radius, crColor, , , aspect
+            pic.Circle (x, y), radius, crColor, , , aspect
         End If
     Else
         If aspect = -1 Then
-            pic.Circle (X, Y), radius, crColor, startangle, endangle
+            pic.Circle (x, y), radius, crColor, startangle, endangle
         Else
-            pic.Circle (X, Y), radius, crColor, startangle, endangle, aspect
+            pic.Circle (x, y), radius, crColor, startangle, endangle, aspect
         End If
     End If
 End Sub

@@ -13,6 +13,7 @@ Begin VB.UserControl TKTopBar
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      FillColor       =   &H00FFFFFF&
       ForeColor       =   &H80000008&
       Height          =   375
       Left            =   15
