@@ -1711,10 +1711,10 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
 
 End Function
 
+Public Function getQueuedMovement(ByRef queue As MOVEMENT_QUEUE) As Long
 '=========================================================================
 ' Get a queued movement (and remove it from the queue)
 '=========================================================================
-Public Function getQueuedMovement(ByRef queue As MOVEMENT_QUEUE) As Long
 
     ' If there's a queue
     If (queue.lngSize) Then
@@ -1755,32 +1755,39 @@ Public Sub runQueuedMovements(): On Error Resume Next
 
 End Sub
 
-'=========================================================================
-' Queue up a movement
-'=========================================================================
 Public Sub setQueuedMovements(ByRef queue As MOVEMENT_QUEUE, ByRef strPath As String)
+    '===========================================================================
+    'Parse a string of movements for pushing and add them to the objects' queue.
+    'Called by PushItemRPG, PushRPG, PlayerStepRPG, ItemStepRPG, WanderRPG
+    '===========================================================================
+    On Error Resume Next
 
-    On Error GoTo arrayError
-
-    ' First, split at comma delimed directions
+    ' First, split at comma delimed directions.
     Dim strMovements() As String
     strMovements = Split(strPath, ",")
 
-    ' Count the number of movements
-    Dim ub As Long
+    ' Count the number of movements, and get the bound on the current queue.
+    Dim ub As Long, ubQueue As Long
     ub = UBound(strMovements)
+    ubQueue = UBound(queue.lngMovements)
 
-    ' Number of movements to add to queue will be larger
-    ' if in pixel movement
+    ' Number of movements to add to queue will be larger if in pixel movement.
     Dim lngQueueSize As Long
-    lngQueueSize = 1 / movementSize
+    If mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH Then
+        lngQueueSize = 1 / movementSize
+    Else
+        lngQueueSize = 1
+    End If
 
-    ' Check current size of the queue
+    ' Get the next position in the queue.
     Dim lngQueueOffset As Long
     lngQueueOffset = queue.lngSize + 1
 
-    ' Enlarge the queue
+    ' Enlarge the queue, and the array if needed.
     queue.lngSize = queue.lngSize + lngQueueSize * (ub + 1)
+    If queue.lngSize >= ubQueue Then
+        ReDim Preserve queue.lngMovements(queue.lngSize)
+    End If
 
     ' For each movement
     Dim i As Long
@@ -1799,7 +1806,7 @@ Public Sub setQueuedMovements(ByRef queue As MOVEMENT_QUEUE, ByRef strPath As St
             Case "NORTHWEST", "NW": lngMovement = MV_NW
             Case "SOUTHEAST", "SE": lngMovement = MV_SE
             Case "SOUTHWEST", "SW": lngMovement = MV_SE
-            Case MVQ_NORTH, MVQ_SOUTH, MVQ_EAST, MVQ_WEST, MVQ_NE, MVQ_NW, MVQ_SE, MVQ_SE:
+            Case MVQ_NORTH, MVQ_SOUTH, MVQ_EAST, MVQ_WEST, MVQ_NE, MVQ_NW, MVQ_SE, MVQ_SW:
                 ' Cast the number to a long
                 lngMovement = CLng(strMovements(i))
             Case Else: lngMovement = MV_IDLE
@@ -1817,14 +1824,6 @@ Public Sub setQueuedMovements(ByRef queue As MOVEMENT_QUEUE, ByRef strPath As St
         Next j
 
     Next i
-
-    Exit Sub
-
-arrayError:
-
-    ' Enlarge the queue array
-    ReDim Preserve queue.lngMovements(queue.lngSize + 16)
-    Resume
 
 End Sub
 
