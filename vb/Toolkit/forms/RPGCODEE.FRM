@@ -113,7 +113,6 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
-      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -694,7 +693,7 @@ Public Sub mnuNotepadMode_Click()
             tkMainForm.mainToolbar.Visible = True
             tkMainForm.leftBarContainer.Visible = True
             tkMainForm.newBarContainerContainer.Visible = True
-            tkMainForm.pcbOpenFileList.Visible = True
+            tkMainForm.Picture2.Visible = True
             tkMainForm.StatusBar1.Visible = True
             Form_Activate
             tkMainForm.popTray.Visible = True
@@ -713,7 +712,7 @@ Public Sub mnuNotepadMode_Click()
             tkMainForm.popTray.Visible = False
             tkMainForm.leftBarContainer.Visible = False
             tkMainForm.newBarContainerContainer.Visible = False
-            tkMainForm.pcbOpenFileList.Visible = False
+            tkMainForm.Picture2.Visible = False
             tkMainForm.StatusBar1.Visible = False
             hideAllTools
             WindowState = 2

@@ -114,7 +114,7 @@ Sub ClearRedirects()
 End Sub
 
 Function dataType( _
-                     ByVal text As String, _
+                     ByVal Text As String, _
                      Optional ByRef equType As dtType = -1 _
                                                              ) As Long
 
@@ -123,13 +123,13 @@ Function dataType( _
     'returns data type of text$
     '0- Numerical var, 1- lit var, 2- text, 3- number 5-equation
     On Error GoTo datatypeerr
-    Dim Length As Long, dType As Long, p As Long, part As String, a As Double, errorsA As Long
-    Length = Len(text$)
+    Dim length As Long, dType As Long, p As Long, part As String, a As Double, errorsA As Long
+    length = Len(Text$)
     dType = -1
     
     'first check if it's a command...
-    For p = 1 To Length
-        part$ = Mid$(text$, p, 1)
+    For p = 1 To length
+        part$ = Mid$(Text$, p, 1)
         If part$ = chr$(34) Then
             'if we encounter quotes before we encounter
             '# or ( then it's not a command!
@@ -143,8 +143,8 @@ Function dataType( _
     
     'wasn't a command-- try other types
     If dType = -1 Then
-        For p = 1 To Length
-            part$ = Mid$(text$, p, 1)
+        For p = 1 To length
+            part$ = Mid$(Text$, p, 1)
             If part$ = chr$(34) Then
                 dType = 2
                 'p = length
@@ -161,7 +161,7 @@ Function dataType( _
     End If
     
     If dType = -1 Then
-        a = CDbl(text$)
+        a = CDbl(Text$)
         If errorsA = 1 Then
             errorsA = 0
             dType = 2
@@ -172,7 +172,7 @@ Function dataType( _
 
     'Maybe it's an equation...
     Dim equResult As Long
-    If isEquation(text, equResult) Then
+    If isEquation(Text, equResult) Then
         dType = DT_EQUATION
         If equType = -1 Then
             dType = equResult
@@ -196,17 +196,17 @@ End Function
 Function GetRedirect(ByVal originalMethod As String) As String
     'get the redirected method name.
     On Error Resume Next
-    Dim Length As Long
+    Dim length As Long
     
     originalMethod = UCase$(removeChar(originalMethod, "#"))
     If RedirectExists(originalMethod) Then
         Dim getStr As String * 4048
-        Length = RPGCGetRedirect(originalMethod, getStr)
-        If Length = 0 Then
+        length = RPGCGetRedirect(originalMethod, getStr)
+        If length = 0 Then
             GetRedirect = originalMethod
             Exit Function
         End If
-        GetRedirect = Mid$(getStr, 1, Length)
+        GetRedirect = Mid$(getStr, 1, length)
     Else
         GetRedirect = ""
     End If
@@ -217,14 +217,14 @@ Function GetRedirectName(ByVal Index As Long) As String
     On Error Resume Next
     
     Dim max As Long
-    Dim Length As Long
+    Dim length As Long
     max = RPGCCountRedirects()
     If Index > max - 1 Or Index < 0 Then
         GetRedirectName = ""
     Else
         Dim inBuf As String * 4024
-        Length = RPGCGetRedirectName(Index, inBuf)
-        GetRedirectName = Mid$(inBuf, 1, Length)
+        length = RPGCGetRedirectName(Index, inBuf)
+        GetRedirectName = Mid$(inBuf, 1, length)
     End If
 End Function
 
@@ -453,7 +453,7 @@ Public Function RPGCodeEquation( _
  
 End Function
 
-Function GetValue(ByVal text As String, ByRef lit As String, _
+Function GetValue(ByVal Text As String, ByRef lit As String, _
  ByRef num As Double, ByRef theProgram As RPGCodeProgram) As dtType
  
 'gets value of text- be it literal, numerical or a var
@@ -474,15 +474,15 @@ Function GetValue(ByVal text As String, ByRef lit As String, _
     On Error GoTo errorhandler
     
     Dim dType As Long, aa As Long, numa As Double, lita As String, p As Long, part As String
-    Dim Length As Long, checkIt As Long, newPos As Long, sendText As String
+    Dim length As Long, checkIt As Long, newPos As Long, sendText As String
     
     Dim EquTyp As dtType
-    dType = dataType(text, EquTyp)
+    dType = dataType(Text, EquTyp)
   
     Select Case dType
         Case DT_NUM:
             'numerical var
-            aa = GetVariable(text$, lita$, numa, theProgram)
+            aa = GetVariable(Text$, lita$, numa, theProgram)
             If aa = 0 Then
                 num = numa
                 GetValue = 0
@@ -494,7 +494,7 @@ Function GetValue(ByVal text As String, ByRef lit As String, _
             End If
         Case DT_LIT:
             'literal var
-            aa = GetVariable(text$, lita$, numa, theProgram)
+            aa = GetVariable(Text$, lita$, numa, theProgram)
             If aa = 1 Then
                 lit$ = lita$
                 GetValue = 1
@@ -505,19 +505,19 @@ Function GetValue(ByVal text As String, ByRef lit As String, _
                 Exit Function
             End If
         Case 2:
-            Length = Len(text$)
-            For p = 1 To Length
-                part$ = Mid$(text$, p, 1)
+            length = Len(Text$)
+            For p = 1 To length
+                part$ = Mid$(Text$, p, 1)
                 If part$ = chr$(34) Then checkIt = 1
             Next p
             If checkIt = 1 Then
                 'it's in quotes!
-                For p = 1 To Length
-                    part$ = Mid$(text$, p, 1)
-                    If part$ = chr$(34) Then newPos = p: p = Length
+                For p = 1 To length
+                    part$ = Mid$(Text$, p, 1)
+                    If part$ = chr$(34) Then newPos = p: p = length
                 Next p
-                For p = newPos + 1 To Length
-                    part$ = Mid$(text$, p, 1)
+                For p = newPos + 1 To length
+                    part$ = Mid$(Text$, p, 1)
                     If part$ = chr$(34) Or part$ = "" Then
                         lit$ = sendText$
                         GetValue = 1
@@ -527,34 +527,34 @@ Function GetValue(ByVal text As String, ByRef lit As String, _
                     End If
                 Next p
             Else
-                lit$ = text$
+                lit$ = Text$
                 GetValue = 1
                 Exit Function
             End If
     
         Case 3:
-            num = val(text$)
+            num = val(Text$)
             GetValue = 0
             Exit Function
             
         Case DT_COMMAND:
             'if it's a command, run the command
             'and return the value it produces...
-            Dim retVal As RPGCODE_RETURN
+            Dim retval As RPGCODE_RETURN
             Dim oldPos As Long
             oldPos = theProgram.programPos
-            Call DoSingleCommand(text$, theProgram, retVal)
+            Call DoSingleCommand(Text$, theProgram, retval)
             theProgram.programPos = oldPos
-            If retVal.dataType = DT_LIT Then
-                GetValue = GetValue(retVal.lit, lit$, num, theProgram)
+            If retval.dataType = DT_LIT Then
+                GetValue = GetValue(retval.lit, lit$, num, theProgram)
             Else
-                GetValue = GetValue(str$(retVal.num), lit$, num, theProgram)
+                GetValue = GetValue(str$(retval.num), lit$, num, theProgram)
             End If
             
         Case DT_EQUATION
             'It's an equation!
             Dim equVal As Parameters
-            equVal = RPGCodeEquation(text, theProgram, EquTyp)
+            equVal = RPGCodeEquation(Text, theProgram, EquTyp)
             Select Case equVal.dataType
                 Case dtNum
                     num = equVal.num
@@ -608,14 +608,14 @@ Function GetNumName(ByVal Index As Integer, ByVal heapID As Long) As String
     'get the index-th numerical variable name
     On Error Resume Next
     
-    Dim max As Long, Length As Long
+    Dim max As Long, length As Long
     max = RPGCCountNum(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetNumName = ""
     Else
         Dim inBuf As String * 4024
-        Length = RPGCGetNumName(Index, inBuf, heapID)
-        GetNumName = Mid$(inBuf, 1, Length)
+        length = RPGCGetNumName(Index, inBuf, heapID)
+        GetNumName = Mid$(inBuf, 1, length)
     End If
 End Function
 
@@ -623,14 +623,14 @@ Function GetLitName(ByVal Index As Integer, ByVal heapID As Long) As String
     'get the index-th literal variable name
     On Error Resume Next
     
-    Dim max As Long, Length As Long
+    Dim max As Long, length As Long
     max = RPGCCountLit(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetLitName = ""
     Else
         Dim inBuf As String * 4024
-        Length = RPGCGetLitName(Index, inBuf, heapID)
-        GetLitName = Mid$(inBuf, 1, Length)
+        length = RPGCGetLitName(Index, inBuf, heapID)
+        GetLitName = Mid$(inBuf, 1, length)
     End If
 End Function
 
@@ -709,10 +709,10 @@ Function varitype(var$, ByVal heapID As Long) As Long
     '0- numerical, 1- literal, -1 if it cannot tell
     On Error GoTo errorhandler
     
-    Dim a As String, Length As Long, pos As Long, typeIt As Long, part As String
+    Dim a As String, length As Long, pos As Long, typeIt As Long, part As String
     a$ = var$
-    Length = Len(a$)
-    For pos = 1 To Length
+    length = Len(a$)
+    For pos = 1 To length
         part$ = Mid$(a$, pos, 1)
         If part$ = "$" Then typeIt = 1
         If part$ = "!" Then typeIt = 2
@@ -1033,14 +1033,14 @@ End Function
 Function GetLitVar(ByVal varName As String, ByVal heapID As Long) As String
     'get literal var.
     On Error Resume Next
-    Dim l As Long, Length As Long
+    Dim l As Long, length As Long
     
     l = RPGCGetLitVarLen(UCase$(varName), heapID)
     If l > 0 Then
         l = l + 1
         Dim getStr As String * 4048
-        Length = RPGCGetLitVar(UCase$(varName), getStr, heapID)
-        GetLitVar = Mid$(getStr, 1, Length)
+        length = RPGCGetLitVar(UCase$(varName), getStr, heapID)
+        GetLitVar = Mid$(getStr, 1, length)
     Else
         GetLitVar = ""
     End If
@@ -1106,7 +1106,7 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
     'equations, etc with their values.
 
     'Just skip errors because they're probably the rpgcoder's fault
-    On Error GoTo skiperror
+    On Error GoTo skipError
 
     'Have something to return incase we leave early
     parseArray = variable
@@ -1188,5 +1188,5 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
     'Pass it back with the type (! or $) on the end
     parseArray = build & variableType
 
-skiperror:
+skipError:
 End Function

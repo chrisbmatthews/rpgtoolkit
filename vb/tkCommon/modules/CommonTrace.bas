@@ -11,6 +11,7 @@ Private traceFile As String   'trace file id
 Private isTracing As Boolean
 
 Private Const enableTracer As Boolean = False
+
 Sub StartTracing(ByVal file As String)
     On Error Resume Next
     
@@ -41,7 +42,7 @@ Sub StopTracing()
 End Sub
 
 
-Sub traceString(ByVal text As String)
+Sub traceString(ByVal Text As String)
     'write text to the trace file
     On Error Resume Next
     If enableTracer Then
@@ -52,7 +53,7 @@ Sub traceString(ByVal text As String)
             tf = FreeFile
             Open traceFile For Append As #tf
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #tf, text
+            Print #tf, Text
             Close #tf
         End If
     End If
