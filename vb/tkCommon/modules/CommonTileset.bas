@@ -1,86 +1,89 @@
 Attribute VB_Name = "CommonTileset"
-'=======================================================================
+'==============================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
-'=======================================================================
-
-'===============================================
-'Alterations for new isometric tilesets, .iso
-'Edited by Delano for 3.0.4
-'
-' Altered subs: All
-' New global constants.
-'===============================================
-
-'Tileset module-- defines a tileset
-
+'==============================================================================
 Option Explicit
+'==============================================================================
+'Tileset module-- defines a tileset
+'==============================================================================
 
-Public Type tilesetHeader              '6 bytes
-    version As Integer          '20=2.0, 21=2.1, etc
-    tilesInSet As Integer       'number of tiles in set
-    detail As Integer           'detail level in set MUST BE UNIFORM!
+Public Type tilesetHeader               '6 bytes.
+    version As Integer                  '20=2.0, 21=2.1, etc.
+    tilesInSet As Integer               'number of tiles in set.
+    detail As Integer                   'detail level in set MUST BE UNIFORM!
 End Type
 
-Public tileset As tilesetHeader    'current tileset file
+Public tileset As tilesetHeader         'current tileset file
 
-'==============================================
-' .iso Isometric Tileset File Format
-' Introduced for 3.0.4
-' Almost identical to .tsts!
+'==============================================================================
+' .tst Tileset File Format
 '
 ' File structure:
 '   Header:                 (6 bytes)
-'       tileset.version = 30
+'       tileset.version = TST_VERSION
+'       tileset.tilesInSet
+'       tileset.detail = specifies size and bit depth (see calcInsertionPoint)
+'   Tiles:                  (size * size * depth bytes)
+'       Pixel converted to rgb components, tile saved in columns / rows.
+'==============================================================================
+
+'==============================================================================
+' .iso Isometric Tileset File Format
+' Introduced for 3.0.4
+'
+' File structure:
+'   Header:                 (6 bytes)
+'       tileset.version = ISO_VERSION
 '       tileset.tilesInSet
 '       tileset.detail = ISODETAIL
-'   Isometric Tiles:        (3072 bytes)
-'       Stored in same way as .tsts, after masking.
-'==============================================
+'   Isometric Tiles:        (32 * 32 * 3 bytes)
+'       Tiles are masked - formed into 32x32 array (see insertIntoTileset)
+'==============================================================================
 
-'==============================================
-'New variables for isometric tile system; 3.0.4
-'GetTileInfo constants.
-
-Public Const TSTTYPE As Byte = 0        'Should be 1!
+'==============================================================================
+'Tileset constants
+'==============================================================================
+Public Const TSTTYPE As Byte = 0                    'Should be 1!
 Public Const ISOTYPE As Byte = 2
-Public Const ISODETAIL As Byte = 150    'Arbitrary value!
+Public Const ISODETAIL As Byte = 150                'Arbitrary value!
+Public Const TR_COLOR_24 As Long = 131328           'Transparent colour in 24-bit tiles = RGB(0,1,2)
+Public Const TR_COLOR_8 As Long = 255               'Transparent colour in 8-bit tiles (bc).
 
-Function addToTileSet(ByVal file As String) As Integer: On Error GoTo errorhandler
-'==================================================
+Private Const TST_HEADER = 6                        'Length of tileset header in bytes.
+Private Const TST_VERSION As Byte = 20
+Private Const ISO_VERSION As Byte = 30
+
+Public Function addToTileSet(ByVal file As String) As Integer: On Error Resume Next
+'==============================================================================
 'Adds the current tile to the end of the tileset.
 'Returns the number in the tst.
-'file$ is the tst name, e.g. "default.tst"
-'==================================================
-'Edited by Delano for 3.0.4
-'Isometric tilesets (.iso) added.
-'Variable a >> setType
-
+'file is the tst name, e.g. "default.tst"
+'==============================================================================
 'Called by: CommonItem openItem         -tk2 compat
 '           CommonPlayer openchar       -tk2 compat
 '(toolkit)  tileedit mnusts_click, savetile2
 '           tilesetedit Command1_Click      - unneeded changes, since cannot add .gph to .iso
 '           tilesetadd Command1_Click
 
-    Dim setType As Long, num As Long
-    setType = tilesetInfo(file$)
+    Dim num As Long
     
-    If (setType = TSTTYPE And tileset.detail = detail) Or (setType = ISOTYPE And tileset.detail = ISODETAIL) Then
+    If (tilesetInfo(file) = TSTTYPE And tileset.detail = detail) Or _
+       (tilesetInfo(file) = ISOTYPE And tileset.detail = ISODETAIL) Then
     
         'If the versions are correct and the header was read.
         tileset.tilesInSet = tileset.tilesInSet + 1
                 
         'Set up the file for rewriting the header with the updated tile number.
         num = FreeFile
-        'Kill file$
         
-        Open file$ For Binary As #num
-            Put #num, 1, tileset
-        Close #num
+        Open file For Binary Access Write As num
+            Put num, 1, tileset
+        Close num
                     
         'Append the tile data.
-        Call insertIntoTileSet(file$, tileset.tilesInSet)
+        Call insertIntoTileSet(file, tileset.tilesInSet)
         
         'Return the new tile number.
         addToTileSet = tileset.tilesInSet
@@ -91,214 +94,118 @@ Function addToTileSet(ByVal file As String) As Integer: On Error GoTo errorhandl
         addToTileSet = -1
     End If
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
-
-Function calcInsertionPoint(ByRef ts As tilesetHeader, ByVal num As Long) As Long
-'===================================================
-'Calculates insertion point of tile #num in tileset.
-'Returns the byte position in the file.
-'.tst header is 6 bytes long!
-'===================================================
-'Edited by Delano for 3.0.4
-'Added isometric case as for detail = 1.
-
+Private Function calcInsertionPoint(ByRef ts As tilesetHeader, _
+                                    ByRef size As Long, ByRef depth As Long, _
+                                    ByVal number As Long) As Long
+'==============================================================================
+'Calculates the byte position of the number tile in a tileset by on its quality.
+'Assigns size and depth dependent on quality.
+'==============================================================================
 'Called by openTileSet and insertIntoTileSet
 
-    On Error GoTo errorhandler
-    Dim ret As Long
-    
+    On Error Resume Next
+
     Select Case ts.detail
-    
-        Case 1, ISODETAIL:
-            'Case added: Isometrics are the same file size!
-            '32x32, 16.7 million colors. (32x32x3 bytes each)
-            ret = (3072 * (num - 1)) + 7
-            calcInsertionPoint = ret
-            Exit Function
-            
-        Case 2:
+        Case 1, ISODETAIL
+            '32x32, 16.7 million colors (32x32x3 bytes)
+            size = 32: depth = 3
+        Case 2
             '16x16, 16.7 million colors (16x16x3 bytes)
-            ret = (768 * (num - 1)) + 7
-            calcInsertionPoint = ret
-            Exit Function
-            
-        Case 3:
+            size = 16: depth = 3
+        Case 3, 5
             '32x32, 256 colors (32x32x1 bytes)
-            ret = (1024 * (num - 1)) + 7
-            calcInsertionPoint = ret
-            Exit Function
-            
-        Case 4:
+            size = 32: depth = 1
+        Case 4, 6
             '16x16, 256 colors (16x16x1 bytes)
-            ret = (256 * (num - 1)) + 7
-            calcInsertionPoint = ret
-            Exit Function
-            
-        Case 5:
-            '32x32, 16 colors (32x32x1 byte)
-            ret = (1024 * (num - 1)) + 7
-            calcInsertionPoint = ret
-            Exit Function
-            
-        Case 6:
-            '16x16, 16 colors (16x16,1 bytes)
-            ret = (256 * (num - 1)) + 7
-            calcInsertionPoint = ret
-            Exit Function
-           
+            size = 16: depth = 1
+        Case Else
+            size = 32: depth = 3
     End Select
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
     
-    Resume Next
+    calcInsertionPoint = size * size * depth * (number - 1) + (TST_HEADER + 1)
+
 End Function
 
-
-Function createNewTileSet(ByVal file As String, Optional ByVal bIsometric As Boolean = False) As Integer: On Error Resume Next
-'==================================================
+Public Function createNewTileSet(ByVal file As String, Optional ByVal bIsometric As Boolean = False) As Integer: On Error Resume Next
+'==============================================================================
 'Creates a new tileset and inserts the first tile.
 'Called when a new tst is set in the save dialogs.
-'file$ is the new name, e.g. "default.tst"
-'==================================================
-'Edited by Delano for 3.0.4
-'Now returns the tilenumber! -> converted to function
-
+'file is the new name, e.g. "default.tst"
+'==============================================================================
 'Called by: CommonItem openItem                 -tk2 compat
 '           CommonPlayer openchar               -tk2 compat
 '(toolkit)  tileedit mnusts_click, savetile2
 '           tilesetedit Command1_Click  - unneeded changes, since cannot add .gph to .iso
 '           tilesetadd Command1_Click
     
+    Dim num As Long
     
-    Dim num As Long, tileNumber As Integer, fileType As String
-    
-    fileType$ = GetExt(file$)                   ' tst or iso.
-      
-    If bIsometric And UCase$(fileType$) = "ISO" Then
+    If bIsometric And UCase$(GetExt(file)) = "ISO" Then
         'Set the header information (6 bytes).
         'bIsometric passed in from forms.
         
-        tileset.version = 30                    'Begun for version 3.0.4
+        tileset.version = ISO_VERSION                   'Begun for version 3.0.4
         tileset.tilesInSet = 0
-        tileset.detail = ISODETAIL              'In case tsts ever get upgraded.
+        tileset.detail = ISODETAIL                      'In case tsts ever get upgraded.
     
-    ElseIf Not bIsometric And UCase$(fileType$) = "TST" Then
+    ElseIf Not bIsometric And UCase$(GetExt(file)) = "TST" Then
         'Set the header information (6 bytes).
         
-    tileset.version = 20
-    tileset.tilesInSet = 0
-        tileset.detail = Int(detail)
+        tileset.version = TST_VERSION
+        tileset.tilesInSet = 0
+        tileset.detail = detail
     End If
         
-    
     'Set up a new file and write the header to it.
     num = FreeFile
-    Kill file$          'We're creating a new file so we can kill the filename.
+    Kill file          'We're creating a new file so we can kill the filename.
     
-    Open file$ For Binary As #num
-        Put #num, 1, tileset
-    Close #num
+    Open file For Binary Access Write As num
+        Put num, 1, tileset
+    Close num
 
     'Insert the first tile. tile number is returned (should be 1).
-    createNewTileSet = addToTileSet(file$)
+    createNewTileSet = addToTileSet(file)
     
 End Function
 
-
-Function getTileNum(ByVal file As String) As Long: On Error GoTo errorhandler
-'================================================
+Public Function getTileNum(ByVal file As String) As Long: On Error Resume Next
+'==============================================================================
 'Extracts the tile number from the filename.
 'e.g. tileset.tst148 would return 148.
-'================================================
-
+'==============================================================================
 'Called by: Routines opentile2, openwintile, savetile
 '           tileedit mnusts_Click
 '           tileinfo Form_Load
 
-'    'New method.
-'    Dim strArray() As String, number As String
-'
-'    'Split the file.
-'    strArray$ = Split(file$, ".")
-'    'Last element will be the extension. Take off first 3 letters.
-'    number$ = Right$(strArray$(UBound(strArray$)), Len(strArray$(UBound(strArray$))) - 3)
-'
-'    getTileNum = val(number$)
-'    Exit Function
-'
-'    'Old code:
+    Dim strArray() As String, number As String
 
-    Dim Length As Long, t As Long, numb As String, part As String
-    
+    'Split the file.
+    strArray = Split(file, ".")
+    'Last element will be the extension. Take off first 3 letters.
+    number = Right$(strArray(UBound(strArray)), Len(strArray(UBound(strArray))) - 3)
 
-    
-    Length = Len(file$)
-    For t = 1 To Length
-        part$ = Mid$(file$, t, 1)
-        If part$ = "." Then
-            numb$ = Mid$(file$, t + 4, Length - t)
-            getTileNum = val(numb$)
-            Exit Function
-        End If
-    Next t
+    getTileNum = val(number)
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
-Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
-'======================================================================
+Public Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
+'==============================================================================
 'Inserts current image into the tileset at position 'number'.
 '.tst and .iso are written in binary, whereas .gph is written in ascii.
-'file$ is the name, e.g. "default.tst"
-'======================================================================
-'Edited by Delano for 3.0.4
-'Added code to prepare the isometric tile for writing.
-'Writing uses the same code as for high detail tsts.
-'Variables: a >> setType, np >> insertPoint, off >> offset
+'file is the name, e.g. "default.tst"
+'==============================================================================
+'Last edited by Delano for 3.0.6
 
-'Called by: addToTileSet
-'           Routines savetile
-'NOTES:
-' -1 (transparent) is saved as:
-'       r0, g1, b2 in RGB
-'       255 in 256 or 16
+'Called by: addToTileSet, Routines savetile
 
-    On Error Resume Next
-    Dim rrr As String * 1
-    Dim ggg As String * 1
-    Dim bbb As String * 1
-    
-    Dim num As Long, setType As Long, insertPoint As Long, Offset As Long, xx As Long, yy As Long
-    Dim xCount As Integer, yCount As Integer
-    Dim rr As Long, gg As Long, bb As Long
-    
-    num = FreeFile
-    
-    'Check the tst header.
-    setType = tilesetInfo(file$)
-    
-        
-    '============================================
-    ' Isometric tileset addition starts here.
-    ' Preparing the isometric tile for writing.
-    
-    'If into an isometric set (ISOTYPE).
-    If setType = ISOTYPE Then
+    Dim tileBlock() As Byte, lTile(32, 32) As Long, r As Byte, g As Byte, b As Byte
+    Dim position As Long, size As Long, depth As Long, num As Long, element As Long
+    Dim x As Long, y As Long, xCount As Long, yCount As Long
+
+    If tilesetInfo(file) = ISOTYPE Then
     
         'Now we're saving in 32x32 form. This will only work if the isometric tile is in
         'a 64x32 arrangement in tilemem - it will be for the tile editor or the tile grabber.
@@ -308,355 +215,186 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
         'pixel from the old tilemem and put it in the *next available* element in a new tilemem.
         'This way tilemem gets completely filled but the pixels will be in the wrong order
         'for normal tiles.
-        
         xCount = 1: yCount = 1
         
         'Mask the isometric corners off using the isoMaskBmp
-        For xx = 1 To 64
-            For yy = 1 To 32
+        For x = 1 To 64
+            For y = 1 To 32
             
-                'Store the tilemem temporarily.
-                bufTile(xx, yy) = tileMem(xx, yy)
-            
-                If isoMaskBmp(xx, yy) = RGB(0, 0, 0) Then
+                If isoMaskBmp(x, y) = RGB(0, 0, 0) Then
                     'If the pixel isn't masked (is black), move the pixel.
-                    tileMem(xCount, yCount) = tileMem(xx, yy)
+                    lTile(xCount, yCount) = lTile(x, y)
                     
-'Call traceString("tilemem(" & xCount & ", " & yCount & ") = TileMem(" & xx & ", " & yy & ") = " & isoTileMem(xx, yy))
-                    
-                    'Increment the entry in the tilemem array.
+                    'Increment the entry in the ltile array.
                     yCount = yCount + 1
                     If yCount > 32 Then
                         xCount = xCount + 1
                         yCount = 1
                     End If
-                    
                 End If
-            Next yy
-        Next xx
+            Next y
+        Next x
 
+    Else
+        'Put tileMem straight to the working set.
+        For x = 1 To 32
+            For y = 1 To 32
+                lTile(x, y) = tileMem(x, y)
+            Next y
+        Next x
     End If '(setType = ISOTYPE)
-        
-    'End isometric preparation. We still need to restore the tilemem array after writing!
     
-    'The tile is now ready for writing: .iso uses the same code as high detail .tst.
 
-    If (setType = TSTTYPE And tileset.detail = detail) Or (setType = ISOTYPE And tileset.detail = ISODETAIL) Then
+    If (tilesetInfo(file) = TSTTYPE And tileset.detail = detail) Or (tilesetInfo(file) = ISOTYPE And tileset.detail = ISODETAIL) Then
         'Header could be read.
         
         'Calculate next insertion point in bytes.
-        insertPoint = calcInsertionPoint(tileset, number)
+        position = calcInsertionPoint(tileset, size, depth, number)
+        ReDim tileBlock(size * size * depth - 1)
         
-            Open file$ For Binary As #num
-        
-                Select Case tileset.detail
-                Case 1, ISODETAIL:                      'Iso case is the same.
-                        '32x32x16.7 million (32x32x3 bytes)
-                    Offset = insertPoint
-                    
-                    'Loop over every pixel in the matrix and write its
-                    'RGB values to file.
-                        For xx = 1 To 32
-                            For yy = 1 To 32
-                                If tileMem(xx, yy) = -1 Then
-                                'If a transparent pixel, set a specific RGB combination.
-                                    rr = 0
-                                    gg = 1
-                                    bb = 2
-                                Else
-                                'Calculate the RGB values from the colour value.
-                                    rr = red(tileMem(xx, yy))
-                                    gg = green(tileMem(xx, yy))
-                                    bb = blue(tileMem(xx, yy))
-                                End If
-                            
-                            'Convert the values to strings and write them to file as 3
-                            'sequential bytes.
-                                rrr = Chr$(rr)
-                            Put #num, Offset, rrr
-                                ggg = Chr$(gg)
-                            Put #num, Offset + 1, ggg
-                                bbb = Chr$(bb)
-                            Put #num, Offset + 2, bbb
-                            
-                            Offset = Offset + 3
-                            Next yy
-                        Next xx
-                    
-                    Case 2:
-                        '16x16x16.7 million (16x16x3 bytes)
-                    Offset = insertPoint
-                        For xx = 1 To 16
-                            For yy = 1 To 16
-                        
-                                If tileMem(xx, yy) = -1 Then
-                                    rr = 0
-                                    gg = 1
-                                    bb = 2
-                                Else
-                                    rr = red(tileMem(xx, yy))
-                                    gg = green(tileMem(xx, yy))
-                                    bb = blue(tileMem(xx, yy))
-                                End If
-                            
-                                rrr = Chr$(rr)
-                            Put #num, Offset, rrr
-                                ggg = Chr$(gg)
-                            Put #num, Offset + 1, ggg
-                                bbb = Chr$(bb)
-                            Put #num, Offset + 2, bbb
-                            
-                            Offset = Offset + 3
-                            Next yy
-                        Next xx
-                    
-                    Case 3, 5:
-                        '32x32x256 colors (32x32x1 bytes) (or 16 colors)
-                    Offset = insertPoint
-                    
-                    'Loop over every pixel in the matrix and write its
-                    'RGB value to file.
-                        For xx = 1 To 32
-                            For yy = 1 To 32
-                        
-                                If tileMem(xx, yy) = -1 Then
-                                'If transparent, set the value as 255.
-                                    rrr = Chr$(255)
-                                Else
-                                'Convert the RGB value to a string.
-                                    rrr = Chr$(tileMem(xx, yy))
-                                End If
-                            
-                            'Write the colour string to file.
-                            Put #num, Offset, rrr
-                            
-                            Offset = Offset + 1
-                            Next yy
-                        Next xx
-                    
-                    Case 4, 6:
-                        '16x16x256 colors (32x32x1 bytes) (or 16 colors)
-                    Offset = insertPoint
-                        For xx = 1 To 16
-                            For yy = 1 To 16
-                        
-                                If tileMem(xx, yy) = -1 Then
-                                    rrr = Chr$(255)
-                                Else
-                                    rrr = Chr$(tileMem(xx, yy))
-                                End If
-                            
-                            Put #num, Offset, rrr
-                            
-                            Offset = Offset + 1
-                            Next yy
-                        Next xx
-                End Select
+        For x = 1 To size
+            For y = 1 To size
             
-            Close #num
-        Else
+                If depth = 3 Then
+                
+                    'Convert long colour to rgb byte values.
+                    If lTile(x, y) = -1 Then
+                        'Transparent colour.
+                        r = 0: g = 1: b = 2
+                    Else
+                        r = red(lTile(x, y))
+                        g = green(lTile(x, y))
+                        b = blue(lTile(x, y))
+                    End If
+                    
+                    'Set the bytes in the block.
+                    tileBlock(element) = r
+                    tileBlock(element + 1) = g
+                    tileBlock(element + 2) = b
+                    element = element + 3
+                    
+                Else
+                
+                    If lTile(x, y) = -1 Then
+                        'Transparent colour.
+                        tileBlock(element) = TR_COLOR_8
+                    Else
+                        tileBlock(element) = lTile(x, y)
+                    End If
+                    element = element + 1
+                    
+                End If
+            Next y
+        Next x
+        
+        ChDir (currentDir)
+        num = FreeFile
+        
+        Open file For Binary Access Write As num
+    
+            Put num, position, tileBlock
+            
+        Close num
+
+    Else
         'Detail level does not match.
         MsgBox "Cannot insert into tileset!", , "Wrong filetype or detail level"
         
     End If '(setType = TSTTYPE Or setType = ISOTYPE)
     
-    If setType = ISOTYPE Then
-        'Restore the tilemem from the buffer.
-        For xx = 1 To 64
-            For yy = 1 To 32
-                tileMem(xx, yy) = bufTile(xx, yy)
-            Next yy
-        Next xx
-    End If
-    
 End Sub
 
-Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo errorhandler
-'=====================================
+Public Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error Resume Next
+'==============================================================================
 'Opens tile number from a tileset.
-'Loads it into tilemem
-'file$ is the name, e.g. "default.tst"
-'=====================================
-'Edited by Delano for 3.0.4
-'Opening a .iso uses the same code as a high detail .tst.
-'Variables: a >> setType, np >> insertPoint, off >> offset
+'Loads it into tilemem. file is the name, e.g. "default.tst"
+'==============================================================================
+'Last edited by Delano for 3.0.6
 
 'Called by: Routines opentile2, openwintile
 '           tilesetadd Command2_Click, List1_Click
-    
-  
-    Dim rrr As String * 1
-    Dim ggg As String * 1
-    Dim bbb As String * 1
 
-    Dim setType As Long, num As Long, xx As Long, yy As Long, insertPoint As Long, Offset As Long
+    Dim tileBlock() As Byte, size As Long, depth As Long, position As Long
+    Dim num As Long, element As Long, x As Long, y As Long
     
-    'Check the tst header.
-    setType = tilesetInfo(file$)
-    
-    'Check the tile number being accessed is in the tileset.
+    'Check valid file, valid tile number, valid header.
+    If Not fileExists(file) Then Exit Sub
     If number < 1 Or number > tileset.tilesInSet Then Exit Sub
-    
-    ChDir (currentDir$)
-    
-    'New tile type. This is exactly the same as for the case of standard high colour tsts!
-    'Note: we're reading isometric tiles into tilemem! But this won't look right!
-    'Drawing is handled by DrawTileIso in CommonTileDoc.
-
-    If setType = TSTTYPE Or setType = ISOTYPE Then
-        'If the header was read.
+    If tilesetInfo(file) <> TSTTYPE And tilesetInfo(file) <> ISOTYPE Then Exit Sub
  
-        detail = tileset.detail
-        
-        num = FreeFile
-        Open file$ For Binary As #num
-        
-            'Calculate next insertion point in bytes.
-            insertPoint = calcInsertionPoint(tileset, number)
-            
-            Select Case tileset.detail
-                Case 1, ISODETAIL:                  'Addition.
-                
-                    detail = 1                      'Addition.
-                    '32x32x16.7 million
-                    Offset = insertPoint
-                    
-                    'Loop over every pixel in the tile and and read its RGB values from file.
-                    For xx = 1 To 32
-                        For yy = 1 To 32
-                        
-                            Get #num, Offset, rrr
-                            Get #num, Offset + 1, ggg
-                            Get #num, Offset + 2, bbb
-                            Offset = Offset + 3
-                            
-                            'Convert the strings to numbers.
-                            If Asc(rrr) = 0 And Asc(ggg) = 1 And Asc(bbb) = 2 Then
-                                'Transparent colour.
-                                tileMem(xx, yy) = -1
-                            Else
-                                'Set the colour value of the RGB components.
-                                tileMem(xx, yy) = RGB(Asc(rrr), Asc(ggg), Asc(bbb))
-                            End If
-                        Next yy
-                    Next xx
-                    
-                Case 2:
-                    '16x16x16.7 million
-                    Offset = insertPoint
-                    
-                    For xx = 1 To 16
-                        For yy = 1 To 16
-                        
-                            Get #num, Offset, rrr
-                            Get #num, Offset + 1, ggg
-                            Get #num, Offset + 2, bbb
-                            Offset = Offset + 3
-                            
-                            If Asc(rrr) = 0 And Asc(ggg) = 1 And Asc(bbb) = 2 Then
-                                'Transparent colour.
-                                tileMem(xx, yy) = -1
-                            Else
-                                tileMem(xx, yy) = RGB(Asc(rrr), Asc(ggg), Asc(bbb))
-                            End If
-                            
-                        Next yy
-                    Next xx
-                    
-                Case 3, 5:
-                    '32x32x256 (or 16)
-                    Offset = insertPoint
-                    
-                    For xx = 1 To 32
-                        For yy = 1 To 32
-                        
-                            Get #num, Offset, rrr
-                            Offset = Offset + 1
-                            
-                            If Asc(rrr) = 255 Then
-                                'Transparent colour.
-                                tileMem(xx, yy) = -1
-                            Else
-                                tileMem(xx, yy) = Asc(rrr)
-                            End If
-                            
-                        Next yy
-                    Next xx
-                    
-                Case 4, 6:
-                    '16x16x256 (or 16)
-                    Offset = insertPoint
-                    
-                    For xx = 1 To 16
-                        For yy = 1 To 16
-                        
-                            Get #num, Offset, rrr
-                            Offset = Offset + 1
-                            
-                            If Asc(rrr) = 255 Then
-                                'Transparent colour.
-                                tileMem(xx, yy) = -1
-                            Else
-                                tileMem(xx, yy) = Asc(rrr)
-                            End If
-                            
-                        Next yy
-                    Next xx
-            End Select
-            
-        Close #num
-    End If '(setType = TSTTYPE Or setType = ISOTYPE)
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
+    detail = tileset.detail
+    If detail = ISODETAIL Then detail = 1
     
-    Resume Next
+    'Receive information about byte position, tile size, byte depth.
+    position = calcInsertionPoint(tileset, size, depth, number)
+    ReDim tileBlock(size * size * depth - 1)
+    
+    ChDir (currentDir)
+    num = FreeFile
+    
+    Open file For Binary Access Read As num
+
+        Get num, position, tileBlock
+        
+    Close num
+        
+    For x = 1 To size
+        For y = 1 To size
+        
+            If depth = 3 Then
+                '3 bytes per colour, convert to rbg.
+                'Set the colour value of the RGB components.
+                tileMem(x, y) = RGB(tileBlock(element), _
+                                    tileBlock(element + 1), _
+                                    tileBlock(element + 2))
+                element = element + 3
+                
+                If tileMem(x, y) = TR_COLOR_24 Then
+                    'Transparent colour.
+                    tileMem(x, y) = -1
+                End If
+            Else
+                '1 byte per colour.
+                If tileBlock(element) = TR_COLOR_8 Then
+                    'Transparent colour.
+                    tileMem(x, y) = -1
+                Else
+                    tileMem(x, y) = tileBlock(element)
+                End If
+                element = element + 1
+            End If
+        Next y
+    Next x
+
 End Sub
 
-Function tilesetFilename(ByVal file As String) As String: On Error GoTo errorhandler
-'========================================================
+Public Function tilesetFilename(ByVal file As String) As String: On Error Resume Next
+'==============================================================================
 'Returns filename without the number after the extention.
 'e.g. "default.tst123" returns "default.tst"
-'========================================================
-'Edited by Delano for 3.0.4
-'Rewrote using arrays - to allow for both .iso and .tst
-    
+'==============================================================================
 'Called by: CommonTileAnim tileaniminsert
 '           Commonboard openboard
 '           Commontkgfx drawtile, drawtileCNV
 '           Routines opentile2, openwintile, savetile
 '           tileinfo Form_Load
     
-    'New method.
     Dim strArray() As String
     
     'Split the file.
-    strArray$ = Split(file$, ".")
+    strArray = Split(file, ".")
     'Last element will be the extension. Take the first 3 letters.
-    strArray$(UBound(strArray$)) = Left$(strArray$(UBound(strArray$)), 3)
+    strArray(UBound(strArray)) = Left$(strArray(UBound(strArray)), 3)
     
-    tilesetFilename$ = Join(strArray$, ".")
+    tilesetFilename = Join(strArray, ".")
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
-Function tilesetInfo(ByVal file As String) As Long: On Error GoTo tserr
-'==========================================
+Public Function tilesetInfo(ByVal file As String) As Long: On Error Resume Next
+'==============================================================================
 'Gets tileset header.
-'Returns 0 on success, 1 on failure, 2 on isometric.
-'New constants introduced:
-'       TSTTYPE = 0
-'       ISOTYPE = 2
-'file$ is the name, e.g. "default.tst"
-'==========================================
-'Edited Delano for 3.0.4
-
+'Returns TSTTYPE on success, 1 on failure, ISOTYPE on isometric.
+'==============================================================================
 'Called by: CommonTileset addToTileSet, insertIntoTileSet, openFromTileSet
 '           tkMainForm fillTilesetBar
 '           tileedit mnusts_Click, savetile2_Click
@@ -664,33 +402,27 @@ Function tilesetInfo(ByVal file As String) As Long: On Error GoTo tserr
 '           tilesetedit Command1_Click
 '           tilesetadd Command1_Click, Form_Load
 
+    Dim num As Long
     
+    If fileExists(file) Then
     
-    Dim errorsA As Long, num As Long
-    
-    errorsA = 0
-    tilesetInfo = 1
-    
-    num = FreeFile
-    Open file$ For Binary As #num
-        Get #num, 1, tileset
-    Close #num
-    
-    If errorsA = 1 Then Exit Function
-    
-    If tileset.version = 30 And tileset.detail = ISODETAIL And UCase$(GetExt(file$)) = "ISO" Then
-        'This is an isometric tileset.
-        tilesetInfo = ISOTYPE
-            
-    ElseIf tileset.version = 20 And UCase$(GetExt(file$)) = "TST" Then
-        'This is a standard tileset.
-        tilesetInfo = TSTTYPE
-              
-    End If
+        num = FreeFile
+        Open file For Binary Access Read As num
+            Get num, 1, tileset
+        Close num
         
-    Exit Function
+        Debug.Print tileset.detail & " " & tileset.tilesInSet & " " & tileset.version
     
-tserr:
-    errorsA = 1
-Resume Next
+        If tileset.version = ISO_VERSION And tileset.detail = ISODETAIL And UCase$(GetExt(file)) = "ISO" Then
+            'This is an isometric tileset.
+            tilesetInfo = ISOTYPE
+        ElseIf tileset.version = TST_VERSION And UCase$(GetExt(file)) = "TST" Then
+            'This is a standard tileset.
+            tilesetInfo = TSTTYPE
+        End If
+    Else
+        'Fail.
+        tilesetInfo = 1
+    End If
+    
 End Function
