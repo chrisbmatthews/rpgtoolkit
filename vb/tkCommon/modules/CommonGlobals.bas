@@ -137,7 +137,6 @@ Public projectPath As String                   'path of current project
 Public mp3Path As String                       'starting path for mp3 files (the bard)
 
 'Misc constants
-Public Const compression = 1                   'use compression where avaliable
 Public Const major = 2                         '[now] arbitrary value
 Public Const minor = 0                         '[now] arbitrary value
 Public Const gamePath = "Game\"                'game dir

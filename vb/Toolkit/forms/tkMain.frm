@@ -908,8 +908,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2464,13 +2464,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "13/08/2004"
+            TextSave        =   "14/08/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "3:48 PM"
+            TextSave        =   "11:11 AM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3502,13 +3502,13 @@ Private Sub ReadCommandLine_Timer()
         With Edit
             .tag = "1"
             .mnuNewProject.Visible = False
-            .mnunew.Visible = False
+            .mnuNew.Visible = False
             .mnuNewPRG.Visible = True
             .mnuOpenProject.Visible = False
             .mnuSaveAll.Visible = False
             .closemnu.Visible = False
             .mnuToolkit.Visible = False
-            .mnubuild.Visible = False
+            .mnuBuild.Visible = False
             .mnuWindow.Visible = False
             .Show
             Dim fCaption As String

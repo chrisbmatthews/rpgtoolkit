@@ -173,7 +173,7 @@ ServerSupportFiles=0
 VersionCompanyName="Awesome Computing"
 VersionLegalCopyright="Copyright 2002 By Christopher B. Matthews"
 VersionProductName="RPG Toolkit Development System, Version 3"
-CondComp="isToolkit = 1"
+CondComp="isToolkit = 1 : compression = 1"
 CompilationType=0
 OptimizationType=1
 FavorPentiumPro(tm)=0

@@ -83,7 +83,7 @@ Public Type TKBoard
     brdSavingYN As Integer       'can player save on board? 0-yes, 1-no
     isIsometric As Byte         'is it an isometric board? (0- no, 1-yes)
 
-    Threads() As String
+    threads() As String
     
     'volatile (not in the file or anything)
     hasAnmTiles As Boolean  'does board have anim tiles?
@@ -723,9 +723,9 @@ Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
         
         Call BinWriteByte(num, theBoard.isIsometric)
 
-        For t = 0 To UBound(theBoard.Threads)
-            If Not theBoard.Threads(t) = "" Then
-                BinWriteString num, theBoard.Threads(t)
+        For t = 0 To UBound(theBoard.threads)
+            If Not theBoard.threads(t) = "" Then
+                BinWriteString num, theBoard.threads(t)
             End If
         Next t
         
@@ -976,8 +976,8 @@ exitTheFor:
         Dim tCount As Long
         Dim thread As String
         Do Until EOF(num)
-            ReDim Preserve theBoard.Threads(tCount)
-            theBoard.Threads(tCount) = BinReadString(num)
+            ReDim Preserve theBoard.threads(tCount)
+            theBoard.threads(tCount) = BinReadString(num)
             tCount = tCount + 1
         Loop
 
