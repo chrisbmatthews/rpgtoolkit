@@ -3624,6 +3624,7 @@ Public Sub LoadRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     'Load board data.
     Call destroyItemSprites
     Call openBoard(currentBoard, boardList(activeBoardIndex).theData)
+    Call checkMusic(True)
 
     Call ClearNonPersistentThreads
     Call clearAnmCache
@@ -5790,7 +5791,7 @@ Public Sub Send(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
     ' Open the board
     Call openBoard(projectPath & brdPath & targetBoardName, boardList(activeBoardIndex).theData)
-    
+
     ' Clear non-persistent threads
     Call ClearNonPersistentThreads
 
@@ -11820,4 +11821,24 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     ' Destroy said canvas
     Call destroyCanvas(cnv)
 
+End Sub
+
+'=========================================================================
+' Adjust the volume of the playing music
+'=========================================================================
+' setVolume(percent!)
+'=========================================================================
+Public Sub setVolumeRPG(ByRef strText As String, ByRef prg As RPGCodeProgram)
+    Dim paras() As parameters, lngCount As Long
+    paras = getParameters(strText, prg, lngCount)
+    If (lngCount <> 1) Then
+        Call debugger("setVolume() takes one parameter-- " & strText)
+        Exit Sub
+    End If
+    If (paras(0).dataType <> DT_NUM) Then
+        Call debugger("setVolume() takes a numerical parameter-- " & strText)
+        Exit Sub
+    End If
+    ' Set the volume
+    Call getDirectMusic().setVolume(paras(0).num)
 End Sub

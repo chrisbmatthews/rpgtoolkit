@@ -2432,6 +2432,11 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             DoSingleCommand = increment(theProgram)
             Exit Function
 
+        Case "SETVOLUME"
+            Call setVolumeRPG(splice, theProgram)
+            DoSingleCommand = increment(theProgram)
+            Exit Function
+
         Case Else
 
             ' Check for class creator
