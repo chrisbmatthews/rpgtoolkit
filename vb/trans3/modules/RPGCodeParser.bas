@@ -540,14 +540,11 @@ Public Function ParseRPGCodeCommand( _
 
             'Quote
             Case Chr(34)
-                If ignore Then
-                    ignore = False
-                Else
-                    ignore = True
-                End If
+                ignore = (Not ignore)
 
             'Opening bracket
-            Case "(": If Not ignore Then depth = depth + 1
+            Case "("
+                If Not ignore Then depth = depth + 1
 
             'Closing bracket
             Case ")"
@@ -565,11 +562,7 @@ Public Function ParseRPGCodeCommand( _
 
                                 'Quote
                                 Case Chr(34)
-                                    If ignore Then
-                                        ignore = False
-                                    Else
-                                        ignore = True
-                                    End If
+                                    ignore = (Not ignore)
 
                                 'Opening/closing bracket
                                 Case "(": If Not ignore Then depth = depth - 1

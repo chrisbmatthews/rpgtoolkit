@@ -366,9 +366,14 @@ inline int locateBrackets(inlineString text)
     //look for the brackets
 	for (int p = 1; p <= text.len(); p++)
 	{
-        if (text.mid(p, 1) == "(")
+
+		//grab a character
+		inlineString part(text.mid(p, 1), 1);
+
+        if (part == "(")
 			//found them
 			return p;
+
 	}
 
 	//brackets couldn't be found
