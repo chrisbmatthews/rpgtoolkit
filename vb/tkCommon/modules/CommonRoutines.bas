@@ -838,8 +838,9 @@ loadtileerr:
                                   ByVal txt As String, _
                                   ByRef chars() As String, _
                                   ByRef usedDelimiters() As String, _
-                                  Optional ByVal ignoreQuotes As Boolean _
-                                                                           ) As String()
+                                  Optional ByVal ignoreQuotes As Boolean, _
+                                  Optional ByVal ignoreBrackets As Boolean _
+                                                                             ) As String()
 
         '=======================================================
         'Splits a string at multiple characters
@@ -854,20 +855,29 @@ loadtileerr:
         Dim a As Long
         Dim b As Long
         Dim c As String
-        Dim depth As Long
+        Dim depth As Long, bracketDepth As Long
  
         'Make one space in the arrays...
         ReDim ret(0)
         ReDim uD(0)
  
+        ReDim charLens(UBound(chars)) As Long
+        Dim theMaxLen As Long
+        For a = 0 To UBound(charLens)
+            charLens(a) = Len(chars(a))
+            If (charLens(a) > theMaxLen) Then
+                theMaxLen = charLens(a)
+            End If
+        Next a
+ 
         'For each character in the string...
         For a = 1 To Len(txt)
 
-            c = Mid$(txt, a, 1) 'Get the charater
-            ret(UBound(ret)) = ret(UBound(ret)) & c
+            c = Mid$(txt, a, theMaxLen) 'Get the charater
+            ret(UBound(ret)) = ret(UBound(ret)) & MidB$(c, 1, 2)
 
             If (ignoreQuotes) Then
-                Select Case c
+                Select Case MidB$(c, 1, 2)
                     Case """"
                         ignore = (Not ignore)
                     Case "["
@@ -877,20 +887,29 @@ loadtileerr:
                 End Select
             End If
  
-            If ((Not ignore) And (depth = 0)) Then
+            If (ignoreBrackets) Then
+                Select Case c
+                    Case "("
+                        bracketDepth = bracketDepth + 1
+                    Case ")"
+                        bracketDepth = bracketDepth - 1
+                End Select
+            End If
+ 
+            If ((Not ignore) And (depth = 0) And (bracketDepth = 0)) Then
                 'For each delimiter...
                 For b = 0 To UBound(chars)
                     'It's a delimiter...
-                    If c = chars(b) Then
+                    If Mid$(c, 1, charLens(b)) = chars(b) Then
                         'Take it off the ret() array...
-                        ret(UBound(ret)) = Left$(ret(UBound(ret)), _
-                        Len(ret(UBound(ret))) - 1)
+                        ret(UBound(ret)) = Left$(ret(UBound(ret)), Len(ret(UBound(ret))) - charLens(b))
                         'Put it in the ud() array...
                         uD(UBound(ret)) = c
                         'Enlarge the ret() array
                         ReDim Preserve ret(UBound(ret) + 1)
                         'Enlarge the ud() array...
                         ReDim Preserve uD(UBound(uD) + 1)
+                        a = a + charLens(b) - 1
                     End If
                 Next b
             End If

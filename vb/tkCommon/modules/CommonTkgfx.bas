@@ -231,7 +231,7 @@ Public Function GFXBoardTile(ByVal x As Long, ByVal y As Long, ByVal z As Long) 
    
     'send result back to actkrt3.dll
     Call GFXSetCurrentTileString(res)
-    
+
     GFXBoardTile = Len(res)
 End Function
 

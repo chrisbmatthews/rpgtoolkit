@@ -4,6 +4,10 @@ Option Explicit
 Private rpgC As String
 
 Public Function CapitalizeRPGCode(ByVal txt As String) As String
+ CapitalizeRPGCode = txt
+End Function
+
+#If (OLD_CODE) Then
 
  txt = Trim(replaceOutsideQuotes((txt), vbTab, "", True))
  If Left(txt, 1) = "*" Or Left(txt, 2) = "//" Then
@@ -308,3 +312,5 @@ Private Function replaceOutsideQuotes(ByVal Text As String, ByVal find As String
     replaceOutsideQuotes = Text
 
 End Function
+
+#End If

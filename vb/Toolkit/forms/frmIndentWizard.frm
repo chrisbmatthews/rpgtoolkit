@@ -19,10 +19,10 @@ Begin VB.Form frmIndentWizard
       TabIndex        =   6
       Top             =   0
       Width           =   3135
-      _extentx        =   5530
-      _extenty        =   847
-      Object.width           =   3135
-      caption         =   "Indent Wizard"
+      _ExtentX        =   5530
+      _ExtentY        =   847
+      Object.Width           =   3135
+      Caption         =   "Indent Wizard"
    End
    Begin VB.Frame frmInfo 
       Appearance      =   0  'Flat
@@ -131,10 +131,10 @@ Begin VB.Form frmIndentWizard
       TabIndex        =   0
       Top             =   720
       Width           =   1455
-      _extentx        =   820
-      _extenty        =   873
-      Object.width           =   450
-      caption         =   "Indent"
+      _ExtentX        =   820
+      _ExtentY        =   873
+      Object.Width           =   450
+      Caption         =   "Indent"
    End
    Begin VB.Shape shpBorder 
       Height          =   3375
@@ -149,117 +149,137 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '============================================================================
-'RPGCode Indent Wizard
-'Designed, Programmed, and Copyright of Colin James Fitzpatrick, 2004
+' RPGCode Indent Wizard
+' Designed, Programmed, and Copyright of Colin James Fitzpatrick, 2004
 '============================================================================
 
 Option Explicit
 
 '============================================================================
-'Declarations
+' Declarations
 '============================================================================
 
 Private preventClose As Integer
 
 '============================================================================
-'Control events
+' Control events
 '============================================================================
 
 Private Sub cmdIndent_Click()
- If preventClose = 1 Then Exit Sub
- If GetSetting("RPGToolkit3", "PRG Editor", "Tabs", 1) = 0 Then
-  indentCode " "
- Else
-  indentCode vbTab
- End If
+    If (preventClose = 1) Then Exit Sub
+    If GetSetting("RPGToolkit3", "PRG Editor", "Tabs", 1) = 0 Then
+        Call indentCode(" ")
+    Else
+        Call indentCode(vbTab)
+    End If
 End Sub
 
 Private Sub Form_Activate()
- Set topBar.theForm = Me
+    Set TopBar.theForm = Me
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
- Cancel = preventClose
+    Cancel = preventClose
 End Sub
 
 '============================================================================
-'Main code
+' Main code
 '============================================================================
 
 Public Sub indentCode(ByVal ic As String)
 
- On Error Resume Next
+    On Error Resume Next
 
- 'Declarations...
- Dim rtf As RichTextBox
- Dim noNext As Boolean
- Dim lines() As String
- Dim il As Long
- Dim a As Long
- Dim b As Long
- 
- 'Don't let the user mess with anything...
- preventClose = 1
- 
- 'Show the 'please wait' frame...
- frmInfo.Visible = True
- 
- 'Indent the code...
- Set rtf = tkMainForm.activeForm.CodeForm
- With rtf
-  .Locked = True
-  lblWait.Caption = "Splitting..."
-  lines() = Split(.Text, vbCrLf, , vbTextCompare)
-  .Text = ""
-  For a = 0 To UBound(lines)
-   lblWait.Caption = CStr(CInt((a / UBound(lines) * 100))) & "% Complete"
-   lines(a) = Replace(Trim(lines(a)), vbTab, "")
-   For b = 1 To il
-    lines(a) = ic & lines(a)
-   Next b
-   If Not noNext Then
-    changePerOccurence Trim(lines(a)), "{", il, 1
-   End If
-   noNext = False
-   If InStr(1, Trim(lines(a + 1)), "}", vbTextCompare) > 0 Then
-    changePerOccurence Trim(lines(a + 1)), "}", il, -1
-    changePerOccurence Trim(lines(a + 1)), "{", il, 1
-    noNext = True
-   End If
-   .Text = .Text & lines(a)
-   If Not a = UBound(lines) Then .Text = .Text & vbCrLf
-   .selStart = Len(.Text)
-   DoEvents
-  Next a
-  .Locked = False
- End With
+    Dim noNext As Boolean, lines() As String
+    Dim il As Long, a As Long, b As Long, c As Long
+    Dim scopeDepth As Long, check As Boolean
 
- 'Re-color this code...
- SplitLines
- DoEvents
+    ' Don't let the user mess with anything
+    preventClose = 1
 
- 'Did something go wrong?
- If Not il = 0 Then
-  frmCodeTip.showTip "RPGCode Error", _
-  "The amount of opening, {, and closing, }, brackets in your " _
-  & "code are not equal. This not only has caused incorrect indentation, " _
-  & "but it may cause errors in your program."
- End If
+    ' Show the 'please wait' frame
+    frmInfo.Visible = True
 
- 'Unload this form...
- preventClose = 0
- Unload Me
- DoEvents
+    ' Indent the code
+    With activeRPGCode.codeForm
+        .Locked = True
+        lblWait.Caption = "Splitting..."
+        lines = Split(.Text, vbNewLine)
+        .Text = vbNullString
+        For a = 0 To UBound(lines)
+            lblWait.Caption = CStr(CInt((a / UBound(lines) * 100))) & "% Complete"
+            lines(a) = replace(Trim$(lines(a)), vbTab, vbNullString)
+            Dim ucla As String
+            ucla = UCase$(lines(a))
+            For b = 1 To il
+                lines(a) = ic & lines(a)
+            Next b
+            If (ucla = "PUBLIC:" Or ucla = "PRIVATE:") Then
+                If (scopeDepth = 0) Then
+                    il = il + 1
+                    scopeDepth = il
+                Else
+                    lines(a) = replace(lines(a), vbTab, vbNullString, , 1)
+                End If
+            End If
+            If (check) Then
+                check = False
+                If (scopeDepth = 0) Then
+                    il = il - 1
+                End If
+            End If
+            Dim tl As String
+            tl = Trim$(lines(a + 1))
+            If (Not noNext) Then
+                Call changePerOccurence(Trim$(lines(a)), "{", il, 1)
+            End If
+            If InStrB(1, tl, "}") Then
+                Dim oil As Long
+                oil = il
+                Call changePerOccurence(tl, "}", il, -1)
+                Call changePerOccurence(tl, "{", il, 1)
+                If (scopeDepth <> 0) Then
+                    scopeDepth = scopeDepth + (il - oil)
+                    check = True
+                End If
+                noNext = True
+            Else
+                noNext = False
+            End If
+            .Text = .Text & lines(a)
+            If (a <> UBound(lines)) Then
+                .Text = .Text & vbCrLf
+            End If
+            .selStart = Len(.Text)
+            DoEvents
+        Next a
+        .Locked = False
+    End With
+
+    ' Re-color this code
+    Call SplitLines
+    DoEvents
+
+    ' Did something go wrong?
+    If (il <> 0) Then
+        Call frmCodeTip.showTip("RPGCode Error", _
+        "The amount of opening, {, and closing, }, brackets in your " _
+        & "code are not equal. This not only has caused incorrect indentation, " _
+        & "but it may cause errors in your program.")
+    End If
+
+    ' Unload this form
+    preventClose = 0
+    Call Unload(Me)
+    DoEvents
 
 End Sub
 
-Private Sub changePerOccurence(ByVal txt As String, _
- ByVal chr As String, ByRef toChange As Long, ByVal change As Long)
-
- Dim a As Long
- For a = 1 To Len(txt)
-  If LCase(Mid(txt, a, 1)) = LCase(chr) Then _
-   toChange = toChange + change
- Next a
-
+Private Sub changePerOccurence(ByVal txt As String, ByVal chr As String, ByRef toChange As Long, ByVal change As Long)
+    Dim a As Long
+    For a = 1 To Len(txt)
+        If LCase$(Mid(txt, a, 1)) = chr Then
+            toChange = toChange + change
+        End If
+    Next a
 End Sub

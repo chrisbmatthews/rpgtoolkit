@@ -135,7 +135,7 @@ Option Explicit
 ' ! MODIFIED BY KSNiloc...
 
 Private Sub cmdEditItem_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim a As Long
     a = proglist.ListIndex
@@ -147,28 +147,28 @@ Private Sub cmdEditItem_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub cmdDelete_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim a As Long
     a = proglist.ListIndex
     If a = -1 Then MsgBox LoadStringLoc(966, "Please Select An Item From The Above List First!"): Exit Sub
     
     With boardList(activeBoardIndex).theData
-        .itmName(a) = ""   'Board program filenames
+        .itmName(a) = vbNullString   'Board program filenames
         .itmX(a) = 0          'program x
         .itmY(a) = 0          'program y
         .itmLayer(a) = 0      'program layer
         .itmActivate(a) = 0   'program activation: 0- always active, 1- conditional activation.
-        .itmVarActivate(a) = "" 'activation variable
-        .itmDoneVarActivate(a) = "" 'activation variable at end of prg.
-        .itmActivateInitNum(a) = "" 'initial number of activation
-        .itmActivateDoneNum(a) = "" 'what to make variable at end of activation.
+        .itmVarActivate(a) = vbNullString 'activation variable
+        .itmDoneVarActivate(a) = vbNullString 'activation variable at end of prg.
+        .itmActivateInitNum(a) = vbNullString 'initial number of activation
+        .itmActivateDoneNum(a) = vbNullString 'what to make variable at end of activation.
         .itmActivationType(a) = 0 'activation type- 0-step on, 1- conditional
     End With
 
@@ -176,34 +176,30 @@ Private Sub cmdDelete_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub populateList()
-
     On Error Resume Next
-
-    proglist.Clear
-    Dim t As Long
-    Dim nameI As String
-    Dim no As Boolean
+    Call proglist.Clear
+    Dim t As Long, nameI As String
     For t = 0 To UBound(boardList(activeBoardIndex).theData.itmName)
-        If boardList(activeBoardIndex).theData.itmName(t) = "" Then _
-            nameI = "None" Else nameI = boardList _
-            (activeBoardIndex).theData.itmName(t)
-
+        If LenB(boardList(activeBoardIndex).theData.itmName(t)) = 0 Then
+            nameI = "None"
+        Else
+            nameI = boardList(activeBoardIndex).theData.itmName(t)
+        End If
         proglist.AddItem "Item" & str(t) & ": " & nameI & "   Location:" & _
-            str(boardList(activeBoardIndex).theData.itmX(t)) & "," & _
-            str(boardList(activeBoardIndex).theData.itmY(t)) & ", Layer" & _
-            str(boardList(activeBoardIndex).theData.itmLayer(t))
+            CStr(boardList(activeBoardIndex).theData.itmX(t)) & "," & _
+            CStr(boardList(activeBoardIndex).theData.itmY(t)) & ", Layer" & _
+            CStr(boardList(activeBoardIndex).theData.itmLayer(t))
     Next t
-
 End Sub
 
 Private Sub cmdSetItem_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     MsgBox LoadStringLoc(946, "To set an item, click on the tile you want")
     boardList(activeBoardIndex).drawState = 3
@@ -212,31 +208,31 @@ Private Sub cmdSetItem_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
 
     populateList
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub proglist_DblClick()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     cmdEditItem_Click
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

@@ -99,7 +99,7 @@ End Sub
 '=========================================================================
 Public Function InitImage() As Boolean
     On Error Resume Next
-    If IMGInit = 1 Then InitImage = True
+    InitImage = (IMGInit = 1)
 End Function
 
 '=========================================================================

@@ -69,7 +69,6 @@ Public Type TKItem
     
 #If isToolkit = 0 Then
     bIsActive As Boolean            'is item active?
-    hasIdleGfx(7) As Boolean        'do we have idling graphics?
 #End If
 End Type
 
@@ -89,26 +88,6 @@ End Type
 Public Function canItemEquip(ByVal file As String) As Boolean
     canItemEquip = (openItem(file$).EquipYN = 1)
 End Function
-
-'=========================================================================
-' Check if we have idling graphics
-'=========================================================================
-#If (isToolkit = 0) Then
-Public Function itemHasIdlingGfx(ByRef item As TKItem, ByVal theGfx As String) As Boolean
-    With item
-        Select Case UCase$(theGfx)
-            Case "STAND_N": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_N)
-            Case "STAND_S": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_S)
-            Case "STAND_W": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_W)
-            Case "STAND_E": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_E)
-            Case "STAND_NW": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_NW)
-            Case "STAND_NE": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_NE)
-            Case "STAND_SW": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_SW)
-            Case "STAND_SE": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_SE)
-        End Select
-    End With
-End Function
-#End If
 
 '=========================================================================
 ' Get an item stance
@@ -462,11 +441,7 @@ Public Function openItem(ByVal file As String) As TKItem
                 theItem.speed = BinReadDouble(num)
                 theItem.idleTime = BinReadDouble(num)
             End If
-#If (isToolkit = 0) Then
-            For t = 0 To UBound(theItem.standingGfx)
-                theItem.hasIdleGfx(t) = (LenB(theItem.standingGfx(t)) <> 0)
-            Next t
-#End If
+
             If (minorVer < 6) Then
                 'REST has been depreciated-- move REST graphic to STAND_S
                 theItem.standingGfx(ITEM_WALK_S) = theItem.gfx(ITEM_REST)

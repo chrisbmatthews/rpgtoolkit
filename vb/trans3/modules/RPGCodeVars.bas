@@ -1305,12 +1305,12 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
                             getVariable = DT_LIT
                             lit = rV.lit
                             Exit Function
-                        End If
-                    End If
-                End If
-            End If
-        End If
-    End If
+                        End If ' isMethodMember
+                    End If ' isObject
+                End If ' (numA <> 0)
+            End If ' Not numVarExists
+        End If ' Not numVarExists
+    End If ' ((tdc <> "!") And (tdc <> "$"))
 
     If (varType = DT_VOID) Then
         ' If there was an error, just exit this function

@@ -623,20 +623,25 @@ Private Sub Command2_Click()
 End Sub
 
 Private Sub Command3_Click()
-'search for a free itm space.
-    On Error GoTo ErrorHandler
 
-' ! MODIFIED BY KSNiloc...
-Dim thisProgram As Long
-Call dimensionItemArrays(boardList(activeBoardIndex).theData)
+Dim thisProgram As Long, x As Long, y As Long
 
-thisProgram = UBound(boardList(activeBoardIndex).theData.itmName)
-'If boardList(activeBoardIndex).itmCondition <> -1 Then thisProgram = boardList(activeBoardIndex).itmCondition
-
+thisProgram = -1
+On Error GoTo ErrorHandler
+y = UBound(boardList(activeBoardIndex).theData.itmName)
 On Error Resume Next
+For x = 0 To y
+    If (LenB(boardList(activeBoardIndex).theData.itmName(x)) = 0) Then
+        thisProgram = x
+    End If
+Next x
 
-If thisProgram = -1 Then MsgBox LoadStringLoc(964, "This board already has 10 items.  This is the set limit."), , LoadStringLoc(964, "Too many items."): Exit Sub
-If prgfilename.Text = LoadStringLoc(1010, "None") Or prgfilename.Text = "" Then
+If (thisProgram = -1) Then
+    Call dimensionItemArrays(boardList(activeBoardIndex).theData)
+    thisProgram = UBound(boardList(activeBoardIndex).theData.itmName)
+End If
+
+If prgfilename.Text = LoadStringLoc(1010, "None") Or LenB(prgfilename.Text) = 0 Then
     Unload itemset
     Exit Sub
 End If
@@ -682,7 +687,7 @@ Unload itemset
     Exit Sub
 'Begin error handling code:
 ErrorHandler:
-    Call HandleError
+    Call dimensionItemArrays(boardList(activeBoardIndex).theData)
     Resume Next
 End Sub
 

@@ -113,7 +113,7 @@ Private Sub initBoardAndTileEditor()
     boardList(activeBoardIndex).theData.brdColor = vbQBColor(15)
     boardList(activeBoardIndex).theData.bSizeX = 19
     boardList(activeBoardIndex).theData.bSizeY = 11
-    Call SetupAutoTiler 'initialize autotiler tilemorphs
+    Call setupAutoTiler 'initialize autotiler tilemorphs
 End Sub
 
 Private Sub initLocalization()

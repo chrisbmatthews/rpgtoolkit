@@ -38,13 +38,11 @@ Begin VB.Form frmColoringOptions
       TabPicture(1)   =   "frmSyntaxColor.frx":001C
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "fraTab1"
-      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Common"
       TabPicture(2)   =   "frmSyntaxColor.frx":0038
       Tab(2).ControlEnabled=   0   'False
       Tab(2).Control(0)=   "fraTab2"
-      Tab(2).Control(0).Enabled=   0   'False
       Tab(2).ControlCount=   1
       Begin VB.Frame fraTab2 
          Appearance      =   0  'Flat
@@ -59,7 +57,7 @@ Begin VB.Form frmColoringOptions
          Begin RichTextLib.RichTextBox codeForm 
             Height          =   1575
             Left            =   120
-            TabIndex        =   30
+            TabIndex        =   29
             Top             =   600
             Width           =   2415
             _ExtentX        =   4260
@@ -83,7 +81,7 @@ Begin VB.Form frmColoringOptions
             Caption         =   "Text to place at the start of each newly created program file:"
             Height          =   495
             Left            =   120
-            TabIndex        =   29
+            TabIndex        =   28
             Top             =   120
             Width           =   2415
          End
@@ -111,8 +109,8 @@ Begin VB.Form frmColoringOptions
             ForeColor       =   &H80000008&
             Height          =   855
             Left            =   120
-            TabIndex        =   26
-            Top             =   720
+            TabIndex        =   25
+            Top             =   240
             Width           =   2415
             Begin VB.OptionButton optTabs 
                Appearance      =   0  'Flat
@@ -121,7 +119,7 @@ Begin VB.Form frmColoringOptions
                ForeColor       =   &H80000008&
                Height          =   255
                Left            =   120
-               TabIndex        =   28
+               TabIndex        =   27
                Top             =   480
                Width           =   975
             End
@@ -132,23 +130,11 @@ Begin VB.Form frmColoringOptions
                ForeColor       =   &H80000008&
                Height          =   255
                Left            =   120
-               TabIndex        =   27
+               TabIndex        =   26
                Top             =   240
                Value           =   -1  'True
                Width           =   975
             End
-         End
-         Begin VB.CheckBox chkCapital 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            Caption         =   "Capitalize command names"
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Left            =   120
-            TabIndex        =   25
-            Top             =   240
-            Value           =   1  'Checked
-            Width           =   2415
          End
          Begin VB.Shape Shape2 
             Height          =   2295
@@ -313,8 +299,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   11
             Top             =   480
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -323,8 +309,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   12
             Top             =   840
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -333,8 +319,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   13
             Top             =   1200
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -343,8 +329,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   14
             Top             =   1560
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -353,8 +339,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   15
             Top             =   1920
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -363,8 +349,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   16
             Top             =   120
             Width           =   735
-            _ExtentX        =   1296
-            _ExtentY        =   450
+            _extentx        =   1296
+            _extenty        =   450
          End
          Begin VB.Shape Shape1 
             Height          =   2295
@@ -494,10 +480,10 @@ Begin VB.Form frmColoringOptions
       TabIndex        =   2
       Top             =   0
       Width           =   3735
-      _ExtentX        =   6588
-      _ExtentY        =   847
-      Object.Width           =   3735
-      Caption         =   "Program Editor Options"
+      _extentx        =   6588
+      _extenty        =   847
+      Object.width           =   3735
+      caption         =   "Program Editor Options"
    End
    Begin Toolkit.TKButton cmdDefault 
       Height          =   495
@@ -505,10 +491,10 @@ Begin VB.Form frmColoringOptions
       TabIndex        =   1
       Top             =   1320
       Width           =   1215
-      _ExtentX        =   3440
-      _ExtentY        =   873
-      Object.Width           =   1935
-      Caption         =   "Default"
+      _extentx        =   3440
+      _extenty        =   873
+      Object.width           =   1935
+      caption         =   "Default"
    End
    Begin Toolkit.TKButton cmdSave 
       Height          =   495
@@ -516,10 +502,10 @@ Begin VB.Form frmColoringOptions
       TabIndex        =   0
       Top             =   840
       Width           =   1215
-      _ExtentX        =   3440
-      _ExtentY        =   873
-      Object.Width           =   1935
-      Caption         =   "Save"
+      _extentx        =   3440
+      _extenty        =   873
+      Object.width           =   1935
+      caption         =   "Save"
    End
    Begin VB.Shape Shape3 
       Height          =   3495
@@ -559,11 +545,11 @@ Private Sub cmdOK_Click()
  SaveSetting "RPGToolkit3", "Colors", "!$", CStr(shpColorPreview(5).BackColor)
  For a = 0 To 5
   SaveSetting "RPGToolkit3", "SyntaxBold", CStr(a), _
-   CStr(BooleanToLong(BIU(a).Bold))
+   CStr(booleanToLong(BIU(a).Bold))
   SaveSetting "RPGToolkit3", "SyntaxItalics", CStr(a), _
-   CStr(BooleanToLong(BIU(a).Italics))
+   CStr(booleanToLong(BIU(a).Italics))
   SaveSetting "RPGToolkit3", "SyntaxUnderline", CStr(a), _
-   CStr(BooleanToLong(BIU(a).Underline))
+   CStr(booleanToLong(BIU(a).Underline))
  Next a
  
  'Flag to have any open programs be re-colored...
@@ -571,8 +557,8 @@ Private Sub cmdOK_Click()
  programEditorCountDown = programEditorCount
  
  'Save other settings
- SaveSetting "RPGToolkit3", "PRG Editor", "Cap", chkCapital.value
- SaveSetting "RPGToolkit3", "PRG Editor", "Tabs", BooleanToLong(optTabs.value)
+ ' SaveSetting "RPGToolkit3", "PRG Editor", "Cap", chkCapital.value
+ SaveSetting "RPGToolkit3", "PRG Editor", "Tabs", booleanToLong(optTabs.value)
  SaveSetting "RPGToolkit3", "PRG Editor", "Common", codeForm.Text
  
  'Unload this form...
@@ -600,7 +586,7 @@ Private Sub cmdDefault_Click()
   BIU(a).Underline = False
  Next a
  
- chkCapital.value = 1
+ ' chkCapital.value = 1
  optTabs.value = True
  
 End Sub
@@ -617,7 +603,7 @@ End Sub
 
 Private Sub Form_Load(): On Error Resume Next
     updateColors
-    chkCapital.value = GetSetting("RPGToolkit3", "PRG Editor", "Cap", 1)
+    ' chkCapital.value = GetSetting("RPGToolkit3", "PRG Editor", "Cap", 1)
     If GetSetting("RPGToolkit3", "PRG Editor", "Tabs", 1) = 1 Then
         optTabs.value = True
     End If
