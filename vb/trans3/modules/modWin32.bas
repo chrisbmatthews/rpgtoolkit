@@ -266,7 +266,7 @@ Public Function endFormWndProc( _
 
                 Case 101
                     'More info button pressed
-                    Call Shell("start http://toolkitzone.com")
+                    Call Shell("start http://www.toolkitzone.com")
                     Call DestroyWindow(hwnd)
                     m_exitDo = True
 
