@@ -54,7 +54,7 @@ Private multitaskAnimationY() As Long              'y position of these animatio
 Private multitaskAnimationFrame() As Long          'current frame of these animations
 Private multitaskCurrentlyAnimating As Long        'current index in array
 Private multitaskAnimationPersistent() As Boolean  'are these animations persistent?
-Private lastAnimRender As Double                   'last animation render
+Private lastAnimRender As Long                     'last animation render
 
 '=========================================================================
 ' Game state declarations
@@ -684,7 +684,7 @@ Public Sub renderMultiAnimations( _
             Else
                 If (frame > maxFrame) And (anim.loop) Then
                     'Set this animation back to the first frame
-                    frame = 1
+                    frame = 0
                 End If
                 'This animation has had its turn
                 multitaskAnimationFrame(num) = frame
