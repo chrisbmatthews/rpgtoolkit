@@ -814,21 +814,15 @@ End Sub
 Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal boardY As Double, ByVal boardL As Long, _
                 ByRef pending As PENDING_MOVEMENT, Optional ByVal cnvTarget As Long = -1, Optional ByVal bAccountForUnderTiles As Boolean = True)
     
-    '==========================================
-    'REWRITTEN: [Isometrics - Delano - 3/05/04]
-    'FIXED: Edge of screen problems.
-    'ADDED: a new argument: "pending". Using pending movements to fix iso transluscent problems.
-    '"pending" is also passed to getBottomCentreX - this is an isometric fix.
-    'MISSING: Partial transluscency functions do not seem to have been written yet... needed for
-    'transluscent sprites at edge of board, etc.
-    '===========================================
-    
+    '============================================================================
     'Draw the sprite in canvas cnv at boardx, boardy, boardlayer [playerPosition]
     'The bottom of the sprite will touch the centre of boardx, boardy
-    'It will be centred horiztonally about this point.
-    'If cnvTarget=-1 then render to screen, else render to canvas
+    'and will be centred horiztonally about this point.
+    'If cnvTarget= -1 then render to screen, else render to canvas
     'Can also set the opacity of sprites in this function.
-    
+    'Problems occur if the sprites are partially off the screen and transluscent,
+    'since no actkrt functions have been written (yet) to do this.
+    '============================================================================
     'Called by DXDrawSprites only. New arguments added in these calls.
 
     On Error Resume Next
@@ -846,11 +840,37 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     If xTarg > boardList(activeBoardIndex).theData.bSizeX Or xTarg < 0 Then xTarg = Round(boardX)
     If yTarg > boardList(activeBoardIndex).theData.bSizeY Or yTarg < 0 Then yTarg = Round(boardY)
     
-    Dim targetTile As Double, originTile As Double
+    Dim targetTile As Byte, originTile As Byte
     
-    targetTile = boardList(activeBoardIndex).theData.tiletype(xTarg, yTarg, Int(boardL))
-    originTile = boardList(activeBoardIndex).theData.tiletype(xOrig, yOrig, Int(boardL))
+    targetTile = boardList(activeBoardIndex).theData.tiletype(Round(xTarg), -Int(-yTarg), Int(boardL))
+    originTile = boardList(activeBoardIndex).theData.tiletype(Round(xOrig), -Int(-yOrig), Int(boardL))
        
+    'Do some tiletype checks now instead of later.
+    Dim drawTransluscently As Boolean
+    
+    '    If [tiles on layers above]
+    '    OR [Moving *to* "under" tile (target)]
+    '    OR [Moving *from* "under" tile (origin)]
+    '    OR [Moving between "under" tiles]
+    
+    If boardList(activeBoardIndex).theData.isIsometric = 1 Then
+        If _
+            checkAbove(boardX, boardY, boardL) = 1 _
+            Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
+            Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
+            Or (targetTile = UNDER And originTile = UNDER) Then
+                drawTransluscently = True
+        End If
+    Else
+        If _
+            checkAbove(boardX, boardY, boardL) = 1 _
+            Or (targetTile = UNDER And Round(boardX) = Round(xTarg) And -Int(-boardY) = -Int(-yTarg)) _
+            Or (originTile = UNDER And Round(boardX) = Round(xOrig) And -Int(-boardY) = -Int(-yOrig)) _
+            Or (targetTile = UNDER And originTile = UNDER) Then
+                drawTransluscently = True
+        End If
+    End If
+
     Dim centreX As Long, centreY As Long
     
     'Determine the centrepoint of the tile in pixels.
@@ -911,7 +931,6 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
             'Temporary fix. Until partial transparent function is written.
             bAccountForUnderTiles = False
             
-            
         ElseIf cornerY + spriteHeight > resY Then
             'Frame off bottom.
             offsetY = 0
@@ -928,12 +947,8 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
         'We now have the position and area of the sprite to draw.
         'Check if we need to draw the sprite transluscently:
         
-        'ORIGINAL statement:
-        'If bAccountForUnderTiles And (checkAbove(boardx, boardy, boardL) = 1 Or boardList(activeBoardIndex).theData.tiletype(Int(boardx), Int(boardy), Int(boardL)) = 2) Then
-        
-        'NEW statement: note "Round" instead of "Int":
-        
-        If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
+        If drawTransluscently And bAccountForUnderTiles Then
+        'If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
             Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
             Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
             Or (targetTile = UNDER And originTile = UNDER)) Then
@@ -973,14 +988,10 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
         
     Else 'Sprite is entirely on the board.
     
-        'Check if we need to draw the sprite transluscent.
-    
-        'ORIGINAL statement:
-        'If bAccountForUnderTiles And (checkAbove(boardx, boardy, boardL) = 1 Or boardList(activeBoardIndex).theData.tiletype(Int(boardx), Int(boardy), Int(boardL)) = 2) Then
+        'Check if we need to draw the sprite transluscently.
         
-        'NEW: should be identical to above statement.
-        
-        If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
+        If drawTransluscently And bAccountForUnderTiles Then
+        'If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
             Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
             Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
             Or (targetTile = UNDER And originTile = UNDER)) Then
