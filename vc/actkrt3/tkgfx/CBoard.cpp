@@ -88,8 +88,7 @@ INLINE std::string CBoard::tile(
 	if (!lut)
 	{
 		// No tile at this location (lut == 0).
-		CONST std::string nullStr;
-		return nullStr;
+		return std::string();
 	}
 	else
 	{
