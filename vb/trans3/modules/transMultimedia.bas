@@ -1,6 +1,6 @@
 Attribute VB_Name = "transMultimedia"
 '=========================================================================
-' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 ' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '=========================================================================
@@ -42,6 +42,10 @@ Private m_dm As CDirectMusic             ' DirectMusic object
 '=========================================================================
 Private Const SFX_DEVICE = "sfxDevive"   ' Sound effect device (MCI)
 Private Const MID_DEVICE = "midDevice"   ' Music device (MCI)
+Private Const WS_CHILD = &H40000000      ' DirectShow window settings
+Private Const WS_CLIPSIBLINGS = &H4000000
+Private Const WS_CLIPCHILDREN = &H2000000
+
 
 '=========================================================================
 ' Expose DirectMusic
@@ -259,42 +263,56 @@ Public Sub stopMedia()
 End Sub
 
 '=========================================================================
-' Play a video file
+' Play a video file (DirectShow supports .avi, .mpg, .mov)
+' Called by PlayAviRPG, PlayAviSmallRPG only.
 '=========================================================================
-Public Sub playVideo(ByVal file As String, Optional ByVal windowed As Boolean)
-
-    On Error Resume Next
+Public Sub playVideo(ByVal file As String, Optional ByVal windowed As Boolean): On Error Resume Next
 
     Dim quartz As FilgraphManager
     Dim video As IVideoWindow
     Dim pos As IMediaPosition
 
+    'Set the interfaces to quartz.
     Set quartz = New FilgraphManager
-
-    'Set the interfaces to quartz
     Set video = quartz
     Set pos = quartz
 
-    'Render the movie
+    'Render the movie (do not run it yet).
     Call quartz.RenderFile(file)
 
-    With video
-        .FullScreenMode = Not windowed
-        .Owner = host.hwnd
-    End With
+    'Setup the window information.
+    Call video.HideCursor(True)
+    video.Owner = host.hwnd
+    'Window style using standard styles.
+    video.WindowStyle = WS_CHILD Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN
+    
+    'Set the size and position of the image, relative to the host.
+    If windowed And _
+       host.width / Screen.TwipsPerPixelX >= video.width And _
+       host.height / Screen.TwipsPerPixelY >= video.height Then
+        'Centre video (PlayAviSmall).
+        video.Left = (host.width / Screen.TwipsPerPixelX - video.width) \ 2
+        video.Top = (host.height / Screen.TwipsPerPixelY - video.height) \ 2
+    Else
+        'Stretch to the dimensions (not fullscreen it!) if requested or if video is bigger than screen.
+        'PlayAvi or PlayAviSmall with a large video res.
+        Call video.SetWindowPosition(0, 0, host.width \ Screen.TwipsPerPixelX, host.height \ Screen.TwipsPerPixelY)
+    End If
 
+    'Finally run the video!
     Call quartz.run
-    Dim windowStateNow As Long
-    windowStateNow = video.WindowState
 
-    Do Until (pos.CurrentPosition = pos.StopTime) Or (video.WindowState <> windowStateNow)
+    'Hold trans3 until the video ends.
+    Do Until (pos.CurrentPosition >= pos.Duration)
         Call processEvent
     Loop
-
+    
+    'Clean up.
+    Call quartz.Stop
     video.Visible = False
-    Call Unload(video)
-    Set video = Nothing
+    video.Owner = Null
     Set pos = Nothing
+    Set video = Nothing
     Set quartz = Nothing
 
 End Sub

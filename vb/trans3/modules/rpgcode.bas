@@ -1,6 +1,6 @@
 Attribute VB_Name = "RPGCode"
 '=========================================================================
-' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 ' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '=========================================================================
@@ -4335,78 +4335,100 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PlayAviRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#PlayAvi(file$)
-    'plays avi (full screen)
-    On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    num = CountData(dataUse$)        'how many data elements are there?
-    If num <> 1 Then
-        Call debugger("Warning: PlayAvi has more than 1 data element!-- " & Text$)
-    End If
-    useIt$ = GetElement(dataUse$, 1)
-    If LenB(useIt$) = 0 Then
-        Call debugger("Error: PlayAvi has no data element!-- " & Text$)
+'==============================================================================
+' PlayAvi("video.avi") - Plays movie files; .avi, .mpg, .mov
+' Stretches video to fit screen
+' Should combine with PlayAviSmall and provide custom size options
+'==============================================================================
+Public Sub PlayAviRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram): On Error Resume Next
+
+    Dim paras() As parameters, count As Long, oldMusic As String
+
+    paras = getParameters(Text, theProgram, count)
+    If count <> 1 Then
+        Call debugger("Error: PlayAvi requires 1 data element!-- " & Text)
         Exit Sub
     End If
-    a = getValue(useIt$, lit$, num, theProgram)
-    If a = 0 Then
-        Call debugger("Error: PlayAvi data type must be literal!-- " & Text$)
-    Else
-        lit$ = addExt(lit$, ".avi")
-        lit$ = projectPath & mediaPath & lit$
-        lit$ = PakLocate(lit$)
-        'KSNiloc...
-        Dim oldMusic As String
-        oldMusic = musicPlaying
-        boardList(activeBoardIndex).theData.boardMusic = vbNullString
-        Call checkMusic(True)
-        Call playVideo(lit)
-        boardList(activeBoardIndex).theData.boardMusic = oldMusic
-        Call checkMusic(True)
-        
+    If paras(0).dataType <> DT_LIT Then
+        Call debugger("Error: PlayAvi data type must be literal!-- " & Text)
+        Exit Sub
     End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
     
-    Resume Next
+    'If no extension, set to avi.
+    paras(0).lit = addExt(paras(0).lit, ".avi")
+    
+    If Not fileExists(projectPath & mediaPath & paras(0).lit) Then
+        Call debugger("Error: PlayAvi - video file not found in /Media folder!-- " & Text)
+        Exit Sub
+    End If
+    
+    Select Case UCase$(GetExt(paras(0).lit))
+        Case "AVI", "MPG", "MOV"
+            'Valid filetypes for DirectShow.
+            'Stop the music, if any.
+            oldMusic = musicPlaying
+            boardList(activeBoardIndex).theData.boardMusic = vbNullString
+            Call checkMusic(True)
+            
+            'Play video.
+            Call playVideo(projectPath & mediaPath & paras(0).lit)
+            
+            'Reinstate music.
+            boardList(activeBoardIndex).theData.boardMusic = oldMusic
+            Call checkMusic(True)
+            
+        Case Else
+            Call debugger("Error: PlayAvi - format not supported (only AVI, MPG or MOV supported)!-- " & Text)
+    
+    End Select
+
 End Sub
 
-Sub PlayAviSmallRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#PlayAviSmall(file$)
-    'plays avi (windowed)
-    On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    num = CountData(dataUse$)        'how many data elements are there?
-    If num <> 1 Then
-        Call debugger("Warning: PlayAviSmall has more than 1 data element!-- " + Text$)
-    End If
-    useIt$ = GetElement(dataUse$, 1)
-    If LenB(useIt$) = 0 Then
-        Call debugger("Error: PlayAviSmall has no data element!-- " + Text$)
+'==============================================================================
+' PlayAvi("video.avi") - Plays movie files; .avi, .mpg, .mov
+' Plays video at video's resolution, centred
+'==============================================================================
+Public Sub PlayAviSmallRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram): On Error Resume Next
+
+    Dim paras() As parameters, count As Long, oldMusic As String
+
+    paras = getParameters(Text, theProgram, count)
+    If count <> 1 Then
+        Call debugger("Error: PlayAviSmall requires 1 data element!-- " & Text)
         Exit Sub
     End If
-    a = getValue(useIt$, lit$, num, theProgram)
-    If a = 0 Then
-        Call debugger("Error: PlayAviSmall data type must be literal!-- " + Text$)
-    Else
-        lit$ = addExt(lit$, ".avi")
-        lit$ = projectPath & mediaPath & lit$
-        lit$ = PakLocate(lit$)
-        Call playVideo(lit, True)
+    If paras(0).dataType <> DT_LIT Then
+        Call debugger("Error: PlayAviSmall data type must be literal!-- " & Text)
+        Exit Sub
     End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
     
-    Resume Next
+    'If no extension, set to avi.
+    paras(0).lit = addExt(paras(0).lit, ".avi")
+    
+    If Not fileExists(projectPath & mediaPath & paras(0).lit) Then
+        Call debugger("Error: PlayAviSmall - video file not found in /Media folder!-- " & Text)
+        Exit Sub
+    End If
+    
+    Select Case UCase$(GetExt(paras(0).lit))
+        Case "AVI", "MPG", "MOV"
+            'Valid filetypes for DirectShow.
+            'Stop the music, if any.
+            oldMusic = musicPlaying
+            boardList(activeBoardIndex).theData.boardMusic = vbNullString
+            Call checkMusic(True)
+            
+            'Play video, windowed.
+            Call playVideo(projectPath & mediaPath & paras(0).lit, True)
+            
+            'Reinstate music.
+            boardList(activeBoardIndex).theData.boardMusic = oldMusic
+            Call checkMusic(True)
+            
+        Case Else
+            Call debugger("Error: PlayAviSmall - format not supported (only AVI, MPG or MOV supported)!-- " & Text)
+    
+    End Select
 End Sub
 
 Sub PostureRPG(Text$, ByRef theProgram As RPGCodeProgram)
