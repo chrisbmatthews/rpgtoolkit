@@ -37,7 +37,7 @@ Begin VB.Form warpset
       _ExtentX        =   8916
       _ExtentY        =   847
       Object.Width           =   5055
-      Caption         =   "Caption"
+      Caption         =   "Warp Set"
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
