@@ -65,7 +65,6 @@ errorhandler:
     Resume Next
 End Function
 
-
 Function IsNight() As Boolean
     'determines if it is after 8pm and before 8am
     Dim theTime As Long
@@ -84,7 +83,6 @@ Function IsNight() As Boolean
     
     IsNight = False
 End Function
-
 
 Function TimeOfDay() As Long
     'return the 'time of day' in seconds.

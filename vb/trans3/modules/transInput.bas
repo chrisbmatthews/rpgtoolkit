@@ -376,7 +376,7 @@ errorhandler:
 End Function
 
 
-Sub getMouseMove(ByRef x As Long, ByRef Y As Long)
+Sub getMouseMove(ByRef x As Long, ByRef y As Long)
     '=============================================
     'Waits for user to move mouse on mainFormform.
     'Returns x and y.
@@ -395,7 +395,7 @@ Sub getMouseMove(ByRef x As Long, ByRef Y As Long)
     
     bWaitingForInput = False
     x = Int(mouseMoveX)
-    Y = Int(mouseMoveY)
+    y = Int(mouseMoveY)
 
     Exit Sub
     
@@ -405,7 +405,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub getMouse(ByRef x As Long, ByRef Y As Long)
+Sub getMouse(ByRef x As Long, ByRef y As Long)
     '=========================================
     'Waits for user to click mouse on mainForm.
     'Returns x and y.
@@ -424,7 +424,7 @@ Sub getMouse(ByRef x As Long, ByRef Y As Long)
     bWaitingForInput = False
     
     x = Int(mouseX)
-    Y = Int(mouseY)
+    y = Int(mouseY)
 
     Exit Sub
     
@@ -434,7 +434,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub getMouseNoWait(ByRef x As Long, ByRef Y As Long)
+Public Sub getMouseNoWait(ByRef x As Long, ByRef y As Long)
 
     '======================================================
     'Waits only 15 milliseconds for the mouse to be clicked
@@ -448,7 +448,7 @@ Public Sub getMouseNoWait(ByRef x As Long, ByRef Y As Long)
     bWaitingForInput = False
 
     x = Round(mouseX)
-    Y = Round(mouseY)
+    y = Round(mouseY)
 
 End Sub
 
@@ -678,7 +678,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     End If
 
 
-    If (Not runningProgram) And (Not bInMenu) And (Not fightInProgress()) Then
+    If (Not runningProgram) And (Not bInMenu) And (Not fightInProgress) Then
         'Scan for special keys.
         
         If keyCode = 88 And Shift = 4 Then
@@ -726,7 +726,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     
 End Sub
 
-Sub mouseDownEvent(ByVal x As Integer, ByVal Y As Integer, ByVal Shift As Integer, ByVal button As Integer)
+Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Integer, ByVal button As Integer)
     '======================================================
     'Called when mouse down event detected on the MainForm.
     'Renamed variables: t >> index
@@ -737,7 +737,7 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal Y As Integer, ByVal Shift As Intege
     
     'Returned values from the form.
     mouseX = x
-    mouseY = Y
+    mouseY = y
     
     'Inform plugins...
     Dim Index As Integer
@@ -751,7 +751,7 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal Y As Integer, ByVal Shift As Intege
             
             If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
                 'If an input is requested, return that input to the plugin.
-                Call PLUGEventInform(plugName, -1, x, Y, button, Shift, "", INPUT_MOUSEDOWN)
+                Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
             End If
         End If
     Next Index
@@ -761,7 +761,7 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal Y As Integer, ByVal Shift As Intege
         plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
-            Call PLUGEventInform(plugName, -1, x, Y, button, Shift, "", INPUT_MOUSEDOWN)
+            Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
         End If
     End If
     
@@ -770,13 +770,13 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal Y As Integer, ByVal Shift As Intege
         plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
-            Call PLUGEventInform(plugName, -1, x, Y, button, Shift, "", INPUT_MOUSEDOWN)
+            Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
         End If
     End If
     
 End Sub
 
-Sub mouseMoveEvent(ByVal x As Integer, ByVal Y As Integer)
+Sub mouseMoveEvent(ByVal x As Integer, ByVal y As Integer)
     '=====================================================
     'Called when mouse move event detected on the MainForm
     'Called by Form_MoveMouse only.
@@ -785,7 +785,7 @@ Sub mouseMoveEvent(ByVal x As Integer, ByVal Y As Integer)
     
     'Returned values from the form.
     mouseMoveX = x
-    mouseMoveY = Y
+    mouseMoveY = y
     
 End Sub
 
@@ -817,7 +817,7 @@ Sub scanKeys()
         'by the isometric "jump" correction in the mainLoop).
         pendingPlayerMovement(selectedPlayer).direction = MV_NE
         pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).Y
+        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
         
         'Insert the target co-ordinates based on the movement direction.
@@ -838,7 +838,7 @@ Sub scanKeys()
         
         pendingPlayerMovement(selectedPlayer).direction = MV_NW
         pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).Y
+        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
@@ -852,7 +852,7 @@ Sub scanKeys()
         
         pendingPlayerMovement(selectedPlayer).direction = MV_SE
         pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).Y
+        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
@@ -866,7 +866,7 @@ Sub scanKeys()
         
         pendingPlayerMovement(selectedPlayer).direction = MV_SW
         pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).Y
+        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
@@ -881,7 +881,7 @@ Sub scanKeys()
         
         pendingPlayerMovement(selectedPlayer).direction = MV_NORTH
         pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).Y
+        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
@@ -896,7 +896,7 @@ Sub scanKeys()
         
         pendingPlayerMovement(selectedPlayer).direction = MV_SOUTH
         pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).Y
+        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
@@ -911,7 +911,7 @@ Sub scanKeys()
         
         pendingPlayerMovement(selectedPlayer).direction = MV_EAST
         pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).Y
+        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
@@ -926,7 +926,7 @@ Sub scanKeys()
         
         pendingPlayerMovement(selectedPlayer).direction = MV_WEST
         pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).Y
+        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         

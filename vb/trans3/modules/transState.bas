@@ -498,8 +498,6 @@ Sub LoadState(ByVal file As String)
     Close #num
     initTime = Timer
     addTime = gameTime
-    
-    maxNum = 0: maxLit = 0
 End Sub
 
 

@@ -5,6 +5,12 @@ Private rpgC As String
 
 Public Function CapitalizeRPGCode(ByVal txt As String) As String
 
+ txt = Trim(replaceOutsideQuotes((txt), vbTab, "", True))
+ If Left(txt, 1) = "*" Or Left(txt, 2) = "//" Then
+  CapitalizeRPGCode = txt
+  Exit Function
+ End If
+
  If GetSetting("RPGToolkit3", "PRG Editor", "Cap", 1) = 0 Then
   CapitalizeRPGCode = txt
   Exit Function
@@ -266,37 +272,39 @@ Public Function CapitalizeRPGCode(ByVal txt As String) As String
 End Function
 
 Private Sub fR(ByVal Text As String)
-    rpgC = Replace(rpgC, Text, Text, , , vbTextCompare)
+    rpgC = replaceOutsideQuotes(rpgC, Text, Text, True)
 End Sub
 
-Private Function LCaseOutsideQuotes(ByVal Text As String) As String
+Private Function replaceOutsideQuotes(ByVal Text As String, ByVal find As String, ByVal replace As String, ByVal stopAtComment As Boolean) As String
 
-    '======================================================================================
-    'Convert characters not within quotes to lowercase
-    '======================================================================================
+    On Error Resume Next
 
-    Dim ignore As Boolean
-    Dim build As String
-    Dim char As String
     Dim a As Long
+    Dim ignore As Boolean
     
     For a = 1 To Len(Text)
-        char = Mid(Text, a, 1)
-        Select Case char
-            Case """"
-                If ignore Then
-                    ignore = False
-                Else
-                    ignore = True
-                End If
-        End Select
-        If ignore Then
-            build = build & char
-        Else
-            build = build & LCase(char)
-        End If
-    Next a
+        Dim read As String
+        read = Mid(Text, a, Len(find))
 
-    LCaseOutsideQuotes = build
+        If Left(read, 1) = chr(34) Then
+            If ignore Then
+                ignore = False
+            Else
+                ignore = True
+            End If
+
+        ElseIf Left(read, 1) = "*" Or Mid(Text, a, 2) = "//" Then
+            Exit For
+
+        ElseIf Not ignore Then
+            If LCase(find) = LCase(read) Then
+                Text = Mid(Text, 1, a - 1) & replace & Mid(Text, a + Len(replace))
+            End If
+
+        End If
+
+    Next a
+    
+    replaceOutsideQuotes = Text
 
 End Function

@@ -23,8 +23,6 @@ Function chooseHit(ByVal enemyNum As Long) As Long
     Loop
 End Function
 
-
-
 Sub AIOne(ByVal partyIdx As Long, ByVal fighterIdx As Long)
     'Enemy ai- level 1
     'will use special moves until power is spent.
@@ -211,5 +209,3 @@ Function enemyCanDoSM(ByRef theEnemy As TKEnemy, ByRef moveArray() As String) As
     
     enemyCanDoSM = idx
 End Function
-
-

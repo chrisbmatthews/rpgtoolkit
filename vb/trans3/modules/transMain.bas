@@ -22,6 +22,8 @@ Public loaded As Long           'was the game loaded from start menu? 0-no, 1-ye
 Public runningAsEXE As Boolean  'are we running as an exe file?
 Public gShuttingDown As Boolean 'Has the shutdown process been initiated?
 
+Public slackTime As Double
+
 Public Sub closeSystems()
 
     On Error Resume Next
@@ -249,7 +251,7 @@ Public Sub mainLoop()
                 #If Not isRelease = 1 Then
                     framesDrawn = framesDrawn + 1
                 #End If
-                
+
                 'this should be called 4 times (moving 0.25 each time)
                 movementCounter = movementCounter + 1
 
@@ -273,14 +275,14 @@ Public Sub mainLoop()
                     
                     'Isometric fix:
                     pendingItemMovement(cnt).xOrig = itmPos(cnt).x
-                    pendingItemMovement(cnt).yOrig = itmPos(cnt).Y
+                    pendingItemMovement(cnt).yOrig = itmPos(cnt).y
                 Next cnt
                 
                 'The pending movements have to be cleared *before* any programs are run,
                 'whereas the movement direction can only be cleared afterwards.
                 For cnt = 0 To UBound(pendingPlayerMovement)
                     pendingPlayerMovement(cnt).xOrig = ppos(cnt).x
-                    pendingPlayerMovement(cnt).yOrig = ppos(cnt).Y
+                    pendingPlayerMovement(cnt).yOrig = ppos(cnt).y
                 Next cnt
                 
                 'check if player moved...
@@ -291,12 +293,12 @@ Public Sub mainLoop()
                     Dim tempPos As PLAYER_POSITION
                     tempPos = ppos(selectedPlayer)
 
-                    tempPos.l = Round(pendingPlayerMovement(selectedPlayer).lTarg)
-                    tempPos.x = Round(pendingPlayerMovement(selectedPlayer).xTarg)
-                    tempPos.Y = Round(pendingPlayerMovement(selectedPlayer).yTarg)
+                    tempPos.l = pendingPlayerMovement(selectedPlayer).lTarg
+                    tempPos.x = pendingPlayerMovement(selectedPlayer).xTarg
+                    tempPos.y = pendingPlayerMovement(selectedPlayer).yTarg
 
-                    pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
                     Call programTest(tempPos)
+                    pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
 
                     checkFight = checkFight + 1
                     If checkFight = 4 Then
@@ -363,11 +365,54 @@ Sub openSystems(Optional ByVal testingPRG As Boolean)
     
     Call setupMain(testingPRG)
     Call DXRefresh
+    
+    Call calculateSlackTime
 
     host.Visible = True
     Call host.Show
     DoEvents
     
+End Sub
+
+Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
+
+    '==================================
+    'Calculate this CPU's slack time
+    '==================================
+
+    Dim a As Long
+
+    If recurse Then
+
+        Dim running As Double
+        For a = 1 To 10
+            Call calculateSlackTime(False)
+            running = running + slackTime
+        Next a
+        slackTime = running / 10
+
+    Else
+
+        'Get the current tick count
+        Dim startTime As Double
+        startTime = Timer()
+
+        'Do events ten times
+        For a = 1 To 10
+            DoEvents
+        Next a
+
+        'Get tick count again
+        Dim endTime As Double
+        endTime = Timer()
+
+        'Calculate the slack
+        slackTime = ((endTime - startTime) / 5) + 1
+    
+    End If
+
+    'We now have an approximate idea of this CPU's speed
+
 End Sub
 
 Private Sub initActiveX()
@@ -452,16 +497,16 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
         'Setup player position.
         ppos(0).x = boardList(activeBoardIndex).theData.playerX
-        ppos(0).Y = boardList(activeBoardIndex).theData.playerY
+        ppos(0).y = boardList(activeBoardIndex).theData.playerY
         ppos(0).l = boardList(activeBoardIndex).theData.playerLayer
         ppos(0).stance = "WALK_S"
         ppos(0).frame = 0
         selectedPlayer = 0
 
-        Dim pNum As Long
-        For pNum = 0 To UBound(showPlayer)
-            showPlayer(pNum) = False
-        Next pNum
+        Dim pnum As Long
+        For pnum = 0 To UBound(showPlayer)
+            showPlayer(pnum) = False
+        Next pnum
         showPlayer(selectedPlayer) = True
         facing = 1                      'Facing South.
         

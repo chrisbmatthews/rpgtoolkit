@@ -1,21 +1,33 @@
 Attribute VB_Name = "Shop"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
+
+'=========================================================================
+' Internal shopping routines
+'=========================================================================
 
 Option Explicit
 
-Public itemsforsale(500) As String  'filenames of 500 items to sell.
-Public itemMap(500) As Long
+'=========================================================================
+' Integral variables
+'=========================================================================
 
+Public itemsForSale(500) As String   'filenames of 500 items to sell
+Public itemMap(500) As Long          'locations of those items in a map
+
+'=========================================================================
+' Add items to the inventory
+'=========================================================================
 Public Sub shopGiveItems(ByVal file As String, ByVal num As Long)
-    'add num items as defined by file$
 
     On Error Resume Next
 
     Dim n As String
     n = getItemName(projectPath & itmPath & file)
-    file = addext(file, ".itm")
+    file = addExt(file, ".itm")
     Dim theOne As Long, t As Long
     theOne = -1
     With inv
@@ -44,13 +56,15 @@ Public Sub shopGiveItems(ByVal file As String, ByVal num As Long)
 
 End Sub
 
+'=========================================================================
+' Take items from the inventory
+'=========================================================================
 Public Sub shopTakeItems(ByVal file As String, ByVal num As Long)
-    'take num items as defined by file$
 
     On Error Resume Next
     Dim n As String
     n = getItemName(projectPath & itmPath & file)
-    file = addext(file, ".itm")
+    file = addExt(file, ".itm")
     Dim theOne As Long, t As Long
     theOne = -1
     With inv

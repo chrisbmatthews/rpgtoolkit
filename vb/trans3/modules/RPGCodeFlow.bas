@@ -1,159 +1,152 @@
 Attribute VB_Name = "RPGCodeFlow"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
+
+'=========================================================================
+' Procedures that control the flow of rpgcode
+'=========================================================================
 
 Option Explicit
 
-Public program(11) As RPGCodeProgram
-Public gbMultiTasking As Boolean    'the the current set of commands runing under mutlitasking?
+'=========================================================================
+' Integral rpgcode variables
+'=========================================================================
 
-' ADDED BY KSNiloc...
-Public nextProgram As String
+Public program() As RPGCodeProgram      'item multitask programs
+Public gbMultiTasking As Boolean        'the the current set of commands runing under mutlitasking?
+Public nextProgram As String            'program to run after current one finishes
+Public lineNum As Long                  'line number of message window
+Public mwinLines As Long                'number of lines in the message window
+Public pointer(100) As String           'list of 100 pointer variable names
+Public correspPointer(100) As String    'corresponding pointers
+Public textX As Double, textY As Double 'current x and y coords of text
+Public endCausesStop As Boolean         'end action swapped for stop action?
+Public buttons(50) As activeButton      '51 buttons on screen
+Public runningProgram As Boolean        'is a program running?
+Public wentToNewBoard As Boolean        'did we go to a new board in the program?
+Public methodReturn As RPGCODE_RETURN   'return value for method calls
+Public errorKeep As RPGCodeProgram      'program kept as a backup for error handling
+Public preErrorPos As Long              'position before an error occured
 
-Public lineNum As Long             'line number of message window
-Global mwinLines As Long            'number of lines in the message window
+Public Enum RPGC_DT                     'rpgcode data type enum
+    DT_VOID = -1                        '  can't tell
+    DT_NUM = 0                          '  numerical variable
+    DT_LIT = 1                          '  literal variable
+    DT_STRING = 2                       '  string
+    DT_NUMBER = 3                       '  number
+    DT_COMMAND = 4                      '  command (function)
+    DT_EQUATION = 5                     '  equation
+End Enum
 
-Global pointer$(100)        'list of 100 pointer variable names
-Global corresppointer$(100) 'corresponding pointers
-
-Public textx As Double, texty As Double     'current x and y coords of text
-
-' ADDED BY KSNiloc...
-Public endCausesStop As Boolean
-
-Type activebutton
-    x1 As Integer
-    x2 As Integer
-    y1 As Integer
-    y2 As Integer
-    face As String
+Public Type RPGCODE_RETURN              'rpgcode return structure
+    dataType As Long                    '  data type 0-num, 1-string (out)
+    num As Double                       '  data as numerical (out)
+    lit As String                       '  data as string (out)
+    usingReturnData As Boolean          '  is the return data being used? (in)
 End Type
 
-Global buttons(50) As activebutton
-
-Global runningProgram As Boolean    'is a program runing?
-
-Global wentToNewBoard As Boolean    'did we go to a new board in the program?
-
-
-'carry return values from rpgcode commands
-
-Type RPGCODE_RETURN
-    dataType As Long    'data type 0-num, 1-string
-    num As Double       'data as numerical
-    lit As String       'data as string
-    
-    ' ! ADDED BY KSNiloc...
-    usingReturnData As Boolean
-
+Public Type activeButton                'setButton() structure
+    x1 As Integer                       '  x1
+    x2 As Integer                       '  x2
+    y1 As Integer                       '  y1
+    y2 As Integer                       '  y2
+    face As String                      '  image on button
 End Type
 
-Public methodReturn As RPGCODE_RETURN   'return value from custom method calls
-
-Public Const DT_VOID As Integer = -1
-Public Const DT_NUM As Integer = 0
-Public Const DT_LIT As Integer = 1
-Public Const DT_COMMAND As Integer = 4
-
-'KSNiloc adds...
-Public Const DT_EQUATION As Integer = 5
-Public errorKeep As RPGCodeProgram
-Public preErrorPos As Long
-
-Function isMultiTasking() As Boolean
-    'check if we're multitasking...
+'=========================================================================
+' Read-only pointer to gbMultiTasking
+'=========================================================================
+Public Property Get isMultiTasking() As Boolean
     isMultiTasking = gbMultiTasking
-End Function
+End Property
 
+'=========================================================================
+' Pops up the rpgcode debugger
+'=========================================================================
+Public Sub debugger(ByVal text As String)
 
-Sub debugger(Text$)
-    On Error GoTo errorhandler
+    On Error Resume Next
 
-    'KSNiloc adds..
-    If Not errorBranch = "" Then
-        errorKeep.program(0) = errorKeep.program(0) & "*ERROR CHECKING FLAG"
-        If Not errorBranch = "Resume Next" Then
-            Branch "#Branch(" & errorBranch & ")", errorKeep
+    If Not checkErrorHandling() Then
+        If debugYN = 1 Then
+            Call debugwin.Show
+            debugwin.buglist.text = debugwin.buglist.text & text & vbCrLf
+            DoEvents
         Else
-            preErrorPos = errorKeep.programPos
-            resumeNextRPG "#ResumeNext()", errorKeep
+            Call Unload(debugwin)
         End If
-        Exit Sub
     End If
 
-    If debugYN = 1 Then
-        debugwin.Show
-        debugwin.buglist.Text = debugwin.buglist.Text + Text$ + chr$(13) + chr$(10)
-        DoEvents
-    Else
-        Unload debugwin
-    End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Function increment(ByRef theProgram As RPGCodeProgram) As Long
-    'Increments the program
-    On Error GoTo errorhandler
+'=========================================================================
+' Checks is the user has error handling in place
+'=========================================================================
+Private Function checkErrorHandling() As Boolean
+    If Not errorBranch = "" Then
+        checkErrorHandling = True
+        errorKeep.program(0) = errorKeep.program(0) & "*ERROR CHECKING FLAG"
+        If Not errorBranch = "Resume Next" Then
+            Call Branch("Branch(" & errorBranch & ")", errorKeep)
+        Else
+            preErrorPos = errorKeep.programPos
+            Call resumeNextRPG("ResumeNext()", errorKeep)
+        End If
+    End If
+End Function
+
+'=========================================================================
+' Increment the program position
+'=========================================================================
+Public Function increment(ByRef theProgram As RPGCodeProgram) As Long
+    On Error Resume Next
     theProgram.programPos = theProgram.programPos + 1
     If theProgram.programPos > theProgram.Length Then
         theProgram.programPos = -1
     End If
     increment = theProgram.programPos
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Function
 
-Sub MethodCallRPG(Text$, commandName$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
-    'A method was called.
-    '#ret!$ = #method()
+'=========================================================================
+' Handle a custom method call
+'=========================================================================
+Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
-    ''''''''''''''''''''''''''''''''''
-    'Modified in a big way by KSNiloc'
-    ''''''''''''''''''''''''''''''''''
-    
-    'What's the name of the method?
     On Error GoTo errorhandler
-    ReDim parameterlist$(100)
-    ReDim destlist$(100)
+
+    Dim parameterList(100) As String
+    Dim destList(100) As String
 
     Dim mName As String, includeFile As String, methodName As String, oldPos As Long, foundIt As Long
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If commandName$ = "" Then
-        mName$ = GetCommandName$(Text$, theProgram)   'get command name without extra info
+        mName = GetCommandName(text, theProgram)   'get command name without extra info
     Else
-        mName$ = commandName$
+        mName = commandName
     End If
 
-    includeFile$ = ParseBefore(mName$, ".")
-    methodName$ = ParseAfter(mName$, ".")
-    
+    includeFile = ParseBefore(mName, ".")
+    methodName = ParseAfter(mName, ".")
+
     If Not InClass.DoNotCheckForClass Then
-     If Not methodName$ = "" Then
-      If IsClassRPG(includeFile$, methodName$, Text$, theProgram, retval) Then
-       Exit Sub
-      End If
-     End If
+        If Not methodName = "" Then
+            If IsClassRPG(includeFile, methodName, text, theProgram, retval) Then
+                Exit Sub
+            End If
+        End If
     End If
     
     InClass.DoNotCheckForClass = False
     
-    If methodName$ <> "" Then
+    If methodName <> "" Then
         'include file...
-        includeFile$ = addext(includeFile$, ".prg")
-        Call IncludeRPG("#include(" + chr$(34) + includeFile$ + chr$(34) + ")", theProgram)
-        mName$ = methodName$
+        includeFile = addExt(includeFile, ".prg")
+        Call IncludeRPG("include(" + chr$(34) + includeFile$ + chr$(34) + ")", theProgram)
+        mName = methodName
     End If
 
     oldPos = theProgram.programPos
@@ -172,11 +165,11 @@ Sub MethodCallRPG(Text$, commandName$, ByRef theProgram As RPGCodeProgram, ByRef
     InClass.MethodWasFound = True
     If foundIt = -1 Then
         'didn't find it in prg code, but it may exist in a plugin...
-        canDoIt = QueryPlugins(mName$, Text$, retval)
+        canDoIt = QueryPlugins(mName$, text$, retval)
         If canDoIt = False Then
             'InClass.MethodWasFound = False
             If InClass.PopupMethodNotFound = True Then
-                Call debugger("Error: Method not found!-- " + Text$)
+                Call debugger("Error: Method not found!-- " + text$)
             End If
         Else
             Exit Sub
@@ -192,22 +185,17 @@ Sub MethodCallRPG(Text$, commandName$, ByRef theProgram As RPGCodeProgram, ByRef
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
         
         'Get parameters from calling line
-        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
         For pList = 1 To number
-            parameterlist$(pList) = GetElement(dataUse$, pList)
+            parameterList$(pList) = GetElement(dataUse$, pList)
         Next pList
     
         'Get parameters from method line
         dataUse$ = GetBrackets(theProgram.program$(foundIt))   'Get text inside brackets (parameter list)
         number2 = CountData(dataUse$)        'how many data elements are there?
-        'If number <> number2 Then
-        '    Call debugger("Error: Cannot call method- parameters don't match!--" + Text$)
-        '    theProgram.programPos = oldPos
-        '    Exit Sub
-        'End If
         For pList = 1 To number2
-            destlist$(pList) = GetElement(dataUse$, pList)
+            destList$(pList) = GetElement(dataUse$, pList)
         Next pList
 
         'create a new local scope for this method...
@@ -219,7 +207,7 @@ Sub MethodCallRPG(Text$, commandName$, ByRef theProgram As RPGCodeProgram, ByRef
         For pList = 1 To number
             'get the value from the previous stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
-            dataG = GetValue(parameterlist$(pList), lit$, num, theProgram)
+            dataG = GetValue(parameterList$(pList), lit$, num, theProgram)
             'restore stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
             
@@ -230,8 +218,8 @@ Sub MethodCallRPG(Text$, commandName$, ByRef theProgram As RPGCodeProgram, ByRef
             End If
             'make sure the variable becomes local to the method...
             Dim dummyRet As RPGCODE_RETURN
-            Call LocalRPG("#local(" + destlist$(pList) + ")", theProgram, dummyRet)
-            Call SetVariable(destlist$(pList), dUse$, theProgram)
+            Call LocalRPG("#local(" + destList$(pList) + ")", theProgram, dummyRet)
+            Call SetVariable(destList$(pList), dUse$, theProgram)
         Next pList
         
         Dim theOne As Long, se As Long
@@ -250,8 +238,8 @@ Sub MethodCallRPG(Text$, commandName$, ByRef theProgram As RPGCodeProgram, ByRef
         For t = 1 To number
             For se = theOne To 100
                 If pointer$(se) = "" Then
-                    pointer$(se) = removeChar(destlist$(t), " ")
-                    corresppointer$(se) = removeChar(parameterlist$(t), " ")
+                    pointer$(se) = removeChar(destList$(t), " ")
+                    correspPointer$(se) = removeChar(parameterList$(t), " ")
                     topList = se
                     Exit For
                 End If
@@ -266,7 +254,6 @@ Sub MethodCallRPG(Text$, commandName$, ByRef theProgram As RPGCodeProgram, ByRef
         'OK- data is passed.  Now run the method:
         theProgram.programPos = increment(theProgram)
         
-        ' ! MODIFIED BY KSNiloc
         Dim ogbm As Boolean
         ogbm = isMultiTasking()
         gbMultiTasking = False
@@ -281,9 +268,9 @@ Sub MethodCallRPG(Text$, commandName$, ByRef theProgram As RPGCodeProgram, ByRef
         'Clear our variables from pointer list
         For t = 1 To number
             For se = theOne To topList
-                If UCase$(pointer$(se)) = UCase$(destlist$(t)) Then
+                If UCase$(pointer$(se)) = UCase$(destList$(t)) Then
                     pointer$(se) = ""
-                    corresppointer$(se) = ""
+                    correspPointer$(se) = ""
                     se = 100
                 End If
             Next se
@@ -304,83 +291,77 @@ errorhandler:
     Resume Next
 End Sub
 
+'=========================================================================
+' Run a line from item programs and threads
+'=========================================================================
+Public Sub multiTaskNow()
 
-Sub MultiTaskNow()
-    'Multitasks item programs.
-    On Error GoTo errorhandler
-    'On Error Resume Next
-    Call openMulti  'Open up multi if not already done
-    
+    On Error Resume Next
+
+    'Flag we're multitasking
     gbMultiTasking = True
     
+    Call openMulti
     Call ExecuteAllThreads
-    
+
     Dim t As Long
-    ' ! MODIFIED BY KSNiloc...
     For t = 0 To UBound(multilist)
-        If multilist$(t) <> "" Then
+        If multilist(t) <> "" Then
             'OK, run this multitask program.
             target = t
-            targetType = 1
+            targetType = TYPE_ITEM
             source = t
-            sourceType = 1
-            If Not (ExecuteThread(program(t + 1))) Then
-                multilist$(t) = ""
+            sourceType = TYPE_ITEM
+            If Not ExecuteThread(program(t + 1)) Then
+                multilist(t) = ""
             End If
         End If
     Next t
+
+    'Flag we're no longer multitasking
     gbMultiTasking = False
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Sub openMulti()
-    'Open multitask programs if they're not already open.
+'=========================================================================
+' Make sure all item programs are open
+'=========================================================================
+Public Sub openMulti()
     On Error Resume Next
     Dim t As Long
-    ' ! MODIFIED BY KSNiloc...
+    ReDim program(UBound(multilist))
     For t = 0 To UBound(multilist)
-        If multilist$(t) <> "" Then
+        If multilist(t) <> "" Then
             If multiopen(t) = 0 Then
-            'MsgBox multilist$(t)
-                Call openProgram(projectPath$ + prgPath$ + multilist$(t), program(t + 1))
+                Call openProgram(projectPath & prgPath & multilist(t), program(t + 1))
                 multiopen(t) = 1
             End If
         End If
     Next t
 End Sub
 
+'=========================================================================
+' Tests if a program is to be run and returns whether it was
+'=========================================================================
 Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
 
-    '========================================
-    'Modified by KSNiloc
-    '
-    'NOTES: Now works with pixel movement
-    '========================================
-
-    'This sub tests if the player has stepped/pressed activation key on a program.
-    'If so, the program will run (only if the program's conditions
-    'tell it to run).
-    'return true if the program was run
-    
-    'On Error GoTo errorhandler
     On Error Resume Next
 
     Dim xx As Double
     Dim yy As Double
     Dim runIt As Long
     Dim t As Long
-    
-    Dim toRet As Boolean
-    toRet = False
 
+    Dim toRet As Boolean
+
+    'Copy structure as contents may change
     Dim pos As PLAYER_POSITION
     pos = passPos
-    If usingPixelMovement() Then pos = roundCoords(pos)
+
+    If usingPixelMovement() Then
+        'If we're using pixel movement then round the coordinates
+        pos = roundCoords(pos, pendingPlayerMovement(selectedPlayer).direction)
+    End If
 
     'First, test for programs:
     For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
@@ -389,29 +370,29 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
             'OK, how is it activated?
             If boardList(activeBoardIndex).theData.activationType(t) = 0 Then
                 'we step on it.
-                If val(boardList(activeBoardIndex).theData.progX(t)) = pos.X And _
-                    val(boardList(activeBoardIndex).theData.progY(t)) = pos.Y And _
+                If val(boardList(activeBoardIndex).theData.progX(t)) = pos.x And _
+                    val(boardList(activeBoardIndex).theData.progY(t)) = pos.y And _
                     val(boardList(activeBoardIndex).theData.progLayer(t)) = pos.l Then
                     'all right! we stepped on it!
                     toRet = runprgYN(t)
                 End If
-            End If
-            If boardList(activeBoardIndex).theData.activationType(t) = 1 Then
+            ElseIf boardList(activeBoardIndex).theData.activationType(t) = 1 Then
                 'ah! we press the actiavtion key!
-                xx = pos.X: yy = pos.Y
-                Select Case UCase$(pos.stance)
-                    Case "WALK_S":
-                        yy = pos.Y + 1
-                    Case "WALK_W":
-                        xx = pos.X - 1
-                    Case "WALK_N":
-                        yy = pos.Y - 1
-                    Case "WALK_E":
-                        xx = pos.X + 1
+                xx = pos.x
+                yy = pos.y
+                Select Case UCase(pos.stance)
+                    Case "WALK_S"
+                        yy = pos.y + 1
+                    Case "WALK_W"
+                        xx = pos.x - 1
+                    Case "WALK_N"
+                        yy = pos.y - 1
+                    Case "WALK_E"
+                        xx = pos.x + 1
                 End Select
                 If (boardList(activeBoardIndex).theData.progX(t) = xx And boardList(activeBoardIndex).theData.progY(t) = yy And boardList(activeBoardIndex).theData.progLayer(t) = pos.l) _
-                   Or (boardList(activeBoardIndex).theData.progX(t) = pos.X And boardList(activeBoardIndex).theData.progY(t) = pos.Y) Then
-                    If keyWaitState = mainMem.key Then
+                   Or (boardList(activeBoardIndex).theData.progX(t) = pos.x And boardList(activeBoardIndex).theData.progY(t) = pos.y) Then
+                    If keyWaitState = mainMem.Key Then
                         'yes, we pressed the right key
                         toRet = runprgYN(t)
                     End If
@@ -420,12 +401,15 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
         End If
     Next t
 
-    Dim tempItems() As PLAYER_POSITION
-    ReDim tempItems(MAXITEM)
-    For t = 0 To MAXITEM
-        tempItems(t) = itmPos(t)
-        itmPos(t) = roundCoords(itmPos(t))
-    Next t
+    If usingPixelMovement() Then
+        'If we're using pixel movement then round item
+        'coordinates and backup the old ones
+        ReDim tempItems(MAXITEM) As PLAYER_POSITION
+        For t = 0 To MAXITEM
+            tempItems(t) = itmPos(t)
+            itmPos(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
+        Next t
+    End If
     
     'Ouch.  Now test for items:
     For t = 0 To MAXITEM
@@ -435,28 +419,27 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 'OK, how is it activated?
                 If boardList(activeBoardIndex).theData.itmActivationType(t) = 0 Then
                     'we step on it.
-                    If itmPos(t).X = pos.X _
-                        And itmPos(t).Y = pos.Y And _
+                    If itmPos(t).x = pos.x _
+                        And itmPos(t).y = pos.y And _
                         itmPos(t).l = pos.l Then
                         'all right! we stepped on it!
                         toRet = runItmYN(t)
                     End If
-                End If
-                If boardList(activeBoardIndex).theData.itmActivationType(t) = 1 Then
+                ElseIf boardList(activeBoardIndex).theData.itmActivationType(t) = 1 Then
                     'ah! we press the actiavtion key!
-                    xx = pos.X: yy = pos.Y
+                    xx = pos.x: yy = pos.y
                     Select Case UCase$(pos.stance)
                         Case "WALK_S":
-                            yy = pos.Y + 1
+                            yy = pos.y + 1
                         Case "WALK_W":
-                            xx = pos.X - 1
+                            xx = pos.x - 1
                         Case "WALK_N":
-                            yy = pos.Y - 1
+                            yy = pos.y - 1
                         Case "WALK_E":
-                            xx = pos.X + 1
+                            xx = pos.x + 1
                     End Select
-                    If itmPos(t).X = xx And itmPos(t).Y = yy And itmPos(t).l = pos.l Then
-                        If keyWaitState = mainMem.key Then
+                    If itmPos(t).x = xx And itmPos(t).y = yy And itmPos(t).l = pos.l Then
+                        If keyWaitState = mainMem.Key Then
                             'yes, we pressed the right key
                             toRet = runItmYN(t)
                         End If
@@ -466,36 +449,27 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
         End If
     Next t
 
-    For t = 0 To MAXITEM
-        itmPos(t) = tempItems(t)
-    Next t
+    If usingPixelMovement() Then
+        'If we're using pixel movement then restore the old item positions
+        For t = 0 To MAXITEM
+            itmPos(t) = tempItems(t)
+        Next t
+    End If
 
     programTest = toRet
 
-    Exit Function
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Function
 
-Private Sub changePerOccurence(ByVal txt As String, _
- ByVal chr As String, ByRef toChange As Long, ByVal Change As Long)
-
- Dim a As Long
- For a = 1 To Len(txt)
-  If LCase(Mid(txt, a, 1)) = LCase(chr) Then _
-   toChange = toChange + Change
- Next a
-
-End Sub
-
+'=========================================================================
+' Advances until a { is found
+'=========================================================================
 Public Sub moveToStartOfBlock(ByRef prg As RPGCodeProgram)
 
-    ' ! ADDED BY KSNiloc...
+    '=========================================================================
+    ' prg - the rpgcode program (in & out)
+    '=========================================================================
 
     Dim done As Boolean
-
     Do Until done
         Select Case LCase(GetCommandName(prg.program(prg.programPos), prg))
             
@@ -510,19 +484,14 @@ Public Sub moveToStartOfBlock(ByRef prg As RPGCodeProgram)
     
 End Sub
 
+'=========================================================================
+' Runs a block of code (or skips it if res = 0)
+'=========================================================================
 Public Function runBlock( _
-                            ByVal Text As String, _
+                            ByVal text As String, _
                             ByVal res As Long, _
                             ByRef prg As RPGCodeProgram _
                                                           ) As Long
-
-    '=========================================================================
-    'Bug fix by KSNiloc
-    '=========================================================================
-    'Runs a block of code (or skips it if res = 0)
-    '=========================================================================
-    
-    'NOTE:  The text passed in no longer matters.
 
     Dim retval As RPGCODE_RETURN
     Dim done As Boolean
@@ -575,8 +544,10 @@ Public Function runBlock( _
     
 End Function
 
-
-Function runItmYN(ByVal itmnum As Long) As Boolean
+'=========================================================================
+' Returns if the item num passed in can be run
+'=========================================================================
+Public Function runItmYN(ByVal itmNum As Long) As Boolean
     'Tests if conditions are right to run an item.
     'If so, it will be run.
     'return true if it was run
@@ -588,12 +559,11 @@ Function runItmYN(ByVal itmnum As Long) As Boolean
     Dim t As Long, runIt As Long, checkIt As Long, lit As String, num As Double, valueTest As Double
     Dim valueTes As String
     
-    t = itmnum
+    t = itmNum
     If boardList(activeBoardIndex).theData.itmActivate(t) = 0 Then
         'always active
         runIt = 1
-    End If
-    If boardList(activeBoardIndex).theData.itmActivate(t) = 1 Then
+    ElseIf boardList(activeBoardIndex).theData.itmActivate(t) = 1 Then
         'conditional activation
         runIt = 0
         checkIt = GetIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(t), lit$, num)
@@ -601,8 +571,7 @@ Function runItmYN(ByVal itmnum As Long) As Boolean
             'it's a numerical variable
             valueTest = num
             If valueTest = val(boardList(activeBoardIndex).theData.itmActivateInitNum$(t)) Then runIt = 1
-        End If
-        If checkIt = 1 Then
+        ElseIf checkIt = 1 Then
             'it's a literal variable
             valueTes$ = lit$
             If valueTes$ = boardList(activeBoardIndex).theData.itmActivateInitNum$(t) Then runIt = 1
@@ -637,8 +606,8 @@ Function runItmYN(ByVal itmnum As Long) As Boolean
             
             If runIt = 0 Then
                 'it is no longer active-- remove it
-                itemMem(itmnum).bIsActive = False
-                multilist$(itmnum) = ""
+                itemMem(itmNum).bIsActive = False
+                multilist$(itmNum) = ""
             End If
         End If
     End If
@@ -652,10 +621,11 @@ errorhandler:
     Resume Next
 End Function
 
-Function runprgYN(ByVal prgnum As Long) As Boolean
-    'Tests if conditions are right to run a program (program prgNum)
-    'If so, it will be run.
-    'return true if it was run
+'=========================================================================
+' Returns if the program passed in can be run
+'=========================================================================
+Public Function runprgYN(ByVal prgnum As Long) As Boolean
+
     On Error GoTo errorhandler
     
     Dim toRet As Boolean
@@ -734,13 +704,12 @@ errorhandler:
     Resume Next
 End Function
 
-Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1, Optional ByVal setSourceAndTarget As Boolean = True)
+'=========================================================================
+' Run the rpgcode program passed in
+'=========================================================================
+Public Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1, Optional ByVal setSourceAndTarget As Boolean = True)
        
-    On Error GoTo runprgerr
-    'Run a program from the BOARD
-    'file is filename
-    'number is multitask number (?)
-    'boardnum is the index on the board of the program
+    On Error GoTo runPrgErr
     
     If Trim(Right(file, 1)) = "\" Then Exit Sub
     
@@ -763,9 +732,7 @@ Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1, Optio
     End If
     
     Dim theProgram As RPGCodeProgram
-    'MsgBox "here :: runProgram :: " & file
     Call openProgram(file, theProgram)
-    'MsgBox "here out :: runProgram :: " & file
     lineNum = 1
     theProgram.threadID = -1
         
@@ -780,10 +747,9 @@ Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1, Optio
     theProgram.programPos = 0
     theProgram.boardNum = boardNum
 
-    ' ! MODIFIED BY KSNiloc
     Dim mainRetVal As RPGCODE_RETURN
     mainRetVal.usingReturnData = True
-    DoSingleCommand "#Main()", theProgram, mainRetVal
+    DoSingleCommand "Main()", theProgram, mainRetVal
     If Not mainRetVal.num = 1 Then
         theProgram.programPos = 0
         Do While _
@@ -832,49 +798,48 @@ Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1, Optio
         Dim oldNextProgram As String
         oldNextProgram = nextProgram
         nextProgram = ""
-        runProgram oldNextProgram, theProgram.boardNum
+        Call runProgram(oldNextProgram, theProgram.boardNum, setSourceAndTarget)
     End If
 
     Exit Sub
-runprgerr:
-errorsA = 1
-Resume Next
+
+runPrgErr:
+    errorsA = 1
+    Resume Next
 End Sub
 
-'program flow routines for rpgcode.
-Function DoCommand(ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
-    'do a command as specified by the program passed in...
+'=========================================================================
+' Do a command from the program passed in and return its value
+'=========================================================================
+Public Function DoCommand(ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
     On Error GoTo error
-    
     DoCommand = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval)
-    
     Exit Function
 error:
     theProgram.programPos = -1
     DoCommand = -1
 End Function
 
-Function DoIndependentCommand(ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN) As Long
-    'do a single command, unattached to a program
+'=========================================================================
+' Do any single command - unattached to a program
+'=========================================================================
+Public Function DoIndependentCommand(ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN) As Long
     On Error Resume Next
-    
-    ' ! MODIFIED BY KSNiloc...
-    
     rpgcodeCommand = ParseRPGCodeCommand(rpgcodeCommand, errorKeep)
-    
     Dim oPP As Long
     oPP = errorKeep.programPos
     DoSingleCommand rpgcodeCommand, errorKeep, retval
     errorKeep.programPos = oPP
-   
 End Function
 
-Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
+'=========================================================================
+' Do any single command - attached to a program
+'=========================================================================
+Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
     'Performs a command, and returns the new line number
     'afterwards.  If it returns -1, then the program is done.
     On Error GoTo errorhandler
    
-    'Error checking... [KSNiloc]
     Dim checkIt As String
     checkIt = replace(replace(replace _
         (LCase(rpgcodeCommand), " ", "" _
@@ -923,32 +888,19 @@ Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPG
     End If
     
     Dim splice As String, cType As String, testText As String
-    
+
     splice$ = cLine$
     cType$ = GetCommandName$(splice$, theProgram)   'get command name without extra info
     testText$ = UCase$(cType$)
-    
+
     'check for redirects...
-    'If RedirectExists(testText$) Then
-        Dim oTT As String
-        oTT = testText
-        testText$ = GetRedirect(testText$)
-        If testText = "" Then testText = oTT
-    'End If
+    If RedirectExists(testText) Then
+        testText = GetRedirect(testText)
+    End If
 
-    '''''''''''''''''''''''''''
-    '   Modified by KSNiloc   '
-    '''''''''''''''''''''''''''
-    '[6/18/04]
-    
-    If Left(testText, 1) = "." Then testText = _
-     UCase(GetWithPrefix() & testText)
-    
-    '''''''''''''''''''''''''''
-    '    Modification Over    '
-    '''''''''''''''''''''''''''
+    If Left(testText, 1) = "." Then testText = UCase(GetWithPrefix() & testText)
 
-    If testText$ <> "MWIN" Then
+    If testText <> "MWIN" Then
         'if the command is not a MWin command, then
         'check if we have just finished puttin text
         'int the message window
@@ -958,8 +910,9 @@ Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPG
             Call renderRPGCodeScreen
         End If
     End If
-    
-    Select Case testText$
+
+    Select Case testText
+
         Case "VAR":
             Call VariableManip(splice$, theProgram)  'manipulate var
             DoSingleCommand = increment(theProgram)
@@ -980,12 +933,11 @@ Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPG
             DoSingleCommand = increment(theProgram)
             Exit Function
         
-        ' !MODIFIED BY KSNILOC!
         Case "IF", "ELSE", "ELSEIF"
             DoSingleCommand = IfThen(splice$, theProgram) 'if then
             Exit Function
     
-        Case "WHILE", "UNTIL" ' [KSNiloc]
+        Case "WHILE", "UNTIL"
             DoSingleCommand = WhileRPG(splice$, theProgram) 'while
             Exit Function
     
@@ -998,7 +950,6 @@ Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPG
             DoSingleCommand = increment(theProgram)
             Exit Function
     
-        '! MODIFICATION BY KSNiloc
         Case "TEXT", "PIXELTEXT"
             Call TextRPG(splice$, theProgram) 'text
             DoSingleCommand = increment(theProgram)
@@ -2253,22 +2204,22 @@ Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPG
             Exit Function
             
         Case "RESUMENEXT"
-            resumeNextRPG splice, theProgram
+            Call resumeNextRPG(splice, theProgram)
             DoSingleCommand = theProgram.programPos
             Exit Function
 
         Case "MSGBOX"
-            MBoxRPG splice, theProgram, retval
+            Call MBoxRPG(splice, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
         
         Case "ANIMATIONDELAY"
-            animationDelayRPG splice, theProgram
+            Call animationDelayRPG(splice, theProgram)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "SETCONSTANTS"
-            setConstantsRPG splice
+            Call setConstantsRPG(splice)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
@@ -2278,12 +2229,12 @@ Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPG
             Exit Function
             
         Case "LOG"
-            logRPG splice, theProgram, retval
+            Call logRPG(splice, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "ONBOARD"
-            onBoardRPG splice, theProgram, retval
+            Call onBoardRPG(splice, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
@@ -2333,7 +2284,7 @@ Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPG
         Case Else
             'If we got this far, it's an unrecognised command and
             'is probably a method call
-            Call MethodCallRPG(splice$, testText$, theProgram, retval) 'method called
+            Call MethodCallRPG(splice, testText, theProgram, retval) 'method called
             DoSingleCommand = increment(theProgram)
             Exit Function
 
@@ -2346,5 +2297,3 @@ errorhandler:
     Call HandleError
     Resume Next
 End Function
-
-

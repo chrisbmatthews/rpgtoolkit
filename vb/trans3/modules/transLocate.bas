@@ -60,12 +60,13 @@ Public Function linkIso(ByVal linkBoard As String) As Boolean
 'Called by TestLink only, to give different co-ordinates for moving to iso boards.
 '===========================================
 
-On Error Resume Next
+    On Error Resume Next
+
     linkIso = False
 
     Dim test As Boolean
  
-    test = FileExists(linkBoard$)
+    test = fileExists(linkBoard$)
     If Not test Then Exit Function
 
     Dim TestBoard As TKBoard
@@ -74,7 +75,6 @@ On Error Resume Next
     If TestBoard.isIsometric = 1 Then linkIso = True
 
 End Function
-
 
 Function getBottomCentreX(ByVal boardx As Double, ByVal boardy As Double, ByRef pending As PENDING_MOVEMENT) As Long
     '=========================================
@@ -149,7 +149,6 @@ Function getBottomCentreY(ByVal boardy As Double) As Long
     getBottomCentreY = y
     
 End Function
-
 
 Sub incrementPosition(ByRef pos As PLAYER_POSITION, ByRef pend As PENDING_MOVEMENT, ByVal moveFraction As Double)
     '=========================================

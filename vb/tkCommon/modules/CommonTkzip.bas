@@ -1,15 +1,19 @@
 Attribute VB_Name = "Commontkzip"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'=======================================================
-' Common TkZip
-'
-' Contains ZIP file APIs.
-'=======================================================
+'=========================================================================
+' Interface with actkrt3.dll :: zip files
+'=========================================================================
 
 Option Explicit
+
+'=========================================================================
+' Declarations for actkrt3.dll's zip exports
+'=========================================================================
 
 #If isToolkit = 1 Then
     Private Declare Function ZIPCreate Lib "actkrt3.dll" (ByVal fileCreate As String, ByVal TackOntoEndYN As Long) As Long
@@ -25,6 +29,10 @@ Option Explicit
 Private Declare Function ZIPTest Lib "actkrt3.dll" () As Long
 Private Declare Function ZIPClose Lib "actkrt3.dll" () As Long
 
+'=========================================================================
+' Integral variables
+'=========================================================================
+
 #If isToolkit = 0 Then
     Public PakFileMounted As String     'filename of the pakfile we have mounted.
     Public pakFileRunning As Boolean    'have we mounted a pakfile?  is the game running from the pakfile?
@@ -33,8 +41,11 @@ Private Declare Function ZIPClose Lib "actkrt3.dll" () As Long
 
 #If isToolkit = 1 Then
 
+'=========================================================================
+' Returns if the path passed in is a directory
+'=========================================================================
 Private Function IsDir(ByVal theDir As String) As Boolean
-    'checks if string thedir is a directory
+
     On Error GoTo theerr
     Dim c As String
     c$ = CurDir$
@@ -48,8 +59,11 @@ theerr:
     IsDir = False
 End Function
 
+'========================================================================='
+' Count the files in a directory
+'=========================================================================
 Private Function DirCount(ByVal recurseYN As Boolean, Optional ByVal theDir As String, Optional ByVal theOldDir) As Integer
-    'count all files in the dir
+
     On Error Resume Next
    
     If theDir <> "" Then
@@ -111,8 +125,11 @@ Private Function DirCount(ByVal recurseYN As Boolean, Optional ByVal theDir As S
     DirCount = theCount
 End Function
 
-Public Sub AddDir(ByVal zipFilename$, ByVal recurseYN As Boolean, ByVal AppendToExistingEXE As Boolean)
-    'add all files and subdirs into this dir
+'=========================================================================
+' Add a directory to a ZIP
+'=========================================================================
+Public Sub AddDir(ByVal zipFilename As String, ByVal recurseYN As Boolean, ByVal AppendToExistingEXE As Boolean)
+
     On Error Resume Next
     Dim numFiles As Long
     
@@ -130,14 +147,11 @@ Public Sub AddDir(ByVal zipFilename$, ByVal recurseYN As Boolean, ByVal AppendTo
     
 End Sub
 
+'=========================================================================
+' Recursively add a directory to a ZIP
+'=========================================================================
 Public Sub AddDirRecurse(ByVal exclusion As String, ByVal dirprefix As String, ByVal recurseYN As Boolean, ByVal totalfiles As Long, ByRef filesadded As Long)
-     'add all files in the dir and subdirs
-    'to zip file
-    'exclusion - file to exclude
-    'dirprefix - prefix to add to file as it goes into zip (for recursing)
-    'recurseYN - should we recurse into subdirs?
-    'totalfiles - total number of files we expect to add (for status bar)
-    'addedSoFar - files added so far (for recursing)
+
     On Error Resume Next
     'first count number of subdirs...
     Dim subDirs As Long, f As String, subdirpos As Long, perc As Long, a As Long
@@ -192,6 +206,9 @@ Public Sub AddDirRecurse(ByVal exclusion As String, ByVal dirprefix As String, B
     End If
 End Sub
 
+'=========================================================================
+' Create a PAK file
+'=========================================================================
 Public Sub CreatePakFile(ByVal file As String)
     'creates a pakfile from the currently loaded project.
     
@@ -367,8 +384,11 @@ Public Sub CreatePakFile(ByVal file As String)
     Unload statusbar
 End Sub
 
-Function CountProjectFiles() As Integer
-    On Error GoTo ErrorHandler
+'=========================================================================
+' Return the number of files this project consists of
+'=========================================================================
+Public Function CountProjectFiles() As Integer
+    On Error GoTo errorhandler
     'returns the total number of files in the project
     Dim count As Long, a As String
     count = 1 'the mainForm file counts as 1
@@ -475,7 +495,7 @@ Function CountProjectFiles() As Integer
 
     Exit Function
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 
@@ -483,13 +503,13 @@ End Function
 
 #Else
 
+'=========================================================================
+' Extract a zip into a \ terminated directory
+'=========================================================================
 Public Sub extractDir( _
                          ByVal zipFile As String, _
                          ByVal extractInto As String _
                                                        )
-
-    'extract a zip file into a specified dir.
-    'extractinto must have '\' at end
     On Error Resume Next
     Dim t As Long, cnt As Long, perc As Long
     Call ZIPOpen(zipFile)
@@ -504,9 +524,12 @@ Public Sub extractDir( _
     Call Unload(statusbar)
 End Sub
 
-Sub CreatePakTemp()
+'=========================================================================
+' Create temporary PAK folders
+'=========================================================================
+Public Sub CreatePakTemp()
     On Error Resume Next
-    'create a temp dir for the cached pak file files...
+
     Dim wintemp As String
     wintemp$ = TempDir()
     PakTempPath$ = wintemp$ + "TKCACHE\"
@@ -533,8 +556,10 @@ Sub CreatePakTemp()
 
 End Sub
 
+'=========================================================================
+' Get the filename in a ZIP at fileNum
+'=========================================================================
 Public Function GetZipFilename(ByVal fileNum As Long) As String
-    'get the filenum-th entry in the zipfile
     On Error Resume Next
     Dim ret As String * 400
     Dim le As Long
@@ -542,7 +567,10 @@ Public Function GetZipFilename(ByVal fileNum As Long) As String
     GetZipFilename = Mid$(ret, 1, le)
 End Function
 
-Sub DeletePakTemp()
+'=========================================================================
+' Delete the temporary PAK folders
+'=========================================================================
+Public Sub DeletePakTemp()
     On Error Resume Next
     
     Dim wintemp As String
@@ -595,6 +623,9 @@ Public Sub deletePath(ByVal path As String)
 
 End Sub
 
+'=========================================================================
+' Setup a PAK file
+'=========================================================================
 Public Sub setupPakSystem(ByVal pakfile As String)
 
     On Error Resume Next
@@ -610,7 +641,7 @@ Public Sub setupPakSystem(ByVal pakfile As String)
     Call DeletePakTemp
     Call CreatePakTemp
     
-    'Let's make this a lot less 'painful'... extract the files now... [KSNiloc]
+    'Let's make this a lot less 'painful'... extract the files now...
     Call extractDir(PakFileMounted, TempDir & "tkcache\")
 
     'Now open it 'normally'...
@@ -620,28 +651,36 @@ Public Sub setupPakSystem(ByVal pakfile As String)
 
 End Sub
 
+'=========================================================================
+' Shutdown the PAK system
+'=========================================================================
 Public Sub shutdownPakSystem()
     On Error Resume Next
     Call ZIPClose
-    'kill remains of cache
     Call DeletePakTemp
 End Sub
 
 #End If
 
-Function PAKTestSystem() As Boolean
+'=========================================================================
+' Initiate the PAK file system
+'=========================================================================
+Public Function PAKTestSystem() As Boolean
     'test pakfile system
-    On Error GoTo pakerr
+    On Error GoTo pakErr
     
     Call ZIPTest
     PAKTestSystem = True
     Exit Function
     
-pakerr:
+pakErr:
     MsgBox "The file tkzip.dll could not be initialised.  You likely need to download the MFC runtimes.  You can get then at http://rpgtoolkit.com"
-    PAKTestSystem = False
+
 End Function
 
+'=========================================================================
+' Return the location of a file in a PAK file
+'=========================================================================
 Public Function PakLocate(ByVal file As String) As String
 
     On Error Resume Next

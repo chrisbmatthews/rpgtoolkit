@@ -1,33 +1,44 @@
 Attribute VB_Name = "transFight"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
+
+'=========================================================================
+' Interface with the fight plugin
+'=========================================================================
 
 Option Explicit
 
+'=========================================================================
+' Integral variables
+'=========================================================================
 Public fightInProgress As Boolean   'fight going yn
+Public numEne As Long               'number of enemies loaded
+Public enemies(3) As String         'filenames of enemies loaded
+Public canRun As Long               'can players run from fight?
 
-Public numEne As Long           'number of enemies loaded
-Public enemies(3) As String     'filenames of enemies loaded
-
-Public canrun As Long   'can players run from fight?
-
-Function isFightInProgress() As Boolean
+'=========================================================================
+' Read-only pointer to fightInProgress
+'=========================================================================
+Public Property Get isFightInProgress() As Boolean
     isFightInProgress = fightInProgress
-End Function
+End Property
 
-Sub fightTest()
-    'Test if a fight is to happen, and
-    'starts the fight if so.
+'=========================================================================
+' Run a fight if one is to occur
+'=========================================================================
+Public Sub fightTest()
+
     On Error Resume Next
-    
+
     If isFightInProgress() Then
         'a fight is already going!
         Exit Sub
     End If
 
-    Dim a As Long
-    Dim b As Long
+    Dim a As Long, b As Long
     If mainMem.fightgameYN = 0 Then
         'fighting has been enbabled in this game
         If boardList(activeBoardIndex).theData.fightingYN = 1 Then
@@ -47,14 +58,12 @@ Sub fightTest()
                         Else
                             Call skilledFight(boardList(activeBoardIndex).theData.boardskill, boardList(activeBoardIndex).theData.boardBackground$)
                         End If
-                    End If
-                    If mainMem.fprgYN = 1 Then
+                    ElseIf mainMem.fprgYN = 1 Then
                         'RPGCode fight
-                        Call runProgram(projectPath$ + prgPath$ + mainMem.fightPrg$)
+                        Call runProgram(projectPath & prgPath & mainMem.fightPrg)
                     End If
                 End If
-            End If
-            If mainMem.fightType = 1 Then
+            ElseIf mainMem.fightType = 1 Then
                 'Planned fights
                 a = stepsTaken
                 b = Int(a / mainMem.chances)
@@ -70,10 +79,9 @@ Sub fightTest()
                         Else
                             Call skilledFight(boardList(activeBoardIndex).theData.boardskill, boardList(activeBoardIndex).theData.boardBackground$)
                         End If
-                    End If
-                    If mainMem.fprgYN = 1 Then
+                    ElseIf mainMem.fprgYN = 1 Then
                         'RPGCode fight
-                        Call runProgram(projectPath$ + prgPath$ + mainMem.fightPrg$)
+                        Call runProgram(projectPath & prgPath & mainMem.fightPrg)
                     End If
                 End If
             End If
@@ -81,16 +89,15 @@ Sub fightTest()
     End If
 End Sub
 
+'=========================================================================
+' Cause the enemy at partyIdx, fightIdx to attack
+'=========================================================================
 Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
 
     On Error Resume Next
     
-    '====================================================================================
-    'Re-written by KSNiloc
-    '====================================================================================
-    
     'Check that we have an enemy
-    If Not (parties(partyIdx).fighterList(fightIdx).isPlayer) Then
+    If Not parties(partyIdx).fighterList(fightIdx).isPlayer Then
 
         'Create a pointer
         Dim ene As TKEnemy
@@ -99,9 +106,8 @@ Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
         'Check if there is an AI program
         If ene.eneRPGCode <> "" Then
             'Yep-- there is
-        
-            Dim a As Long
-            Dim b As Long
+
+            Dim a As Long, b As Long
             Dim indices(5) As Long
 
             'Create indices of living players
@@ -119,22 +125,22 @@ Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
             toAttack = indices(Int(Rnd(1) * b) + 1)
             
             'Set target, source, and run the program
-            CBSetTarget toAttack, TYPE_PLAYER
-            CBSetSource fightIdx, TYPE_ENEMY
-            runProgram projectPath & prgPath & ene.eneRPGCode, , False
+            Call CBSetTarget(toAttack, TYPE_PLAYER)
+            Call CBSetSource(fightIdx, TYPE_ENEMY)
+            Call runProgram(projectPath & prgPath & ene.eneRPGCode, , False)
             
         Else
         
             'No AI program, use internal AI
             Select Case ene.eneAI
                 Case 0
-                    AIZero partyIdx, fightIdx
+                    Call AIZero(partyIdx, fightIdx)
                 Case 1
-                    AIOne partyIdx, fightIdx
+                    Call AIOne(partyIdx, fightIdx)
                 Case 2
-                    AITwo partyIdx, fightIdx
+                    Call AITwo(partyIdx, fightIdx)
                 Case 3
-                    AIThree partyIdx, fightIdx
+                    Call AIThree(partyIdx, fightIdx)
             End Select
         
         End If
@@ -143,128 +149,119 @@ Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
 
 End Sub
 
-Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long)
-    'call into the fight plugin
-    'inform it that the fighter at fighterIndex int he party at partyIndex is hitting
-    'if toSMP is true, then it was an SMP atack
+'=========================================================================
+' Inform the plugin of an attack
+'=========================================================================
+Public Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long)
+
     On Error Resume Next
     
     If fightInProgress Then
         'yup-- send it
         If mainMem.fightPlugin <> "" Then
-            Dim a As Long
             Dim code As Long
             code = INFORM_SOURCE_ATTACK
             
             Dim plugName As String
             plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
             
-            ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
+                Call VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
             Else
-                a = PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
+                Call PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
             End If
 
         End If
     End If
 End Sub
 
-Sub fightInformRemoveStat(ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal amountLost As Long, ByVal toSMP As Boolean, Optional ByVal msg As String = "")
-    'call into the fight plugin
-    'inform it that the fighter at fighterIndex int he party at partyIndex is hitting
+'=========================================================================
+' Inform the plugin of a stat being removed
+'=========================================================================
+Public Sub fightInformRemoveStat(ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal amountLost As Long, ByVal toSMP As Boolean, Optional ByVal msg As String = "")
+
     On Error Resume Next
     
     If fightInProgress Then
         'yup-- send it
         If mainMem.fightPlugin <> "" Then
-            Dim a As Long
             Dim code As Long
-            
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             
             If toSMP Then
                 code = INFORM_REMOVE_HP
                 
-                ' ! MODIFIED BY KSNiloc...
                 If isVBPlugin(plugName) Then
-                    a = VBPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                    Call VBPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
                 Else
-                    a = PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                    Call PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
                 End If
                 
             Else
                 code = INFORM_REMOVE_SMP
-                ' ! MODIFIED BY KSNiloc...
                 If isVBPlugin(plugName) Then
-                    a = VBPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                    Call VBPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
                 Else
-                    a = PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                    Call PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
                 End If
             End If
         End If
     End If
 End Sub
 
+'=========================================================================
+' Inform the plugin of an item being used
+'=========================================================================
+Public Sub fightInformItemUse(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal itemFile As String)
 
-
-Sub fightInformItemUse(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal itemFile As String)
-    'call into the fight plugin
-    'inform it that the fighter at fighterIndex int he party at partyIndex is hitting
-    'if toSMP is true, then it was an SMP atack
     On Error Resume Next
     
     If fightInProgress Then
         'yup-- send it
         If mainMem.fightPlugin <> "" Then
-            Dim a As Long
-            Dim code As Long
-            code = INFORM_SOURCE_ITEM
+            Const code = INFORM_SOURCE_ITEM
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
-
-            ' ! MODIFIED BY KSNiloc...
+            plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
+                Call VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
             Else
-                a = PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
+                Call PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
             End If
-
         End If
     End If
 End Sub
 
-Sub fightInformSpecialMove(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal sourceSMPLost As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal moveFile As String)
-    'call into the fight plugin
-    'inform it that the fighter at fighterIndex in the party at partyIndex is hitting
+'=========================================================================
+' Inform the plugin of a special move being used
+'=========================================================================
+Public Sub fightInformSpecialMove(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal sourceSMPLost As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal moveFile As String)
+
     On Error Resume Next
     
     If fightInProgress Then
         'yup-- send it
         If mainMem.fightPlugin <> "" Then
-            Dim a As Long
             Dim code As Long
             code = INFORM_SOURCE_SMP
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             
-            ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
+                Call VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
             Else
-                a = PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
+                Call PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
             End If
             
         End If
     End If
 End Sub
 
+'=========================================================================
+' Inform the plugin that a party was defeated
+'=========================================================================
+Public Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
 
-
-Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
-    'call into the fight plugin
-    'inform it that the party is defeated
     On Error Resume Next
     
     If fightInProgress Then
@@ -287,36 +284,36 @@ Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
     End If
 End Sub
 
+'=========================================================================
+' Inform the plugin that a player is ready to attack
+'=========================================================================
+Public Sub fightInformCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
 
-
-
-Sub fightInformCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
-    'inform the plugin tat a fighter is charged up
     On Error Resume Next
     
     If fightInProgress Then
         'yup-- send it
         If mainMem.fightPlugin <> "" Then
-            Dim a As Long
             Dim code As Long
             code = INFORM_SOURCE_CHARGED
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
-            
-            ' ! MODIFIED BY KSNiloc...
+            plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).fightInform(partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
+                Call VBPlugin(plugName).fightInform(partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
             Else
-                a = PLUGFightInform(plugName, partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
+                Call PLUGFightInform(plugName, partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
             End If
-            
         End If
     End If
 End Sub
 
-Sub fightTick()
-    'called by the fight plugin each time we render a new scene.
+'=========================================================================
+' Increment charge bars
+'=========================================================================
+Public Sub fightTick()
+
     On Error Resume Next
+
     Dim t As Long
     Dim u As Long
     Dim S As Long
@@ -377,10 +374,6 @@ Sub fightTick()
                         Next S
                         
                         If Not (parties(t).fighterList(u).freezeCharge) Then
-                        
-                            'KSNiloc says:
-                            '   Should lock BEFORE calling plugin
-                        
                             'now lock the player from charging again...
                             parties(t).fighterList(u).freezeCharge = True
                             'tell the plugin that the plyer is charged...
@@ -395,16 +388,18 @@ Sub fightTick()
     'check for the end of the fight...
     If isPartyDefeated(PLAYER_PARTY) Then
         Call fightInformPartyDefeated(PLAYER_PARTY)
-    End If
-    If isPartyDefeated(ENEMY_PARTY) Then
+    ElseIf isPartyDefeated(ENEMY_PARTY) Then
         Call fightInformPartyDefeated(ENEMY_PARTY)
     End If
     
     DoEvents
+
 End Sub
 
-Sub loadEnemies(ByRef eneList() As String, ByVal num As Long)
-    'load the enemies in the eneList array
+'========================================================================
+' Load the enemies passed in
+'=========================================================================
+Public Sub loadEnemies(ByRef eneList() As String, ByVal num As Long)
     On Error Resume Next
     Dim t As Long
     For t = 0 To num - 1
@@ -412,10 +407,11 @@ Sub loadEnemies(ByRef eneList() As String, ByVal num As Long)
     Next t
 End Sub
 
-
-Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
+'=========================================================================
+' Reward the players
+'=========================================================================
+Public Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     On Error Resume Next
-    'reward the players
     Dim t As Long
     Dim exp As Long
     Dim gp As Long
@@ -457,30 +453,33 @@ Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     End If
 End Sub
 
-Sub gameOver()
+'=========================================================================
+' Run if the players lose
+'=========================================================================
+Public Sub gameOver()
     On Error Resume Next
     
     Dim retval As RPGCODE_RETURN
     Dim theProgram As RPGCodeProgram
     Call InitRPGCodeProcess(theProgram)
-    theProgram.boardNum = -1     'not attached to the board
+    theProgram.boardNum = -1
     Call CanvasGetScreen(cnvRPGCodeScreen)
     
-    If mainMem.gameOverPrg$ = "" Then
+    If mainMem.gameOverPrg = "" Then
         Call DXClearScreen(0)
         Call DXDrawText(1, 1, "Game Over...", "Arial", 48, RGB(255, 255, 255), 1, 0, 0, 0, 0)
         Call WaitForKey
     Else
-        Call runProgram(projectPath$ + prgPath$ + mainMem.gameOverPrg$)
+        Call runProgram(projectPath & prgPath & mainMem.gameOverPrg)
     End If
     Call ResetRPG(theProgram)
 End Sub
 
-Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As String)
-    'Runs a fight -- loads enemies
-    'eneList() is an array of enemy filenames
-    'num is the number of enemies in that array
-    'bkg$ is the background to fight against
+'=========================================================================
+' Begin a fight against the enemies passed in on the background passed in
+'=========================================================================
+Public Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As String)
+
     On Error Resume Next
        
     If fightInProgress Then Exit Sub
@@ -493,7 +492,7 @@ Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As String)
     'load enemies
     Call loadEnemies(eneList, num)
     
-    canrun = 1
+    canRun = 1
     Dim t As Long, cnt As Long
     'create enemy party...
     Dim strRunProgram As String
@@ -505,7 +504,7 @@ Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As String)
             strRunProgram = enemyMem(t).eneRunPrg
         End If
         If enemyMem(t).eneRun = 0 Then
-            canrun = 0
+            canRun = 0
         End If
         If enemyMem(t).eneWinPrg <> "" Then
             strRewardProgram = enemyMem(t).eneWinPrg
@@ -538,13 +537,11 @@ Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As String)
     boardList(activeBoardIndex).theData.boardMusic = back.bkgMusic
     Call checkMusic(True)
            
-    'LAUNCH FIGHT PLUGIN HERE
     If mainMem.fightPlugin <> "" Then
         Dim aa As Long
         Dim plugName As String
         plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
         
-        ' ! MODIFIED BY KSNiloc...
         If isVBPlugin(plugName) Then
             aa = VBPlugin(plugName).plugType(PT_FIGHT)
         Else
@@ -554,11 +551,10 @@ Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As String)
         If aa = 1 Then
             Dim a As Long
             
-            ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).fight(num, -1, bkg, canrun)
+                a = VBPlugin(plugName).fight(num, -1, bkg, canRun)
             Else
-                a = PLUGFight(plugName, num, -1, bkg, canrun)
+                a = PLUGFight(plugName, num, -1, bkg, canRun)
             End If
             
             Select Case a
@@ -590,11 +586,11 @@ errorhandler:
     Resume Next
 End Sub
 
-
-
+'=========================================================================
+' Randomly return an enemy of the skill passed in
+'=========================================================================
 Function getEnemy(ByVal skill As Long) As String
-    'randomly selects an enemy of skill *skill*
-    'returns filename, or "" if none found
+
     On Error Resume Next
     
     'count the possibilities:
@@ -626,12 +622,13 @@ Function getEnemy(ByVal skill As Long) As String
     getEnemy = ""
 End Function
 
-
-Sub skilledFight(ByVal skill As Long, ByVal bkg As String)
-    'initiate a board fight
-    'based upon a skill level...
+'=========================================================================
+' Initiate a fight of the skill passed in
+'=========================================================================
+Public Sub skilledFight(ByVal skill As Long, ByVal bkg As String)
     
     On Error Resume Next
+
     Dim t As Long
     
     numEne = Int(Rnd(1) * 4) + 1
@@ -645,41 +642,34 @@ Sub skilledFight(ByVal skill As Long, ByVal bkg As String)
     Call runFight(enemies, numEne, bkg)
 End Sub
 
-Sub startFightPlugin()
-    'init fight plugin
-    'InitPlugins must have been called first
+'=========================================================================
+' Initiate the fight plugin
+'=========================================================================
+Public Sub startFightPlugin()
     On Error Resume Next
     If mainMem.fightPlugin <> "" Then
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
-        
-        ' ! MODIFIED BY KSNiloc...
-        
+        plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         If Not isVBPlugin(plugName) Then
-            PLUGBegin plugName
+            Call PLUGBegin(plugName)
         Else
-            VBPlugin(plugName).Initialize
+            Call VBPlugin(plugName).Initialize
         End If
     End If
 End Sub
 
-Sub stopFightPlugin()
-    'end fight plugin
-    'InitPlugins must have been called first
+'=========================================================================
+' Terminate the fight plugin
+'=========================================================================
+Public Sub stopFightPlugin()
     On Error Resume Next
     If mainMem.fightPlugin <> "" Then
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
-        
-        ' ! MODIFIED BY KSNiloc...
+        plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         If isVBPlugin(plugName) Then
-            VBPlugin(plugName).Terminate
+            Call VBPlugin(plugName).Terminate
         Else
-            PLUGEnd plugName
+            Call PLUGEnd(plugName)
         End If
-        
     End If
 End Sub
-
-
-

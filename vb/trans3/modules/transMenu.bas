@@ -1,81 +1,87 @@
 Attribute VB_Name = "transMenu"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'run internal menu system
-'depends on the menu plugin having been initialized
+'=========================================================================
+' Interface with menu plugin
+'=========================================================================
 
 Option Explicit
 
-Public bInMenu As Boolean   'currently running a menu?
+'=========================================================================
+' Integral variables
+'=========================================================================
+Public bInMenu As Boolean     'currently running a menu?
 
+'=========================================================================
+' Shows the menu passed in
+'=========================================================================
 Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
-    'show menu system
-    'version 3 menus run through plugins :)
+
     On Error Resume Next
-   
-    'quit if we're already shpwing the menu...
-    If bInMenu Then Exit Sub
-    If fightInProgress Then Exit Sub
+
+    'Quit if we're already shpwing the menu
+    If bInMenu Or isFightInProgress() Then Exit Sub
    
     If mainMem.menuPlugin <> "" Then
-        Dim aa As Long
-       
+    
+        Dim isMenuPlugin As Long
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
-       
-        ' ! MODIFIED BY KSNiloc...
+        plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
+
+        'Determine if we have a menu plugin
         If isVBPlugin(plugName) Then
-            aa = VBPlugin(plugName).plugType(PT_MENU)
+            isMenuPlugin = VBPlugin(plugName).plugType(PT_MENU)
         Else
-            aa = plugType(plugName, PT_MENU)
+            isMenuPlugin = plugType(plugName, PT_MENU)
         End If
-       
-        If aa = 1 Then
-            Dim a As Long
+
+        'Yep-- we do
+        If isMenuPlugin = 1 Then
             bInMenu = True
-           
-            ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).menu(requestedMenu)
+                Call VBPlugin(plugName).menu(requestedMenu)
             Else
-                a = PLUGMenu(plugName, requestedMenu)
+                Call PLUGMenu(plugName, requestedMenu)
             End If
-           
             bInMenu = False
         End If
+
     End If
+
 End Sub
 
+'=========================================================================
+' Initiates the menu plugin
+'=========================================================================
 Public Sub startMenuPlugin()
-    'init menu plugin
-    'InitPlugins must have been called first
     On Error Resume Next
     If mainMem.menuPlugin <> "" Then
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
-        ' ! MODIFIED BY KSNiloc...
+        plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         If isVBPlugin(plugName) Then
-            VBPlugin(plugName).Initialize
+            Call VBPlugin(plugName).Initialize
         Else
-            PLUGBegin plugName
+            Call PLUGBegin(plugName)
         End If
     End If
 End Sub
 
+'=========================================================================
+' Terminates the menu plugin
+'=========================================================================
 Public Sub stopMenuPlugin()
-    'end menu plugin
-    'InitPlugins must have been called first
     On Error Resume Next
     If mainMem.menuPlugin <> "" Then
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
-        ' ! MODIFIED BY KSNiloc...
+        plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         If isVBPlugin(plugName) Then
-            VBPlugin(plugName).Terminate
+            Call VBPlugin(plugName).Terminate
         Else
-            PLUGEnd plugName
+            Call PLUGEnd(plugName)
         End If
     End If
 End Sub

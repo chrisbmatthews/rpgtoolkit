@@ -103,7 +103,6 @@ Function getPlayerName(ByRef thePlayer As TKPlayer) As String
     getPlayerName = l
 End Function
 
-
 Function getPlayerDP(ByRef thePlayer As TKPlayer) As Double
     'gets the DP of player
     On Error Resume Next
@@ -244,8 +243,6 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     Call WaitForKey
 End Sub
 
-
-
 Function getPlayerMaxHP(ByRef thePlayer As TKPlayer) As Double
     'gets the max HP of player
     On Error Resume Next
@@ -278,6 +275,7 @@ Function getPlayerIndex(ByVal handle As String) As Long
     Next t
     getPlayerIndex = theOne
 End Function
+
 Sub addPlayerHP(ByVal amount As Double, ByRef thePlayer As TKPlayer)
     'add to player's hp
     On Error Resume Next
@@ -289,7 +287,6 @@ Sub addPlayerHP(ByVal amount As Double, ByRef thePlayer As TKPlayer)
     Call setPlayerHP(hp, thePlayer)
 End Sub
 
-
 Sub addPlayerSMP(ByVal amount As Double, ByRef thePlayer As TKPlayer)
     'add to player's smp
     On Error Resume Next
@@ -300,8 +297,6 @@ Sub addPlayerSMP(ByVal amount As Double, ByRef thePlayer As TKPlayer)
     smp = smp + amount
     Call setPlayerSMP(smp, thePlayer)
 End Sub
-
-
 
 Sub setPlayerHP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
     'set player's hp
@@ -334,7 +329,6 @@ Sub setPlayerSMP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
     
     Call setIndependentVariable(thePlayer.smVar$, str$(stat))
 End Sub
-
 
 Sub setPlayerDP(ByVal stat As Double, ByRef thePlayer As TKPlayer)
     'set player's dp
