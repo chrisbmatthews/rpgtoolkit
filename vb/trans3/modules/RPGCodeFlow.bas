@@ -66,14 +66,14 @@ End Property
 '=========================================================================
 ' Pops up the rpgcode debugger
 '=========================================================================
-Public Sub debugger(ByVal text As String)
+Public Sub debugger(ByVal Text As String)
 
     On Error Resume Next
 
     If Not checkErrorHandling() Then
         If debugYN = 1 Then
             Call debugwin.Show
-            debugwin.buglist.text = debugwin.buglist.text & text & vbCrLf
+            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
             DoEvents
         Else
             Call Unload(debugwin)
@@ -113,7 +113,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error GoTo errorhandler
 
@@ -124,7 +124,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If commandName$ = "" Then
-        mName = GetCommandName(text, theProgram)   'get command name without extra info
+        mName = GetCommandName(Text, theProgram)   'get command name without extra info
     Else
         mName = commandName
     End If
@@ -134,7 +134,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
 
     If Not InClass.DoNotCheckForClass Then
         If Not methodName = "" Then
-            If IsClassRPG(includeFile, methodName, text, theProgram, retval) Then
+            If IsClassRPG(includeFile, methodName, Text, theProgram, retval) Then
                 Exit Sub
             End If
         End If
@@ -165,11 +165,11 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     InClass.MethodWasFound = True
     If foundIt = -1 Then
         'didn't find it in prg code, but it may exist in a plugin...
-        canDoIt = QueryPlugins(mName$, text$, retval)
+        canDoIt = QueryPlugins(mName$, Text$, retval)
         If canDoIt = False Then
             'InClass.MethodWasFound = False
             If InClass.PopupMethodNotFound Then
-                Call debugger("Error: Method not found!-- " + text$)
+                Call debugger("Error: Method not found!-- " + Text$)
             End If
         Else
             Exit Sub
@@ -185,7 +185,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
         
         'Get parameters from calling line
-        dataUse$ = GetBrackets(text$)    'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
         For pList = 1 To number
             parameterList$(pList) = GetElement(dataUse$, pList)
@@ -436,10 +436,10 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
     If usingPixelMovement() Then
         'If we're using pixel movement then round item
         'coordinates and backup the old ones
-        ReDim tempItems(MAXITEM) As PLAYER_POSITION
+        ReDim tempitems(MAXITEM) As PLAYER_POSITION
         For t = 0 To MAXITEM
-            tempItems(t) = itmPos(t)
-            itmPos(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
+            tempitems(t) = itmPos(t)
+            tempitems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
         Next t
     End If
     
@@ -451,15 +451,34 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 'OK, how is it activated?
                 If boardList(activeBoardIndex).theData.itmActivationType(t) = 0 Then
                     'we step on it.
-                    If _
-                            itmPos(t).x = pos.x _
-                        And itmPos(t).y = pos.y _
-                        And itmPos(t).l = pos.l Then
+                    
+                    If Not (usingPixelMovement) Then
+                        If _
+                                itmPos(t).x = Int(passPos.x) _
+                            And itmPos(t).y = Int(passPos.y) _
+                            And itmPos(t).l = passPos.l Then
+                            
+                            toRet = runItmYN(t)
+                        End If
+                    Else
+                        If _
+                                Abs(itmPos(t).x - passPos.x) < 1 _
+                            And Abs(itmPos(t).y - passPos.y) <= movementSize _
+                            And itmPos(t).l = passPos.l Then
                         
-                        'all right! we stepped on it!
-                        toRet = runItmYN(t)
-                        
+                            toRet = runItmYN(t)
+                        End If
                     End If
+                    
+                    'If _
+                    '        tempitems(t).x = pos.x _
+                    '    And tempitems(t).y = pos.y _
+                    '    And tempitems(t).l = pos.l Then
+                    '
+                    '    'all right! we stepped on it!
+                    '    toRet = runItmYN(t)
+                    '
+                    'End If
                     
                 ElseIf boardList(activeBoardIndex).theData.itmActivationType(t) = 1 Then
                 
@@ -490,7 +509,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                             
                         End Select
                     
-                    If itmPos(t).x = xx And itmPos(t).y = yy And itmPos(t).l = pos.l Then
+                    If tempitems(t).x = xx And tempitems(t).y = yy And tempitems(t).l = pos.l Then
                         If keyWaitState = mainMem.Key Then
                             'yes, we pressed the right key
                             toRet = runItmYN(t)
@@ -502,12 +521,12 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
         End If '(.BoardYN = 1)
     Next t
 
-    If usingPixelMovement() Then
-        'If we're using pixel movement then restore the old item positions
-        For t = 0 To MAXITEM
-            itmPos(t) = tempItems(t)
-        Next t
-    End If
+    'If usingPixelMovement() Then
+    '    'If we're using pixel movement then restore the old item positions
+    '    For t = 0 To MAXITEM
+    '        itmPos(t) = tempitems(t)
+    '    Next t
+    'End If
 
     programTest = toRet
 
@@ -541,7 +560,7 @@ End Sub
 ' Runs a block of code (or skips it if res = 0)
 '=========================================================================
 Public Function runBlock( _
-                            ByVal text As String, _
+                            ByVal Text As String, _
                             ByVal res As Long, _
                             ByRef prg As RPGCodeProgram _
                                                           ) As Long

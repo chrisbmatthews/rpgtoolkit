@@ -9,6 +9,7 @@ Attribute VB_Name = "transMovement"
 Option Explicit
 
 'Movement constants for pending movements
+
 Public Const MV_IDLE = 0
 Public Const MV_NORTH = 1
 Public Const MV_SOUTH = 2
@@ -125,7 +126,12 @@ Function checkAbove(ByVal x As Long, ByVal y As Long, ByVal layer As Long) As Lo
     Dim uptile As String
     For lay = layer + 1 To boardList(activeBoardIndex).theData.Bsizel
         uptile$ = BoardGetTile(x, y, lay, boardList(activeBoardIndex).theData)
-        If uptile$ <> "" Then checkAbove = 1: Exit Function
+        If uptile$ <> "" Then
+        
+            checkAbove = 1
+            Exit Function
+            
+        End If
     Next lay
     checkAbove = 0
 
@@ -137,73 +143,73 @@ errorhandler:
     Resume Next
 End Function
 
-Function CheckObstruction(ByVal x As Double, ByVal y As Double, ByVal l As Long) As Long
-    '====================================
+Function checkObstruction(ByVal x As Double, ByVal y As Double, ByVal l As Long, Optional ByVal activeItem As Long = -1) As Long
+    '=============================================
     'Checks if an item is blocking x,y,l
-    'returns 0 for no, 1 for yes.
-    '====================================
+    'returns 0 (NORMAL) for no, 1 (SOLID) for yes.
+    'Edited for 3.0.4 by Delano : pixel movement.
+    '=============================================
     'Called by EffectiveTileType, PushItem*, and ObtainTileType
     
     On Error GoTo errorhandler
-    Dim atx As Long
-    Dim aty As Long
-    Dim atl As Long
-    Dim returnVal As Long
-    Dim xx As Long
-    Dim runIt As Long
-    Dim checkIt As Long
-    Dim valueTest As Double
-    Dim num As Double
-    Dim lit As String
-    Dim valueTes As String
+
+    Dim i As Long, coordMatch As Boolean
+    Dim variableType As Long, num As Double, lit As String
     
-    x = Int(x)
-    y = Int(y)
-    
-    atx = 0: aty = 0: atl = 0
-    returnVal = 0
-    For xx = 0 To UBound(itmPos)
-        If itmPos(xx).x = x And _
-           itmPos(xx).y = y And _
-           itmPos(xx).l = l Then
-            'there's an item here, but is it active?
-            If boardList(activeBoardIndex).theData.itmActivate(xx) = 1 Then
-                'conditional activation
-                runIt = 0
-                checkIt = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(xx), lit$, num)
-                If checkIt = 0 Then
-                    'it's a numerical variable
-                    valueTest = num
-                    If valueTest = val(boardList(activeBoardIndex).theData.itmActivateInitNum$(xx)) Then runIt = 1
-                End If
-                If checkIt = 1 Then
-                    'it's a literal variable
-                    valueTes$ = lit$
-                    If valueTes$ = boardList(activeBoardIndex).theData.itmActivateInitNum$(xx) Then runIt = 1
-                End If
-                
-                If runIt = 1 Then
-                    'it's active!
-                    atx = 1
-                Else
-                    'it's not active
-                    atx = 0
-                End If
-            Else
-                atx = 1
+    'Altered for pixel movement: test location.
+
+    For i = 0 To MAXITEM
+           
+        coordMatch = False
+        If Not (usingPixelMovement) Then
+            If itmPos(i).x = Int(x) And itmPos(i).y = Int(y) And itmPos(i).l = l Then
+                coordMatch = True
+            End If
+        Else
+            If Abs(itmPos(i).x - x) < 1 And Abs(itmPos(i).y - y) <= movementSize And itmPos(i).l = l Then
+                coordMatch = True
             End If
         End If
-    Next xx
-    'For yy = 0 To 10
-    '    If itmy(yy) = y Then aty = 1
-    'Next yy
-    'For ll = 0 To 10
-    '    If itmlayer(ll) = l Then atl = 1
-    'Next ll
-    'If atx = 1 And aty = 1 And atl = 1 Then returnval = 1
-    If atx = 1 Then returnVal = 1
-    CheckObstruction = returnVal
+        
+        'Check we're not testing the active item!
+        If i = activeItem Then coordMatch = False
+        
+        If coordMatch Then
+        
+            'There's an item here, but is it active?
+            If boardList(activeBoardIndex).theData.itmActivate(i) = 1 Then
+            
+                'conditional activation
+                 variableType = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(i), lit$, num)
+                
+                If variableType = 0 Then
+                    'it's a numerical variable
+                    
+                    If num = val(boardList(activeBoardIndex).theData.itmActivateInitNum$(i)) Then
+                        checkObstruction = SOLID
+                        Exit Function
+                    End If
+                End If
+                
+                If variableType = 1 Then
+                    'it's a literal variable
+                    
+                    If lit$ = boardList(activeBoardIndex).theData.itmActivateInitNum$(i) Then
+                        checkObstruction = SOLID
+                        Exit Function
+                    End If
+                End If
+                
+            Else
+                'Not conditionally activated - permanently active.
+                checkObstruction = SOLID
+                Exit Function
+            End If
+        End If
+    Next i
 
+    'We've got here and no match has been found.
+    checkObstruction = NORMAL
     Exit Function
 
 'Begin error handling code:
@@ -455,7 +461,7 @@ Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal l As In
     
     'check if an item is blocking...
     Dim itemBlocking As Long
-    itemBlocking = CheckObstruction(testX, testY, testLayer)
+    itemBlocking = checkObstruction(testX, testY, testLayer)
     
     Dim didItem As Boolean
     didItem = False
@@ -486,7 +492,7 @@ End Function
 
 
 
-Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boolean
+Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     '=====================================
     'EDITED: [Isometrics - Delano 3/05/04]
     'Renamed variables: tx,ty >> topXTemp,topYTemp [Altered type also; Long >> Double]
@@ -509,7 +515,7 @@ Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boolean
     topYtemp = topY
         
     Dim targetBoard As String
-    targetBoard$ = boardList(activeBoardIndex).theData.dirLink$(theLink)
+    targetBoard$ = boardList(activeBoardIndex).theData.dirLink$(thelink)
         
     If targetBoard$ = "" Then
         'no link exists...
@@ -540,7 +546,7 @@ Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boolean
     Dim targetX As Long 'Target board dimensions
     Dim targetY As Long
     
-    If theLink = LINK_NORTH Then
+    If thelink = LINK_NORTH Then
         'Get dimensions of target board.
         Call boardSize(projectPath$ + brdPath$ + targetBoard$, targetX, targetY)
 
@@ -555,7 +561,7 @@ Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boolean
         End If
         
     End If
-    If theLink = LINK_SOUTH Then
+    If thelink = LINK_SOUTH Then
         
         testY = 1
         
@@ -570,12 +576,12 @@ Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boolean
         End If
         
     End If
-    If theLink = LINK_EAST Then
+    If thelink = LINK_EAST Then
     
         testX = 1
     
     End If
-    If theLink = LINK_WEST Then
+    If thelink = LINK_WEST Then
     
         'Get the dimensions of the target board.
         Call boardSize(projectPath$ + brdPath$ + targetBoard$, targetX, targetY)
@@ -678,617 +684,6 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
     CheckEdges = False
 End Function
 
-Sub pushItemNorth(ByVal itemNum As Long, ByVal moveFraction As Double)
-    '==========================
-    'EDITED: [Delano - 5/05/04]
-    'Items can now move on "under" tiles!
-    'Items and players can no longer cross paths (caused players to stop interacting with programs etc.
-    'Substituted tile type constants.
-    'Renamed variables: pnum >> itemNum
-    '==========================
-    
-    'Push item itemNum North
-    'Called by moveItems, each frame of the movement cycle (currently 4 times).
-    
-    On Error Resume Next
-
-    If pendingItemMovement(itemNum).yTarg < 1 Then
-        'If targetY is off the top of the board.
-        Exit Sub
-    End If
-    
-    If (pendingItemMovement(itemNum).yTarg = Int(ppos(selectedPlayer).y) Or _
-        pendingItemMovement(itemNum).yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-        (pendingItemMovement(itemNum).xTarg = Int(ppos(selectedPlayer).x) Or _
-        pendingItemMovement(itemNum).xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
-        'If target is the player's location or their destination.
-        Exit Sub
-    End If
-    
-    'Check if there is another item obstructing us at the next position.
-    If (CheckObstruction(pendingItemMovement(itemNum).xTarg, _
-        pendingItemMovement(itemNum).yTarg, _
-        pendingItemMovement(itemNum).lTarg) = 1) Then
-        Exit Sub
-    End If
-        
-    'tileType at the target.
-    Dim tiletype As Long
-    tiletype = boardList(activeBoardIndex).theData.tiletype( _
-                pendingItemMovement(itemNum).xTarg, _
-                pendingItemMovement(itemNum).yTarg, _
-                pendingItemMovement(itemNum).lTarg)
-    
-    'Check to see if there are any tiles on any layers above.
-    'Dim underneath As Long
-    'underneath = checkAbove(pendingItemMovement(itemNum).xTarg, pendingItemMovement(itemNum).yTarg, pendingItemMovement(itemNum).lTarg)
-    
-    If tiletype >= STAIRS1 And tiletype <= STAIRS8 Then
-        'If target tile is a stair to a level.
-        
-        itmPos(itemNum).l = tiletype - 10   'Put the item on this layer!
-        tiletype = NORMAL                   'Can always been seen on stairs!
-        'underneath = 0                      'Not underneath a tile.
-        
-    End If
-    
-    'If under a tile on another level, current tile is "under".
-    'If underneath = 1 Then tileType = UNDER
-    
-    'If North-South normal tile, carry on as if it were normal.
-    'If tileType = NORTH_SOUTH Then tileType = NORMAL
-    
-    Select Case tiletype
-    
-        Case NORMAL, UNDER, NORTH_SOUTH:
-            itmPos(itemNum).stance = "walk_n"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-            
-        Case SOLID:
-            'Walk on the spot.
-            itmPos(itemNum).stance = "walk_n"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            
-    End Select
-    
-End Sub
-
-Sub pushItemSouth(ByVal itemNum As Long, ByVal moveFraction As Double)
-    '==========================
-    'EDITED: [Delano - 5/05/04]
-    'Items can now move on "under" tiles!
-    'Items and players can no longer cross paths (caused players to stop interacting with programs etc.
-    'Substituted tile type constants.
-    'Renamed variables: pnum >> itemNum
-    '==========================
-
-    'Push item itemNum South.
-    'Called by moveItems, each frame of the movement cycle (currently 4 times).
-    
-    On Error Resume Next
-
-    If pendingItemMovement(itemNum).yTarg > boardList(activeBoardIndex).theData.Bsizey Then
-        'If target is off the bottom of the board.
-        Exit Sub
-    End If
-    
-    If (pendingItemMovement(itemNum).yTarg = Int(ppos(selectedPlayer).y) Or _
-        pendingItemMovement(itemNum).yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-        (pendingItemMovement(itemNum).xTarg = Int(ppos(selectedPlayer).x) Or _
-        pendingItemMovement(itemNum).xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
-        'If target is the player's location or their destination.
-        Exit Sub
-    End If
-    
-    'Check if there is another item obstructing us at the next position.
-    If (CheckObstruction(pendingItemMovement(itemNum).xTarg, _
-        pendingItemMovement(itemNum).yTarg, _
-        pendingItemMovement(itemNum).lTarg) = 1) Then
-        Exit Sub
-    End If
-        
-    'tileType at the target.
-    Dim tiletype As Long
-    tiletype = boardList(activeBoardIndex).theData.tiletype( _
-                pendingItemMovement(itemNum).xTarg, _
-                pendingItemMovement(itemNum).yTarg, _
-                pendingItemMovement(itemNum).lTarg)
-    
-    'Check to see if there are any tiles on any layers above.
-    'Dim underneath As Long
-    'underneath = checkAbove(pendingItemMovement(itemNum).xTarg, pendingItemMovement(itemNum).yTarg, pendingItemMovement(itemNum).lTarg)
-    
-    If tiletype >= STAIRS1 And tiletype <= STAIRS8 Then
-        'If target tile is a stair to a level.
-        
-        itmPos(itemNum).l = tiletype - 10   'Put the item on this layer!
-        tiletype = NORMAL                   'Can always been seen on stairs!
-        'underneath = 0                     'Not underneath a tile.
-        
-    End If
-    
-    'If under a tile on another level, current tile is "under".
-    'If underneath = 1 Then tileType = UNDER
-    
-    'If North-South normal tile, carry on as if it were normal.
-    'If tileType = NORTH_SOUTH Then tileType = NORMAL
-    
-    Select Case tiletype
-    
-        Case NORMAL, UNDER, NORTH_SOUTH:
-            itmPos(itemNum).stance = "walk_s"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-        
-        Case SOLID:
-            'Walk on the spot.
-            itmPos(itemNum).stance = "walk_s"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            
-    End Select
-    
-End Sub
-
-
-Sub pushItemSouthEast(ByVal itemNum As Long, ByVal moveFraction As Double)
-    '==========================
-    'EDITED: [Delano - 5/05/04]
-    'Items can now move on "under" tiles!
-    'Items and players can no longer cross paths (caused players to stop interacting with programs etc.
-    'Substituted tile type constants.
-    'Renamed variables: pnum >> itemNum
-    '==========================
-
-    'Push item itemNum SouthEast.
-    'Called by moveItems, each frame of the movement cycle (currently 4 times).
-    
-    On Error Resume Next
-
-    If pendingItemMovement(itemNum).yTarg > boardList(activeBoardIndex).theData.Bsizey Or _
-        pendingItemMovement(itemNum).xTarg > boardList(activeBoardIndex).theData.Bsizex Then
-        'If target is off the board.
-        Exit Sub
-    End If
-    
-    If (pendingItemMovement(itemNum).yTarg = Int(ppos(selectedPlayer).y) Or _
-        pendingItemMovement(itemNum).yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-        (pendingItemMovement(itemNum).xTarg = Int(ppos(selectedPlayer).x) Or _
-        pendingItemMovement(itemNum).xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
-        'If target is the player's location or their destination.
-        Exit Sub
-    End If
-    
-    'Check if there is another item obstructing us at the next position.
-    If (CheckObstruction(pendingItemMovement(itemNum).xTarg, _
-        pendingItemMovement(itemNum).yTarg, _
-        pendingItemMovement(itemNum).lTarg) = 1) Then
-        Exit Sub
-    End If
-        
-    'tileType at the target.
-    Dim tiletype As Long
-    tiletype = boardList(activeBoardIndex).theData.tiletype( _
-                pendingItemMovement(itemNum).xTarg, _
-                pendingItemMovement(itemNum).yTarg, _
-                pendingItemMovement(itemNum).lTarg)
-    
-    'Check to see if there are any tiles on any layers above.
-    'Dim underneath As Long
-    'underneath = checkAbove(pendingItemMovement(itemNum).xTarg, pendingItemMovement(itemNum).yTarg, pendingItemMovement(itemNum).lTarg)
-    
-    If tiletype >= STAIRS1 And tiletype <= STAIRS8 Then
-        'If target tile is a stair to a level.
-        
-        itmPos(itemNum).l = tiletype - 10   'Put the item on this layer!
-        tiletype = NORMAL                   'Can always been seen on stairs!
-        'underneath = 0                     'Not underneath a tile.
-        
-    End If
-    
-    'If under a tile on another level, current tile is "under".
-    'If underneath = 1 Then tileType = UNDER
-    
-    Select Case tiletype
-    
-        Case NORMAL, UNDER:
-            itmPos(itemNum).stance = "walk_se"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-            
-        Case SOLID:
-            'Walk on the spot.
-            itmPos(itemNum).stance = "walk_se"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            
-    End Select
-    
-End Sub
-
-
-Sub pushItemEast(ByVal itemNum As Long, ByVal moveFraction As Double)
-    '==========================
-    'EDITED: [Delano - 5/05/04]
-    'Items can now move on "under" tiles!
-    'Items and players can no longer cross paths (caused players to stop interacting with programs etc.
-    'Substituted tile type constants.
-    'Renamed variables: pnum >> itemNum
-    '==========================
-
-    'Push item itemNum East.
-    'Called by moveItems, each frame of the movement cycle (currently 4 times).
-    
-    On Error Resume Next
-
-    If pendingItemMovement(itemNum).xTarg > boardList(activeBoardIndex).theData.Bsizex Then
-        'If targetX is off the board (Note: pushing east!)
-        Exit Sub
-    End If
-    
-    If (pendingItemMovement(itemNum).yTarg = Int(ppos(selectedPlayer).y) Or _
-        pendingItemMovement(itemNum).yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-        (pendingItemMovement(itemNum).xTarg = Int(ppos(selectedPlayer).x) Or _
-        pendingItemMovement(itemNum).xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
-        'If target is the player's location or their destination.
-        Exit Sub
-    End If
-    
-    'Check if there is another item obstructing us at the next position.
-    If (CheckObstruction(pendingItemMovement(itemNum).xTarg, _
-        pendingItemMovement(itemNum).yTarg, _
-        pendingItemMovement(itemNum).lTarg) = 1) Then
-        Exit Sub
-    End If
-        
-    'tileType at the target.
-    Dim tiletype As Long
-    tiletype = boardList(activeBoardIndex).theData.tiletype( _
-                pendingItemMovement(itemNum).xTarg, _
-                pendingItemMovement(itemNum).yTarg, _
-                pendingItemMovement(itemNum).lTarg)
-    
-    'Check to see if there are any tiles on any layers above.
-    'Doesn't make a difference! Only decided by putSpriteAt!
-    'Dim underneath As Long
-    'underneath = checkAbove(pendingItemMovement(itemNum).xTarg, pendingItemMovement(itemNum).yTarg, pendingItemMovement(itemNum).lTarg)
-    
-    If tiletype >= STAIRS1 And tiletype <= STAIRS8 Then
-        'If target tile is a stair to a level.
-        
-        itmPos(itemNum).l = tiletype - 10   'Put the item on this layer!
-        tiletype = NORMAL                   'Can always been seen on stairs!
-        'underneath = 0                     'Not underneath a tile.
-        
-    End If
-    
-    'If under a tile on another level, current tile is "under".
-    'But what if current tile is solid and there is something above?
-    'If underneath = 1 Then tileType = UNDER
-    
-    'If East-West normal tile, carry on as if it were normal.
-    'If tileType = EAST_WEST Then tileType = NORMAL
-   
-    Select Case tiletype
-    
-        Case NORMAL, UNDER, EAST_WEST:
-            itmPos(itemNum).stance = "walk_e"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-            
-        Case SOLID:
-            'Walk on the spot. Might be better to be idle...?
-            itmPos(itemNum).stance = "walk_e"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            
-    End Select
-    
-End Sub
-
-
-
-Sub pushItemNorthEast(ByVal itemNum As Long, ByVal moveFraction As Double)
-    '==========================
-    'EDITED: [Delano - 5/05/04]
-    'Items can now move on "under" tiles!
-    'Items and players can no longer cross paths (caused players to stop interacting with programs etc.
-    'Substituted tile type constants.
-    'Renamed variables: pnum >> itemNum
-    '==========================
-    
-    'Push item itemNum NorthEast.
-    'Called by moveItems, each frame of the movement cycle (currently 4 times).
-    
-    On Error Resume Next
-
-    If pendingItemMovement(itemNum).xTarg > boardList(activeBoardIndex).theData.Bsizex Or _
-        pendingItemMovement(itemNum).yTarg < 1 Then
-        'If target is off the board.
-        Exit Sub
-    End If
-    
-    If (pendingItemMovement(itemNum).yTarg = Int(ppos(selectedPlayer).y) Or _
-        pendingItemMovement(itemNum).yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-        (pendingItemMovement(itemNum).xTarg = Int(ppos(selectedPlayer).x) Or _
-        pendingItemMovement(itemNum).xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
-        'If target is the player's location or their destination.
-        Exit Sub
-    End If
-    
-    'Check if there is another item obstructing us at the next position.
-    If (CheckObstruction(pendingItemMovement(itemNum).xTarg, _
-        pendingItemMovement(itemNum).yTarg, _
-        pendingItemMovement(itemNum).lTarg) = 1) Then
-        Exit Sub
-    End If
-        
-    'tileType at the target.
-    Dim tiletype As Long
-    tiletype = boardList(activeBoardIndex).theData.tiletype( _
-                pendingItemMovement(itemNum).xTarg, _
-                pendingItemMovement(itemNum).yTarg, _
-                pendingItemMovement(itemNum).lTarg)
-    
-    'Check to see if there are any tiles on any layers above.
-    'Dim underneath As Long
-    'underneath = checkAbove(pendingItemMovement(itemNum).xTarg, pendingItemMovement(itemNum).yTarg, pendingItemMovement(itemNum).lTarg)
-    
-    If tiletype >= STAIRS1 And tiletype <= STAIRS8 Then
-        'If target tile is a stair to a level.
-        
-        itmPos(itemNum).l = tiletype - 10   'Put the item on this layer!
-        tiletype = NORMAL                   'Can always been seen on stairs!
-        'underneath = 0                     'Not underneath a tile.
-        
-    End If
-    
-    'If under a tile on another level, current tile is "under".
-    'If underneath = 1 Then tileType = UNDER
-    
-    Select Case tiletype
-    
-        Case NORMAL, UNDER:
-            itmPos(itemNum).stance = "walk_ne"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-            
-        Case SOLID:
-            'Walk on the spot. Might be better to be idle...?
-            itmPos(itemNum).stance = "walk_ne"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            
-    End Select
-    
-End Sub
-
-
-
-
-Sub pushItemWest(ByVal itemNum As Long, ByVal moveFraction As Double)
-    '==========================
-    'EDITED: [Delano - 5/05/04]
-    'Items can now move on "under" tiles!
-    'Items and players can no longer cross paths (caused players to stop interacting with programs etc.
-    'Substituted tile type constants.
-    'Renamed variables: pnum >> itemNum
-    '==========================
-
-    'Push item itemNum West.
-    'Called by moveItems, each frame of the movement cycle (currently 4 times).
-    
-    On Error Resume Next
-
-    If pendingItemMovement(itemNum).xTarg < 1 Then
-        'If target is off the board.
-        Exit Sub
-    End If
-    
-    If (pendingItemMovement(itemNum).yTarg = Int(ppos(selectedPlayer).y) Or _
-        pendingItemMovement(itemNum).yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-        (pendingItemMovement(itemNum).xTarg = Int(ppos(selectedPlayer).x) Or _
-        pendingItemMovement(itemNum).xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
-        'If target is the player's location or their destination.
-        Exit Sub
-    End If
-    
-    'Check if there is another item obstructing us at the next position.
-    If (CheckObstruction(pendingItemMovement(itemNum).xTarg, _
-        pendingItemMovement(itemNum).yTarg, _
-        pendingItemMovement(itemNum).lTarg) = 1) Then
-        Exit Sub
-    End If
-        
-    'tileType at the target.
-    Dim tiletype As Long
-    tiletype = boardList(activeBoardIndex).theData.tiletype( _
-                pendingItemMovement(itemNum).xTarg, _
-                pendingItemMovement(itemNum).yTarg, _
-                pendingItemMovement(itemNum).lTarg)
-    
-    'Check to see if there are any tiles on any layers above.
-    'Dim underneath As Long
-    'underneath = checkAbove(pendingItemMovement(itemNum).xTarg, pendingItemMovement(itemNum).yTarg, pendingItemMovement(itemNum).lTarg)
-    
-    If tiletype >= STAIRS1 And tiletype <= STAIRS8 Then
-        'If target tile is a stair to a level.
-        
-        itmPos(itemNum).l = tiletype - 10   'Put the item on this layer!
-        tiletype = NORMAL                   'Can always been seen on stairs!
-        'underneath = 0                     'Not underneath a tile.
-        
-    End If
-    
-    'If under a tile on another level, current tile is "under".
-    'If underneath = 1 Then tileType = UNDER
-    
-    'If East-West normal tile, carry on as if it were normal.
-    'If tileType = EAST_WEST Then tileType = NORMAL
-    
-    Select Case tiletype
-    
-        Case NORMAL, UNDER, EAST_WEST:
-            itmPos(itemNum).stance = "walk_w"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-            
-        Case SOLID:
-            'Walk on the spot.
-            itmPos(itemNum).stance = "walk_w"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            
-    End Select
-    
-End Sub
-
-
-Sub pushItemSouthWest(ByVal itemNum As Long, ByVal moveFraction As Double)
-    '==========================
-    'EDITED: [Delano - 5/05/04]
-    'Items can now move on "under" tiles!
-    'Items and players can no longer cross paths (caused players to stop interacting with programs etc.
-    'Substituted tile type constants.
-    'Renamed variables: pnum >> itemNum
-    '==========================
-
-    'Push item itemNum SouthWest.
-    'Called by moveItems, each frame of the movement cycle (currently 4 times).
-    
-    On Error Resume Next
-
-    If pendingItemMovement(itemNum).xTarg < 1 Or _
-        pendingItemMovement(itemNum).yTarg > boardList(activeBoardIndex).theData.Bsizey Then
-        'If target is off the board.
-        Exit Sub
-    End If
-    
-    If (pendingItemMovement(itemNum).yTarg = Int(ppos(selectedPlayer).y) Or _
-        pendingItemMovement(itemNum).yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-        (pendingItemMovement(itemNum).xTarg = Int(ppos(selectedPlayer).x) Or _
-        pendingItemMovement(itemNum).xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
-        'If target is the player's location or their destination.
-        Exit Sub
-    End If
-    
-    'Check if there is another item obstructing us at the next position.
-    If (CheckObstruction(pendingItemMovement(itemNum).xTarg, _
-        pendingItemMovement(itemNum).yTarg, _
-        pendingItemMovement(itemNum).lTarg) = 1) Then
-        Exit Sub
-    End If
-        
-    'tileType at the target.
-    Dim tiletype As Long
-    tiletype = boardList(activeBoardIndex).theData.tiletype( _
-                pendingItemMovement(itemNum).xTarg, _
-                pendingItemMovement(itemNum).yTarg, _
-                pendingItemMovement(itemNum).lTarg)
-    
-    'Check to see if there are any tiles on any layers above.
-    'Dim underneath As Long
-    'underneath = checkAbove(pendingItemMovement(itemNum).xTarg, pendingItemMovement(itemNum).yTarg, pendingItemMovement(itemNum).lTarg)
-    
-    If tiletype >= STAIRS1 And tiletype <= STAIRS8 Then
-        'If target tile is a stair to a level.
-        
-        itmPos(itemNum).l = tiletype - 10   'Put the item on this layer!
-        tiletype = NORMAL                   'Can always been seen on stairs!
-        'underneath = 0                     'Not underneath a tile.
-        
-    End If
-    
-    'If under a tile on another level, current tile is "under".
-    'If underneath = 1 Then tileType = UNDER
-    
-    Select Case tiletype
-    
-        Case NORMAL, UNDER:
-            itmPos(itemNum).stance = "walk_sw"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-            
-        Case SOLID:
-            'Walk on the spot.
-            itmPos(itemNum).stance = "walk_sw"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            
-    End Select
-    
-End Sub
-
-
-Sub pushItemNorthWest(ByVal itemNum As Long, ByVal moveFraction As Double)
-    '==========================
-    'EDITED: [Delano - 5/05/04]
-    'Items can now move on "under" tiles!
-    'Items and players can no longer cross paths (caused players to stop interacting with programs etc.
-    'Substituted tile type constants.
-    'Renamed variables: pnum >> itemNum
-    '==========================
-
-    'Push item itemNum NorthWest.
-    'Called by moveItems, each frame of the movement cycle (currently 4 times).
-    
-    On Error Resume Next
-
-    If pendingItemMovement(itemNum).xTarg < 1 Or _
-        pendingItemMovement(itemNum).yTarg < 1 Then
-        'If target is off the board.
-        Exit Sub
-    End If
-    
-    If (pendingItemMovement(itemNum).yTarg = Int(ppos(selectedPlayer).y) Or _
-        pendingItemMovement(itemNum).yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-        (pendingItemMovement(itemNum).xTarg = Int(ppos(selectedPlayer).x) Or _
-        pendingItemMovement(itemNum).xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
-        'If target is the player's location or their destination.
-        Exit Sub
-    End If
-    
-    'Check if there is another item obstructing us at the next position.
-    If (CheckObstruction(pendingItemMovement(itemNum).xTarg, _
-        pendingItemMovement(itemNum).yTarg, _
-        pendingItemMovement(itemNum).lTarg) = 1) Then
-        Exit Sub
-    End If
-        
-    'tileType at the target.
-    Dim tiletype As Long
-    tiletype = boardList(activeBoardIndex).theData.tiletype( _
-                pendingItemMovement(itemNum).xTarg, _
-                pendingItemMovement(itemNum).yTarg, _
-                pendingItemMovement(itemNum).lTarg)
-    
-    'Check to see if there are any tiles on any layers above.
-    'Dim underneath As Long
-    'underneath = checkAbove(pendingItemMovement(itemNum).xTarg, pendingItemMovement(itemNum).yTarg, pendingItemMovement(itemNum).lTarg)
-    
-    If tiletype >= STAIRS1 And tiletype <= STAIRS8 Then
-        'If target tile is a stair to a level.
-        
-        itmPos(itemNum).l = tiletype - 10   'Put the item on this layer!
-        tiletype = NORMAL                   'Can always been seen on stairs!
-        'underneath = 0                     'Not underneath a tile.
-        
-    End If
-    
-    'If under a tile on another level, current tile is "under".
-    'If underneath = 1 Then tileType = UNDER
-    
-    Select Case tiletype
-    
-        Case NORMAL, UNDER:
-            itmPos(itemNum).stance = "walk_nw"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-            
-        Case SOLID:
-            'Walk on spot.
-            itmPos(itemNum).stance = "walk_nw"
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            
-    End Select
-    
-End Sub
-
 Sub pushPlayerNorthEast(ByVal pnum As Long, ByVal moveFraction As Double)
     '======================================
     'EDITED: [Isometrics - Delano 11/05/04]
@@ -1318,12 +713,12 @@ Sub pushPlayerNorthEast(ByVal pnum As Long, ByVal moveFraction As Double)
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = ObtainTileType(pendingPlayerMovement(pnum).xTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
                               pendingPlayerMovement(pnum).yTarg, _
                               pendingPlayerMovement(pnum).lTarg, _
-                              LINK_NE, _
-                              ppos(pnum), _
-                              didItem)
+                              MV_NE, _
+                              ppos(pnum))
+                              'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     ppos(pnum).stance = "walk_ne"
@@ -1407,12 +802,12 @@ Sub pushPlayerNorthWest(ByVal pnum As Long, ByVal moveFraction As Double)
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = ObtainTileType(pendingPlayerMovement(pnum).xTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
                               pendingPlayerMovement(pnum).yTarg, _
                               pendingPlayerMovement(pnum).lTarg, _
-                              LINK_NW, _
-                              ppos(pnum), _
-                              didItem)
+                              MV_NW, _
+                              ppos(pnum))
+                              'didItem)
     
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
@@ -1496,12 +891,12 @@ Sub pushPlayerSouthEast(ByVal pnum As Long, ByVal moveFraction As Double)
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = ObtainTileType(pendingPlayerMovement(pnum).xTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
                               pendingPlayerMovement(pnum).yTarg, _
                               pendingPlayerMovement(pnum).lTarg, _
-                              LINK_SE, _
-                              ppos(pnum), _
-                              didItem)
+                              MV_SE, _
+                              ppos(pnum))
+                              'didItem)
     
     'Introducing new independent direction variables.
     Dim scrollEast As Boolean
@@ -1595,12 +990,12 @@ Sub pushPlayerSouthWest(ByVal pnum As Long, ByVal moveFraction As Double)
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = ObtainTileType(pendingPlayerMovement(pnum).xTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
                               pendingPlayerMovement(pnum).yTarg, _
                               pendingPlayerMovement(pnum).lTarg, _
-                              LINK_SW, _
-                              ppos(pnum), _
-                              didItem)
+                              MV_SW, _
+                              ppos(pnum))
+                              'didItem)
     
     'Introducing new independent direction variables
     Dim scrollWest As Boolean
@@ -1697,12 +1092,12 @@ Sub pushPlayerNorth(ByVal pnum As Long, ByVal moveFraction As Double)
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = ObtainTileType(pendingPlayerMovement(pnum).xTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
                               pendingPlayerMovement(pnum).yTarg, _
                               pendingPlayerMovement(pnum).lTarg, _
-                              LINK_NORTH, _
-                              ppos(pnum), _
-                              didItem)
+                              MV_NORTH, _
+                              ppos(pnum))
+                              'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     ppos(pnum).stance = "walk_n"
@@ -1759,12 +1154,12 @@ Sub pushPlayerSouth(ByVal pnum As Long, ByVal moveFraction As Double)
     'obtain the 'tile type' at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = ObtainTileType(pendingPlayerMovement(pnum).xTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
                               pendingPlayerMovement(pnum).yTarg, _
                               pendingPlayerMovement(pnum).lTarg, _
-                              LINK_SOUTH, _
-                              ppos(pnum), _
-                              didItem)
+                              MV_SOUTH, _
+                              ppos(pnum))
+                              'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     ppos(pnum).stance = "walk_s"
@@ -1820,12 +1215,12 @@ Sub pushPlayerEast(ByVal pnum As Long, ByVal moveFraction As Double)
     'Obtain the 'tile type' at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = ObtainTileType(pendingPlayerMovement(pnum).xTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
                               pendingPlayerMovement(pnum).yTarg, _
                               pendingPlayerMovement(pnum).lTarg, _
-                              LINK_EAST, _
-                              ppos(pnum), _
-                              didItem)
+                              MV_EAST, _
+                              ppos(pnum))
+                              'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     ppos(pnum).stance = "walk_e"
@@ -1882,12 +1277,12 @@ Sub pushPlayerWest(ByVal pnum As Long, ByVal moveFraction As Double)
     'obtain the tile type at the target...
     Dim didItem As Boolean
     Dim typetile As Long
-    typetile = ObtainTileType(pendingPlayerMovement(pnum).xTarg, _
+    typetile = obtainTileType(pendingPlayerMovement(pnum).xTarg, _
                               pendingPlayerMovement(pnum).yTarg, _
                               pendingPlayerMovement(pnum).lTarg, _
-                              LINK_WEST, _
-                              ppos(pnum), _
-                              didItem)
+                              MV_WEST, _
+                              ppos(pnum))
+                              'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     ppos(pnum).stance = "walk_w"
@@ -2041,134 +1436,132 @@ Public Function roundCoords( _
 
 End Function
 
-Public Function ObtainTileType( _
+Private Function obtainTileType( _
                                   ByVal testX As Double, _
                                   ByVal testY As Double, _
-                                  ByVal testLayer As Long, _
-                                  ByVal theLink As Long, _
+                                  ByVal testL As Double, _
+                                  ByVal direction As Long, _
                                   ByRef passPos As PLAYER_POSITION, _
-                                  ByRef didItem As Boolean _
-                                                             ) As Integer
+                                  Optional ByVal activeItem As Long = -1 _
+                                                             ) As Byte
 
-    'look at testX, testY, testLayer
-    'to find the tile type (also based upon the theLink direction to which we are moving)
-    'if there's an item or something we return solid.
-    'will run programs if necissary
-    'will move to new layer if stairs encountered.
-    'also return the diditem constant in the args passed in.
     '========================================================
-    'Edited by Delano 28/06/04 for 3.0.4
+    'Determines the effective tile type at the test co-ords
+    'by considering items, tiletypes and stairs.
+    'Items at the location will block movement.
+    'The player is moved to the new level on stairs.
+    '========================================================
+    'Edited for 3.0.4 by Delano: isometrics, pixel movement.
     'Added code to prevent players walking across the corners
     'of solid tiles in isometrics.
 
-    'thelink is the direction of movement, rather than the linking board.
-    'Called by the pushPlayer subs.
+    'Called by the pushPlayer and pushItem subs.
     On Error Resume Next
     
-    testLayer = Round(testLayer)
-
-    Dim typetile As Byte
-    'typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testLayer)
+    Dim typetile As Byte, first As Byte, second As Byte
+    Dim underneath As Long
     
-    Dim first As Byte, second As Byte
-    first = NORMAL: second = NORMAL
+    testL = Round(testL)
+    
+    'typetile = boardTileType(testX, testY, testL, thelink)
     
     If Not (usingPixelMovement) Then
-        
+    'If 1 Then
+    
         'Tiletype at the target.
-        typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testLayer)
+        typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testL)
         
     Else
 
         With boardList(activeBoardIndex).theData
-            Select Case theLink
-                Case LINK_NORTH:
-                    'first = .tiletype(Int(testX), Int(testY), testLayer)  'To stay away!
-                    'second = .tiletype(-Int(-testX), Int(testY), testLayer)
-                    first = .tiletype(Int(testX), -Int(-testY), testLayer) 'To approach walls.
-                    second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-                Case LINK_SOUTH:
-                    first = .tiletype(Int(testX), -Int(-testY), testLayer)
-                    second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-                Case LINK_EAST:
-                    first = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-                    'second = .tiletype(-Int(-testX), Int(testY), testLayer)    'To stay away!
-                Case LINK_WEST:
-                    first = .tiletype(Int(testX), -Int(-testY), testLayer)
-                    'second = .tiletype(Int(testX), Int(testY), testLayer)      'To stay away!
+            Select Case direction
+                Case MV_NORTH:
+                    'first = .tiletype(Int(testX), Int(testY), testL)  'To stay away!
+                    'second = .tiletype(-Int(-testX), Int(testY), testL)
+                    first = .tiletype(Int(testX), -Int(-testY), testL) 'To approach walls.
+                    second = .tiletype(-Int(-testX), -Int(-testY), testL)
+                Case MV_SOUTH:
+                    first = .tiletype(Int(testX), -Int(-testY), testL)
+                    second = .tiletype(-Int(-testX), -Int(-testY), testL)
+                Case MV_EAST:
+                    first = .tiletype(-Int(-testX), -Int(-testY), testL)
+                    'second = .tiletype(-Int(-testX), Int(testY), testL)    'To stay away!
+                Case MV_WEST:
+                    first = .tiletype(Int(testX), -Int(-testY), testL)
+                    'second = .tiletype(Int(testX), Int(testY), testL)      'To stay away!
                     
                 'Problems if approaching walls.
-                Case LINK_NE:
-                    'typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                Case MV_NE:
+                    'typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
                     
                     'The current type.
-                    typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    typetile = .tiletype(Int(testX), -Int(-testY), testL)
                         
                     If testX > Int(testX) Then
                         'We're crossing two tiles horizontally. Test the tile to the right.
-                        typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                        typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
                         
                     End If
                     If testY = Int(testY) Then
                         'We're moving to two tiles vertically. Test tiles above and to the right.
-                        first = .tiletype(Int(testX), Int(testY), testLayer)
-                        second = .tiletype(-Int(-testX), Int(testY), testLayer)
+                        first = .tiletype(Int(testX), Int(testY), testL)
+                        second = .tiletype(-Int(-testX), Int(testY), testL)
                         
                     End If
                     
                     
-                Case LINK_NW:
-                    'typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                Case MV_NW:
+                    'typetile = .tiletype(Int(testX), -Int(-testY), testL)
                     
                     'The current type.
-                    typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    typetile = .tiletype(Int(testX), -Int(-testY), testL)
                      
                     If testX > Int(testX) Then
                         'We're crossing two tiles horizontally. Test the tile to the left.
-                        typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                        typetile = .tiletype(Int(testX), -Int(-testY), testL)
                         
                     End If
                     If testY = Int(testY) Then
                         'We're moving up to two tiles. Test tiles above and to the left.
-                        first = .tiletype(Int(testX), Int(testY), testLayer)
-                        second = .tiletype(-Int(-testX), Int(testY), testLayer)
+                        first = .tiletype(Int(testX), Int(testY), testL)
+                        second = .tiletype(-Int(-testX), Int(testY), testL)
                     End If
                     
                     
-                Case LINK_SE:
-                    'typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                Case MV_SE:
+                    'typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
                     
                     'The current type.
-                    typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    typetile = .tiletype(Int(testX), -Int(-testY), testL)
                     
                     If testX > Int(testX) Then
                         'We're crossing two tiles horizontally. Test the tile to the right.
-                        typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                        typetile = .tiletype(-Int(-testX), -Int(-testY), testL)
                         
                     End If
                     If testY - movementSize = Int(testY) Then
                         'We're moving down to two tiles. Test tiles above and to the right.
-                        first = .tiletype(Int(testX), -Int(-testY), testLayer)
-                        second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                        first = .tiletype(Int(testX), -Int(-testY), testL)
+                        second = .tiletype(-Int(-testX), -Int(-testY), testL)
                     
                     End If
                     
                     
-                Case LINK_SW:
-                    'typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                Case MV_SW:
+                    'typetile = .tiletype(Int(testX), -Int(-testY), testL)
                     
                     'The current type.
-                    typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    typetile = .tiletype(Int(testX), -Int(-testY), testL)
                     
                     If testX > Int(testX) Then
                         'We're crossing two tiles horizontally. Test the tile to the left.
-                        typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                        typetile = .tiletype(Int(testX), -Int(-testY), testL)
                         
                     End If
                     If testY - movementSize = Int(testY) Then
                         'We're moving down to two tiles. Test tiles above and to the left.
-                        first = .tiletype(Int(testX), -Int(-testY), testLayer)
-                        second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                        first = .tiletype(Int(testX), -Int(-testY), testL)
+                        second = .tiletype(-Int(-testX), -Int(-testY), testL)
    
                     End If
                     
@@ -2185,21 +1578,11 @@ Public Function ObtainTileType( _
     
     End If '(usingPixelMovement)
 
-    'check if an item is blocking...
-    Dim itemBlocking As Long
-    itemBlocking = CheckObstruction(testX, testY, testLayer)
-    
-    didItem = False
-    If itemBlocking = 1 Then
-        'TODO
-        'Call programtest(testX, testY, testLayer, keycode, facing)
-        didItem = True
-        typetile = SOLID
-    End If
-    
-    Dim underneath As Long
+    'Check if an item is blocking...
+    If checkObstruction(testX, testY, testL, activeItem) = SOLID Then typetile = SOLID
+
     'check for tiles above...
-    underneath = checkAbove(testX, testY, testLayer)
+    underneath = checkAbove(testX, testY, testL)
     
     'if we're sitting on stairs, forget about tiles above.
     If typetile >= STAIRS1 And typetile <= STAIRS8 Then
@@ -2208,11 +1591,11 @@ Public Function ObtainTileType( _
         underneath = 0
     End If
     
-    If typetile = EAST_WEST And (theLink = LINK_EAST Or theLink = LINK_WEST) Then
+    If typetile = EAST_WEST And (direction = MV_EAST Or direction = MV_WEST) Then
         typetile = NORMAL   'if ew normal, carry on as if it were normal
     End If
     
-    If typetile = NORTH_SOUTH And (theLink = LINK_SOUTH Or theLink = LINK_NORTH) Then
+    If typetile = NORTH_SOUTH And (direction = MV_SOUTH Or direction = MV_NORTH) Then
         typetile = NORMAL   'if ns normal, carry on as if it were normal
     End If
     
@@ -2220,62 +1603,53 @@ Public Function ObtainTileType( _
         typetile = UNDER
     End If
     
-    'TODO
-    'test if we're on stairs...
-    'Dim testIt As Long
-    'testIt = boardList(activeBoardIndex).theData.tiletype(testX, testY, testLayer)
-    'If testIt >= STAIRS1 And testIt <= STAIRS8 Then
-    '    pos.l = testIt - 10
-    'End If
-    
     'Added: Prevent players from crossing corners of solid tiles on isometric boards:
     Dim leftTile As Byte, rightTile As Byte, aboveTile As Byte, belowTile As Byte
-    leftTile = NORMAL: rightTile = NORMAL: aboveTile = NORMAL: belowTile = NORMAL
     
     If boardIso() Then
         'Check if the tiles above and below the movement are solid.
         'We get the location with respect to the *test* (target) co-ordinates.
         With boardList(activeBoardIndex).theData
-            Select Case theLink
-                Case LINK_NORTH:
+            Select Case direction
+                Case MV_NORTH:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        leftTile = .tiletype(testX - 1, testY + 1, testLayer)
-                        rightTile = .tiletype(testX, testY + 1, testLayer)
+                        leftTile = .tiletype(testX - 1, testY + 1, testL)
+                        rightTile = .tiletype(testX, testY + 1, testL)
                     Else
                         'Odd y
-                        leftTile = .tiletype(testX, testY + 1, testLayer)
-                        rightTile = .tiletype(testX + 1, testY + 1, testLayer)
+                        leftTile = .tiletype(testX, testY + 1, testL)
+                        rightTile = .tiletype(testX + 1, testY + 1, testL)
                     End If
-                Case LINK_SOUTH:
+                Case MV_SOUTH:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        leftTile = .tiletype(testX - 1, testY - 1, testLayer)
-                        rightTile = .tiletype(testX, testY - 1, testLayer)
+                        leftTile = .tiletype(testX - 1, testY - 1, testL)
+                        rightTile = .tiletype(testX, testY - 1, testL)
                     Else
                         'Odd y
-                        leftTile = .tiletype(testX, testY - 1, testLayer)
-                        rightTile = .tiletype(testX + 1, testY - 1, testLayer)
+                        leftTile = .tiletype(testX, testY - 1, testL)
+                        rightTile = .tiletype(testX + 1, testY - 1, testL)
                     End If
-                Case LINK_EAST:
+                Case MV_EAST:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        aboveTile = .tiletype(testX - 1, testY - 1, testLayer)
-                        belowTile = .tiletype(testX - 1, testY + 1, testLayer)
+                        aboveTile = .tiletype(testX - 1, testY - 1, testL)
+                        belowTile = .tiletype(testX - 1, testY + 1, testL)
                     Else
                         'Odd y
-                        aboveTile = .tiletype(testX, testY - 1, testLayer)
-                        belowTile = .tiletype(testX, testY + 1, testLayer)
+                        aboveTile = .tiletype(testX, testY - 1, testL)
+                        belowTile = .tiletype(testX, testY + 1, testL)
                     End If
-                 Case LINK_WEST:
+                 Case MV_WEST:
                     If testY Mod 2 = 0 Then
                         'Even y
-                        aboveTile = .tiletype(testX, testY - 1, testLayer)
-                        belowTile = .tiletype(testX, testY + 1, testLayer)
+                        aboveTile = .tiletype(testX, testY - 1, testL)
+                        belowTile = .tiletype(testX, testY + 1, testL)
                     Else
                         'Odd y
-                        aboveTile = .tiletype(testX + 1, testY - 1, testLayer)
-                        belowTile = .tiletype(testX + 1, testY + 1, testLayer)
+                        aboveTile = .tiletype(testX + 1, testY - 1, testL)
+                        belowTile = .tiletype(testX + 1, testY + 1, testL)
                     End If
             End Select
         End With
@@ -2286,13 +1660,13 @@ Public Function ObtainTileType( _
         End If
     End If
     
-    ObtainTileType = typetile
+    obtainTileType = typetile
     
 End Function
 
 
-Sub moveItems()
-    'move all pending items
+Public Sub moveItems()
+    'Move all pending items
     On Error Resume Next
     
     If MAXITEM = -1 Then Exit Sub
@@ -2307,28 +1681,101 @@ Sub moveItems()
     
     For t = 0 To maxP
         Select Case pendingItemMovement(t).direction
-            Case MV_IDLE:
-                'this item isn't moving...
-            Case MV_NORTH:
-                Call pushItemNorth(t, moveFraction)
-            Case MV_SOUTH:
-                Call pushItemSouth(t, moveFraction)
-            Case MV_EAST:
-                Call pushItemEast(t, moveFraction)
-            Case MV_WEST:
-                Call pushItemWest(t, moveFraction)
-            Case MV_NE:
-                Call pushItemNorthEast(t, moveFraction)
-            Case MV_NW:
-                Call pushItemNorthWest(t, moveFraction)
-            Case MV_SE:
-                Call pushItemSouthEast(t, moveFraction)
-            Case MV_SW:
-                Call pushItemSouthWest(t, moveFraction)
+            Case MV_IDLE
+                'This item isn't moving...
+            Case Else
+                'Cleaned up into one sub!
+                Call pushItem(t, moveFraction)
         End Select
     Next t
+    
 End Sub
 
+Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
+'======================================================================
+'Generic pushItem[Direction] sub. For 3.0.4 by Delano.
+'Replaces pushItem* subs with common code.
+'======================================================================
+    On Error Resume Next
+    
+    Dim tiletype As Byte, item As PENDING_MOVEMENT, stance As String
+    'Copy across the pending movements to a local.
+    item = pendingItemMovement(itemNum)
+
+    'Check board dimensions.
+    If item.yTarg < 1 _
+        Or item.xTarg < 1 _
+        Or item.yTarg > boardList(activeBoardIndex).theData.Bsizey _
+        Or item.xTarg > boardList(activeBoardIndex).theData.Bsizex Then
+        
+        Exit Sub
+        
+    End If
+
+    'Check the player's location. Should combine in CheckObstruction.
+    If Not (usingPixelMovement) Then
+    
+        'Tile movement.
+        If (item.yTarg = Int(ppos(selectedPlayer).y) Or _
+            item.yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
+           (item.xTarg = Int(ppos(selectedPlayer).x) Or _
+            item.xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
+            'If target is the player's location or their destination.
+            Exit Sub
+        End If
+    
+    Else
+    
+        'Pixel movement. Current and target locations.
+        If Abs(item.yTarg - ppos(selectedPlayer).y) <= movementSize _
+            And Abs(item.xTarg - ppos(selectedPlayer).x) < 1 Then
+            Exit Sub
+        End If
+            
+        If Abs(item.yTarg - pendingPlayerMovement(selectedPlayer).yTarg) <= movementSize _
+            And Abs(item.xTarg - pendingPlayerMovement(selectedPlayer).xTarg) < 1 Then
+            Exit Sub
+        End If
+    
+    End If
+
+    'CheckObstruction-> done in obtainTileType.
+
+    'Check the tiletype at the target.
+    tiletype = obtainTileType(item.xTarg, _
+                              item.yTarg, _
+                              item.lTarg, _
+                              item.direction, _
+                              itmPos(itemNum), _
+                              itemNum)
+
+    'Select the stance direction - surely .stance shouldn't be a string!!
+    Select Case item.direction
+        Case MV_NORTH: stance = "walk_n"
+        Case MV_SOUTH: stance = "walk_s"
+        Case MV_EAST: stance = "walk_e"
+        Case MV_WEST: stance = "walk_w"
+        Case MV_NE: stance = "walk_ne"
+        Case MV_NW: stance = "walk_nw"
+        Case MV_SE: stance = "walk_se"
+        Case MV_SW: stance = "walk_sw"
+    End Select
+    
+    Select Case tiletype
+    
+        Case NORMAL, UNDER
+            itmPos(itemNum).stance = stance
+            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
+            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
+            
+        Case SOLID
+            'Walk on the spot.
+            itmPos(itemNum).stance = stance
+            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
+            
+    End Select
+
+End Sub
 
 Public Sub movePlayers()
 
@@ -2623,3 +2070,5 @@ Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY As Lon
     TestBoard = aBoard.tiletype(testX, testY, testL)
 
 End Function
+
+
