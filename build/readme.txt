@@ -61,7 +61,7 @@ method CTest::function(IRun obj)
 	obj->run() // Will always succeed
 }
 
-The object the caller passes in must derive from IRun to succeed. Because of this property, interfaces cannot be created directly - only inherit. A class the creator passed in might look like this:
+The object the caller passes in must derive from IRun to succeed. Because of this property, interfaces cannot be created directly - only inherit. The object the creator passes in might be of a class that looks like this:
 
 class CRun: IRun
 {
