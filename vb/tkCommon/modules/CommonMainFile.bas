@@ -183,7 +183,7 @@ Private Sub upgradeBattleSystem()
 
                     'It's trans3 and the DLL is supposed to already be registered
                     'but it's not-- make it happen
-                    Call ExecCmd("regsrv32 /s " & Chr(34) & fullPath & Chr(34))
+                    Call ExecCmd("regsrv32 /s " & chr(34) & fullPath & chr(34))
 
                     'Now setup the plugin for usage
                     Call setupVBPlugin(fullPath)
@@ -191,6 +191,21 @@ Private Sub upgradeBattleSystem()
                 #End If
 
             End If
+
+        Else
+
+            #If isToolkit = 1 Then
+                'Close the plugin
+                Dim a As Long
+                For a = 0 To UBound(vbPlugins)
+                    If (vbPlugins(a).filename = fullPath) Then
+                        Call Unload(vbPlugins(a).obj)
+                        Set vbPlugins(a).obj = Nothing
+                        vbPlugins(a).filename = ""
+                        Exit For
+                    End If
+                Next a
+            #End If
 
         End If
 
