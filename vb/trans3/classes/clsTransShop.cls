@@ -95,23 +95,29 @@ Public Sub Show()
 
     On Error Resume Next
 
-    'Save pre-shop view
+    ' Save pre-shop view
+    Dim bRunPrg As Boolean
+    bRunPrg = runningProgram
+    runningProgram = False
+    Call haltKeyDownScanning
     m_oldView = createCanvas(resX, resY)
     Call canvasGetScreen(m_oldView)
 
-    'Make sure we have color!
+    ' Make sure we have color!
     If shopColors(0) = -1 Then
         shopColors(0) = RGB(0, 0, 150)
         shopColors(1) = RGB(0, 102, 255)
     End If
 
-    'Open the main menu
+    ' Open the main menu
     Call mainMenuScanKeys
 
-    'Restore pre-shop view
+    ' Restore pre-shop view
     Call renderCanvas(m_oldView)
+    Call startKeyDownScanning
+    runningProgram = bRunPrg
 
-    'Clean up
+    ' Clean up
     Call destroyCanvas(m_oldView)
     Call destroyCanvas(m_commonDisplay)
 
