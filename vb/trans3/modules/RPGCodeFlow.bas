@@ -136,8 +136,8 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         mName = commandName
     End If
 
-    If (queryPlugins(mName, Text, retval)) Then
-        ' Found the command in a plugin, don't waste time checking for a method!
+    If (queryPlugins(mName, Text, retval, theProgram)) Then
+        ' Found the command in a plugin; don't waste time checking for a method!
         Exit Sub
     End If
 
