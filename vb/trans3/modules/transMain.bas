@@ -372,6 +372,7 @@ Private Sub openSystems()
     Call DXClearScreen(0)
     Call DXRefresh
     Call setupMain
+    Call FlushKB
 End Sub
 
 '=======================================================================

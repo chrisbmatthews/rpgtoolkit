@@ -889,7 +889,6 @@ Public Sub runProgram( _
         Call renderNow(-1, True)
     End If
 
-    Call FlushKB
     Call ClearRPGCodeProcess(theProgram)
     runningProgram = False
     Call stopWaitingForInput
@@ -900,6 +899,8 @@ Public Sub runProgram( _
         nextProgram = vbNullString
         Call runProgram(oldNextProgram, theProgram.boardNum, setSourceAndTarget)
     End If
+
+    Call FlushKB
 
     Exit Sub
 
