@@ -54,7 +54,7 @@ End Sub
 '=========================================================================
 ' Allows actkrt3.dll to force a render
 '=========================================================================
-Public Sub forceRender()
+Private Sub forceRender()
     If (Not runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
         Call renderNow(-1, True)
     ElseIf (runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
@@ -65,21 +65,21 @@ End Sub
 '=========================================================================
 ' Allows actkrt3.dll to check if we're shutting down
 '=========================================================================
-Public Function isShuttingDown() As Long
+Private Function isShuttingDown() As Long
     If (gShuttingDown) Then isShuttingDown = 1
 End Function
 
 '=========================================================================
 ' Allows actkrt3.dll to get the game state
 '=========================================================================
-Public Function getGameState() As Long
+Private Function getGameState() As Long
     getGameState = gGameState
 End Function
 
 '=========================================================================
 ' Allows actkrt3.dll to set the game state
 '=========================================================================
-Public Sub setGameState(ByVal newState As Long)
+Private Sub setGameState(ByVal newState As Long)
     gGameState = newState
 End Sub
 
