@@ -79,6 +79,7 @@ Public addOnG As Long                       ' Green to add on
 Public addOnB As Long                       ' Blue to add on
 Public cnvRenderNow As Long                 ' RPGCode renderNow() canvas
 Public renderRenderNowCanvas As Boolean     ' Render said canvas?
+Public g_dblWinIntensity As Double          ' Message window intensity
 
 '=========================================================================
 ' Members
@@ -1370,8 +1371,19 @@ Public Sub renderRPGCodeScreen()
 
     ' Draw the message box if it's being shown
     If (bShowMsgBox) Then
-        ' Draw the messsage window
-        Call DXDrawCanvasTranslucent(cnvMsgBox, (tilesX * 32 - 600) * 0.5, 0, , fontColor)
+
+        If (g_dblWinIntensity <> 1) Then
+
+            ' Draw the messsage window, using translucency
+            Call DXDrawCanvasTranslucent(cnvMsgBox, (tilesX * 32 - 600) * 0.5, 0, g_dblWinIntensity, fontColor)
+
+        Else
+
+            ' Draw the messsage window opaquely
+            Call DXDrawCanvas(cnvMsgBox, (tilesX * 32 - 600) * 0.5, 0)
+
+        End If
+
     End If
 
     ' Make the flip
@@ -1605,6 +1617,9 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     ' Get resolution x / y
     resX = screenWidth \ Screen.TwipsPerPixelX
     resY = screenHeight \ Screen.TwipsPerPixelY
+
+    ' Start the message window with a "normal" translucency value
+    g_dblWinIntensity = 0.5
 
     ' Get res from main file
     If (mainMem.mainResolution = 0) Then

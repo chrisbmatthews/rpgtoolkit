@@ -11905,3 +11905,28 @@ Public Sub setVolumeRPG(ByRef strText As String, ByRef prg As RPGCodeProgram)
     ' Set the volume
     Call getDirectMusic().setVolume(paras(0).num)
 End Sub
+
+'=========================================================================
+' Set translucency of the message window
+' 0% is invisible, 100% is opaque
+'=========================================================================
+' setMwinTranslucency(percent!)
+'=========================================================================
+Public Sub setMwinTranslucencyRpg(ByRef strText As String, ByRef prg As RPGCodeProgram)
+    Dim paras() As parameters, lngCount As Long
+    paras = getParameters(strText, prg, lngCount)
+    If (lngCount <> 1) Then
+        Call debugger("setMwinTranslucency() takes one parameter-- " & strText)
+        Exit Sub
+    End If
+    If (paras(0).dataType <> DT_NUM) Then
+        Call debugger("setMwinTranslucency() takes a numerical parameter-- " & strText)
+        Exit Sub
+    End If
+    If ((paras(0).num < 0) Or (paras(0).num > 100)) Then
+        Call debugger("setMwinTranslucency()'s parameter should be a percent-- " & strText)
+        Exit Sub
+    End If
+    ' Set the global mwin intensity
+    g_dblWinIntensity = paras(0).num / 100
+End Sub
