@@ -3937,8 +3937,8 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
         scTopY = -1
         Call alignBoard(pPos(0).x, pPos(0).y)
         Call openItems
-        Call renderNow
         Call renderNow(cnvRPGCodeScreen)
+        Call renderRPGCodeScreen
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
         saveFileLoaded = True
 

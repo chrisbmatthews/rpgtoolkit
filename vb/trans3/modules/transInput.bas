@@ -181,6 +181,8 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
     'Clear the last pressed key.
     keyWaitState = -1
 
+    If (milliSeconds = 0) Then milliSeconds = 15
+
     'call processevent so we can get a key...
     Call DoEventsFor(milliSeconds)
 
