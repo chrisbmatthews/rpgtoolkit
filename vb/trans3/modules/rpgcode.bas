@@ -3474,6 +3474,10 @@ Sub IncludeRPG(text$, ByRef theProgram As RPGCodeProgram)
                 End If
             Next count
 
+            For count = 0 To UBound(tempPRG.classes.classes)
+                Call addClassToProgram(tempPRG.classes.classes(count), theProgram)
+            Next count
+
             'Make the program large enough for the code we're adding...
             ReDim Preserve .program(UBound(.program) + 2 + tempPRG.Length)
 
@@ -3489,8 +3493,6 @@ Sub IncludeRPG(text$, ByRef theProgram As RPGCodeProgram)
             .Length = .Length + 2 + UBound(tempPRG.program)
 
         End With
-
-        Call spliceUpClasses(theProgram)
 
         '====================================================================
         'End bug fix by KSNiloc
@@ -5740,6 +5742,9 @@ Sub ReturnMethodRPG(text$, ByRef theProgram As RPGCodeProgram)
     'Now look for this variable in the pointer list
     Dim foundIt As Long, t As Long, aa As Long, datu As String
     foundIt = -1
+    If Right(dataUse, 1) <> "$" And Right(dataUse, 1) <> "!" Then
+        dataUse = dataUse & "!"
+    End If
     For t = 1 To 100
         If UCase$(pointer$(t)) = UCase$(dataUse$) Then
             foundIt = 1

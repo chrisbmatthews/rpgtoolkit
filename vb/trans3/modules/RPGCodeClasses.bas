@@ -84,6 +84,45 @@ Public Type RPGCodeProgram
 End Type
 
 '=========================================================================
+' Add a class to a program
+'=========================================================================
+Public Sub addClassToProgram(ByRef theClass As RPGCODE_CLASS, ByRef prg As RPGCodeProgram)
+
+    On Error Resume Next
+
+    Dim idx As Long         'Loop var
+    Dim pos As Long         'Position to use
+
+    'Make pos void
+    pos = -1
+
+    'Check all classes already in program
+    For idx = 0 To UBound(prg.classes.classes)
+        If (theClass.strName = prg.classes.classes(idx).strName) Then
+            'Already in program
+            Exit Sub
+
+        ElseIf (prg.classes.classes(idx).strName = "") Then
+            'Free space
+            If (pos = -1) Then
+                pos = idx
+            End If
+
+        End If
+    Next idx
+
+    If (pos = -1) Then
+        'No free spaces
+        ReDim Preserve prg.classes.classes(UBound(prg.classes.classes) + 1)
+        pos = UBound(prg.classes.classes)
+    End If
+
+    'Write in the data
+    prg.classes.classes(pos) = theClass
+
+End Sub
+
+'=========================================================================
 ' Read all data on classes from a program
 '=========================================================================
 Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
@@ -97,10 +136,6 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     Dim opening As Boolean  'Looking for { bracket?
     Dim depth As Long       'Depth in class
     Dim classIdx As Long    'Current class
-
-    'Init the classes array
-    ReDim prg.classes.classes(0)
-    ReDim prg.classes.nestle(0)
 
     'Make classIdx void
     classIdx = -1
@@ -169,10 +204,19 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 End If
             Else
                 'Found a variable
-                If (scope = "private") Then
-                    Call addVarToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePrivate)
+                If (InStr(1, prg.program(lineIdx), "[")) Then
+                    'It's an array
+                    If (scope = "private") Then
+                        Call addArrayToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePrivate)
+                    Else
+                        Call addArrayToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePublic)
+                    End If
                 Else
-                    Call addVarToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePublic)
+                    If (scope = "private") Then
+                        Call addVarToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePrivate)
+                    Else
+                        Call addVarToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePublic)
+                    End If
                 End If
             End If
 
@@ -184,6 +228,71 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
         End If
 
     Next lineIdx
+
+End Sub
+
+'=========================================================================
+' Add an array to a scope
+'=========================================================================
+Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_SCOPE)
+
+    On Error Resume Next
+
+    Dim done As Boolean             'Done?
+    Dim toParse As String           'Text to parse
+    Dim variableType As String      'Type of var
+    Dim start As Long               'First [
+    Dim tEnd As Long                'Last ]
+    Dim variableName As String      'Name of var
+    Dim parseArrayD() As String     'Dimensions
+    Dim idx As Long                 'Loop var
+
+    'Set toParse to the text passed in
+    toParse = Trim(theVar)
+
+    'Grab the variable's type (! or $)
+    variableType = Right(toParse, 1)
+    If (variableType <> "!" And variableType <> "$") Then
+        'It's an object
+        variableType = ""
+    End If
+
+    'See where the first [ is
+    start = InStr(1, toParse, "[")
+
+    'Grab the variable's name
+    variableName = Mid(toParse, 1, start - 1)
+
+    'Find the last ]
+    tEnd = InStr(1, StrReverse(toParse), "]")
+    tEnd = Len(toParse) - tEnd + 1
+
+    'Just keep what's inbetween the two
+    toParse = Mid(toParse, start + 1, tEnd - start - 1)
+
+    'Split it at '][' (bewteen elements)
+    parseArrayD() = Split(toParse, "][")
+
+    'Create an array
+    ReDim values(UBound(parseArrayD)) As Long
+
+    'Do the loop!
+    Do Until (done)
+        theVar = variableName
+        For idx = 0 To UBound(parseArrayD)
+            theVar = theVar & "[" & CStr(values(idx)) & "]"
+            If (values(idx) = CLng(parseArrayD(idx))) Then
+                done = True
+            Else
+                If (done Or (idx = 0)) Then
+                    values(idx) = values(idx) + 1
+                    done = False
+                End If
+            End If
+        Next idx
+        theVar = theVar & variableType
+        Call addVarToScope(theVar, scope)
+    Loop
 
 End Sub
 

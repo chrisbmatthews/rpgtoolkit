@@ -140,6 +140,9 @@ Public Sub InitRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
     Call AddHeapToStack(thePrg)
     ReDim thePrg.compilerStack(1)
     thePrg.currentCompileStackIdx = -1
+    'Init the classes array
+    ReDim thePrg.classes.classes(0)
+    ReDim thePrg.classes.nestle(0)
 End Sub
 
 '=========================================================================

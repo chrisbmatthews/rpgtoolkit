@@ -225,6 +225,11 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
             Else
                 dUse$ = lit$
             End If
+            
+            If Left(destList$(pList), 1) <> "!" And Left(destList$(pList), 1) <> "$" Then
+                destList$(pList) = destList$(pList) & "!"
+            End If
+            
             'make sure the variable becomes local to the method...
             Dim dummyRet As RPGCODE_RETURN
             Call LocalRPG("#local(" + destList$(pList) + ")", theProgram, dummyRet)
