@@ -88,7 +88,7 @@ Public Function wndProc( _
             Call BeginPaint(hwnd, ps)
             If (Not runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
                 Call renderNow
-            ElseIf runningProgram Then
+            ElseIf (runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
                 Call renderRPGCodeScreen
             End If
             Call EndPaint(hwnd, ps)
