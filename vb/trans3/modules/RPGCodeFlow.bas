@@ -170,7 +170,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     Dim theMethod As RPGCodeMethod, params() As parameters, number As Long
     params = getParameters(Text, theProgram, number)
     theMethod.lngParams = number
-    theMethod.name = UCase$(mName)
+    theMethod.name = UCase$(Trim$(mName))
     ReDim theMethod.dtParams(number - 1)
     Dim i As Long
     For i = 1 To number
