@@ -40,7 +40,7 @@ RSC=rc.exe
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
-# PROP Ignore_Export_Lib 0
+# PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "actkrt3_EXPORTS" /YX /FD /c
 # ADD CPP /nologo /MT /W2 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "actkrt3_EXPORTS" /FR /YX /FD /c
@@ -53,7 +53,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 ddraw.lib dxguid.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib msimg32.lib /nologo /dll /machine:I386
+# ADD LINK32 ddraw.lib dxguid.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib msimg32.lib /nologo /dll /machine:I386 /nodefaultlib:"library"
+# SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "actkrt3 - Win32 Debug"
 
@@ -210,7 +211,7 @@ SOURCE=.\tkimage\Tkimage.def
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkimage\FreeImageDLL.lib
+SOURCE=.\tkimage\FreeImage.lib
 # End Source File
 # End Group
 # Begin Group "tkzip No. 1"

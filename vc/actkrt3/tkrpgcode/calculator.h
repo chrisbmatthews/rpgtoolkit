@@ -6,6 +6,9 @@
 // Used under license
 ///////////////////////////////////////////////////////////
 
+#ifndef EXPRESSION_CALCULATOR
+#define EXPRESSION_CALCULATOR
+
 #include <cstring>
 #include <cmath>
 #include <cstdlib>
@@ -145,7 +148,7 @@ class calculator
           break;
         }  
       }while(*(str + index++) != '\0'); // Loop to prevent overrun at the end
-      	
+	  return "";
     } 
     
     // Function to evaluate an arithmetic expression
@@ -180,3 +183,4 @@ class calculator
 	  long double calculator::solve(char* str) { eat_spaces(str); return expr(str); }
 };
 
+#endif

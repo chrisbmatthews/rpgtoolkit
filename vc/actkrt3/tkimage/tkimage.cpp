@@ -1,42 +1,50 @@
-//All contents copyright 2003, Christopher Matthews
-//All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+////////////////////////////////////////////////////////
+//All contents copyright 2003, 2004, CBM or developers
+//All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE
 //Read LICENSE.txt for licensing info
+////////////////////////////////////////////////////////
 
-// tkreg.cpp : Defines the entry point for the console application.
+////////////////////////////////////////////////////////
+// FreeImage interface
+////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////
+// EDITED [KSNiloc] :: September 4, 2004
 //
+// + Modified to use FreeImage version 3
+////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////
+// Inclusions
+////////////////////////////////////////////////////////
 #include "stdafx.h"
-
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
-
-//#define FREEIMAGE_LIB
 #include "freeimage.h"
 #include "tkimage.h"
 
-										
-
-///////////////////////////////////
-// DLL Entry point...
+////////////////////////////////////////////////////////
+// Initiate FreeImage
+////////////////////////////////////////////////////////
 int APIENTRY IMGInit()
 {
 	FreeImage_Initialise();
 	return 1;
 }
 
-
-///////////////////////////////////
-// Shutdown freeimage system
+////////////////////////////////////////////////////////
+// Kill FreeImage
+////////////////////////////////////////////////////////
 int APIENTRY IMGClose()
 {
 	FreeImage_DeInitialise();
 	return 1;
 }
 
-
-////////////////////////////////////
-// Load and draw an image to the screen
+////////////////////////////////////////////////////////
+// Draw an image onto a device context
+////////////////////////////////////////////////////////
 int APIENTRY IMGDraw(char* pstrFilename, int x, int y, int hdc)
 {
 	FIBITMAP* bmp = (FIBITMAP*)IMGLoad(pstrFilename);
@@ -48,15 +56,16 @@ int APIENTRY IMGDraw(char* pstrFilename, int x, int y, int hdc)
 			FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp),
 			FreeImage_GetInfo(bmp), DIB_RGB_COLORS); 
 
-		FreeImage_Free(bmp);	
+		FreeImage_Unload(bmp);
 		return 1;
 	}
 	return 0;
 }
 
 
-////////////////////////////////////
-// Load and draw an image to the screen
+////////////////////////////////////////////////////////
+// Draw an image (resized) onto a device context
+////////////////////////////////////////////////////////
 int APIENTRY IMGDrawSized(char* pstrFilename, int x, int y, int sizex, int sizey, int hdc)
 {
 	FIBITMAP* bmp = (FIBITMAP*)IMGLoad(pstrFilename);
@@ -68,112 +77,67 @@ int APIENTRY IMGDrawSized(char* pstrFilename, int x, int y, int sizex, int sizey
 			FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp),
 			FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY); 
 
-		FreeImage_Free(bmp);	
+		FreeImage_Unload(bmp);	
 		return 1;
 	}
 	return 0;
 }
 
-
-////////////////////////////////////////
-// Load an image
-// return 'pointer' to freeimage
-// this pointer is returned as an int
+////////////////////////////////////////////////////////
+// Load an images
+////////////////////////////////////////////////////////
 FIBITMAP* APIENTRY IMGLoad(char* pstrFilename)
 {
-	FREE_IMAGE_FORMAT fmt = FreeImage_GetFileType(pstrFilename, 16); 
-	FIBITMAP* bmp = NULL;
 
-	switch(fmt)
-	{
-		case FIF_BMP:
-			bmp = FreeImage_LoadBMP(pstrFilename);
-			break;
-		case FIF_ICO:
-			bmp = FreeImage_LoadICO(pstrFilename);
-			break;
-		case FIF_JPEG:
-			bmp = FreeImage_LoadJPEG(pstrFilename);
-			break;
-		case FIF_KOALA:
-			bmp = FreeImage_LoadKOALA(pstrFilename);
-			break;
-		case FIF_LBM:
-			bmp = FreeImage_LoadLBM(pstrFilename);
-			break;
-		case FIF_MNG:
-			bmp = FreeImage_LoadMNG(pstrFilename);
-			break;
-		case FIF_PCD:
-			bmp = FreeImage_LoadPCD(pstrFilename);
-			break;
-		case FIF_PCX:
-			bmp = FreeImage_LoadPCX(pstrFilename);
-			break;
-		case FIF_PNG:
-			bmp = FreeImage_LoadPNG(pstrFilename);
-			break;
-		case FIF_RAS:
-			bmp = FreeImage_LoadRAS(pstrFilename);
-			break;
-		case FIF_TARGA:
-			bmp = FreeImage_LoadTARGA(pstrFilename);
-			break;
-		case FIF_TIFF:
-			bmp = FreeImage_LoadTIFF(pstrFilename);
-			break;
-		case FIF_WBMP:
-			bmp = FreeImage_LoadWBMP(pstrFilename);
-			break;
-		case FIF_PBM:
-		case FIF_PGM:
-		case FIF_PPM:
-		case FIF_JNG:
-		case FIF_UNKNOWN:
-			break;
-	}
+	//FreeImage version 3 has merged image loading procedures
+	return FreeImage_Load(FreeImage_GetFileType(pstrFilename, 16), pstrFilename);
 
-	return bmp;
 }
 
-
-////////////////////////////////////////
-// Free an image
+////////////////////////////////////////////////////////
+// Kill a loaded image
+////////////////////////////////////////////////////////
 int APIENTRY IMGFree(FIBITMAP* nFreeImagePtr)
 {
-	FreeImage_Free((FIBITMAP*)nFreeImagePtr);
+	FreeImage_Unload((FIBITMAP*)nFreeImagePtr);
 	return 1;
 }
 
-/////////////////////////////////////////
-// Get image dimensions
+////////////////////////////////////////////////////////
+// Get width of an image
+////////////////////////////////////////////////////////
 int APIENTRY IMGGetWidth(FIBITMAP* nFreeImagePtr)
 {
 	return FreeImage_GetWidth((FIBITMAP*)nFreeImagePtr);
 }
 
+////////////////////////////////////////////////////////
+// Get height of an image
+////////////////////////////////////////////////////////
 int APIENTRY IMGGetHeight(FIBITMAP* nFreeImagePtr)
 {
 	return FreeImage_GetHeight((FIBITMAP*)nFreeImagePtr);
 }
 
-/////////////////////////////////////////
-// Get FreeImage DIB pointer
+////////////////////////////////////////////////////////
+// Get a DIB pointer
+////////////////////////////////////////////////////////
 int APIENTRY IMGGetDIB(FIBITMAP* nFreeImagePtr)
 {
 	return (int)FreeImage_GetBits((FIBITMAP*)nFreeImagePtr);
 }
 
-//////////////////////////////////////////
-// Get FreeImage BITMAPINFO pointer
+////////////////////////////////////////////////////////
+// Get info on a loaded image
+////////////////////////////////////////////////////////
 int APIENTRY IMGGetBitmapInfo(FIBITMAP* nFreeImagePtr)
 {
 	return (int)FreeImage_GetInfo((FIBITMAP*)nFreeImagePtr);
 }
 
-
-////////////////////////////////////////////
-// Blt freeimage to device
+////////////////////////////////////////////////////////
+// Draw an image onto a device context
+////////////////////////////////////////////////////////
 int APIENTRY IMGBlt(FIBITMAP* nFreeImagePtr, int x, int y, int hdc)
 {
 	FIBITMAP* bmp = (FIBITMAP*)nFreeImagePtr;
@@ -188,9 +152,9 @@ int APIENTRY IMGBlt(FIBITMAP* nFreeImagePtr, int x, int y, int hdc)
 	return 1;
 }
 
-
-////////////////////////////////////////////
-// StretchBlt freeimage to device
+////////////////////////////////////////////////////////
+// Draw an image (resized) onto a device context
+////////////////////////////////////////////////////////
 int APIENTRY IMGStretchBlt(FIBITMAP* nFreeImagePtr, int x, int y, int sizex, int sizey, int hdc)
 {
 	FIBITMAP* bmp = (FIBITMAP*)nFreeImagePtr;
