@@ -26,23 +26,10 @@ int APIENTRY RPGCStringContains(VB_STRING pText, VB_STRING theChar)
 {
 	inlineString text = initVbString(pText);				//Text we're operating on
 	inlineString symbol(initVbString(theChar));				//Symbol we need
-	
 	symbol.resize(symbol.len());
-
-	if (strstr(text,symbol))
-	{
-		//Found the char, return true
-		returnVbString(1);
-		return true;	
-	}
-	else
-	{
-		//Didn't find it, return false
-		returnVbString(0);
-		return false;
-	}
-		
+	return (int)(strstr(text,symbol));
 }
+
 //////////////////////////////////////////////////////////////////////////
 // Get the variable at number in an equation
 //////////////////////////////////////////////////////////////////////////
