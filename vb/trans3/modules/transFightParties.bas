@@ -61,8 +61,8 @@ Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long
         End If
 
         'randomly do a critical hit (1 in 20 chance)
-        randomHit = Int(Rnd(1) * lngCrit)
-        If randomHit <> 10 And amount > 0 Then
+        randomHit = Int(Rnd(1) * (lngCrit + 1))
+        If randomHit <> 0 And amount > 0 Then
             amount = amount - dp
         End If
 
@@ -85,8 +85,8 @@ Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long
         End If
     
         'randomly do a critical hit (1 in 20 chance)
-        randomHit = Int(Rnd(1) * lngCrit)
-        If randomHit <> 10 And amount > 0 Then
+        randomHit = Int(Rnd(1) * (lngCrit + 1))
+        If randomHit <> 0 And amount > 0 Then
             amount = amount - dp
         End If
 
