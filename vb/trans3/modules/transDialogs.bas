@@ -18,10 +18,9 @@ Public Const MBR_OK = 1
 Public Const MBR_YES = 6
 Public Const MBR_NO = 7
 
-
 Type CURSOR_MAP
-    x As Long   'x coord of target
-    y As Long   'y coord of target
+    X As Long   'x coord of target
+    Y As Long   'y coord of target
     'if any of the links are -1, then it is determined by the system.
     leftLink As Long    'where do you go when you hit left?
     rightLink As Long   'where do you go when you hit right?
@@ -31,7 +30,7 @@ End Type
 
 Type CURSOR_MAP_TABLE
     list() As CURSOR_MAP
-    length As Long  'actual number of entries in cursor map tbale
+    Length As Long  'actual number of entries in cursor map tbale
 End Type
 
 'list of cursor map tables
@@ -179,7 +178,6 @@ Sub DeleteCursorMapTable(ByVal idx As Long)
     Call CursorMapClear(cursorMapTables(idx))
 End Sub
 
-
 Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     'open file dialog.
     'path - path of starting dialog (including trailing \)
@@ -270,12 +268,12 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         Call DXDrawCanvas(cnvAllPurpose, 0, 0)
         Call DXDrawCanvas(cnv, offsetX, offsetY)
         
-        Dim x As Long
-        Dim y As Long
-        x = offsetX + textSize * 0.2 + 10
-        y = ((cursorNum + 1) * textSize - (textSize / 2)) + offsetY + 50
+        Dim X As Long
+        Dim Y As Long
+        X = offsetX + textSize * 0.2 + 10
+        Y = ((cursorNum + 1) * textSize - (textSize / 2)) + offsetY + 50
         
-        Call CBDrawHand(x, y)
+        Call CBDrawHand(X, Y)
         Call DXRefresh
         
         'first check the joystick...
@@ -351,7 +349,6 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     Call startKeyDownScanning
 End Function
 
-
 Sub cursorDelay()
     '==========================
     'Some people have problems with the speed of the
@@ -366,33 +363,32 @@ Sub cursorDelay()
     
 End Sub
 
-
 Sub CursorMapClear(ByRef ctable As CURSOR_MAP_TABLE)
     'clear the cursor map...
     On Error Resume Next
     ReDim ctable.list(10)
-    ctable.length = 0
+    ctable.Length = 0
 End Sub
+
 Sub CursorMapAdd(ByRef cmap As CURSOR_MAP, ByRef ctable As CURSOR_MAP_TABLE)
     'add an entry to the cursor map...
     On Error Resume Next
     
-    If ctable.length = 0 Then
+    If ctable.Length = 0 Then
         ReDim ctable.list(10)
     End If
     
     'check size of container...
     Dim sz As Long
-    If ctable.length + 1 > UBound(ctable.list) Then
+    If ctable.Length + 1 > UBound(ctable.list) Then
         sz = UBound(ctable.list) * 2
         ReDim Preserve ctable.list(sz)
     End If
     
     'add...
-    ctable.list(ctable.length) = cmap
-    ctable.length = ctable.length + 1
+    ctable.list(ctable.Length) = cmap
+    ctable.Length = ctable.Length + 1
 End Sub
-
 
 Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
     '==============================
@@ -423,12 +419,12 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
         Call DXDrawCanvas(cnv, 0, 0)
         
         'draw the cursor...
-        Dim x As Long
-        Dim y As Long
-        x = ctable.list(cursorNum).x
-        y = ctable.list(cursorNum).y
+        Dim X As Long
+        Dim Y As Long
+        X = ctable.list(cursorNum).X
+        Y = ctable.list(cursorNum).Y
         
-        Call CBDrawHand(x, y)
+        Call CBDrawHand(X, Y)
         
         Call DXRefresh
         
@@ -438,8 +434,8 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             Else
                 cursorNum = cursorNum - 1
             End If
-            If cursorNum < 0 Then cursorNum = ctable.length - 1
-            If cursorNum >= ctable.length Then cursorNum = 0
+            If cursorNum < 0 Then cursorNum = ctable.Length - 1
+            If cursorNum >= ctable.Length Then cursorNum = 0
             Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             Call cursorDelay
         End If
@@ -449,8 +445,8 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             Else
                 cursorNum = cursorNum - 1
             End If
-            If cursorNum < 0 Then cursorNum = ctable.length - 1
-            If cursorNum >= ctable.length Then cursorNum = 0
+            If cursorNum < 0 Then cursorNum = ctable.Length - 1
+            If cursorNum >= ctable.Length Then cursorNum = 0
             Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             Call cursorDelay
         End If
@@ -460,8 +456,8 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             Else
                 cursorNum = cursorNum + 1
             End If
-            If cursorNum < 0 Then cursorNum = ctable.length - 1
-            If cursorNum >= ctable.length Then cursorNum = 0
+            If cursorNum < 0 Then cursorNum = ctable.Length - 1
+            If cursorNum >= ctable.Length Then cursorNum = 0
             Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             Call cursorDelay
         End If
@@ -471,8 +467,8 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             Else
                 cursorNum = cursorNum + 1
             End If
-            If cursorNum >= ctable.length Then cursorNum = 0
-            If cursorNum < 0 Then cursorNum = ctable.length - 1
+            If cursorNum >= ctable.Length Then cursorNum = 0
+            If cursorNum < 0 Then cursorNum = ctable.Length - 1
             Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             Call cursorDelay
         End If
@@ -500,21 +496,19 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
     CursorMapRun = cursorNum
 End Function
 
-
-Function max3(ByVal x As Long, ByVal y As Long, ByVal z As Long) As Long
+Function max3(ByVal X As Long, ByVal Y As Long, ByVal z As Long) As Long
     'return the max of 3 vars
     On Error Resume Next
-    If z >= x And z >= y Then
+    If z >= X And z >= Y Then
         max3 = z
     End If
-    If y >= x And y >= z Then
-        max3 = y
+    If Y >= X And Y >= z Then
+        max3 = Y
     End If
-    If x >= z And x >= y Then
-        max3 = x
+    If X >= z And X >= Y Then
+        max3 = X
     End If
 End Function
-
 
 Public Function MBox(ByVal text As String, Optional ByVal title As String = "", Optional ByVal mBoxType As Long = MBT_OK, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = "") As Integer
     'calls the mbox function (pops up an eqivalent to mwin.)
@@ -544,8 +538,6 @@ Public Function MBox(ByVal text As String, Optional ByVal title As String = "", 
             Exit Function
     End Select
 End Function
-
-
 
 Function SelectionBox(ByVal text As String, ByRef options() As String, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = "") As Long
     On Error Resume Next
@@ -612,33 +604,11 @@ Function SelectionBox(ByVal text As String, ByRef options() As String, Optional 
     Dim offsetY As Long
     offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) / 2
     offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) / 2
-    'Call DXDrawCanvas(cnv, offsetX, offsetY)
-    
-    'Dim ctable As CURSOR_MAP_TABLE
-    'Call CursorMapClear(ctable)
-    'Dim cm As CURSOR_MAP
-    'cm.leftLink = -1
-    'cm.rightLink = -1
-    'cm.upLink = -1
-    'cm.downLink = -1
-    
-    'For t = 0 To UBound(options) - 1
-    '    Dim X As Long
-    '    Dim Y As Long
-    '    X = offsetX + textSize * 0.2
-    '    Y = (t + 2 + oy) * textSize - (textSize / 2) + offsetY
-    '    cm.X = X
-    '    cm.Y = Y
-    '    Call CursorMapAdd(cm, ctable)
-    'Next t
-    
-    'SelectionBox = CursorMapRun(ctable)
     
     Dim cursorNum As Long
     cursorNum = 0
     
     Dim done As Boolean
-    
     
     Call cursorDelay
     
@@ -647,12 +617,12 @@ Function SelectionBox(ByVal text As String, ByRef options() As String, Optional 
         Call DXDrawCanvas(cnv, offsetX, offsetY)
         
         'draw the cursor...
-        Dim x As Long
-        Dim y As Long
-        x = offsetX + textSize * 0.2
-        y = (cursorNum + 2 + oy) * textSize - (textSize / 2) + offsetY
+        Dim X As Long
+        Dim Y As Long
+        X = offsetX + textSize * 0.2
+        Y = (cursorNum + 2 + oy) * textSize - (textSize / 2) + offsetY
         
-        Call CBDrawHand(x, y)
+        Call CBDrawHand(X, Y)
         
         Call DXRefresh
         
@@ -683,5 +653,3 @@ Function SelectionBox(ByVal text As String, ByRef options() As String, Optional 
     Call DXRefresh
     Call FlushKB
 End Function
-
-

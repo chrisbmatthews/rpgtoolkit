@@ -131,8 +131,6 @@ Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
     errorsA = 0
     num = FreeFile()
 
-    'call tracestring("openprogram: " + filen$)
-
     If Trim(Right(file, 1)) = "\" Then Exit Sub
     If Not FileExists(file) Then Exit Sub
     filen = file

@@ -25,7 +25,7 @@ Public enePath As String             'enemy path
 Public gamPath As String             'mainForm file path
 Public bmpPath As String             'bmp files
 Public statusPath As String          'status effect path
-Public miscPath As String            'miscellaneous path (ie, anims)
+Public miscPath As String            'miscellaneous path (ie. anims)
 Public pluginPath As String          'plugin path
 Public savPath As String             'saved games
 Public projectPath As String         'project path
