@@ -1489,9 +1489,9 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
             Call DXRefresh
 
         End If
-        
+
         renderNow = True
-        
+
     End If
 
 End Function

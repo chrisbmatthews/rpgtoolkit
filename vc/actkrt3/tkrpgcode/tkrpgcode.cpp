@@ -11,6 +11,10 @@
 #include <string.h>
 #include <list>
 
+#include <wtypes.h>
+#include <oleauto.h>
+#include <atlbase.h>
+
 #include "tkrpgcode.h"
 
 //////////////////////////
@@ -47,11 +51,8 @@ int APIENTRY RPGCShutdown()
 // return an index we can use to refer to that heap
 HEAP_HANDLE APIENTRY RPGCCreateHeap()
 {
-	int nRet = 0;
-
-	RPGCODE_HEAP* pHeap = new RPGCODE_HEAP;
+	RPGCODE_HEAP *const pHeap = new RPGCODE_HEAP;
 	g_HeapList.push_back(pHeap);
-
 	return (HEAP_HANDLE)pHeap;
 }
 
@@ -59,7 +60,7 @@ HEAP_HANDLE APIENTRY RPGCCreateHeap()
 //destroy a heap
 int APIENTRY RPGCDestroryHeap(HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (p)
 	{
 		g_HeapList.remove(p);
@@ -75,7 +76,7 @@ int APIENTRY RPGCDestroryHeap(HEAP_HANDLE heap)
 // dValue - value of var
 int APIENTRY RPGCSetNumVar(char* pstrVarName, double dValue, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 
@@ -88,30 +89,41 @@ int APIENTRY RPGCSetNumVar(char* pstrVarName, double dValue, HEAP_HANDLE heap)
 ///////////////////////////////////
 // Set literal var
 // pstrVarName - name of variable
-// dValue - value of var
-int APIENTRY RPGCSetLitVar(char* pstrVarName, char* pstrValue, HEAP_HANDLE heap)
+// pstrValue - value of var
+int APIENTRY RPGCSetLitVar(const char *pstrVarName, BSTR pstrValue, HEAP_HANDLE heap, const int byteLen)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
+
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 
-	std::string strVarName = pstrVarName;
-	std::string strValue;
-	if (pstrValue == NULL)
-		strValue = "";
-	else
-		strValue = pstrValue;
-	p->litVars[strVarName] = strValue;
+	p->litVars[pstrVarName].theBstr = pstrValue;
+	p->litVars[pstrVarName].theByteLen = byteLen;
+
 	return 1;
+
 }
 
+
+int APIENTRY RPGCGetLitVarByteLen(const char *pStrVarName, const HEAP_HANDLE heap)
+{
+
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
+
+	if (pStrVarName == NULL || p == NULL) 
+		return 0;
+
+	return p->litVars[pStrVarName].theByteLen;
+
+}
 
 ///////////////////////////////////
 // Get numerical var
 // pstrVarName - name of variable
 double APIENTRY RPGCGetNumVar(char* pstrVarName, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 
@@ -131,39 +143,37 @@ double APIENTRY RPGCGetNumVar(char* pstrVarName, HEAP_HANDLE heap)
 ///////////////////////////////////
 // Get literal var
 // pstrVarName - name of variable
-int APIENTRY RPGCGetLitVar(char* pstrVarName, char* pstrToVal, HEAP_HANDLE heap)
+BSTR APIENTRY RPGCGetLitVar(const char *pstrVarName, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 
 	std::string strVarName = pstrVarName;
+
 	if (p->litVars.count(strVarName) > 0)
-	{
-		strcpy(pstrToVal, p->litVars[strVarName].c_str());
-		return strlen(pstrToVal);
-	}
+		return p->litVars[strVarName].theBstr.Copy();
+
 	else
-	{
-		strcpy(pstrToVal, "");
-		return 0;
-	}
+		return NULL;
+
 }
 
 
 ///////////////////////////////////
 // Get length of lit var
 // pstrVarName - name of variable
-int APIENTRY RPGCGetLitVarLen(char* pstrVarName, HEAP_HANDLE heap)
+int APIENTRY RPGCGetLitVarLen(const char *pstrVarName, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 
 	std::string strVarName = pstrVarName;
 	if (p->litVars.count(strVarName) > 0)
 	{
-		return strlen(p->litVars[strVarName].c_str());
+		return p->litVars[strVarName].theBstr.Length();
 	}
 	else
 	{
@@ -177,7 +187,7 @@ int APIENTRY RPGCGetLitVarLen(char* pstrVarName, HEAP_HANDLE heap)
 // numerical var set
 int APIENTRY RPGCCountNum(HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (p == NULL) 
 		return 0;
 	return p->numVars.size();
@@ -189,7 +199,7 @@ int APIENTRY RPGCCountNum(HEAP_HANDLE heap)
 // literal var set
 int APIENTRY RPGCCountLit(HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (p == NULL) 
 		return 0;
 	return p->litVars.size();
@@ -200,7 +210,7 @@ int APIENTRY RPGCCountLit(HEAP_HANDLE heap)
 // Get the i-th numerical var name
 int APIENTRY RPGCGetNumName(int nItrOffset, char* pstrToVal, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (p == NULL) 
 		return 0;
 
@@ -218,7 +228,7 @@ int APIENTRY RPGCGetNumName(int nItrOffset, char* pstrToVal, HEAP_HANDLE heap)
 // Get the i-th numerical var name
 int APIENTRY RPGCGetLitName(int nItrOffset, char* pstrToVal, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (p == NULL) 
 		return 0;
 
@@ -236,7 +246,7 @@ int APIENTRY RPGCGetLitName(int nItrOffset, char* pstrToVal, HEAP_HANDLE heap)
 // Clear all vars
 int APIENTRY RPGCClearAll(HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (p == NULL) 
 		return 0;
 
@@ -250,7 +260,7 @@ int APIENTRY RPGCClearAll(HEAP_HANDLE heap)
 // Kill a num var
 int APIENTRY RPGCKillNum(char* pstrVarName, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 
@@ -264,7 +274,7 @@ int APIENTRY RPGCKillNum(char* pstrVarName, HEAP_HANDLE heap)
 // Kill a lit var
 int APIENTRY RPGCKillLit(char* pstrVarName, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 
@@ -278,7 +288,7 @@ int APIENTRY RPGCKillLit(char* pstrVarName, HEAP_HANDLE heap)
 // Determine if a var exists
 int APIENTRY RPGCNumExists(char* pstrVarName, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 
@@ -291,7 +301,7 @@ int APIENTRY RPGCNumExists(char* pstrVarName, HEAP_HANDLE heap)
 // Determine if a var exists
 int APIENTRY RPGCLitExists(char* pstrVarName, HEAP_HANDLE heap)
 {
-	RPGCODE_HEAP* p = heapHandleToPtr(heap);
+	RPGCODE_HEAP *const p = heapHandleToPtr(heap);
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 

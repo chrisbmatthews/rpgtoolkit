@@ -25,9 +25,9 @@ Public Declare Function RPGCShutdown Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCCreateHeap Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCDestroyHeap Lib "actkrt3.dll" (ByVal heapID As Long) As Long
 Public Declare Function RPGCSetNumVar Lib "actkrt3.dll" (ByVal varname As String, ByVal value As Double, ByVal heapID As Long) As Long
-Public Declare Function RPGCSetLitVar Lib "actkrt3.dll" (ByVal varname As String, ByVal value As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCSetLitVar Lib "actkrt3.dll" (ByVal varname As String, ByVal value As String, ByVal heapID As Long, ByVal theByteLen As Long) As Long
 Public Declare Function RPGCGetNumVar Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Double
-Public Declare Function RPGCGetLitVar Lib "actkrt3.dll" (ByVal varname As String, ByVal inSpaceAllocated As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCGetLitVar Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As String
 Public Declare Function RPGCGetLitVarLen Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCCountNum Lib "actkrt3.dll" (ByVal heapID As Long) As Long
 Public Declare Function RPGCCountLit Lib "actkrt3.dll" (ByVal heapID As Long) As Long
@@ -38,6 +38,7 @@ Public Declare Function RPGCKillNum Lib "actkrt3.dll" (ByVal varname As String, 
 Public Declare Function RPGCKillLit Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCNumExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCLitExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
+Private Declare Function RPGCGetLitVarByteLen Lib "actkrt3.dll" (ByVal theVar As String, ByVal theHeap As Long) As Long
 
 '=========================================================================
 ' Declarations for the actkrt3.dll redirection exports
@@ -459,17 +460,17 @@ End Function
 Public Function getRedirect(ByVal originalMethod As String) As String
 
     On Error Resume Next
-    Dim Length As Long
+    Dim length As Long
     
     originalMethod = UCase$(replace(originalMethod, "#", vbNullString))
     If redirectExists(originalMethod) Then
         Dim getStr As String * 4048
-        Length = RPGCGetRedirect(originalMethod, getStr)
-        If Length = 0 Then
+        length = RPGCGetRedirect(originalMethod, getStr)
+        If length = 0 Then
             getRedirect = originalMethod
             Exit Function
         End If
-        getRedirect = Mid$(getStr, 1, Length)
+        getRedirect = Mid$(getStr, 1, length)
     Else
         getRedirect = vbNullString
     End If
@@ -484,14 +485,14 @@ Public Function getRedirectName(ByVal Index As Long) As String
     On Error Resume Next
     
     Dim max As Long
-    Dim Length As Long
+    Dim length As Long
     max = RPGCCountRedirects()
     If Index > max - 1 Or Index < 0 Then
         getRedirectName = vbNullString
     Else
         Dim inBuf As String * 4024
-        Length = RPGCGetRedirectName(Index, inBuf)
-        getRedirectName = Mid$(inBuf, 1, Length)
+        length = RPGCGetRedirectName(Index, inBuf)
+        getRedirectName = Mid$(inBuf, 1, length)
     End If
 
 End Function
@@ -870,7 +871,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
     Dim numA As Double      ' Numerical value
     Dim litA As String      ' Literal value
     Dim p As Long           ' For loop control variable
-    Dim Length As Long      ' Length of text
+    Dim length As Long      ' Length of text
     Dim part As String      ' A character
     Dim checkIt As Boolean  ' In quotes?
     Dim newPos As Long      ' New position
@@ -936,10 +937,10 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                             '------
 
             ' Get the length of the text
-            Length = Len(Text)
+            length = Len(Text)
 
             ' Check if text is in quotes
-            For p = 1 To Length
+            For p = 1 To length
                 If Mid$(Text, p, 1) = ("""") Then
                     checkIt = True
                     Exit For
@@ -948,13 +949,13 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
 
             If (checkIt) Then
                 ' It is!
-                For p = 1 To Length
+                For p = 1 To length
                     If Mid$(Text, p, 1) = ("""") Then
                         newPos = p
                         Exit For
                     End If
                 Next p
-                For p = (newPos + 1) To (Length)
+                For p = (newPos + 1) To (length)
                     part = Mid$(Text, p, 1)
                     If ((part = ("""")) Or (LenB(part) = 0)) Then
                         lit = sendText
@@ -1036,14 +1037,14 @@ End Sub
 Public Function GetNumName(ByVal Index As Integer, ByVal heapID As Long) As String
     On Error Resume Next
     
-    Dim max As Long, Length As Long
+    Dim max As Long, length As Long
     max = RPGCCountNum(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetNumName = vbNullString
     Else
         Dim inBuf As String * 4024
-        Length = RPGCGetNumName(Index, inBuf, heapID)
-        GetNumName = Mid$(inBuf, 1, Length)
+        length = RPGCGetNumName(Index, inBuf, heapID)
+        GetNumName = Mid$(inBuf, 1, length)
     End If
 End Function
 
@@ -1053,14 +1054,14 @@ End Function
 Public Function GetLitName(ByVal Index As Integer, ByVal heapID As Long) As String
     On Error Resume Next
     
-    Dim max As Long, Length As Long
+    Dim max As Long, length As Long
     max = RPGCCountLit(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetLitName = vbNullString
     Else
         Dim inBuf As String * 4024
-        Length = RPGCGetLitName(Index, inBuf, heapID)
-        GetLitName = Mid$(inBuf, 1, Length)
+        length = RPGCGetLitName(Index, inBuf, heapID)
+        GetLitName = Mid$(inBuf, 1, length)
     End If
 End Function
 
@@ -1165,10 +1166,10 @@ Public Function variType(ByVal var As String, ByVal heapID As Long) As Long
 
     On Error Resume Next
     
-    Dim a As String, Length As Long, pos As Long, typeIt As Long, part As String
+    Dim a As String, length As Long, pos As Long, typeIt As Long, part As String
     a$ = var$
-    Length = Len(a$)
-    For pos = 1 To Length
+    length = Len(a$)
+    For pos = 1 To length
         part$ = Mid$(a$, pos, 1)
         If part$ = "$" Then typeIt = 1
         If part$ = "!" Then typeIt = 2
@@ -1442,7 +1443,7 @@ End Function
 '=========================================================================
 Public Function SetLitVar(ByVal varname As String, ByVal val As String, ByVal heapID As Long) As Long
     On Error Resume Next
-    SetLitVar = RPGCSetLitVar(UCase$(varname), val, heapID)
+    SetLitVar = RPGCSetLitVar(UCase$(varname), val, heapID, LenB(val))
 End Function
 
 '=========================================================================
@@ -1457,16 +1458,12 @@ End Function
 ' Get a literal variable
 '=========================================================================
 Public Function GetLitVar(ByVal varname As String, ByVal heapID As Long) As String
-    On Error Resume Next
-    Dim l As Long, Length As Long
-    
-    l = RPGCGetLitVarLen(UCase$(varname), heapID)
-    If l > 0 Then
-        l = l + 1
-        Dim getStr As String * 4048
-        Length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
-        GetLitVar = Mid$(getStr, 1, Length)
-    Else
-        GetLitVar = vbNullString
+    Dim var As String, varLen As Long, valLen As Long
+    var = UCase$(varname)
+    varLen = RPGCGetLitVarByteLen(var, heapID)
+    GetLitVar = LeftB$(RPGCGetLitVar(var, heapID), varLen)
+    valLen = varLen - LenB(GetLitVar)
+    If (valLen) Then
+        GetLitVar = GetLitVar & String$(valLen * 0.5, vbNullChar)
     End If
 End Function

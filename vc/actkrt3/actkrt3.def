@@ -202,3 +202,5 @@ EXPORTS
 	;RPGCReplaceOutsideQuotes	@243
 	;RPGCGetBrackets		@244
 	;RPGCGetCommandName	@245
+
+	RPGCGetLitVarByteLen @ 246

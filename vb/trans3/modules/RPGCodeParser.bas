@@ -1036,7 +1036,7 @@ Public Function GetParameters(ByRef Text As String, ByRef theProgram As RPGCodeP
         Select Case dataType
             Case DT_LIT
                 ret(a - 1).dataType = DT_LIT
-                ret(a - 1).lit = Trim$(lit)
+                ret(a - 1).lit = lit
             Case DT_NUM
                 ret(a - 1).dataType = DT_NUM
                 ret(a - 1).num = num
