@@ -48,7 +48,7 @@ method CTest::function(CTestTwo obj)
 	m_myObjectTwo = obj!
 }
 
-While the advantages of this are incredible, you no longer have an obvious way to take *any* type of object. If you want to acomplish this, you could use the undocumented "interface" keyword. An interfaces is a class that has no code, and as a result cannot be created directly. Say CTest::function() can take any object, so long as it has a run() method; you might code the following:
+While the advantages of this are incredible, you no longer have an obvious way to take *any* type of object. If you want to acomplish this, you could use the undocumented "interface" keyword. An interface is a class that has no code, and as a result cannot be created directly. Say CTest::function() can take any object, so long as it has a run() method; you might code the following:
 
 interface IRun
 {
