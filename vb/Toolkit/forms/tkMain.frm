@@ -240,7 +240,7 @@ Begin VB.MDIForm tkMainForm
             NumListImages   =   11
             BeginProperty ListImage1 {2C247F27-8591-11D1-B16A-00C0F0283628} 
                Picture         =   "tkMain.frx":CB04
-               Key             =   ""
+               Key             =   "New..."
             EndProperty
             BeginProperty ListImage2 {2C247F27-8591-11D1-B16A-00C0F0283628} 
                Picture         =   "tkMain.frx":D09E
@@ -248,15 +248,15 @@ Begin VB.MDIForm tkMainForm
             EndProperty
             BeginProperty ListImage3 {2C247F27-8591-11D1-B16A-00C0F0283628} 
                Picture         =   "tkMain.frx":D638
-               Key             =   ""
+               Key             =   "Open"
             EndProperty
             BeginProperty ListImage4 {2C247F27-8591-11D1-B16A-00C0F0283628} 
                Picture         =   "tkMain.frx":D9D2
-               Key             =   ""
+               Key             =   "Save"
             EndProperty
             BeginProperty ListImage5 {2C247F27-8591-11D1-B16A-00C0F0283628} 
                Picture         =   "tkMain.frx":DF6C
-               Key             =   ""
+               Key             =   "Save All"
             EndProperty
             BeginProperty ListImage6 {2C247F27-8591-11D1-B16A-00C0F0283628} 
                Picture         =   "tkMain.frx":E306
@@ -272,7 +272,7 @@ Begin VB.MDIForm tkMainForm
             EndProperty
             BeginProperty ListImage9 {2C247F27-8591-11D1-B16A-00C0F0283628} 
                Picture         =   "tkMain.frx":EDD4
-               Key             =   ""
+               Key             =   "Test Game"
             EndProperty
             BeginProperty ListImage10 {2C247F27-8591-11D1-B16A-00C0F0283628} 
                Picture         =   "tkMain.frx":F16E
@@ -908,8 +908,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2470,7 +2470,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "2:29 PM"
+            TextSave        =   "3:52 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2578,10 +2578,12 @@ Begin VB.MDIForm tkMainForm
       End
       Begin VB.Menu sub46 
          Caption         =   "-"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuShowSplashScreen 
          Caption         =   "Show Splash Screen"
          Checked         =   -1  'True
+         Visible         =   0   'False
       End
    End
    Begin VB.Menu buildmnu 
@@ -2687,6 +2689,8 @@ Public boardCount As Integer
 '=========================================================================================
 
 Public toolTop As Integer   'top of tools
+
+Public lastIconForm As Form
 
 Private cnvBkgImage As Long 'background image
 
@@ -2956,8 +2960,6 @@ Private Function isFolder(ByVal path As String) As Boolean: On Error GoTo folder
     Close #num
     isFolder = False
 
-    DoEvents
-
     Exit Function
 foldererr:
     isFolder = True
@@ -2965,95 +2967,70 @@ foldererr:
 End Function
 
 Public Sub fillTree(ByVal parentNode As String, ByVal folder As String): On Error Resume Next
-'===================================================
-'Fills the flyout file tree with the projects' files
-'===================================================
-'Edited by Delano for 3.0.4 new isometric tilesets.
-'Added .iso to the list of openable files - opens in tile editor.
-'Added isometric.ico to ImageList1 at index 17.
+    '===================================================
+    'Fills the flyout file tree with the projects' files
+    '===================================================
+
+    Dim a As String, b As String, gfx As Long
+
+    a = Dir(folder & "*.*", vbDirectory)
+    a = Dir()
+    a = Dir()
+
+    With TreeView1.Nodes
     
-    'first fill with folders...
-    
-    Dim a As String
-    Dim b As String
-    Dim ex As String
-    
-    a$ = Dir$(folder + "*.*", vbDirectory)
-    a$ = Dir$()
-    a$ = Dir$()
-    Do While a$ <> ""
-        If (isFolder(folder + a$)) Then
-            If parentNode <> "" Then
-                Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, a$, a$, 1)
-                'do subtrees...
-                Call fillTree(a$, folder + a$ + "\")
+        Do Until a = ""
+            If isFolder(folder & a) Then
+                If parentNode <> "" Then
+                    Call .Add(parentNode, tvwChild, a, a, 1)
+                    'do subtrees...
+                    Call fillTree(a, folder & a & "\")
                 
-                'reset dir counter
-                b$ = Dir$(folder + "*.*", vbDirectory)
-                Do While b$ <> a$
-                    b$ = Dir$()
-                Loop
+                    'reset dir counter
+                    b = Dir(folder & "*.*", vbDirectory)
+                    Do Until a = b
+                        b = Dir()
+                    Loop
+                Else
+                    Call .Add(, , a, a, 1)
+                    'do subtrees...
+                    Call fillTree(a, folder & a & "\")
+                
+                    'reset dir counter
+                    b = Dir(folder & "*.*", vbDirectory)
+                    Do Until a = b
+                        b = Dir()
+                    Loop
+                End If
             Else
-                Call tkMainForm.TreeView1.Nodes.Add(, , a$, a$, 1)
-                'do subtrees...
-                Call fillTree(a$, folder + a$ + "\")
-                
-                'reset dir counter
-                b$ = Dir$(folder + "*.*", vbDirectory)
-                Do While b$ <> a$
-                    b$ = Dir$()
-                Loop
+                Select Case UCase(commonRoutines.extention(a))
+                    Case "GAM": gfx = 3
+                    Case "TST", "GPH": gfx = 4
+                    Case "TAN": gfx = 5
+                    Case "BRD": gfx = 6
+                    Case "PRG": gfx = 7
+                    Case "TEM": gfx = 8
+                    Case "ITM": gfx = 9
+                    Case "ENE": gfx = 10
+                    Case "BKG": gfx = 11
+                    Case "SPC": gfx = 12
+                    Case "STE": gfx = 13
+                    Case "FNT": gfx = 14
+                    Case "ANM": gfx = 15
+                    Case "TBM": gfx = 16
+                    Case "ISO": gfx = 17
+                    Case Else: gfx = 2
+                End Select
+                If parentNode <> "" Then
+                    Call .Add(parentNode, tvwChild, a, a, gfx)
+                Else
+                    Call .Add(, , a, a, gfx)
+                End If
             End If
-        End If
-        a$ = Dir$()
-    Loop
+            a = Dir()
+        Loop
     
-    'now fill with files...
-    a$ = Dir$(folder + "*.*")
-    Do While a$ <> ""
-        Dim gfx As Long
-        gfx = 2
-        ex$ = UCase$(GetExt(a$))
-        Select Case ex$
-            Case "GAM":
-                gfx = 3
-            Case "TST", "GPH":
-                gfx = 4
-            Case "TAN":
-                gfx = 5
-            Case "BRD":
-                gfx = 6
-            Case "PRG":
-                gfx = 7
-            Case "TEM":
-                gfx = 8
-            Case "ITM":
-                gfx = 9
-            Case "ENE":
-                gfx = 10
-            Case "BKG":
-                gfx = 11
-            Case "SPC":
-                gfx = 12
-            Case "STE":
-                gfx = 13
-            Case "FNT":
-                gfx = 14
-            Case "ANM":
-                gfx = 15
-            Case "TBM":
-                gfx = 16
-            Case "ISO":         'Added for new .iso isometric tilesets.
-                gfx = 17        'Added isometric.ico to ImageList1 at this index.
-        End Select
-        
-        If parentNode <> "" Then
-            Call tkMainForm.TreeView1.Nodes.Add(parentNode, tvwChild, a$, a$, gfx)
-        Else
-            Call tkMainForm.TreeView1.Nodes.Add(, , a$, a$, gfx)
-        End If
-        a$ = Dir$()
-    Loop
+    End With
 
 End Sub
 
@@ -3072,21 +3049,18 @@ Sub refreshOpenFileList(): On Error GoTo frmerror
     Dim filename As String
     For cnt = 2 To Forms.count - 1
         Set frm = Forms(cnt)
-        'If frm.formType() = FT_TILE Then
-            filename = insideBrackets(frm.Caption)
-            If filename <> "" And frm.formType() >= FT_BOARD Then
-                If Not (anError) Then
-                    Set theForms(c) = frm
-                    c = c + 1
-                Else
-                    anError = False
-                End If
+        filename = insideBrackets(frm.Caption)
+        If filename <> "" And frm.formType() >= FT_BOARD Then
+            If Not (anError) Then
+                Set theForms(c) = frm
+                c = c + 1
+            Else
+                anError = False
             End If
-        'End If
+        End If
     Next cnt
     
     countOfForms = c - 1
-    
     
     Dim c2 As Long
     
@@ -3230,7 +3204,7 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
     Exit Sub
 End Sub
 
-Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
 '===========================================================
 'MouseDown event on the flyout tileset viewer.
 '===========================================================
@@ -3254,14 +3228,14 @@ Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, x 
     If iMetric = 0 Then
         'Not isometric.
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tileX = Int(x / 32)                                                        'x-tile clicked.
+        tileX = Int(X / 32)                                                        'x-tile clicked.
     Else
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(x / 64)
+        tileX = Int(X / 64)
     End If
     
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
-    tileY = Int(y / 32)
+    tileY = Int(Y / 32)
     
     'Alterations for the scroller. Now scrolls row by row.
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
@@ -3446,7 +3420,7 @@ Private Sub mnuShowSplashScreen_Click()
     End If
 End Sub
 
-Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -3488,9 +3462,7 @@ Private Sub ProjectListSize_Timer()
 End Sub
 
 Private Sub ReadCommandLine_Timer()
-
-    ' ! ADDED BY KSNiloc...
-    
+   
     On Error Resume Next
     
     DoEvents
@@ -3509,7 +3481,7 @@ Private Sub ReadCommandLine_Timer()
             .mnuToolkit.Visible = False
             .mnuBuild.Visible = False
             .mnuWindow.Visible = False
-            .Show
+            Call .Show
             Dim fCaption As String
             Dim filename As String
             fCaption = Command
@@ -3526,8 +3498,9 @@ Private Sub ReadCommandLine_Timer()
             If Top < 0 Then Top = 0
             DoEvents
             If fCaption <> "Untitled" Then
-                .OpenProgram Command
+                Call .OpenProgram(Command)
                 rpgcodeList(activeRPGCodeIndex).prgName = Command
+                CommonGlobals.filename(2) = Command
             End If
         End With
     End If
@@ -3586,16 +3559,11 @@ ErrorHandler:
 End Sub
 
 Private Sub MDIForm_Activate()
- 'Setup the docking/undocking toolbars!
-
- ' {-KSNiloc-}
- 
- 'Tools bar...
- Set ToolsTopBar.theForm = leftBarContainer
- Set NewBarTop.theForm = newBarContainerContainer
- tilesetContainer.height = Me.height - 50
- MDIForm_Resize
-
+    Set ToolsTopBar.theForm = leftBarContainer
+    Set NewBarTop.theForm = newBarContainerContainer
+    tilesetContainer.height = Me.height - 50
+    Call MDIForm_Resize
+    Call addCommonIcons(Me)
 End Sub
 
 Private Sub MDIForm_Load(): On Error Resume Next
@@ -3603,7 +3571,6 @@ Private Sub MDIForm_Load(): On Error Resume Next
 'Call added for isometrics, 3.0.4
 
     Call createIsoMask
-    
     Call LocalizeForm(Me)
     
     toolTop = 240
@@ -3860,8 +3827,8 @@ Private Sub Option5_Click(): On Error Resume Next
     Call activeAnimation.Option5_Click
 End Sub
 
-Private Sub palettebox_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    Call activeTile.palettebox_MouseDown(button, Shift, x, y)
+Private Sub palettebox_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+    Call activeTile.palettebox_MouseDown(button, Shift, X, Y)
 End Sub
 
 Private Sub pausebar_Change(): On Error Resume Next
@@ -3956,7 +3923,7 @@ Private Sub rightbar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub rightbar_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub rightbar_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
     'ignoreFocus = False
     'rightbar.SetFocus
     'If rightbar.width = 2730 Then
@@ -4209,19 +4176,23 @@ Private Sub tileTool_Click(Index As Integer): On Error Resume Next
     Call activeTile.ToolSet(Index)
 End Sub
 
-Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    Call activeBoard.ChangeTileType(button, Shift, x, y)
+Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+    Call activeBoard.ChangeTileType(button, Shift, X, Y)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
     Call Me.Arrange(2)
 End Sub
 
+Private Sub timerIconRefresh_Timer()
+    Call addCommonIcons(lastIconForm)
+End Sub
+
 Public Sub toggle_Click(): On Error Resume Next
     Call activeBoard.toggleTileType
 End Sub
 
-Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -4241,7 +4212,7 @@ Private Sub TreeView1_DblClick(): On Error Resume Next
     ignoreFocus = False
 End Sub
 
-Private Sub TreeView1_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub TreeView1_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
     ignoreFocus = True
 End Sub
 
@@ -4296,10 +4267,6 @@ Public Sub ShowPic(ByRef file As String): On Error Resume Next
     
 End Sub
 
-Private Sub wallpaperTimer_Timer(): On Error Resume Next
-    'Call refreshPic
-End Sub
-
 Private Sub xsize_Change(): On Error Resume Next
     Call activeAnimation.xsize_Change
 End Sub
@@ -4347,7 +4314,7 @@ Private Sub bTools_Title_DblClick()
     of2 = Frame4.Caption
     of3 = Frame5.Caption
     oldTree = bTools_Objects_Tree
-    unDock bTools_Tabs, bTools_Title.Caption, uD
+    Call unDock(bTools_Tabs, bTools_Title.Caption, uD)
     pTools.Visible = False
     popButton(3).Enabled = False
     bTools_Objects_Tree = oldTree

@@ -874,13 +874,14 @@ Public Function initVarSystem() As Boolean
     bRPGCStarted = True
     initVarSystem = bRPGCStarted
     globalHeap = RPGCCreateHeap()
+    Call RPGCEvaluate("1 + 1")
 
     Exit Function
     
 anErr:
     bRPGCStarted = False
     initVarSystem = bRPGCStarted
-    Call MsgBox("Cannot initialize heap system.")
+    Call MsgBox("Cannot initialize heap system-- get the latest actkrt3.dll")
     gGameState = GS_QUIT
 End Function
 

@@ -176,8 +176,12 @@ Sub initDefaults()
     initTime = Timer()
     Call StartTracing("trace.txt")
     If Not (InitRuntime()) Then
-        Call MsgBox("Could not initialize actkrt3.dll.  Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
-        End
+        Call ChDir("C:\Program Files\Toolkit3\")
+        currentDir = CurDir()
+        If Not InitRuntime() Then
+            Call MsgBox("Could not initialize actkrt3.dll.  Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
+            End
+        End If
     End If
     Call initgame
 End Sub

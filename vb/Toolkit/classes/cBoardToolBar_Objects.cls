@@ -95,12 +95,10 @@ End Sub
 '========================================================================
 ' POPULATES_PROGRAMS - Fills the tree view with boards programs.
 '========================================================================
-Private Sub Populate_Programs(layer As Integer)
+Private Sub Populate_Programs(ByVal layer As Integer)
     
     Dim i As Integer, name As String, count As Integer, keytmp As String
     
-    count = 0
-
     ' loop through and add programs (exc. warps)
     For i = 0 To UBound(boardList(mBoard).theData.programName)
         If boardList(mBoard).theData.programName(i) <> "" Then
@@ -129,12 +127,10 @@ End Sub
 '========================================================================
 ' POPULATE_ITEMS - Fills the tree view with boards objects.
 '========================================================================
-Private Sub Populate_Items(Optional layer As Integer)
+Private Sub Populate_Items(Optional ByVal layer As Integer)
  
     Dim i As Integer, name As String, count As Integer, keytmp As String
     
-    count = 0
-
     ' loop through and add programs (exc. warps)
     For i = 0 To UBound(boardList(mBoard).theData.itmName)
         If boardList(mBoard).theData.itmName(i) <> "" Then
@@ -161,12 +157,10 @@ End Sub
 '========================================================================
 ' POPULATE_WARPS - Fills the tree view with boards warps.
 '========================================================================
-Private Sub Populate_Warps(layer As Integer)
+Private Sub Populate_Warps(ByVal layer As Integer)
 
     Dim i As Integer, name As String, count As Integer, keytmp As String
-    
-    count = 0
-    
+   
     ' loop through and add programs (exc. warps)
     For i = 0 To UBound(boardList(mBoard).theData.programName)
         If boardList(mBoard).theData.programName(i) <> "" Then
@@ -195,7 +189,7 @@ End Sub
 '========================================================================
 ' POPULATE_LAYERS - Loops through layers, adding objects
 '========================================================================
-Private Sub Populate_Layers(Optional parent As ePrefix)
+Private Sub Populate_Layers(Optional ByVal parent As ePrefix)
 
     Dim i As Integer, j As Integer, start As Integer, fend As Integer
 
@@ -280,21 +274,21 @@ End Sub
 '========================================================================
 ' POPULATE_OBJECT - Calls the appropiate object routine
 '========================================================================
-Private Sub Populate_Object(object As ePrefix, layer As Integer)
+Private Sub Populate_Object(ByVal object As ePrefix, ByVal layer As Integer)
     Select Case object
         Case eProgram
-            Populate_Programs (layer)
+            Call Populate_Programs(layer)
         Case eItem
-            Populate_Items (layer)
+            Call Populate_Items(layer)
         Case eWarp
-            Populate_Warps (layer)
+            Call Populate_Warps(layer)
     End Select
 End Sub
 
 '========================================================================
 ' KEY - Create appropiate key for treeview item.
 '========================================================================
-Private Function Key(Prefix As ePrefix, Optional tag As ePrefix, Optional id As Integer = -1) As String
+Private Function Key(ByVal Prefix As ePrefix, Optional ByVal tag As ePrefix, Optional ByVal id As Integer = -1) As String
     Key = mPrefix(Prefix).Prefix
     If IsMissing(tag) = False Then Key = Key & "_" & mPrefix(tag).Prefix
     If id <> -1 Then Key = Key & "_" & id
@@ -313,7 +307,7 @@ Public Sub click()
         Case "w_w_"
             mSelected = 2: valid = True
     End Select
-    If valid = True Then
+    If valid Then
         mObject = Right(tkMainForm.bTools_Objects_Tree.SelectedItem.Key, 1)
         activeBoard.PopupMenu activeBoard.mTB
     End If
@@ -372,14 +366,14 @@ Public Sub Edit()
     Dim mObjEdit As String
     Select Case mSelected
         Case 0, 2
-            mObjEdit = "Prg/" & boardList(activeBoardIndex).theData.programName(mObject)
+            mObjEdit = prgPath & boardList(activeBoardIndex).theData.programName(mObject)
         Case 1
-            mObjEdit = "Item/" & boardList(activeBoardIndex).theData.itmName(mObject)
+            mObjEdit = itmPath & boardList(activeBoardIndex).theData.itmName(mObject)
     End Select
-    If FileExists(projectPath$ + mObjEdit) Then
-        Call tkMainForm.openFile(projectPath$ + mObjEdit)
+    If fileExists(projectPath & mObjEdit) Then
+        Call tkMainForm.openFile(projectPath & mObjEdit)
     Else
-        MsgBox ("The object could not be found!")
+        Call MsgBox("The object could not be found!")
     End If
 End Sub
 
@@ -400,10 +394,7 @@ Private Sub Class_Initialize()
     mPrefix(3).Prefix = "l"
     mPrefix(3).name = "layer"
     mPrefix(3).Enum = eLayer
-
-    ' set display value
-    mDisplay = 0
-    
+   
     ' set control value
     tkMainForm.bTools_Objects_Display(mDisplay).value = True
 End Sub

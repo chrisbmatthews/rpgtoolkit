@@ -36,13 +36,13 @@ Private mDisplay As New cBoardToolbar_Display
 Property Get Objects() As cBoardToolbar_Objects
     Set Objects = mObjects
 End Property
-Property Set Objects(newValue As cBoardToolbar_Objects)
+Property Set Objects(ByRef newValue As cBoardToolbar_Objects)
     Set mObjects = newValue
 End Property
 
 Property Get Display() As cBoardToolbar_Display
     Set Display = mDisplay
 End Property
-Property Set Display(newValue As cBoardToolbar_Display)
+Property Set Display(ByRef newValue As cBoardToolbar_Display)
     Set mDisplay = newValue
 End Property

@@ -30,7 +30,7 @@ Option Explicit
 '========================================================================
 Private mDisplay(4) As Integer
 
-Enum eDisplay
+Public Enum eDisplay
     eRedrawAll = 0
     eShowPrograms
     eShowItems
@@ -41,10 +41,10 @@ End Enum
 '========================================================================
 ' PUBLIC PROPERTIES
 '========================================================================
-Property Get Setting(id As eDisplay) As Integer
+Public Property Get Setting(ByVal id As eDisplay) As Integer
     Setting = mDisplay(id)
 End Property
-Property Let Update(id As Integer, ByVal newValue As Integer)
+Public Property Let Update(ByVal id As Integer, ByVal newValue As Integer)
     mDisplay(id) = newValue
     Select Case id
         Case 0: activeBoard.drawLayers
@@ -57,20 +57,9 @@ End Property
 '========================================================================
 ' REFRESH - Refresh control values
 '========================================================================
-Sub Refresh()
+Public Sub Refresh()
     Dim i As Integer
     For i = 0 To 4
         tkMainForm.bTools_Display_Option(i).value = mDisplay(i)
     Next i
-End Sub
-
-'========================================================================
-' INITIALISE VARIABLES
-'========================================================================
-Private Sub Class_Initialize()
-    mDisplay(0) = 0
-    mDisplay(1) = 0
-    mDisplay(2) = 0
-    mDisplay(3) = 0
-    mDisplay(4) = 0
 End Sub
