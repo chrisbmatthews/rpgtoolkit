@@ -16,10 +16,10 @@ Attribute VB_Name = "CommonTileset"
 'Tileset module-- defines a tileset
 Option Explicit
 
-Type tilesetHeader  '6 bytes
-    version As Integer  '20=2.0, 21=2.1, etc
-    tilesInSet As Integer 'number of tiles in set
-    detail As Integer   'detail level in set MUST BE UNIFORM!
+Type tilesetHeader              '6 bytes
+    version As Integer          '20=2.0, 21=2.1, etc
+    tilesInSet As Integer       'number of tiles in set
+    detail As Integer           'detail level in set MUST BE UNIFORM!
 End Type
 
 Global tileset As tilesetHeader    'current tileset file
@@ -93,7 +93,7 @@ Function addToTileSet(ByVal file As String) As Integer: On Error GoTo ErrorHandl
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -110,7 +110,7 @@ Function calcInsertionPoint(ByRef ts As tilesetHeader, ByVal num As Long) As Lon
 
 'Called by openTileSet and insertIntoTileSet
 
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim ret As Long
     
     Select Case ts.detail
@@ -157,7 +157,7 @@ Function calcInsertionPoint(ByRef ts As tilesetHeader, ByVal num As Long) As Lon
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -237,15 +237,15 @@ Function getTileNum(ByVal file As String) As Long: On Error GoTo ErrorHandler
 '
 '    'Old code:
 
-    Dim length As Long, t As Long, numb As String, part As String
+    Dim Length As Long, t As Long, numb As String, part As String
     
 
     
-    length = Len(file$)
-    For t = 1 To length
+    Length = Len(file$)
+    For t = 1 To Length
         part$ = Mid$(file$, t, 1)
         If part$ = "." Then
-            numb$ = Mid$(file$, t + 4, length - t)
+            numb$ = Mid$(file$, t + 4, Length - t)
             getTileNum = val(numb$)
             Exit Function
         End If
@@ -254,7 +254,7 @@ Function getTileNum(ByVal file As String) As Long: On Error GoTo ErrorHandler
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -282,7 +282,7 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
     Dim ggg As String * 1
     Dim bbb As String * 1
     
-    Dim num As Long, setType As Long, insertPoint As Long, offset As Long, xx As Long, yy As Long
+    Dim num As Long, setType As Long, insertPoint As Long, Offset As Long, xx As Long, yy As Long
     Dim xCount As Integer, yCount As Integer
     Dim rr As Long, gg As Long, bb As Long
     
@@ -304,7 +304,7 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
         'Tile saving in the advanced tileset editor is handled separately in that module.
         
         'Loop over the isoMaskBmp and on the unmasked (black) area we take the corresponding
-        'pixel from the isoTileMem and put it in the *next available* element in tilemem.
+        'pixel from the old tilemem and put it in the *next available* element in a new tilemem.
         'This way tilemem gets completely filled but the pixels will be in the wrong order
         'for normal tiles.
         
@@ -340,7 +340,7 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
     
     'The tile is now ready for writing: .iso uses the same code as high detail .tst.
 
-    If (setType = TSTTYPE And tileset.detail = detail) Or (isIsoTile And setType = ISOTYPE) Then
+    If (setType = TSTTYPE And tileset.detail = detail) Or (setType = ISOTYPE And tileset.detail = ISODETAIL) Then
         'Header could be read.
         
         'Calculate next insertion point in bytes.
@@ -351,7 +351,7 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
                 Select Case tileset.detail
                 Case 1, ISODETAIL:                      'Iso case is the same.
                         '32x32x16.7 million (32x32x3 bytes)
-                    offset = insertPoint
+                    Offset = insertPoint
                     
                     'Loop over every pixel in the matrix and write its
                     'RGB values to file.
@@ -371,20 +371,20 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
                             
                             'Convert the values to strings and write them to file as 3
                             'sequential bytes.
-                                rrr = Chr$(rr)
-                            Put #num, offset, rrr
-                                ggg = Chr$(gg)
-                            Put #num, offset + 1, ggg
-                                bbb = Chr$(bb)
-                            Put #num, offset + 2, bbb
+                                rrr = chr$(rr)
+                            Put #num, Offset, rrr
+                                ggg = chr$(gg)
+                            Put #num, Offset + 1, ggg
+                                bbb = chr$(bb)
+                            Put #num, Offset + 2, bbb
                             
-                            offset = offset + 3
+                            Offset = Offset + 3
                             Next yy
                         Next xx
                     
                     Case 2:
                         '16x16x16.7 million (16x16x3 bytes)
-                    offset = insertPoint
+                    Offset = insertPoint
                         For xx = 1 To 16
                             For yy = 1 To 16
                         
@@ -398,20 +398,20 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
                                     bb = blue(tilemem(xx, yy))
                                 End If
                             
-                                rrr = Chr$(rr)
-                            Put #num, offset, rrr
-                                ggg = Chr$(gg)
-                            Put #num, offset + 1, ggg
-                                bbb = Chr$(bb)
-                            Put #num, offset + 2, bbb
+                                rrr = chr$(rr)
+                            Put #num, Offset, rrr
+                                ggg = chr$(gg)
+                            Put #num, Offset + 1, ggg
+                                bbb = chr$(bb)
+                            Put #num, Offset + 2, bbb
                             
-                            offset = offset + 3
+                            Offset = Offset + 3
                             Next yy
                         Next xx
                     
                     Case 3, 5:
                         '32x32x256 colors (32x32x1 bytes) (or 16 colors)
-                    offset = insertPoint
+                    Offset = insertPoint
                     
                     'Loop over every pixel in the matrix and write its
                     'RGB value to file.
@@ -420,34 +420,34 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
                         
                                 If tilemem(xx, yy) = -1 Then
                                 'If transparent, set the value as 255.
-                                    rrr = Chr$(255)
+                                    rrr = chr$(255)
                                 Else
                                 'Convert the RGB value to a string.
-                                    rrr = Chr$(tilemem(xx, yy))
+                                    rrr = chr$(tilemem(xx, yy))
                                 End If
                             
                             'Write the colour string to file.
-                            Put #num, offset, rrr
+                            Put #num, Offset, rrr
                             
-                            offset = offset + 1
+                            Offset = Offset + 1
                             Next yy
                         Next xx
                     
                     Case 4, 6:
                         '16x16x256 colors (32x32x1 bytes) (or 16 colors)
-                    offset = insertPoint
+                    Offset = insertPoint
                         For xx = 1 To 16
                             For yy = 1 To 16
                         
                                 If tilemem(xx, yy) = -1 Then
-                                    rrr = Chr$(255)
+                                    rrr = chr$(255)
                                 Else
-                                    rrr = Chr$(tilemem(xx, yy))
+                                    rrr = chr$(tilemem(xx, yy))
                                 End If
                             
-                            Put #num, offset, rrr
+                            Put #num, Offset, rrr
                             
-                            offset = offset + 1
+                            Offset = Offset + 1
                             Next yy
                         Next xx
                 End Select
@@ -473,7 +473,7 @@ End Sub
 Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo ErrorHandler
 '=====================================
 'Opens tile number from a tileset.
-'Loads it into tilemem or isoTileMem
+'Loads it into tilemem
 'file$ is the name, e.g. "default.tst"
 '=====================================
 'Edited by Delano for 3.0.4
@@ -488,7 +488,7 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo E
     Dim ggg As String * 1
     Dim bbb As String * 1
 
-    Dim setType As Long, num As Long, xx As Long, yy As Long, insertPoint As Long, offset As Long
+    Dim setType As Long, num As Long, xx As Long, yy As Long, insertPoint As Long, Offset As Long
     
     'Check the tst header.
     setType = tilesetInfo(file$)
@@ -518,16 +518,16 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo E
                 
                     detail = 1                      'Addition.
                     '32x32x16.7 million
-                    offset = insertPoint
+                    Offset = insertPoint
                     
                     'Loop over every pixel in the tile and and read its RGB values from file.
                     For xx = 1 To 32
                         For yy = 1 To 32
                         
-                            Get #num, offset, rrr
-                            Get #num, offset + 1, ggg
-                            Get #num, offset + 2, bbb
-                            offset = offset + 3
+                            Get #num, Offset, rrr
+                            Get #num, Offset + 1, ggg
+                            Get #num, Offset + 2, bbb
+                            Offset = Offset + 3
                             
                             'Convert the strings to numbers.
                             If Asc(rrr) = 0 And Asc(ggg) = 1 And Asc(bbb) = 2 Then
@@ -542,15 +542,15 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo E
                     
                 Case 2:
                     '16x16x16.7 million
-                    offset = insertPoint
+                    Offset = insertPoint
                     
                     For xx = 1 To 16
                         For yy = 1 To 16
                         
-                            Get #num, offset, rrr
-                            Get #num, offset + 1, ggg
-                            Get #num, offset + 2, bbb
-                            offset = offset + 3
+                            Get #num, Offset, rrr
+                            Get #num, Offset + 1, ggg
+                            Get #num, Offset + 2, bbb
+                            Offset = Offset + 3
                             
                             If Asc(rrr) = 0 And Asc(ggg) = 1 And Asc(bbb) = 2 Then
                                 'Transparent colour.
@@ -564,13 +564,13 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo E
                     
                 Case 3, 5:
                     '32x32x256 (or 16)
-                    offset = insertPoint
+                    Offset = insertPoint
                     
                     For xx = 1 To 32
                         For yy = 1 To 32
                         
-                            Get #num, offset, rrr
-                            offset = offset + 1
+                            Get #num, Offset, rrr
+                            Offset = Offset + 1
                             
                             If Asc(rrr) = 255 Then
                                 'Transparent colour.
@@ -584,13 +584,13 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo E
                     
                 Case 4, 6:
                     '16x16x256 (or 16)
-                    offset = insertPoint
+                    Offset = insertPoint
                     
                     For xx = 1 To 16
                         For yy = 1 To 16
                         
-                            Get #num, offset, rrr
-                            offset = offset + 1
+                            Get #num, Offset, rrr
+                            Offset = Offset + 1
                             
                             If Asc(rrr) = 255 Then
                                 'Transparent colour.
@@ -608,7 +608,7 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo E
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -640,7 +640,7 @@ Function tilesetFilename(ByVal file As String) As String: On Error GoTo ErrorHan
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
