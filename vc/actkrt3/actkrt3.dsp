@@ -211,7 +211,7 @@ SOURCE=.\tkimage\Tkimage.def
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkimage\FreeImageDLL.lib
+SOURCE=.\tkimage\FreeImage.lib
 # End Source File
 # End Group
 # Begin Group "tkzip No. 1"
