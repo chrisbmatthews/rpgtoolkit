@@ -1,0 +1,19 @@
+; tkgfx.def : Declares the module parameters for the DLL.
+
+LIBRARY      "tkimage"
+DESCRIPTION  'tkimage Windows Dynamic Link Library'
+
+EXPORTS
+	IMGInit				@1
+	IMGClose			@2
+	IMGDraw				@3
+	IMGDrawSized		@4
+	IMGLoad				@5
+	IMGFree				@6
+	IMGGetWidth			@7
+	IMGGetHeight		@8
+	IMGGetDIB			@9
+	IMGGetBitmapInfo	@10
+	IMGBlt				@11
+	IMGStretchBlt		@12
+    ; Explicit exports can go here

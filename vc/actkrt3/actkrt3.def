@@ -1,0 +1,165 @@
+; actkrt2.def : Declares the module parameters for the DLL.
+;All contents copyright 2003, Christopher Matthews
+;All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+;Read LICENSE.txt for licensing info
+
+LIBRARY      "actkrt3"
+DESCRIPTION  'actkrt3 Windows Dynamic Link Library'
+
+EXPORTS
+	TKInit				@1
+	TKClose				@2
+
+	;tkgfx...
+	GFXFunctionPtr		@11
+	GFXInit				@12
+	GFXInitScreen		@13
+	GFXAbout			@14
+	GFXdrawtile			@15
+	GFXdrawtilemask		@16
+	GFXdrawpixel		@17
+	GFXdrawboard		@18
+	GFXdrawTstWindow	@19
+	GFXBitBltTransparent @23
+	GFXBitBltTranslucent @24
+	GFXBitBltAdditive	 @25
+	GFXSetCurrentTileString	@26
+	GFXClearTileCache	@27
+	GFXGetDOSColor		 @28
+	GFXKill				@29
+	GFXDrawBoardCNV		@30
+	GFXDrawTileCNV		@31
+	GFXDrawTileMaskCNV	@32
+
+	;tkimage...
+	IMGInit				@35
+	IMGClose			@36
+	IMGDraw				@37
+	IMGDrawSized		@38
+	IMGLoad				@39
+	IMGFree				@40
+	IMGGetWidth			@41
+	IMGGetHeight		@42
+	IMGGetDIB			@43
+	IMGGetBitmapInfo	@44
+	IMGBlt				@45
+	IMGStretchBlt		@46
+
+	;tkzip...
+	ZIPTest				@61
+	ZIPCreate			@62
+	ZIPCloseNew			@63
+	ZIPAdd				@64
+	ZIPOpen				@65
+	ZIPClose			@66
+	ZIPExtract			@67
+	ZIPGetFileCount		@68
+	ZIPGetFile			@69
+	ZIPFileExist		@70
+	ZIPCreateCompoundFile @71
+	ZIPIsCompoundFile	@72
+	ZIPExtractCompoundFile @73
+
+	;tkCanvas...
+	CNVInit				@90
+	CNVShutdown			@91
+	CNVCreate			@92
+	CNVDestroy			@93
+	CNVOpenHDC			@94
+	CNVGetWidth			@95
+	CNVGetHeight		@96
+	CNVGetPixel			@97
+	CNVSetPixel			@98
+	CNVExists			@99
+	CNVCloseHDC			@100
+	CNVBltCanvas		@101
+	CNVBltCanvasTransparent	@102
+	CNVGetRGBColor		@103
+	CNVBltCanvasTranslucent @104
+	CNVResize			@105
+	CNVShiftLeft		@106
+	CNVShiftRight		@107
+	CNVShiftUp			@108
+	CNVShiftDown		@109
+	CNVBltPartCanvas	@110
+	CNVBltTransparentPartCanvas	@111
+	CNVLock				@112
+	CNVUnlock			@113
+
+	;tkDirectX...
+	DXInitGfxMode		@120
+	DXKillGfxMode		@121
+	DXDrawPixel			@122
+	DXRefresh			@123
+	DXLockScreen		@124
+	DXUnlockScreen		@125
+	DXDrawCanvas		@126
+	DXDrawCanvasTransparent	@127
+	DXClearScreen		@128
+	DXDrawText			@129
+	DXDrawCanvasPartial	@130
+	DXDrawCanvasTransparentPartial	@131
+	DXDrawCanvasTranslucent	@132
+	DXCopyScreenToCanvas	@133
+
+	;tkMD5...
+	MD5String			@150
+	MD5File				@151
+
+
+	;tkPLUG
+	PLUGInitSystem		@160
+	PLUGShutdownSystem	@161
+	PLUGBegin			@162
+	PLUGQuery			@163
+	PLUGExecute			@164
+	PLUGEnd				@165
+	PLUGVersion			@166
+	PLUGDescription		@167
+	PLUGType			@168
+	PLUGMenu			@169
+	PLUGFight			@170
+	PLUGFightInform		@171
+	PLUGInputRequested	@172
+	PLUGEventInform		@173
+
+	;tkRPGCode
+	RPGCInit			@180
+	RPGCShutdown		@181
+	RPGCCreateHeap		@182
+	RPGCDestroryHeap	@183
+	RPGCSetNumVar		@184
+	RPGCSetLitVar		@185
+	RPGCGetNumVar		@186
+	RPGCGetLitVar		@187
+	RPGCGetLitVarLen	@188
+	RPGCCountNum		@189
+	RPGCCountLit		@190
+	RPGCGetNumName		@191
+	RPGCGetLitName		@192
+	RPGCClearAll		@193
+	RPGCKillNum			@194
+	RPGCKillLit			@195
+	RPGCNumExists		@196
+	RPGCLitExists		@197
+	RPGCSetRedirect		@198
+	RPGCRedirectExists	@199
+	RPGCGetRedirect		@200
+	RPGCKillRedirect	@201
+	RPGCGetRedirectName	@202
+	RPGCClearRedirects	@203
+	RPGCCountRedirects	@204
+
+	;tkAudiere
+	TKAudiereInit		@210
+	TKAudiereKill		@211
+	TKAudierePlay		@212
+	TKAudiereIsPlaying	@213
+	TKAudiereStop		@214
+	TKAudiereRestart	@215
+	TKAudiereDestroyHandle	@216
+	TKAudiereCreateHandle	@217
+	TKAudiereGetPosition	@218
+	TKAudiereSetPosition	@219
+
+    ; Explicit exports can go here

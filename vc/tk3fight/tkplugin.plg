@@ -1,0 +1,67 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: tkplugin - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo"Release/tkplugin.res" /d "NDEBUG" /d "_AFXDLL" "F:\cvs\v3\vc\tk3fight\tkplugin.rc"" 
+Creating temporary file "C:\DOCUME~1\CHRISM~1\LOCALS~1\Temp\RSP8C.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /Fp"Release/tkplugin.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\cvs\v3\vc\tk3fight\fight.cpp"
+"F:\cvs\v3\vc\tk3fight\tkplugin.cpp"
+"F:\cvs\v3\vc\tk3fight\tkpluginFight.cpp"
+"F:\cvs\v3\vc\tk3fight\tkpluginMenu.cpp"
+"F:\cvs\v3\vc\tk3fight\tkpluginRPGCode.cpp"
+"F:\cvs\v3\vc\tk3fight\sdk\tkplugcallbacks.cpp"
+"F:\cvs\v3\vc\tk3fight\sdk\tkpluginbase.cpp"
+"F:\cvs\v3\vc\tk3fight\sdk\tkpluglocalfns.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\CHRISM~1\LOCALS~1\Temp\RSP8C.tmp" 
+Creating temporary file "C:\DOCUME~1\CHRISM~1\LOCALS~1\Temp\RSP8D.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /Fp"Release/tkplugin.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\cvs\v3\vc\tk3fight\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\CHRISM~1\LOCALS~1\Temp\RSP8D.tmp" 
+Creating temporary file "C:\DOCUME~1\CHRISM~1\LOCALS~1\Temp\RSP8E.tmp" with contents
+[
+/nologo /subsystem:windows /dll /incremental:no /pdb:"Release/tk3fight.pdb" /machine:I386 /def:".\tkplugin.def" /out:"Release/tk3fight.dll" /implib:"Release/tk3fight.lib" 
+.\Release\fight.obj
+.\Release\StdAfx.obj
+.\Release\tkplugin.obj
+.\Release\tkpluginFight.obj
+.\Release\tkpluginMenu.obj
+.\Release\tkpluginRPGCode.obj
+.\Release\tkplugcallbacks.obj
+.\Release\tkpluginbase.obj
+.\Release\tkpluglocalfns.obj
+.\Release\tkplugin.res
+]
+Creating command line "link.exe @C:\DOCUME~1\CHRISM~1\LOCALS~1\Temp\RSP8E.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+fight.cpp
+tkplugin.cpp
+tkpluginFight.cpp
+tkpluginMenu.cpp
+tkpluginRPGCode.cpp
+tkplugcallbacks.cpp
+tkpluginbase.cpp
+tkpluglocalfns.cpp
+Generating Code...
+Linking...
+   Creating library Release/tk3fight.lib and object Release/tk3fight.exp
+
+
+
+<h3>Results</h3>
+tk3fight.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: zlib - Win32 LIB--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\WINDOWS\TEMP\RSP8230.TMP" with contents
+[
+/nologo /ML /W3 /O1 /D "WIN32" /D "NDEBUG" /Fo".\win32\zlib\lib/" /Fd".\win32\zlib\lib/" /FD /c 
+"F:\Source\vc\zlib\adler32.c"
+"F:\Source\vc\zlib\compress.c"
+"F:\Source\vc\zlib\crc32.c"
+"F:\Source\vc\zlib\deflate.c"
+"F:\Source\vc\zlib\example.c"
+"F:\Source\vc\zlib\gzio.c"
+"F:\Source\vc\zlib\infblock.c"
+"F:\Source\vc\zlib\infcodes.c"
+"F:\Source\vc\zlib\inffast.c"
+"F:\Source\vc\zlib\inflate.c"
+"F:\Source\vc\zlib\inftrees.c"
+"F:\Source\vc\zlib\infutil.c"
+"F:\Source\vc\zlib\trees.c"
+"F:\Source\vc\zlib\uncompr.c"
+"F:\Source\vc\zlib\unzip.c"
+"F:\Source\vc\zlib\zip.c"
+"F:\Source\vc\zlib\zutil.c"
+]
+Creating command line "cl.exe @C:\WINDOWS\TEMP\RSP8230.TMP" 
+Creating temporary file "C:\WINDOWS\TEMP\RSP8231.TMP" with contents
+[
+/nologo /out:".\win32\zlib\lib\zlib.lib" 
+.\win32\zlib\lib\adler32.obj
+.\win32\zlib\lib\compress.obj
+.\win32\zlib\lib\crc32.obj
+.\win32\zlib\lib\deflate.obj
+.\win32\zlib\lib\example.obj
+.\win32\zlib\lib\gzio.obj
+.\win32\zlib\lib\infblock.obj
+.\win32\zlib\lib\infcodes.obj
+.\win32\zlib\lib\inffast.obj
+.\win32\zlib\lib\inflate.obj
+.\win32\zlib\lib\inftrees.obj
+.\win32\zlib\lib\infutil.obj
+.\win32\zlib\lib\trees.obj
+.\win32\zlib\lib\uncompr.obj
+.\win32\zlib\lib\unzip.obj
+.\win32\zlib\lib\zip.obj
+.\win32\zlib\lib\zutil.obj
+]
+Creating command line "link.exe -lib @C:\WINDOWS\TEMP\RSP8231.TMP"
+<h3>Output Window</h3>
+Compiling...
+adler32.c
+compress.c
+crc32.c
+deflate.c
+example.c
+gzio.c
+infblock.c
+infcodes.c
+inffast.c
+inflate.c
+inftrees.c
+infutil.c
+trees.c
+uncompr.c
+unzip.c
+zip.c
+zutil.c
+Generating Code...
+Creating library...
+
+
+
+<h3>Results</h3>
+zlib.lib - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

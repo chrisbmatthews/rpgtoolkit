@@ -1,0 +1,36 @@
+Copyright (c) 2003, Christopher Matthews
+All rights reserved.
+
+License name: AC Open License Derivative v 1.0
+Parent License: AC Open License v 1.0
+Definitions:
+	"Product": The software product falling under the terms of this license.  This includes the source and binary forms of the software.
+	
+	"Derivative Work": Modification of the original Product produces a Derivative Work.  This includes the source code and binary forms of the modified Product.
+	
+	"Software Library": A software component that is seperate and distinct from other portions of a larger piece of software.  This can include Software Libraries that are statically or dynamicaly linked to another piece of software.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1) Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
+
+2) Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 
+
+3) Neither the name of Christopher Matthews, nor Awesome Computing nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission. 
+
+4) Parent License considerations:
+	4a) If portions of this Product are declared to belong under the Parent License, a copy of the Parent License must be included with this Product.
+	
+	4b) Portions of this Product declared to belong under the Parent License shall continue to adhere to the conditions of that license alone.
+
+5) If the Product is a Software Library, the software and source code that uses the Software Library falls under its own license and is beyond the scope of this license.
+
+6) If a Derivative Work is created:
+	6a) The entire Derivative Work (including source code) must be made available to anyone at no charge and no royalty fee for the Derivative Work itself.  
+	
+	6b) The Derivative Work must fall under the terms of this license (with the exception of portions existing in the original Product declared to belong to the Parent License).
+	
+	6c) If the Derivative Work is a Software Library, the software and source code that uses the Software Library falls under its own license and is beyond the scope of this license.
+	
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

@@ -1,0 +1,20 @@
+; tkgfx.def : Declares the module parameters for the DLL.
+
+LIBRARY      "tkzip"
+DESCRIPTION  'tkzip Windows Dynamic Link Library'
+
+EXPORTS
+	ZIPTest				@1
+	ZIPCreate			@2
+	ZIPCloseNew			@3
+	ZIPAdd				@4
+	ZIPOpen				@5
+	ZIPClose			@6
+	ZIPExtract			@7
+	ZIPGetFileCount		@8
+	ZIPGetFile			@9
+	ZIPFileExist		@10
+	ZIPCreateCompoundFile @11
+	ZIPIsCompoundFile	@12
+	ZIPExtractCompoundFile @13
+    ; Explicit exports can go here

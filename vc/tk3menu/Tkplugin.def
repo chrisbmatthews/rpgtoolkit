@@ -1,0 +1,20 @@
+; tkplugin.def : Declares the module parameters for the DLL.
+
+LIBRARY      "tk3menu"
+DESCRIPTION  'tk3 menu system'
+
+EXPORTS
+	; THESE *MUST* BE EXPORTED:
+	TKPlugInit				@1
+	TKPlugVersion			@2
+	TKPlugDescription		@3
+	TKPlugBegin				@4
+	TKPlugQuery				@5
+	TKPlugExecute			@6
+	TKPlugEnd				@7
+	TKPlugMenu				@8
+	TKPlugFight				@9
+	TKPlugFightInform		@10
+	TKPlugEventInform		@11
+	TKPlugInputRequested	@12
+	TKPlugType				@13

@@ -1,0 +1,11 @@
+RPG Toolkit Development System 3 Fight Plugin
+Copyright 2003
+LICENSE terms
+
+The Fight plugin is covered under the AC Open License Derivative v 1.0.  You can read the terms of this license in "AC Open License Derivative.txt".  As per the terms of this license, it's conditions do not extend to those parts that belong to the plugin SDK.
+
+The plugin SDK is included with the Fight Plugin.  It falls under the terms of the AC Open License v 1.0.  You can see which files fall under this license by the comment at the top of the file.
+
+An English-language descritpion of the license for the battle system:
+	-You can modify and distribute the Fight Plugin for free as long as you distribute the source code with it.
+	-Because of the terms of the license, changes you make can legally be merged back into the main release of the Fight Plugin that is included with the RPG Toolkit.  You grant royalty-free rights to do this.
