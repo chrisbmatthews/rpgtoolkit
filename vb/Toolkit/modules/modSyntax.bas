@@ -34,24 +34,23 @@ Attribute VB_Name = "modSyntax"
 
 Option Explicit
 
-Public ColorCodes(5) As Double
-Public BoldCodes(5) As Double
-Public ItalicCodes(5) As Double
-Public UnderlineCodes(5) As Double
-Public ActiveModule As String
+Private ColorCodes(5) As Long
+Private BoldCodes(5) As Long
+Private ItalicCodes(5) As Long
+Private UnderlineCodes(5) As Long
 
 Public Function SplitLines(Optional ByVal min As Long = -1, Optional ByVal max As Long = -1)
-ActiveModule = "SplitLines()"
+
 ' Synatx Coloring
 Dim linesArray() As String
-Dim runningTotal As Double
-Dim startTime As Double
-Dim StopTime As Double
-Dim TimeToColor As Double
+Dim runningTotal As Long
+Dim startTime As Long
+Dim StopTime As Long
+Dim TimeToColor As Long
 Dim x As Long
 
 Dim currentObject As RichTextBox
-Set currentObject = activeRPGCode.CodeForm
+Set currentObject = activeRPGCode.codeForm
 
 Call GetLineColors
 
@@ -80,10 +79,8 @@ For x = 0 To UBound(linesArray())
 
     If (x >= min And x <= max) Or (min = -1 And max = -1) Then
 
-        With currentObject
-            .SelFontName = "Courier New"
-            .SelFontSize = 10
-        End With
+        currentObject.SelFontName = "Courier New"
+        currentObject.SelFontSize = 10
 
         If min = -1 Then
             ColorLine linesArray(x), runningTotal
@@ -106,33 +103,31 @@ currentObject.Visible = True
 'frmMain.StatusBar1.Panels(1).text = "Loaded " & (UBound(linesArray()) - 1) & " liines in " & TimeToColor & " seconds"
 End Function
 
-Function ColorLine(lineText As String, runningTotal As Double, Optional ByVal noBookmarks As Boolean)
-ActiveModule = "ColorLine()"
+Function ColorLine(lineText As String, runningTotal As Long, Optional ByVal noBookmarks As Boolean)
+
 On Error GoTo ErrorHandler ' Skip any errors, 90% of the time they are RPG code mistake anyway
 Dim SpaceLessLine As String ' Define a variable to hold the line of code
 Dim moveFromStart As Long
 ' Set the active code text box as CurrentObject
 
 Dim currentObject As RichTextBox
-Set currentObject = activeRPGCode.CodeForm
+Set currentObject = activeRPGCode.codeForm
 
-SpaceLessLine = _
- replace(replace(lineText, " ", ""), vbTab, "") _
- ': CurrentObject.SelText = RTrim(CurrentObject.SelText) ' Remove spaces, tabs and line feed from the line of code
+SpaceLessLine = replace(replace(lineText, " ", vbNullString), vbTab, vbNullString) _
 
-If Mid$(SpaceLessLine, 1, 2) = "//" Then
-    ColorSelection currentObject, 1
+If LeftB$(SpaceLessLine, 4) = "//" Then
+    Call ColorSection(currentObject.selStart, currentObject.SelLength, 1)
     If Not noBookmarks Then addBookmark lineText
     Exit Function
 End If
 
-Select Case Mid$(SpaceLessLine, 1, 1) ' Check first character of the line
+Select Case LeftB$(SpaceLessLine, 2)  ' Check first character of the line
 Case "@"
-    ColorSelection currentObject, 0
+    Call ColorSection(currentObject.selStart, currentObject.SelLength, 0)
 Case "*"
-    ColorSelection currentObject, 1
+    Call ColorSection(currentObject.selStart, currentObject.SelLength, 1)
 Case "{", "}"
-    ColorSelection currentObject, 2
+    Call ColorSection(currentObject.selStart, currentObject.SelLength, 2)
 
     ' Check for comments
     If InStr(1, SpaceLessLine, "*") > 0 Then
@@ -145,7 +140,7 @@ Case "{", "}"
         ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "*") + 1, 1
     End If
 Case ":"
-    ColorSelection currentObject, 3
+    Call ColorSection(currentObject.selStart, currentObject.SelLength, 3)
     If InStr(1, SpaceLessLine, "*") > 0 Then
         moveFromStart = InStr(1, lineText, "*") + runningTotal
         ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "*") + 1, 1
@@ -157,11 +152,11 @@ Case ":"
     End If
 Case Else ' It's a command
 
-    ColorSelection currentObject, 0 ' set the whole line to command color
+    Call ColorSection(currentObject.selStart, currentObject.SelLength, 0)   ' set the whole line to command color
     Dim SplitCommandUp() As String ' Create a blank array
     Dim insideBrackets() As String ' Create a second blank array
 
-    If InStr(1, SpaceLessLine, "(") > 0 Then ' Do we have a parameter bracket?
+    If InStr(1, SpaceLessLine, "(") <> 0 Then ' Do we have a parameter bracket?
         
         ' Where does the parameter bracket start
         SplitCommandUp() = Split(lineText, "(")
@@ -179,7 +174,7 @@ Case Else ' It's a command
         
         ' Check for comments
         ' This line stops us detecting comments inside paramter brackets ()
-        If InStr(InStr(1, SpaceLessLine, ")"), SpaceLessLine, "*") > 0 Then
+        If InStr(InStr(1, SpaceLessLine, ")"), SpaceLessLine, "*") <> 0 Then
             
             ' Find the first location of a comment, and add it to existing lenght values
             moveFromStart = InStr(InStr(1, SpaceLessLine, ")"), lineText, "*") + runningTotal
@@ -187,7 +182,7 @@ Case Else ' It's a command
             ' Color from the comment onwards.
             ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "*") + 1, 1
         End If
-        If InStr(InStr(1, SpaceLessLine, ")"), SpaceLessLine, "//") > 0 Then
+        If InStr(InStr(1, SpaceLessLine, ")"), SpaceLessLine, "//") <> 0 Then
             
             ' Find the first location of a comment, and add it to existing lenght values
             moveFromStart = InStr(InStr(1, SpaceLessLine, ")"), lineText, "//") + runningTotal
@@ -197,26 +192,26 @@ Case Else ' It's a command
         End If
         
     ' Check for Variable Defenitions
-    ElseIf InStr(1, SpaceLessLine, "!") > 0 Or InStr(1, SpaceLessLine, "$") Then
-               
-        ColorSelection currentObject, 5
+    ElseIf InStr(1, SpaceLessLine, "!") <> 0 Or InStr(1, SpaceLessLine, "$") Then
+
+        Call ColorSection(currentObject.selStart, currentObject.SelLength, 5)
         moveFromStart = InStr(1, lineText, "=") + runningTotal
         ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "=") + 1, 4
-    
+
     ' Check for comments
-    ElseIf InStr(1, SpaceLessLine, "*") > 0 Then
+    ElseIf InStr(1, SpaceLessLine, "*") Then
         moveFromStart = InStr(1, lineText, "*") + runningTotal
         ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "*") + 1, 1
     End If
     ' Check for comments
-    If InStr(1, SpaceLessLine, "//") > 0 Then
+    If InStr(1, SpaceLessLine, "//") Then
         moveFromStart = InStr(1, lineText, "//") + runningTotal
-        ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "*") + 1, 1
+        ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "//") + 1, 1
     End If
 
 End Select
 
-If Not noBookmarks Then addBookmark lineText
+If Not (noBookmarks) Then Call addBookmark(lineText)
 
 ErrorHandler:
 End Function
@@ -247,16 +242,13 @@ Private Sub addBookmark(ByRef lineText As String)
     
 End Sub
 
-Public Sub ColorSelection(ByRef rtf As RichTextBox, ByVal numtp As _
- Double): ColorSection rtf.selStart, rtf.SelLength, numtp: End Sub
-
-Function ColorSection(SectionStart As Double, SectionLen As Double, SectionColor As Double)
+Function ColorSection(SectionStart As Long, SectionLen As Long, SectionColor As Long)
 
  On Error Resume Next
 
  'Access the RTF box...
  Dim currentObject As RichTextBox
- Set currentObject = activeRPGCode.CodeForm ' 3.06: Use the active RPGCode form
+ Set currentObject = activeRPGCode.codeForm ' 3.06: Use the active RPGCode form
  
  'Select the text...
  currentObject.selStart = SectionStart
@@ -283,17 +275,17 @@ Public Sub GotoLine(ByVal lineText As String)
  Dim a As Long
  
  Dim currentObject As RichTextBox
- Set currentObject = activeRPGCode.CodeForm
+ Set currentObject = activeRPGCode.codeForm
 
  With currentObject
  
   'Split the code up into lines...
-  lines() = Split(.Text, vbCrLf, , vbTextCompare)
+  lines() = Split(.Text, vbCrLf)
   
   'For each line...
   For a = 0 To UBound(lines)
    'We found the line!
-   If (InStr(1, lines(a), lineText, vbTextCompare) > 0) Then
+   If (InStr(1, lines(a), lineText)) Then
     'Move the cursor there
     .selStart = count
     .SetFocus
@@ -308,169 +300,90 @@ Public Sub GotoLine(ByVal lineText As String)
 
 End Sub
 
-Public Sub ReColorLine(Optional ByRef blackLine As Boolean = -2, _
- Optional ByVal colorBlack As Boolean = False)
+Public Sub reColorLine( _
+    Optional ByRef blackLine As Boolean = True, _
+    Optional ByVal colorBlack As Boolean = False)
 
- ''''''''''''''''''''''''''
- '    Added by KSNiloc    '
- ''''''''''''''''''''''''''
- '[6/18/04]
- 
- '''''''''
- 'Purpose'
- '''''''''
- 'Colors the current line
- 
- '''''''
- 'Notes'
- '''''''
- 'The code here's a bit messy- it's written in a way so it
- 'runs as fast as it can.
+    On Error Resume Next
 
- On Error Resume Next
- 
- 'Declare variables...
- 'Dim enterKey As String
- Dim lines() As String
- Dim cf As rpgcodeedit
- Dim oldSS As Long
- Dim oldSL As Long
- Dim done As Boolean
- Dim tempSS As Long
- Dim tempSL As Long
- Dim a As Long
- Dim b As Long
- 
- Dim currentObject As RichTextBox
- Set currentObject = activeRPGCode.CodeForm
- 
- With currentObject 'cf.codeform
- 
-  .Visible = False
- 
-  'enterKey = vbCrLf
-  'Find the start of the line...
-  'For a = (.selStart - 1) To 1 Step -1
-  ' If mid$(.text, a + 1, 1) = mid$(enterKey, 2, 1) Then Exit For
-  'Next a
-  'Find the end of the line...
-  'b = InStr(.selStart, .text & vbCrLf, enterKey, vbTextCompare)
- 
-  'Remember what is selected now...
-  oldSS = .selStart
-  oldSL = .SelLength
-  
-  'Break the code up into lines...
-  lines() = Split(.Text, vbCrLf, , vbTextCompare)
+    With activeRPGCode.codeForm
 
-  'This part may seem very convoluted, that's because it is (heh...)
-  For a = 0 To UBound(lines) 'For each line...
-   'If the cursor is located on this line...
-   If (.selStart >= b - 2) And (.selStart <= Len(lines(a)) + b + 1) Then
-   'If .GetLineFromChar(.selStart) = a Then
-    'Select this *whole* line!
-    .selStart = b
-    .SelLength = Len(lines(a))
-    'Save time by leaving the loop...
-    Exit For
-   End If
-   'We didn't find the loop so increase the running total by the
-   'length of the line we left plus two for the line break...
-   b = b + Len(lines(a)) + 2
-   'If we've tried every line and still haven't found anything then
-   'just color the first line as it's sometimes missed...
-   If a = UBound(lines) Then b = 1
-  Next a
-  
-  tempSS = .selStart
-  tempSL = .SelLength
-  .SelText = CapitalizeRPGCode(.SelText)
-  .selStart = tempSS
-  .SelLength = tempSL
-  
-  If Not blackLine = -2 Then
-   'We're going to change the boolean passed in...
+        .Visible = False
 
-   'If the line's only got one charater MAKE SURE it's colored...
-   If Len(Trim( _
-   replace(replace(replace(.SelText, " ", ""), vbTab, ""), vbCrLf, "") _
-   )) = 1 Then blackLine = True
-  
-   If Not colorBlack Then
-    'If the line is black...
-    If blackLine Then
-     'Color it...
-     ColorLine .SelText, .selStart
-    End If
-   Else
-   
-    'Make this line black...
-    .SelColor = &H0&
-    'And remove its possible bookmark...
-    makeLineBlack .SelText
-    'Flag that this line's black...
-    blackLine = True
-   End If
-  Else
-  
-   'The boolean's not our problem; don't worry about it...
-   If colorBlack Then
-    'We're to color this line black!
-    .SelColor = &H0& 'Do it!
-    makeLineBlack .SelText '...and remove its bookmark.
-   Else
-   
-    'We're supposed to give this line some color...
-    ColorLine .SelText, .selStart '...make it happen!
-   End If
-  End If
+        Dim oldSS As Long, oldSL As Long
+        oldSS = .selStart
+        oldSL = .SelLength
 
-  'Select whatever was selected before...
-  .selStart = oldSS
-  .SelLength = oldSL
+        Dim lines() As String
+        lines = Split(.Text, vbCrLf)
 
-  .Visible = True
-  .SetFocus
-  
- End With
- 
+        Dim i As Long, j As Long
+        For i = 0 To UBound(lines)
+            If (.selStart >= j - 2) And (.selStart <= Len(lines(i)) + j + 1) Then
+                .selStart = j
+                .SelLength = Len(lines(i))
+                Exit For
+            End If
+            j = j + Len(lines(i)) + 2
+        Next i
+
+        If Not (colorBlack) Then
+
+            If (blackLine) Then
+
+                Call ColorLine(.SelText, .selStart)
+
+            End If
+
+        Else
+
+            .SelColor = &H0&
+            .SelBold = 0
+            .SelItalic = 0
+            .SelUnderline = 0
+            Call makeLineBlack(.SelText)
+
+        End If
+
+        .selStart = oldSS
+        .SelLength = oldSL
+
+        .Visible = True
+        Call .SetFocus
+
+    End With
+
 End Sub
 
-Private Sub makeLineBlack(ByVal lineText As String)
- 'Take away its bookmark (if there is one...)
- With activeRPGCode
-  Select Case LCase$(GetCommandName(AddNumberSignIfNeeded(lineText)))
-   Case "label": .removeBookmark lineText, .cboLabelBookmarks
-   Case "method": .removeBookmark RemoveNumberSignIfThere(lineText), .cboMethodBookmarks
-   Case "*": .removeBookmark lineText, .cboCommentBookmarks
-  End Select
- End With
+Private Sub makeLineBlack(ByRef lineText As String)
+    With activeRPGCode
+        Select Case LCase$(GetCommandName(AddNumberSignIfNeeded(lineText)))
+            Case "label": .removeBookmark lineText, .cboLabelBookmarks
+            Case "method": .removeBookmark RemoveNumberSignIfThere(lineText), .cboMethodBookmarks
+            Case "*": .removeBookmark lineText, .cboCommentBookmarks
+        End Select
+    End With
 End Sub
 
 Public Sub GetLineColors()
 
- On Error Resume Next
+    On Error Resume Next
 
- 'Declarations...
- Dim a As Long
+    Dim a As Long
 
- 'Retrieve colors to use from the registry...
- ColorCodes(0) = CDbl(GetSetting("RPGToolkit3", "Colors", "#", "8388608"))
- ColorCodes(1) = CDbl(GetSetting("RPGToolkit3", "Colors", "*", "32768"))
- ColorCodes(2) = CDbl(GetSetting("RPGToolkit3", "Colors", "{}", "15490"))
- ColorCodes(3) = CDbl(GetSetting("RPGToolkit3", "Colors", ":", "12632064"))
- ColorCodes(4) = CDbl(GetSetting("RPGToolkit3", "Colors", "()", "0"))
- ColorCodes(5) = CDbl(GetSetting("RPGToolkit3", "Colors", "!$", "10223809"))
- 
- 'Retrieve styles to use from the registry...
- For a = 0 To 5
-  BoldCodes(a) = CDbl(GetSetting("RPGToolkit3", _
-   "SyntaxBold", CStr(a), 0))
-  ItalicCodes(a) = CDbl(GetSetting("RPGToolkit3", _
-   "SyntaxItalics", CStr(a), 0))
-  UnderlineCodes(a) = CDbl(GetSetting("RPGToolkit3", _
-   "SyntaxUnderline", CStr(a), 0))
- Next a
+    ColorCodes(0) = GetSetting("RPGToolkit3", "Colors", "#", "8388608")
+    ColorCodes(1) = GetSetting("RPGToolkit3", "Colors", "*", "32768")
+    ColorCodes(2) = GetSetting("RPGToolkit3", "Colors", "{}", "15490")
+    ColorCodes(3) = GetSetting("RPGToolkit3", "Colors", ":", "12632064")
+    ColorCodes(4) = GetSetting("RPGToolkit3", "Colors", "()", "0")
+    ColorCodes(5) = GetSetting("RPGToolkit3", "Colors", "!$", "10223809")
+
+    Dim i As Long
+    For i = 0 To 5
+        BoldCodes(i) = CDbl(GetSetting("RPGToolkit3", "SyntaxBold", CStr(i), 0))
+        ItalicCodes(i) = CDbl(GetSetting("RPGToolkit3", "SyntaxItalics", CStr(i), 0))
+        UnderlineCodes(i) = CDbl(GetSetting("RPGToolkit3", "SyntaxUnderline", CStr(i), 0))
+    Next i
  
 End Sub
 
@@ -510,7 +423,6 @@ Public Function AddNumberSignIfNeeded(ByVal txt As String) As String
  AddNumberSignIfNeeded = build
 End Function
 
-Public Function RemoveNumberSignIfThere(ByVal txt As String) As String
- txt = replace(txt, "#", "")
- RemoveNumberSignIfThere = txt
+Public Function RemoveNumberSignIfThere(ByRef txt As String) As String
+    RemoveNumberSignIfThere = replace(txt, "#", vbNullString)
 End Function

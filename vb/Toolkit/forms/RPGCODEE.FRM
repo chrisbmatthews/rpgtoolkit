@@ -102,7 +102,6 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
-      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -631,7 +630,7 @@ End Sub
 ' Key down on the field
 '==========================================================================
 Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Resume Next
-
+    
     If ((Shift = 2) And (keyCode = 86)) Then
 
         ' Paste
@@ -666,16 +665,19 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
 
     'We're leaving the line- color it!
     If keyCode = 38 Or keyCode = 40 Or keyCode = 13 Or keyCode = 18 Then
-        If blackLine Then
-            ReColorLine blackLine
+        If (blackLine) Then
+            Call reColorLine(blackLine)
             blackLine = False
+            If (codeForm.selStart = Len(codeForm.Text)) Then
+                codeForm.SelItalic = 0
+            End If
         End If
         Exit Sub
     End If
 
     'The user is modifying the line- turn it black!
     If Not (blackLine) Then
-        Call ReColorLine(True, True)
+        Call reColorLine(True, True)
         blackLine = True
     End If
     
@@ -704,7 +706,7 @@ Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y
         codeForm.SelLength = mouseDownSelLength
 
         ' Color the line we just left
-        ReColorLine
+        reColorLine
  
         ' Flag that the line is no longer black
         blackLine = False
