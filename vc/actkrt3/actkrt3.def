@@ -191,4 +191,3 @@ EXPORTS
 	endProgram			@233
 
 	RPGCGetLitVarByteLen @ 246
-

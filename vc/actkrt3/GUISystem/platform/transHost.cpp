@@ -5,7 +5,7 @@
 //-------------------------------------------------------------------
 
 //-------------------------------------------------------------------
-// Trans3 engine :: C++ code
+// Trans3 engine
 //-------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -13,6 +13,11 @@
 //-------------------------------------------------------------------
 #include "transHost.h"					// Contains types, constants,
 										// and prototypes for this file
+
+//-------------------------------------------------------------------
+// Definintions
+//-------------------------------------------------------------------
+#define FPS_CAP 120						// FPS cap
 
 //-------------------------------------------------------------------
 // Globals
@@ -103,7 +108,7 @@ INT APIENTRY createHostWindow(
 							        );
 
 	// Return its HWND
-    return INT(hostHwnd);
+	return INT(hostHwnd);
 
 }
 
@@ -119,10 +124,13 @@ VOID APIENTRY mainEventLoop(INT gameLogicAddress)
     // continually calls gameLogic() (in transMain). The only
     // to break out of this loop is to call PostQuitMessage().
 
-	// Create a poINTer to the gameLogic procedure
+	// Create a pointer to the gameLogic procedure
 	typedef VOID (__stdcall *FUNCTIONPOINTER)();
 	FUNCTIONPOINTER gameLogic;
-	gameLogic = (FUNCTIONPOINTER)gameLogicAddress;
+	gameLogic = FUNCTIONPOINTER(gameLogicAddress);
+
+	// Calculate how long one frame should take
+	CONST DWORD dblOneFrame = 1 / FPS_CAP * 1000;
 
 	// Define a structure to hold the messages we recieve
     MSG message;
@@ -147,8 +155,14 @@ VOID APIENTRY mainEventLoop(INT gameLogicAddress)
             }
         }
 
+		// Get current time
+		CONST DWORD dblTimeNow = GetTickCount();
+
 		// Run a frame of game logic
         gameLogic();
+
+		// Sleep for any remaining time
+		while ((GetTickCount() - dblTimeNow) < dblOneFrame);
 
     }
 
@@ -228,7 +242,7 @@ LRESULT CALLBACK eventProcessor(
 	// Last game state
 	static INT prevGameState = GS_IDLE;
 
-	// Create a structure to use when paINTing the window
+	// Create a structure to use when painting the window
 	PAINTSTRUCT ps;
 
 	// Switch on the message we're to process
@@ -239,13 +253,13 @@ LRESULT CALLBACK eventProcessor(
 		case WM_PAINT:
 		{
 
-			// Begin paINTing the window
+			// Begin painting the window
 			BeginPaint(hwnd, &ps);
 
 			// Force a render of the screen
 			forceRender();
 
-			// End of paINTing of the window
+			// End of painting of the window
 			EndPaint(hwnd, &ps);
 
 		} break;
