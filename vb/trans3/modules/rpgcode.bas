@@ -5561,7 +5561,6 @@ Sub ResetRPG(ByRef theProgram As RPGCodeProgram)
     runningProgram = False
     'Call openMainFile(loadedMainFile$)
     Call setupMain
-    Call runProgram(projectPath & prgPath & mainMem.startupPrg)
 End Sub
 
 
@@ -5878,7 +5877,7 @@ Public Sub RPGCodeRPG(ByVal Text As String, _
         theProgram.program(theProgram.programPos + 1 + a) = _
             tempPRG.program(a)
     Next a
-    
+   
 End Sub
 
 
