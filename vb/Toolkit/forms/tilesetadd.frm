@@ -953,10 +953,12 @@ Private Sub cmdSave_Click(index As Integer): On Error Resume Next
         Call cmdSaveAs_Click(index)
         Exit Sub
     End If
-    If (GetAttr(projectPath & tilePath & ts(index).filename) And vbReadOnly) Then
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call cmdSaveAs_Click(index)
-        Exit Sub
+    If (fileExists(projectPath & tilePath & ts(index).filename)) Then
+        If (GetAttr(projectPath & tilePath & ts(index).filename) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call cmdSaveAs_Click(index)
+            Exit Sub
+        End If
     End If
     'Delete the original and copy the working the tileset.
     ChDir (currentDir)

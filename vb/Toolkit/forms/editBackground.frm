@@ -962,10 +962,12 @@ Private Sub mnusave_Click()
     file = bkgList(activeBkgIndex).filename
     If (LenB(file) = 0) Then Call mnusaveas_Click: Exit Sub
     file = projectPath & bkgPath & file
-    If (GetAttr(file) And vbReadOnly) Then
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call mnusaveas_Click
-        Exit Sub
+    If (fileExists(file)) Then
+        If (GetAttr(file) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call mnusaveas_Click
+            Exit Sub
+        End If
     End If
     Call saveBackground(file, bkgList(activeBkgIndex).theData)
     bkgList(activeBkgIndex).needUpdate = False

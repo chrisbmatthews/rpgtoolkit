@@ -653,10 +653,12 @@ Private Sub savemnu_Click()
     If tileAnmList(activeTileAnmIndex).animTileFile$ = "" Then saveasmnu_Click: Exit Sub
     Dim strFile As String
     strFile = projectPath & tilePath & tileAnmList(activeTileAnmIndex).animTileFile
-    If (GetAttr(strFile) And vbReadOnly) Then
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call saveasmnu_Click
-        Exit Sub
+    If (fileExists(strFile)) Then
+        If (GetAttr(strFile) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call saveasmnu_Click
+            Exit Sub
+        End If
     End If
     Call saveTileAnm(strFile, tileAnmList(activeTileAnmIndex).theData)
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False

@@ -1434,12 +1434,14 @@ Private Sub mnusave_Click(): On Error Resume Next
     Dim strFile As String
     strFile = projectPath & temPath & playerList(activePlayerIndex).charFile
 
-    If (GetAttr(strFile) And vbReadOnly) Then
+    If (fileExists(strFile)) Then
+        If (GetAttr(strFile) And vbReadOnly) Then
 
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call mnusaveas_Click
-        Exit Sub
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call mnusaveas_Click
+            Exit Sub
 
+        End If
     End If
 
     Call saveChar(strFile, playerList(activePlayerIndex).theData)

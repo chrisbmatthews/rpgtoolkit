@@ -962,10 +962,12 @@ Private Sub savemnu_Click()
     If filename$(2) = "" Then saveasmnu_Click: Exit Sub
     Dim strFile As String
     strFile = projectPath & spcPath & filename(2)
-    If (GetAttr(strFile) And vbReadOnly) Then
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call saveasmnu_Click
-        Exit Sub
+    If (fileExists(strFile)) Then
+        If (GetAttr(strFile) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call saveasmnu_Click
+            Exit Sub
+        End If
     End If
     Call saveSpecialMove(strFile, specialMoveList(activeSpecialMoveIndex).theData)
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False

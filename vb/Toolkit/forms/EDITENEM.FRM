@@ -1083,10 +1083,12 @@ Private Sub mnusave_Click()
     If filename$(2) = "" Then Call mnusaveas_Click: Exit Sub
     Dim strFile As String
     strFile = projectPath & enePath & filename(2)
-    If (GetAttr(strFile) And vbReadOnly) Then
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call mnusaveas_Click
-        Exit Sub
+    If (fileExists(strFile)) Then
+        If (GetAttr(strFile) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call mnusaveas_Click
+            Exit Sub
+        End If
     End If
     Call saveEnemy(strFile, enemylist(activeEnemyIndex).theData)
     enemylist(activeEnemyIndex).eneNeedUpdate = False

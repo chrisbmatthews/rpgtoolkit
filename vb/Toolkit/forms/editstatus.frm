@@ -730,10 +730,12 @@ Private Sub savemnu_Click()
     End If
     Dim strFile As String
     strFile = projectPath & statusPath & statusEffectList(activeStatusEffectIndex).statusFile
-    If (GetAttr(strFile) And vbReadOnly) Then
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call saveasmnu_Click
-        Exit Sub
+    If (fileExists(strFile)) Then
+        If (GetAttr(strFile) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call saveasmnu_Click
+            Exit Sub
+        End If
     End If
     Call saveStatus(strFile, statusEffectList(activeStatusEffectIndex).theData)
     activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"

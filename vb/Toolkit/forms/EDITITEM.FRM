@@ -1088,10 +1088,12 @@ Private Sub savemnu_Click()
     If filename(2) = "" Then saveasmnu_Click: Exit Sub
     Dim strFile As String
     strFile = projectPath & itmPath & filename(2)
-    If (GetAttr(strFile) And vbReadOnly) Then
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call saveasmnu_Click
-        Exit Sub
+    If (fileExists(strFile)) Then
+        If (GetAttr(strFile) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call saveasmnu_Click
+            Exit Sub
+        End If
     End If
     Call saveItem(strFile, itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemNeedUpdate = False

@@ -3486,12 +3486,14 @@ Private Sub savebrdmnu_Click(): On Error Resume Next
     End If
 
     'Check this isn't read-only.
-    If (GetAttr(projectPath & brdPath & boardList(activeBoardIndex).boardName) And vbReadOnly) Then
+    If (fileExists(projectPath & brdPath & boardList(activeBoardIndex).boardName)) Then
+        If (GetAttr(projectPath & brdPath & boardList(activeBoardIndex).boardName) And vbReadOnly) Then
         
-        Call MsgBox(boardList(activeBoardIndex).boardName & " is read-only, please choose a different filename", vbExclamation)
-        Call savebrdasmnu_Click
+            Call MsgBox(boardList(activeBoardIndex).boardName & " is read-only, please choose a different filename", vbExclamation)
+            Call savebrdasmnu_Click
 
-        Exit Sub
+            Exit Sub
+        End If
     End If
 
     ' set changes to false

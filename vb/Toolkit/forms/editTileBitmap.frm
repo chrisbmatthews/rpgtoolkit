@@ -251,10 +251,12 @@ Public Sub saveFile()
         End If
         Dim strFile As String
         strFile = projectPath & bmpPath & tileBmpList(activeTileBmpIndex).filename
-        If (GetAttr(strFile) And vbReadOnly) Then
-            Call MsgBox("This file is read-only; please choose a different file.")
-            Call saveAsFile
-            Exit Sub
+        If (fileExists(strFile)) Then
+            If (GetAttr(strFile) And vbReadOnly) Then
+                Call MsgBox("This file is read-only; please choose a different file.")
+                Call saveAsFile
+                Exit Sub
+            End If
         End If
         Call SaveTileBitmap(strFile, tileBmpList(activeTileBmpIndex).theData)
         Me.Caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + tileBmpList(activeTileBmpIndex).filename + ")"

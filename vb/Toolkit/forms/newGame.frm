@@ -192,6 +192,8 @@ Private Sub Command1_Click()
         tt$ = replace(tt$, ".", "")
         tt$ = tt$ + ".gam"
         mainMem.mainScreenType = 1
+        ' Colin, 306: Initialize gamespeed
+        Call setGameSpeed(mainMem.gameSpeed, 0)
         Call saveMain(gamPath$ + tt$, mainMem)
         mainFile$ = tt$
         configfile.lastProject$ = mainFile$
@@ -209,7 +211,6 @@ Private Sub Command1_Click()
             mainMem.mainScreenType = 1
             saveMain gamPath$ + tt$, mainMem
         End If
-        ' editmainfile.Show
         Unload newGame
     End If
     Exit Sub

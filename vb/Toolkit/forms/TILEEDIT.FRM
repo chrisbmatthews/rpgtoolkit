@@ -2030,10 +2030,12 @@ Private Sub savenoquestions_Click()
     Dim strFile As String
     strFile = projectPath & tilePath & tilesetFilename(openTileEditorDocs(indice).tileName)
 
-    If (GetAttr(strFile) And vbReadOnly) Then
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call savetile2_Click
-        Exit Sub
+    If (fileExists(strFile)) Then
+        If (GetAttr(strFile) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call savetile2_Click
+            Exit Sub
+        End If
     End If
 
     'Else, the tile was opened, so update the file.

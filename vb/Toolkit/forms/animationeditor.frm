@@ -955,21 +955,22 @@ Private Sub saveanimmnu_Click(): On Error Resume Next
         strFile = projectPath & miscPath & animationList(activeAnimationIndex).animFile
 
         ' Make sure it's writable
-        If (GetAttr(strFile) And vbReadOnly) Then
+        If (fileExists(strFile)) Then
+            If (GetAttr(strFile) And vbReadOnly) Then
 
-            ' Read-only
-            Call MsgBox("This file is read-only; please choose a different file.")
-            Call saveasanimmnu_Click
+                ' Read-only
+                Call MsgBox("This file is read-only; please choose a different file.")
+                Call saveasanimmnu_Click
+                Exit Sub
 
-        Else
-
-            ' If the animation is already saved, save it again
-            Call saveAnimation(strFile, animationList(activeAnimationIndex).theData)
-
-            ' No need to update anymore
-            animationList(activeAnimationIndex).animNeedUpdate = False
-
+            End If
         End If
+
+        ' If the animation is already saved, save it again
+        Call saveAnimation(strFile, animationList(activeAnimationIndex).theData)
+
+        ' No need to update anymore
+        animationList(activeAnimationIndex).animNeedUpdate = False
 
     End If
 
@@ -993,7 +994,10 @@ Private Sub saveasanimmnu_Click(): On Error Resume Next
     If dlg.strSelectedFile = vbNullString Then Exit Sub
     
     ChDir (currentDir)
-    
+
+    ' Set the animation name
+    animationList(activeAnimationIndex).animFile = dlg.strSelectedFileNoPath
+
     Call saveanimmnu_Click
     
     ' No need to update anymore
@@ -1001,9 +1005,6 @@ Private Sub saveasanimmnu_Click(): On Error Resume Next
      
     ' Save the animation
     ' Call saveAnimation(dlg.strSelectedFile, animationList(activeAnimationIndex).theData)
-    
-    ' Set the animation name
-    animationList(activeAnimationIndex).animFile = dlg.strSelectedFileNoPath
     
     ' Update the caption
     activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") & " (" & dlg.strSelectedFileNoPath & ")"
