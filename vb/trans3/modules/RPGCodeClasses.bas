@@ -226,7 +226,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 End If
 
                 ' Don't run this line
-                cmd = vbNullString
+                prg.program(lineIdx) = vbNullString
 
             End If
 

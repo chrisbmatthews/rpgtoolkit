@@ -724,7 +724,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                                             Call getValue(theVal, lit, numberUse(tokenIdx - 1), theProgram)
                                             ' Nullify this position
                                             nulled(tokenIdx) = True
-                                            ' Count functions as variable
+                                            ' Count functions as variables
                                             bIsVar(tokenIdx) = True
                                         End If ' isMethodMember
                                     End If ' isObject

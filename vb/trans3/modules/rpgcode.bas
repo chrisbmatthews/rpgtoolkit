@@ -11327,13 +11327,8 @@ Public Sub getBoardNameRPG( _
     '=========================================================================
     'fileName$ = GetBoardName()
 
-    If Not CountData(Text) = 0 Then
-        debugger "GetBoardName() requires no data elements-- " & Text
-        Exit Sub
-    End If
-
     retval.dataType = DT_LIT
-    retval.lit = boardList(activeBoardIndex).boardName
+    retval.lit = boardList(activeBoardIndex).theData.strFilename
 
 End Sub
 
