@@ -301,11 +301,11 @@ Function WaitForKey() As String
     'Waits for key to be pressed.
     'Renamed variables: t >> jButtonNum
     '=============================
-    
+
     'Called by rewardPlayers, gameOver, showMenu, increaseLevel, WaitRPG, WinRPG, AddToMsgBox, DebugBox
 
     On Error GoTo errorhandler
-       
+
     'Clear the last pressed key.
     keyWaitState = 0
     bWaitingForInput = True

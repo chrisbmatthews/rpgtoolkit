@@ -111,13 +111,13 @@ End Sub
 Public Sub ClearNonPersistentThreads()
 
     On Error Resume Next
-    
+
     Dim c As Long                   'for loop control variable
-    Dim retval As RPGCODE_RETURN    'unused rpgcode return value
-    
+    Dim retVal As RPGCODE_RETURN    'unused rpgcode return value
+
     For c = 0 To UBound(Threads)
         If (Threads(c).bPersistent = False) Then
-            Call TellThread(c, "Unload()", retval, True)
+            Call TellThread(c, "Unload()", retVal, True)
             Threads(c).filename = ""
             Threads(c).thread.programPos = -1
             Threads(c).thread.threadID = -1
@@ -149,10 +149,10 @@ Public Sub ClearAllThreads()
     On Error Resume Next
 
     Dim c As Long                   'for loop control variable
-    Dim retval As RPGCODE_RETURN    'unused rpgcode return value
+    Dim retVal As RPGCODE_RETURN    'unused rpgcode return value
 
     For c = 0 To UBound(Threads)
-        Call TellThread(c, "Unload()", retval, True)
+        Call TellThread(c, "Unload()", retVal, True)
         Threads(c).filename = ""
         Threads(c).thread.programPos = -1
         Threads(c).thread.threadID = -1
@@ -257,8 +257,8 @@ Private Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
             targetType = TYPE_ITEM
             sourceType = TYPE_ITEM
         End If
-        Dim retval As RPGCODE_RETURN
-        theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval)
+        Dim retVal As RPGCODE_RETURN
+        theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retVal)
         If (theProgram.programPos = -1) Or (theProgram.programPos = -2) Then
             'clear the program
             Call ClearRPGCodeProcess(theProgram)
@@ -295,8 +295,8 @@ End Sub
 '=========================================================================
 Public Sub KillThread(ByVal threadID As Long)
     On Error Resume Next
-    Dim retval As RPGCODE_RETURN
-    Call TellThread(threadID, "Unload()", retval, True)
+    Dim retVal As RPGCODE_RETURN
+    Call TellThread(threadID, "Unload()", retVal, True)
     Threads(threadID).filename = ""
     Threads(threadID).thread.programPos = -1
     Threads(threadID).thread.threadID = -1
@@ -307,11 +307,11 @@ End Sub
 '=========================================================================
 ' Call a method from a thread
 '=========================================================================
-Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
+Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retVal As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
     On Error Resume Next
     Dim shortName As String
     shortName = UCase(GetCommandName(rpgcodeCommand))
-    Call MethodCallRPG(rpgcodeCommand, shortName, Threads(threadID).thread, retval, noMethodNotFound)
+    Call MethodCallRPG(rpgcodeCommand, shortName, Threads(threadID).thread, retVal, noMethodNotFound)
 End Sub
 
 '=========================================================================
@@ -349,10 +349,10 @@ End Sub
 '=========================================================================
 Public Sub launchBoardThreads(ByRef board As TKBoard)
     On Error Resume Next
-    Dim retval As RPGCODE_RETURN, a As Long, id As Long
+    Dim retVal As RPGCODE_RETURN, a As Long, id As Long
     For a = 0 To UBound(Threads)
         If (Threads(a).bPersistent) And (Threads(a).filename <> "") Then
-            Call TellThread(a, "EnterNewBoard()", retval, True)
+            Call TellThread(a, "EnterNewBoard()", retVal, True)
         End If
     Next a
     For a = 0 To UBound(board.Threads)
@@ -458,6 +458,14 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
                 Dim oPP As Long
                 Dim rV As RPGCODE_RETURN
                 oPP = .prg.programPos
+                Dim itmNum As Long
+                itmNum = Threads(.prg.threadID).itemNum
+                If (itmNum <> -1) Then
+                    Source = itmNum
+                    target = itmNum
+                    sourceType = TYPE_ITEM
+                    targetType = TYPE_ITEM
+                End If
                 .prg.programPos = DoSingleCommand(.increment, .prg, rV)
                 .prg.programPos = oPP
                 If Evaluate(.condition, .prg) = 1 Then

@@ -348,7 +348,7 @@ Public Sub gameLogic()
 
                     'Test for a program
                     Call programTest(tempPos)
-                
+
                     'Flag player is no longer moving
                     .direction = MV_IDLE
 
