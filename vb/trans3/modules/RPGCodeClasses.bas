@@ -21,7 +21,7 @@ Public g_objHandleUsed() As Boolean          ' This handle used?
 ' An instance of a class
 '=========================================================================
 Private Type RPGCODE_CLASS_INSTANCE
-    hClass As Long                          ' Handle to this class
+    hClass As Long                          ' Address of this structure
     strInstancedFrom As String              ' It was instanced from this class
 End Type
 
@@ -101,6 +101,11 @@ Public Enum RPGC_DT
 End Enum
 
 '=========================================================================
+' Members
+'=========================================================================
+Private m_objectOffset As Long              ' Address of object array
+
+'=========================================================================
 ' Check a method override name
 '=========================================================================
 Public Function checkOverrideName(ByRef theClass As RPGCODE_CLASS, ByVal theMethod As String) As String
@@ -144,11 +149,12 @@ End Function
 '=========================================================================
 Public Function isObject(ByVal hClass As Long, ByRef prg As RPGCodeProgram) As Boolean
 
-    On Error Resume Next
+    On Error GoTo fin
 
     ' Return if it's an object
-    isObject = (LenB(g_objects(hClass).strInstancedFrom))
+    isObject = (LenB(g_objects((hClass - m_objectOffset) / 8).strInstancedFrom))
 
+fin:
 End Function
 
 '=========================================================================
@@ -790,6 +796,7 @@ End Function
 Public Sub initRPGCodeClasses()
     ReDim g_objHandleUsed(250)
     ReDim g_objects(250)
+    m_objectOffset = VarPtr(g_objects(0))
     Call newHandle
 End Sub
 
@@ -1059,6 +1066,7 @@ Public Function getClass(ByVal hClass As Long, ByRef prg As RPGCodeProgram) As R
     Dim idx As Long         ' Loop var
 
     ' Get the class' name
+    hClass = (hClass - m_objectOffset) / 8
     strClass = g_objects(hClass).strInstancedFrom
 
     ' Loop over every class it could be
@@ -1147,6 +1155,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         End If
         ' Write in the data
         g_objects(hClass).strInstancedFrom = UCase$(theClass)
+        hClass = VarPtr(g_objects(hClass))
         g_objects(hClass).hClass = hClass
         ' Clear the object
         Call clearObject(g_objects(hClass), prg)
@@ -1161,7 +1170,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
     End If
 
-    ' Return a handle to the class
+    ' Return a pointer to the class
     createRPGCodeObject = hClass
 
 End Function
@@ -1424,6 +1433,7 @@ Public Function spliceForObjects( _
                 Call callObjectMethod(hClass, "~" & g_objects(hClass).strInstancedFrom, prg, retval, "~" & g_objects(hClass).strInstancedFrom)
 
                 ' Kill the object's members
+                hClass = (hClass - m_objectOffset) / 8
                 Call clearObject(g_objects(hClass), prg)
 
                 ' Kill the object
@@ -1438,6 +1448,7 @@ Public Function spliceForObjects( _
             ElseIf (cmdName = "GETTYPE") Then
 
                 ' Return type of object
+                hClass = (hClass - m_objectOffset) / 8
                 value = g_objects(hClass).strInstancedFrom
 
             Else
@@ -1459,8 +1470,10 @@ Public Function spliceForObjects( _
                 Else
 
                     If (isMethodMember(cmdName, hClass, prg, False)) Then
+                        hClass = (hClass - m_objectOffset) / 8
                         Call debugger("Error: Method " & cLine & " is not avaliable from outside " & g_objects(hClass).strInstancedFrom & "; " & Text)
                     Else
+                        hClass = (hClass - m_objectOffset) / 8
                         Call debugger("Error: Method " & cLine & " is not a member of " & g_objects(hClass).strInstancedFrom & "; " & Text)
                     End If
 
@@ -1476,8 +1489,10 @@ Public Function spliceForObjects( _
                 value = getObjectVarName(cLine, hClass)
             Else
                 If (isVarMember(cLine, hClass, prg, False)) Then
+                    hClass = (hClass - m_objectOffset) / 8
                     Call debugger("Error: Variable " & cLine & " is not avaliable from outside " & g_objects(hClass).strInstancedFrom & "; " & Text)
                 Else
+                    hClass = (hClass - m_objectOffset) / 8
                     Call debugger("Error: Variable " & cLine & " is not a member of " & g_objects(hClass).strInstancedFrom & "; " & Text)
                 End If
             End If
