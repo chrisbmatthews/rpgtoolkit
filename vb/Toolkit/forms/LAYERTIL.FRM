@@ -337,9 +337,10 @@ End Sub
 '==============================================================================
 'Set intensity for translucent layering.
 '==============================================================================
-Private Sub txtIntensity_LostFocus()
+Private Sub txtIntensity_Change()
     
     intensity = inBounds(val(txtIntensity.Text), 0, 100)
     txtIntensity.Text = CStr(intensity)
+    If chkPreview.value Then Call Preview
 
 End Sub

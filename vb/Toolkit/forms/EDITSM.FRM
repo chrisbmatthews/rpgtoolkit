@@ -41,7 +41,7 @@ Begin VB.Form editsm
          TabIndex        =   19
          Top             =   2160
          Width           =   1215
-         Begin VB.CommandButton Command2 
+         Begin VB.CommandButton cmdAnimation 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -59,7 +59,7 @@ Begin VB.Form editsm
             Top             =   720
             Width           =   1095
          End
-         Begin VB.CommandButton Command1 
+         Begin VB.CommandButton cmdStatusEffect 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -77,7 +77,7 @@ Begin VB.Form editsm
             Top             =   360
             Width           =   1095
          End
-         Begin VB.CommandButton Command14 
+         Begin VB.CommandButton cmdProgram 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -96,7 +96,7 @@ Begin VB.Form editsm
             Width           =   1095
          End
       End
-      Begin VB.TextBox namebox 
+      Begin VB.TextBox txtName 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -113,7 +113,7 @@ Begin VB.Form editsm
          Top             =   360
          Width           =   2535
       End
-      Begin VB.TextBox fpbox 
+      Begin VB.TextBox txtFightPower 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -130,7 +130,7 @@ Begin VB.Form editsm
          Top             =   720
          Width           =   2535
       End
-      Begin VB.TextBox smbox 
+      Begin VB.TextBox txtSMP 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -147,7 +147,7 @@ Begin VB.Form editsm
          Top             =   1440
          Width           =   2535
       End
-      Begin VB.TextBox rpgcodebox 
+      Begin VB.TextBox txtProgram 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -164,7 +164,7 @@ Begin VB.Form editsm
          Top             =   2160
          Width           =   2535
       End
-      Begin VB.TextBox targSMPbox 
+      Begin VB.TextBox txtTargetSMP 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -181,7 +181,7 @@ Begin VB.Form editsm
          Top             =   1080
          Width           =   2535
       End
-      Begin VB.CheckBox Check1 
+      Begin VB.CheckBox chkBattleDriven 
          Caption         =   "Battle-Driven"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -199,7 +199,7 @@ Begin VB.Form editsm
          Top             =   3360
          Width           =   2295
       End
-      Begin VB.CheckBox Check2 
+      Begin VB.CheckBox chkBoardDriven 
          Caption         =   "Board-Driven"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -217,7 +217,7 @@ Begin VB.Form editsm
          Top             =   3720
          Width           =   2295
       End
-      Begin VB.TextBox statuse 
+      Begin VB.TextBox txtStatusEffect 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -234,7 +234,7 @@ Begin VB.Form editsm
          Top             =   2520
          Width           =   2535
       End
-      Begin VB.TextBox effectanim 
+      Begin VB.TextBox txtAnimation 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -251,7 +251,7 @@ Begin VB.Form editsm
          Top             =   2880
          Width           =   2535
       End
-      Begin VB.TextBox description 
+      Begin VB.TextBox txtDescription 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -583,81 +583,64 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'==============================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'==============================================================================
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'==============================================================================
+' Special Move Editor
+'==============================================================================
+Option Explicit
 
-Public dataIndex As Long    'index into the vector of items maintained in commonenemy
+Public dataIndex As Long
 
-
-Public Function formType() As Long
-    'identify type of form
-    On Error Resume Next
+'==============================================================================
+'Identify type of form
+'==============================================================================
+Public Function formType() As Long: On Error Resume Next
     formType = FT_SM
 End Function
 
-
-Public Sub saveAsFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
+'==============================================================================
+'Saves the file
+'==============================================================================
+Public Sub saveAsFile(): On Error Resume Next
     If specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True Then
         Me.Show
         saveasmnu_Click
     End If
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-
-
-Public Sub checkSave()
-    'check if the file has changed an it needs to be saved...
-    On Error GoTo ErrorHandler
+'==============================================================================
+'check if the file has changed an it needs to be saved...
+'==============================================================================
+Public Sub checkSave(): On Error Resume Next
     If specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True Then
-        aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo)
-        If aa = 6 Then
-            'yes-- save
+        If MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo) = vbYes Then
             Call saveFile
         End If
     End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-Public Sub saveFile()
+'==============================================================================
+'saves the file.
+'==============================================================================
+Public Sub saveFile(): On Error Resume Next
 
 #If (False) Then
 
-    'saves the file.
-    On Error GoTo ErrorHandler
+    
     'If specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True Then
-        filename$(2) = specialMoveList(activeSpecialMoveIndex).smFile$
         specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
-        If filename$(2) = "" Then
+        If LenB(specialMoveList(activeSpecialMoveIndex).smFile) = 0 Then
             Me.Show
             Call saveasmnu_Click
             Exit Sub
         End If
-        Call saveSpecialMove(projectPath$ + spcPath$ + filename$(2), specialMoveList(activeSpecialMoveIndex).theData)
+        Call saveSpecialMove(projectPath & spcPath & specialMoveList(activeSpecialMoveIndex).smFile, specialMoveList(activeSpecialMoveIndex).theData)
     'End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 
 #Else
 
@@ -667,301 +650,62 @@ ErrorHandler:
 #End If
 
 End Sub
-Public Sub openFile(ByVal file$)
-    On Error Resume Next
-    'Call checkSave
+
+'==============================================================================
+'Open file
+'==============================================================================
+Public Sub openFile(ByVal file As String): On Error Resume Next
+    
     activeSpecialMove.Show
-    filename$(1) = file$
-    antiPath$ = absNoPath(file$)
-    FileCopy filename$(1), projectPath$ + spcPath$ + antiPath$
-    specialMoveList(activeSpecialMoveIndex).theData = openSpecialMove(filename$(1))
-    spfile$ = antiPath$
-    activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") + "  (" + antiPath$ + ")"
+
+    FileCopy file, projectPath & spcPath & absNoPath(file)
+    
+    specialMoveList(activeSpecialMoveIndex).theData = openSpecialMove(file)
+    specialMoveList(activeSpecialMoveIndex).smFile = absNoPath(file)
+    activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") & "  (" & absNoPath(file) & ")"
+    
     Call infofill
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
 End Sub
 
+'==============================================================================
+'File > Save As
+'==============================================================================
+Private Sub saveasmnu_Click(): On Error Resume Next
 
-Private Sub Check1_Click()
-    On Error GoTo ErrorHandler
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    If Check1.value = 0 Then specialMoveList(activeSpecialMoveIndex).theData.smBattle = 1 Else specialMoveList(activeSpecialMoveIndex).theData.smBattle = 0
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Check2_Click()
-    On Error GoTo ErrorHandler
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    If Check2.value = 0 Then specialMoveList(activeSpecialMoveIndex).theData.smMenu = 1 Else specialMoveList(activeSpecialMoveIndex).theData.smMenu = 0
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub closemnu_Click()
-    On Error GoTo ErrorHandler
-    Unload editsm
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Command1_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
+    ChDir (currentDir)
+    
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + statusPath$
-    
-    dlg.strTitle = "Select Status Effect"
-    dlg.strDefaultExt = "ste"
-    dlg.strFileTypes = "RPG Toolkit Status Effect (*.ste)|*.ste|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + statusPath$ + antiPath$
-    statuse.Text = antiPath$
-    specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect$ = antiPath$
-End Sub
-
-Private Sub Command14_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgPath$
-    
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
-    rpgcodebox.Text = antiPath$
-    specialMoveList(activeSpecialMoveIndex).theData.smPrg$ = antiPath$
-End Sub
-
-Private Sub Command2_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + miscPath$
-    
-    dlg.strTitle = "Select Animation"
-    dlg.strDefaultExt = "anm"
-    dlg.strFileTypes = "RPG Toolkit Animation (*.anm)|*.anm|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + miscPath$ + antiPath$
-    effectanim.Text = antiPath$
-    specialMoveList(activeSpecialMoveIndex).theData.smAnimation$ = antiPath$
-End Sub
-
-Private Sub description_Change()
-    specialMoveList(activeSpecialMoveIndex).theData.smDescription$ = description.Text
-End Sub
-
-Private Sub effectanim_Change()
-    On Error Resume Next
-    specialMoveList(activeSpecialMoveIndex).theData.smAnimation$ = effectanim.Text
-End Sub
-
-Private Sub Form_Activate()
-    On Error Resume Next
-    Set activeSpecialMove = Me
-    Set activeForm = Me
-    activeSpecialMoveIndex = dataIndex
-    Call hideAllTools
-End Sub
-
-Private Sub Form_Load()
-    On Error GoTo ErrorHandler
-    ' Call LocalizeForm(Me)
-    
-    Set activeSpecialMove = Me
-    dataIndex = VectSpecialMoveNewSlot()
-    activeSpecialMoveIndex = dataIndex
-    Call SpecialMoveClear(specialMoveList(dataIndex).theData)
-    
-    Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Form_Unload(Cancel As Integer)
-    On Error Resume Next
-    Call hideAllTools
-    Call tkMainForm.refreshTabs
-End Sub
-
-Private Sub fpbox_Change()
-    On Error GoTo ErrorHandler
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smFP = val(fpbox.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub infofill()
-    On Error GoTo ErrorHandler
-    namebox.Text = specialMoveList(activeSpecialMoveIndex).theData.smname$
-    fpbox.Text = CStr(specialMoveList(activeSpecialMoveIndex).theData.smFP)
-    smbox.Text = CStr(specialMoveList(activeSpecialMoveIndex).theData.smSMP)
-    targSMPbox.Text = CStr(specialMoveList(activeSpecialMoveIndex).theData.smtargSMP)
-    rpgcodebox.Text = specialMoveList(activeSpecialMoveIndex).theData.smPrg$
-    If specialMoveList(activeSpecialMoveIndex).theData.smBattle = 0 Then Check1.value = 1 Else Check1.value = 0
-    If specialMoveList(activeSpecialMoveIndex).theData.smMenu = 0 Then Check2.value = 1 Else Check2.value = 0
-    statuse.Text = specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect$ 'status effect cast
-    effectanim.Text = specialMoveList(activeSpecialMoveIndex).theData.smAnimation$
-    description.Text = specialMoveList(activeSpecialMoveIndex).theData.smDescription$
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Label3_Click()
-    On Error GoTo ErrorHandler
-    activeStatusEffect.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Label4_Click()
-    On Error GoTo ErrorHandler
-    activeRPGCode.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
-Private Sub link1_Click()
-    On Error GoTo ErrorHandler
-    activeAnimation.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub namebox_Change()
-    On Error GoTo ErrorHandler
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smname$ = namebox.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub newsm()
-    On Error GoTo ErrorHandler
-        
-    Call SpecialMoveClear(specialMoveList(activeSpecialMoveIndex).theData)
-    activeSpecialMove.Caption = LoadStringLoc(1351, "Special Move Editor (Untitled)")
-    Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-'FIXIT: rpgcodebox_Change event has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
-Private Sub rpgcodebox_Change()
-    On Error Resume Next
-    specialMoveList(activeSpecialMoveIndex).theData.smPrg$ = rpgcodebox.Text
-End Sub
-
-Private Sub saveasmnu_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + spcPath$
-    
+    dlg.strDefaultFolder = projectPath & spcPath
     dlg.strTitle = "Save Special Move As"
     dlg.strDefaultExt = "spc"
     dlg.strFileTypes = "RPG Toolkit Special Move (*.spc)|*.spc|All files(*.*)|*.*"
     'dlg2
-    If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
+    If Not SaveFileDialog(dlg, Me.hwnd, True) Then Exit Sub
+    ChDir (currentDir)
+    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
     
-    If filename$(1) = "" Then Exit Sub
-    specialMoveList(activeSpecialMoveIndex).smFile$ = antiPath$
-    Call savemnu_Click
-    ' Call saveSpecialMove(filename$(1), specialMoveList(activeSpecialMoveIndex).theData)
-    activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") + " (" + antiPath$ + ")"
-    ' specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
-    Call tkMainForm.fillTree("", projectPath$)
+    specialMoveList(activeSpecialMoveIndex).smFile = dlg.strSelectedFileNoPath
+    Call saveSpecialMove(dlg.strSelectedFile, specialMoveList(activeSpecialMoveIndex).theData)
+    
+    activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") & " (" & dlg.strSelectedFileNoPath & ")"
+    
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
+    Call tkMainForm.fillTree(vbNullString, projectPath)
 End Sub
 
-Private Sub savemnu_Click()
-    On Error GoTo ErrorHandler
-    filename$(2) = specialMoveList(activeSpecialMoveIndex).smFile$
-    If filename$(2) = "" Then saveasmnu_Click: Exit Sub
+'==============================================================================
+'File > Save
+'==============================================================================
+Private Sub savemnu_Click(): On Error Resume Next
+
+    If LenB(specialMoveList(activeSpecialMoveIndex).smFile) = 0 Then
+        saveasmnu_Click
+        Exit Sub
+    End If
+    
     Dim strFile As String
-    strFile = projectPath & spcPath & filename(2)
+    strFile = projectPath & spcPath & specialMoveList(activeSpecialMoveIndex).smFile
     If (fileExists(strFile)) Then
         If (GetAttr(strFile) And vbReadOnly) Then
             Call MsgBox("This file is read-only; please choose a different file.")
@@ -969,244 +713,343 @@ Private Sub savemnu_Click()
             Exit Sub
         End If
     End If
+    
     Call saveSpecialMove(strFile, specialMoveList(activeSpecialMoveIndex).theData)
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub smbox_Change()
-    On Error GoTo ErrorHandler
+'==============================================================================
+'Battle Driven check box
+'==============================================================================
+Private Sub chkBattleDriven_Click(): On Error Resume Next
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smSMP = val(smbox.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    specialMoveList(activeSpecialMoveIndex).theData.smBattle = chkBattleDriven.value
 End Sub
 
-Private Sub statuse_Change()
-    On Error Resume Next
-    specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect$ = statuse.Text
-End Sub
-
-Private Sub targSMPbox_Change()
-    On Error GoTo ErrorHandler
+'==============================================================================
+'Board Driven check box
+'==============================================================================
+Private Sub chkBoardDriven_Click(): On Error Resume Next
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smtargSMP = val(targSMPbox.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    specialMoveList(activeSpecialMoveIndex).theData.smMenu = chkBoardDriven.value
 End Sub
 
-Private Sub toc_Click()
-    On Error GoTo ErrorHandler
-    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
+'==============================================================================
+'Browse > Status Effect
+'==============================================================================
+Private Sub cmdStatusEffect_Click(): On Error Resume Next
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    ChDir (currentDir)
+    Dim dlg As FileDialogInfo
+    dlg.strDefaultFolder = projectPath & statusPath
+    dlg.strTitle = "Select Status Effect"
+    dlg.strDefaultExt = "ste"
+    dlg.strFileTypes = "RPG Toolkit Status Effect (*.ste)|*.ste|All files(*.*)|*.*"
+    
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
+    ChDir (currentDir)
+    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
+
+    FileCopy dlg.strSelectedFile, projectPath & statusPath & dlg.strSelectedFileNoPath
+    
+    txtStatusEffect.Text = dlg.strSelectedFileNoPath
+    specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect = dlg.strSelectedFileNoPath
+    
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
 End Sub
 
+'==============================================================================
+'Browse > Program
+'==============================================================================
+Private Sub cmdProgram_Click(): On Error Resume Next
 
-
-Private Sub mnutilehorizontally_Click()
-    On Error Resume Next
-    Call tkMainForm.tilehorizonatllymnu_Click
+    ChDir (currentDir)
+    Dim dlg As FileDialogInfo
+    dlg.strDefaultFolder = projectPath & prgPath
+    dlg.strTitle = "Select Program"
+    dlg.strDefaultExt = "prg"
+    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
+    ChDir (currentDir)
+    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
+    
+    FileCopy dlg.strSelectedFile, projectPath & prgPath & dlg.strSelectedFileNoPath
+    txtProgram.Text = dlg.strSelectedFileNoPath
+    specialMoveList(activeSpecialMoveIndex).theData.smPrg = dlg.strSelectedFileNoPath
+    
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
 End Sub
 
-Private Sub mnutilevertically_Click()
-    On Error Resume Next
-    Call tkMainForm.tileverticallymnu_Click
+'==============================================================================
+'Browse > Animation
+'==============================================================================
+Private Sub cmdAnimation_Click(): On Error Resume Next
+    
+    ChDir (currentDir)
+    Dim dlg As FileDialogInfo
+    dlg.strDefaultFolder = projectPath & miscPath
+    dlg.strTitle = "Select Animation"
+    dlg.strDefaultExt = "anm"
+    dlg.strFileTypes = "RPG Toolkit Animation (*.anm)|*.anm|All files(*.*)|*.*"
+    
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
+    ChDir (currentDir)
+    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
+    
+    FileCopy dlg.strSelectedFile, projectPath & miscPath & dlg.strSelectedFileNoPath
+    txtAnimation.Text = dlg.strSelectedFileNoPath
+    specialMoveList(activeSpecialMoveIndex).theData.smAnimation = dlg.strSelectedFileNoPath
+    
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
 End Sub
 
+'==============================================================================
+'Name textbox
+'==============================================================================
+Private Sub txtName_Change(): On Error Resume Next
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    specialMoveList(activeSpecialMoveIndex).theData.smname = txtName.Text
+End Sub
 
-Private Sub mnuTutorial_Click()
-    On Error Resume Next
+'==============================================================================
+'Fight Power textbox
+'==============================================================================
+Private Sub txtFightPower_Change(): On Error Resume Next
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    specialMoveList(activeSpecialMoveIndex).theData.smFP = val(txtFightPower.Text)
+End Sub
+
+'==============================================================================
+'Target Special Move Power Drain textbox
+'==============================================================================
+Private Sub txtTargetSMP_Change(): On Error Resume Next
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    specialMoveList(activeSpecialMoveIndex).theData.smtargSMP = val(txtTargetSMP.Text)
+End Sub
+
+'==============================================================================
+'Special Move Power Consumption textbox
+'==============================================================================
+Private Sub txtSMP_Change(): On Error Resume Next
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    specialMoveList(activeSpecialMoveIndex).theData.smSMP = val(txtSMP.Text)
+End Sub
+
+'==============================================================================
+'Description textbox
+'==============================================================================
+Private Sub txtDescription_Change(): On Error Resume Next
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    specialMoveList(activeSpecialMoveIndex).theData.smDescription = txtDescription.Text
+End Sub
+
+'==============================================================================
+'Program textbox
+'==============================================================================
+Private Sub txtProgram_Change(): On Error Resume Next
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    specialMoveList(activeSpecialMoveIndex).theData.smPrg = txtProgram.Text
+End Sub
+
+'==============================================================================
+'Status effect textbox
+'==============================================================================
+Private Sub txtStatusEffect_Change(): On Error Resume Next
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect = txtStatusEffect.Text
+End Sub
+
+'==============================================================================
+'Animation textbox
+'==============================================================================
+Private Sub txtAnimation_Change(): On Error Resume Next
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    specialMoveList(activeSpecialMoveIndex).theData.smAnimation = txtAnimation.Text
+End Sub
+
+'==============================================================================
+'Form Activate
+'==============================================================================
+Private Sub Form_Activate(): On Error Resume Next
+    Set activeSpecialMove = Me
+    Set activeForm = Me
+    activeSpecialMoveIndex = dataIndex
+    Call hideAllTools
+    
+    mainFrame.Left = (Me.width - mainFrame.width) \ 2
+    mainFrame.Top = (Me.Height - mainFrame.Height) \ 2
+End Sub
+
+'==============================================================================
+'Form Load
+'==============================================================================
+Private Sub Form_Load(): On Error Resume Next
+    
+    ' Call LocalizeForm(Me)
+    Set activeSpecialMove = Me
+    dataIndex = VectSpecialMoveNewSlot()
+    activeSpecialMoveIndex = dataIndex
+    Call SpecialMoveClear(specialMoveList(dataIndex).theData)
+    
+    Call infofill
+    
+    mainFrame.Left = (Me.width - mainFrame.width) \ 2
+    mainFrame.Top = (Me.Height - mainFrame.Height) \ 2
+End Sub
+
+'==============================================================================
+'Form Unload
+'==============================================================================
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
+    Call hideAllTools
+    Call tkMainForm.refreshTabs
+End Sub
+
+'==============================================================================
+'Insert info on load
+'==============================================================================
+Private Sub infofill(): On Error Resume Next
+    txtName.Text = specialMoveList(activeSpecialMoveIndex).theData.smname
+    txtFightPower.Text = CStr(specialMoveList(activeSpecialMoveIndex).theData.smFP)
+    txtSMP.Text = CStr(specialMoveList(activeSpecialMoveIndex).theData.smSMP)
+    txtTargetSMP.Text = CStr(specialMoveList(activeSpecialMoveIndex).theData.smtargSMP)
+    txtProgram.Text = specialMoveList(activeSpecialMoveIndex).theData.smPrg
+    chkBattleDriven.value = specialMoveList(activeSpecialMoveIndex).theData.smBattle
+    chkBoardDriven.value = specialMoveList(activeSpecialMoveIndex).theData.smMenu
+    txtStatusEffect.Text = specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect
+    txtAnimation.Text = specialMoveList(activeSpecialMoveIndex).theData.smAnimation
+    txtDescription.Text = specialMoveList(activeSpecialMoveIndex).theData.smDescription
+End Sub
+
+'==============================================================================
+'File > Close
+'==============================================================================
+Private Sub closemnu_Click(): On Error Resume Next
+    Unload editsm
+End Sub
+
+'==============================================================================
+Private Sub mnuTutorial_Click(): On Error Resume Next
     Call tkMainForm.tutorialmnu_Click
 End Sub
 
-Private Sub mnuusersguide_Click()
-    On Error Resume Next
+Private Sub mnuusersguide_Click(): On Error Resume Next
     Call tkMainForm.usersguidemnu_Click
 End Sub
 
-Private Sub mnuAbout_Click()
-    On Error Resume Next
+Private Sub mnuAbout_Click(): On Error Resume Next
     Call tkMainForm.aboutmnu_Click
 End Sub
 
-Private Sub mnuArrangeIcons_Click()
-    On Error Resume Next
-    Call tkMainForm.arrangeiconsmnu_Click
-End Sub
-
-Private Sub mnuCascade_Click()
-    On Error Resume Next
-    Call tkMainForm.cascademnu_Click
-End Sub
-
-Private Sub mnucreatepakfile_Click()
-    On Error Resume Next
+Private Sub mnucreatepakfile_Click(): On Error Resume Next
     Call tkMainForm.createpakfilemnu_Click
 End Sub
 
-Private Sub mnucreatesetup_Click()
-    On Error Resume Next
+Private Sub mnucreatesetup_Click(): On Error Resume Next
     Call tkMainForm.createsetupmnu_Click
 End Sub
 
-Private Sub mnuexit_Click()
-    On Error Resume Next
+Private Sub mnuexit_Click(): On Error Resume Next
     Call tkMainForm.exitmnu_Click
 End Sub
 
-Private Sub mnuHistorytxt_Click()
-    On Error Resume Next
+Private Sub mnuHistorytxt_Click(): On Error Resume Next
     Call tkMainForm.historytxtmnu_Click
 End Sub
 
-Private Sub mnuinstallupgrade_Click()
-    On Error Resume Next
+Private Sub mnuinstallupgrade_Click(): On Error Resume Next
     Call tkMainForm.installupgrademnu_Click
 End Sub
 
-Private Sub mnumakeexe_Click()
-    On Error Resume Next
+Private Sub mnumakeexe_Click(): On Error Resume Next
     Call tkMainForm.makeexemnu_Click
 End Sub
 
-Private Sub mnunewanimatedtile_Click()
-    On Error Resume Next
+Private Sub mnunewanimatedtile_Click(): On Error Resume Next
     Call tkMainForm.newanimtilemnu_Click
 End Sub
 
-Private Sub mnunewanimation_Click()
-    On Error Resume Next
+Private Sub mnunewanimation_Click(): On Error Resume Next
     Call tkMainForm.newanimationmnu_Click
 End Sub
 
-Private Sub mnunewboard_Click()
-    On Error Resume Next
+Private Sub mnunewboard_Click(): On Error Resume Next
     Call tkMainForm.newboardmnu_Click
 End Sub
 
-Private Sub mnunewenemy_Click()
-    On Error Resume Next
+Private Sub mnunewenemy_Click(): On Error Resume Next
     Call tkMainForm.newenemymnu_Click
 End Sub
 
-Private Sub mnunewitem_Click()
-    On Error Resume Next
+Private Sub mnunewitem_Click(): On Error Resume Next
     Call tkMainForm.newitemmnu_Click
 End Sub
 
-Private Sub mnunewplayer_Click()
-    On Error Resume Next
+Private Sub mnunewplayer_Click(): On Error Resume Next
     Call tkMainForm.newplayermnu_Click
 End Sub
 
-
-Private Sub mnunewproject_Click()
-    On Error Resume Next
+Private Sub mnunewproject_Click(): On Error Resume Next
     Call tkMainForm.newprojectmnu_Click
 End Sub
 
-Private Sub mnunewrpgcodeprogram_Click()
-    On Error Resume Next
+Private Sub mnunewrpgcodeprogram_Click(): On Error Resume Next
     Call tkMainForm.newrpgcodemnu_Click
 End Sub
 
-Private Sub mnunewspecialmove_Click()
-    On Error Resume Next
+Private Sub mnunewspecialmove_Click(): On Error Resume Next
     Call tkMainForm.newspecialmovemnu_Click
 End Sub
 
-
-Private Sub mnunewstatuseffect_Click()
-    On Error Resume Next
+Private Sub mnunewstatuseffect_Click(): On Error Resume Next
     Call tkMainForm.newstatuseffectmnu_Click
 End Sub
 
-
-Private Sub mnunewtile_Click()
-    On Error Resume Next
+Private Sub mnunewtile_Click(): On Error Resume Next
     Call tkMainForm.newtilemnu_Click
 End Sub
 
-
-Private Sub mnunewtilebitmap_Click()
-    On Error Resume Next
+Private Sub mnunewtilebitmap_Click(): On Error Resume Next
     Call tkMainForm.newtilebitmapmnu_Click
 End Sub
 
-Private Sub mnuopen_Click()
-    On Error Resume Next
+Private Sub mnuopen_Click(): On Error Resume Next
     Call tkMainForm.openmnu_Click
 End Sub
 
-
-Private Sub mnuRegistrationInfo_Click()
-    On Error Resume Next
-    Call tkMainForm.registrationinfomnu_Click
-End Sub
-
-Private Sub mnuRPGCodePrimer_Click()
-    On Error Resume Next
+Private Sub mnuRPGCodePrimer_Click(): On Error Resume Next
     Call tkMainForm.rpgcodeprimermnu_Click
 End Sub
 
-Private Sub mnurpgcodereference_Click()
-    On Error Resume Next
+Private Sub mnurpgcodereference_Click(): On Error Resume Next
     Call tkMainForm.rpgcodereferencemnu_Click
 End Sub
 
-
-Private Sub mnusaveall_Click()
-    On Error Resume Next
+Private Sub mnusaveall_Click(): On Error Resume Next
     Call tkMainForm.saveallmnu_Click
 End Sub
 
-
-Private Sub mnuselectlanguage_Click()
-    On Error Resume Next
+Private Sub mnuselectlanguage_Click(): On Error Resume Next
     Call tkMainForm.selectlanguagemnu_Click
 End Sub
 
-Private Sub mnushowprojectlist_Click()
-    On Error Resume Next
+Private Sub mnushowprojectlist_Click(): On Error Resume Next
     Call tkMainForm.showprojectlistmnu_Click
 End Sub
 
-Private Sub mnushowtools_Click()
-    On Error Resume Next
+Private Sub mnushowtools_Click(): On Error Resume Next
     Call tkMainForm.showtoolsmnu_Click
 End Sub
 
-Private Sub mnutestgame_Click()
-    On Error Resume Next
+Private Sub mnutestgame_Click(): On Error Resume Next
     tkMainForm.testgamemnu_Click
 End Sub
 
-
-Private Sub mnuOpenProject_Click()
-    On Error Resume Next
+Private Sub mnuOpenProject_Click(): On Error Resume Next
     Call tkMainForm.mnuOpenProject_Click
 End Sub
 
-Private Sub mnuNewFightBackground_Click()
-    On Error Resume Next
+Private Sub mnuNewFightBackground_Click(): On Error Resume Next
     Call tkMainForm.mnuNewFightBackground_Click
 End Sub
-
