@@ -1009,7 +1009,7 @@ Public Function ParseRPGCodeCommand( _
                                             If (theInlineCommand <> "WAIT") _
                                              And (theInlineCommand <> "GET") Then
                                                 Select Case rV.dataType
-                                                    Case DT_NUM: v = " (" & CStr(rV.num) & ")"
+                                                    Case DT_NUM: v = " " & CStr(rV.num)
                                                     Case DT_LIT: v = " " & Chr(34) & rV.lit & Chr(34)
                                                 End Select
                                             Else
