@@ -1390,7 +1390,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
 
     Dim variableType As String
     ' Grab the variable's type (! or $)
-    variableType = Right$(toParse, 1)
+    variableType = RightB$(toParse, 2)
     If (variableType <> "!" And variableType <> "$") Then variableType = vbNullString
 
     Dim start As Long
@@ -1410,7 +1410,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     If (hClass) Then
         If (isObject(hClass, prg)) Then
             ' Check for overloaded [] operator
-            If (Not isMethodMember("operator[]", hClass, prg, topNestle(prg) <> hClass)) Then
+            If Not (isMethodMember("operator[]", hClass, prg, topNestle(prg) <> hClass)) Then
                 ' Alert the user
                 Call debugger("Overloaded [] operator not found or cannot be reached-- " & variable)
                 ' Nullify hClass
@@ -1433,20 +1433,19 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     ' Split it at '][' (bewteen elements)
     parseArrayD() = Split(toParse, "][")
 
-    Dim build As String
-    Dim a As Long
+    Dim build As String, i As Long
 
-    build = "Array("
+    build = "i("
 
     ' Mould the array as if it were parameters passed to a command
-    For a = 0 To UBound(parseArrayD)
-        build = build & parseArrayD(a)
-        If (a <> UBound(parseArrayD)) Then
+    For i = 0 To UBound(parseArrayD)
+        build = build & parseArrayD(i)
+        If (i <> UBound(parseArrayD)) Then
             build = build & ","
         Else
             build = build & ")"
         End If
-    Next a
+    Next i
 
     ' Parse for commands
     build = ParseRPGCodeCommand(build, prg)
@@ -1476,7 +1475,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
         variableName = retval.ref
         ' Check for postfixed sign
         Dim postFix As String
-        postFix = Right$(variableName, 1)
+        postFix = RightB$(variableName, 2)
         If ((postFix = "!") Or (postFix = "$")) Then
             ' Override this array's sign
             variableType = postFix
@@ -1489,15 +1488,15 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     build = variableName
 
     ' For each dimension
-    For a = 0 To UBound(arrayElements)
+    For i = 0 To UBound(arrayElements)
 
         ' Add in the content
-        Select Case arrayElements(a).dataType
-            Case DT_NUM: build = build & "[" & CStr(arrayElements(a).num) & "]"
-            Case DT_LIT: build = build & "[""" & arrayElements(a).lit & """]"
+        Select Case arrayElements(i).dataType
+            Case DT_NUM: build = build & "[" & CStr(arrayElements(i).num) & "]"
+            Case DT_LIT: build = build & "[""" & arrayElements(i).lit & """]"
         End Select
 
-    Next a
+    Next i
 
     ' Pass it back with the type (! or $) on the end
     parseArray = build & variableType
