@@ -80,7 +80,7 @@ Begin VB.Form skew
       Width           =   1095
    End
 End
-Attribute VB_Name = "Skew"
+Attribute VB_Name = "skew"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

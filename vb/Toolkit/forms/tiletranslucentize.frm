@@ -61,7 +61,7 @@ Begin VB.Form tiletranslucentize
       Width           =   1815
    End
 End
-Attribute VB_Name = "tileTranslucentize"
+Attribute VB_Name = "tiletranslucentize"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

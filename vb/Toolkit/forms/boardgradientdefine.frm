@@ -182,7 +182,7 @@ Begin VB.Form boardGradientDefine
       Width           =   6255
    End
 End
-Attribute VB_Name = "boardgradientdefine"
+Attribute VB_Name = "boardGradientDefine"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

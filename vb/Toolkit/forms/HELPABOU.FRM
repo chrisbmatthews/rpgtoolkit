@@ -210,7 +210,7 @@ Begin VB.Form helpAbout
       Width           =   6615
    End
 End
-Attribute VB_Name = "helpabout"
+Attribute VB_Name = "helpAbout"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

@@ -89,7 +89,7 @@ Begin VB.Form commandRef
       Width           =   6255
    End
 End
-Attribute VB_Name = "commandref"
+Attribute VB_Name = "commandRef"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

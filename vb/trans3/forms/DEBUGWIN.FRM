@@ -39,7 +39,7 @@ Begin VB.Form debugWin
       Width           =   4815
    End
 End
-Attribute VB_Name = "debugwin"
+Attribute VB_Name = "debugWin"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

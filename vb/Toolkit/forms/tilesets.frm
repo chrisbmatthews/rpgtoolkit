@@ -91,7 +91,7 @@ Begin VB.Form tilesetForm
       Width           =   3495
    End
 End
-Attribute VB_Name = "tilesetform"
+Attribute VB_Name = "tilesetForm"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

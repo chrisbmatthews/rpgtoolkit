@@ -55,7 +55,7 @@ Begin VB.Form statusBar
       End
    End
 End
-Attribute VB_Name = "statusbar"
+Attribute VB_Name = "statusBar"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
