@@ -696,7 +696,7 @@ Private Sub cmdBrowse_Click()
     ' Use the windows shell
     Dim shell As shell, folder As Folder3
     Set shell = New shell
-    Set folder = shell.BrowseForFolder(hwnd, "Please choose the direcory where you would like RPGToolkit3 to be installed:", 0)
+    Set folder = shell.BrowseForFolder(hwnd, "Please choose the directory where you would like RPGToolkit3 to be installed:", 0)
     If Not (folder Is Nothing) Then
 
         ' Update the text box
@@ -751,17 +751,17 @@ Private Sub changeStep(ByVal lngNewStep As Long)
     ElseIf (lngNewStep = 7) Then
 
         ' Exit
-         
+
         ' Make the path
         Dim strPath As String
         strPath = txtDirectory.Text
         If (RightB$(strPath, 2) <> "\") Then strPath = strPath & "\"
-        
+
         ' Show the readme file, if one exists
         If ((GetAttr(strPath & "readme.txt") And vbDirectory) = 0) Then
             Call shell("notepad.exe " & strPath & "readme.txt", vbNormalFocus)
         End If
-        
+
         End
 
     End If
