@@ -1650,40 +1650,36 @@ Private Function obtainTileType( _
     
 End Function
 
-
 Public Sub moveItems()
-    'Move all pending items
+
     On Error Resume Next
-    
-    If maxItem = -1 Then Exit Sub
-    
-    Dim maxP As Long
-    maxP = UBound(pendingItemMovement)
-       
-    Dim t As Long
-    
+
+    'Increase movedThisFrame
+    Call incrementFrame(-1)
+
     Dim moveFraction As Double
     moveFraction = movementSize / FRAMESPERMOVE
-    
-    For t = 0 To maxP
-        Select Case pendingItemMovement(t).direction
+
+    Dim itmIdx As Long
+    For itmIdx = 0 To UBound(pendingItemMovement)
+        Select Case pendingItemMovement(itmIdx).direction
             Case MV_IDLE
                 'This item isn't moving...
             Case Else
                 'Cleaned up into one sub!
-                Call pushItem(t, moveFraction)
+                Call pushItem(itmIdx, moveFraction)
         End Select
-    Next t
-    
+    Next itmIdx
+
+    'Check if we should reset movedThisFrame
+    Call incrementFrame(-2)
+
 End Sub
 
 Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
-'======================================================================
-'Generic pushItem[Direction] sub. For 3.0.4 by Delano.
-'Replaces pushItem* subs with common code.
-'======================================================================
+
     On Error Resume Next
-    
+
     Dim tiletype As Byte, item As PENDING_MOVEMENT, stance As String
     'Copy across the pending movements to a local.
     item = pendingItemMovement(itemNum)
@@ -1693,14 +1689,14 @@ Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
         Or item.xTarg < 1 _
         Or item.yTarg > boardList(activeBoardIndex).theData.bSizeY _
         Or item.xTarg > boardList(activeBoardIndex).theData.bSizeX Then
-        
+
         Exit Sub
-        
+
     End If
 
     'Check the player's location. Should combine in CheckObstruction.
-    If Not (usingPixelMovement) Then
-    
+    If (Not usingPixelMovement()) Then
+
         'Tile movement.
         If (item.yTarg = Int(pPos(selectedPlayer).y) Or _
             item.yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
@@ -1709,31 +1705,33 @@ Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
             'If target is the player's location or their destination.
             Exit Sub
         End If
-    
+
     Else
-    
+
         'Pixel movement. Current and target locations.
         If Abs(item.yTarg - pPos(selectedPlayer).y) <= movementSize _
             And Abs(item.xTarg - pPos(selectedPlayer).x) < 1 Then
             Exit Sub
         End If
-            
+
         If Abs(item.yTarg - pendingPlayerMovement(selectedPlayer).yTarg) <= movementSize _
             And Abs(item.xTarg - pendingPlayerMovement(selectedPlayer).xTarg) < 1 Then
             Exit Sub
         End If
-    
+
     End If
 
     'CheckObstruction-> done in obtainTileType.
 
     'Check the tiletype at the target.
-    tiletype = obtainTileType(item.xTarg, _
-                              item.yTarg, _
-                              item.lTarg, _
-                              item.direction, _
-                              itmPos(itemNum), _
-                              itemNum)
+    With item
+        tiletype = obtainTileType(.xTarg, _
+                                  .yTarg, _
+                                  .lTarg, _
+                                  .direction, _
+                                  itmPos(itemNum), _
+                                  itemNum)
+    End With
 
     'Select the stance direction - surely .stance shouldn't be a string!!
     Select Case item.direction
@@ -1746,20 +1744,24 @@ Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
         Case MV_SE: stance = "walk_se"
         Case MV_SW: stance = "walk_sw"
     End Select
-    
-    Select Case tiletype
-    
-        Case NORMAL, UNDER
-            itmPos(itemNum).stance = stance
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
-            
-        Case SOLID
-            'Walk on the spot.
-            itmPos(itemNum).stance = stance
-            itmPos(itemNum).frame = itmPos(itemNum).frame + 1
-            
-    End Select
+
+    With itmPos(itemNum)
+
+        Select Case tiletype
+
+            Case NORMAL, UNDER
+                .stance = stance
+                Call incrementFrame(.frame)
+                Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
+
+            Case SOLID
+                'Walk on the spot.
+                .stance = stance
+                Call incrementFrame(.frame)
+
+        End Select
+
+    End With
 
 End Sub
 
