@@ -30,7 +30,7 @@ Begin VB.Form characteredit
       TabIndex        =   5
       Top             =   120
       Width           =   7695
-      Begin VB.CommandButton Command5 
+      Begin VB.CommandButton cmdLevels 
          Appearance      =   0  'Flat
          Caption         =   "Levels..."
          BeginProperty Font 
@@ -49,7 +49,7 @@ Begin VB.Form characteredit
          Top             =   3000
          Width           =   1575
       End
-      Begin VB.CommandButton Command4 
+      Begin VB.CommandButton cmdEquipment 
          Appearance      =   0  'Flat
          Caption         =   "Equipment..."
          BeginProperty Font 
@@ -68,7 +68,7 @@ Begin VB.Form characteredit
          Top             =   2640
          Width           =   1575
       End
-      Begin VB.CommandButton Command3 
+      Begin VB.CommandButton cmdGraphics 
          Appearance      =   0  'Flat
          Caption         =   "Graphics..."
          BeginProperty Font 
@@ -87,7 +87,7 @@ Begin VB.Form characteredit
          Top             =   2280
          Width           =   1575
       End
-      Begin VB.CommandButton Command2 
+      Begin VB.CommandButton cmdSpecialMoves 
          Appearance      =   0  'Flat
          Caption         =   "Special Moves..."
          BeginProperty Font 
@@ -106,7 +106,38 @@ Begin VB.Form characteredit
          Top             =   1920
          Width           =   1575
       End
-      Begin VB.Frame Frame3 
+      Begin VB.PictureBox profile 
+         AutoRedraw      =   -1  'True
+         Height          =   975
+         Left            =   6120
+         ScaleHeight     =   61
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   61
+         TabIndex        =   6
+         ToolTipText     =   "Profile Picture"
+         Top             =   240
+         Width           =   975
+      End
+      Begin VB.CommandButton cmdProfile 
+         Appearance      =   0  'Flat
+         Caption         =   "Profile..."
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   5880
+         TabIndex        =   0
+         Tag             =   "1302"
+         Top             =   1560
+         Width           =   1575
+      End
+      Begin VB.Frame frVariables 
          Caption         =   "Variables"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -123,26 +154,7 @@ Begin VB.Form characteredit
          Tag             =   "1316"
          Top             =   840
          Width           =   4935
-         Begin VB.CheckBox maxsmdefault 
-            Caption         =   "Default"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   3840
-            TabIndex        =   44
-            Tag             =   "1317"
-            Top             =   2760
-            Value           =   1  'Checked
-            Width           =   855
-         End
-         Begin VB.TextBox maxsmvar 
+         Begin VB.TextBox txtVariables 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -153,13 +165,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   0
             Left            =   2160
-            TabIndex        =   43
-            Text            =   "Undefined!"
-            Top             =   2760
+            TabIndex        =   54
+            Text            =   "Undefined"
+            Top             =   240
             Width           =   1575
          End
-         Begin VB.CheckBox leveldefault 
+         Begin VB.CheckBox chkDefault 
             Caption         =   "Default"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -171,14 +184,36 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
+            Index           =   0
+            Left            =   3840
+            TabIndex        =   53
+            ToolTipText     =   "Use the default form of the variable"
+            Top             =   240
+            Value           =   1  'Checked
+            Width           =   855
+         End
+         Begin VB.CheckBox chkDefault 
+            Caption         =   "Default"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Index           =   7
             Left            =   3840
             TabIndex        =   42
             Tag             =   "1317"
-            Top             =   3120
+            ToolTipText     =   "Use the default form of the variable"
+            Top             =   2760
             Value           =   1  'Checked
             Width           =   855
          End
-         Begin VB.TextBox levelvar 
+         Begin VB.TextBox txtVariables 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -189,13 +224,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   7
             Left            =   2160
             TabIndex        =   41
             Text            =   "Undefined!"
-            Top             =   3120
+            Top             =   2760
             Width           =   1575
          End
-         Begin VB.CheckBox smdefault 
+         Begin VB.CheckBox chkDefault 
             Caption         =   "Default"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -207,14 +243,16 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
+            Index           =   8
             Left            =   3840
             TabIndex        =   40
             Tag             =   "1317"
-            Top             =   2400
+            ToolTipText     =   "Use the default form of the variable"
+            Top             =   3120
             Value           =   1  'Checked
             Width           =   855
          End
-         Begin VB.TextBox smpowervar 
+         Begin VB.TextBox txtVariables 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -225,13 +263,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   8
             Left            =   2160
             TabIndex        =   39
             Text            =   "Undefined!"
-            Top             =   2400
+            Top             =   3120
             Width           =   1575
          End
-         Begin VB.CheckBox maxhealthdefault 
+         Begin VB.CheckBox chkDefault 
             Caption         =   "Default"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -243,14 +282,16 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
+            Index           =   6
             Left            =   3840
             TabIndex        =   38
             Tag             =   "1317"
-            Top             =   1320
+            ToolTipText     =   "Use the default form of the variable"
+            Top             =   2400
             Value           =   1  'Checked
             Width           =   855
          End
-         Begin VB.TextBox maxhealthbox 
+         Begin VB.TextBox txtVariables 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -261,13 +302,53 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   6
             Left            =   2160
             TabIndex        =   37
+            Text            =   "Undefined!"
+            Top             =   2400
+            Width           =   1575
+         End
+         Begin VB.CheckBox chkDefault 
+            Caption         =   "Default"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Index           =   3
+            Left            =   3840
+            TabIndex        =   36
+            Tag             =   "1317"
+            ToolTipText     =   "Use the default form of the variable"
+            Top             =   1320
+            Value           =   1  'Checked
+            Width           =   855
+         End
+         Begin VB.TextBox txtVariables 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   3
+            Left            =   2160
+            TabIndex        =   35
             Text            =   "Undefined!"
             Top             =   1320
             Width           =   1575
          End
-         Begin VB.CheckBox namedefault 
+         Begin VB.CheckBox chkDefault 
             Caption         =   "Default"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -279,50 +360,16 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
-            Left            =   3840
-            TabIndex        =   36
-            Tag             =   "1317"
-            Top             =   240
-            Value           =   1  'Checked
-            Width           =   855
-         End
-         Begin VB.TextBox namevarbox 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   35
-            Text            =   "Undefined$"
-            Top             =   240
-            Width           =   1575
-         End
-         Begin VB.CheckBox fightdefault 
-            Caption         =   "Default"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
+            Index           =   5
             Left            =   3840
             TabIndex        =   34
             Tag             =   "1317"
+            ToolTipText     =   "Use the default form of the variable"
             Top             =   2040
             Value           =   1  'Checked
             Width           =   855
          End
-         Begin VB.TextBox fightbox 
+         Begin VB.TextBox txtVariables 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -333,13 +380,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   5
             Left            =   2160
             TabIndex        =   33
             Text            =   "Undefined!"
             Top             =   2040
             Width           =   1575
          End
-         Begin VB.CheckBox defencedefault 
+         Begin VB.CheckBox chkDefault 
             Caption         =   "Default"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -351,14 +399,16 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
+            Index           =   4
             Left            =   3840
             TabIndex        =   32
             Tag             =   "1317"
+            ToolTipText     =   "Use the default form of the variable"
             Top             =   1680
             Value           =   1  'Checked
             Width           =   855
          End
-         Begin VB.TextBox defensebox 
+         Begin VB.TextBox txtVariables 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -369,13 +419,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   4
             Left            =   2160
             TabIndex        =   31
             Text            =   "Undefined!"
             Top             =   1680
             Width           =   1575
          End
-         Begin VB.CheckBox healthdefault 
+         Begin VB.CheckBox chkDefault 
             Caption         =   "Default"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -387,14 +438,16 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
+            Index           =   2
             Left            =   3840
             TabIndex        =   30
             Tag             =   "1317"
+            ToolTipText     =   "Use the default form of the variable"
             Top             =   960
             Value           =   1  'Checked
             Width           =   855
          End
-         Begin VB.CheckBox expdefault 
+         Begin VB.CheckBox chkDefault 
             Caption         =   "Default"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -406,14 +459,16 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
+            Index           =   1
             Left            =   3840
             TabIndex        =   29
             Tag             =   "1317"
+            ToolTipText     =   "Use the default form of the variable"
             Top             =   600
             Value           =   1  'Checked
             Width           =   855
          End
-         Begin VB.TextBox healthbox 
+         Begin VB.TextBox txtVariables 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -424,13 +479,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   2
             Left            =   2160
             TabIndex        =   28
             Text            =   "Undefined!"
             Top             =   960
             Width           =   1575
          End
-         Begin VB.TextBox expbox 
+         Begin VB.TextBox txtVariables 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -441,6 +497,7 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   1
             Left            =   2160
             TabIndex        =   27
             Text            =   "Undefined!"
@@ -465,7 +522,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   9
             Left            =   120
-            TabIndex        =   53
+            TabIndex        =   51
             Tag             =   "1326"
             Top             =   2760
             Width           =   1815
@@ -488,7 +545,7 @@ Begin VB.Form characteredit
             Height          =   255
             Index           =   8
             Left            =   120
-            TabIndex        =   52
+            TabIndex        =   50
             Tag             =   "1325"
             Top             =   3120
             Width           =   1815
@@ -511,7 +568,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   7
             Left            =   120
-            TabIndex        =   51
+            TabIndex        =   49
             Tag             =   "1324"
             Top             =   2400
             Width           =   1815
@@ -534,7 +591,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   5
             Left            =   120
-            TabIndex        =   50
+            TabIndex        =   48
             Tag             =   "1323"
             Top             =   1320
             Width           =   1935
@@ -557,7 +614,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   0
             Left            =   120
-            TabIndex        =   49
+            TabIndex        =   47
             Tag             =   "1322"
             Top             =   240
             Width           =   1815
@@ -580,7 +637,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   4
             Left            =   120
-            TabIndex        =   48
+            TabIndex        =   46
             Tag             =   "1321"
             Top             =   2040
             Width           =   1935
@@ -603,7 +660,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   3
             Left            =   120
-            TabIndex        =   47
+            TabIndex        =   45
             Tag             =   "1320"
             Top             =   1680
             Width           =   1815
@@ -626,7 +683,7 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   2
             Left            =   120
-            TabIndex        =   46
+            TabIndex        =   44
             Tag             =   "1319"
             Top             =   960
             Width           =   1815
@@ -649,13 +706,45 @@ Begin VB.Form characteredit
             Height          =   375
             Index           =   1
             Left            =   120
-            TabIndex        =   45
+            TabIndex        =   43
             Tag             =   "1318"
             Top             =   600
             Width           =   1815
          End
       End
-      Begin VB.Frame Frame2 
+      Begin MSComctlLib.TabStrip tabCharacter 
+         Height          =   4335
+         Left            =   240
+         TabIndex        =   52
+         Top             =   360
+         Width           =   5415
+         _ExtentX        =   9551
+         _ExtentY        =   7646
+         _Version        =   393216
+         BeginProperty Tabs {1EFB6598-857C-11D1-B16A-00C0F0283628} 
+            NumTabs         =   2
+            BeginProperty Tab1 {1EFB659A-857C-11D1-B16A-00C0F0283628} 
+               Caption         =   "Stats"
+               Object.Tag             =   "1303"
+               ImageVarType    =   2
+            EndProperty
+            BeginProperty Tab2 {1EFB659A-857C-11D1-B16A-00C0F0283628} 
+               Caption         =   "Advanced"
+               Object.Tag             =   "2048"
+               ImageVarType    =   2
+            EndProperty
+         EndProperty
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Frame frStats 
          Caption         =   "Stats"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -672,7 +761,7 @@ Begin VB.Form characteredit
          Tag             =   "1303"
          Top             =   840
          Width           =   4935
-         Begin VB.TextBox smmaxinit 
+         Begin VB.TextBox txtStats 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -683,13 +772,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   7
             Left            =   2400
             TabIndex        =   16
             Text            =   "0"
             Top             =   2760
             Width           =   2175
          End
-         Begin VB.TextBox initlevel1 
+         Begin VB.TextBox txtStats 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -700,13 +790,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   8
             Left            =   2400
             TabIndex        =   15
             Text            =   "0"
             Top             =   3120
             Width           =   2175
          End
-         Begin VB.TextBox sminit 
+         Begin VB.TextBox txtStats 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -717,13 +808,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   6
             Left            =   2400
             TabIndex        =   14
             Text            =   "0"
             Top             =   2400
             Width           =   2175
          End
-         Begin VB.TextBox fightstart 
+         Begin VB.TextBox txtStats 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -734,13 +826,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   5
             Left            =   2400
             TabIndex        =   13
             Text            =   "0"
             Top             =   2040
             Width           =   2175
          End
-         Begin VB.TextBox defencestart 
+         Begin VB.TextBox txtStats 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -751,13 +844,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   4
             Left            =   2400
             TabIndex        =   12
             Text            =   "0"
             Top             =   1680
             Width           =   2175
          End
-         Begin VB.TextBox maxhealthstart 
+         Begin VB.TextBox txtStats 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -768,13 +862,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   3
             Left            =   2400
             TabIndex        =   11
             Text            =   "0"
             Top             =   1320
             Width           =   2175
          End
-         Begin VB.TextBox starthealth 
+         Begin VB.TextBox txtStats 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -785,13 +880,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   2
             Left            =   2400
             TabIndex        =   10
             Text            =   "0"
             Top             =   960
             Width           =   2175
          End
-         Begin VB.TextBox startexp 
+         Begin VB.TextBox txtStats 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -802,13 +898,14 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   1
             Left            =   2400
             TabIndex        =   9
             Text            =   "0"
             Top             =   600
             Width           =   2175
          End
-         Begin VB.TextBox namebox 
+         Begin VB.TextBox txtStats 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -819,6 +916,7 @@ Begin VB.Form characteredit
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
+            Index           =   0
             Left            =   2400
             TabIndex        =   8
             Text            =   "Undefined"
@@ -1033,68 +1131,6 @@ Begin VB.Form characteredit
             Width           =   2175
          End
       End
-      Begin VB.PictureBox profile 
-         AutoRedraw      =   -1  'True
-         Height          =   975
-         Left            =   6120
-         ScaleHeight     =   61
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   61
-         TabIndex        =   6
-         Top             =   240
-         Width           =   975
-      End
-      Begin VB.CommandButton Command1 
-         Appearance      =   0  'Flat
-         Caption         =   "Profile..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   5880
-         TabIndex        =   0
-         Tag             =   "1302"
-         Top             =   1560
-         Width           =   1575
-      End
-      Begin MSComctlLib.TabStrip TabStrip1 
-         Height          =   4335
-         Left            =   240
-         TabIndex        =   54
-         Top             =   360
-         Width           =   5415
-         _ExtentX        =   9551
-         _ExtentY        =   7646
-         _Version        =   393216
-         BeginProperty Tabs {1EFB6598-857C-11D1-B16A-00C0F0283628} 
-            NumTabs         =   2
-            BeginProperty Tab1 {1EFB659A-857C-11D1-B16A-00C0F0283628} 
-               Caption         =   "Stats"
-               Object.Tag             =   "1303"
-               ImageVarType    =   2
-            EndProperty
-            BeginProperty Tab2 {1EFB659A-857C-11D1-B16A-00C0F0283628} 
-               Caption         =   "Advanced"
-               Object.Tag             =   "2048"
-               ImageVarType    =   2
-            EndProperty
-         EndProperty
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
    End
    Begin VB.Menu charfilemenu 
       Caption         =   "File"
@@ -1152,12 +1188,12 @@ Begin VB.Form characteredit
          Caption         =   "Open"
          Shortcut        =   ^O
       End
-      Begin VB.Menu savecharmenu 
+      Begin VB.Menu mnuSave 
          Caption         =   "Save Character"
          Shortcut        =   ^S
          Tag             =   "1329"
       End
-      Begin VB.Menu scharasmnu 
+      Begin VB.Menu mnuSaveAs 
          Caption         =   "Save Character As"
          Shortcut        =   ^A
          Tag             =   "1330"
@@ -1168,7 +1204,7 @@ Begin VB.Form characteredit
       Begin VB.Menu sub2 
          Caption         =   "-"
       End
-      Begin VB.Menu clsemnu 
+      Begin VB.Menu mnuClose 
          Caption         =   "Close"
          Tag             =   "1088"
       End
@@ -1273,883 +1309,563 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'==============================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'==============================================================================
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
-Private advancedOn As Boolean
+'==============================================================================
+'Character Editor
+'==============================================================================
+'Cleaned up for 3.0.5 by Delano.
 
+Option Explicit
 
-Public dataIndex As Long    'index into the vector of players maintained in commonenemy
+Public dataIndex As Long    'Index into the vector of players maintained in CommonEnemy
 
-
-Public Function formType() As Long
-    'identify type of form
-    On Error Resume Next
+'==============================================================================
+'Identify type of form.
+'==============================================================================
+Public Function formType() As Long: On Error Resume Next
     formType = FT_CHARACTER
 End Function
 
-
-Public Sub saveAsFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
-    If playerList(activePlayerIndex).charNeedUpdate = True Then
-        Me.Show
-        scharasmnu_Click
-    End If
+'==============================================================================
+' Save the player file. Direct to Save As if untitled. Called from TkMain, etc.
+'==============================================================================
+Public Sub saveFile(): On Error Resume Next
     
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
-
-Public Sub checkSave()
-    'check if the file has changed an it needs to be saved...
-    On Error GoTo ErrorHandler
-    If playerList(activePlayerIndex).charNeedUpdate = True Then
-        aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo, LoadStringLoc(950, "Save file"))
-        If aa = 6 Then
-            'yes-- save
-            Call saveFile
-        End If
-    End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Public Sub saveFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
-    'If playerList(activePlayerIndex).charNeedUpdate = True Then
-        filename$(2) = playerList(activePlayerIndex).charFile$
-        playerList(activePlayerIndex).charNeedUpdate = False
-        filename$(2) = playerList(activePlayerIndex).charFile$
-        If filename$(2) = "" Then
-            Me.Show
-            Call scharasmnu_Click
-            Exit Sub
-        End If
-        Call saveChar(projectPath$ + temPath$ + filename$(2), playerList(activePlayerIndex).theData)
-    'End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Public Sub openFile(file$)
-    On Error Resume Next
-    'Call checkSave
-    activePlayer.Show
-    filename$(1) = file$
-    antiPath$ = absNoPath(file$)
-    FileCopy filename$(1), projectPath$ + temPath$ + antiPath$
-    Call clearchar
-    Call openChar(filename$(1), playerList(activePlayerIndex).theData)
-    activePlayer.Caption = LoadStringLoc(804, "Character Editor") + "  (" + antiPath$ + ")"
-    playerList(activePlayerIndex).charFile$ = antiPath$
-    namedefault.value = False
-    maxhealthdefault.value = False
-    expdefault.value = False
-    healthdefault.value = False
-    defencedefault.value = False
-    fightdefault.value = False
-    smdefault.value = False
-    maxsmdefault.value = False
-    leveldefault.value = False
-    
-    Call infofill
+    'Player file is up to date.
     playerList(activePlayerIndex).charNeedUpdate = False
+    
+    If playerList(activePlayerIndex).charFile = vbNullString Then
+        'Untitled; prompt Save As.
+        Me.Show
+        Call mnuSaveAs_Click
+        Exit Sub
+    End If
+    
+    'Save the .tem file.
+    Call saveChar(projectPath & temPath & playerList(activePlayerIndex).charFile, playerList(activePlayerIndex).theData)
+
 End Sub
 
+'==============================================================================
+' Open character file. e.g., from File Tree or Main Form methods.
+'==============================================================================
+Public Sub openFile(ByVal file As String): On Error Resume Next
 
-
-Private Sub clearchar()
-    On Error GoTo ErrorHandler
-    filename$(2) = ""
+    Dim antipath As String
+    
+    activePlayer.Show
+    
+    antipath = RemovePath(file)
+    FileCopy file, projectPath & temPath & antipath
+    
     Call PlayerClear(playerList(activePlayerIndex).theData)
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call openChar(file, playerList(activePlayerIndex).theData)
+    
+    activePlayer.Caption = LoadStringLoc(804, "Character Editor") & "  (" & antipath & ")"
+    playerList(activePlayerIndex).charFile = antipath
+    
+    Dim i As Integer
+    For i = 0 To chkDefault.uBound
+        chkDefault(i).value = 0
+    Next i
+    
+    Call infoFill
+    
+    playerList(activePlayerIndex).charNeedUpdate = False
+    
 End Sub
 
-Private Sub clsemnu_Click()
-    On Error GoTo ErrorHandler
+'==============================================================================
+' "Default" check box array: set variables to default form.
+'==============================================================================
+Private Sub chkDefault_Click(Index As Integer): On Error Resume Next
+
+    'If unchecked, exit.
+    If chkDefault(Index).value = 0 Then Exit Sub
+
+    Dim varname As String
+
+    'Select the variable ending for the specific index.
+    With playerList(activePlayerIndex).theData
+        Select Case Index
+        
+            Case 0: varname = "[name]$"
+            Case 1: varname = "[experience]!"
+            Case 2: varname = "[health]!"
+            Case 3: varname = "[maxhealth]!"
+            Case 4: varname = "[defence]!"
+            Case 5: varname = "[fight]!"
+            Case 6: varname = "[smpower]!"
+            Case 7: varname = "[maxsm]!"
+            Case 8: varname = "[level]!"
+            
+        End Select
+    End With
+    
+    'Change the associated text box to the default name.
+    ' e.g. Frap[name]$
+    'This will trigger txt*_change and alter the member variables also.
+    txtVariables(Index).Text = addUnderscore(playerList(activePlayerIndex).theData.charname) & varname
+
+End Sub
+
+'==============================================================================
+'File -> Save Character
+'==============================================================================
+Private Sub mnuSave_Click(): On Error Resume Next
+
+    If playerList(activePlayerIndex).charFile = vbNullString Then
+        Call mnuSaveAs_Click
+        Exit Sub
+    End If
+    
+    Call saveChar(projectPath & temPath & playerList(activePlayerIndex).charFile, playerList(activePlayerIndex).theData)
+    
+    playerList(activePlayerIndex).charNeedUpdate = False
+
+End Sub
+
+'==============================================================================
+'File -> Save Character As
+'==============================================================================
+Private Sub mnuSaveAs_Click(): On Error Resume Next
+
+    Dim dlg As FileDialogInfo
+    ChDir (currentDir)
+    
+    dlg.strDefaultFolder = projectPath & temPath
+    dlg.strTitle = "Save Character As (Archives cannot be used with characters!)"
+    dlg.strDefaultExt = "tem"
+    dlg.strFileTypes = "RPG Toolkit Character (*.tem)|*.tem|All files(*.*)|*.*"
+    
+    'Prompt for overwrite.
+    If Not (SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub
+    If dlg.strSelectedFile = vbNullString Then Exit Sub
+    
+    ChDir (currentDir)
+    
+    'Write the file.
+    Call saveChar(dlg.strSelectedFile, playerList(activePlayerIndex).theData)
+    
+    playerList(activePlayerIndex).charFile = dlg.strSelectedFileNoPath
+    
+    activePlayer.Caption = LoadStringLoc(804, "Character Editor") & " (" & dlg.strSelectedFileNoPath & ")"
+    
+    'File is up to date.
+    playerList(activePlayerIndex).charNeedUpdate = False
+    
+    'Add file to the tree.
+    Call tkMainForm.fillTree("", projectPath)
+
+End Sub
+
+'==============================================================================
+'File -> Close
+'==============================================================================
+Private Sub mnuClose_Click(): On Error Resume Next
+
     Unload editcharsm
-    'Unload chargfx
     Unload charequip
     Unload charlevels
     Unload characteredit
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command1_Click()
-On Error Resume Next
-    ChDir (currentDir$)
+'==============================================================================
+'Select the player's profile.
+'==============================================================================
+Private Sub cmdProfile_Click(): On Error Resume Next
+
+    ChDir (currentDir)
+    
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmpPath$
-    dlg.strTitle = "Open Profile"
+    dlg.strDefaultFolder = projectPath & bmpPath
+    dlg.strTitle = "Select Profile Picture"
     dlg.strDefaultExt = "bmp"
     dlg.strFileTypes = strFileDialogFilterWithTiles
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    playerList(activePlayerIndex).charNeedUpdate = True
-    Call vbPicFillRect(profile, 0, 0, 1000, 1000, vbQBColor(15))
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
     
-    picname$ = antiPath$
-    Call drawprofile(projectPath$ + bmpPath$ + picname$)
-    playerList(activePlayerIndex).theData.profilePic$ = picname$
+    If Not (OpenFileDialog(dlg, Me.hwnd)) Then Exit Sub    'User pressed cancel.
+    If dlg.strSelectedFile = vbNullString Then Exit Sub
+    
+    ChDir (currentDir)
+    
+    Call FileCopy(dlg.strSelectedFile, projectPath & bmpPath & dlg.strSelectedFileNoPath)
+    
+    'Draw the image, scaled to 64x64.
+    Call DrawSizedImage(projectPath & bmpPath & dlg.strSelectedFileNoPath, 0, 0, 64, 64, profile.hdc)
+    profile.Refresh
+    
+    playerList(activePlayerIndex).theData.profilePic = dlg.strSelectedFileNoPath
+    playerList(activePlayerIndex).charNeedUpdate = True
+    
 End Sub
 
-Private Sub Command2_Click()
-    On Error GoTo ErrorHandler
+'==============================================================================
+'Alter characters' special moves.
+'==============================================================================
+Private Sub cmdSpecialMoves_Click(): On Error Resume Next
+
     playerList(activePlayerIndex).charNeedUpdate = True
     editcharsm.Show vbModal ', me
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command3_Click()
-    On Error GoTo ErrorHandler
+'==============================================================================
+'Alter characters' graphics.
+'==============================================================================
+Private Sub cmdGraphics_Click(): On Error Resume Next
+
     playerList(activePlayerIndex).charNeedUpdate = True
-    'If charSizeType = 0 Then
-    '    chargfx.Show
-    'Else
-    '    chargfx2.Show vbModal ', me
-    'End If
     characterGraphics.Show vbModal
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command4_Click()
-    On Error GoTo ErrorHandler
+'==============================================================================
+'Alter characters' equipment.
+'==============================================================================
+Private Sub cmdEquipment_Click(): On Error Resume Next
+
     playerList(activePlayerIndex).charNeedUpdate = True
     charequip.Show vbModal ', me
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command5_Click()
-    On Error GoTo ErrorHandler
+'==============================================================================
+'Alter characters' levels.
+'==============================================================================
+Private Sub cmdLevels_Click(): On Error Resume Next
+
     playerList(activePlayerIndex).charNeedUpdate = True
     charlevels.Show vbModal ', me
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command6_Click()
-    advancedOn = Not (advancedOn)
-    If advancedOn Then
-        Command6.Caption = LoadStringLoc(911, "Advanced <<")
-        activePlayer.width = 9600
-    Else
-        Command6.Caption = LoadStringLoc(912, "Advanced >>")
-        activePlayer.width = 4440
-    End If
+'==============================================================================
+'Click on the profile picture box: change picture.
+'==============================================================================
+Private Sub profile_Click(): On Error Resume Next
+    Call cmdProfile_Click
 End Sub
 
-Private Sub defencestart_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initDefense = val(defencestart.Text)
+'==============================================================================
+'Form
+'==============================================================================
+Private Sub Form_Activate(): On Error Resume Next
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub defensebox_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.defenseVar$ = defensebox.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub drawprofile(file$)
-On Error Resume Next
-ReDim supertile(64, 64)
-    profile.Picture = LoadPicture("")
-    'PicClip1.Picture = LoadPicture("")
-    If file$ = "" Then Exit Sub
-    Call vbPicAutoRedraw(profile, True)
-    thextention$ = extention(file$)
-    'If UCase$(thextention$) = "GIF" Then
-    '    dummy = GifToBMP(filename$(1), "rpgscrtc.bmp")
-    '    picname$ = filename$(1)
-    '    profile.Picture = LoadPicture("rpgscrtc.bmp")
-    'End If
-    'If UCase$(thextention$) <> "GPH" Then
-    '    profile.Picture = LoadPicture(file$)
-    '    picname$ = filename$(1)
-    'End If
-    If UCase$(thextention$) = "GPH" Then
-        'Backup the tile in memory
-        openTileEditorDocs(activeTile.indice).oldDetail = detail
-        For xx = 1 To 32
-            For yy = 1 To 32
-                bufTile(xx, yy) = tileMem(xx, yy)
-            Next yy
-        Next xx
-        
-        
-        'Open new tile
-        Call openWinTile(file$)
-        If detail = 2 Then Call increaseDetail
-        'Resize to 64x64
-        xx = 1: yy = 1
-        For X = 1 To 32
-            For Y = 1 To 32
-                supertile(xx, yy) = tileMem(X, Y)
-                supertile(xx, yy + 1) = tileMem(X, Y)
-                supertile(xx + 1, yy) = tileMem(X, Y)
-                supertile(xx + 1, yy + 1) = tileMem(X, Y)
-                yy = yy + 2
-            Next Y
-            yy = 1
-            xx = xx + 2
-        Next X
-        For xx = 1 To 32
-            For yy = 1 To 32
-                tileMem(xx, yy) = bufTile(xx, yy)
-            Next yy
-        Next xx
-        detail = openTileEditorDocs(activeTile.indice).oldDetail
-        
-        'Now that we've properly resized the GPH, draw it:
-        For X = 1 To 64
-            For Y = 1 To 64
-                If supertile(X, Y) <> -1 Then
-                    Call vbPicPSet(profile, X - 1, Y - 1, supertile(X, Y))
-                End If
-            Next Y
-        Next X
-        picname$ = filename$(1)
-    Else
-        'PicClip1.Picture = LoadPicture(file$)
-        'PicClip1.ClipX = 0
-        'PicClip1.ClipY = 0
-        'PicClip1.ClipHeight = PicClip1.height
-        'PicClip1.ClipWidth = PicClip1.width
-        'PicClip1.StretchX = 64
-        'PicClip1.StretchY = 64
-        'profile.Picture = PicClip1.Clip
-        'profile.Picture = LoadPicture(file$)
-        Call vbPicAutoRedraw(profile, True)
-        Call DrawSizedImage(file$, 0, 0, 64, 64, vbPicHDC(profile))
-        Call vbPicRefresh(profile)
-    End If
-
-End Sub
-
-Private Sub expbox_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.experienceVar$ = expbox.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub fightbox_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.fightVar$ = fightbox.Text
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub fightstart_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initFight = val(fightstart.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Form_Activate()
-    On Error Resume Next
     Set activePlayer = Me
     Set activeForm = Me
     activePlayerIndex = dataIndex
     Call hideAllTools
+    
 End Sub
 
-Private Sub Form_Load()
-    On Error GoTo ErrorHandler
+Private Sub Form_Load(): On Error Resume Next
+
     Call LocalizeForm(Me)
-    Call LocalizeTabStrip(TabStrip1)
+    Call LocalizeTabStrip(tabCharacter)
     
     Set activePlayer = Me
+    
     dataIndex = VectPlayerNewSlot()
     activePlayerIndex = dataIndex
+    
     Call PlayerClear(playerList(dataIndex).theData)
        
-    Y = Screen.height
-    X = Screen.height * (1 / 0.75)
-    mainX = activePlayer.width
-    mainY = activePlayer.height
-    dx = (X - mainX) / 2
-    dy = (Y - mainY) / 2
-    activePlayer.Top = dy
-    activePlayer.Left = dx
+    Call infoFill
+
+End Sub
+
+Private Sub Form_Resize(): On Error Resume Next
+
+    mainFrame.Left = (Me.width - mainFrame.width) / 2
+    mainFrame.Top = (Me.height - mainFrame.height - 500) / 2
+
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     
-    filename$(2) = ""
-    Call infofill
-    Frame2.Visible = True
-    Frame3.Visible = False
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Form_Resize()
-    On Error Resume Next
-    'mainFrame.Left = (Me.width - mainFrame.width) / 2
-    'mainFrame.Top = (Me.height - mainFrame.height) / 2
-End Sub
-
-Private Sub Form_Unload(Cancel As Integer)
-    On Error Resume Next
+    'See if the board needs saving:
+    If playerList(activePlayerIndex).charNeedUpdate Then
+        
+        'Use caption to set "Untitled" for blank boards.
+        Dim answer As VbMsgBoxResult
+        answer = MsgBox("Save changes to " & insideBrackets(Me.Caption) & "?", vbYesNoCancel + vbQuestion)
+        
+        If answer = vbCancel Then
+            
+            'Cancel unload.
+            Cancel = 1
+            Exit Sub
+            
+        ElseIf answer = vbYes Then
+        
+            'Save the file; prompt for untitled.
+            Call saveFile
+            
+        End If
+    
+    End If
+    
     Call hideAllTools
-End Sub
-
-Private Sub healthbox_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.healthVar$ = healthbox.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub infofill()
-    On Error GoTo ErrorHandler
-    Call drawprofile(projectPath$ + bmpPath$ + playerList(activePlayerIndex).theData.profilePic$)
-    If playerList(activePlayerIndex).theData.charname$ <> "" Then namebox.Text = playerList(activePlayerIndex).theData.charname$ Else namebox.Text = "Undefined"
-    If playerList(activePlayerIndex).theData.experienceVar$ <> "" Then expbox.Text = playerList(activePlayerIndex).theData.experienceVar$ Else expbox.Text = "Undefined$"
-    If playerList(activePlayerIndex).theData.healthVar$ <> "" Then healthbox.Text = playerList(activePlayerIndex).theData.healthVar$ Else healthbox.Text = "Undefined!"
-    If playerList(activePlayerIndex).theData.defenseVar$ <> "" Then defensebox.Text = playerList(activePlayerIndex).theData.defenseVar$ Else defensebox.Text = "Undefined!"
-    If playerList(activePlayerIndex).theData.fightVar$ <> "" Then fightbox.Text = playerList(activePlayerIndex).theData.fightVar$ Else fightbox.Text = "Undefined!"
-    If playerList(activePlayerIndex).theData.nameVar$ <> "" Then namevarbox.Text = playerList(activePlayerIndex).theData.nameVar$ Else namevarbox.Text = "Undefined!"
-    If playerList(activePlayerIndex).theData.maxHealthVar$ <> "" Then maxhealthbox = playerList(activePlayerIndex).theData.maxHealthVar$ Else maxhealthbox.Text = "Undefined!"
-    If playerList(activePlayerIndex).theData.smVar$ <> "" Then smpowervar = playerList(activePlayerIndex).theData.smVar$ Else smpowervar.Text = "Undefined!"
-    If playerList(activePlayerIndex).theData.smMaxVar$ <> "" Then maxsmvar.Text = playerList(activePlayerIndex).theData.smMaxVar$ Else maxsmvar.Text = "Undefined!"
-    If playerList(activePlayerIndex).theData.leVar$ <> "" Then levelvar.Text = playerList(activePlayerIndex).theData.leVar$ Else levelvar.Text = "Undefined!"
-
-    startexp.Text = playerList(activePlayerIndex).theData.initExperience
-    starthealth.Text = playerList(activePlayerIndex).theData.initHealth
-    maxhealthstart.Text = playerList(activePlayerIndex).theData.initMaxHealth
-    defencestart.Text = playerList(activePlayerIndex).theData.initDefense
-    fightstart.Text = playerList(activePlayerIndex).theData.initFight
-    sminit.Text = playerList(activePlayerIndex).theData.initSm
-    smmaxinit.Text = playerList(activePlayerIndex).theData.initSmMax
-    initlevel1.Text = playerList(activePlayerIndex).theData.initLevel
-    If playerList(activePlayerIndex).theData.charSizeType = 0 Then
-        Option1.value = True
-    Else
-        Option2.value = True
-    End If
-    'activePlayer.Caption = "Character Editor (" + filename$(2) + ")"
-    'If filename$(2) = "" Then activePlayer.Caption = "Character Editor (Untitled)"
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub initlevel1_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initLevel = val(initlevel1.Text)
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub initsmmax_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).theData.initSmMax = val(smmaxinit.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub levelvar_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.leVar$ = levelvar.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub maxhealthbox_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.maxHealthVar$ = maxhealthbox.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub maxhealthstart_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initMaxHealth = val(maxhealthstart.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub maxsmvar_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.smMaxVar$ = maxsmvar.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub namebox_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).theData.charname$ = namebox.Text
-    Temp$ = addUnderscore(playerList(activePlayerIndex).theData.charname$)
-    If namedefault.value = 1 Then namevarbox.Text = Temp$ + "[name]$"
-    If maxhealthdefault.value = 1 Then maxhealthbox.Text = Temp$ + "[maxhealth]!"
-    If expdefault.value = 1 Then expbox.Text = Temp$ + "[experience]!"
-    If healthdefault.value = 1 Then healthbox.Text = Temp$ + "[health]!"
-    If defencedefault.value = 1 Then defensebox.Text = Temp$ + "[defence]!"
-    If fightdefault.value = 1 Then fightbox.Text = Temp$ + "[fight]!"
-    If smdefault.value = 1 Then smpowervar.Text = Temp$ + "[smpower]!"
-    If maxsmdefault.value = 1 Then maxsmvar.Text = Temp$ + "[maxsm]!"
-    If leveldefault.value = 1 Then levelvar.Text = Temp$ + "[level]!"
-    playerList(activePlayerIndex).charNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub namevarbox_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.nameVar$ = namevarbox.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub profile_Click()
-    Call Command1_Click
-End Sub
-
-Private Sub savecharmenu_Click()
-    On Error GoTo ErrorHandler
-    filename$(2) = playerList(activePlayerIndex).charFile$
-    If filename$(2) = "" Then Call scharasmnu_Click: Exit Sub
-    Call saveChar(projectPath$ + temPath$ + filename$(2), playerList(activePlayerIndex).theData)
-    playerList(activePlayerIndex).charNeedUpdate = False
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub scharasmnu_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + temPath$
-    dlg.strTitle = "Save Character As (Archives cannot be used with characters!)"
-    dlg.strDefaultExt = "tem"
-    dlg.strFileTypes = "RPG Toolkit Character (*.tem)|*.tem|All files(*.*)|*.*"
-    If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
     
-    If filename$(1) = "" Then Exit Sub
+End Sub
+
+'==============================================================================
+'Fill the form entries with the player data.
+'==============================================================================
+Private Sub infoFill(): On Error Resume Next
+
+    With playerList(activePlayerIndex).theData
     
-    Call saveChar(filename$(1), playerList(activePlayerIndex).theData)
-    playerList(activePlayerIndex).charFile$ = antiPath$
-    activePlayer.Caption = LoadStringLoc(804, "Character Editor") + " (" + antiPath$ + ")"
-    playerList(activePlayerIndex).charNeedUpdate = False
-    Call tkMainForm.fillTree("", projectPath$)
+        Call DrawSizedImage(projectPath & bmpPath & .profilePic, 0, 0, 64, 64, profile.hdc)
+        profile.Refresh
+    
+        If .nameVar <> "" Then txtVariables(0).Text = .nameVar Else txtVariables(0).Text = "Undefined!"
+        If .experienceVar <> "" Then txtVariables(1).Text = .experienceVar Else txtVariables(1).Text = "Undefined$"
+        If .healthVar <> "" Then txtVariables(2).Text = .healthVar Else txtVariables(2).Text = "Undefined!"
+        If .maxHealthVar <> "" Then txtVariables(3).Text = .maxHealthVar Else txtVariables(3).Text = "Undefined!"
+        If .defenseVar <> "" Then txtVariables(4).Text = .defenseVar Else txtVariables(4).Text = "Undefined!"
+        If .fightVar <> "" Then txtVariables(5).Text = .fightVar Else txtVariables(5).Text = "Undefined!"
+        If .smVar <> "" Then txtVariables(6).Text = .smVar Else txtVariables(6).Text = "Undefined!"
+        If .smMaxVar <> "" Then txtVariables(7).Text = .smMaxVar Else txtVariables(7).Text = "Undefined!"
+        If .leVar <> "" Then txtVariables(8).Text = .leVar Else txtVariables(8).Text = "Undefined!"
+
+        If .charname <> "" Then txtStats(0).Text = playerList(activePlayerIndex).theData.charname Else txtStats(0).Text = "Undefined"
+        txtStats(1).Text = .initExperience
+        txtStats(2).Text = .initHealth
+        txtStats(3).Text = .initMaxHealth
+        txtStats(4).Text = .initDefense
+        txtStats(5).Text = .initFight
+        txtStats(6).Text = .initSm
+        txtStats(7).Text = .initSmMax
+        txtStats(8).Text = .initLevel
+    
+    End With
+        
 End Sub
 
-Private Sub sminit_Change()
-    On Error GoTo ErrorHandler
+'==============================================================================
+'Array of initial stat text boxes.
+'==============================================================================
+Private Sub txtStats_Change(Index As Integer): On Error Resume Next
+
+    With playerList(activePlayerIndex).theData
+        Select Case Index
+        
+            Case 0
+                    playerList(activePlayerIndex).theData.charname = txtStats(0).Text
+            
+                    'Create RPGCode variables containing the character name.
+                    Dim i As Integer
+                    For i = 0 To chkDefault.uBound
+                        Call chkDefault_Click(i)
+                    Next i
+
+            Case 1: .initExperience = val(txtStats(1).Text)
+            Case 2: .initHealth = val(txtStats(2).Text)
+            Case 3: .initMaxHealth = val(txtStats(3).Text)
+            Case 4: .initDefense = val(txtStats(4).Text)
+            Case 5: .initFight = val(txtStats(5).Text)
+            Case 6: .initSm = val(txtStats(6).Text)
+            Case 7: .initSmMax = val(txtStats(7).Text)
+            Case 8: .initLevel = val(txtStats(8).Text)
+            
+        End Select
+    End With
+
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initSm = val(sminit.Text)
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub smmaxinit_Change()
-    On Error GoTo ErrorHandler
+'==============================================================================
+'Array of variable text boxes.
+'==============================================================================
+Private Sub txtVariables_Change(Index As Integer): On Error Resume Next
+
+    With playerList(activePlayerIndex).theData
+        Select Case Index
+        
+            Case 0: .nameVar = txtVariables(0).Text
+            Case 1: .experienceVar = txtVariables(1).Text
+            Case 2: .healthVar = txtVariables(2).Text
+            Case 3: .maxHealthVar = txtVariables(3).Text
+            Case 4: .defenseVar = txtVariables(4).Text
+            Case 5: .fightVar = txtVariables(5).Text
+            Case 6: .smVar = txtVariables(6).Text
+            Case 7: .smMaxVar = txtVariables(7).Text
+            Case 8: .leVar = txtVariables(8).Text
+            
+        End Select
+    End With
+
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initSmMax = val(smmaxinit.Text)
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub smpowervar_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.smVar$ = smpowervar.Text
+'==============================================================================
+'Tab strip
+'==============================================================================
+Private Sub tabCharacter_Click(): On Error Resume Next
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
+    frStats.Visible = False
+    frVariables.Visible = False
 
-'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
-Private Sub startexp_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initExperience = val(startexp.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub starthealth_Change()
-    On Error GoTo ErrorHandler
-    playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initHealth = val(starthealth.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub TabStrip1_Click()
-    On Error Resume Next
-    Frame2.Visible = False
-    Frame3.Visible = False
-'FIXIT: p1.SelectedItem.Index property has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
-'FIXIT: electedItem.Index property has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
-    Select Case TabStrip1.SelectedItem.Index
+    Select Case tabCharacter.SelectedItem.Index
         Case 1:
-            Frame2.Visible = True
+            frStats.Visible = True
         Case 2:
-            Frame3.Visible = True
+            frVariables.Visible = True
     End Select
 End Sub
 
-Private Sub toc_Click()
-    On Error GoTo ErrorHandler
-    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
-Private Sub mnutilehorizontally_Click()
-    On Error Resume Next
+'==============================================================================
+'TkMain menu items
+'==============================================================================
+Private Sub mnutilehorizontally_Click(): On Error Resume Next
     Call tkMainForm.tilehorizonatllymnu_Click
 End Sub
 
-Private Sub mnutilevertically_Click()
-    On Error Resume Next
+Private Sub mnutilevertically_Click(): On Error Resume Next
     Call tkMainForm.tileverticallymnu_Click
 End Sub
 
-
-Private Sub mnuTutorial_Click()
-    On Error Resume Next
+Private Sub mnuTutorial_Click(): On Error Resume Next
     Call tkMainForm.tutorialmnu_Click
 End Sub
 
-Private Sub mnuusersguide_Click()
-    On Error Resume Next
+Private Sub mnuusersguide_Click(): On Error Resume Next
     Call tkMainForm.usersguidemnu_Click
 End Sub
 
-Private Sub mnuAbout_Click()
-    On Error Resume Next
+Private Sub mnuAbout_Click(): On Error Resume Next
     Call tkMainForm.aboutmnu_Click
 End Sub
 
-Private Sub mnuArrangeIcons_Click()
-    On Error Resume Next
+Private Sub mnuArrangeIcons_Click(): On Error Resume Next
     Call tkMainForm.arrangeiconsmnu_Click
 End Sub
 
-Private Sub mnuCascade_Click()
-    On Error Resume Next
+Private Sub mnuCascade_Click(): On Error Resume Next
     Call tkMainForm.cascademnu_Click
 End Sub
 
-Private Sub mnucreatepakfile_Click()
-    On Error Resume Next
+Private Sub mnucreatepakfile_Click(): On Error Resume Next
     Call tkMainForm.createpakfilemnu_Click
 End Sub
 
-Private Sub mnucreatesetup_Click()
-    On Error Resume Next
+Private Sub mnucreatesetup_Click(): On Error Resume Next
     Call tkMainForm.createsetupmnu_Click
 End Sub
 
-Private Sub mnuexit_Click()
-    On Error Resume Next
+Private Sub mnuexit_Click(): On Error Resume Next
     Call tkMainForm.exitmnu_Click
 End Sub
 
-Private Sub mnuHistorytxt_Click()
-    On Error Resume Next
+Private Sub mnuHistorytxt_Click(): On Error Resume Next
     Call tkMainForm.historytxtmnu_Click
 End Sub
 
-Private Sub mnuinstallupgrade_Click()
-    On Error Resume Next
+Private Sub mnuinstallupgrade_Click(): On Error Resume Next
     Call tkMainForm.installupgrademnu_Click
 End Sub
 
-Private Sub mnumakeexe_Click()
-    On Error Resume Next
+Private Sub mnumakeexe_Click(): On Error Resume Next
     Call tkMainForm.makeexemnu_Click
 End Sub
 
-Private Sub mnunewanimatedtile_Click()
-    On Error Resume Next
+Private Sub mnunewanimatedtile_Click(): On Error Resume Next
     Call tkMainForm.newanimtilemnu_Click
 End Sub
 
-Private Sub mnunewanimation_Click()
-    On Error Resume Next
+Private Sub mnunewanimation_Click(): On Error Resume Next
     Call tkMainForm.newanimationmnu_Click
 End Sub
 
-Private Sub mnunewboard_Click()
-    On Error Resume Next
+Private Sub mnunewboard_Click(): On Error Resume Next
     Call tkMainForm.newboardmnu_Click
 End Sub
 
-Private Sub mnunewenemy_Click()
-    On Error Resume Next
+Private Sub mnunewenemy_Click(): On Error Resume Next
     Call tkMainForm.newenemymnu_Click
 End Sub
 
-Private Sub mnunewitem_Click()
-    On Error Resume Next
+Private Sub mnunewitem_Click(): On Error Resume Next
     Call tkMainForm.newitemmnu_Click
 End Sub
 
-Private Sub mnunewplayer_Click()
-    On Error Resume Next
+Private Sub mnunewplayer_Click(): On Error Resume Next
     Call tkMainForm.newplayermnu_Click
 End Sub
 
-
-Private Sub mnunewproject_Click()
-    On Error Resume Next
+Private Sub mnunewproject_Click(): On Error Resume Next
     Call tkMainForm.newprojectmnu_Click
 End Sub
 
-Private Sub mnunewrpgcodeprogram_Click()
-    On Error Resume Next
+Private Sub mnunewrpgcodeprogram_Click(): On Error Resume Next
     Call tkMainForm.newrpgcodemnu_Click
 End Sub
 
-Private Sub mnunewspecialmove_Click()
-    On Error Resume Next
+Private Sub mnunewspecialmove_Click(): On Error Resume Next
     Call tkMainForm.newspecialmovemnu_Click
 End Sub
 
-
-Private Sub mnunewstatuseffect_Click()
-    On Error Resume Next
+Private Sub mnunewstatuseffect_Click(): On Error Resume Next
     Call tkMainForm.newstatuseffectmnu_Click
 End Sub
 
-
-Private Sub mnunewtile_Click()
-    On Error Resume Next
+Private Sub mnunewtile_Click(): On Error Resume Next
     Call tkMainForm.newtilemnu_Click
 End Sub
 
-
-Private Sub mnunewtilebitmap_Click()
-    On Error Resume Next
+Private Sub mnunewtilebitmap_Click(): On Error Resume Next
     Call tkMainForm.newtilebitmapmnu_Click
 End Sub
 
-Private Sub mnuopen_Click()
-    On Error Resume Next
+Private Sub mnuopen_Click(): On Error Resume Next
     Call tkMainForm.openmnu_Click
 End Sub
 
-
-Private Sub mnuRegistrationInfo_Click()
-    On Error Resume Next
+Private Sub mnuRegistrationInfo_Click(): On Error Resume Next
     Call tkMainForm.registrationinfomnu_Click
 End Sub
 
-Private Sub mnuRPGCodePrimer_Click()
-    On Error Resume Next
+Private Sub mnuRPGCodePrimer_Click(): On Error Resume Next
     Call tkMainForm.rpgcodeprimermnu_Click
 End Sub
 
-Private Sub mnurpgcodereference_Click()
-    On Error Resume Next
+Private Sub mnurpgcodereference_Click(): On Error Resume Next
     Call tkMainForm.rpgcodereferencemnu_Click
 End Sub
 
-
-Private Sub mnusaveall_Click()
-    On Error Resume Next
+Private Sub mnusaveall_Click(): On Error Resume Next
     Call tkMainForm.saveallmnu_Click
 End Sub
 
-
-Private Sub mnuselectlanguage_Click()
-    On Error Resume Next
+Private Sub mnuselectlanguage_Click(): On Error Resume Next
     Call tkMainForm.selectlanguagemnu_Click
 End Sub
 
-Private Sub mnushowprojectlist_Click()
-    On Error Resume Next
+Private Sub mnushowprojectlist_Click(): On Error Resume Next
     Call tkMainForm.showprojectlistmnu_Click
 End Sub
 
-Private Sub mnushowtools_Click()
-    On Error Resume Next
+Private Sub mnushowtools_Click(): On Error Resume Next
     Call tkMainForm.showtoolsmnu_Click
 End Sub
 
-Private Sub mnutestgame_Click()
-    On Error Resume Next
+Private Sub mnutestgame_Click(): On Error Resume Next
     tkMainForm.testgamemnu_Click
 End Sub
 
-
-Private Sub mnuOpenProject_Click()
-    On Error Resume Next
+Private Sub mnuOpenProject_Click(): On Error Resume Next
     Call tkMainForm.mnuOpenProject_Click
 End Sub
 
-Private Sub mnuNewFightBackground_Click()
-    On Error Resume Next
+Private Sub mnuNewFightBackground_Click(): On Error Resume Next
     Call tkMainForm.mnuNewFightBackground_Click
 End Sub
-
