@@ -562,13 +562,17 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
     End If
 
     ' Check for numerical var without its sign
-    If (numVarExists(Text, prg.heapStack(prg.currentHeapFrame)) Or _
-        numVarExists(Text, globalHeap)) Then
+    Dim lngHeapFrame As Long
+    lngHeapFrame = prg.heapStack(prg.currentHeapFrame)
+    If (lngHeapFrame) Then
+        If (numVarExists(Text, lngHeapFrame) Or _
+            numVarExists(Text, globalHeap)) Then
 
-        ' It's a numerical var
-        dataType = DT_NUM
-        Exit Function
+            ' It's a numerical var
+            dataType = DT_NUM
+            Exit Function
 
+        End If
     End If
 
     ' If we're still not free of this nightmare then assume string, for
@@ -1287,7 +1291,7 @@ End Sub
 ' Determine if a numerical variable exists
 '=========================================================================
 Public Function numVarExists(ByVal varname As String, ByVal heapId As Long) As Boolean
-    If (LenB(varname)) Then
+    If (LenB(varname) <> 0 And heapId <> 0) Then
         numVarExists = (RPGCNumExists(UCase$(varname), heapId) = 1)
     End If
 End Function
