@@ -20,9 +20,12 @@ Private Declare Sub RPGCParseAfter Lib "actkrt3.dll" (ByVal text As Long, ByVal 
 Private Declare Sub RPGCParseBefore Lib "actkrt3.dll" (ByVal text As Long, ByVal endSymbol As Long)
 Private Declare Sub RPGCGetVarList Lib "actkrt3.dll" (ByVal text As Long, ByVal number As Long)
 Private Declare Sub RPGCParseWithin Lib "actkrt3.dll" (ByVal text As Long, ByVal startSymbol As Long, ByVal endSymbol As Long)
-Private Declare Function RPGCValueNumber Lib "actkrt3.dll" (ByVal theString As Long) As Long
 Private Declare Sub RPGCGetElement Lib "actkrt3.dll" (ByVal text As Long, ByVal elemNum As Long)
+Private Declare Sub RPGCReplaceOutsideQuotes Lib "actkrt3.dll" (ByVal text As Long, ByVal find As Long, ByVal replace As Long)
+Private Declare Sub RPGCGetBrackets Lib "actkrt3.dll" (ByVal text As Long)
+Private Declare Sub RPGCGetCommandName Lib "actkrt3.dll" (ByVal text As Long)
 Private Declare Function RPGCInStrOutsideQuotes Lib "actkrt3.dll" (ByVal startAt As Long, ByVal theString As Long, ByVal theSubString As Long) As Long
+Private Declare Function RPGCValueNumber Lib "actkrt3.dll" (ByVal theString As Long) As Long
 
 '=========================================================================
 ' Member variables
@@ -76,6 +79,76 @@ End Function
 Public Function ParseBefore(ByVal text As String, ByVal endSymbol As String) As String
     Call RPGCParseBefore(StrPtr(text), StrPtr(endSymbol))
     ParseBefore = m_lastStr
+End Function
+
+'=========================================================================
+' Get the variable at number in an equation
+'=========================================================================
+Public Function GetVarList(ByVal text As String, ByVal number As Long) As String
+    Call RPGCGetVarList(StrPtr(text), number)
+    GetVarList = m_lastStr
+End Function
+
+'=========================================================================
+' Return the content in text between the start and end symbols
+'=========================================================================
+Public Function ParseWithin(ByVal text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
+    Call RPGCParseWithin(StrPtr(text), StrPtr(startSymbol), StrPtr(endSymbol))
+    ParseWithin = m_lastStr
+End Function
+
+'=========================================================================
+' Count the number of values in an equation
+'=========================================================================
+Public Function ValueNumber(ByVal text As String) As Long
+    ValueNumber = RPGCValueNumber(StrPtr(text))
+End Function
+
+'=========================================================================
+' Remove the character passed in from the text passed in
+'=========================================================================
+Public Function removeChar(ByVal text As String, ByVal char As String) As String
+    On Error Resume Next
+    removeChar = replace(text, char, "")
+End Function
+
+'=========================================================================
+' Get the bracket element at eleeNum
+'=========================================================================
+Public Function GetElement(ByVal text As String, ByVal eleeNum As Long) As String
+    Call RPGCGetElement(StrPtr(text), eleeNum)
+    GetElement = m_lastStr
+End Function
+
+'=========================================================================
+' Retrieve the text inside the brackets
+'=========================================================================
+Public Function GetBrackets(ByVal text As String) As String
+    Call RPGCGetBrackets(StrPtr(text))
+    GetBrackets = m_lastStr
+End Function
+
+'=========================================================================
+' Get the command name in the text passed in
+'=========================================================================
+Public Function GetCommandName(ByVal splice As String) As String
+    Call RPGCGetCommandName(StrPtr(splice))
+    GetCommandName = m_lastStr
+End Function
+
+'=========================================================================
+' Replace not within quotes
+'=========================================================================
+Public Function replaceOutsideQuotes(ByVal text As String, ByVal find As String, ByVal replace As String) As String
+    Call RPGCReplaceOutsideQuotes(StrPtr(text), StrPtr(find), StrPtr(replace))
+    replaceOutsideQuotes = m_lastStr
+End Function
+
+'=========================================================================
+' InStr outside quotes
+'=========================================================================
+Public Function inStrOutsideQuotes(ByVal start As Long, ByVal text As String, ByVal find As String) As Long
+    inStrOutsideQuotes = RPGCInStrOutsideQuotes(start, StrPtr(text), StrPtr(find))
 End Function
 
 '=========================================================================
@@ -327,52 +400,6 @@ errorhandler:
 End Function
 
 '=========================================================================
-' Get the variable at number in an equation
-'=========================================================================
-Public Function GetVarList(ByVal text As String, ByVal number As Long) As String
-    Call RPGCGetVarList(StrPtr(text), number)
-    GetVarList = m_lastStr
-End Function
-
-'=========================================================================
-' Return the content in text between the start and end symbols
-'=========================================================================
-Public Function ParseWithin(ByVal text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
-    Call RPGCParseWithin(StrPtr(text), StrPtr(startSymbol), StrPtr(endSymbol))
-    ParseWithin = m_lastStr
-End Function
-
-'=========================================================================
-' Determine if a string contains a substring
-'=========================================================================
-Public Function stringContains(ByVal theString As String, ByVal theChar As String) As Boolean
-    stringContains = RPGCStringContains(StrPtr(theString), StrPtr(theChar))
-End Function
-
-'=========================================================================
-' Count the number of values in an equation
-'=========================================================================
-Public Function ValueNumber(ByVal text As String) As Long
-    ValueNumber = RPGCValueNumber(StrPtr(text))
-End Function
-
-'=========================================================================
-' Remove the character passed in from the text passed in
-'=========================================================================
-Public Function removeChar(ByVal text As String, ByVal char As String) As String
-    On Error Resume Next
-    removeChar = replace(text, char, "")
-End Function
-
-'=========================================================================
-' Get the bracket element at eleeNum
-'=========================================================================
-Public Function GetElement(ByVal text As String, ByVal eleeNum As Long) As String
-    Call RPGCGetElement(StrPtr(text), eleeNum)
-    GetElement = m_lastStr
-End Function
-
-'=========================================================================
 ' Count the number of bracket elements in text
 '=========================================================================
 Public Function CountData(ByVal text As String) As Long
@@ -380,9 +407,7 @@ Public Function CountData(ByVal text As String) As Long
     On Error Resume Next
 
     'If there is no text, there are no elements
-    Dim gB As String
-    gB = GetBrackets(text, True)
-    If gB = "" Then Exit Function
+    If (Trim(GetBrackets(text)) = "") Then Exit Function
 
     'Setup delimiter array
     Dim c(1) As String
@@ -396,252 +421,6 @@ Public Function CountData(ByVal text As String) As Long
 
     'Number of data elements will be one higher than the upper bound
     CountData = UBound(S) + 1
-
-End Function
-
-'=========================================================================
-' Return the first space after the command / the opening bracket
-'=========================================================================
-Public Function LocateBrackets(ByVal text As String) As Long
-
-    On Error Resume Next
-    
-    Dim Length As Long, p As Long, part As String, posAt As Long
-    
-    'First look for brackets--make it easy:
-    Length = Len(text$)
-    For p = 1 To Length
-        part = Mid$(text$, p, 1)
-        If part = "(" Then
-            posAt = p
-            Exit For
-        End If
-    Next p
-    If posAt <> 0 Then
-        LocateBrackets = posAt
-        Exit Function
-    End If
-
-    'OK- no brackets.  Find position of first space after command.
-    For p = 1 To Length
-        part = Mid(text, p, 1)
-        If part = "#" Then posAt = p
-        Exit For
-    Next p
-    If posAt = 0 Then
-        Exit Function 'couldn't find a command!
-    End If
-    For p = posAt To Length     'Find first occurrence of command name
-        part = Mid(text$, p, 1)
-        If part <> " " Then
-            posAt = p
-            Exit For
-        End If
-    Next p
-    For p = posAt To Length     'Find where command name ends.
-        part = Mid(text$, p, 1)
-        If part = " " Then
-            posAt = p
-            Exit For
-        End If
-    Next p
-
-    LocateBrackets = posAt
-
-End Function
-
-'=========================================================================
-' Retrieve the text inside the brackets
-'=========================================================================
-Public Function GetBrackets(ByVal text As String, Optional ByVal doNotCheckForBrackets As Boolean) As String
-
-    On Error Resume Next
-
-    Dim ignoreClosing As Boolean
-    Dim use As String, location As Long, Length As Long, bracketDepth As Long, p As Long, part As String
-    Dim fullUse As String
-    
-    use = text
-    location = LocateBrackets(use)
-    Length = Len(text)
-    
-    If Not doNotCheckForBrackets Then
-        If Not stringContains(text, "(") Then
-            If Not stringContains(text, ")") Then
-                'No (s or )s here!
-                Exit Function
-            End If
-        End If
-    End If
-
-    For p = location + 1 To Length
-        part$ = Mid$(text$, p, 1)
-        If ((part = ")") And ignoreClosing = False And bracketDepth <= 0) Or part = "" Then
-            Exit For
-        Else
-            If part = ")" Then
-                bracketDepth = bracketDepth - 1
-            ElseIf part = Chr(34) Then
-                'quote-- ignore stuff inside quotes.
-                If ignoreClosing = True Then
-                    'clsing quote...
-                    ignoreClosing = False
-                Else
-                    ignoreClosing = True
-                End If
-            ElseIf part = "(" Then
-                bracketDepth = bracketDepth + 1
-            End If
-            fullUse = fullUse & part
-        End If
-    Next p
-
-    GetBrackets = fullUse
-
-End Function
-
-'=========================================================================
-' Get the command name in the text passed in
-'=========================================================================
-Public Function GetCommandName(ByVal splice As String) As String
-
-    On Error Resume Next
-
-    If splice = "" Then Exit Function
-
-    Dim Length As Long, foundIt As Long, p As Long, part As String, starting As Long, commandName As String
-    Dim testIt As String, ignore As Boolean
-    
-    Length = Len(splice)
-
-    For p = 1 To Length
-        part = Mid(splice, p, 1)
-        If (part = "(") Then ignore = True
-        If (part = ")") Then ignore = False
-        If (part = "=") And (Not ignore) Then
-            GetCommandName = "VAR"
-            Exit Function
-        End If
-    Next p
-
-    For p = 1 To Length
-        part = Mid$(splice, p, 1)
-        If (part = "[") Then
-            GetCommandName = "VAR"
-            Exit Function
-        ElseIf (part = " " Or part = "#" Or part = "(") Then
-            Exit For
-        End If
-    Next p
-
-    'Look for #
-    For p = 1 To Length
-        part = Mid$(splice, p, 1)
-        If part <> " " And part <> "#" And part <> Chr(9) Then
-            If part$ = "*" Then
-                GetCommandName = "*"
-                Exit Function
-                
-            ElseIf part$ = ":" Then
-                GetCommandName = "LABEL"
-                Exit Function
-                
-            ElseIf part$ = "@" Then
-                GetCommandName = "@"
-                Exit Function
-            End If
-                
-            foundIt = p
-            starting = p - 1
-            Exit For
-
-        ElseIf part = "#" Then
-            starting = p
-            foundIt = p
-            Exit For
-        End If
-    Next p
-    If foundIt = 0 Then
-        'Yipes- didn't find a #.  Maybe it's a @ command
-        For p = 1 To Length
-            part$ = Mid$(splice$, p, 1)
-            If part$ <> " " And part$ <> "@" And part$ <> Chr$(9) Then
-                foundIt = 0
-                Exit For
-            End If
-            If part$ = "@" Then
-                GetCommandName$ = "@"
-                Exit Function
-            End If
-        Next p
-        If foundIt = 0 Then
-            'Oh oh- still can't find it!  Probably a message
-            'maybe a comment?
-            For p = 1 To Length
-                part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> "*" And part$ <> Chr$(9) Then foundIt = 0: p = Length
-                If part$ = "*" Then GetCommandName$ = "*": Exit Function
-            Next p
-        End If
-        If foundIt = 0 Then
-            'Maybe a label
-            For p = 1 To Length
-                part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> ":" And part$ <> Chr$(9) Then foundIt = 0: p = Length
-                If part$ = ":" Then GetCommandName$ = "LABEL": Exit Function
-            Next p
-        End If
-        If foundIt = 0 Then
-            'Maybe an if then start/stop
-            For p = 1 To Length
-                part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> "<" And part$ <> "{" And part$ <> Chr$(9) Then foundIt = 0: p = Length
-                If part$ = "<" Or part$ = "{" Then GetCommandName$ = "OPENBLOCK": Exit Function
-            Next p
-        End If
-        If foundIt = 0 Then
-            'Maybe an if then start/stop
-            For p = 1 To Length
-                part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> ">" And part$ <> "}" And part$ <> Chr$(9) Then foundIt = 0: p = Length
-                If part$ = ">" Or part$ = "}" Then GetCommandName$ = "CLOSEBLOCK": Exit Function
-            Next p
-        End If
-        If foundIt = 0 Then
-            'if after all of this stuff we didn't find anything
-            'it's a message
-            GetCommandName$ = "MBOX"
-            'Exit Function
-        End If
-    End If
-    'OK, if I'm here, that means that it is a # command
-    For p = starting + 1 To Length
-        part$ = Mid$(splice$, p, 1)
-        If part$ <> " " Then
-            starting = p
-            Exit For
-        End If
-    Next p
-    
-    commandName$ = ""
-    'now find command
-    For p = starting To Length
-        part$ = Mid$(splice$, p, 1)
-        If part$ = " " Or part$ = "(" Or part$ = "=" Then p = Length: part$ = ""
-        commandName$ = commandName & part$
-    Next p
-    'Now, before sending this back, let's see if it's a varibale
-    If commandName$ = "{" Then commandName$ = "OPENBLOCK"
-    If commandName$ = "}" Then commandName$ = "CLOSEBLOCK"
-
-    testIt$ = commandName$
-    Length = Len(testIt$)
-    For p = 1 To Length
-        part$ = Mid$(testIt$, p, 1)
-        If part$ = "!" Or part$ = "$" Then commandName$ = "VAR"
-    Next p
-
-    GetCommandName = commandName
 
 End Function
 
@@ -863,43 +642,6 @@ Public Function ParseRPGCodeCommand( _
     'Return what we've done
     ParseRPGCodeCommand = line
 
-End Function
-
-'=========================================================================
-' Replace not within quotes
-'=========================================================================
-Public Function replaceOutsideQuotes(ByVal text As String, ByVal find As String, ByVal replace As String)
-
-    On Error Resume Next
-
-    Dim ignore As Boolean
-    Dim build As String
-    Dim char As String
-    Dim a As Long
-
-    For a = 1 To Len(text)
-        char = Mid(text, a, 1)
-        Select Case char
-            Case """"
-                If ignore Then
-                    ignore = False
-                Else
-                    ignore = True
-                End If
-        End Select
-        If Not ignore Then If char = find Then char = replace
-        build = build & char
-    Next a
-
-    replaceOutsideQuotes = build
-
-End Function
-
-'=========================================================================
-' InStr outside quotes
-'=========================================================================
-Public Function inStrOutsideQuotes(ByVal start As Long, ByVal text As String, ByVal find As String) As Long
-    inStrOutsideQuotes = RPGCInStrOutsideQuotes(start, StrPtr(text), StrPtr(find))
 End Function
 
 '=========================================================================

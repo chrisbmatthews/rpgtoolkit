@@ -200,3 +200,6 @@ EXPORTS
 	RPGCValueNumber		@240
 	RPGCGetElement		@241
 	RPGCInStrOutsideQuotes	@242
+	RPGCReplaceOutsideQuotes	@243
+	RPGCGetBrackets		@244
+	RPGCGetCommandName	@245

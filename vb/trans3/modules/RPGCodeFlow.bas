@@ -250,8 +250,8 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
         For t = 1 To number
             For se = theOne To 100
                 If pointer$(se) = "" Then
-                    pointer$(se) = removeChar(destList$(t), " ")
-                    correspPointer$(se) = removeChar(parameterList$(t), " ")
+                    pointer$(se) = replace(destList$(t), " ", "")
+                    correspPointer$(se) = replace(parameterList$(t), " ", "")
                     topList = se
                     Exit For
                 End If

@@ -20,6 +20,400 @@
 CBOneParamStr setLastString;	//set the last parser string
 
 //////////////////////////////////////////////////////////////////////////
+// Get the command name in the text passed in
+//////////////////////////////////////////////////////////////////////////
+void APIENTRY RPGCGetCommandName(VB_STRING pText)
+{
+
+	inlineString splice = initVbString(pText);	//text to work with
+	inlineString commandName;					//command name to return
+	inlineString part(1);						//a character
+	int depth = 0;								//depth in brackets
+	int starting = 0;							//char to start at
+	int length = splice.len();					//length of text
+	int foundIt = 0;							//where we found it
+	int p = 0;									//loop control variable
+
+	if (splice == "")
+	{
+		//we got no text
+		returnVbString("");
+		return;
+	}
+
+	for (p = 1; p <= length; p ++)
+	{
+
+		//grab a character
+		part = splice.mid(p, 1);
+
+		if (part == "(")
+		{
+			//heading into brackets
+			depth++;
+		}
+
+		if (part == ")")
+		{
+			//coming out of brackets
+			depth--;
+		}
+
+		if (part == "=")
+		{
+			//if we're not within brackets
+			if (depth == 0)
+			{
+				//it's a variable
+				returnVbString("VAR");
+				return;
+			}
+		}
+
+    }
+
+	for (p = 1; p <= length; p++)
+	{
+
+		//grab a character
+        part = splice.mid(p, 1);
+
+        if (part == "[")
+		{
+            //it's a vairable
+            returnVbString("VAR");
+			return;
+		}
+		else if (part == "" || part == "#" || part == "(")
+			//*this* variable check fails (it still may be a variable, though)
+			break;
+    }
+
+    //look for special characters
+    for (p = 1; p <= length; p++)
+	{
+
+		//grab a character
+        part = splice.mid(p, 1);
+
+        if ( part != " " && part != "#" && part != TAB )
+		{
+
+            if ( part == "*" )
+			{
+				//it's a comment
+                returnVbString("*");
+                return;
+			}
+
+            else if ( part == ":" )
+			{
+                returnVbString("LABEL");
+                return;
+			}
+
+            else if ( part == "@" )
+			{
+				returnVbString("@");
+                return;
+            }
+
+            foundIt = p;
+            starting = p - 1;
+            break;
+
+		}
+
+        else if ( part == "#" )
+		{
+			//it's a command, but this command test will never pass,
+			//but it has been left for now
+            starting = p;
+            foundIt = p;
+            break;
+        }
+
+    }
+
+    if (foundIt == 0)
+	{
+
+        //didn't find one of the special characters above, this
+		//is going to be difficult
+
+        for (p = 1; p <= length; p++)
+		{
+
+			//grab a character
+            part = splice.mid(p, 1);
+
+            if ( part != " " && part != "@" && part != TAB )
+				//it's not a @ line
+				break;
+
+            else if (part == "@")
+			{
+				//it's an @ line
+				returnVbString("@");
+				return;
+            }
+
+        }
+
+		//still haven't found it... try for comments
+		for (p = 1; p <= length; p++)
+		{
+
+			//grab a character
+			part = splice.mid(p, 1);
+
+			if ( part != " " && part != "*" && part != TAB ) 
+				//it's not a comment
+				break;
+
+			if (part == "*")
+			{
+				//it's a comment
+				returnVbString("*");
+				return;
+			}
+
+		}
+
+		//yet to find it... try for labels
+		for (p = 1; p <= length; p++)
+		{
+
+			//grab a character
+			part = splice.mid(p, 1);
+
+			if ( part != " " && part != ":" && part != TAB ) 
+				//it's not a label
+				break;
+
+			if (part == ":")
+			{
+				//it's a label
+				returnVbString("LABEL");
+				return;
+			}
+
+		}
+
+		//no luck yet... try for opening blocks
+		for (p = 1; p <= length; p++)
+		{
+
+			//grab a character
+			part = splice.mid(p, 1);
+
+			if ( part != " " && part != "<" && part != "{" && part != TAB ) 
+				//it's not an opening block
+				break;
+
+			if (part == "<" || part == "{")
+			{
+				//it's an opening block
+				returnVbString("OPENBLOCK");
+				return;
+			}
+
+		}
+
+		//still no luck... try for closing blocks
+		for (p = 1; p <= length; p++)
+		{
+
+			//grab a character
+			part = splice.mid(p, 1);
+
+			if ( part != " " && part != ">" && part != "}" && part != TAB ) 
+				//it's not an closing block
+				break;
+
+			if (part == ">" || part == "}")
+			{
+				//it's an closing block
+				returnVbString("CLOSEBLOCK");
+				return;
+			}
+
+		}
+
+		//if we make it here, it *could* be a message box. However, since
+		//these types of message boxes are obsolete this may just serve as
+		//an unneeded delay.
+		returnVbString("MBOX");
+
+    }
+
+    //if we make it here, it's a command
+	for (p = (starting + 1); p <= length; p++)
+	{
+
+		//grab a character
+        part = splice.mid(p, 1);
+
+        if (part != " ")
+		{
+			//found the start of the command's name
+			starting = p;
+			break;
+        }
+
+    }
+
+    //now scoop out the command's name
+    for (p = starting; p <= length; p++)
+	{
+
+		//grab a character
+        part = splice.mid(p, 1);
+
+		if ( part == " " || part == "(" || part == "=" ) 
+			//found the name of the command
+			break;
+
+		//add to the return string
+		commandName += part;
+
+    }
+
+    //before we return the result, let's check if we somehow missed an opening /
+	//closing block, or a variable
+
+    if (commandName == "{") commandName = "OPENBLOCK";
+    if (commandName == "}") commandName = "CLOSEBLOCK";
+
+    for (p = 1; p <= commandName.len(); p++)
+	{
+
+		//grab a character
+		part = commandName.mid(p, 1);
+
+		//check for type-declaration characters
+		if (part == "!" || part == "$")
+		{
+			//it's a variable
+			commandName = "VAR";
+			break;
+		}
+
+    }
+
+	//return the command's name
+    returnVbString(commandName);
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Retrieve the text inside the brackets
+//////////////////////////////////////////////////////////////////////////
+void APIENTRY RPGCGetBrackets(VB_STRING pText)
+{
+
+	inlineString text = initVbString(pText);	//text to work with
+	inlineString toRet;							//string to return
+	inlineString part(1);						//a character
+	bool ignoreClosing = false;					//within quotes?
+	int bracketDepth = 0;						//depth in brackets
+
+	for (int p = (locateBrackets(text) + 1); p <= text.len(); p++)
+	{
+
+		//grab a charater
+		part = text.mid(p, 1);
+
+        if ( ((part == ")") && (!ignoreClosing) && (bracketDepth <= 0)) || (part == "") )
+			//end of the brackets
+            break;
+
+        else
+		{
+
+            if (part == ")")
+				//leaving brackets
+                bracketDepth--;
+
+            else if (part == QUOTE)
+				//found a quote
+				ignoreClosing = (!ignoreClosing);
+
+            else if (part == "(")
+				//entering brackets
+                bracketDepth++;
+
+			//add it onto the return string
+            toRet += part;
+
+        }
+    }
+
+    returnVbString(toRet);
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Return the first space after the command / the opening bracket
+//////////////////////////////////////////////////////////////////////////
+inline int locateBrackets(inlineString text)
+{
+
+	////////////////////////////////
+	//Called only by RPGCGetBrackets
+	////////////////////////////////
+
+    //look for the brackets
+	for (int p = 1; p <= text.len(); p++)
+	{
+        if (text.mid(p, 1) == "(")
+			//found them
+			return p;
+	}
+
+	//brackets couldn't be found
+	return 0;
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Replace not within quotes
+//////////////////////////////////////////////////////////////////////////
+void APIENTRY RPGCReplaceOutsideQuotes(VB_STRING pText, VB_STRING pFind, VB_STRING pReplace)
+{
+
+	inlineString text = initVbString(pText);			//text we're working with
+	inlineString find(initVbString(pFind), 1);			//character to find
+	inlineString replace(initVbString(pReplace), 1);	//character to replace it with
+    inlineString toRet;									//string to return
+    inlineString chr(1);								//a character
+    bool ignore = false;								//within quotes?
+
+	for (int idx = 1; idx <= text.len(); idx++)
+	{
+
+		//grab a character
+		chr = text.mid(idx, 1);
+
+		if (chr == QUOTE)
+			//found a quote
+			ignore = (!ignore);
+
+		else if ( (!ignore) && (chr == find) )
+			//found the find character-- swap with replace character
+			chr = (char*)replace;
+
+		//add to the return string
+		toRet += chr;
+
+    }
+
+    //return what we've found
+	returnVbString(toRet);
+
+}
+
+//////////////////////////////////////////////////////////////////////////
 // InStr outside quotes
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY RPGCInStrOutsideQuotes(int start, VB_STRING pText, VB_STRING pFind)

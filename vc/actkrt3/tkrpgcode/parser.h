@@ -54,6 +54,9 @@ inline VB_STRING charToVbString(char*);
 inline char* vbStringToChar(VB_STRING);
 inline int vbStringGetLen(VB_STRING);
 
+//private parsing functions
+inline int locateBrackets(inlineString);
+
 //exports
 void APIENTRY RPGCInitParser(int);
 void APIENTRY RPGCGetMethodName(VB_STRING);
@@ -62,6 +65,9 @@ void APIENTRY RPGCParseBefore(VB_STRING, VB_STRING);
 void APIENTRY RPGCGetVarList(VB_STRING, int);
 void APIENTRY RPGCParseWithin(VB_STRING, VB_STRING, VB_STRING);
 void APIENTRY RPGCGetElement(VB_STRING, int);
+void APIENTRY RPGCReplaceOutsideQuotes(VB_STRING, VB_STRING, VB_STRING);
+void APIENTRY RPGCGetBrackets(VB_STRING);
+void APIENTRY RPGCGetCommandName(VB_STRING);
 int APIENTRY RPGCValueNumber(VB_STRING);
 int APIENTRY RPGCInStrOutsideQuotes(int, VB_STRING, VB_STRING);
 
