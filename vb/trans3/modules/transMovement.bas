@@ -1697,8 +1697,6 @@ Private Function pushPlayer(ByVal pNum As Long, ByRef staticTileType As Byte) As
         topX = Round(topX, 5)               'Need topX,Y as FRACTIONs.
         topY = Round(topY, 5)
         
-        'Update the step count (doesn't take pixel movement into account yet).
-        stepsTaken = stepsTaken + 1
     End If
 
     'We can move, put the test location into the true loc.
@@ -1742,6 +1740,9 @@ Private Sub playerDoneMove(): On Error Resume Next
         End If
 
     End With
+    
+    'Update the step count (doesn't take pixel movement into account yet).
+    stepsTaken = stepsTaken + 1
 
     ' Convert *STUPID* string positions to numerical
     Select Case UCase$(pPos(selectedPlayer).stance)
