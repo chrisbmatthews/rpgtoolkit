@@ -367,7 +367,7 @@ Private Sub calcLevels(ByRef player As TKPlayer)
         .nextLevel = .levelType
         .levelProgression = .levelType - .initExperience
         ReDim .levelStarts(.maxLevel)
-        Dim levIdx As Long, running As Long, exp As Long
+        Dim levIdx As Long, exp As Long
         .levelStarts(.initLevel) = .initExperience
         exp = .levelType
         For levIdx = (.initLevel + 1) To (.maxLevel)
