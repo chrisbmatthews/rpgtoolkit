@@ -130,6 +130,10 @@ Begin VB.Form tileedit
          Shortcut        =   ^Z
          Tag             =   "1669"
       End
+      Begin VB.Menu mnuRedo 
+         Caption         =   "Redo"
+         Shortcut        =   ^Y
+      End
       Begin VB.Menu sub9 
          Caption         =   "-"
       End
@@ -371,18 +375,28 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 '========================================================================
 ' Variable declaration
 '========================================================================
+
 'Main data
 Private theData As tileDoc
+
 'Ignore reactivation action
 Public ignoreDeactivate As Boolean
+
 'Have we begun dragging?
 Private bDragBegin As Boolean
+
 'Initial x and y coords if drag
 Private dragX1 As Integer, dragY1 As Integer
+
 'For the new ISO mode; 1 = Normal, 2 = ISO
 Private xMod As Byte
+
 'For the changecolor function
-Private bchangecolor As Byte
+Private bChangeColor As Byte
+
+'Current position in undo array
+Private currentUndo As Long
+
 '========================================================================
 ' Enum declaration
 '========================================================================
@@ -410,7 +424,7 @@ End Enum
 Private Enum ROTATE_TYPE
     Left = 1
     Right = 2
-    OneHunderdEighty = 3
+    OneHundredEighty = 3
 End Enum
 '========================================================================
 ' Change the mode to normal/ISO
@@ -507,6 +521,7 @@ Public Sub isoChange( _
     'Resize/Redraw
     Call Form_Resize
 End Sub
+
 '========================================================================
 ' Update buttons/menu
 '========================================================================
@@ -544,6 +559,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' When you click in the color picker in TkMainform
 '========================================================================
@@ -560,6 +576,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' Set Grid On/Off
 '========================================================================
@@ -568,12 +585,13 @@ Public Sub tileGrid(ByVal value As Byte): On Error Resume Next
     'Redraw
     Call tileRedraw
 End Sub
+
 '========================================================================
 ' Scroll
 '========================================================================
 Public Sub Scroll(ByVal how As SCROLL_TYPE): On Error Resume Next
     'Undo
-    Call SetUndo
+    Call setUndo
     
     Dim xx As Integer, yy As Integer
     
@@ -630,12 +648,13 @@ Public Sub Scroll(ByVal how As SCROLL_TYPE): On Error Resume Next
     'Redraw
     Call tileRedraw
 End Sub
+
 '========================================================================
 ' Rotates the tile
 '========================================================================
 Private Sub Rotate(ByVal how As ROTATE_TYPE)
    'Undo
-    Call SetUndo
+    Call setUndo
 
     Dim x As Integer, y As Integer, xx As Integer, yy As Integer
    
@@ -682,12 +701,13 @@ Private Sub Rotate(ByVal how As ROTATE_TYPE)
     'Redraw
     Call tileRedraw
 End Sub
+
 '========================================================================
 ' Flips the tile
 '========================================================================
 Private Sub Flip(ByVal how As FLIP_TYPE)
     'Undo
-    Call SetUndo
+    Call setUndo
    
     Dim x As Integer, y As Integer
    
@@ -710,26 +730,120 @@ Private Sub Flip(ByVal how As FLIP_TYPE)
     'Redraw
     Call tileRedraw
 End Sub
+
 '========================================================================
-' Put the tile in the good undo
+' Put the tile in the undo buffer
 '========================================================================
-Public Sub SetUndo()
+Public Sub setUndo()
+
+    On Error Resume Next
+
+    'Enlarge undo array
+    ReDim Preserve publicTile.undoTile(currentUndo, 64, 32)
+
     Dim x As Integer, y As Integer
-    
     For x = 1 To xRange
         For y = 1 To 32
+            publicTile.undoTile(currentUndo, x, y) = tileMem(x, y)
             publicTile.Undotile(x, y) = Tilemem(x, y)
         Next y
     Next x
+
+    'Move onto the next place in the array
+    currentUndo = currentUndo + 1
+
 End Sub
+
 '========================================================================
 ' This gets the info from the undo and changes the tile back
 '========================================================================
-Public Sub GetUndo()
-    'ReDim the variable
-    ReDim bufundo(64, 32)
-    Dim x As Integer, y As Integer
+Public Sub getUndo()
+
+    On Error Resume Next
+
+    If currentUndo = 0 Then
+        'No undos have been saved
+        Exit Sub
+    End If
+
+    Dim undoFrom As Long, undoTo As Long
+
+    'currentUndo will be one higher than the last used position
+    'in the undo array
+    undoFrom = currentUndo - 1
+
+    'currentUndo will be the next avaliable position in the undo array
+    undoTo = currentUndo
+
+    'Enlarge the array to make room for undoTo
+    ReDim Preserve publicTile.undoTile(undoTo, 64, 32)
+
+    'Now copy tileMem --> undoTo and undoFrom --> tileMem
+    Dim a As Long, b As Long
+    For a = 1 To xRange
+        For b = 1 To 32
+            'tileMem --> undoTo
+            publicTile.undoTile(undoTo, a, b) = tileMem(a, b)
+            'undoFrom --> tileMem
+            tileMem(a, b) = publicTile.undoTile(undoFrom, a, b)
+            'undoTo --> undoFrom
+            publicTile.undoTile(undoFrom, a, b) = publicTile.undoTile(undoTo, a, b)
+        Next b
+    Next a
+
+    'Decrease currentUndo so the next undo yields it
+    currentUndo = currentUndo - 1
+
+    'Redraw the tile
+    Call tileRedraw
     
+End Sub
+
+'========================================================================
+'Redo what was just undone
+'========================================================================
+Public Sub useRedo()
+
+    On Error Resume Next
+
+    Dim redoFrom As Long, redoTo As Long
+
+    'currentUndo will equal one higher than the last undo dimension used.
+    'This is also the position of the current redo.
+    redoFrom = currentUndo
+
+    'currentUndo will equal one higher than the last used position. One higher
+    'than this is new free position for redoing.
+    redoTo = currentUndo + 1
+
+    'Enlarge the array to fit redoTo
+    ReDim Preserve publicTile.undoTile(redoTo + 1, 64, 32)
+
+    'At this point, things look like this:
+    'undoTile(...
+    '             currentUndo - 1 == current undo buffer
+    '             currentUndo     == current redo buffer [redoFrom]
+    '             currentUndo + 1 == free redo buffer    [redoTo]
+    '                                                               ..., x, y)
+    
+    'Now it's time to do the loop
+    Dim a As Long, b As Long
+    For a = 1 To xRange
+        For b = 1 To 32
+            'tileMem --> redoTo
+            publicTile.undoTile(redoTo, a, b) = tileMem(a, b)
+            'redoFrom --> tileMem
+            tileMem(a, b) = publicTile.undoTile(redoFrom, a, b)
+            'redoTo --> redoFrom
+            publicTile.undoTile(redoFrom, a, b) = publicTile.undoTile(redoTo, a, b)
+        Next b
+    Next a
+
+    'Now move forward in the array
+    currentUndo = currentUndo + 1
+
+    'Things are still as they were (setup wise)
+
     For x = 1 To xRange
         For y = 1 To 32
             bufundo(x, y) = Tilemem(x, y)
@@ -738,9 +852,11 @@ Public Sub GetUndo()
         Next y
     Next x
 
-    'Redraw
+    'Redraw!
     Call tileRedraw
+
 End Sub
+
 '========================================================================
 ' Changes one color to another color in the editor
 '========================================================================
@@ -766,9 +882,11 @@ Public Sub changeColor()
         Call ToolSet(1)
     End If
 End Sub
+
 '========================================================================
 ' Tile Tools
 '========================================================================
+
 'Fill
 Private Sub fillTile( _
                         ByVal x As Long, _
@@ -782,17 +900,11 @@ Private Sub fillTile( _
     ' + Now uses GDI
     ' + Much, much, much faster
     '========================================================================
+
     On Error Resume Next
-    
-    Dim replaceCol As Long
-    replaceCol = Tilemem(x, y)              'Colour at the location
-    
-    If replaceCol = crColor Then
-        Exit Sub
-    End If
 
     'Make this 'undoable'
-    Call SetUndo
+    Call setUndo
 
     'Create a canvas
     Dim cnv As Long
@@ -839,10 +951,11 @@ Private Sub fillTile( _
     'Redraw the tile
     Call tileRedraw
 End Sub
+
 'Others
 Private Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal how As ADDSHAPE_TYPE): On Error Resume Next
     'Undo
-    Call SetUndo
+    Call setUndo
     
     Dim x, y As Integer
     Dim Canv As Long
@@ -918,6 +1031,7 @@ Private Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
     'Redraw
     Call tileRedraw
 End Sub
+
 '========================================================================
 ' Form_Activate
 '========================================================================
@@ -978,6 +1092,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' Form_Deactivate (EDIT for 3.0.4 by Delano)
 '========================================================================
@@ -994,8 +1109,8 @@ Private Sub Form_Deactivate(): On Error Resume Next
         Next y
     Next x
 
-    'theData.Isometric = tkMainForm.tileIsoCheck.value
 End Sub
+
 '========================================================================
 ' Form_KeyPress
 '========================================================================
@@ -1014,13 +1129,16 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error GoTo ErrorHandler
         Call opentile2(projectPath$ + tilepath$ + setFilename$)
         
         'Redraw tile
+        Call highRedraw
         Call activeTile.highredraw
         
         'Update filename
         publicTile.TileName = setFilename$
         
         'Update caption
+        Caption = LoadStringLoc(801, "Tile Editor") & "  (" & setFilename & ")"
         activeTile.caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
+
     End If
         
     Exit Sub
@@ -1029,6 +1147,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' Form_Load
 '========================================================================
@@ -1059,6 +1178,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' Form_Resize
 '========================================================================
@@ -1102,6 +1222,7 @@ Private Sub Form_Resize(): On Error Resume Next
     'Redraw
     Call tileRedraw
 End Sub
+
 '========================================================================
 ' Form_Unload
 '========================================================================
@@ -1109,6 +1230,7 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     'Hide all tools
     Call hideAllTools
 End Sub
+
 '========================================================================
 ' Depress tool index, and unpress the others
 '========================================================================
@@ -1133,6 +1255,7 @@ Public Sub ToolSet(ByVal Index As Byte): On Error Resume Next
 
     ignore = 0
 End Sub
+
 '========================================================================
 ' Redraws the tileform
 '========================================================================
@@ -1194,6 +1317,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' Draw the Grid on the tileform
 '========================================================================
@@ -1214,13 +1338,14 @@ Private Sub drawGrid(): On Error Resume Next
     Dim x As Integer, y As Integer
     'Vertical Lines
     For x = -1 To tfWidth Step pixelWidth
-            Call vbPicLine(tileform, x, -1, x, tfHeight, vbQBColor(1))
+        Call vbPicLine(tileForm, x, -1, x, tfHeight, vbQBColor(1))
     Next x
     'Horizontal Lines
     For y = -1 To tfHeight Step pixelHeight
-            Call vbPicLine(tileform, -1, y, tfWidth, y, vbQBColor(1))
+        Call vbPicLine(tileForm, -1, y, tfWidth, y, vbQBColor(1))
     Next y
 End Sub
+
 '========================================================================
 ' Redraw the tile
 '========================================================================
@@ -1234,6 +1359,11 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
+Private Sub mnuRedo_Click()
+    Call useRedo
+End Sub
+
 '========================================================================
 ' When you click in the Tile Editor
 '========================================================================
@@ -1267,11 +1397,10 @@ Private Sub tileform_MouseDown(button As Integer, shift As Integer, x As Single,
         
     Select Case publicTile.TileMode
         Case 0, 3
-            '0: Pencil
-            '0: Eraser
+
                 
             'Undo
-            Call SetUndo
+            Call setUndo
                 
             'If the user wants to erase, set colorUse to -1 (Transparent)
             If publicTile.TileMode = 3 Then
@@ -1339,13 +1468,10 @@ Private Sub tileform_MouseDown(button As Integer, shift As Integer, x As Single,
             publicTile.TileMode = 0
             Call ToolSet(publicTile.TileMode)
         Case 2 'Fill
-            'Undo
-            Call SetUndo
-            
-            'Fill
             Call fillTile(mouseX + 1, mouseY + 1, coloruse)
     End Select
 End Sub
+
 '========================================================================
 ' When you move the mouse in the Tile Editor
 '========================================================================
@@ -1454,6 +1580,7 @@ Private Sub tileform_MouseMove(button As Integer, shift As Integer, x As Single,
     dragX1 = x
     dragY1 = y
 End Sub
+
 '========================================================================
 ' When you release the mouse in the Tile Editor
 '========================================================================
@@ -1489,6 +1616,7 @@ Private Sub tileform_MouseUp(button As Integer, shift As Integer, x As Single, y
         End Select
     End If
 End Sub
+
 '========================================================================
 ' Check if the file has changed an it needs to be saved
 '========================================================================
@@ -1503,20 +1631,25 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' Saves the file
 '========================================================================
 Public Sub saveFile(): On Error GoTo ErrorHandler
     
-    filename$(2) = publicTile.TileName
+    filename(2) = publicTile.tileName
+    publicTile.tileneedupdate = False
+    If filename(2) = "" Then
+        Call Show
+    filename(2) = publicTile.TileName
     publicTile.TileNeedUpdate = False
-    If filename$(2) = "" Then
-        Me.Show
+    If filename(2) = "" Then
+        Call Show
         Call savenoquestions_Click
         Exit Sub
     End If
     'Save the tile
-    Call savetile(projectPath$ + tilepath$ + filename$(2))
+    Call saveTile(projectPath & tilePath & filename(2))
 
     Exit Sub
 'Begin error handling code:
@@ -1524,47 +1657,49 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' Opens the file
 '========================================================================
 Public Sub openFile(ByVal file As String): On Error Resume Next
     
-    activeTile.Show
-    
-    ChDir (currentdir$)
+    Call Show
+    Call ChDir(currentDir)
     
     Call checkSave      'Check if a tile is already open and needs saving.
     publicTile.TileNeedUpdate = False
     
-    filename$(1) = file$
-    antiPath$ = absNoPath(file$)
+    filename(1) = file
+    antiPath = absNoPath(file)
     
-    FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
+    Call FileCopy(filename(1), projectPath & tilePath & antiPath)
     
-    whichType$ = GetExt(filename$(1))
+    whichType = GetExt(filename(1))
     
-    If UCase$(whichType$) = "ISO" Then
+    If UCase(whichType) = "ISO" Then
         'Set the mode to isometric.
         tkMainForm.tileIsoCheck.value = 1
     Else
         tkMainForm.tileIsoCheck.value = 0
     End If
     
-    If UCase$(whichType$) = "TST" Or UCase$(whichType$) = "ISO" Then
+    If UCase(whichType) = "TST" Or UCase(whichType) = "ISO" Then
         'Yipes! we've selected an archive!
     
         tstnum = 0
-        'FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
         
-        lastTileset$ = antiPath$
-        tstFile$ = antiPath$
-        
+        lastTileset = antiPath
+        tstFile = antiPath
+
         ignoreDeactivate = True
-        
-        tilesetform.Show vbModal            'Show the tileset browser.
-        
-        'setFilename$ created in tilesetform. Contains the tilenumber.
-        If setFilename$ = "" Then Exit Sub
+
+        Call tilesetform.Show(vbModal)             'Show the tileset browser.
+
+        'setFilename created in tilesetform. Contains the tilenumber.
+        If setFilename = "" Then Exit Sub
+
+        Call openFromTileSet(projectPath & tilePath & tilesetFilename(setFilename), getTileNum(setFilename))
+
         
         Call openFromTileSet(projectPath$ + tilepath$ + tilesetFilename(setFilename$), getTileNum(setFilename$))
         
@@ -1576,7 +1711,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         
         'Now we need to rearrange the pixels in the tilemem from 32x32 to 62x32
         
-        If UCase$(whichType$) = "ISO" Then
+        If UCase(whichType$) = "ISO" Then
             Dim xCount As Byte, yCount As Byte, x As Integer, y As Integer
             xCount = 1: yCount = 1
         
@@ -1606,40 +1741,39 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
                             yCount = 1
                         End If
                     End If
-                    
-                    'Call traceString("tilemem(" & xx & ", " & yy & ") = " & tilemem(xx, yy))
-                    
                 Next yy
             Next xx
         End If '(whichtype$ = "ISO")
         
         
-        Call activeTile.highredraw
+        Call highRedraw
         
-        publicTile.TileName$ = setFilename$
-        activeTile.caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
+        publicTile.tileName = setFilename
+        Caption = LoadStringLoc(801, "Tile Editor") & "  (" & setFilename & ")"
+
         
     Else
         '.gph
         
-        Call opentile2(filename$(1))
-        Call activeTile.highredraw
-        publicTile.TileName$ = antiPath$
-        activeTile.caption = LoadStringLoc(801, "Tile Editor") + "  (" + antiPath$ + ")"
+        Call openTile2(filename(1))
+        Call highRedraw
+        publicTile.tileName = antiPath
+        Caption = LoadStringLoc(801, "Tile Editor") & "  (" & antiPath & ")"
         
     End If
     
     Call tileGrid(tkMainForm.tileGrid.value)
 End Sub
+
 '========================================================================
-' Opens a tile... (EDIT for 3.0.4 by Delano)
+' Opens a tile
 '========================================================================
 Public Sub opentile_Click(): On Error Resume Next
-    ChDir (currentdir$)
+    Call ChDir(currentDir)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tilepath$
+    dlg.strDefaultFolder = projectPath & tilePath
     
-    If UCase$(whichType$) = "ISO" Then
+    If UCase(whichType) = "ISO" Then
         'Set the mode to isometric.
         tkMainForm.tileIsoCheck.value = 1
     Else
@@ -1651,23 +1785,23 @@ Public Sub opentile_Click(): On Error Resume Next
     dlg.strFileTypes = "Supported Files|*.gph;*.tst;*.iso|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Tile (*.gph)|*.gph|RPG Toolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
     
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
+        filename(1) = dlg.strSelectedFile
+        antiPath = dlg.strSelectedFileNoPath
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
-    whichType$ = GetExt(filename$(1))
-    
-    
-    
-    If UCase$(whichType$) = "TST" Or UCase$(whichType$) = "ISO" Then      'Yipes! we've selected an archive!
+<<<<<<< TILEEDIT.FRM
+    Call ChDir(currentDir$)
+
+
+    If filename(1) = "" Then Exit Sub
+    Call FileCopy(filename(1), projectPath & tilePath & antiPath)
+    whichType = GetExt(filename(1))
+
+    If UCase(whichType) = "TST" Or UCase(whichType) = "ISO" Then      'Yipes! we've selected an archive!
         tstnum = 0
-        'FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
-        tstFile$ = antiPath$
-        lastTileset$ = tstFile$
+        tstFile = antiPath
+        lastTileset = tstFile
         
         ignoreDeactivate = True
         tilesetform.Show vbModal ', me
@@ -1682,15 +1816,16 @@ Public Sub opentile_Click(): On Error Resume Next
             End If
             Call color_16million
             
-            Call activeTile.highredraw
-            publicTile.TileName$ = setFilename$
-            activeTile.caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
+<<<<<<< TILEEDIT.FRM
+            Call highRedraw
+            publicTile.tileName = setFilename
+            Caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
         End If
     Else
-        Call opentile2(filename$(1))
-        Call activeTile.highredraw
-        publicTile.TileName$ = antiPath$
-        activeTile.caption = LoadStringLoc(801, "Tile Editor") + "  (" + antiPath$ + ")"
+        Call openTile2(filename$(1))
+        Call highRedraw
+        publicTile.tileName = antiPath$
+        Caption = LoadStringLoc(801, "Tile Editor") + "  (" + antiPath$ + ")"
     End If
     Call tileGrid(tkMainForm.tileGrid.value)
 
@@ -1700,84 +1835,101 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' File Menu
 '========================================================================
+
 'New Project
 Private Sub mnunewproject_Click()
     On Error Resume Next
     Call tkMainForm.newprojectmnu_Click
 End Sub
+
 'New Tile
 Private Sub mnunewtile_Click()
     On Error Resume Next
     Call tkMainForm.newtilemnu_Click
 End Sub
+
 'New Animated Tile
 Private Sub mnunewanimatedtile_Click()
     On Error Resume Next
     Call tkMainForm.newanimtilemnu_Click
 End Sub
+
 'New Board
 Private Sub mnunewboard_Click()
     On Error Resume Next
     Call tkMainForm.newboardmnu_Click
 End Sub
+
 'New Player
 Private Sub mnunewplayer_Click()
     On Error Resume Next
     Call tkMainForm.newplayermnu_Click
 End Sub
+
 'New Item
 Private Sub mnunewitem_Click()
     On Error Resume Next
     Call tkMainForm.newitemmnu_Click
 End Sub
+
 'New Enemy
 Private Sub mnunewenemy_Click()
     On Error Resume Next
     Call tkMainForm.newenemymnu_Click
 End Sub
+
 'New RpgCode Program
 Private Sub mnunewrpgcodeprogram_Click()
     On Error Resume Next
     Call tkMainForm.newrpgcodemnu_Click
 End Sub
+
 'New Fight Background
 Private Sub mnuNewFightBackground_Click()
     On Error Resume Next
     Call tkMainForm.mnuNewFightBackground_Click
 End Sub
+
 'New Special Move
 Private Sub mnunewspecialmove_Click()
     On Error Resume Next
     Call tkMainForm.newspecialmovemnu_Click
 End Sub
+
 'New Status Effect
 Private Sub mnunewstatuseffect_Click()
     On Error Resume Next
     Call tkMainForm.newstatuseffectmnu_Click
 End Sub
+
 'New Animation
 Private Sub mnunewanimation_Click()
     On Error Resume Next
     Call tkMainForm.newanimationmnu_Click
 End Sub
+
 'New Tile Bitmap
 Private Sub mnunewtilebitmap_Click()
     On Error Resume Next
     Call tkMainForm.newtilebitmapmnu_Click
 End Sub
+
 'Open Project
 Private Sub mnuOpenProject_Click()
     On Error Resume Next
     Call tkMainForm.mnuOpenProject_Click
 End Sub
+
 'Open File
 Private Sub mnuopen_Click()
     On Error Resume Next
     Call tkMainForm.openmnu_Click
 End Sub
+
 'Save Tile
 Private Sub savenoquestions_Click()
     On Error GoTo ErrorHandler
@@ -1798,6 +1950,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '=======================================================================================
 'File -> Save Tile As...
 '=======================================================================================
@@ -1853,9 +2006,8 @@ Private Sub savetile2_Click(): On Error Resume Next
             If aa > 0 Then
                 'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
                 MsgBox ("Your tile has been added to the tileset: tile number " & aa & " in " & Chr$(13) & filename(1) & ".")
-                
-                publicTile.TileName = antiPath$ + toString(aa)
-                activeTile.caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.TileName + ")"
+                publicTile.tileName = antiPath$ + toString(aa)
+                Caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.tileName + ")"
             End If
         Else
             'Note new argument!
@@ -1863,9 +2015,8 @@ Private Sub savetile2_Click(): On Error Resume Next
             If aa > 0 Then
                 'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
                 MsgBox ("A new tileset has been created: " & Chr$(13) & filename$(1) & Chr$(13) & " and the first tile added.")
-                
-                publicTile.TileName = antiPath$ + "1"
-                activeTile.caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.TileName + ")"
+                publicTile.tileName = antiPath$ + "1"
+                Caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.tileName + ")"
             End If
         End If
         
@@ -1876,14 +2027,15 @@ Private Sub savetile2_Click(): On Error Resume Next
             bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
             If bb = vbNo Then Exit Sub
         End If
-        Call savetile(filename$(1))
-        publicTile.TileName = antiPath$
-        activeTile.caption = LoadStringLoc(801, "Tile Editor") + " (" + antiPath$ + ")"
+        Call saveTile(filename(1))
+        publicTile.tileName = antiPath
+        Caption = LoadStringLoc(801, "Tile Editor") + " (" + antiPath$ + ")"
         
     End If 'tst, iso.
     
-    Call tkMainForm.fillTree("", projectPath$)
+    Call tkMainForm.fillTree("", projectPath)
 End Sub
+
 '==========================================================================================
 'File -> Save into tileset
 '==========================================================================================
@@ -1945,18 +2097,17 @@ Private Sub mnusts_Click(): On Error Resume Next
         
             aa = addToTileSet(filename$(1))
             'MsgBox "Your tile has been added to the tileset", , "Save into tileset"
-            publicTile.TileName = antiPath$ + toString(tnum)
-            activeTile.caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.TileName$ + ")"
+            publicTile.tileName = antiPath$ + toString(tnum)
+            Caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.tileName$ + ")"
             
         Else
             'Insert at the position indicated - overwrite the tile at that position!
             
             result = MsgBox("Warning! This will overwrite the tile at that position!", vbOKCancel)
             If result = vbCancel Then Exit Sub
-                    
-            publicTile.TileName$ = setFilename$
-            Call insertIntoTileSet(projectPath$ + tilepath$ + tilesetFilename(setFilename$), getTileNum(setFilename$))
-            activeTile.caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.TileName$ + ")"
+            publicTile.tileName$ = setFilename$
+            Call insertIntoTileSet(projectPath$ + tilePath$ + tilesetFilename(setFilename$), getTileNum(setFilename$))
+            Caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.tileName$ + ")"
         End If
         
     Else
@@ -1966,23 +2117,24 @@ Private Sub mnusts_Click(): On Error Resume Next
         If aa > 0 Then
             'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
             MsgBox ("A new tileset has been created: " & Chr$(13) & filename$(1) & Chr$(13) & " and the first tile added.")
-        
-            publicTile.TileName = antiPath$ + "1"
-            activeTile.caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.TileName$ + ")"
+            publicTile.tileName = antiPath$ + "1"
+            Caption = LoadStringLoc(801, "Tile Editor") + " (" + publicTile.tileName$ + ")"
         End If
         
     End If
 
 End Sub
+
 'Save All
 Private Sub mnusaveall_Click()
     On Error Resume Next
     Call tkMainForm.saveallmnu_Click
 End Sub
+
 'Close
 Private Sub exit_Click()
     On Error GoTo ErrorHandler
-    activeTile.Hide
+    Call Hide
 
     Exit Sub
 'Begin error handling code:
@@ -1990,18 +2142,22 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Exit
 Private Sub mnuexit_Click()
     On Error Resume Next
     Call tkMainForm.exitmnu_Click
 End Sub
+
 '========================================================================
 ' Edit Menu
 '========================================================================
+
 'Undo
 Private Sub undotilemenu_Click()
-    Call GetUndo
+    Call getUndo
 End Sub
+
 'Cut Corner
 Private Sub cutcornermnu_Click()
     On Error GoTo ErrorHandler
@@ -2014,6 +2170,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Skew
 Private Sub mnuSkew_Click()
     On Error GoTo ErrorHandler
@@ -2026,41 +2183,49 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Clear
 Private Sub cmdClear_Click()
     'Undo
-    Call SetUndo
-    
+    Call setUndo
+
     Dim x As Integer, y As Integer
     For x = 1 To xRange
         For y = 1 To 32
             Tilemem(x, y) = -1
         Next y
     Next x
-    
+
     'Redraw
     Call tileRedraw
+
 End Sub
+
 'Rotate Left
 Private Sub mnuRotate90CCW_Click()
     Rotate Left
 End Sub
+
 'Rotate Right
 Private Sub mnuRotate90CW_Click()
     Rotate Right
 End Sub
+
 'Rotate 180
 Private Sub mnuRotate180_Click()
     Rotate OneHunderdEighty
 End Sub
+
 'Flip Horizontal
 Private Sub mnuFlipHor_Click()
     Flip Horizontal
 End Sub
+
 'Flip Vertical
 Private Sub mnuFlipVer_Click()
     Flip Vertical
 End Sub
+
 '========================================================================
 ' Image Menu
 '========================================================================
@@ -2076,6 +2241,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Layer Tile
 Private Sub layer_Click()
     On Error GoTo ErrorHandler
@@ -2088,6 +2254,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Grab Tile
 Private Sub gtilemnu_Click()
     On Error GoTo ErrorHandler
@@ -2100,6 +2267,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Color
 Public Sub scolormnu_Click()
     On Error GoTo ErrorHandler
@@ -2112,11 +2280,12 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'DOS Color
 Public Sub mnuDOS_Click()
     On Error GoTo ErrorHandler
     ignoreDeactivate = True
-    Version1Palette.Show vbModal ', me
+    Version1Palette.Show vbModal
 
     Exit Sub
 'Begin error handling code:
@@ -2124,11 +2293,12 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Shade Tile
 Public Sub shadetle_Click()
     On Error GoTo ErrorHandler
     ignoreDeactivate = True
-    RGBDefine.Show vbModal ', me
+    RGBDefine.Show vbModal
 
     Exit Sub
 'Begin error handling code:
@@ -2136,12 +2306,13 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Grayscale
 Public Sub gryscle_Click()
     On Error Resume Next
    
     'Undo
-    Call SetUndo
+    Call setUndo
    
     Dim x As Integer, y As Integer
     Dim rr As Long, gg As Long, bb As Long, newavg As Long
@@ -2163,43 +2334,51 @@ Public Sub gryscle_Click()
     'Redraw
     Call tileRedraw
 End Sub
+
 '========================================================================
 ' Draw Menu
 '========================================================================
+
 'Grid
 Private Sub mnuGrid_Click()
     If tkMainForm.tileGrid.value = 0 Then tkMainForm.tileGrid.value = 1 Else tkMainForm.tileGrid.value = 0
     Call tileGrid(tkMainForm.tileGrid.value)
 End Sub
+
 'Pencil
 Private Sub mnuPencil_Click()
     publicTile.TileMode = 0
     Call ToolSet(publicTile.TileMode)
 End Sub
+
 'Color Capture
 Private Sub mnuColorCap_Click()
     publicTile.TileMode = 1
     Call ToolSet(publicTile.TileMode)
 End Sub
+
 'Flood Fill
 Private Sub mnuFloodfill_Click()
     publicTile.TileMode = 2
     Call ToolSet(publicTile.TileMode)
 End Sub
+
 'Eraser
 Private Sub mnuEraser_Click()
     publicTile.TileMode = 3
     Call ToolSet(publicTile.TileMode)
 End Sub
+
 '========================================================================
 ' Effects Menu
 '========================================================================
+
 'Blur
 Private Sub blurmnu_Click()
     On Error GoTo ErrorHandler
     
     'Undo
-    Call SetUndo
+    Call setUndo
     
     Dim x, y As Integer
     Dim aa As Long
@@ -2262,6 +2441,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Light Source
 Private Sub lsrc_Click()
     On Error GoTo ErrorHandler
@@ -2274,6 +2454,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Texturize
 Public Sub mnuTexturize_Click()
     On Error GoTo ErrorHandler
@@ -2286,6 +2467,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 'Translucentize
 Private Sub mnuTranslucentize_Click()
     On Error GoTo ErrorHandler
@@ -2298,108 +2480,131 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' Toolkit Menu
 '========================================================================
+
 'Test Game
 Private Sub mnutestgame_Click()
     On Error Resume Next
     tkMainForm.testgamemnu_Click
 End Sub
+
 'Select Language
 Private Sub mnuselectlanguage_Click()
     On Error Resume Next
     Call tkMainForm.selectlanguagemnu_Click
 End Sub
+
 'Install Upgrade
 Private Sub mnuinstallupgrade_Click()
     On Error Resume Next
     Call tkMainForm.installupgrademnu_Click
 End Sub
+
 '========================================================================
 ' Build Menu
 '========================================================================
+
 'Pakfile
 Private Sub mnucreatepakfile_Click()
     On Error Resume Next
     Call tkMainForm.createpakfilemnu_Click
 End Sub
+
 'EXE
 Private Sub mnumakeexe_Click()
     On Error Resume Next
     Call tkMainForm.makeexemnu_Click
 End Sub
+
 'Setup
 Private Sub mnucreatesetup_Click()
     On Error Resume Next
     Call tkMainForm.createsetupmnu_Click
 End Sub
+
 '========================================================================
 ' Window Menu
 '========================================================================
+
 'Show/Hide Tools
 Private Sub mnushowtools_Click()
     On Error Resume Next
     Call tkMainForm.showtoolsmnu_Click
 End Sub
+
 'Show/Hide Project List
 Private Sub mnushowprojectlist_Click()
     On Error Resume Next
     Call tkMainForm.showprojectlistmnu_Click
 End Sub
+
 'Tile Horizontally
 Private Sub mnutilehorizontally_Click()
     On Error Resume Next
     Call tkMainForm.tilehorizonatllymnu_Click
 End Sub
+
 'Tile Vertically
 Private Sub mnutilevertically_Click()
     On Error Resume Next
     Call tkMainForm.tileverticallymnu_Click
 End Sub
+
 'Cascade
 Private Sub mnuCascade_Click()
     On Error Resume Next
     Call tkMainForm.cascademnu_Click
 End Sub
+
 'Arrange Icons
 Private Sub mnuArrangeIcons_Click()
     On Error Resume Next
     Call tkMainForm.arrangeiconsmnu_Click
 End Sub
+
 '========================================================================
 ' Help Menu
 '========================================================================
+
 'Users Guide
 Private Sub mnuusersguide_Click()
     On Error Resume Next
     Call tkMainForm.usersguidemnu_Click
 End Sub
+
 'RpgCode Primer
 Private Sub mnuRPGCodePrimer_Click()
     On Error Resume Next
     Call tkMainForm.rpgcodeprimermnu_Click
 End Sub
+
 'RpgCode Reference
 Private Sub mnurpgcodereference_Click()
     On Error Resume Next
     Call tkMainForm.rpgcodereferencemnu_Click
 End Sub
+
 'Tutorial
 Private Sub mnuTutorial_Click()
     On Error Resume Next
     Call tkMainForm.tutorialmnu_Click
 End Sub
+
 'History.txt
 Private Sub mnuHistorytxt_Click()
     On Error Resume Next
     Call tkMainForm.historytxtmnu_Click
 End Sub
+
 'Registration Info
 Private Sub mnuRegistrationInfo_Click()
     On Error Resume Next
     Call tkMainForm.registrationinfomnu_Click
 End Sub
+
 'About
 Private Sub mnuAbout_Click()
     On Error Resume Next
