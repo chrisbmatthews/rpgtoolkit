@@ -697,40 +697,37 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                         ' If we found one
                         If (toFind) Then
                             ' Check for operator overloading on previous token
-                            Dim prevToken As String, tdc As String
-                            prevToken = valueList(tokenIdx + toFind)
-                            ' Get its value
-                            tdc = RightB$(prevToken, 2)
-                            If ((tdc <> "!") And (tdc <> "$")) Then
-                                If (getVariable(prevToken & "!", lit, num, theProgram) = DT_NUM) Then
-                                    ' If it's not NULL
-                                    If (num) Then
-                                        ' See if it's an object
-                                        Dim hTokenClass As Long
-                                        hTokenClass = CLng(num)
-                                        If (isObject(hTokenClass, theProgram)) Then
-                                            ' See if it handles said conjuction
-                                            Dim cnj As String
-                                            cnj = "operator" & conjunctions(tokenIdx - 1)
-                                            If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
-                                                ' Call the method
-                                                Call callObjectMethod(hTokenClass, cnj & "(" & valueList(tokenIdx) & ")", theProgram, retval, cnj)
-                                                ' Switch on returned type
-                                                Dim theVal As String
-                                                Select Case retval.dataType
-                                                    Case DT_LIT: theVal = retval.lit
-                                                    Case DT_NUM: theVal = CStr(retval.num)
-                                                    Case DT_REFERENCE: theVal = retval.ref
-                                                End Select
-                                                ' Fill in new data
-                                                Call getValue(theVal, lit, numberUse(tokenIdx + toFind), theProgram)
-                                                ' Flag this spot holds an identity
-                                                nulled(tokenIdx) = True
-                                            End If ' isMethodMember
-                                        End If ' isObject
-                                    End If ' (num <> 0)
-                                End If ' (getVariable == DT_NUM)
-                            End If ' ((tdc <> "!") And (tdc <> "$"))
+                            Dim prevToken As String
+                            prevToken = CStr(numberUse(tokenIdx - 1 + nulled(tokenIdx - 1)))
+                            ' Get the value of the previous token
+                            If (getValue(prevToken, lit, num, theProgram) = DT_NUM) Then
+                                ' If it's not NULL
+                                If (num) Then
+                                    ' See if it's an object
+                                    Dim hTokenClass As Long
+                                    hTokenClass = CLng(num)
+                                    If (isObject(hTokenClass, theProgram)) Then
+                                        ' See if it handles said conjuction
+                                        Dim cnj As String
+                                        cnj = "operator" & conjunctions(tokenIdx - 1)
+                                        If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
+                                            ' Call the method
+                                            Call callObjectMethod(hTokenClass, cnj & "(" & valueList(tokenIdx) & ")", theProgram, retval, cnj)
+                                            ' Switch on returned type
+                                            Dim theVal As String
+                                            Select Case retval.dataType
+                                                Case DT_LIT: theVal = retval.lit
+                                                Case DT_NUM: theVal = CStr(retval.num)
+                                                Case DT_REFERENCE: theVal = retval.ref
+                                            End Select
+                                            ' Fill in new data
+                                            Call getValue(theVal, lit, numberUse(tokenIdx - 1), theProgram)
+                                            ' Flag this spot holds an identity
+                                            nulled(tokenIdx) = True
+                                        End If ' isMethodMember
+                                    End If ' isObject
+                                End If ' (num <> 0)
+                            End If ' (getVariable == DT_NUM)
                         End If ' (toFind <> 0)
                     End If ' ((tokenIdx <> 2) And (tokenIdx <= (number - 2)))
                 Next tokenIdx
