@@ -196,7 +196,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         dlg.strDefaultExt = ext
         dlg.strFileTypes = "RPG Toolkit Saved Game (*.sav)|*.sav|All files(*.*)|*.*"
         
-        If SaveFileDialog(dlg) Then
+        If SaveFileDialog(dlg, host.hwnd) Then
             ShowFileDialog = dlg.strSelectedFileNoPath
         Else
             ShowFileDialog = ""
