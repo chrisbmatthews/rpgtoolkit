@@ -3926,7 +3926,7 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim t As Long
         For t = 0 To 4
             If playerFile$(t) <> "" Then
-                Call RestoreCharacter(playerFile$(t), t, False)
+                Call RestoreCharacter(playerFile$(t), t, True)
             End If
         Next t
         Call openBoard(currentBoard, boardList(activeBoardIndex).theData)
