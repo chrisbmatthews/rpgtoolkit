@@ -100,97 +100,70 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+Option Explicit
 
-'FIXIT: Declare 'getMainFilename' with an early-bound data type                            FixIT90210ae-R1672-R1B8ZE
-Function getMainFilename() As String
-    On Error GoTo ErrorHandler
-    ChDir (currentDir$)
+Private Function getMainFilename() As String
+
+    On Error Resume Next
+    
+    ChDir (currentDir)
+
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gampath$
-    
-    dlg.strTitle = "Open Main File"
-    dlg.strDefaultExt = "gam"
-    dlg.strFileTypes = "RPG Toolkit Main File (*.gam)|*.gam|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Function
-    End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Function
-    FileCopy filename$(1), gampath$ + antiPath$
-    Call openMainFile(filename$(1))
-    getMainFilename = antiPath$
+    With dlg
+        .strDefaultFolder = gampath
+        .strTitle = "Open Main File"
+        .strDefaultExt = "gam"
+        .strFileTypes = "RPG Toolkit Main File (*.gam)|*.gam|All files(*.*)|*.*"
+        If OpenFileDialog(dlg, Me.hwnd) Then
+            filename(1) = .strSelectedFile
+            Dim antiPath As String
+            antiPath = .strSelectedFileNoPath
+        Else
+            Exit Function
+        End If
+    End With
 
-    Exit Function
+    ChDir (currentDir)
+    If filename(1) = "" Then Exit Function
+    FileCopy filename(1), gampath & antiPath
+    Call openMainFile(filename(1))
+    getMainFilename = antiPath
 
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Function
-
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gampath$
-    
-    dlg.strTitle = "Open Main File"
-    dlg.strDefaultExt = "gam"
-    dlg.strFileTypes = "RPG Toolkit Main File (*.gam)|*.gam|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), gampath$ + antiPath$
-    Call openMainFile(filename$(1))
-    mainfile$ = antiPath$
-    lastProject$ = antiPath$
-    Do While mainMem.gameTitle$ = ""
-        mainMem.gameTitle$ = InputBox("Please choose a name for your game", "Your game must have a name!", "My Game")
+    Dim antiPath As String
+    antiPath = getMainFilename()
+    Call openMainFile(filename(1))
+    mainfile = antiPath
+    lastProject = antiPath
+    Do While mainMem.gameTitle = ""
+        mainMem.gameTitle = InputBox("Please choose a name for your game", "Your game must have a name!", "My Game")
     Loop
-    tt$ = mainMem.gameTitle$
-    tt$ = replaceChar(tt$, "\", "")
-    tt$ = replaceChar(tt$, "/", "")
-    tt$ = replaceChar(tt$, ":", "")
-    tt$ = replaceChar(tt$, " ", "")
-    projectPath$ = gamePath$ + tt$ + "\"
-    pp$ = projectPath$
-    MsgBox "Your project will be placed in " + projectPath$, , "Upgrade File System"
-    Call saveMain(gampath$ + antiPath$, mainMem)
+    Dim tt As String
+    tt = mainMem.gameTitle
+    tt = Replace(tt, "\", "")
+    tt = Replace(tt, "/", "")
+    tt = Replace(tt, ":", "")
+    tt = Replace(tt, " ", "")
+    projectPath = gamePath & tt & "\"
+    MsgBox "Your project will be placed in " & projectPath, , "Upgrade File System"
+    Call saveMain(gampath & antiPath, mainMem)
     'move the files...
-    Call moveFilesInto(projectPath$)
+    Call moveFilesInto(projectPath)
     'out with the old...
+    Dim a As VbMsgBoxResult
     a = MsgBox("Your files have been upgraded to the new file system.  The old file system can now be deleted.  You might want to check and make sure that the files copied correctly before you delete the old filesystem.  To delete the old file system later, you can select 'Delete Old File System' from the main 'File' menu.  Would you like to delete the old file system now?", vbYesNo, "Delete Old File System")
-    If a = 6 Then
+    If a = vbYes Then
         'yes-- delete it now!
         Call DeleteOldFiles
     End If
     
-    mainoption.Caption = "RPG Toolkit Development System, Version 2.2 (" + antiPath$ + ")"
     MsgBox "File System Upgrade Complete!", , "Upgrade"
-    Unload upgradeform
+    Unload Me
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo ErrorHandler
-    Unload upgradeform
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Unload Me
 End Sub
-
-

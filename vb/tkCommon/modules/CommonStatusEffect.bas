@@ -106,7 +106,7 @@ Sub openStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
         If fileHeader$ <> "RPGTLKIT STATUSE" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Status Effect": Exit Sub
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Status Effect was created with an unrecognised version of the Toolkit", , "Unable to open Status Effect": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Status Effect was created with an unrecognised version of the Toolkit", , "Unable to open Status Effect": Close #num: Exit Sub
     
         theEffect.statusName = BinReadString(num)
         theEffect.statusRounds = BinReadInt(num)
@@ -133,10 +133,10 @@ ver2oldstatus:
         End If
         Input #num, majorVer           'Version
         Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Status Effect was created with an unrecognised version of the Toolkit", , "Unable to open": Close #num: Exit Sub
-        If minorVer <> Minor Then
+        If majorVer <> major Then MsgBox "This Status Effect was created with an unrecognised version of the Toolkit", , "Unable to open": Close #num: Exit Sub
+        If minorVer <> minor Then
             Dim user As Long
-            user = MsgBox("This file was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + CurrentVersion$ + ". Opening this file may not work.  Continue?", 4, "Different Version")
+            user = MsgBox("This file was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
         theEffect.statusName = fread(num)
@@ -167,7 +167,7 @@ Sub saveStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
     Kill file
     Open file$ For Binary As #num
         Call BinWriteString(num, "RPGTLKIT STATUSE")    'Filetype
-        Call BinWriteInt(num, Major)               'Version
+        Call BinWriteInt(num, major)               'Version
         Call BinWriteInt(num, 2)                'Minor version
     
         Call BinWriteString(num, theEffect.statusName)

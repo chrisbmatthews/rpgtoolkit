@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form Form1 
+Begin VB.Form frmMain 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
@@ -41,7 +41,6 @@ Begin VB.Form Form1
       Height          =   255
       Left            =   120
       TabIndex        =   2
-      Tag             =   "1094"
       Top             =   2880
       Width           =   2775
    End
@@ -81,7 +80,7 @@ Begin VB.Form Form1
       Width           =   3495
    End
 End
-Attribute VB_Name = "Form1"
+Attribute VB_Name = "frmMain"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -90,231 +89,120 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'=======================================================
+'Cleaned up a bit, 3.0.4 by KSNiloc
+'
+' ---What is done
+' + Option Explicit added
+' + Removed obsolete code
+' + Organized startup code more effectively
+' + Made some things constants
+' + Added option to disable splash screen
+' + Purpose of procedure noted
+'
+'=======================================================
 
-Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
-mainoption.Show
-Unload Form1
-Call openConfig("toolkit.cfg")
-If tipsOnOff = 1 Then
-    'DoEvents
-    tips.Show
-End If
-If tutCurrentLesson = 0 Then
-    'never run the tutorial before!
-    tutorialask.Show
-End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Command2_Click()
-    On Error GoTo ErrorHandler
-a = fileExist("d:\vb\toolki~2\archives\new.arc#demo1.brd")
-MsgBox str$(a)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Command3_Click()
-    On Error GoTo ErrorHandler
-    a = roundOff(1.9)
-    MsgBox a
-    a = roundOff(1.3)
-    MsgBox a
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
+Option Explicit
 
 Public Sub Form_Click()
-    On Error GoTo ErrorHandler
-    
-    Call traceString("Showing main screen...")
-    
-    'mainoption.Show
-    tkMainForm.Show
-    
-    Call traceString("Done main screen...")
-    Unload Form1
-    Call traceString("Opening config file...")
-    
-    Call openConfig("toolkit.cfg")
-        
-    Call traceString("Done config file...")
-        
-    If tipsOnOff = 1 Then
-        'DoEvents
-        Call traceString("Showing tips...")
-        
-        tips.Show
-    
-        Call traceString("Done tips...")
-    End If
-    If tutCurrentLesson = 0 Then
-        'never run the tutorial before!
-        
-        Call traceString("Asking tutorial...")
-        
-        tutorialask.Show
-    
-        Call traceString("Done tutorial ask...")
-    End If
-    If m_LangFile = "" Then
-        Call traceString("Asking language...")
-            
-        selectLanguage.Show
-        
-        Call traceString("Done language ask...")
-    Else
-        Call traceString("Setting lang..." + resourcePath$ + m_LangFile)
-        
-        Call ChangeLanguage(resourcePath$ + m_LangFile)
-    
-        Call traceString("Done Setting lang..." + resourcePath$ + m_LangFile)
-    End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    '=======================================================
+    'Start the main program
+    '=======================================================
+    On Error Resume Next
+    Call Unload(Me)
+    Call tkMainForm.Show
+    Call displayTip
+    Call askTutorial
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo titleerror
-
-    ' ! KSNiloc...
-    CreateAssociation "prg", "RPGCode Program", App.path & "\" & App.EXEName & ".exe"
-    If Command <> "" Then Timer1.interval = 1
-    
-    Call LocalizeForm(Me)
-
+    '=======================================================
+    'Initialize everything
+    '=======================================================
+    On Error Resume Next
+    Call initRuntimes
+    Call openConfig("toolkit.cfg")
+    Call initTimer
+    Call createFileAssociations
     Call StartTracing("tktrace.txt")
-
-    Randomize Timer
-    
-    'a = fileExist("brddraw.exe")
-    'If a = 0 Then usefastdrawYN = False Else usefastdrawYN = True
-    useFastDraw = True
-    
-    boardList(activeBoardIndex).theData.Bsizex = 19: boardList(activeBoardIndex).theData.Bsizey = 11
-    If Not (InitRuntime()) Then
-        MsgBox "Could not initialize actkrt3.dll.  Do you have actkrt3.dll and freeimage.dll in the working directory?"
-        End
-    End If
+    Call Randomize(Timer)
     Call BoardInit(boardList(activeBoardIndex).theData)
     Call TileAnmClear(tileAnmList(activeTileAnmIndex).theData)
     Call InitTkGfx
-    Call InitCanvasEngine(True)
-    mainMem.mainResolution = 0
+    Call InitCanvasEngine
+    Call initDirectories
+    Call initBoardAndTileEditor
+    Call initLocalization
+End Sub
+
+Private Sub initDirectories()
+    '=======================================================
+    'Create "resource", "game", and "help" folders
+    '=======================================================
+    On Error Resume Next
     currentDir = CurDir
-    Major = 2   'Version 2
-    Minor = 0   ' version 2.0
-    CurrentVersion$ = "2.1"
-    compression = 1 'compression is used
-    publicTile.transparentLayer = 0
-    filename(2) = ""
-    drawlock = 0
-    boardList(activeBoardIndex).gridBoard = 0
-    enemylist(activeEnemyIndex).theData.eneSizeX = 1
-    enemylist(activeEnemyIndex).theData.eneSizeY = 1
-    
-    ' KSNiloc...
-    If Command = "" Then
-        gamePath$ = "Game\"            'game dir
-        MkDir Mid$(gamePath$, 1, Len(gamePath$) - 1)
-        tilepath$ = "Tiles\"          'Tile dir path
-        'MkDir Mid$(tilepath$, 1, Len(tilepath$) - 1)
-        brdpath$ = "Boards\"           'board dir path
-        'MkDir Mid$(brdpath$, 1, Len(brdpath$) - 1)
-        tempath$ = "Chrs\"           'character dir path
-        'MkDir Mid$(tempath$, 1, Len(tempath$) - 1)
-        arcpath$ = "Archives\"           'archive dir path
-        'MkDir Mid$(arcpath$, 1, Len(arcpath$) - 1)
-        spcpath$ = "SpcMove\"       'spc move path
-        'MkDir Mid$(spcpath$, 1, Len(spcpath$) - 1)
-        bkgpath$ = "Bkrounds\"       'bkg path
-        'MkDir Mid$(bkgpath$, 1, Len(bkgpath$) - 1)
-        mediapath$ = "Media\"       'media path
-        'MkDir Mid$(mediapath$, 1, Len(mediapath$) - 1)
-        prgpath$ = "Prg\"       'prg path
-        'MkDir Mid$(prgpath$, 1, Len(prgpath$) - 1)
-        fontpath$ = "Font\"     'Font path
-         itmpath$ = "Item\"     'Item path
-        enepath$ = "Enemy\"     'enemy path
-        gampath$ = "Main\"     'main file path
-        MkDir Mid$(gampath$, 1, Len(gampath$) - 1)
-        bmppath$ = "Bitmap\"     'bmp file path
-        statuspath$ = "StatusE\"     'status effect
-        helppath$ = "Help\"     'help file path
-        MkDir Mid$(helppath$, 1, Len(helppath$) - 1)
-        hashpath$ = "Hash\"     'hash file path
-        miscPath$ = "Misc\"     'misc file path
-        pluginPath$ = "Plugin\"     'plugin file path
-        resourcePath$ = "Resources\"     'resource file path
-        MkDir Mid$(resourcePath$, 1, Len(resourcePath$) - 1)
-    Else
-        gamePath = "Game\"
-        projectPath = "Basic\"
-        prgpath = "Prg\"
-        helppath = "Help\"
-    End If
-    chances = 50
-    'Clear character graphics:
-    'For t = 1 To 16
-    '    For x = 1 To 32
-    '        For y = 1 To 32
-    '            walkinggraphics(x, y, t) = -1
-    '            itmwalk(x, y, t) = -1
-    '        Next y
-    '    Next x
-    'Next t
-    'For t = 1 To 10
-    '    For x = 1 To 32
-    '        For y = 1 To 32
-    '            custom(x, y, t) = -1
-    '        Next y
-    '    Next x
-    'Next t
-    'For t = 1 To 4
-    '    For x = 1 To 32
-    '        For y = 1 To 32
-    '            fightinggraphics(x, y, t) = -1
-    '            smgraphics(x, y, t) = -1
-    '            defensegraphics(x, y, t) = -1
-    '            deadgraphics(x, y, t) = -1
-    '        Next y
-    '    Next x
-    'Next t
-    '    For x = 1 To 32
-    '        For y = 1 To 32
-    '            atrest(x, y) = -1
-    '            itmrest(x, y) = -1
-    '        Next y
-    '    Next x
-    For t = 1 To 6
-        playerList(activePlayerIndex).theData.armorType(t) = 1
-    Next t
+    Call MkDir(Mid(resourcePath, 1, Len(resourcePath) - 1))
+    Call MkDir(Mid(gamPath, 1, Len(gamPath) - 1))
+    Call MkDir(Mid(helpPath, 1, Len(helpPath) - 1))
+End Sub
+
+Private Sub initPlayers()
+    '=======================================================
+    'Initiates player structure
+    '=======================================================
+    On Error Resume Next
+    Dim a As Long
+    For a = 1 To 6
+        playerList(activePlayerIndex).theData.armorType(a) = 1
+    Next a
     playerList(activePlayerIndex).theData.maxLevel = 99
     playerList(activePlayerIndex).theData.experienceIncrease = 2
-    
+End Sub
+
+Private Sub initRuntimes()
+    '=======================================================
+    'Initiate runtimes
+    '=======================================================
+    On Error Resume Next
+    If Not InitRuntime() Then
+        Call MsgBox("Could not initialize actkrt3.dll.  Do you have actkrt3.dll and freeimage.dll in the working directory?")
+        End
+    End If
+    mainMem.mainResolution = 0
+End Sub
+
+Private Sub initTimer()
+    '=======================================================
+    'Initiate splash screen timer
+    '=======================================================
+    On Error Resume Next
+    Timer1.interval = 1
+    If Command <> "" Then
+        'Do nothing
+    ElseIf GetSetting("RPGToolkit3", "Settings", "Splash", "1") = "0" Then
+        Me.Visible = False
+    Else
+        Timer1.interval = 1000
+    End If
+End Sub
+
+Private Sub initEnemyEditor()
+    '=======================================================
+    'Initiate the enemy editor
+    '=======================================================
+    On Error Resume Next
+    enemylist(activeEnemyIndex).theData.eneSizeX = 1
+    enemylist(activeEnemyIndex).theData.eneSizeY = 1
+End Sub
+
+Private Sub initBoardAndTileEditor()
+    '=======================================================
+    'Initiate the board and tile editors
+    '=======================================================
+    On Error Resume Next
+    Dim x As Long, y As Long
     boardList(activeBoardIndex).spotLightRadius = 2
     boardList(activeBoardIndex).percentFade = 100
-    'Set up tileedit
-    publicTile.currentColor = vbQBColor(0)
     detail = 1
     For x = 1 To 32
         For y = 1 To 32
@@ -323,106 +211,49 @@ Private Sub Form_Load()
             boardList(activeBoardIndex).BoardTile(x, y) = -1
         Next y
     Next x
-    
-    boardList(activeBoardIndex).theData.brdBack$ = ""            'Board background image
-    boardList(activeBoardIndex).theData.borderBack$ = ""         'Border background image
-    boardList(activeBoardIndex).theData.brdColor = vbQBColor(15)           'Board color
-    boardList(activeBoardIndex).theData.borderColor = vbQBColor(0)        'Border color
-    
-    
-    'Get old palette
-    theerror = 0
-    'Open "256RGB.pal" For Input As #1
-    'For clr = 0 To 255
-    '    Input #1, gfxgetdoscolor(clr)
-    'Next clr
-    'Close #1
-    'Open "256to16.pal" For Input As #1
-    'For clr = 0 To 255
-    '    Input #1, oldpal(clr)
-    'Next clr
-    'Close #1
-    'If theerror = 1 Then
-    '    theerror = 0
-    '    nowcol = 0
-    '    For clr = 0 To 255
-    '        oldpal(clr) = nowcol
-    '        'gfxgetdoscolor(color) = vbqbcolor(nowcol)
-    '        nowcol = nowcol + 1
-    '        If nowcol > 15 Then nowcol = 0
-    '    Next clr
-    'End If
-    
-    ' Commented by KSNiloc
-    'If Command$ <> "" Then
-    '    'attempt to load a file...
-    '    Call openConfig("toolkit.cfg")
-    '    ex$ = extention(Command$)
-    '    antiPath$ = absNoPath(Command$)
-    '    ex$ = UCase$(ex$)
-    '    Select Case ex$
-    '        Case "GPH", "TST":
-    '            FileCopy Command$, projectPath$ + tilepath$ + antiPath$
-    '        Case "BRD":
-    '            FileCopy Command$, projectPath$ + brdpath$ + antiPath$
-    '        Case "PRG":
-    '            FileCopy Command$, projectPath$ + prgpath$ + antiPath$
-    '        Case "SPC":
-    '            FileCopy Command$, projectPath$ + spcpath$ + antiPath$
-    '        Case "TEM":
-    '            FileCopy Command$, projectPath$ + tempath$ + antiPath$
-    '        Case "ITM":
-    '            FileCopy Command$, projectPath$ + itmpath$ + antiPath$
-    '        Case "FNT":
-    '            FileCopy Command$, projectPath$ + fontpath$ + antiPath$
-    '        Case "ENE":
-    '            FileCopy Command$, projectPath$ + enepath$ + antiPath$
-    '        Case "BKG":
-    '            FileCopy Command$, projectPath$ + bkgpath$ + antiPath$
-    '        Case "WAV":
-    '            FileCopy Command$, projectPath$ + mediapath$ + antiPath$
-    '        Case "MID", "MP3", "MOD", "VOC":
-    '            FileCopy Command$, projectPath$ + mediapath$ + antiPath$
-    '        Case "GAM":
-    '            FileCopy Command$, gampath$ + antiPath$
-    '    End Select
-    '    mainoption.Show
-    '    mainoption.openFile (Command$)
-    '    Unload Form1
-    'End If
-    
-    Label2.Caption = LoadStringLoc(906, "Community Edition [Open Source]")
-    
-    Call InitLocalizeSystem
-    
-    
-    Exit Sub
+    boardList(activeBoardIndex).theData.brdColor = vbQBColor(15)
+    boardList(activeBoardIndex).theData.Bsizex = 19
+    boardList(activeBoardIndex).theData.Bsizey = 11
+End Sub
 
-titleerror:
-theerror = 1: Resume Next
+Private Sub initLocalization()
+    '=======================================================
+    'Initiate the localization system
+    '=======================================================
+    On Error Resume Next
+    If m_LangFile = "" Then
+        Call selectLanguage.Show(vbModal)
+    Else
+        Call ChangeLanguage(resourcePath & m_LangFile)
+    End If
+    Call InitLocalizeSystem
+    Call LocalizeForm(Me)
+End Sub
+
+Private Sub displayTip()
+    '=======================================================
+    'Display a tip if they are enabled
+    '=======================================================
+    On Error Resume Next
+    If tipsOnOff = 1 Then
+        Call tips.Show(vbModal)
+    End If
+End Sub
+
+Private Sub askTutorial()
+    '=======================================================
+    'Ask to show the tutorial if we haven't before
+    '=======================================================
+    On Error Resume Next
+    If tutCurrentLesson = 0 Then
+        Call tutorialask.Show(vbModal)
+    End If
 End Sub
 
 Private Sub Timer1_Timer()
-    On Error GoTo ErrorHandler
+    '=======================================================
+    'Close the splash screen
+    '=======================================================
+    On Error Resume Next
     Call Form_Click
-    Exit Sub
-mainoption.Show
-Unload Form1
-Call openConfig("toolkit.cfg")
-If tipsOnOff = 1 Then
-    'DoEvents
-    tips.Show
-End If
-If tutCurrentLesson = 0 Then
-    'never run the tutorial before!
-    tutorialask.Show
-End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
-

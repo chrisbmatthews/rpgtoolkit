@@ -12,7 +12,7 @@ Private m_LangNoneString As String  'since the word 'none' comes up so much, we'
 
 Type LangEntry
     tagID As Long
-    caption As String
+    Caption As String
     toolTip As String
 End Type
 
@@ -101,7 +101,7 @@ Function LoadStringLoc(ByVal tagID As Long, ByVal equivStringOptional As String)
         End If
         idx = LangIndexOfTag(tagID, m_LangTable)
         If idx <> -1 Then
-            LoadStringLoc = m_LangTable.theTable(idx).caption
+            LoadStringLoc = m_LangTable.theTable(idx).Caption
         Else
             LoadStringLoc = equivStringOptional
         End If
@@ -174,20 +174,20 @@ Sub LocalizeForm(frm As VB.Form)
     End If
     
     Dim idx As Long
-    If IsNumeric(frm.Tag) Then
-        idx = LangIndexOfTag(Int(frm.Tag), m_LangTable)
+    If IsNumeric(frm.tag) Then
+        idx = LangIndexOfTag(Int(frm.tag), m_LangTable)
         If idx <> -1 Then
-            frm.caption = m_LangTable.theTable(idx).caption
-            If frm.caption = " " Then frm.caption = ""
+            frm.Caption = m_LangTable.theTable(idx).Caption
+            If frm.Caption = " " Then frm.Caption = ""
         End If
     End If
     
     For Each ctl In frm.Controls
-        If IsNumeric(ctl.Tag) Then
-            idx = LangIndexOfTag(Int(ctl.Tag), m_LangTable)
+        If IsNumeric(ctl.tag) Then
+            idx = LangIndexOfTag(Int(ctl.tag), m_LangTable)
             If idx <> -1 Then
-                ctl.caption = m_LangTable.theTable(idx).caption
-                If ctl.caption = " " Then ctl.caption = ""
+                ctl.Caption = m_LangTable.theTable(idx).Caption
+                If ctl.Caption = " " Then ctl.Caption = ""
                 ctl.ToolTipText = m_LangTable.theTable(idx).toolTip
                 If ctl.ToolTipText = " " Then ctl.ToolTipText = ""
             End If
@@ -205,7 +205,7 @@ Function ObtainCaptionFromTag(ByVal tagID As Long, ByVal dbfile As String) As St
     If lTable.numEntries > 0 Then
         idx = LangIndexOfTag(tagID, lTable)
         If idx <> -1 Then
-            ObtainCaptionFromTag = lTable.theTable(idx).caption
+            ObtainCaptionFromTag = lTable.theTable(idx).Caption
         Else
         End If
     Else
@@ -301,37 +301,37 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     On Error Resume Next
     
     Dim tagID As Long
-    Dim caption As String
+    Dim Caption As String
     Dim toolTip As String
     tagID = 0
-    caption = ""
+    Caption = ""
     toolTip = ""
     
-    Dim temp As String
+    Dim Temp As String
     'TagID
     Dim t As Long, part As String, idx As Long
     For t = 1 To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = " " Or part$ = Chr$(9) Then
+        If part$ = " " Or part$ = chr$(9) Then
             'ok, we're starting in on the caption tag...
-            tagID = Int(temp)
-            temp = ""
+            tagID = Int(Temp)
+            Temp = ""
             idx = t
             Exit For
         Else
-            temp = temp + part$
+            Temp = Temp + part$
         End If
     Next t
        
     'gobble up whitespace...
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = Chr$(9) Then
+        If part$ = chr$(9) Then
             'tab. This means next entry is coming...
             idx = t + 1
             Exit For
         End If
-        If part$ <> " " And part$ <> Chr$(9) Then
+        If part$ <> " " And part$ <> chr$(9) Then
             'found start of new block
             idx = t
             Exit For
@@ -343,18 +343,18 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     firstOccur = True
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = Chr$(9) Then
+        If part$ = chr$(9) Then
             'next entry, please!
             idx = t
             Exit For
         End If
-        If part$ = Chr$(34) Then
+        If part$ = chr$(34) Then
             If firstOccur = True Then
                 firstOccur = False
             Else
                 'found end of caption tag.
-                caption = temp
-                temp = ""
+                Caption = Temp
+                Temp = ""
                 idx = t + 1
                 Exit For
             End If
@@ -363,19 +363,19 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
                 t = t + 1
                 part$ = Mid$(line, t, 1)
             End If
-            temp = temp + part$
+            Temp = Temp + part$
         End If
     Next t
     
     'gobble up whitespace...
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = Chr$(9) Then
+        If part$ = chr$(9) Then
             'tab. This means next entry is coming...
             idx = t + 1
             Exit For
         End If
-        If part$ <> " " And part$ <> Chr$(9) Then
+        If part$ <> " " And part$ <> chr$(9) Then
             'found start of new block
             idx = t
             Exit For
@@ -386,13 +386,13 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     firstOccur = True
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = Chr$(34) Then
+        If part$ = chr$(34) Then
             If firstOccur = True Then
                 firstOccur = False
             Else
                 'found end of tooltip tag.
-                toolTip = temp
-                temp = ""
+                toolTip = Temp
+                Temp = ""
                 idx = t + 1
                 Exit For
             End If
@@ -401,13 +401,13 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
                 t = t + 1
                 part$ = Mid$(line, t, 1)
             End If
-            temp = temp + part$
+            Temp = Temp + part$
         End If
     Next t
     
     Dim toRet As LangEntry
     toRet.tagID = tagID
-    toRet.caption = caption
+    toRet.Caption = Caption
     toRet.toolTip = toolTip
     
     ParseLangEntry = toRet

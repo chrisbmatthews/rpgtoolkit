@@ -379,258 +379,184 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What is done
+' + Option Explicit added
+' + Added ByVal or ByRef to arguments
+'
+'=======================================================
+
+Option Explicit
 
 Private Sub ambient_Change()
-    On Error GoTo errorhandler
-    Call vbPicFillRect(shade, 0, 0, 100, 100, rgbb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
-    Change = ambient.value
-    rr = redambient.value + Change
-    gg = greenambient.value + Change
-    bb = blueambient.value + Change
+    On Error Resume Next
+    Dim rr As Long, gg As Long, bb As Long, change As Long
+    Call vbPicFillRect(shade, 0, 0, 100, 100, RGBb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
+    change = ambient.value
+    rr = redambient.value + change
+    gg = greenambient.value + change
+    bb = blueambient.value + change
     If rr > 255 Then rr = 255: If rr < 0 Then rr = 0
     If gg > 255 Then gg = 255: If gg < 0 Then gg = 0
     If bb > 255 Then bb = 255: If bb < 0 Then bb = 0
-'    redambient.Value = rr
-'    greenambient.Value = gg
-'    blueambient.Value = bb
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub amblevel_Change()
-    On Error GoTo errorhandler
-    If val(amblevel.text) > 255 Then amblevel.text = 255
-    If val(amblevel.text) < -255 Then amblevel.text = -255
-    ambient.value = val(amblevel.text)
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    On Error Resume Next
+    If val(amblevel.Text) > 255 Then amblevel.Text = 255
+    If val(amblevel.Text) < -255 Then amblevel.Text = -255
+    ambient.value = val(amblevel.Text)
 End Sub
 
 Private Sub blueambient_Change()
-    On Error GoTo errorhandler
-    blueamvalue.text = str$(blueambient.value)
+    On Error Resume Next
+    blueamvalue.Text = str(blueambient.value)
     Call vbPicFillRect(lightcolor, 0, 0, 100, 100, RGB(redambient.value, greenambient.value, blueambient.value))
-    Call vbPicFillRect(shade, 0, 0, 100, 100, rgbb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    Call vbPicFillRect(shade, 0, 0, 100, 100, RGBb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
 End Sub
 
 Private Sub blueamvalue_Change()
-    On Error GoTo errorhandler
-    If val(blueamvalue.text) > 255 Then blueamvalue.text = 255
-    If val(blueamvalue.text) < 0 Then blueamvalue.text = 0
-    blueambient.value = val(blueamvalue.text)
+    On Error Resume Next
+    If val(blueamvalue.Text) > 255 Then blueamvalue.Text = 255
+    If val(blueamvalue.Text) < 0 Then blueamvalue.Text = 0
+    blueambient.value = val(blueamvalue.Text)
     Call vbPicFillRect(lightcolor, 0, 0, 100, 100, RGB(redambient.value, greenambient.value, blueambient.value))
-
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error Resume Next
     Call LocalizeForm(Me)
-    
-    oldvalue = 0
-    redambient.Max = 255
-    redambient.Min = 0
+    oldValue = 0
+    redambient.max = 255
+    redambient.min = 0
     redambient.value = 0
-    greenambient.Max = 255
-    greenambient.Min = 0
+    greenambient.max = 255
+    greenambient.min = 0
     greenambient.value = 0
-    blueambient.Max = 255
-    blueambient.Min = 0
+    blueambient.max = 255
+    blueambient.min = 0
     blueambient.value = 0
-    pullallambient.Max = 255
-    pullallambient.Min = 0
+    pullallambient.max = 255
+    pullallambient.min = 0
     pullallambient.value = 0
-    ambient.Min = -255
-    ambient.Max = 255
+    ambient.min = -255
+    ambient.max = 255
     ambient.value = 0
-    
     redambient.value = boardList(activeBoardIndex).ambientR
     greenambient.value = boardList(activeBoardIndex).ambientG
     blueambient.value = boardList(activeBoardIndex).ambientB
     Call vbPicFillRect(lightcolor, 0, 0, 100, 100, RGB(redambient.value, greenambient.value, blueambient.value))
-    'publictile.currentColor = rgbcol.Point(1, 1)
-    Call vbPicFillRect(shade, 0, 0, 100, 100, rgbb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    Call vbPicFillRect(shade, 0, 0, 100, 100, RGBb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
 End Sub
 
 Private Sub greenambient_Change()
-    On Error GoTo errorhandler
-    greenamvalue.text = str$(greenambient.value)
+    On Error Resume Next
+    greenamvalue.Text = CStr(greenambient.value)
     Call vbPicFillRect(lightcolor, 0, 0, 100, 100, RGB(redambient.value, greenambient.value, blueambient.value))
-    Call vbPicFillRect(shade, 0, 0, 100, 100, rgbb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    Call vbPicFillRect(shade, 0, 0, 100, 100, RGBb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
 End Sub
 
 Private Sub greenamvalue_Change()
-    On Error GoTo errorhandler
-    If val(greenamvalue.text) > 255 Then greenamvalue.text = 255
-    If val(greenamvalue.text) < 0 Then greenamvalue.text = 0
-    greenambient.value = val(greenamvalue.text)
+    On Error Resume Next
+    If val(greenamvalue.Text) > 255 Then greenamvalue.Text = 255
+    If val(greenamvalue.Text) < 0 Then greenamvalue.Text = 0
+    greenambient.value = val(greenamvalue.Text)
     Call vbPicFillRect(lightcolor, 0, 0, 100, 100, RGB(redambient.value, greenambient.value, blueambient.value))
-
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub OK_Click()
-    On Error GoTo errorhandler
-    Call vbPicFillRect(shade, 0, 0, 100, 100, rgbb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
-    Change = ambient.value
-    rr = redambient.value + Change
-    gg = greenambient.value + Change
-    bb = blueambient.value + Change
+    On Error Resume Next
+    Dim rr As Long, gg As Long, bb As Long, change As Long
+    Call vbPicFillRect(shade, 0, 0, 100, 100, RGBb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
+    change = ambient.value
+    rr = redambient.value + change
+    gg = greenambient.value + change
+    bb = blueambient.value + change
     If rr > 255 Then rr = 255: If rr < 0 Then rr = 0
     If gg > 255 Then gg = 255: If gg < 0 Then gg = 0
     If bb > 255 Then bb = 255: If bb < 0 Then bb = 0
     boardList(activeBoardIndex).ambientR = rr
     boardList(activeBoardIndex).ambientG = gg
     boardList(activeBoardIndex).ambientB = bb
-    Unload boardlighting
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    Call Unload(Me)
 End Sub
 
 Private Sub pullallambient_Change()
-    On Error GoTo errorhandler
-    Change = pullallambient.value - oldvalue
-    oldvalue = pullallambient.value
-    rred = redambient.value
-    ggreen = greenambient.value
-    bblue = blueambient.value
+
+    On Error Resume Next
+    
+    Dim change As Long, rRed As Long, gGreen As Long, bBlue As Long
+    Dim greatest As Long, wasDone As Long, least As Long
+    
+    change = pullallambient.value - oldValue
+    oldValue = pullallambient.value
+    rRed = redambient.value
+    gGreen = greenambient.value
+    bBlue = blueambient.value
     greatest = 255
-    wasdone = 0
-    If Change > 0 Then
-        If rred > ggreen And rred > bblue Then greatest = 255 - rred
-        If ggreen > rred And ggreen > bblue Then greatest = 255 - ggreen
-        If bblue > ggreen And bblue > rred Then greatest = 255 - bblue
-        If Change > greatest Then Change = greatest
+
+    If change > 0 Then
+        If rRed > gGreen And rRed > bBlue Then greatest = 255 - rRed
+        If gGreen > rRed And gGreen > bBlue Then greatest = 255 - gGreen
+        If bBlue > gGreen And bBlue > rRed Then greatest = 255 - bBlue
+        If change > greatest Then change = greatest
+    ElseIf change < 0 Then
+        If rRed < gGreen And rRed < bBlue Then least = rRed
+        If gGreen < rRed And gGreen < bBlue Then least = gGreen
+        If bBlue < gGreen And bBlue < rRed Then least = bBlue
+        If -1 * change > least Then change = -1 * least
     End If
-    If Change < 0 Then
-        If rred < ggreen And rred < bblue Then least = rred
-        If ggreen < rred And ggreen < bblue Then least = ggreen
-        If bblue < ggreen And bblue < rred Then least = bblue
-        If -1 * Change > least Then Change = -1 * least
-    End If
-    rr = redambient.value + Change
-    gg = greenambient.value + Change
-    bb = blueambient.value + Change
+    
+    Dim rr As Long, gg As Long, bb As Long
+    rr = redambient.value + change
+    gg = greenambient.value + change
+    bb = blueambient.value + change
     If rr > 255 Then rr = 255: If rr < 0 Then rr = 0
     If gg > 255 Then gg = 255: If gg < 0 Then gg = 0
     If bb > 255 Then bb = 255: If bb < 0 Then bb = 0
-
     redambient.value = rr
     greenambient.value = gg
     blueambient.value = bb
-    Call vbPicFillRect(shade, 0, 0, 100, 100, rgbb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
+    Call vbPicFillRect(shade, 0, 0, 100, 100, RGBb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
 
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub redambient_Change()
-    On Error GoTo errorhandler
-    redamval.text = str$(redambient.value)
+    On Error Resume Next
+    redamval.Text = str(redambient.value)
     Call vbPicFillRect(lightcolor, 0, 0, 100, 100, RGB(redambient.value, greenambient.value, blueambient.value))
-    'publictile.currentColor = rgbcol.Point(1, 1)
-    Call vbPicFillRect(shade, 0, 0, 100, 100, rgbb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    Call vbPicFillRect(shade, 0, 0, 100, 100, RGBb(redambient.value + ambient.value, greenambient.value + ambient.value, blueambient.value + ambient.value))
 End Sub
 
 Private Sub redamval_Change()
-    On Error GoTo errorhandler
-    If val(redamval.text) > 255 Then redamval.text = 255
-    If val(redamval.text) < 0 Then redamval.text = 0
-    redambient.value = val(redamval.text)
+    On Error Resume Next
+    If val(redamval.Text) > 255 Then redamval.Text = 255
+    If val(redamval.Text) < 0 Then redamval.Text = 0
+    redambient.value = val(redamval.Text)
     Call vbPicFillRect(lightcolor, 0, 0, 100, 100, RGB(redambient.value, greenambient.value, blueambient.value))
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub resetwhite_Click()
-    On Error GoTo errorhandler
+    On Error Resume Next
     redambient.value = 0
     greenambient.value = 0
     blueambient.value = 0
     pullallambient.value = 0
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-'FIXIT: Declare 'rgbb' and 'reda' and 'greena' and 'bluea' with an early-bound data type     FixIT90210ae-R1672-R1B8ZE
-Private Function rgbb(reda, greena, bluea)
-    On Error GoTo errorhandler
-    redaa = reda
-    blueaa = bluea
-    greenaa = greena
-    If redaa > 255 Then redaa = 255
-    If blueaa > 255 Then blueaa = 255
-    If greenaa > 255 Then greenaa = 255
-    If redaa < 0 Then redaa = 0
-    If greenaa < 0 Then greenaa = 0
-    If blueaa < 0 Then blueaa = 0
-    newval = RGB(redaa, greenaa, blueaa)
-    rgbb = newval
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+Private Function RGBb(ByVal redA As Long, ByVal greenA As Long, ByVal blueA As Long) As Long
+    On Error Resume Next
+    Dim redAA As Long, blueAA As Long, greenAA As Long
+    redAA = redA
+    blueAA = blueA
+    greenAA = greenA
+    If redAA > 255 Then redAA = 255
+    If blueAA > 255 Then blueAA = 255
+    If greenAA > 255 Then greenAA = 255
+    If redAA < 0 Then redAA = 0
+    If greenAA < 0 Then greenAA = 0
+    If blueAA < 0 Then blueAA = 0
+    RGBb = RGB(redAA, greenAA, blueAA)
 End Function
-

@@ -25,7 +25,7 @@ Begin VB.Form Version1Palette
    ScaleWidth      =   4320
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1842"
-   Begin VB.TextBox colcode 
+   Begin VB.TextBox colCode 
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -41,7 +41,7 @@ Begin VB.Form Version1Palette
       Top             =   1200
       Width           =   1455
    End
-   Begin VB.CommandButton selectdoscol 
+   Begin VB.CommandButton selectDosCol 
       Appearance      =   0  'Flat
       Caption         =   "Close"
       BeginProperty Font 
@@ -60,7 +60,7 @@ Begin VB.Form Version1Palette
       Top             =   120
       Width           =   1095
    End
-   Begin VB.PictureBox doscurrentcol 
+   Begin VB.PictureBox dosCurrentCol 
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       ForeColor       =   &H80000008&
@@ -73,7 +73,7 @@ Begin VB.Form Version1Palette
       Top             =   1680
       Width           =   615
    End
-   Begin VB.PictureBox dospal 
+   Begin VB.PictureBox dosPal 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H00000000&
@@ -118,59 +118,50 @@ Attribute VB_Exposed = False
 '=======================================================
 'Notes by KSNiloc for 3.04
 '
-' ---What needs to be done
+' ---What is done
 ' + Add Option Explicit
+'
+' ---What needs to be done
 ' + Apply new visual style
-' + Standardize
 '
 '=======================================================
 
-Private Sub colcode_Change()
-    On Error GoTo ErrorHandler
-    If val(colcode.text) > 255 Then colcode.text = "255"
-    If val(colcode.text) < 0 Then colcode.text = "0"
-    Call vbPicFillRect(doscurrentcol, 0, 0, 100, 100, GFXGetDOSColor(val(colcode.text)))
-    publicTile.currentColor = GFXGetDOSColor(val(colcode.text))
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, publicTile.currentColor)
+Option Explicit
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Private Sub colcode_Change()
+    On Error Resume Next
+    If val(colcode.Text) > 255 Then colcode.Text = "255"
+    If val(colcode.Text) < 0 Then colcode.Text = "0"
+    Call vbPicFillRect(doscurrentcol, 0, 0, 100, 100, GFXGetDOSColor(val(colcode.Text)))
+    publicTile.currentColor = GFXGetDOSColor(val(colcode.Text))
+    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, publicTile.currentColor)
 End Sub
 
 Private Sub dospal_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
-    On Error GoTo ErrorHandler
-    
+    On Error Resume Next
+    Dim xx As Long, yy As Long, theColor As Long
     xx = Int((x / 10))
     yy = Int((y / 10))
-    thecolor = yy * 16 + xx
-    Call vbPicFillRect(doscurrentcol, 0, 0, 100, 100, GFXGetDOSColor(thecolor))
-    colcode.text = str$(thecolor)
-    publicTile.currentColor = GFXGetDOSColor(thecolor)
+    theColor = yy * 16 + xx
+    Call vbPicFillRect(doscurrentcol, 0, 0, 100, 100, GFXGetDOSColor(theColor))
+    colcode.Text = str(theColor)
+    publicTile.currentColor = GFXGetDOSColor(theColor)
     Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, publicTile.currentColor)
     If detail <> 1 And detail <> 2 Then
         If detail = 3 Or detail = 4 Then
-        publicTile.currentColor = thecolor
-        End If
-        If detail = 5 Or detail = 6 Then
-        publicTile.currentColor = toColor(publicTile.currentColor, "16")
+            publicTile.currentColor = theColor
+        ElseIf detail = 5 Or detail = 6 Then
+            publicTile.currentColor = toColor(publicTile.currentColor, 16)
         End If
         Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, GFXGetDOSColor(publicTile.currentColor))
     End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub Form_Activate()
-    On Error GoTo ErrorHandler
-    x = 0
-    color = 0
+    On Error Resume Next
+    Dim x As Long, y As Long
+    Dim xx As Long, yy As Long
+    Dim color As Long
     For yy = 0 To 15
         For xx = 0 To 15
             Call vbPicFillRect(dospal, xx * 10, yy * 10, xx * 10 + 8, yy * 10 + 8, GFXGetDOSColor(color))
@@ -178,34 +169,15 @@ Private Sub Form_Activate()
         Next xx
     Next yy
     Call vbPicRefresh(dospal)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Call LocalizeForm(Me)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub selectdoscol_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, publicTile.currentColor)
-    Unload Version1Palette
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Unload Me
 End Sub
-

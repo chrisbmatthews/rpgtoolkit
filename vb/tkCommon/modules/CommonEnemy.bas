@@ -348,7 +348,7 @@ Sub openEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
         If fileHeader$ <> "RPGTLKIT ENEMY" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Enemy": Exit Sub
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit", , "Unable to open Enemy": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit", , "Unable to open Enemy": Close #num: Exit Sub
         
         theEnemy.eneName$ = BinReadString(num)
         theEnemy.eneHP = BinReadLong(num)
@@ -406,9 +406,9 @@ ver2oldenemy:
         If fileHeader$ <> "RPGTLKIT ENEMY" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Enemy": Exit Sub
         majorVer = val(fread(num))         'Version
         minorVer = val(fread(num))         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit " + file$, , "Unable to open Enemy": Close #num: Exit Sub
-        If minorVer <> Minor Then
-            user = MsgBox("This Enemy was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + CurrentVersion$ + ". Opening this file may not work.  Continue?", 4, "Different Version")
+        If majorVer <> major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit " + file$, , "Unable to open Enemy": Close #num: Exit Sub
+        If minorVer <> minor Then
+            user = MsgBox("This Enemy was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
         theEnemy.eneName$ = fread(num)  'Name

@@ -34,7 +34,7 @@ Begin VB.Form ambienteffectform
       TabIndex        =   6
       Top             =   600
       Width           =   735
-      _ExtentX        =   1296
+      _ExtentX        =   661
       _ExtentY        =   661
       Object.Width           =   360
       Caption         =   "OK"
@@ -170,40 +170,34 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What is done
+' + Option Explicit added
+'
+'=======================================================
+
 Option Explicit
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+
 Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     If none.value = -1 Then boardList(activeBoardIndex).theData.ambienteffect = 0
     If fog.value = -1 Then boardList(activeBoardIndex).theData.ambienteffect = 1
     If darkness.value = -1 Then boardList(activeBoardIndex).theData.ambienteffect = 2
     If Watery.value = -1 Then boardList(activeBoardIndex).theData.ambienteffect = 3
-    Unload ambienteffectform
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call Unload(Me)
 End Sub
 
-Private Sub command2_Click()
-    On Error GoTo ErrorHandler
-    Unload ambienteffectform
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Private Sub Command2_Click()
+    On Error Resume Next
+    Call Unload(Me)
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Call LocalizeForm(Me)
-    
     Set TopBar.theForm = Me
-    
     Select Case boardList(activeBoardIndex).theData.ambienteffect
         Case 0
             none.value = -1
@@ -214,12 +208,4 @@ Private Sub Form_Load()
         Case 3
             Watery.value = -1
     End Select
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-

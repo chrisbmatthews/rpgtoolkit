@@ -271,13 +271,21 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-Option Explicit
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What is done
+' + Begun cleaning up
+'
+' ---What needs to be done
+' + Finish cleaning
+' + Apply new visual style
+' + Make into an MDI child
+' + Make actually usable
+'
+'=======================================================
 
-'toolkit environment vars...
-'Public projectPath As String
-'Public bmpPath As String
-'Public prgPath As String
-'Public currentdir As String
+Option Explicit
 
 'editor vars
 Public bGridOnOff As Boolean 'publictile.grid on / off
@@ -292,14 +300,10 @@ Public y1 As Integer                'bounds of clicks
 Public x2 As Integer                'bounds of clicks
 Public y2 As Integer                'bounds of clicks
 
-'FIXIT: Declare 'nButtonNum' with an early-bound data type                                 FixIT90210ae-R1672-R1B8ZE
-Public nButtonNum                   'button number selected for rpgcode
-
-'defintions of each type...
+Public nButtonNum As Long
 
 'CANVAS
 Public sCanvasFilename As String       'background of canvas
-
 
 'standard form code...
 Public formLoadRpgCode As String           'code to run when form has finished drawing.
@@ -352,11 +356,12 @@ Private Type rpgcodeText
     size As Integer
     textString As String
 End Type
+
 Private theText(50) As rpgcodeText   '50 text defined
 
-Sub newVisualForm()
+Private Sub newVisualForm()
     'clears form memory
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim t As Integer
     sCanvasFilename = ""
 
@@ -398,74 +403,20 @@ Sub newVisualForm()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
-Public Sub openFile(file As String)
+Public Sub openFile(ByVal file As String)
     'opens a file.
-    On Error GoTo errorhandler
+    On Error Resume Next
     tkvisual.Show
     Call loadForm(file)
     Call redraw
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-'FIXIT: Declare 'longcolor' with an early-bound data type                                  FixIT90210ae-R1672-R1B8ZE
-Function red(longcolor) As Integer
-On Error Resume Next
-Dim jj As Long
-Dim bluecomp As Integer
-Dim greencomp As Integer
-Dim redcomp As Integer
-Dim takeaway As Integer
-
-jj = longcolor
-bluecomp = Int(jj / 65536)
-takeaway = bluecomp * 256 * 256
-jj = jj - takeaway
-
-greencomp = Int(jj / 256)
-takeaway = greencomp * 256
-
-redcomp = jj - takeaway
-red = redcomp
-
-End Function
-
-'FIXIT: Declare 'longcolor' with an early-bound data type                                  FixIT90210ae-R1672-R1B8ZE
-Function green(longcolor) As Integer
-On Error Resume Next
-Dim jj As Long
-Dim bluecomp As Integer
-Dim greencomp As Integer
-Dim takeaway As Integer
-
-jj = longcolor
-bluecomp = Int(jj / 65536)
-takeaway = bluecomp * 256 * 256
-jj = jj - takeaway
-
-greencomp = Int(jj / 256)
-green = greencomp
-
-End Function
-Function blue(longcolor As Long) As Integer
-On Error Resume Next
-Dim jj As Long
-Dim bluecomp As Integer
-jj = longcolor
-bluecomp = Int(jj / 65536)
-blue = bluecomp
-End Function
-
-Sub loadForm(filename As String)
+Private Sub loadForm(ByVal filename As String)
     'load a form
     On Error Resume Next
     Dim a As String
@@ -473,7 +424,7 @@ Sub loadForm(filename As String)
     Dim x As Integer
     Dim bDone As Boolean
     
-    num = FreeFile
+    num = FreeFile()
     
     Open filename For Input As #num
         Line Input #num, a
@@ -509,7 +460,7 @@ Sub loadForm(filename As String)
                 If UCase$(a) = "*ENDCODE" Then
                     bDone = True
                 Else
-                    theButtons(x).rpgcode = theButtons(x).rpgcode + a + Chr$(13) + Chr$(10)
+                    theButtons(x).rpgcode = theButtons(x).rpgcode + a + chr$(13) + chr$(10)
                 End If
             Loop
         Next x
@@ -550,16 +501,15 @@ Sub loadForm(filename As String)
             If UCase$(a) = "*ENDCODE" Then
                 bDone = True
             Else
-                formLoadRpgCode = formLoadRpgCode + a + Chr$(13) + Chr$(10)
+                formLoadRpgCode = formLoadRpgCode + a + chr$(13) + chr$(10)
             End If
         Loop
     Close #num
 End Sub
 
-
-Sub redrawLines()
+Private Sub redrawLines()
     'redraw the lines
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nCount As Integer
     Dim x1 As Integer
     Dim y1 As Integer
@@ -581,14 +531,14 @@ Sub redrawLines()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub redrawrects()
     'redraw the rects
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nCount As Integer
     Dim x1 As Integer
     Dim y1 As Integer
@@ -610,7 +560,7 @@ Sub redrawrects()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -624,107 +574,69 @@ Sub saveForm(filename As String)
     num = FreeFile
     
     Open filename For Output As #num
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "RPGTLKIT RPGCODEFORM"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "2"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "0"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "1" 'resgieterd- yes
-        'data....
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, sCanvasFilename     'canvas background image
-        
         'buttons...
         For x = 0 To 50
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theButtons(x).filename
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theButtons(x).x1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theButtons(x).y1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theButtons(x).x2
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theButtons(x).y2
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, "*CODE"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theButtons(x).rpgcode
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, "*ENDCODE"
         Next x
-    
         'images...
         For x = 0 To 50
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theImages(x).filename
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theImages(x).x1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theImages(x).y1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theImages(x).x2
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theImages(x).y2
         Next x
-    
         'lines...
         For x = 0 To 50
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theLines(x).x1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theLines(x).y1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theLines(x).x2
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theLines(x).y2
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theLines(x).col
         Next x
     
         'rects...
         For x = 0 To 50
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theRects(x).x1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theRects(x).y1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theRects(x).x2
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theRects(x).y2
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, theRects(x).col
         Next x
-        
         'user load code...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "*CODE"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, formLoadRpgCode
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "*ENDCODE"
     Close #num
 End Sub
 
-
-
-Sub boxCreated(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer)
+Private Sub boxCreated(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer)
     'sub that is called after the user drags a box onto the screen.
     'action is based upon the tool that is currently selected.
-    On Error GoTo errorhandler
-    Dim temp As Integer
+    On Error GoTo ErrorHandler
+    Dim Temp As Integer
     If toolMode <> 4 Then
         If x1 > x2 Then
-            temp = x1
+            Temp = x1
             x1 = x2
-            x2 = temp
+            x2 = Temp
         End If
         If y1 > y2 Then
-            temp = y1
+            Temp = y1
             y1 = y2
-            y2 = temp
+            y2 = Temp
         End If
     End If
     
@@ -757,13 +669,12 @@ Sub boxCreated(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
-
-Sub BuildToRPGCode(filename As String)
+Private Sub BuildToRPGCode(filename As String)
     'build the visual form into an RPGCode file
     On Error Resume Next
     If filename = "" Then Exit Sub
@@ -774,303 +685,204 @@ Sub BuildToRPGCode(filename As String)
     Dim c As Integer
     num = FreeFile
     
-    Open filename For Output As #num
+    Open filename For Output As num
         'phase 1...  comments...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "**********************************************************"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "*                RPGCode Visual Program                  *"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "*       Generated by the RPG Toolkit Visual Editor       *"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "* RPG Toolkit Development System, 2.1 Powerhouse Edition *"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "* RPG Toolkit Development System, 3 Open Source Edition  *"
         Print #num, "**********************************************************"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, ""
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#Include(" + Chr$(34) + "System.prg" + Chr$(34) + ")"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "Include(" + chr(34) & "System.prg" & chr(34) + ")"
         Print #num, ""
         'phase 2... save the rpg code state...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* Save current RPGCode state..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#GetColor(m_clr!, m_clg!, m_clb!)"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#GetFontSize(m_fsize!)"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "GetColor(m_clr!, m_clg!, m_clb!)"
+        Print #num, "m_fsize! = GetFontSize()"
         Print #num, ""
-        
+
         'phase 3a... now 'draw' into the program...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* Render the screen..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#RenderVisualForm()"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "RenderVisualForm()"
         Print #num, ""
         
         'phase 3b... insert user's draw code...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* Render user code..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#RenderUserCode()"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "RenderUserCode()"
         Print #num, ""
         
         'phase 4... now process events...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* Process events..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "#ProcessFormEvents()"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, ""
         
         'phase 5... restore the rpg code state...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* Restore RPGCode state..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#ColorRGB(m_clr!, m_clg!, m_clb!)"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#FontSize(m_fsize!)"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#End"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "ColorRGB(m_clr!, m_clg!, m_clb!)"
+        Print #num, "FontSize(m_fsize!)"
+        Print #num, "Stop()"
         Print #num, ""
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, ""
         
         'phase 6... method comment block...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "********************************************************"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* Methods:                                             *"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* RenderVisualForm()- Renders the screen               *"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* RenderUserCode()- User defined code for startup      *"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* ProcessFormEvents()- Process events                  *"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "* FormEnd()- Called to exit the event processing       *"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "********************************************************"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, ""
         
         'phase 7... the rendering method...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#method RenderVisualForm()"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "Method RenderVisualForm()"
         Print #num, "{"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #num, Chr$(9) + "* Clearn screen..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #num, Chr$(9) + "#ColorRGB(255, 255, 255)"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #num, Chr$(9) + "#FillRect(0, 0, 608, 352)"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+            Print #num, chr$(9) & "* Clearn screen..."
+            Print #num, chr$(9) & "ColorRGB(255, 255, 255)"
+            Print #num, chr$(9) & "FillRect(0, 0, 608, 352)"
             Print #num, ""
             
             'first render the background image...
             If (sCanvasFilename <> "") Then
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                Print #num, Chr$(9) + "* Render background image..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                Print #num, Chr$(9) + "#Bitmap(" + Chr$(34) + sCanvasFilename + Chr$(34) + ")"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+                Print #num, chr(9) & "* Render background image..."
+                Print #num, chr(9) & "Bitmap(" & chr(34) & sCanvasFilename & chr(34) & ")"
                 Print #num, ""
             End If
             
             'now render images...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #num, Chr$(9) + "* Render images (if any exist)..."
+            Print #num, chr$(9) + "* Render images (if any exist)..."
             For x = 0 To 50
                 If theImages(x).filename <> "" Then
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + "#SetImage(" + Chr$(34) + theImages(x).filename + Chr$(34) + _
-                                                "," + str$(theImages(x).x1) + _
-                                                "," + str$(theImages(x).y1) + _
-                                                "," + str$(theImages(x).x2 - theImages(x).x1) + _
-                                                "," + str$(theImages(x).y2 - theImages(x).y1) + _
+                    Print #num, chr(9) + "SetImage(" & chr(34) & theImages(x).filename & chr(34) & _
+                                                "," & str(theImages(x).x1) & _
+                                                "," & str(theImages(x).y1) & _
+                                                "," & str(theImages(x).x2 - theImages(x).x1) & _
+                                                "," & str(theImages(x).y2 - theImages(x).y1) & _
                                                 ")"
                 End If
             Next x
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, ""
         
             'now render buttons...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #num, Chr$(9) + "* Render buttons (if any exist)..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #num, Chr$(9) + "#ClearButtons()"
+            Print #num, chr(9) & "* Render buttons (if any exist)..."
+            Print #num, chr(9) + "ClearButtons()"
             For x = 0 To 50
                 If theButtons(x).filename <> "" Then
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + "#SetButton(" + Chr$(34) + theButtons(x).filename + Chr$(34) + _
-                                                "," + str$(x) + _
-                                                "," + str$(theButtons(x).x1) + _
-                                                "," + str$(theButtons(x).y1) + _
-                                                "," + str$(theButtons(x).x2 - theButtons(x).x1) + _
-                                                "," + str$(theButtons(x).y2 - theButtons(x).y1) + _
+                    Print #num, chr(9) + "SetButton(" & chr(34) & theButtons(x).filename & chr(34) + _
+                                                "," & str(x) & _
+                                                "," & str(theButtons(x).x1) + _
+                                                "," & str(theButtons(x).y1) + _
+                                                "," & str(theButtons(x).x2 - theButtons(x).x1) & _
+                                                "," & str(theButtons(x).y2 - theButtons(x).y1) & _
                                                 ")"
                 End If
             Next x
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, ""
-            
-            'now render text...
-            'Print #num, Chr$(9) + "* Render text (if any exist)..."
-            'Print #num, ""
-            
+
             'now render lines...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #num, Chr$(9) + "* Render lines (if any exist)..."
+            Print #num, chr(9) & "* Render lines (if any exist)..."
             For x = 0 To 50
                 If Not (theLines(x).x1 = 0 And theLines(x).y1 = 0 And theLines(x).x2 = 0 And theLines(x).y2 = 0) Then
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + "#ColorRGB(" + _
-                                                        str$(red(theLines(x).col)) + "," + _
-                                                        str$(green(theLines(x).col)) + "," + _
-                                                        str$(blue(theLines(x).col)) + ")"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + "#DrawLine(" + str$(theLines(x).x1) + _
-                                            "," + str$(theLines(x).y1) + _
-                                            "," + str$(theLines(x).x2) + _
-                                            "," + str$(theLines(x).y2) + ")"
+                    Print #num, chr(9) & "ColorRGB(" & _
+                                                        str(red(theLines(x).col)) & "," & _
+                                                        str(green(theLines(x).col)) & "," & _
+                                                        str(blue(theLines(x).col)) & ")"
+                    Print #num, chr(9) & "#DrawLine(" & str(theLines(x).x1) & _
+                                            "," & str(theLines(x).y1) & _
+                                            "," & str(theLines(x).x2) & _
+                                            "," & str(theLines(x).y2) & ")"
                 End If
             Next x
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, ""
             
             'now render rects...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #num, Chr$(9) + "* Render rectangles (if any exist)..."
+            Print #num, chr(9) & "* Render rectangles (if any exist)..."
             For x = 0 To 50
                 If Not (theRects(x).x1 = 0 And theRects(x).y1 = 0 And theRects(x).x2 = 0 And theRects(x).y2 = 0) Then
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + "#ColorRGB(" + _
-                                                        str$(red(theRects(x).col)) + "," + _
-                                                        str$(green(theRects(x).col)) + "," + _
-                                                        str$(blue(theRects(x).col)) + ")"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + "#DrawRect(" + str$(theRects(x).x1) + _
-                                            "," + str$(theRects(x).y1) + _
-                                            "," + str$(theRects(x).x2) + _
-                                            "," + str$(theRects(x).y2) + ")"
+                    Print #num, chr(9) + "ColorRGB(" + _
+                                                        str(red(theRects(x).col)) & "," & _
+                                                        str(green(theRects(x).col)) & "," & _
+                                                        str(blue(theRects(x).col)) & ")"
+                    Print #num, chr(9) & "DrawRect(" & str(theRects(x).x1) & _
+                                            "," & str(theRects(x).y1) & _
+                                            "," & str(theRects(x).x2) & _
+                                            "," & str(theRects(x).y2) & ")"
                 End If
             Next x
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
             Print #num, ""
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "}"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, ""
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, ""
         
         'phase 7b... the user rendering method...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#method RenderUserCode()"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "Method RenderUserCode()"
         Print #num, "{"
-            formLoadRpgCode = formLoadRpgCode + Chr$(13) + Chr$(10)
+            formLoadRpgCode = formLoadRpgCode & vbCrLf
             numLines = countTextLines(formLoadRpgCode)
             If numLines > 0 Then
                 For c = 0 To numLines - 1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + getTextLineNumber(formLoadRpgCode, c)
+                    Print num, chr(9) & getTextLineNumber(formLoadRpgCode, c)
                 Next c
             End If
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "}"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, ""
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, ""
         
         'phase 8... the event processing method...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#method ProcessFormEvents()"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "Method ProcessFormEvents()"
         Print #num, "{"
             'now, if we have buttons, events will be handles by mouseclicks.
             'otherwise, the #wait command will be our only event.
             If (ifButtons()) Then
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                Print #num, Chr$(9) + "* Wait for user to click a button..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                Print #num, Chr$(9) + "#m_done! = 0"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                Print #num, Chr$(9) + "#while (m_done! == 0)"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                Print #num, Chr$(9) + "{"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + Chr$(9) + "#MWinCls()"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + Chr$(9) + "#MouseClick(m_x!, m_y!)"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + Chr$(9) + "#CheckButton(m_x!, m_y!, m_button!)"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                    Print #num, Chr$(9) + Chr$(9) + "* Check which button was pressed..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+                Print #num, chr(9) & "* Wait for user to click a button..."
+                Print #num, chr(9) & "m_done! = 0"
+                Print #num, chr(9) & "while (m_done! == 0)"
+                Print #num, chr(9) & "{"
+                    Print #num, chr(9) & chr(9) & "MWinCls()"
+                    Print #num, chr(9) & chr(9) & "MouseClick(m_x!, m_y!)"
+                    Print #num, chr(9) & chr(9) & "CheckButton(m_x!, m_y!, m_button!)"
+                    Print #num, chr(9) & chr(9) & "* Check which button was pressed..."
                     Print #num, ""
                     
                     For x = 0 To 50
                         If theButtons(x).filename <> "" Then
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                            Print #num, Chr$(9) + Chr$(9) + "#if (m_button! ==" + str$(x) + ")"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                            Print #num, Chr$(9) + Chr$(9) + "{"
-                                theButtons(x).rpgcode = theButtons(x).rpgcode + Chr$(13) + Chr$(10)
+                            Print #num, chr(9) & chr(9) & "if (m_button! ==" & str(x) & ")"
+                            Print #num, chr(9) & chr(9) & "{"
+                                theButtons(x).rpgcode = theButtons(x).rpgcode & chr(13) & chr(10)
                                 numLines = countTextLines(theButtons(x).rpgcode)
                                 If numLines > 0 Then
                                     For c = 0 To numLines - 1
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                                        Print #num, Chr$(9) + Chr$(9) + Chr$(9) + getTextLineNumber(theButtons(x).rpgcode, c)
+                                        Print #num, chr(9) & chr(9) & chr(9) & getTextLineNumber(theButtons(x).rpgcode, c)
                                     Next c
                                 End If
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                            Print #num, Chr$(9) + Chr$(9) + "}"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+                            Print #num, chr$(9) + chr$(9) + "}"
                             Print #num, ""
                         End If
                     Next x
                     
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                Print #num, Chr$(9) + "}"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+                Print #num, chr(9) & "}"
                 Print #num, ""
             Else
                 'no buttons-- process the #wait command
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                Print #num, Chr$(9) + "* Wait for user to press a key..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-                Print #num, Chr$(9) + "#Wait(m_wait$)"
+                Print #num, chr(9) & "* Wait for user to press a key..."
+                Print #num, chr(9) & "Wait()"
             End If
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, "}"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
         Print #num, ""
         
         'phase 9... the formend method...
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, "#method FormEnd()"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, "method FormEnd()"
         Print #num, "{"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, Chr$(9) + "* Cause the event processing #while loop to break..."
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, Chr$(9) + "#m_done! = 1"
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
+        Print #num, chr(9) & "* Cause the event processing #while loop to break..."
+        Print #num, chr(9) & "m_done! = 1"
         Print #num, "}"
     Close #num
 End Sub
 
-Function checkButtonClicked(x As Integer, y As Integer, ByRef theNum As Integer) As Boolean
+Private Function checkButtonClicked(x As Integer, y As Integer, ByRef theNum As Integer) As Boolean
     'checks all buttons to see if x,y is within the click area.
     'if it it, the button that was clicked is placed in theNum and this function returns true
-    On Error GoTo errorhandler
+    On Error Resume Next
     Dim nCount As Integer
     
     For nCount = 0 To 50
@@ -1085,23 +897,16 @@ Function checkButtonClicked(x As Integer, y As Integer, ByRef theNum As Integer)
             End If
         End If
     Next nCount
-    checkButtonClicked = False
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Function
 
-Function getImageFilename() As String
+Private Function getImageFilename() As String
     'prompts for a button filename.
     On Error Resume Next
     Dim filename As String
     Dim antiPath As String
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + bmppath$
     
@@ -1116,7 +921,7 @@ Function getImageFilename() As String
         getImageFilename = ""
         Exit Function
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     'If filename$(1) = "" Then Exit Sub
     FileCopy filename$, projectPath$ + bmppath$ + antiPath$
     getImageFilename = antiPath
@@ -1128,7 +933,7 @@ Function GetPrgFilename() As String
     Dim filename As String
     Dim antiPath As String
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + prgpath$
     
@@ -1143,7 +948,7 @@ Function GetPrgFilename() As String
         GetPrgFilename = ""
         Exit Function
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     'If filename$(1) = "" Then Exit Sub
     FileCopy filename$, projectPath$ + prgpath$ + antiPath$
     GetPrgFilename = filename
@@ -1152,7 +957,7 @@ End Function
 Function getTrueCoordX(x As Integer) As Integer
     'returns the true pixel of an x coordinate
     'originally defined within the boardform bounds (ie 608 x 352)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nWidth As Integer
     Dim dRatio As Double
     Dim nRet As Integer
@@ -1166,7 +971,7 @@ Function getTrueCoordX(x As Integer) As Integer
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -1174,7 +979,7 @@ End Function
 Function getTrueCoordY(y As Integer) As Integer
     'returns the true pixel of a y coordinate
     'originally defined within the boardform bounds (ie 608 x 352)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nHeight As Integer
     Dim dRatio As Double
     Dim nRet As Integer
@@ -1188,7 +993,7 @@ Function getTrueCoordY(y As Integer) As Integer
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -1197,7 +1002,7 @@ End Function
 Function ifButtons() As Boolean
     'checks to see if any buttons are set.
     'If the are, then we return true, else false
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim x As Integer
     
     For x = 0 To 50
@@ -1211,7 +1016,7 @@ Function ifButtons() As Boolean
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -1226,7 +1031,7 @@ Sub loadSizedPicture(filename As String, x1 As Integer, y1 As Integer, x2 As Int
     'PicClip1.StretchX = (x2 - x1)
     'PicClip1.StretchY = (y2 - y1)
     'boardform.Picture = PicClip1.Clip
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim a As Integer
 
      'tkvisual.PicClip1.Picture = LoadPicture(projectPath + bmppath + filename)
@@ -1261,14 +1066,14 @@ Sub loadSizedPicture(filename As String, x1 As Integer, y1 As Integer, x2 As Int
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub redraw()
     'refreshes the form.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Call vbPicCls(tkvisual.boardform)
     
@@ -1309,14 +1114,14 @@ Sub redraw()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub redrawBackground()
     'redraws canvas bkg graphic
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim xx As Integer
     Dim yy As Integer
     
@@ -1325,14 +1130,14 @@ Sub redrawBackground()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub redrawButtons()
     'redraws all buttons
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nCount As Integer
     
     For nCount = 0 To 50
@@ -1347,14 +1152,14 @@ Sub redrawButtons()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub redrawImages()
     'redraws all images
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nCount As Integer
     
     For nCount = 0 To 50
@@ -1369,7 +1174,7 @@ Sub redrawImages()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1377,7 +1182,7 @@ End Sub
 Sub setButton(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer)
     'called when we are to set a button from x1,y1 to x2,y2
     'find and empty button...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nCount As Integer
     
     For nCount = 0 To 50
@@ -1388,7 +1193,7 @@ Sub setButton(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer)
             theButtons(nCount).y1 = y1
             theButtons(nCount).x2 = x2
             theButtons(nCount).y2 = y2
-            theButtons(nCount).rpgcode = "* Button" + str$(nCount) + "; Filename " + theButtons(nCount).filename + Chr$(13) + Chr$(10) + "* TBD: Replace the #FormEnd with your own code" + Chr$(13) + Chr$(10) + "#FormEnd()"
+            theButtons(nCount).rpgcode = "* Button" + str$(nCount) + "; Filename " + theButtons(nCount).filename + chr$(13) + chr$(10) + "* TBD: Replace the #FormEnd with your own code" + chr$(13) + chr$(10) + "#FormEnd()"
             Call loadSizedPicture(theButtons(nCount).filename, x1, y1, x2, y2)
             'MsgBox Str$(nCount) + " " + theButtons(nCount).filename
             Exit Sub
@@ -1398,7 +1203,7 @@ Sub setButton(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1406,7 +1211,7 @@ End Sub
 Sub setImage(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer)
     'called when we are to set an image from x1,y1 to x2,y2
     'find and empty image...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nCount As Integer
     
     For nCount = 0 To 50
@@ -1426,7 +1231,7 @@ Sub setImage(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1434,7 +1239,7 @@ End Sub
 Sub setLine(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, col As Long)
     'set a line
     'find and empty line...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nCount As Integer
     
     For nCount = 0 To 50
@@ -1454,7 +1259,7 @@ Sub setLine(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, col As L
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1462,7 +1267,7 @@ End Sub
 Sub setRect(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, col As Long)
     'set a rect
     'find and empty rect...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim nCount As Integer
     
     For nCount = 0 To 50
@@ -1482,14 +1287,14 @@ Sub setRect(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, col As L
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub sizescreen()
     'sizes screen to appropriate resoultion
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim sx As Integer   'screen width, pixels
     Dim sy As Integer   'screen height, pixels
     Dim tppx As Integer 'twips per pixel x
@@ -1552,14 +1357,14 @@ Private Sub sizescreen()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
-Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    On Error GoTo errorhandler
+Private Sub boardform_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+    On Error GoTo ErrorHandler
     Dim xx As Integer
     Dim yy As Integer
       
@@ -1573,7 +1378,7 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
       
     coords.Caption = str$(xx) + "," + str$(yy)
     
-    If toolMode = 0 And Button = 1 Then
+    If toolMode = 0 And button = 1 Then
         'pointer tool selected.  Let's see if we clicked on something...
         Dim bClicked As Boolean
         Dim num As Integer
@@ -1581,26 +1386,26 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
         If bClicked = True Then
             codeform.Visible = True
             nButtonNum = num
-            codeform.text = theButtons(num).rpgcode
+            codeform.Text = theButtons(num).rpgcode
         Else
             nButtonNum = -1
             If formLoadRpgCode = "" Then
-                formLoadRpgCode = "* Form Load Event (this code gets run each time the screen is refreshed)" + Chr$(13) + Chr$(10) + "* TBD: Input your own code here:"
+                formLoadRpgCode = "* Form Load Event (this code gets run each time the screen is refreshed)" + chr$(13) + chr$(10) + "* TBD: Input your own code here:"
             End If
             codeform.Visible = True
-            codeform.text = formLoadRpgCode
+            codeform.Text = formLoadRpgCode
         End If
     End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
-Private Sub boardform_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    On Error GoTo errorhandler
+Private Sub boardform_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
+    On Error GoTo ErrorHandler
     Dim xx As Integer
     Dim yy As Integer
       
@@ -1614,14 +1419,14 @@ Private Sub boardform_MouseMove(Button As Integer, Shift As Integer, x As Single
     yy = y * (11 * 32) / (boardform.height / Screen.TwipsPerPixelY)
       
     If bGridOnOff Then
-        xx = roundoff(xx / 10) * 10
-        yy = roundoff(yy / 10) * 10
+        xx = roundOff(xx / 10) * 10
+        yy = roundOff(yy / 10) * 10
     End If
       
     coords.Caption = str$(xx) + "," + str$(yy)
     
     If toolMode <> 0 Then
-        If bButtonPressed = True And Button = 0 Then
+        If bButtonPressed = True And button = 0 Then
             'end of button click
             x2 = xx
             y2 = yy
@@ -1639,13 +1444,13 @@ Private Sub boardform_MouseMove(Button As Integer, Shift As Integer, x As Single
             bIgnoreIt = True
             Exit Sub
         End If
-        If bButtonPressed = False And Button = 1 Then
+        If bButtonPressed = False And button = 1 Then
             x1 = xx
             y1 = yy
             bButtonPressed = True
             Exit Sub
         End If
-        If bButtonPressed = True And Button = 1 Then
+        If bButtonPressed = True And button = 1 Then
             Call vbPicAutoRedraw(boardform, False)
             Call vbPicRefresh(boardform)
             If toolMode = 4 Then
@@ -1660,64 +1465,64 @@ Private Sub boardform_MouseMove(Button As Integer, Shift As Integer, x As Single
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub codeform_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If nButtonNum = -1 Then
-        formLoadRpgCode = codeform.text
+        formLoadRpgCode = codeform.Text
     Else
-        theButtons(nButtonNum).rpgcode = codeform.text
+        theButtons(nButtonNum).rpgcode = codeform.Text
     End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub colorform_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     curcolor = ColorDialog()
     Call vbPicFillRect(colorform, 0, 0, 1000, 1000, curcolor)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     sCanvasFilename = getImageFilename()
     Call redraw
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub editmnu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim aa As Integer
     aa = MsgBox(LoadStringLoc(990, "Closing this window will destroy changes.  Do you wish to save your changes?"), vbYesNo)
     If aa = 6 Then
@@ -1727,13 +1532,13 @@ Private Sub Form_Unload(Cancel As Integer)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub gridbutton_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim x As Integer
     Dim y As Integer
     Dim xx As Integer
@@ -1745,18 +1550,18 @@ Private Sub gridbutton_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub ControlPanel_Click(Index As Integer)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     toolMode = Index
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1766,43 +1571,43 @@ Private Sub Form_Load()
     'bmpPath = "bitmap\"
     'prgPath = "prg\"
     'currentdir$ = CurDir$
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Call sizescreen
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub mnubuild_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call BuildToRPGCode(GetPrgFilename())
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub mnuCLose_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload tkvisual
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub mnunew_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim aa As Integer
     aa = MsgBox(LoadStringLoc(947, "Are you sure you want to erase the current form and start a new one?"), vbYesNo)
     If aa = 6 Then
@@ -1813,7 +1618,7 @@ Private Sub mnunew_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1823,7 +1628,7 @@ Private Sub mnuopen_Click()
     Dim filename As String
     Dim antiPath As String
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + prgpath$
     
@@ -1837,14 +1642,14 @@ Private Sub mnuopen_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     'If filename$(1) = "" Then Exit Sub
     Call loadForm(filename)
     Call redraw
 End Sub
 
 Public Sub mnusave_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If curfilename = "" Then
         Call mnusaveas_Click
     Else
@@ -1853,7 +1658,7 @@ Public Sub mnusave_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1863,7 +1668,7 @@ Public Sub mnusaveas_Click()
     Dim filename As String
     Dim antiPath As String
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + prgpath$
     
@@ -1877,35 +1682,18 @@ Public Sub mnusaveas_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
-    'If filename$(1) = "" Then Exit Sub
+    ChDir (currentDir$)
     Call saveForm(filename)
     curfilename = filename
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 Private Sub redrawbutton_Click()
-    On Error GoTo errorhandler
+    On Error Resume Next
     Call redraw
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 
 Private Sub tocmnu_Click()
-    On Error GoTo errorhandler
-    Dim a As Integer
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    On Error Resume Next
+    Call BrowseFile(helppath & ObtainCaptionFromTag(DB_Help1, resourcePath & m_LangFile))
 End Sub
-
-

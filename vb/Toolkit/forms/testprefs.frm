@@ -313,7 +313,7 @@ End Sub
 
 Private Sub Command2_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + bmppath$
     
@@ -327,7 +327,7 @@ Private Sub Command2_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filenamea$ = "" Then Exit Sub
     fName$ = filenamea$
     FileCopy filenamea$, projectPath$ + bmppath$ + antiPath$
@@ -337,7 +337,7 @@ End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + fontpath$
     
@@ -351,7 +351,7 @@ Private Sub Command14_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filenamea$ = "" Then Exit Sub
     fName$ = filenamea$
     FileCopy filenamea$, projectPath$ + fontpath$ + antiPath$
@@ -363,7 +363,7 @@ Private Sub Command3_Click()
     On Error GoTo ErrorHandler
     If Combo1.ListIndex = -1 Then Combo1.ListIndex = 0
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + tempath$
     
@@ -377,7 +377,7 @@ Private Sub Command3_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filenamea$ = "" Then Exit Sub
     fName$ = filenamea$
     FileCopy filenamea$, projectPath$ + tempath$ + antiPath$
@@ -394,7 +394,7 @@ End Sub
 
 Private Sub Command4_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + brdpath$
     
@@ -408,7 +408,7 @@ Private Sub Command4_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filenamea$ = "" Then Exit Sub
     fName$ = filenamea$
     FileCopy filenamea$, projectPath$ + brdpath$ + antiPath$

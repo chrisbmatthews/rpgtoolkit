@@ -100,8 +100,8 @@ Begin VB.MDIForm tkMainForm
       Left            =   0
       TabIndex        =   7
       Top             =   0
-      Width           =   15240
-      _ExtentX        =   26882
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
@@ -291,11 +291,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1335
       Left            =   0
       ScaleHeight     =   1335
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   123
-      Top             =   8865
+      Top             =   6225
       Visible         =   0   'False
-      Width           =   15240
+      Width           =   11880
       Begin VB.Frame tileBmpExtras 
          BorderStyle     =   0  'None
          BeginProperty Font 
@@ -858,9 +858,9 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   6840
-      Left            =   3825
-      ScaleHeight     =   6840
+      Height          =   4200
+      Left            =   465
+      ScaleHeight     =   4200
       ScaleWidth      =   3510
       TabIndex        =   99
       Top             =   360
@@ -908,8 +908,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -1086,9 +1086,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   6840
-      Left            =   2010
-      ScaleHeight     =   6840
+      Height          =   4200
+      Left            =   -1350
+      ScaleHeight     =   4200
       ScaleWidth      =   1815
       TabIndex        =   95
       Top             =   360
@@ -1131,9 +1131,9 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   6840
+      Height          =   4200
       Left            =   0
-      ScaleHeight     =   6840
+      ScaleHeight     =   4200
       ScaleWidth      =   975
       TabIndex        =   50
       Top             =   360
@@ -1743,11 +1743,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   29
-      Top             =   7200
+      Top             =   4560
       Visible         =   0   'False
-      Width           =   15240
+      Width           =   11880
       Begin VB.CommandButton Command21 
          Appearance      =   0  'Flat
          Caption         =   "Draw All Layers"
@@ -2047,9 +2047,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   6840
-      Left            =   14865
-      ScaleHeight     =   6840
+      Height          =   4200
+      Left            =   11505
+      ScaleHeight     =   4200
       ScaleWidth      =   375
       TabIndex        =   22
       Top             =   360
@@ -2108,10 +2108,10 @@ Begin VB.MDIForm tkMainForm
       Height          =   375
       Left            =   0
       ScaleHeight     =   375
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   9
-      Top             =   10200
-      Width           =   15240
+      Top             =   7560
+      Width           =   11880
       Begin VB.CommandButton openWindowsScrollRight 
          Height          =   255
          Left            =   11760
@@ -2251,9 +2251,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   6840
-      Left            =   7335
-      ScaleHeight     =   6840
+      Height          =   4200
+      Left            =   3975
+      ScaleHeight     =   4200
       ScaleWidth      =   4800
       TabIndex        =   8
       Top             =   360
@@ -2358,9 +2358,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   6840
-      Left            =   12135
-      ScaleHeight     =   6840
+      Height          =   4200
+      Left            =   8775
+      ScaleHeight     =   4200
       ScaleWidth      =   2730
       TabIndex        =   1
       Top             =   360
@@ -2455,9 +2455,9 @@ Begin VB.MDIForm tkMainForm
       Height          =   255
       Left            =   0
       TabIndex        =   0
-      Top             =   10575
-      Width           =   15240
-      _ExtentX        =   26882
+      Top             =   7935
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
@@ -2469,8 +2469,8 @@ Begin VB.MDIForm tkMainForm
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   10980
-            TextSave        =   "1:11 PM"
+            Object.Width           =   5054
+            TextSave        =   "7:56 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2483,7 +2483,6 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
-            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -2579,8 +2578,9 @@ Begin VB.MDIForm tkMainForm
       Begin VB.Menu sub46 
          Caption         =   "-"
       End
-      Begin VB.Menu installupgrademnu 
-         Caption         =   "Install Upgrade"
+      Begin VB.Menu mnuShowSplashScreen 
+         Caption         =   "Show Splash Screen"
+         Checked         =   -1  'True
       End
    End
    Begin VB.Menu buildmnu 
@@ -2757,7 +2757,7 @@ Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On Error Re
     
     'This export requires iMetric = 2 for .iso tiles!!
     'tstnum is the tile to start drawing at.
-    Call GFXdrawTstWindow(projectPath$ + tilepath$ + lastTileset$, vbPicHDC(currentTilesetForm), tstnum, tilesWide, tilesHigh, iMetric)
+    Call GFXdrawTstWindow(projectPath$ + tilePath$ + lastTileset$, vbPicHDC(currentTilesetForm), tstnum, tilesWide, tilesHigh, iMetric)
     
     If autoRefresh Then
         Call vbPicRefresh(currentTilesetForm)
@@ -2789,7 +2789,7 @@ Private Sub fillTilesetBar(): On Error Resume Next
     
     If lastTileset$ <> "" Then
     
-        setType = tilesetInfo(projectPath$ + tilepath$ + lastTileset$)
+        setType = tilesetInfo(projectPath$ + tilePath$ + lastTileset$)
         If setType = TSTTYPE Or setType = ISOTYPE Then
             'tilesetInfo now returns 2 for isometric tilesets. Set type constants introduced.
             
@@ -2833,88 +2833,84 @@ Private Sub fillTilesetBar(): On Error Resume Next
     End If
 End Sub
 
-Public Sub openFile(ByVal fName As String): On Error GoTo errmid
-'=================================================
-'Opens any type of tk file - called by OpenFile_click
-'=================================================
-'Edited by Delano for 3.0.4 new isometric tilesets.
-'Added .iso to the list of openable files - opens in tile editor.
+Public Sub openFile(ByVal fName As String)
+
+    On Error Resume Next
 
     Dim ex As String
-    ex$ = extention(fName$)
-    ex$ = UCase$(ex$)
+    ex = UCase(extention(fName))
     
     Dim frm As Form
-    
-    Select Case ex$
-        Case "GPH", "TST", "ISO":
+    Select Case ex
+        Case "GPH", "TST", "ISO"
             Set frm = New tileedit
             frm.Show
-'FIXIT: 'ignoreDeactivate' is not a property of the generic 'Form' object in Visual Basic .NET. To access 'ignoreDeactivate' declare 'frm' using its actual type instead of 'Form'     FixIT90210ae-R1460-RCFE85
-            frm.ignoreDeactivate = True
-            Call activeTile.openFile(fName$)
-        Case "BRD":
+            activeTile.ignoreDeactivate = True
+            Call activeTile.openFile(fName)
+        Case "BRD"
             Set frm = New boardedit
             frm.Show
-            Call activeBoard.openFile(fName$)
-        Case "TBM":
+            Call activeBoard.openFile(fName)
+        Case "TBM"
             Set frm = New editTileBitmap
             frm.Show
-            Call activeTileBmp.openFile(fName$)
-        Case "PRG":
+            Call activeTileBmp.openFile(fName)
+        Case "PRG"
             Set frm = New rpgcodeedit
             frm.Show
-            Call activeRPGCode.openFile(fName$)
-        Case "SPC":
+            Call activeRPGCode.openFile(fName)
+        Case "SPC"
             Set frm = New editsm
             frm.Show
-            Call activeSpecialMove.openFile(fName$)
-        Case "TEM":
+            Call activeSpecialMove.openFile(fName)
+        Case "TEM"
             Set frm = New characteredit
             frm.Show
-            Call activePlayer.openFile(fName$)
-        Case "ITM":
+            Call activePlayer.openFile(fName)
+        Case "ITM"
             Set frm = New EditItem
             frm.Show
-            Call activeItem.openFile(fName$)
-        Case "FNT":
+            Call activeItem.openFile(fName)
+        Case "FNT"
             'Call fontedit.openFile(fName$)
-        Case "ENE":
+        Case "ENE"
             Set frm = New editenemy
             frm.Show
-            Call activeEnemy.openFile(fName$)
-        Case "BKG":
+            Call activeEnemy.openFile(fName)
+        Case "BKG"
             Set frm = New editBackground
             frm.Show
-            Call activeBackground.openFile(fName$)
-        Case "STE":
+            Call activeBackground.openFile(fName)
+        Case "STE"
             Set frm = New editstatus
             frm.Show
-            Call activeStatusEffect.openFile(fName$)
-        'Case "WAV":
-        '    wFlags% = SND_ASYNC Or SND_NODEFAULT
-        '    x% = sndPlaySound(projectPath$ + fname$, wFlags%)
-        Case "MP3", "MP2", "MP1", "MID", "MIDI", "WAV", "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW":
-            'mp3player.Show
-            'mp3player.playSong (fName$)
-        'Case "MID":
-        '    OLE1.SourceDoc = projectPath$ + fname$
-        '    OLE1.Action = 1
-        '    OLE1.Action = 7
-        Case "ANM":
+            Call activeStatusEffect.openFile(fName)
+        Case "ANM"
             Set frm = New animationeditor
             frm.Show
-            Call activeAnimation.openFile(fName$)
-        Case "TAN":
+            Call activeAnimation.openFile(fName)
+        Case "TAN"
             Set frm = New tileanim
             frm.Show
-            Call activeTileAnm.openFile(fName$)
-        Case "RFM":
-            Call tkvisual.openFile(fName$)
+            Call activeTileAnm.openFile(fName)
+        Case "RFM"
+            Call tkvisual.openFile(fName)
+        Case Else
+            Dim theAppTemp As String
+            theAppTemp = determineDefaultApp(fName)
+            Dim ff As Long
+            ff = FreeFile()
+            Open TempDir & "temp" For Output As ff
+                Print #ff, theAppTemp
+            Close ff
+            Open TempDir & "temp" For Input As ff
+                Dim theApp As String
+                theApp = Replace(Replace(fread(ff), vbCrLf, ""), " ", "")
+            Close ff
+            Dim commandLine As String
+            commandLine = theApp & " " & """" & resolve(CurDir) & fName & """"
+            Call Shell(commandLine, vbNormalFocus)
     End Select
-Exit Sub
-errmid:
-Exit Sub
 
 End Sub
 
@@ -3199,7 +3195,7 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
     Exit Sub
 End Sub
 
-Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '===========================================================
 'MouseDown event on the flyout tileset viewer.
 '===========================================================
@@ -3223,14 +3219,14 @@ Private Sub currentTilesetForm_MouseDown(button As Integer, Shift As Integer, X 
     If iMetric = 0 Then
         'Not isometric.
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tileX = Int(X / 32)                                                        'x-tile clicked.
+        tileX = Int(x / 32)                                                        'x-tile clicked.
     Else
         tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(X / 64)
+        tileX = Int(x / 64)
     End If
     
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
-    tileY = Int(Y / 32)
+    tileY = Int(y / 32)
     
     'Alterations for the scroller. Now scrolls row by row.
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
@@ -3368,7 +3364,7 @@ Private Sub LaunchBard()
  
         Case notOpen
             'Launch the program...
-            theBard.hwnd = GetWinHandle(Shell("bard3.exe", vbNormalFocus))
+            theBard.hwnd = getWinHandle(Shell("bard3.exe", vbNormalFocus))
             'Make it a child of TKMainForm...
             SetParent theBard.hwnd, Me.hwnd
             'Flag that the Bard is open...
@@ -3406,9 +3402,16 @@ Public Sub MDIForm_Resize()
 
 End Sub
 
+Private Sub mnuShowSplashScreen_Click()
+    mnuShowSplashScreen.Checked = Not mnuShowSplashScreen.Checked
+    If mnuShowSplashScreen.Checked Then
+        Call SaveSetting("RPGToolkit3", "Settings", "Splash", "1")
+    Else
+        Call SaveSetting("RPGToolkit3", "Settings", "Splash", "0")
+    End If
+End Sub
 
-
-Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -3463,13 +3466,13 @@ Private Sub ReadCommandLine_Timer()
         With Edit
             .tag = "1"
             .mnuNewProject.Visible = False
-            .mnunew.Visible = False
+            .mnuNew.Visible = False
             .mnuNewPRG.Visible = True
             .mnuOpenProject.Visible = False
             .mnuSaveAll.Visible = False
             .closemnu.Visible = False
             .mnuToolkit.Visible = False
-            .mnubuild.Visible = False
+            .mnuBuild.Visible = False
             .mnuWindow.Visible = False
             .Show
             Dim fCaption As String
@@ -3574,7 +3577,7 @@ Private Sub MDIForm_Activate()
 
 End Sub
 
-Private Sub MDIForm_Load(): On Error GoTo ErrorHandler
+Private Sub MDIForm_Load(): On Error Resume Next
 '=====================================================
 'Call added for isometrics, 3.0.4
 
@@ -3584,7 +3587,7 @@ Private Sub MDIForm_Load(): On Error GoTo ErrorHandler
     
     toolTop = 240
     
-    Call openConfig("toolkit.cfg")
+    mnuShowSplashScreen.Checked = integerToBoolean(GetSetting("RPGToolkit3", "Settings", "Splash", "1"))
     
     Dim upgradeYN As Boolean
     'check if we have top upgrade...
@@ -3608,11 +3611,11 @@ Private Sub MDIForm_Load(): On Error GoTo ErrorHandler
     End If
     
     If lastProject <> "" And Command = "" Then
-        Call traceString("Opening project..." + gampath$ + lastProject$)
+        Call traceString("Opening project..." + gamPath$ + lastProject$)
         
-        Call openMainFile(gampath$ + lastProject$)
+        Call openMainFile(gamPath$ + lastProject$)
         
-        Call traceString("Done opening project..." + gampath$ + lastProject$)
+        Call traceString("Done opening project..." + gamPath$ + lastProject$)
         mainfile$ = lastProject$
         loadedMainFile = mainfile
         tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" + lastProject$ + ")"
@@ -3622,11 +3625,6 @@ Private Sub MDIForm_Load(): On Error GoTo ErrorHandler
         mainfile = lastProject
     End If
     
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub MDIForm_Unload(Cancel As Integer): On Error GoTo ErrorHandler
@@ -3652,7 +3650,7 @@ End Sub
 Public Sub mnuOpenProject_Click(): On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gampath$
+    dlg.strDefaultFolder = gamPath$
     
     Dim antiPath As String
     
@@ -3669,7 +3667,7 @@ Public Sub mnuOpenProject_Click(): On Error Resume Next
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), gampath$ + antiPath$
+    FileCopy filename$(1), gamPath$ + antiPath$
     Call openMainFile(filename$(1))
     editmainfile.Show
     lastProject$ = antiPath$
@@ -3841,8 +3839,8 @@ Private Sub Option5_Click(): On Error Resume Next
     Call activeAnimation.Option5_Click
 End Sub
 
-Private Sub palettebox_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeTile.palettebox_MouseDown(button, Shift, X, Y)
+Private Sub palettebox_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeTile.palettebox_MouseDown(button, Shift, x, y)
 End Sub
 
 Private Sub pausebar_Change(): On Error Resume Next
@@ -3937,7 +3935,7 @@ Private Sub rightbar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub rightbar_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rightbar_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
     'ignoreFocus = False
     'rightbar.SetFocus
     'If rightbar.width = 2730 Then
@@ -3949,7 +3947,7 @@ Private Sub rightbar_MouseMove(button As Integer, Shift As Integer, X As Single,
 End Sub
 
 Public Sub rpgcodeprimermnu_Click(): On Error GoTo ErrorHandler
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help2, resourcePath$ + m_LangFile))
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help2, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:
@@ -3959,7 +3957,7 @@ ErrorHandler:
 End Sub
 
 Public Sub rpgcodereferencemnu_Click(): On Error GoTo ErrorHandler
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help3, resourcePath$ + m_LangFile))
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help3, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:
@@ -4211,8 +4209,8 @@ Private Sub tileTool_Click(Index As Integer): On Error Resume Next
     Call activeTile.tileTool(Index)
 End Sub
 
-Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeBoard.ChangeTileType(button, Shift, X, Y)
+Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeBoard.ChangeTileType(button, Shift, x, y)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -4223,7 +4221,7 @@ Public Sub toggle_Click(): On Error Resume Next
     Call activeBoard.toggleTileType
 End Sub
 
-Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -4243,7 +4241,7 @@ Private Sub TreeView1_DblClick(): On Error Resume Next
     ignoreFocus = False
 End Sub
 
-Private Sub TreeView1_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TreeView1_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
     ignoreFocus = True
 End Sub
 
@@ -4253,7 +4251,7 @@ End Sub
 
 Public Sub usersguidemnu_Click(): On Error GoTo ErrorHandler
     
-    Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
+    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
     
     Exit Sub
 'Begin error handling code:
@@ -4423,7 +4421,7 @@ Private Sub changedSelectedTileset_Click(): On Error Resume Next
     
     'Set up the dialog window for opening the tileset.
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tilepath$
+    dlg.strDefaultFolder = projectPath$ + tilePath$
     dlg.strTitle = "Select Tileset"
     dlg.strDefaultExt = "tst"
     

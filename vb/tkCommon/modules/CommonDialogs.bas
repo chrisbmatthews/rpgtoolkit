@@ -29,8 +29,7 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pC
 
 Declare Function GlobalAlloc Lib "kernel32.dll" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
 Declare Function GlobalLock Lib "kernel32.dll" (ByVal hMem As Long) As Long
-'FIXIT: As Any is not supported in Visual Basic .NET. Use a specific type.                 FixIT90210ae-R5608-H1984
-Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (Destination As Any, source As Any, ByVal length As Long)
+Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Long, ByRef Source As Long, ByVal Length As Long)
 Declare Function GlobalUnlock Lib "kernel32.dll" (ByVal hMem As Long) As Long
 Declare Function GlobalFree Lib "kernel32.dll" (ByVal hMem As Long) As Long
 
@@ -120,7 +119,7 @@ Private Function APIString2VBString(ByVal str As String) As String
     Dim t As Integer
     For t = 0 To Len(str)
         part = Mid$(str, t, 1)
-        If part = Chr$(0) Then
+        If part = chr$(0) Then
             Exit For
         Else
             toRet = toRet + part
@@ -197,12 +196,12 @@ Function DialogFilterToAPIFilter(ByVal filter As String) As String
     Dim part As String
     For t = 0 To Len(filter)
         part = Mid$(filter, t, 1)
-        If part = "|" Then part = Chr$(0)
+        If part = "|" Then part = chr$(0)
         toRet = toRet + part
     Next t
           
-    toRet = toRet + Chr$(0)
-    toRet = toRet + Chr$(0)
+    toRet = toRet + chr$(0)
+    toRet = toRet + chr$(0)
 
     DialogFilterToAPIFilter = toRet
 End Function

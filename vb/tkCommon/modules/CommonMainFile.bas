@@ -161,7 +161,7 @@ Function openMain(ByVal file As String, ByRef theMain As TKMain) As Integer
         If fileHeader$ <> "RPGTLKIT MAIN" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open mainForm File": Exit Function
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Project was created with an unrecognised version of the Toolkit": Close #num: Exit Function
+        If majorVer <> major Then MsgBox "This Project was created with an unrecognised version of the Toolkit": Close #num: Exit Function
         reg = BinReadInt(num)
         toRet = reg
         regCode$ = BinReadString(num)
@@ -284,10 +284,10 @@ ver2oldmain:
         If fileHeader$ <> "RPGTLKIT mainForm" Then Close #num: GoTo openversion1main
         Input #num, majorVer           'Version
         Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Function
-        If minorVer <> Minor Then
+        If majorVer <> major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Function
+        If minorVer <> minor Then
             Dim user As Long
-            user = MsgBox("This file was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + CurrentVersion$ + ". Opening this file may not work.  Continue?", 4, "Different Version")
+            user = MsgBox("This file was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Function 'selected no
         End If
         Input #num, reg          'registeredYN
@@ -409,7 +409,7 @@ Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     
     Open file$ For Binary As #num
         Call BinWriteString(num, "RPGTLKIT MAIN")    'Filetype
-        Call BinWriteInt(num, Major)
+        Call BinWriteInt(num, major)
         Call BinWriteInt(num, 3)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
         Call BinWriteInt(num, 1)    'registered
         Call BinWriteString(num, "NOCODE")            'No reg code

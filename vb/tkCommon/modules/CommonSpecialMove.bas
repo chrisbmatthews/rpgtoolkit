@@ -101,7 +101,7 @@ Sub openSpecialMove(ByVal file As String, ByRef theMove As TKSpecialMove)
         If fileHeader$ <> "RPGTLKIT SPLMOVE" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Special Move": Exit Sub
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Move was created with an unrecognised version of the Toolkit", , "Unable to open Special Move": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Move was created with an unrecognised version of the Toolkit", , "Unable to open Special Move": Close #num: Exit Sub
     
         theMove.smname$ = BinReadString(num)     'name
         theMove.smFP = BinReadLong(num)      'fp
@@ -122,10 +122,10 @@ ver2oldmove:
         If fileHeader$ <> "RPGTLKIT SPLMOVE" Then Close #num: Exit Sub
         Input #num, majorVer           'Version
         Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Special Move was created with an unrecognised version of the Toolkit", , "Unable to open Special Move": Close #num: Exit Sub
-        If minorVer <> Minor Then
+        If majorVer <> major Then MsgBox "This Special Move was created with an unrecognised version of the Toolkit", , "Unable to open Special Move": Close #num: Exit Sub
+        If minorVer <> minor Then
             Dim user As Long
-            user = MsgBox("This file was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + CurrentVersion$ + ". Opening this file may not work.  Continue?", 4, "Different Version")
+            user = MsgBox("This file was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
         theMove.smname$ = fread(num)   'name
@@ -154,7 +154,7 @@ Sub saveSpecialMove(ByVal file As String, ByRef theMove As TKSpecialMove)
     Kill file
     Open file$ For Binary As #num
         Call BinWriteString(num, "RPGTLKIT SPLMOVE")    'Filetype
-        Call BinWriteInt(num, Major)               'Version
+        Call BinWriteInt(num, major)               'Version
         Call BinWriteInt(num, 2)                'Minor version
         Call BinWriteString(num, theMove.smname$)     'name
         Call BinWriteLong(num, theMove.smFP)        'fp

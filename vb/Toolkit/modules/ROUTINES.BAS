@@ -35,6 +35,14 @@ Attribute VB_Name = "Routines"
 
 Option Explicit
 
+Public Sub createFileAssociations()
+    '=======================================================
+    'Creates all file associations
+    '=======================================================
+    On Error Resume Next
+    Call CreateAssociation("prg", "RPGCode Program", App.path & "\" & App.EXEName & ".exe")
+End Sub
+
 Public Sub hideAllTools(): On Error Resume Next
     '=======================================================
     'Hides all toolbars
@@ -96,18 +104,18 @@ Public Sub makeFolders(ByVal theProjectPath As String)
     'Creates all project folders
     '=======================================================
     On Error Resume Next
-    MkDir Mid(theProjectPath & tilepath, 1, Len(theProjectPath & tilepath) - 1)
-    MkDir Mid(theProjectPath & brdpath, 1, Len(theProjectPath & brdpath) - 1)
-    MkDir Mid(theProjectPath & tempath, 1, Len(theProjectPath & tempath) - 1)
-    MkDir Mid(theProjectPath & spcpath, 1, Len(theProjectPath & spcpath) - 1)
-    MkDir Mid(theProjectPath & bkgpath, 1, Len(theProjectPath & bkgpath) - 1)
-    MkDir Mid(theProjectPath & mediapath, 1, Len(theProjectPath & mediapath) - 1)
-    MkDir Mid(theProjectPath & prgpath, 1, Len(theProjectPath & prgpath) - 1)
-    MkDir Mid(theProjectPath & fontpath, 1, Len(theProjectPath & fontpath) - 1)
-    MkDir Mid(theProjectPath & itmpath, 1, Len(theProjectPath & itmpath) - 1)
-    MkDir Mid(theProjectPath & enepath, 1, Len(theProjectPath & enepath) - 1)
-    MkDir Mid(theProjectPath & bmppath, 1, Len(theProjectPath & bmppath) - 1)
-    MkDir Mid(theProjectPath & statuspath, 1, Len(theProjectPath & statuspath) - 1)
+    MkDir Mid(theProjectPath & tilePath, 1, Len(theProjectPath & tilePath) - 1)
+    MkDir Mid(theProjectPath & brdPath, 1, Len(theProjectPath & brdPath) - 1)
+    MkDir Mid(theProjectPath & temPath, 1, Len(theProjectPath & temPath) - 1)
+    MkDir Mid(theProjectPath & spcPath, 1, Len(theProjectPath & spcPath) - 1)
+    MkDir Mid(theProjectPath & bkgPath, 1, Len(theProjectPath & bkgPath) - 1)
+    MkDir Mid(theProjectPath & mediaPath, 1, Len(theProjectPath & mediaPath) - 1)
+    MkDir Mid(theProjectPath & prgPath, 1, Len(theProjectPath & prgPath) - 1)
+    MkDir Mid(theProjectPath & fontPath, 1, Len(theProjectPath & fontPath) - 1)
+    MkDir Mid(theProjectPath & itmPath, 1, Len(theProjectPath & itmPath) - 1)
+    MkDir Mid(theProjectPath & enePath, 1, Len(theProjectPath & enePath) - 1)
+    MkDir Mid(theProjectPath & bmpPath, 1, Len(theProjectPath & bmpPath) - 1)
+    MkDir Mid(theProjectPath & statusPath, 1, Len(theProjectPath & statusPath) - 1)
     MkDir Mid(theProjectPath & miscPath, 1, Len(theProjectPath & miscPath) - 1)
     MkDir Mid(theProjectPath & pluginPath, 1, Len(theProjectPath & pluginPath) - 1)
 End Sub
@@ -247,7 +255,7 @@ Public Function green(ByVal longcolor As Long) As Long
     green = Int(longcolor - blue(longcolor) / 256)
 End Function
 
-Public Sub highRedrawLight()
+Public Sub highredrawLIGHT()
     '=======================================================
     'Redraws a tile's light source (high-quality)
     '=======================================================
@@ -321,7 +329,7 @@ Public Sub increaseDetail()
 
 End Sub
 
-Public Sub lowRedrawLight()
+Public Sub lowredrawLIGHT()
     '=======================================================
     'Redraws a tile's light source (low-quality)
     '=======================================================
@@ -524,10 +532,10 @@ Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
         Dim majorVer As Integer, minorVer As Integer
         Input #num, majorVer           'Version
         Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This tile was created with an unrecognised version of the Toolkit", , "Unable to open tile": Exit Sub
-        If minorVer <> Minor Then
+        If majorVer <> major Then MsgBox "This tile was created with an unrecognised version of the Toolkit", , "Unable to open tile": Exit Sub
+        If minorVer <> minor Then
             Dim user As VbMsgBoxResult
-            user = MsgBox("This tile was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + CurrentVersion$ + ". Opening this file may not work.  Continue?", 4, "Different Version")
+            user = MsgBox("This tile was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = vbNo Then Close num: Exit Sub     'selected no
         End If
         Input #num, detail             'Detail level- 1 is 32x32, 2 is 16x16
@@ -785,8 +793,8 @@ Public Sub saveTile(ByVal filenm As String): On Error Resume Next
     num = FreeFile()
     Open filename(1) For Output As num
         Print #num, "RPGTLKIT TILE"    'Filetype
-        Print #num, Major               'Version
-        Print #num, Minor                'Minor version (ie 2.0)
+        Print #num, major               'Version
+        Print #num, minor                'Minor version (ie 2.0)
         Print #num, detail             'Detail level- 1 is 32x32, 2 is 16x16
         Print #num, compression        'Compression 1-on, 0-off
 

@@ -108,89 +108,63 @@ Attribute VB_Exposed = False
 '=======================================================
 'Notes by KSNiloc for 3.04
 '
+' ---What is done
+' + Added Option Explicit
+' + Swapped +s for &s where appropriate
+'
 ' ---What needs to be done
-' + Add Option Explicit
 ' + Apply new visual style
 ' + Make this form used
 '
 '=======================================================
 
+Option Explicit
+
 Private Sub Check1_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     If Check1.value = 1 Then
         tipsOnOff = 0
     Else
         tipsOnOff = 1
     End If
     Call saveConfig("toolkit.cfg")
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     tipNum = tipNum + 1
-    maxTip = getTipCount(helppath$ + ObtainCaptionFromTag(DB_TipFile, resourcePath$ + m_LangFile))
+    Dim maxTip As Long
+    maxTip = getTipCount(helppath & ObtainCaptionFromTag(DB_TipFile, resourcePath & m_LangFile))
     If tipNum > maxTip Then tipNum = 1
-    ctip$ = getTipNum(helppath$ + ObtainCaptionFromTag(DB_TipFile, resourcePath$ + m_LangFile), tipNum)
-    Label2.Caption = ctip$
+    Dim cTip As String
+    cTip = getTipNum(helppath & ObtainCaptionFromTag(DB_TipFile, resourcePath & m_LangFile), tipNum)
+    Label2.Caption = cTip
     Call saveConfig("toolkit.cfg")
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo ErrorHandler
-    Unload tips
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    tipNum = tipNum + 1
+    Call Unload(Me)
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo ErrorHandler
-    Call LocalizeForm(Me)
-    
+    On Error Resume Next
     If tipsOnOff = 1 Then
         Check1.value = 0
     Else
         Check1.value = 1
     End If
-    maxTip = getTipCount(helppath$ + ObtainCaptionFromTag(DB_TipFile, resourcePath$ + m_LangFile))
+    Dim maxTip As Long
+    maxTip = getTipCount(helppath & ObtainCaptionFromTag(DB_TipFile, resourcePath & m_LangFile))
     If tipNum > maxTip Then tipNum = 1
-    ctip$ = getTipNum(helppath$ + ObtainCaptionFromTag(DB_TipFile, resourcePath$ + m_LangFile), tipNum)
-    Label2.Caption = ctip$
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Dim cTip As String
+    cTip = getTipNum(helppath & ObtainCaptionFromTag(DB_TipFile, resourcePath & m_LangFile), tipNum)
+    Label2.Caption = cTip
 End Sub
-
 
 Private Sub Form_Unload(Cancel As Integer)
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     tipNum = tipNum + 1
     Call saveConfig("toolkit.cfg")
-    Unload tips
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call Unload(Me)
 End Sub
-
-

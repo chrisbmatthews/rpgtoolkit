@@ -66,51 +66,25 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+Option Explicit
+
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
-    
-    Unload tutorialask
+    On Error Resume Next
+    Call Unload(Me)
     Call tkMainForm.tutorialmnu_Click
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
-    
-    Unload tutorialask
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    Call Unload(Me)
 End Sub
-
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
-    
-    Unload tutorialask
+    On Error Resume Next
+    Call Unload(Me)
     tutCurrentLesson = 1
-    MsgBox LoadStringLoc(993, "You can always run the tutorial by selecting Tutorial from the Help menu.")
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    Call MsgBox(LoadStringLoc(993, "You can always run the tutorial by selecting Tutorial from the Help menu."))
 End Sub
-
 
 Private Sub Form_Load()
     Call LocalizeForm(Me)
 End Sub
-
-

@@ -3,7 +3,14 @@ Attribute VB_Name = "event"
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What needs to be done
+' + Re-write event generator
+'
+'=======================================================
+
 'event generator methods
 
 Global evtList$()   'listing of the event program
@@ -42,41 +49,40 @@ Sub ListCategories(file$, elist As ListBox)
     End If
 End Sub
 
-
 'FIXIT: Declare 'LocateBrackets' with an early-bound data type                             FixIT90210ae-R1672-R1B8ZE
-Function LocateBrackets(text$)
+Function LocateBrackets(Text$)
     'returns position of first bracket/space after the RPGCode
     'Command.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     'First look for brackets--make it easy:
-    length = Len(text$)
-    For p = 1 To length
-        part$ = Mid$(text$, p, 1)
-        If part$ = "(" Then posat = p: p = length
+    Length = Len(Text$)
+    For p = 1 To Length
+        part$ = Mid$(Text$, p, 1)
+        If part$ = "(" Then posat = p: p = Length
     Next p
     If posat <> 0 Then LocateBrackets = posat: Exit Function
 
     'OK- no brackets.  Find position of first space after command.
-    For p = 1 To length
-        part$ = Mid$(text$, p, 1)
-        If part$ = "#" Then posat = p: p = length
+    For p = 1 To Length
+        part$ = Mid$(Text$, p, 1)
+        If part$ = "#" Then posat = p: p = Length
     Next p
     If posat = 0 Then LocateBrackets = 0: Exit Function 'couldn't find a command!
-    For p = posat To length     'Find first occurrence of command name
-        part$ = Mid$(text$, p, 1)
-        If part$ <> " " Then posat = p: p = length
+    For p = posat To Length     'Find first occurrence of command name
+        part$ = Mid$(Text$, p, 1)
+        If part$ <> " " Then posat = p: p = Length
     Next p
-    For p = posat To length     'Find where command name ends.
-        part$ = Mid$(text$, p, 1)
-        If part$ = " " Then posat = p: p = length
+    For p = posat To Length     'Find where command name ends.
+        part$ = Mid$(Text$, p, 1)
+        If part$ = " " Then posat = p: p = Length
     Next p
     LocateBrackets = posat: Exit Function
 
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -86,54 +92,54 @@ Function GetCommandName$(cline$)
 'is (the prefix, without the #).
 'It returns MBOX for message box, LABEL for label and VAR for variable!
 'Returns OPENBLOCK for block opening, CLOSEBLOCK for block closing
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 splice$ = cline$
 If splice$ = "" Then GetCommandName$ = "": Exit Function
-length = Len(splice$)
+Length = Len(splice$)
 'Look for #
 foundit = 0
-For p = 1 To length
+For p = 1 To Length
     part$ = Mid$(splice$, p, 1)
-    If part$ <> " " And part$ <> "#" And part$ <> Chr$(9) Then foundit = 0: p = length
-    If part$ = "#" Then foundit = p: p = length
+    If part$ <> " " And part$ <> "#" And part$ <> chr$(9) Then foundit = 0: p = Length
+    If part$ = "#" Then foundit = p: p = Length
 Next p
 If foundit = 0 Then
     'Yipes- didn't find a #.  Maybe it's a @ command
-    For p = 1 To length
+    For p = 1 To Length
         part$ = Mid$(splice$, p, 1)
-        If part$ <> " " And part$ <> "@" And part$ <> Chr$(9) Then foundit = 0: p = length
+        If part$ <> " " And part$ <> "@" And part$ <> chr$(9) Then foundit = 0: p = Length
         If part$ = "@" Then GetCommandName$ = "@": Exit Function
     Next p
     If foundit = 0 Then
         'Oh oh- still can't find it!  Probably a message
         'maybe a comment?
-        For p = 1 To length
+        For p = 1 To Length
             part$ = Mid$(splice$, p, 1)
-            If part$ <> " " And part$ <> "*" And part$ <> Chr$(9) Then foundit = 0: p = length
+            If part$ <> " " And part$ <> "*" And part$ <> chr$(9) Then foundit = 0: p = Length
             If part$ = "*" Then GetCommandName$ = "*": Exit Function
         Next p
     End If
     If foundit = 0 Then
         'Maybe a label
-        For p = 1 To length
+        For p = 1 To Length
             part$ = Mid$(splice$, p, 1)
-            If part$ <> " " And part$ <> ":" And part$ <> Chr$(9) Then foundit = 0: p = length
+            If part$ <> " " And part$ <> ":" And part$ <> chr$(9) Then foundit = 0: p = Length
             If part$ = ":" Then GetCommandName$ = "LABEL": Exit Function
         Next p
     End If
     If foundit = 0 Then
         'Maybe an if then start/stop
-        For p = 1 To length
+        For p = 1 To Length
             part$ = Mid$(splice$, p, 1)
-            If part$ <> " " And part$ <> "<" And part$ <> "{" And part$ <> Chr$(9) Then foundit = 0: p = length
+            If part$ <> " " And part$ <> "<" And part$ <> "{" And part$ <> chr$(9) Then foundit = 0: p = Length
             If part$ = "<" Or part$ = "{" Then GetCommandName$ = "OPENBLOCK": Exit Function
         Next p
     End If
     If foundit = 0 Then
         'Maybe an if then start/stop
-        For p = 1 To length
+        For p = 1 To Length
             part$ = Mid$(splice$, p, 1)
-            If part$ <> " " And part$ <> ">" And part$ <> "}" And part$ <> Chr$(9) Then foundit = 0: p = length
+            If part$ <> " " And part$ <> ">" And part$ <> "}" And part$ <> chr$(9) Then foundit = 0: p = Length
             If part$ = ">" Or part$ = "}" Then GetCommandName$ = "CLOSEBLOCK": Exit Function
         Next p
     End If
@@ -146,22 +152,22 @@ If foundit = 0 Then
 End If
 'OK, if I'm here, that means that it is a # command
 starting = foundit
-For p = starting + 1 To length
+For p = starting + 1 To Length
     part$ = Mid$(splice$, p, 1)
-    If part$ <> " " Then starting = p: p = length
+    If part$ <> " " Then starting = p: p = Length
 Next p
 
 commandName$ = ""
 'now find command
-For p = starting To length
+For p = starting To Length
     part$ = Mid$(splice$, p, 1)
-    If part$ = " " Or part$ = "(" Or part$ = "=" Then p = length: part$ = ""
+    If part$ = " " Or part$ = "(" Or part$ = "=" Then p = Length: part$ = ""
     commandName$ = commandName$ + part$
 Next p
 'Now, before sending this back, let's see if it's a varibale
 testit$ = commandName$
-length = Len(testit$)
-For p = 1 To length
+Length = Len(testit$)
+For p = 1 To Length
     part$ = Mid$(testit$, p, 1)
     If part$ = "!" Or part$ = "$" Then commandName$ = "VAR"
 Next p
@@ -170,23 +176,23 @@ GetCommandName$ = commandName$
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 'FIXIT: Declare 'GetBrackets' with an early-bound data type                                FixIT90210ae-R1672-R1B8ZE
-Function GetBrackets(text$)
+Function GetBrackets(Text$)
     'Takes a command and gets all the data that occurs after
     'The command itself (what's in the brackets).
-    On Error GoTo errorhandler
-    use$ = text$
+    On Error GoTo ErrorHandler
+    use$ = Text$
     location = LocateBrackets(use$)
-    length = Len(text$)
-    For p = location + 1 To length
-        part$ = Mid$(text$, p, 1)
+    Length = Len(Text$)
+    For p = location + 1 To Length
+        part$ = Mid$(Text$, p, 1)
         If part$ = ")" Or part$ = "" Then
-            p = length
+            p = Length
         Else
             fulluse$ = fulluse$ + part$
         End If
@@ -196,21 +202,21 @@ GetBrackets = fulluse$
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 'FIXIT: Declare 'CountData' with an early-bound data type                                  FixIT90210ae-R1672-R1B8ZE
-Function CountData(text$)
+Function CountData(Text$)
     'Counts data elements in text
     'Elements are seperated by ,'s or ;'s
-    On Error GoTo errorhandler
-    length = Len(text$)
+    On Error GoTo ErrorHandler
+    Length = Len(Text$)
     ele = 1
-    For p = 1 To length
-        part$ = Mid$(text$, p, 1)
-        If part$ = Chr$(34) Then
+    For p = 1 To Length
+        part$ = Mid$(Text$, p, 1)
+        If part$ = chr$(34) Then
             'A quote
             If ignore = 0 Then
                 ignore = 1
@@ -227,7 +233,7 @@ Function CountData(text$)
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -237,7 +243,7 @@ Function GetDescription(commandName$) As String
     On Error Resume Next
     toTest$ = "#" + UCase$(commandName$)
    
-    file$ = helppath$ + ObtainCaptionFromTag(DB_EventFile, resourcePath$ + m_LangFile)
+    file$ = helpPath$ + ObtainCaptionFromTag(DB_EventFile, resourcePath$ + m_LangFile)
     If FileExists(file$) Then
         num = FreeFile
         Open file$ For Input As #num
@@ -279,14 +285,14 @@ Function GetDescription(commandName$) As String
 End Function
 
 'FIXIT: Declare 'GetElement' and 'eleenum' with an early-bound data type                   FixIT90210ae-R1672-R1B8ZE
-Function GetElement(text$, eleenum)
+Function GetElement(Text$, eleenum)
     'gets element number from struing
-    On Error GoTo errorhandler
-    length = Len(text$)
+    On Error GoTo ErrorHandler
+    Length = Len(Text$)
     element = 0
-    For p = 1 To length + 1
-        part$ = Mid$(text$, p, 1)
-        If part$ = Chr$(34) Then
+    For p = 1 To Length + 1
+        part$ = Mid$(Text$, p, 1)
+        If part$ = chr$(34) Then
             'A quote
             If ignore = 0 Then
                 ignore = 1
@@ -314,20 +320,20 @@ Function GetElement(text$, eleenum)
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
-Function DescribeEvent(rpgcodecommand$, ByRef didDescribe As Boolean) As String
+Function DescribeEvent(rpgcodeCommand$, ByRef didDescribe As Boolean) As String
     'accept an rpgcode command.
     'try to determine a description of the event from events.ref
     'return the description.
     
     'will fill in info for the event
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
-    commandName$ = UCase$(GetCommandName(rpgcodecommand$))
+    commandName$ = UCase$(GetCommandName(rpgcodeCommand$))
     aDesc$ = GetDescription(commandName$)
     If aDesc$ <> "" Then
         didDescribe = True
@@ -335,12 +341,12 @@ Function DescribeEvent(rpgcodecommand$, ByRef didDescribe As Boolean) As String
     Else
         didDescribe = False
         'DescribeEvent = NoIndent(rpgcodecommand$)
-        DescribeEvent = rpgcodecommand$
+        DescribeEvent = rpgcodeCommand$
     End If
 
     Exit Function
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -390,22 +396,22 @@ End Sub
 
 Function NoIndent(cline$) As String
     'remove indentation from text
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     splice$ = cline$
     If splice$ = "" Then NoIndent$ = "": Exit Function
-    length = Len(splice$)
+    Length = Len(splice$)
     
     toRet$ = ""
     'Look for #
-    For p = 1 To length
+    For p = 1 To Length
         part$ = Mid$(splice$, p, 1)
-        If part$ <> " " And part$ <> Chr$(9) Then
+        If part$ <> " " And part$ <> chr$(9) Then
             foundit = p
             Exit For
         End If
     Next p
     
-    For t = foundit To length
+    For t = foundit To Length
         toRet$ = toRet$ + Mid$(splice$, t, 1)
     Next t
     
@@ -413,7 +419,7 @@ Function NoIndent(cline$) As String
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -442,8 +448,8 @@ Sub OpenEventList(file$, eventlist As ListBox)
                 Input #num, evtfile$                'corresponding rpgcode file
                 
                 'now put the event info into the list...
-                text$ = "Event " + toString(t) + ": " + evtDescription$ + " (" + evtfile$ + " (" + evtBoard$ + " " + toString(evtx) + ", " + toString(evty) + ", " + toString(evtl) + "))"
-                eventlist.AddItem (text$)
+                Text$ = "Event " + toString(t) + ": " + evtDescription$ + " (" + evtfile$ + " (" + evtBoard$ + " " + toString(evtx) + ", " + toString(evty) + ", " + toString(evtl) + "))"
+                eventlist.AddItem (Text$)
                 t = t + 1
             Loop
         Close #num

@@ -92,7 +92,6 @@ Attribute VB_Exposed = False
 '========================================================================
 '!NEW! Declared variables
 Option Explicit
-Dim x, y As Integer
 
 '========================================================================
 ' !NEW! The OK button, this was first the command1 button
@@ -113,6 +112,7 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+
 '========================================================================
 ' !NEW! The Cancel button, this was first the command2 button
 '========================================================================
@@ -129,6 +129,7 @@ End Sub
 Private Sub chkPreview_Click()
     'If they uncheck it, we should turn the tile back to how it was at the start
     If chkPreview.value = 0 Then
+        Dim x As Integer, y As Integer
         For x = 1 To 32
             For y = 1 To 32
                 'If tilemem(x, y) <> -1 Then
@@ -150,6 +151,7 @@ Private Sub Form_Load()
     Call LocalizeForm(Me)
     
     '!NEW! Used to store the current tile for when the "preview" function is used
+    Dim x As Integer, y As Integer
     For x = 1 To 32
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
@@ -171,6 +173,7 @@ Private Sub Form_Unload(Cancel As Integer)
     If Not SaveChanges Then
     'Use new undo
     Call activeTile.SetUndo
+    Dim x As Integer, y As Integer
     For x = 1 To 32
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
@@ -206,8 +209,9 @@ End Sub
 '========================================================================
 Private Sub Preview()
     'Declare Variables
-    Dim xin, incr, xx, yy, ninety, disp, d As Integer
+    Dim xin As Integer, incr As Integer, xx As Integer, yy As Integer, ninety As Integer, disp As Integer, d As Integer
     'First we need to to set the tile back to how it was at the start
+    Dim x As Integer, y As Integer
     For x = 1 To 32
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
@@ -317,4 +321,3 @@ Private Sub Preview()
     tkMainForm.isoMirror.cls
     activeTile.tileRedraw
 End Sub
-

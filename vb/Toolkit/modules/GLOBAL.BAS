@@ -23,38 +23,38 @@ Attribute VB_Name = "GLOBAL"
 
 Option Explicit
 
+'Misc Variables
 Public currentDir As String          'Current directory
-Public CurrentVersion As String      'Version "2.0"
-Public Major As Integer               'Major version
-Public Minor As Integer                'Minor version
-Public oldValue As Long             'oldvalue for RGB
-Public compression As Integer          'compression used?
+Public oldValue As Long              'oldvalue for RGB
 Public filename(30) As String        'Filename array
-Public gamePath As String            'path of games
-Public tilepath As String            'Tile dir path
-Public brdpath As String             'board dir path
-Public tempath As String             'character dir path
-Public arcpath As String             'archive dir path
-Public spcpath As String             'special move dir
-Public bkgpath As String             'board background dir
-Public mediapath As String           'media files
-Public prgpath As String             'prg files
-Public fontpath As String            'font files
-Public itmpath As String             'item path
-Public enepath As String             'enemy path
-Public gampath As String             'main file path
-Public bmppath As String             'bmp file path
-Public statuspath As String          'status effect path
-Public miscPath As String            'path for miscellaneous files (ie, anims, etc)
-Public pluginPath As String          'path of plugins
-Public resourcePath As String        'path for Toolkit.exe resource files, like wallpapers, etc
-Public helppath As String            'help file path
-Public hashpath As String            'path of hash files
 Public projectPath As String         'path of current project
 Public mp3Path As String             'starting path for mp3 files (the bard)
-Public fileToRename As String        'filename of file to rename.
-Public mainfileToRegister As String  'the main file to register (w/registered version only)
-Public mainfileToUnRegister As String  'the main file to unregister (w/registered version only)
+
+'Misc Constants
+Public Const compression = 1
+Public Const currentVersion = 2.1
+Public Const major = 2
+Public Const minor = 0
+Public Const gamePath = "Game\"               'game dir
+Public Const tilePath = "Tiles\"             'Tile dir path
+Public Const brdPath = "Boards\"              'board dir path
+Public Const temPath = "Chrs\"              'character dir path
+Public Const arcPath = "Archives\"              'archive dir path
+Public Const spcPath = "SpcMove\"          'spc move path
+Public Const bkgPath = "Bkrounds\"          'bkg path
+Public Const mediaPath = "Media\"          'media path
+Public Const prgPath = "Prg\"          'prg path
+Public Const fontPath = "Font\"        'Font path
+Public Const itmPath = "Item\"        'Item path
+Public Const enePath = "Enemy\"        'enemy path
+Public Const gamPath = "Main\"        'main file path
+Public Const bmpPath = "Bitmap\"        'bmp file path
+Public Const statusPath = "StatusE\"        'status effect
+Public Const helpPath = "Help\"        'help file path
+Public Const hashPath = "Hash\"        'hash file path
+Public Const miscPath = "Misc\"        'misc file path
+Public Const pluginPath = "Plugin\"        'plugin file path
+Public Const resourcePath = "Resources\"        'resource file path
 
 'Top most form
 Public activeForm As Form   'the top most window
@@ -78,7 +78,7 @@ Public activePlayer As characteredit     'active mdi child form
 Public activePlayerIndex As Long     'index for active board
 
 'Item Editor:
-Public activeItem As edititem     'active mdi child form
+Public activeItem As EditItem     'active mdi child form
 Public activeItemIndex As Long     'index for active item
 
 'Main File editor
@@ -111,7 +111,7 @@ Public activeAnimationIndex As Long
 'animated tile editor
 Public activeTileAnm As tileanim     'active mdi child form
 Public activeTileAnmIndex As Long     'index for active tile anm
-    
+
 'For color conversion
 Public qbtile(32, 32) As Long
 Public colorCode(15) As Long
