@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form boardinformation 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Board Information"
@@ -61,6 +61,236 @@ Begin VB.Form boardinformation
       Tag             =   "1022"
       Top             =   3960
       Width           =   1095
+   End
+   Begin VB.Frame Frame4 
+      Caption         =   "Directional Links"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   2895
+      Left            =   360
+      TabIndex        =   12
+      Tag             =   "1057"
+      Top             =   720
+      Width           =   6855
+      Begin VB.TextBox wl 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   285
+         Left            =   1680
+         TabIndex        =   47
+         Top             =   1440
+         Width           =   1815
+      End
+      Begin VB.TextBox el 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   285
+         Left            =   1680
+         TabIndex        =   46
+         Top             =   1080
+         Width           =   1815
+      End
+      Begin VB.TextBox sl 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   285
+         Left            =   1680
+         TabIndex        =   45
+         Top             =   720
+         Width           =   1815
+      End
+      Begin VB.TextBox nl 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   285
+         Left            =   1680
+         TabIndex        =   44
+         Top             =   360
+         Width           =   1815
+      End
+      Begin VB.CommandButton Command4 
+         Appearance      =   0  'Flat
+         Caption         =   "Browse..."
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   345
+         Left            =   3600
+         TabIndex        =   13
+         Tag             =   "1021"
+         Top             =   1440
+         Width           =   1095
+      End
+      Begin VB.CommandButton Command3 
+         Appearance      =   0  'Flat
+         Caption         =   "Browse..."
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   345
+         Left            =   3600
+         TabIndex        =   14
+         Tag             =   "1021"
+         Top             =   1080
+         Width           =   1095
+      End
+      Begin VB.CommandButton Command2 
+         Appearance      =   0  'Flat
+         Caption         =   "Browse..."
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   345
+         Left            =   3600
+         TabIndex        =   15
+         Tag             =   "1021"
+         Top             =   720
+         Width           =   1095
+      End
+      Begin VB.CommandButton Command1 
+         Appearance      =   0  'Flat
+         Caption         =   "Browse..."
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   345
+         Left            =   3600
+         TabIndex        =   16
+         Tag             =   "1021"
+         Top             =   360
+         Width           =   1095
+      End
+      Begin VB.Label Label10 
+         Caption         =   "Western Link"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   120
+         TabIndex        =   51
+         Tag             =   "1058"
+         Top             =   1440
+         Width           =   1455
+      End
+      Begin VB.Label Label9 
+         Caption         =   "Eastern Link"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   120
+         TabIndex        =   50
+         Tag             =   "1059"
+         Top             =   1080
+         Width           =   1455
+      End
+      Begin VB.Label Label8 
+         Caption         =   "Southern Link"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   120
+         TabIndex        =   49
+         Tag             =   "1060"
+         Top             =   720
+         Width           =   1455
+      End
+      Begin VB.Label Label4 
+         Caption         =   "Northern Link"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   120
+         TabIndex        =   48
+         Tag             =   "1061"
+         Top             =   360
+         Width           =   1455
+      End
    End
    Begin VB.Frame Frame3 
       Caption         =   "Music"
@@ -687,19 +917,22 @@ Begin VB.Form boardinformation
       Begin VB.VScrollBar VScroll3 
          Height          =   255
          Left            =   1560
-         Max             =   1024
+         Max             =   0
+         Min             =   2048
          TabIndex        =   39
+         TabStop         =   0   'False
          Top             =   360
-         Value           =   11
          Width           =   135
       End
       Begin VB.VScrollBar VScroll2 
          Height          =   255
          Left            =   720
-         Max             =   1024
+         Max             =   0
+         Min             =   2048
          TabIndex        =   38
+         TabStop         =   0   'False
          Top             =   360
-         Value           =   19
+         Value           =   2048
          Width           =   135
       End
       Begin VB.TextBox sy 
@@ -812,236 +1045,6 @@ Begin VB.Form boardinformation
          Width           =   855
       End
    End
-   Begin VB.Frame Frame4 
-      Caption         =   "Directional Links"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   2895
-      Left            =   360
-      TabIndex        =   12
-      Tag             =   "1057"
-      Top             =   720
-      Width           =   6855
-      Begin VB.TextBox wl 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   47
-         Top             =   1440
-         Width           =   1815
-      End
-      Begin VB.TextBox el 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   46
-         Top             =   1080
-         Width           =   1815
-      End
-      Begin VB.TextBox sl 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   45
-         Top             =   720
-         Width           =   1815
-      End
-      Begin VB.TextBox nl 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   1680
-         TabIndex        =   44
-         Top             =   360
-         Width           =   1815
-      End
-      Begin VB.CommandButton Command4 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   13
-         Tag             =   "1021"
-         Top             =   1440
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command3 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   14
-         Tag             =   "1021"
-         Top             =   1080
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command2 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   15
-         Tag             =   "1021"
-         Top             =   720
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command1 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   3600
-         TabIndex        =   16
-         Tag             =   "1021"
-         Top             =   360
-         Width           =   1095
-      End
-      Begin VB.Label Label10 
-         Caption         =   "Western Link"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   51
-         Tag             =   "1058"
-         Top             =   1440
-         Width           =   1455
-      End
-      Begin VB.Label Label9 
-         Caption         =   "Eastern Link"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   50
-         Tag             =   "1059"
-         Top             =   1080
-         Width           =   1455
-      End
-      Begin VB.Label Label8 
-         Caption         =   "Southern Link"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   49
-         Tag             =   "1060"
-         Top             =   720
-         Width           =   1455
-      End
-      Begin VB.Label Label4 
-         Caption         =   "Northern Link"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   120
-         TabIndex        =   48
-         Tag             =   "1061"
-         Top             =   360
-         Width           =   1455
-      End
-   End
    Begin MSComctlLib.TabStrip TabStrip1 
       Height          =   3735
       Left            =   240
@@ -1121,13 +1124,13 @@ On Error GoTo ErrorHandler
     If boardList(activeBoardIndex).theData.fightingYN = 0 Then
         fyes.value = 0
         Label3(0).Enabled = 0
-        command5.Enabled = 0
+        Command5.Enabled = 0
         skillbox.Enabled = 0
         bkgbox.Enabled = 0
     Else
         fyes.value = 1
         Label3(0).Enabled = 1
-        command5.Enabled = 1
+        Command5.Enabled = 1
         skillbox.Enabled = 1
         bkgbox.Enabled = 1
     End If
@@ -1179,8 +1182,8 @@ On Error GoTo ErrorHandler
     Else
         Option2.value = True
     End If
-    sx.Text = CStr(boardList(activeBoardIndex).theData.bSizeX)
-    sy.Text = CStr(boardList(activeBoardIndex).theData.bSizeY)
+    VScroll2.value = boardList(activeBoardIndex).theData.bSizeX
+    VScroll3.value = boardList(activeBoardIndex).theData.bSizeY
 
     Exit Sub
 'Begin error handling code:
@@ -1412,7 +1415,7 @@ Private Sub Command6_Click(): On Error GoTo ErrorHandler
         Call BoardResize(bx, By, bl, boardList(activeBoardIndex).theData)
         
         ' Resize form
-        Call activeBoard.resizeForm(activeBoard.Width, activeBoard.height)
+        Call activeBoard.resizeForm(activeBoard.width, activeBoard.height)
         
         boardNeedUpdate = True
         
@@ -1435,78 +1438,57 @@ ErrorHandler:
     Call HandleError: Resume Next
 End Sub
 
-Private Sub Option1_Click()
-    ignore = 1
-    VScroll2.max = 2048: VScroll3.max = 2048
-    ignore = 0
-End Sub
+Private Sub sx_LostFocus(): On Error Resume Next
+'===============================================
+' On leaving the X-size textbox, check the value.
 
-Private Sub Option2_Click()
-    If val(sx.Text) > 1024 Then sx.Text = "1024"
-    If val(sy.Text) > 1024 Then sy.Text = "1024"
-    
-    ignore = 1
-    VScroll2.max = 1024: VScroll3.max = 1024
-    ignore = 0
-End Sub
-
-Private Sub sx_Change(): On Error Resume Next
-    If Option1.value = True Then
+        'Maximum board size.
         If val(sx.Text) > 2048 Then sx.Text = "2048"
-        VScroll2.value = 2048 - val(sx.Text)
-    Else
-        If val(sx.Text) > 1024 Then sx.Text = "1024"
-        VScroll2.value = 1024 - val(sx.Text)
-    End If
+        
+        If boardList(activeBoardIndex).theData.isIsometric = 1 Then
+            'Isometric minima: 10x30 (640x480)
+            If val(sx.Text) < 10 Then: sx.Text = "10"
+        Else
+            '2D
+            If val(sx.Text) < 19 Then: sx.Text = "19"
+        End If
+    
+        VScroll2.value = val(sx.Text)
 End Sub
 
-Private Sub sy_Change(): On Error Resume Next
-    If Option1.value = True Then
+Private Sub sy_LostFocus(): On Error Resume Next
+'===============================================
+' On leaving the Y-size textbox, check the value.
+
+        'Maximum board size.
         If val(sy.Text) > 2048 Then sy.Text = "2048"
-        VScroll3.value = 2048 - val(sy.Text)
-    Else
-        If val(sy.Text) > 1024 Then sy.Text = "1024"
-        VScroll3.value = 1024 - val(sy.Text)
-    End If
+        
+        If boardList(activeBoardIndex).theData.isIsometric = 1 Then
+            'Isometric minima: 10x30 (640x480)
+            If val(sy.Text) < 30 Then: sy.Text = "30"
+        Else
+            '2D
+            If val(sy.Text) < 11 Then: sy.Text = "11"
+        End If
+    
+        VScroll3.value = val(sy.Text)
 End Sub
 
-Private Sub VScroll2_Change(): If ignore = 1 Then Exit Sub
-'=========================================================
-'X-scroller. Set minimum values.
+Private Sub VScroll2_Change(): On Error Resume Next
+'==================================================
+'X-scroller.
 
-    If Option1.value = True Then
-        sx.Text = 2048 - VScroll2.value
-    Else
-        sx.Text = 1024 - VScroll2.value
-    End If
-    
-    If boardList(activeBoardIndex).theData.isIsometric = 1 Then
-        'Isometric minima: 10x30 (640x480)
-        If val(sx.Text) < 10 Then: sx.Text = "10"
-    Else
-        '2D
-        If val(sx.Text) < 19 Then: sx.Text = "19"
-    End If
+    sx.Text = CStr(VScroll2.value)
+    Call sx_LostFocus
     
 End Sub
 
-Private Sub VScroll3_Change(): If ignore = 1 Then Exit Sub
-'=========================================================
-'Y-scroller. Set minimum values.
+Private Sub VScroll3_Change(): On Error Resume Next
+'==================================================
+'Y-scroller.
 
-    If Option1.value = True Then
-        sy.Text = 2048 - VScroll3.value
-    Else
-        sy.Text = 1024 - VScroll3.value
-    End If
-    
-    If boardList(activeBoardIndex).theData.isIsometric = 1 Then
-        'Isometric minima: 10x30 (640x480)
-        If val(sy.Text) < 30 Then: sy.Text = "30"
-    Else
-        '2D
-        If val(sy.Text) < 11 Then: sy.Text = "11"
-    End If
+    sy.Text = CStr(VScroll3.value)
+    Call sy_LostFocus
     
 End Sub
 
@@ -1642,13 +1624,13 @@ Private Sub fyes_Click()
     If boardList(activeBoardIndex).theData.fightingYN = 0 Then
         'fyes.Value = 0
         Label3(0).Enabled = 0
-        command5.Enabled = 0
+        Command5.Enabled = 0
         skillbox.Enabled = 0
         bkgbox.Enabled = 0
     Else
         'fyes.Value = 1
         Label3(0).Enabled = 1
-        command5.Enabled = 1
+        Command5.Enabled = 1
         skillbox.Enabled = 1
         bkgbox.Enabled = 1
     End If
@@ -1669,7 +1651,7 @@ Private Sub HScroll1_Change()
     activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
     activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.Width, activeBoard.height)
+    Call activeBoard.resizeForm(activeBoard.width, activeBoard.height)
 
     Exit Sub
 'Begin error handling code:
@@ -1786,7 +1768,7 @@ Private Sub VScroll1_Change()
     activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
     activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.Width, activeBoard.height)
+    Call activeBoard.resizeForm(activeBoard.width, activeBoard.height)
 
     Exit Sub
 'Begin error handling code:
