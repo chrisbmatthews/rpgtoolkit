@@ -2745,6 +2745,12 @@ Private Sub Form_Activate(): On Error Resume Next
     'Added.
     Call resizeForm(0, 0)
     
+    'Redraw the selected tile.
+    tkMainForm.currenttile.cls
+    tkMainForm.currenttileIso.cls
+    tkMainForm.bFrame(2).Caption = "Current Tile - None"
+    Call changeSelectedTile(boardList(activeBoardIndex).selectedTile)
+    
 End Sub
 
 '========================================================================
@@ -3110,30 +3116,30 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
         Next Y
     Next X
     
-    Dim addonR As Long, addonG As Long, addonB As Long, tX As Long, tY As Long
+    Dim addOnR As Long, addOnG As Long, addOnB As Long, tX As Long, tY As Long
     
     ' get RGB add-on value depending on ambient effect selected
     Select Case boardList(activeBoardIndex).theData.ambientEffect
     
         Case 0 ' None
-            addonR = 0
-            addonG = 0
-            addonB = 0
+            addOnR = 0
+            addOnG = 0
+            addOnB = 0
             
         Case 1 ' Fog/Mist
-            addonR = 75
-            addonG = 75
-            addonB = 75
+            addOnR = 75
+            addOnG = 75
+            addOnB = 75
             
         Case 2 ' Darkness
-            addonR = -75
-            addonG = -75
-            addonB = -75
+            addOnR = -75
+            addOnG = -75
+            addOnB = -75
             
         Case 3 ' Watery
-            addonR = 0
-            addonG = 0
-            addonB = 75
+            addOnR = 0
+            addOnG = 0
+            addOnB = 75
             
     End Select
     
@@ -3156,7 +3162,7 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
                     boardList(activeBoardIndex).theData.bSizeX, _
                     boardList(activeBoardIndex).theData.bSizeY, _
                     boardList(activeBoardIndex).theData.bSizeL, _
-                    addonR, addonG, addonB, _
+                    addOnR, addOnG, addOnB, _
                     boardList(activeBoardIndex).theData.isIsometric)
     
     ' chane directory
