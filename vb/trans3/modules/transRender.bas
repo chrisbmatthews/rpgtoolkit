@@ -1312,7 +1312,6 @@ Public Function isItemIdle(ByVal num As Long, Optional ByVal refresh As Boolean)
         End If
 
         If (Not skipSecondCheck) Then
-            Call traceString("In third if block")
             If ((Timer() - timeStamps(num)) >= itemMem(num).idleTime) Then
                 'It's been long enough-- now he's idle
                 Select Case UCase(.stance)
@@ -1335,7 +1334,7 @@ Public Function isItemIdle(ByVal num As Long, Optional ByVal refresh As Boolean)
         'Item was idle, update the time stamp
         timeStamps(num) = Timer()
     End If
-    
+
 fin:
 End Function
 
