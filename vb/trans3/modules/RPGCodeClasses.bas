@@ -324,6 +324,12 @@ Private Sub addVarToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_S
     origName = Trim(theVar)
     theVar = Trim(UCase(theVar))
 
+    'Default to ! if no type def character
+    If (Right(theVar, 1) <> "!" And Right(theVar, 1) <> "$") Then
+        'Add the !
+        theVar = theVar & "!"
+    End If
+
     'Make pos void
     pos = -1
 
