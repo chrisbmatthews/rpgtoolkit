@@ -267,6 +267,10 @@ ErrorHandler:
     Resume Next
 End Sub
 
+Private Sub Text1_KeyDown(KeyCode As Integer, Shift As Integer)
+    KeyCode = 0: Shift = 0
+End Sub
+
 Private Sub Text1_KeyPress(KeyAscii As Integer)
     KeyAscii = 0
 End Sub
