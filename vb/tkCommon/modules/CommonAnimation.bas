@@ -423,6 +423,10 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
 
     Dim anm As TKAnimation, maxF As Long
 
+    'Whatever the case, clear the canvas in case the character has no graphics,
+    'or the animation can't be loaded.
+    Call canvasFill(cnv, TRANSP_COLOR)
+
     If (LenB(file) = 0) Then
         ' Bail if we were passed NULL
         Exit Sub
