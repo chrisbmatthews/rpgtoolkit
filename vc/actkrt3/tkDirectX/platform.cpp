@@ -205,7 +205,7 @@ BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 		// Kill backbuffer
 		if (m_lpddsSecond)
 		{
-			if FAILED(m_lpddsSecond->Release()) return FALSE;
+			if (FAILED(m_lpddsSecond->Release())) return FALSE;
 			m_lpddsSecond = NULL;
 		}
 
