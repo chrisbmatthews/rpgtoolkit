@@ -458,19 +458,17 @@ Option Explicit
 ' BOARD EDITOR
 '========================================================================
 
-'===================================================
-' Additions for new isometric tilesets.
-' For 3.0.4 by Delano.
-'
-'       Changes are required or have been made in the following subs.
-'   changeSelectedTile
-'   boardSelectTile
-'
-' Isometric board size issues:
-'   boardIso,resizeForm,redrawbrd,Form_Load,refreshGrid,viewTiletype
-'   Form boardinformation - size tab alterations.
-'   scroll.bas - scrolling changes
-'====================================================
+'Flood fill a device context with the current brush
+Private Declare Function ExtFloodFill Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal wFillType As Long) As Long
+
+'Create a solid brush object of the color passed in
+Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
+
+'Assign an object to a device context
+Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
+
+'Delete an object
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 '========================================================================
 ' variable declaration
@@ -683,9 +681,96 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
 End Sub
 
 '========================================================================
-' file board with selected tile
+' Fill board with selected tile - using gdi (added for 3.0.6)
 '========================================================================
-Public Sub fillBoard(ByVal x As Long, ByVal y As Long, ByVal l As Long, ByVal tileFile As String, Optional ByVal lastX As Long = -1, Optional ByVal lastY As Long = -1): On Error Resume Next
+Private Sub gdiFillBoard(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long, _
+                        ByVal tileFilename As String): On Error Resume Next
+
+    Const MAGIC_NUMBER = 32768
+                
+    With boardList(activeBoardIndex).theData
+
+        Dim curIdx As Long, newIdx As Long
+        'The tile we clicked to flood and the tile we want to flood it with.
+        curIdx = .board(xLoc, yLoc, layer)
+        newIdx = BoardTileInLUT(tileFilename, boardList(activeBoardIndex).theData)
+        
+        If curIdx = newIdx Then
+            'We're flooding the same tile, but does it have the same attributes?
+            If .ambientRed(xLoc, yLoc, layer) = boardList(activeBoardIndex).ambientR And _
+                .ambientGreen(xLoc, yLoc, layer) = boardList(activeBoardIndex).ambientG And _
+                .ambientBlue(xLoc, yLoc, layer) = boardList(activeBoardIndex).ambientB And _
+                .tiletype(xLoc, yLoc, layer) = boardList(activeBoardIndex).currentTileType Then
+                    Exit Sub
+            Else
+                'Give the new tile a different "colour" so these tiles get flooded.
+                'The magic number... there aren't going to be this many different tiles on a
+                'board so this is safe.
+                newIdx = MAGIC_NUMBER
+            End If
+        End If
+        
+        'Draw the board onto a canvas.
+        'We use a different "colour" for each tile, by its LUT entry.
+        
+        Dim cnv As Long
+        cnv = createCanvas(.bSizeX + 1, .bSizeY + 1)
+        
+        Dim x As Long, y As Long
+        For x = 1 To .bSizeX
+            For y = 1 To .bSizeY
+                'Set a pixel per tile, an empty tile is represented as 0 (black).
+                Call canvasSetPixel(cnv, x, y, .board(x, y, layer))
+            Next y
+        Next x
+        
+        'Perform the flood...
+        
+        Dim hdc As Long, brush As Long
+        hdc = canvasOpenHDC(cnv)                        'Open the canvas device context.
+        brush = CreateSolidBrush(newIdx)                'Create a brush.
+        
+        Call SelectObject(hdc, brush)                   'Assign the brush to the device context.
+        Call ExtFloodFill(hdc, xLoc, yLoc, curIdx, 1)   'Process the flood fill on the device context.
+        
+        Call DeleteObject(brush)                        'Destroy the brush.
+        Call canvasCloseHDC(cnv, hdc)                   'Close the device context.
+            
+        For x = 1 To .bSizeX
+            For y = 1 To .bSizeY
+                'Copy the flooded image back to the board.
+                
+                If .board(x, y, layer) <> canvasGetPixel(cnv, x, y) Then
+                    'This tile has been flooded, copy attributes across.
+                    .board(x, y, layer) = canvasGetPixel(cnv, x, y)
+                    
+                    If newIdx = MAGIC_NUMBER Then
+                        'The magic number - this was the same tile, so change it back.
+                        .board(x, y, layer) = curIdx
+                    End If
+                    
+                    'Set attributes.
+                    .tiletype(x, y, layer) = boardList(activeBoardIndex).currentTileType
+                    .ambientRed(x, y, layer) = boardList(activeBoardIndex).ambientR
+                    .ambientGreen(x, y, layer) = boardList(activeBoardIndex).ambientG
+                    .ambientBlue(x, y, layer) = boardList(activeBoardIndex).ambientB
+                    
+                End If
+            
+            Next y
+        Next x
+        
+        Call destroyCanvas(cnv)                         'Destroy the canvas.
+    
+    End With
+
+End Sub
+
+'==============================================================================
+' Fill board with selected tile
+' Depreciated 3.0.6: crashes on large boards (>~ 100 x 100) - use gdi instead!
+'==============================================================================
+Private Sub fillBoard(ByVal x As Long, ByVal y As Long, ByVal l As Long, ByVal tileFile As String, Optional ByVal lastX As Long = -1, Optional ByVal lastY As Long = -1): On Error Resume Next
     
     ' get old tile
     Dim replaceTile As Long
@@ -1503,14 +1588,14 @@ Public Sub DrawBackground()
         ' if board has a background image
         If LenB(.brdBack) <> 0 Then
         
-            If .brdBackCnv = 0 Then
+            If .brdBackCNV = 0 Then
                 'Not yet opened, or we changed backgrounds.
-                .brdBackCnv = createCanvas(1, 1)
-                Call canvasLoadFullPicture(.brdBackCnv, projectPath & bmpPath & .brdBack, -1, -1)
+                .brdBackCNV = createCanvas(1, 1)
+                Call canvasLoadFullPicture(.brdBackCNV, projectPath & bmpPath & .brdBack, -1, -1)
             End If
             
             ' Blt the image from the canvas, if it's open. Much quicker!
-            If .brdBackCnv <> 0 Then Call canvasBlt(.brdBackCnv, x, y, vbPicHDC(boardform))
+            If .brdBackCNV <> 0 Then Call canvasBlt(.brdBackCNV, x, y, vbPicHDC(boardform))
             
         End If
         
@@ -2445,7 +2530,14 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
                 MsgBox "The Fill tool is disabled in AutoTiler mode!"
             Else
                 ' run fill routine
-                Call fillBoard(xx, yy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).selectedTile$)
+                'Use gdi version as recursive routine crashes on large boards (3.0.6)
+                'Call fillBoard(xx, yy, _
+                               boardList(activeBoardIndex).currentLayer, _
+                               boardList(activeBoardIndex).selectedTile)
+                               
+                Call gdiFillBoard(xx, yy, _
+                                  boardList(activeBoardIndex).currentLayer, _
+                                  boardList(activeBoardIndex).selectedTile)
             End If
             
         End If
@@ -2944,8 +3036,8 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     Set Scroll = Nothing
     
     'Destroy the background image canvas.
-    If boardList(activeBoardIndex).theData.brdBackCnv <> 0 Then
-        Call destroyCanvas(boardList(activeBoardIndex).theData.brdBackCnv)
+    If boardList(activeBoardIndex).theData.brdBackCNV <> 0 Then
+        Call destroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
     End If
     
     Call tkMainForm.refreshTabs
