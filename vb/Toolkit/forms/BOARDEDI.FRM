@@ -1453,6 +1453,18 @@ Public Sub boardEraser(): On Error Resume Next
 End Sub
 
 '========================================================================
+' select autotiler mode (added by Shao, 09/24/2004)
+'========================================================================
+Public Sub boardAutotiler(ByVal value As Integer): On Error Resume Next
+    
+    If ignore = 1 Then Exit Sub
+    
+    ' toggle autotiler mode
+    boardList(activeBoardIndex).autotiler = value
+    
+End Sub
+
+'========================================================================
 ' load board gradient form
 '========================================================================
 Public Sub boardGradient(): On Error Resume Next
@@ -2153,20 +2165,25 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single
                 End If
 
                 If (commonRoutines.extention(tilePath$ & boardList(activeBoardIndex).selectedTile$) <> "TBM") Then
-                    ' draw the tile
-                    Call drawTile(boardform.hdc, _
-                                         tilePath$ & boardList(activeBoardIndex).selectedTile$, _
-                                         xx - boardList(activeBoardIndex).topX, _
-                                         yy - boardList(activeBoardIndex).topY, _
-                                         boardList(activeBoardIndex).ambientR, _
-                                         boardList(activeBoardIndex).ambientG, _
-                                         boardList(activeBoardIndex).ambientB, _
-                                         False, _
-                                         False, _
-                                         iso, _
-                                         eo)
-                    ' set new tile details
-                    Call BoardSetTile(xx, yy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).selectedTile$, boardList(activeBoardIndex).theData)
+                    If boardList(activeBoardIndex).autotiler Then
+                        ' update autotiles
+                        Call autoTilerPutTile(boardList(activeBoardIndex).selectedTile$, xx, yy, iso, eo, ((Shift And vbShiftMask) = vbShiftMask))
+                    Else
+                        ' draw the tile
+                        Call drawTile(boardform.hdc, _
+                                             tilePath$ & boardList(activeBoardIndex).selectedTile$, _
+                                             xx - boardList(activeBoardIndex).topX, _
+                                             yy - boardList(activeBoardIndex).topY, _
+                                             boardList(activeBoardIndex).ambientR, _
+                                             boardList(activeBoardIndex).ambientG, _
+                                             boardList(activeBoardIndex).ambientB, _
+                                             False, _
+                                             False, _
+                                             iso, _
+                                             eo)
+                        'set new tile details
+                        Call BoardSetTile(xx, yy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).selectedTile$, boardList(activeBoardIndex).theData)
+                    End If
                 Else
                     'Tile bitmap!
                     Dim a As Long, b As Long, theTile As TKTileBitmap
@@ -2397,10 +2414,13 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single
             
             ' reset tiletype data
             boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer) = 0
-                
-            ' get tile data
-            Call BoardSetTile(xx, yy, boardList(activeBoardIndex).currentLayer, "", boardList(activeBoardIndex).theData)
-                
+                   
+            If boardList(activeBoardIndex).autotiler Then
+                'update autotiles
+                Call autoTilerPutTile("", xx, yy, boardList(activeBoardIndex).theData.isIsometric, Not (boardList(activeBoardIndex).topY Mod 2 = 0))
+            Else
+                Call BoardSetTile(xx, yy, boardList(activeBoardIndex).currentLayer, "", boardList(activeBoardIndex).theData)
+            End If
         End If
         
         ' set event
@@ -2431,8 +2451,14 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single
             ' update caption
             tkMainForm.drawstatebox.Caption = LoadStringLoc(1678, "Flood Fill")
             
-            ' run fill routine
-            Call fillBoard(xx, yy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).selectedTile$)
+            
+            If boardList(activeBoardIndex).autotiler Then
+                'fill disabled in autotiler mode (until reworked)
+                MsgBox "The Fill tool is disabled in AutoTiler mode!"
+            Else
+                ' run fill routine
+                Call fillBoard(xx, yy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).selectedTile$)
+            End If
             
         End If
     
@@ -2555,10 +2581,15 @@ Private Sub mnuPop_Erase_Click()
             
     ' reset tiletype data
     boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = 0
-                
-    ' get tile data
-    Call BoardSetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, "", boardList(activeBoardIndex).theData)
-                
+                         
+    If boardList(activeBoardIndex).autotiler Then
+        'update autotiles
+        Call autoTilerPutTile("", boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).theData.isIsometric, Not (boardList(activeBoardIndex).topY Mod 2 = 0))
+    Else
+        'set tile data
+        Call BoardSetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, "", boardList(activeBoardIndex).theData)
+    End If
+    
     ' board redraw
     Call boardRedraw
     
@@ -2733,6 +2764,7 @@ Private Sub Form_Activate(): On Error Resume Next
     ignore = 1
     tkMainForm.boardGrid.value = boardList(activeBoardIndex).gridBoard
     tkMainForm.boardIso.value = boardList(activeBoardIndex).theData.isIsometric
+    tkMainForm.boardAutotileDraw.value = boardList(activeBoardIndex).autotiler
     If boardList(activeBoardIndex).drawState = 0 Then boardToolSettings 1, 0, 0, 0
     If boardList(activeBoardIndex).drawState = 1 Then boardToolSettings 0, 1, 0, 0
     If boardList(activeBoardIndex).drawState = 6 Then boardToolSettings 0, 0, 1, 0
@@ -3686,6 +3718,184 @@ Private Function TwipsY(ByVal tiles As Long) As Long
     End If
     
 End Function
+
+'===========================================================
+' Board AutoTiler functions
+'   +Added by Shao, 09/24/2004
+'===========================================================
+'   +autoTileset:
+'returns the index of an autotst, or -1 if invalid
+'if its not presently an autotst, make it one now
+Private Function autoTileset(ByVal tileset As String, Optional ByVal allowAdd As Boolean = True) As Integer
+    Dim i As Integer, ub As Integer ', sGrpCode As String
+
+    ub = UBound(autoTilerSets)
+
+    autoTileset = -1
+
+    If UCase(Left(tileset, 10)) <> "AUTOTILES_" Then Exit Function
+    
+    'insert check for proper tile count here
+
+    For i = 0 To ub
+        If autoTilerSets(i) = tileset Then
+            'if the autotileset is recognized, return its index
+            autoTileset = i
+            Exit Function
+        End If
+    Next i
+
+    'add as autotileset
+    If (allowAdd) And (autoTileset = -1) Then
+        'known issue: first element is skipped, doesn't seem to be a big problem
+        autoTileset = ub + 1
+        ReDim Preserve autoTilerSets(autoTileset)
+        autoTilerSets(autoTileset) = tileset
+    End If
+End Function
+
+'   +autoTilerPutTile
+'change a tile and update surrounding autotiles to match it
+Private Sub autoTilerPutTile(ByVal tst As String, ByVal tilex As Integer, ByVal tiley As Integer, Optional ByVal iso As Boolean = False, Optional ByVal eo As Boolean = False, Optional ByVal ignoreOthers As Boolean = False)
+    Dim ix As Integer, iy As Integer, morphTileIndex As Byte, currentTileset As String, currentAutotileset As Integer, thisAutoTileset As Integer
+    Dim brdWidth As Integer, brdHeight As Integer, startY As Integer, endY As Integer, startX As Integer, endX As Integer
+
+    currentTileset = tilesetFilename(tst)
+     
+    If autoTileset(currentTileset, True) = -1 Then
+        'not an autotileset! set it down to close off surrounding autotiles
+        Call drawTile(boardform.hdc, tilePath$ & tst, _
+                    tilex - boardList(activeBoardIndex).topX, tiley - boardList(activeBoardIndex).topY, _
+                    boardList(activeBoardIndex).ambientR, boardList(activeBoardIndex).ambientG, _
+                    boardList(activeBoardIndex).ambientB, False, False, iso, eo)
+                   
+        Call BoardSetTile(tilex, tiley, boardList(activeBoardIndex).currentLayer, tst, boardList(activeBoardIndex).theData)
+    Else
+        'valid autotileset! set down tile 51 (arbitrary) to link to surrounding autotiles
+        Call drawTile(boardform.hdc, tilePath$ & currentTileset & CStr(51), _
+                         tilex - boardList(activeBoardIndex).topX, tiley - boardList(activeBoardIndex).topY, _
+                         boardList(activeBoardIndex).ambientR, boardList(activeBoardIndex).ambientG, _
+                         boardList(activeBoardIndex).ambientB, False, False, iso, eo)
+                   
+        Call BoardSetTile(tilex, tiley, boardList(activeBoardIndex).currentLayer, currentTileset & CStr(51), boardList(activeBoardIndex).theData)
+    End If
+    
+    brdWidth = boardList(activeBoardIndex).theData.bSizeX
+    brdHeight = boardList(activeBoardIndex).theData.bSizeY
+    
+    currentAutotileset = autoTileset(tilesetFilename(BoardGetTile(tilex, tiley, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)))
+    
+    If iso Then
+        'iso board
+        'loop through each surrounding tile to check if it should be morphed
+        'known issue: this loop has a few unneeded iterations
+        
+        startY = tiley - 2: If startY < 1 Then startY = 1
+        endY = tiley + 2: If endY > brdHeight Then endY = brdHeight
+        
+        startX = tilex - 1: If startX < 1 Then startX = 1
+        endX = tilex + 1: If endX > brdWidth Then endX = brdWidth
+        
+        For iy = startY To endY
+            For ix = startX To endX
+                thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)))
+                
+                'if shift is held down, override updating of other autotiles
+                If (ignoreOthers) And (thisAutoTileset <> currentAutotileset) Then thisAutoTileset = -1
+                
+                'the 8 bits in this byte represent the 8 directions it can link to
+                morphTileIndex = 0
+    
+                If thisAutoTileset <> -1 Then
+                    'check if the tile should link to the cardinal directions
+                    If iy Mod 2 = 0 Then
+                        'even row
+                        If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
+                        If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
+                        If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
+                        If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
+                    Else
+                        'odd row
+                        If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
+                        If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
+                        If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
+                        If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
+                    End If
+                    
+                    'check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
+                    If (ix > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
+                    If (iy > 2) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 2, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
+                    If (iy < brdHeight - 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 2, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
+                    If (ix < brdWidth) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
+                
+                    'draw and set the new tile
+                    Call drawTile(boardform.hdc, tilePath$ & autoTilerSets(thisAutoTileset) & CStr(TileMorphs(morphTileIndex)), _
+                                   ix - boardList(activeBoardIndex).topX, iy - boardList(activeBoardIndex).topY, _
+                                   boardList(activeBoardIndex).theData.ambientRed(ix, iy, boardList(activeBoardIndex).currentLayer), _
+                                   boardList(activeBoardIndex).theData.ambientGreen(ix, iy, boardList(activeBoardIndex).currentLayer), _
+                                   boardList(activeBoardIndex).theData.ambientBlue(ix, iy, boardList(activeBoardIndex).currentLayer), _
+                                   False, False, iso, eo)
+                 
+                    Call BoardSetTile(ix, iy, boardList(activeBoardIndex).currentLayer, autoTilerSets(thisAutoTileset) & CStr(TileMorphs(morphTileIndex)), boardList(activeBoardIndex).theData)
+    
+                End If
+            Next ix
+        Next iy
+    
+    Else
+        '2d board
+        'loop through each surrounding tile to check if it should be morphed
+        
+        startY = tiley - 1: If startY < 1 Then startY = 1
+        endY = tiley + 1: If endY > brdHeight Then endY = brdHeight
+        
+        startX = tilex - 1: If startX < 1 Then startX = 1
+        endX = tilex + 1: If endX > brdWidth Then endX = brdWidth
+        
+        For iy = startY To endY
+            For ix = startX To endX
+                thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)))
+                
+                'if shift is held down, override updating of other autotiles
+                If (ignoreOthers) And (thisAutoTileset <> currentAutotileset) Then thisAutoTileset = -1
+                
+                'the 8 bits in this byte represent the 8 directions it can link to
+                morphTileIndex = 0
+    
+                If thisAutoTileset <> -1 Then
+                    'check if the tile should link to the cardinal directions
+                    If (ix > 1) And autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_W
+                    If (iy > 1) And autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_N
+                    If (iy < brdHeight) And autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_S
+                    If (ix < brdWidth) And autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_E
+                     
+                    'check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
+                    If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
+                    If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
+                    If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
+                    If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
+                    
+                    'draw and set the new tile
+                    Call drawTile(boardform.hdc, tilePath$ & autoTilerSets(thisAutoTileset) & CStr(TileMorphs(morphTileIndex)), _
+                                   ix - boardList(activeBoardIndex).topX, iy - boardList(activeBoardIndex).topY, _
+                                   boardList(activeBoardIndex).theData.ambientRed(ix, iy, boardList(activeBoardIndex).currentLayer), _
+                                   boardList(activeBoardIndex).theData.ambientGreen(ix, iy, boardList(activeBoardIndex).currentLayer), _
+                                   boardList(activeBoardIndex).theData.ambientBlue(ix, iy, boardList(activeBoardIndex).currentLayer), _
+                                   False, False, iso, eo)
+                 
+                    Call BoardSetTile(ix, iy, boardList(activeBoardIndex).currentLayer, autoTilerSets(thisAutoTileset) & CStr(TileMorphs(morphTileIndex)), boardList(activeBoardIndex).theData)
+                End If
+            Next ix
+        Next iy
+    End If
+    
+    Call boardform.Refresh
+End Sub
+'-----------------------------------------------------------
+' End of Board AutoTiler functions
+'   +Added by Shao, 09/24/2004
+'===========================================================
+
 
 '============================================================
 ' Main Form Menu
