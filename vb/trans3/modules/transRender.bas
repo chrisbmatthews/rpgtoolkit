@@ -1,6 +1,6 @@
 Attribute VB_Name = "transRender"
 '=========================================================================
-' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 ' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '=========================================================================
@@ -97,48 +97,6 @@ Private Type PlayerRender
     x As Double                             ' X position the render occured in
     y As Double                             ' Y position the render occured in
 End Type
-
-'=========================================================================
-' Check if board can scroll
-'=========================================================================
-Private Sub checkScrollBounds()
-
-    On Error Resume Next
-
-    ' Is the board isometric?
-    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-
-        ' Check topX
-        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Then
-            topX = boardList(activeBoardIndex).theData.bSizeX - isoTilesX - 0.5
-        End If
-
-        ' Check topY
-        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Then
-            topY = (boardList(activeBoardIndex).theData.bSizeY - isoTilesY - 1) / 2
-        End If
-
-    Else
-
-        ' Check topX
-        If (topX + tilesX > boardList(activeBoardIndex).theData.bSizeX) Then
-            topX = boardList(activeBoardIndex).theData.bSizeX - tilesX
-        End If
-
-        ' Check topY
-        If (topY + tilesY > boardList(activeBoardIndex).theData.bSizeY) Then
-            topY = boardList(activeBoardIndex).theData.bSizeY - tilesY
-        End If
-
-    End If
-
-    ' Can't have x as less than 0
-    If (topX < 0) Then topX = 0
-
-    ' Can't have y as less than 0
-    If (topY < 0) Then topY = 0
-
-End Sub
 
 '=========================================================================
 ' Randomly return one of two values
@@ -808,58 +766,60 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     Dim renderWidth As Long, renderHeight As Long
     'Portion of frame to be drawn, after offset considerations.
        
-    If cornerX < 0 Or cornerY < 0 Or _
-        (cornerX + spriteWidth > resX) Or (cornerY + spriteHeight > resY) Then
-        'If sprite frame will lie outside the bounds of the screen resolution.
-                
-        If cornerX < 0 Then
-            'Frame off left side. cornerX must never be less than zero! (will crash)
-            offsetX = Abs(cornerX)
-            renderWidth = spriteWidth - offsetX
-            cornerX = 0
-            
-        ElseIf cornerX + spriteWidth > resX Then
-        
-            'Frame off right side. Must never be greater than resX!!
-            offsetX = 0
-            renderWidth = resX - cornerX
-            
+    'Calculate locations and areas to draw.
+    If cornerX < 0 Then
+        offsetX = -cornerX
+        If cornerX + spriteWidth > resX Then
+            renderWidth = resX                      'Both.
         Else
-        
-            offsetX = 0
-            renderWidth = spriteWidth
-            
+            renderWidth = spriteWidth - offsetX     'Left.
         End If
-        
-        If cornerY < 0 Then
-        
-            'Frame off top. cornerY must never be less than zero!
-            offsetY = Abs(cornerY)
-            renderHeight = spriteHeight - offsetY
-            cornerY = 0
-            
-        ElseIf cornerY + spriteHeight > resY Then
-        
-            'Frame off bottom.
-            offsetY = 0
-            renderHeight = resY - cornerY
-            
+        cornerX = 0
+    Else
+        If cornerX + spriteWidth > resX Then
+            renderWidth = resX - cornerX            'Right.
         Else
-        
-            offsetY = 0
-            renderHeight = spriteHeight
-            
+            renderWidth = spriteWidth               'None.
         End If
+    End If
+    
+    If cornerY < 0 Then
+        offsetY = -cornerY
+        If cornerY + spriteHeight > resY Then
+            renderHeight = resY                      'Both.
+        Else
+            renderHeight = spriteHeight - offsetY    'Left.
+        End If
+        cornerY = 0
+    Else
+        If cornerY + spriteHeight > resY Then
+            renderHeight = resY - cornerY            'Right.
+        Else
+            renderHeight = spriteHeight              'None.
+        End If
+    End If
+    
+    'We now have the position and area of the sprite to draw.
+    'Check if we need to draw the sprite transluscently:
+    
+    If drawTranslucently And bAccountForUnderTiles Then
+        'If on "under" tiles, make sprite translucent.
         
-        'We now have the position and area of the sprite to draw.
-        'Check if we need to draw the sprite transluscently:
+        If cnvTarget = -1 Then 'Draw to screen
         
-        If drawTranslucently And bAccountForUnderTiles Then
-            'If on "under" tiles, make sprite translucent.
-            
-            If cnvTarget = -1 Then 'Draw to screen
-            
-                Call DXDrawCanvasTranslucentPartial(cnvFrameID, _
+            Call DXDrawCanvasTranslucentPartial(cnvFrameID, _
+                                                cornerX, _
+                                                cornerY, _
+                                                offsetX, _
+                                                offsetY, _
+                                                renderWidth, _
+                                                renderHeight, _
+                                                0.25, -1, _
+                                                TRANSP_COLOR)
+        Else 'Draw to canvas.
+        
+            Call canvas2canvasBltTranslucentPartial(cnvFrameID, _
+                                                    cnvTarget, _
                                                     cornerX, _
                                                     cornerY, _
                                                     offsetX, _
@@ -868,26 +828,25 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
                                                     renderHeight, _
                                                     0.25, -1, _
                                                     TRANSP_COLOR)
-            Else 'Draw to canvas.
+        End If
+        
+    Else
+        'Draw solid. Transparent refers to the transparent colour (alpha) on the frame.
+        
+        If cnvTarget = -1 Then 'Draw to screen
             
-                Call canvas2canvasBltTranslucentPartial(cnvFrameID, _
-                                                        cnvTarget, _
-                                                        cornerX, _
-                                                        cornerY, _
-                                                        offsetX, _
-                                                        offsetY, _
-                                                        renderWidth, _
-                                                        renderHeight, _
-                                                        0.25, -1, _
-                                                        TRANSP_COLOR)
-            End If
-            
-        Else
-            'Draw solid. Transparent refers to the transparent colour (alpha) on the frame.
-            
-            If cnvTarget = -1 Then 'Draw to screen
-                
-                Call DXDrawCanvasTransparentPartial(cnvFrameID, _
+            Call DXDrawCanvasTransparentPartial(cnvFrameID, _
+                                                cornerX, _
+                                                cornerY, _
+                                                offsetX, _
+                                                offsetY, _
+                                                renderWidth, _
+                                                renderHeight, _
+                                                TRANSP_COLOR)
+        Else 'Draw to canvas
+
+            Call canvas2CanvasBltTransparentPartial(cnvFrameID, _
+                                                    cnvTarget, _
                                                     cornerX, _
                                                     cornerY, _
                                                     offsetX, _
@@ -895,61 +854,9 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
                                                     renderWidth, _
                                                     renderHeight, _
                                                     TRANSP_COLOR)
-            Else 'Draw to canvas
-
-                Call canvas2CanvasBltTransparentPartial(cnvFrameID, _
-                                                        cnvTarget, _
-                                                        cornerX, _
-                                                        cornerY, _
-                                                        offsetX, _
-                                                        offsetY, _
-                                                        renderWidth, _
-                                                        renderHeight, _
-                                                        TRANSP_COLOR)
-            End If
         End If
         
-    Else 'Sprite is entirely on the board.
-    
-        'Check if we need to draw the sprite transluscently.
-        
-        If drawTranslucently And bAccountForUnderTiles Then
-            'If on "under" tiles, make sprite transluscent.
-            
-            If cnvTarget = -1 Then 'Draw to screen
-            
-               Call DXDrawCanvasTranslucent(cnvFrameID, _
-                                            cornerX, _
-                                            cornerY, _
-                                            0.25, -1, _
-                                            TRANSP_COLOR)
-            Else 'Draw to canvas
-                
-                Call canvas2CanvasBltTranslucent(cnvFrameID, _
-                                                 cnvTarget, _
-                                                 cornerX, _
-                                                 cornerY, _
-                                                 0.25, , _
-                                                 TRANSP_COLOR)
-            End If
-            
-        Else
-            If cnvTarget = -1 Then 'Draw to screen
-            
-                Call DXDrawCanvasTransparent(cnvFrameID, _
-                                             cornerX, _
-                                             cornerY, _
-                                             TRANSP_COLOR)
-            Else 'Draw to canvas
-            
-                Call canvas2CanvasBltTransparent(cnvFrameID, _
-                                                 cnvTarget, _
-                                                 cornerX, _
-                                                 cornerY, _
-                                                 TRANSP_COLOR)
-            End If
-        End If
-    End If
+    End If 'drawTranslucently And bAccountForUnderTiles
         
 End Sub
 
@@ -1578,14 +1485,14 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
 
     ' Set the dimensions the host window will be created with
     With host
-        .width = width * screen.TwipsPerPixelX
-        .height = height * screen.TwipsPerPixelY
-        .Top = (screen.height - .height) \ 2
-        .Left = (screen.width - .width) \ 2
+        .width = width * Screen.TwipsPerPixelX
+        .height = height * Screen.TwipsPerPixelY
+        .Top = (Screen.height - .height) \ 2
+        .Left = (Screen.width - .width) \ 2
         If Not (inFullScreenMode) Then
             ' If not in full screen mode, increase to account for window border
-            .width = .width + 6 * screen.TwipsPerPixelX
-            .height = .height + 24 * screen.TwipsPerPixelY
+            .width = .width + 6 * Screen.TwipsPerPixelX
+            .height = .height + 24 * Screen.TwipsPerPixelY
         End If
     End With
 
@@ -1660,12 +1567,12 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     useJoystick = JoyTest()
 
     ' Get screen width
-    screenWidth = screen.height * (1 \ 0.75) ' (Colin: Is this a mistake!?)
-    screenHeight = screen.height
+    screenWidth = Screen.height * (1 \ 0.75) ' (Colin: Is this a mistake!?)
+    screenHeight = Screen.height
 
     ' Get resolution x / y
-    resX = screenWidth \ screen.TwipsPerPixelX
-    resY = screenHeight \ screen.TwipsPerPixelY
+    resX = screenWidth \ Screen.TwipsPerPixelX
+    resY = screenHeight \ Screen.TwipsPerPixelY
 
     ' Start the message window with a "normal" translucency value
     g_dblWinIntensity = 0.5
@@ -1690,8 +1597,8 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     Call showScreen(screenWidth, screenHeight, testingPRG)
 
     ' Update screen width and height
-    screenWidth = screenWidth * screen.TwipsPerPixelX
-    screenHeight = screenHeight * screen.TwipsPerPixelY
+    screenWidth = screenWidth * Screen.TwipsPerPixelX
+    screenHeight = screenHeight * Screen.TwipsPerPixelY
 
 End Sub
 
