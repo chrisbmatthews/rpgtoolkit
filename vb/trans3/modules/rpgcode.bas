@@ -151,11 +151,7 @@ Private Sub createTimerCallback(ByVal hwnd As Long, ByVal uMsg As Long, ByVal hT
         If (m_timers(i).hTimer = hTimer) Then
             ' Call its procedure
             Dim retval As RPGCODE_RETURN
-            If (m_timers(i).dataType = DT_NUM) Then
-                Call MethodCallRPG(m_timers(i).strProc & "(" & CStr(m_timers(i).numParam) & ")", m_timers(i).strProc, errorKeep, retval)
-            Else
-                Call MethodCallRPG(m_timers(i).strProc & "(" & m_timers(i).strParam & ")", m_timers(i).strProc, errorKeep, retval)
-            End If
+            Call MethodCallRPG(m_timers(i).strProc & "(" & IIf(m_timers(i).dataType = DT_NUM, CStr(m_timers(i).numParam), m_timers(i).strParam) & ")", m_timers(i).strProc, errorKeep, retval)
             ' Kill this timer
             m_timers(i).hTimer = 0
             m_timers(i).strParam = vbNullString
@@ -5816,13 +5812,13 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 On Error GoTo enlargeArray
                 testArray = cnvRPGCode(paras(0).num)
 
-                If (Not canvasOccupied(cnvRPGCode(paras(0).num))) Then
+                If Not (canvasOccupied(cnvRPGCode(paras(0).num))) Then
                     cnvRPGCode(paras(0).num) = createCanvas(globalCanvasWidth, globalCanvasHeight)
                 End If
 
                 'Save the screen!
                 ' CanvasGetScreen cnvRPGCode(paras(0).num)
-                Call canvas2CanvasBlt(cnvRPGCodeScreen, paras(0).num, 0, 0)
+                Call canvas2CanvasBlt(cnvRPGCodeScreen, cnvRPGCode(paras(0).num), 0, 0)
 
             Else
                 debugger "SaveScreen() requires either no data elements or" _
