@@ -644,6 +644,9 @@ loadtileerr:
         'Saves the current tile to the file passed in
         '=======================================================
 
+        ' Colin, 3.06: Clear the tile cache
+        Call GFXClearTileCache
+
         filename(1) = filenm
 
         Dim extension As String
