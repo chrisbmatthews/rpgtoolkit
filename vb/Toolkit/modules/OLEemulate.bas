@@ -23,7 +23,7 @@ Public Declare Function GetParent Lib "user32" (ByVal hwnd As Long) As Long
 Public Declare Function GetWindow Lib "user32" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
 Public Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
 Public Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
-Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwprocessid As Long) As Long
+Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
 Public Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
 Private Declare Function PostMessage Lib "user32" Alias "PostMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
@@ -51,9 +51,9 @@ Public Function determineDefaultApp(ByVal file As String) As String
     On Error Resume Next
     Dim dummy As String
     Dim appExec As String ' * 255
-    appExec = Space(255)
+    appExec = String$(255, vbNullChar)
     Call FindExecutable(file, dummy, appExec)
-    determineDefaultApp = appExec
+    determineDefaultApp = Left$(appExec, InStr(1, appExec, vbNullChar) - 1)
 End Function
 
 Public Function procIDFromWnd(ByVal hwnd As Long) As Long

@@ -266,10 +266,10 @@ End Function
 '=========================================================================
 ' Initiates the runtime libraries
 '=========================================================================
-Public Function InitRuntime() As Boolean
+Public Function initRuntime() As Boolean
     On Error GoTo rtErr
     Call TKInit
-    InitRuntime = True
+    initRuntime = True
 rtErr:
 End Function
 

@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin VB.Form runtimeprograms 
-   BorderStyle     =   1  'Fixed Single
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Extended Run Time Keys"
    ClientHeight    =   2055
    ClientLeft      =   45
-   ClientTop       =   330
+   ClientTop       =   210
    ClientWidth     =   6390
    Icon            =   "runtimeprograms.frx":0000
    LinkTopic       =   "Form2"
@@ -12,6 +12,7 @@ Begin VB.Form runtimeprograms
    MinButton       =   0   'False
    ScaleHeight     =   2055
    ScaleWidth      =   6390
+   ShowInTaskbar   =   0   'False
    Tag             =   "1729"
    Begin VB.Frame Frame1 
       Caption         =   "Extended Run Time Keys"

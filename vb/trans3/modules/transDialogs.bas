@@ -189,7 +189,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         'Use the Windows dialog since the canvas version is buggy now.
         
         Dim oldpath As String, dlg As FileDialogInfo
-        oldpath = CurDir
+        oldpath = CurDir$()
         
         dlg.strDefaultFolder = path
         dlg.strTitle = "Save / Load A Game"

@@ -2,42 +2,29 @@ VERSION 5.00
 Begin VB.Form warpset 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Set Warp"
-   ClientHeight    =   2655
-   ClientLeft      =   0
-   ClientTop       =   0
-   ClientWidth     =   6375
+   ClientHeight    =   2205
+   ClientLeft      =   45
+   ClientTop       =   315
+   ClientWidth     =   6480
    Icon            =   "warpset.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   2655
-   ScaleWidth      =   6375
+   ScaleHeight     =   2205
+   ScaleWidth      =   6480
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1775"
-   Begin Toolkit.TKButton Command1 
-      Height          =   495
+   Begin VB.CommandButton Command1 
+      Caption         =   "OK"
+      Default         =   -1  'True
+      Height          =   375
       Left            =   5400
       TabIndex        =   11
-      Top             =   600
-      Width           =   855
-      _ExtentX        =   820
-      _ExtentY        =   873
-      Object.Width           =   450
-      Caption         =   "OK"
-   End
-   Begin Toolkit.TKTopBar TopBar 
-      Height          =   480
-      Left            =   0
-      TabIndex        =   10
-      Top             =   0
-      Width           =   5055
-      _ExtentX        =   8916
-      _ExtentY        =   847
-      Object.Width           =   5055
-      Caption         =   "Warp Set"
+      Top             =   240
+      Width           =   975
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
@@ -48,45 +35,56 @@ Begin VB.Form warpset
       Left            =   120
       TabIndex        =   0
       Tag             =   "1779"
-      Top             =   600
+      Top             =   120
       Width           =   5175
+      Begin VB.PictureBox Picture1 
+         BackColor       =   &H80000009&
+         BorderStyle     =   0  'None
+         Height          =   375
+         Left            =   3960
+         ScaleHeight     =   375
+         ScaleWidth      =   1095
+         TabIndex        =   9
+         Top             =   360
+         Width           =   1095
+         Begin VB.CommandButton Command4 
+            Appearance      =   0  'Flat
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   0
+            TabIndex        =   10
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+      End
       Begin VB.TextBox Text1 
          Height          =   285
          Left            =   1440
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   360
          Width           =   2295
       End
       Begin VB.TextBox Text2 
          Height          =   285
          Left            =   1440
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   720
          Width           =   2295
       End
       Begin VB.TextBox Text3 
          Height          =   285
          Left            =   1440
-         TabIndex        =   3
+         TabIndex        =   2
          Top             =   1080
          Width           =   2295
       End
       Begin VB.TextBox Text4 
          Height          =   285
          Left            =   1440
-         TabIndex        =   2
+         TabIndex        =   1
          Top             =   1440
          Width           =   2295
-      End
-      Begin VB.CommandButton Command4 
-         Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   3840
-         TabIndex        =   1
-         Tag             =   "1021"
-         Top             =   360
-         Width           =   1095
       End
       Begin VB.Label Label2 
          Appearance      =   0  'Flat
@@ -95,7 +93,7 @@ Begin VB.Form warpset
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   8
          Tag             =   "1778"
          Top             =   360
          Width           =   1215
@@ -107,7 +105,7 @@ Begin VB.Form warpset
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   7
          Tag             =   "1777"
          Top             =   720
          Width           =   1095
@@ -119,7 +117,7 @@ Begin VB.Form warpset
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   6
          Tag             =   "1776"
          Top             =   1080
          Width           =   1095
@@ -131,17 +129,11 @@ Begin VB.Form warpset
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   5
          Tag             =   "1710"
          Top             =   1440
          Width           =   1095
       End
-   End
-   Begin VB.Shape Shape1 
-      Height          =   2655
-      Left            =   0
-      Top             =   0
-      Width           =   6375
    End
 End
 Attribute VB_Name = "warpset"
@@ -271,7 +263,6 @@ Private Sub Form_Load()
     On Error Resume Next
     ' Call LocalizeForm(Me)
     Frame1.Caption = str(boardList(activeBoardIndex).infoX) & "," & str(boardList(activeBoardIndex).infoY) & "," & str(boardList(activeBoardIndex).currentLayer)
-    Set TopBar.theForm = Me
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

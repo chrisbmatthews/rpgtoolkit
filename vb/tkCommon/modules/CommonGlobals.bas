@@ -60,7 +60,7 @@ Option Explicit
     Public oldpath As String     'old path in file explorer.
 
     'config options
-    Public configfile As New CConfig
+    Public configfile As CConfig
 
     Public TRANSP_COLOR As Long 'not used
     Public topX As Long

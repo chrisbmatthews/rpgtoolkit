@@ -70,6 +70,7 @@ Public Type TKMain
     transpcolor As Long               'transparent color on cursor
     resX As Long                      'custom x resolution
     resY As Long                      'custom y resolution
+    bFpsInTitleBar As Byte            'show FPS in the title bar?
 End Type
 
 '=========================================================================
@@ -207,17 +208,6 @@ Private Sub upgradeBattleSystem()
                 'Put the new DLL in place
                 Call Kill(fullPath)
                 Call FileCopy(newDLL, fullPath)
-
-#If (isToolkit = 0) Then
-
-                'It's trans3 and the DLL is supposed to already be registered
-                'but it's not-- make it happen
-                Call ExecCmd("regsvr32 /s """ & fullPath & """")
-
-                'Now setup the plugin for usage
-                Call setupComPlugin(fullPath)
-
-#End If
 
             End If
 
@@ -416,6 +406,10 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                 mainMem.resY = BinReadLong(num)
             End If
 
+            If (minorVer >= 8) Then
+                mainMem.bFpsInTitleBar = BinReadByte(num)
+            End If
+
         Close num
 
         If minorVer <= 2 Then
@@ -553,7 +547,7 @@ openVersion1Main:
         Close num
 
         Call upgradeBattleSystem
-    
+
     End With
     
 End Sub
@@ -574,7 +568,7 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT MAIN")    'Filetype
         Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 7)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
+        Call BinWriteInt(num, 8)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
         Call BinWriteInt(num, 1)    'registered
         Call BinWriteString(num, "NOCODE")            'No reg code
     
@@ -644,7 +638,9 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         Call BinWriteLong(num, theMain.transpcolor)
         Call BinWriteLong(num, theMain.resX)
         Call BinWriteLong(num, theMain.resY)
-        
+
+        Call BinWriteByte(num, theMain.bFpsInTitleBar)
+
     Close num
 
 End Sub
@@ -705,5 +701,6 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .hotSpotX = 0
         .hotSpotY = 0
         .transpcolor = RGB(255, 0, 0)
+        .bFpsInTitleBar = 0
     End With
 End Sub

@@ -1,6 +1,6 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.Form editmainfile 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Project Properties (Untitled)"
@@ -78,9 +78,9 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "fraSettings"
+      Tab(1).Control(0)=   "startframe"
       Tab(1).Control(0).Enabled=   0   'False
-      Tab(1).Control(1)=   "startframe"
+      Tab(1).Control(1)=   "fraSettings"
       Tab(1).Control(1).Enabled=   0   'False
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
@@ -102,15 +102,15 @@ Begin VB.Form editmainfile
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
       Tab(4).ControlEnabled=   0   'False
-      Tab(4).Control(0)=   "Picture11"
+      Tab(4).Control(0)=   "screenframe"
       Tab(4).Control(0).Enabled=   0   'False
-      Tab(4).Control(1)=   "Picture10"
+      Tab(4).Control(1)=   "Picture8"
       Tab(4).Control(1).Enabled=   0   'False
       Tab(4).Control(2)=   "Picture9"
       Tab(4).Control(2).Enabled=   0   'False
-      Tab(4).Control(3)=   "Picture8"
+      Tab(4).Control(3)=   "Picture10"
       Tab(4).Control(3).Enabled=   0   'False
-      Tab(4).Control(4)=   "screenframe"
+      Tab(4).Control(4)=   "Picture11"
       Tab(4).Control(4).Enabled=   0   'False
       Tab(4).ControlCount=   5
       TabCaption(5)   =   "Day/Night"
@@ -1548,12 +1548,29 @@ Begin VB.Form editmainfile
             Italic          =   -1  'True
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   3615
+         Height          =   4095
          Left            =   -74760
          TabIndex        =   4
          Tag             =   "1136"
          Top             =   600
          Width           =   6735
+         Begin VB.CheckBox chkShowFps 
+            Caption         =   "Show frames per second (FPS) in the title bar in windowed mode"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   240
+            TabIndex        =   110
+            Top             =   3600
+            Width           =   5055
+         End
       End
       Begin VB.Frame prjframe 
          Caption         =   "Project Info"
@@ -2152,6 +2169,13 @@ Private Sub chkScreenStyle_Click(ByRef index As Integer)
 End Sub
 
 '=========================================================================
+' FPS in title bar?
+'=========================================================================
+Private Sub chkShowFps_Click()
+    mainMem.bFpsInTitleBar = chkShowFps.value
+End Sub
+
+'=========================================================================
 ' #Push() in pixel increments.
 '=========================================================================
 Private Sub chkUsePixelPush_Click()
@@ -2583,7 +2607,7 @@ End Sub
 Private Sub Form_Resize(): On Error Resume Next
     'Centre the tabs.
     tabMain.Top = (Me.Height - tabMain.Height) / 2 - 200
-    tabMain.Left = (Me.Width - tabMain.Width) / 2
+    tabMain.Left = (Me.width - tabMain.width) / 2
 End Sub
 
 '=========================================================================
@@ -2738,6 +2762,8 @@ Private Sub infofill()
     End Select
 
     sliGameSpeed.value = getGameSpeed(mainMem.gameSpeed)
+
+    chkShowFps.value = mainMem.bFpsInTitleBar
 
 End Sub
 

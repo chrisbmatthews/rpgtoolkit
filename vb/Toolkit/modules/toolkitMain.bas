@@ -46,8 +46,8 @@ End Function
 '=======================================================================
 Public Sub Main()
     On Error Resume Next
-    Call initCommonControls
-    Call Load(configfile)
+    Call initCommonControls ' Applys XP visual styles, if avaliable
+    Set configfile = New CConfig
     Call initRuntimes
     Call createFileAssociations
     Call StartTracing("tktrace.txt")
@@ -71,7 +71,7 @@ End Sub
 '=======================================================================
 Private Sub initDirectories()
     On Error Resume Next
-    currentDir = CurDir()
+    currentDir = CurDir$()
     Call MkDir(Mid(resourcePath, 1, Len(resourcePath) - 1))
     Call MkDir(Mid(gamPath, 1, Len(gamPath) - 1))
     Call MkDir(Mid(helpPath, 1, Len(helpPath) - 1))
@@ -166,7 +166,7 @@ Private Sub initLocalization()
     End If
     Call ChangeLanguage(resourcePath & m_LangFile)
     Call InitLocalizeSystem
-    Call LocalizeForm(frmMain)
+    ' Call LocalizeForm(frmMain)
 End Sub
 
 '=======================================================================

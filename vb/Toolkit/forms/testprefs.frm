@@ -1,111 +1,29 @@
 VERSION 5.00
 Begin VB.Form testprefs 
    BackColor       =   &H00FFFFFF&
-   BorderStyle     =   0  'None
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Test Run Preferences"
-   ClientHeight    =   3495
-   ClientLeft      =   0
-   ClientTop       =   0
+   ClientHeight    =   3075
+   ClientLeft      =   45
+   ClientTop       =   315
    ClientWidth     =   7815
    Icon            =   "testprefs.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3495
+   ScaleHeight     =   3075
    ScaleWidth      =   7815
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1739"
-   Begin VB.PictureBox TopBar 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00CC9966&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   450
-      Left            =   10
-      ScaleHeight     =   30
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   489
-      TabIndex        =   15
-      Top             =   10
-      Width           =   7335
-      Begin VB.PictureBox Corner 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   450
-         Left            =   6960
-         Picture         =   "testprefs.frx":0CCA
-         ScaleHeight     =   450
-         ScaleWidth      =   450
-         TabIndex        =   16
-         Top             =   0
-         Width           =   450
-      End
-      Begin VB.Label Label1 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Program Running Options"
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   600
-         TabIndex        =   17
-         Top             =   0
-         Width           =   2775
-      End
-      Begin VB.Image CloseX 
-         Height          =   450
-         Left            =   0
-         MousePointer    =   99  'Custom
-         Picture         =   "testprefs.frx":109A
-         ToolTipText     =   "Close"
-         Top             =   0
-         Width           =   450
-      End
-   End
-   Begin VB.PictureBox btnOK 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   495
+   Begin VB.CommandButton btnOK 
+      Caption         =   "OK"
+      Default         =   -1  'True
+      Height          =   375
       Left            =   6600
-      MouseIcon       =   "testprefs.frx":1639
-      MousePointer    =   99  'Custom
-      Picture         =   "testprefs.frx":1943
-      ScaleHeight     =   495
-      ScaleWidth      =   1095
-      TabIndex        =   13
-      Top             =   720
+      TabIndex        =   18
+      Top             =   240
       Width           =   1095
-      Begin VB.Label lblOK 
-         BackStyle       =   0  'Transparent
-         Caption         =   " Save"
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   480
-         MouseIcon       =   "testprefs.frx":1F17
-         MousePointer    =   99  'Custom
-         TabIndex        =   14
-         Top             =   120
-         Width           =   735
-      End
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
@@ -116,7 +34,7 @@ Begin VB.Form testprefs
       Left            =   120
       TabIndex        =   0
       Tag             =   "1746"
-      Top             =   600
+      Top             =   120
       Width           =   6375
       Begin VB.PictureBox Picture1 
          BackColor       =   &H80000009&
@@ -125,14 +43,14 @@ Begin VB.Form testprefs
          Left            =   5040
          ScaleHeight     =   1815
          ScaleWidth      =   1095
-         TabIndex        =   18
+         TabIndex        =   13
          Top             =   360
          Width           =   1095
          Begin VB.CommandButton Command4 
             Caption         =   "Browse..."
             Height          =   345
             Left            =   0
-            TabIndex        =   22
+            TabIndex        =   17
             Tag             =   "1021"
             Top             =   1440
             Width           =   1095
@@ -141,7 +59,7 @@ Begin VB.Form testprefs
             Caption         =   "Browse..."
             Height          =   345
             Left            =   0
-            TabIndex        =   21
+            TabIndex        =   16
             Tag             =   "1021"
             Top             =   1080
             Width           =   1095
@@ -150,7 +68,7 @@ Begin VB.Form testprefs
             Caption         =   "Browse..."
             Height          =   345
             Left            =   0
-            TabIndex        =   20
+            TabIndex        =   15
             Tag             =   "1021"
             Top             =   720
             Width           =   1095
@@ -159,7 +77,7 @@ Begin VB.Form testprefs
             Caption         =   "Browse..."
             Height          =   345
             Left            =   0
-            TabIndex        =   19
+            TabIndex        =   14
             Tag             =   "1021"
             Top             =   0
             Width           =   1095
@@ -274,12 +192,6 @@ Begin VB.Form testprefs
          Top             =   720
          Width           =   2055
       End
-   End
-   Begin VB.Shape Shape1 
-      Height          =   3495
-      Left            =   0
-      Top             =   0
-      Width           =   7815
    End
 End
 Attribute VB_Name = "testprefs"

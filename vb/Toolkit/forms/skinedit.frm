@@ -1,18 +1,19 @@
 VERSION 5.00
 Begin VB.Form skinedit 
    AutoRedraw      =   -1  'True
-   BorderStyle     =   1  'Fixed Single
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Edit Skin"
-   ClientHeight    =   1935
+   ClientHeight    =   1890
    ClientLeft      =   45
-   ClientTop       =   330
+   ClientTop       =   210
    ClientWidth     =   6780
    Icon            =   "skinedit.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   1935
+   ScaleHeight     =   1890
    ScaleWidth      =   6780
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1733"
    Begin VB.Frame Frame1 

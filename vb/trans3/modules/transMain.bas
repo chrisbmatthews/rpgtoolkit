@@ -15,50 +15,33 @@ Option Explicit
 '=======================================================================
 ' Declarations
 '=======================================================================
-
-' Main loop procedure
 Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As Long)
 
-' Current state of logic
-Public gGameState As GAME_LOGIC_STATE
-
-Private m_renderCount As Long             'Count of GS_MOVEMENT state loops.
-Private m_renderTime As Double            'Cumulative GS_MOVEMENT state loop time.
-                                          ' gAvgTime = m_renderTime / m_renderCount
-'Private irc As Long        'Temps
-'Private irt As Double
-
-' State of gameLogic() procedure
+'=======================================================================
+' Game state enumeration
+'=======================================================================
 Public Enum GAME_LOGIC_STATE
-
-    ' Just re-renders the screen
-    GS_IDLE = 0
-
-    ' Shutdown sequence
-    GS_QUIT = 1
-
-    ' Movement is occurring (players or items)
-    GS_MOVEMENT = 2
-
-    ' Movement is finished
-    GS_DONEMOVE = 3
-
-    ' Pause game (do nothing)
-    GS_PAUSE = 4
-
+    GS_IDLE = 0                         ' Just re-renders the screen
+    GS_QUIT = 1                         ' Shutdown sequence
+    GS_MOVEMENT = 2                     ' Movement is occurring (players or items)
+    GS_DONEMOVE = 3                     ' Movement is occurring (players or items)
+    GS_PAUSE = 4                        ' Pause game (do nothing)
 End Enum
 
-' Was the game loaded from start menu?
-Public saveFileLoaded As Boolean
+'=======================================================================
+' Globals
+'=======================================================================
+Public gGameState As GAME_LOGIC_STATE   ' Current game state
+Public saveFileLoaded As Boolean        ' Was the game loaded from start menu?
+Public runningAsEXE As Boolean          ' Are we running as an exe file?
+Public gShuttingDown As Boolean         ' Has the shutdown process been initiated?
+Public host As CDirectXHost             ' DirectX host window
 
-' Are we running as an exe file?
-Public runningAsEXE As Boolean
-
-' Has the shutdown process been initiated?
-Public gShuttingDown As Boolean
-
-' DirectX host window
-Public host As CDirectXHost
+'=======================================================================
+' Members
+'=======================================================================
+Private m_renderCount As Long           ' Count of GS_MOVEMENT state loops
+Private m_renderTime As Double          ' Cumulative GS_MOVEMENT state loop time
 
 '=======================================================================
 ' Average time for one loop in the GS_MOVEMENT gamestate
@@ -118,10 +101,12 @@ Public Sub closeSystems()
     Call UnLoadFontsFromFolder(projectPath & fontPath)
     Call killMedia
     Call DeletePakTemp
+    Call setupCOM(False)
     Call host.Destroy
     Call Unload(debugWin)
-    Call closeActiveX
-    Call showEndForm
+    Set host = Nothing
+    Set inv = Nothing
+    Call showEndForm(True)  ' Ends program
 End Sub
 
 '=======================================================================
@@ -247,7 +232,7 @@ End Sub
 Private Sub initGame()
     On Error Resume Next
     Call Randomize(Timer)
-    currentDir = CurDir()
+    currentDir = CurDir$()
     Call InitThreads
     Call initVarSystem
     Set inv = New CInventory
@@ -270,10 +255,10 @@ Private Sub initDefaults()
     On Error Resume Next
     initTime = Timer()
     Call StartTracing("trace.txt")
-    If Not (InitRuntime()) Then
+    If Not (initRuntime()) Then
         Call ChDir("C:\Program Files\Toolkit3\")
-        currentDir = CurDir()
-        If Not InitRuntime() Then
+        currentDir = CurDir$()
+        If Not (initRuntime()) Then
             Call MsgBox("Could not initialize actkrt3.dll. Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
             End
         End If
@@ -284,7 +269,7 @@ End Sub
 '=======================================================================
 ' Runs one 'frame' of the game logic
 '=======================================================================
-Public Sub gameLogic()
+Private Sub gameLogic()
 
     On Local Error Resume Next
 
@@ -292,10 +277,9 @@ Public Sub gameLogic()
     ' called until gGameState == GS_QUIT, the user closes the window, or
     ' a few other things.
 
-    Dim renderOccured As Boolean ', IDLErenderOccured As Boolean
-    Static loopTime As Double ', irl As Double
+    Dim renderOccured As Boolean
+    Static loopTime As Double
     loopTime = Timer()
-    'irl = loopTime
 
     Static checkFight As Long   ' Used to track number of times fighting
                                 ' *would* have been checked for if not
@@ -372,8 +356,8 @@ Public Sub gameLogic()
                     Dim tempPos As PLAYER_POSITION
                     tempPos = pPos(selectedPlayer)
                     tempPos.l = .lTarg
-                    tempPos.X = .xTarg
-                    tempPos.Y = .yTarg
+                    tempPos.x = .xTarg
+                    tempPos.y = .yTarg
 
                     ' Test for a program
                     Call programTest(tempPos)
@@ -427,18 +411,13 @@ Public Sub gameLogic()
         End If
     End If
 
-    'The loop time in the idle state.
-    'If IDLErenderOccured Then
-    '    irl = Timer() - irl
-    '    If irl < 1 / 4 Then
-    '        irt = irt + irl
-    '        irc = irc + 1
-    '    End If
-    'End If
+    ' Show FPS in title bar if enabled
+    If (mainMem.bFpsInTitleBar) Then
 
-    ' Stick the fps in the title, for test purposes.
-    host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps]" '_
-                 ' & " [" & CStr(Round(irc / irt, 1)) & " fps (GS_I)]"
+        ' Build the string
+        host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / m_renderTime / m_renderCount, 1)) & " fps]"
+
+    End If
 
 End Sub
 
@@ -446,86 +425,43 @@ End Sub
 ' Open systems
 '=======================================================================
 Private Sub openSystems(Optional ByVal testingPRG As Boolean)
-
     On Error Resume Next
-
-    ' Register ActiveX components
-    Call initActiveX
-
-    ' Initiate the event processor
     Call initEventProcessor
-
-    ' Initiate the sprite system
     Call initSprites
-
-    ' Initiate the graphics engine
-    Call initGraphics(testingPRG)
-
-    ' Correct game paths
+    Call initGraphics(testingPRG) ' Creates host window
+    Call setupCOM(True)
     Call correctPaths
-
-    ' Initiate plugins
     Call InitPlugins
-
-    ' Call Plugin_Initiate() in all plugins
     Call BeginPlugins
-
-    ' Initiate the menu plugin
     Call startMenuPlugin
-
-    ' Initiate the fight plugi
     Call startFightPlugin
-
-    ' Initiate the media engine
     Call initMedia
-
-    ' Clear the screen
     Call DXClearScreen(0)
-
-    ' Render the screen
     Call DXRefresh
-
-    ' Read settings from the main file
     Call setupMain(testingPRG)
-
 End Sub
 
 '=======================================================================
-' Register ActiveX components
+' Register or unregister COM components
 '=======================================================================
-Private Sub initActiveX()
-    On Error Resume Next
-    Dim a As Long
-    For a = 0 To UBound(mainMem.plugins)
-        If (LenB(mainMem.plugins(a))) Then
-            Dim fullPath As String
-            fullPath = projectPath & plugPath & mainMem.plugins(a)
-            Call ExecCmd("regsvr32 /s """ & fullPath & """")
-        End If
-    Next a
-    fullPath = projectPath & plugPath & mainMem.menuPlugin
-    Call ExecCmd("regsvr32 /s """ & fullPath & """")
-    fullPath = projectPath & plugPath & mainMem.fightPlugin
-    Call ExecCmd("regsvr32 /s """ & fullPath & """")
-End Sub
+Private Sub setupCOM(ByVal bInitiate As Boolean)
 
-'=======================================================================
-' Unregister ActiveX components
-'=======================================================================
-Private Sub closeActiveX()
     On Error Resume Next
-    Dim a As Long
-    For a = 0 To UBound(mainMem.plugins)
-        If (LenB(mainMem.plugins(a))) Then
-            Dim fullPath As String
-            fullPath = projectPath & plugPath & mainMem.plugins(a)
-            Call ExecCmd("regsvr32 /s /u """ & fullPath & """")
+
+    Dim i As Long, ub As Long
+    ub = UBound(mainMem.plugins)
+
+    ' Loop over every plugin
+    For i = 0 To ub
+        If (LenB(mainMem.plugins(i))) Then
+            Call registerServer(projectPath & plugPath & mainMem.plugins(i), host.hwnd, bInitiate)
         End If
-    Next a
-    fullPath = projectPath & plugPath & mainMem.menuPlugin
-    Call ExecCmd("regsvr32 /s /u """ & fullPath & """")
-    fullPath = projectPath & plugPath & mainMem.fightPlugin
-    Call ExecCmd("regsvr32 /s /u """ & fullPath & """")
+    Next i
+
+    ' Finally, the menu and battle plugins
+    Call registerServer(projectPath & plugPath & mainMem.menuPlugin, host.hwnd, bInitiate)
+    Call registerServer(projectPath & plugPath & mainMem.fightPlugin, host.hwnd, bInitiate)
+
 End Sub
 
 '=======================================================================
@@ -636,11 +572,11 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         ' Setup player position, only if an initial board has been specified.
         If (LenB(mainMem.initBoard)) Then
             With pPos(selectedPlayer)
-                .X = boardList(activeBoardIndex).theData.playerX
-                .Y = boardList(activeBoardIndex).theData.playerY
+                .x = boardList(activeBoardIndex).theData.playerX
+                .y = boardList(activeBoardIndex).theData.playerY
                 .l = boardList(activeBoardIndex).theData.playerLayer
-                pendingPlayerMovement(selectedPlayer).xOrig = .X
-                pendingPlayerMovement(selectedPlayer).yOrig = .Y
+                pendingPlayerMovement(selectedPlayer).xOrig = .x
+                pendingPlayerMovement(selectedPlayer).yOrig = .y
                 pendingPlayerMovement(selectedPlayer).lOrig = .l
             End With
         End If

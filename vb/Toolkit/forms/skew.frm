@@ -1,16 +1,17 @@
 VERSION 5.00
 Begin VB.Form skew 
-   BorderStyle     =   1  'Fixed Single
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Skew"
    ClientHeight    =   1935
    ClientLeft      =   45
-   ClientTop       =   435
+   ClientTop       =   315
    ClientWidth     =   3735
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   1935
    ScaleWidth      =   3735
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
    Begin VB.Frame Frame1 
       Caption         =   "Skew"
@@ -328,6 +329,6 @@ Private Sub Preview()
         Next x
     End If
     'Redraw
-    tkMainForm.isoMirror.cls
+    tkMainForm.isoMirror.Cls
     activeTile.tileRedraw
 End Sub

@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin VB.Form selectLanguage 
-   BorderStyle     =   1  'Fixed Single
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Language"
    ClientHeight    =   3210
    ClientLeft      =   45
-   ClientTop       =   330
+   ClientTop       =   210
    ClientWidth     =   4665
    Icon            =   "selectLanguage.frx":0000
    LinkTopic       =   "Form2"
@@ -12,6 +12,7 @@ Begin VB.Form selectLanguage
    MinButton       =   0   'False
    ScaleHeight     =   3210
    ScaleWidth      =   4665
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1891"
    Begin VB.CommandButton Command2 

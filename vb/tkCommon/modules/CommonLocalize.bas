@@ -162,7 +162,7 @@ Sub ChangeLanguage(ByVal file As String)
         'change all forms to the new language...
 'FIXIT: Forms collection not upgraded to Visual Basic .NET by the Upgrade Wizard.          FixIT90210ae-R6616-H1984
         For Each frm In Forms
-            Call LocalizeForm(frm)
+            ' Call LocalizeForm(frm)
         Next frm
     End If
 End Sub
@@ -188,8 +188,8 @@ Sub LocalizeForm(frm As VB.Form)
     End If
     
     Dim idx As Long
-    If IsNumeric(frm.Tag) Then
-        idx = LangIndexOfTag(Int(frm.Tag), m_LangTable)
+    If IsNumeric(frm.tag) Then
+        idx = LangIndexOfTag(Int(frm.tag), m_LangTable)
         If idx <> -1 Then
             frm.Caption = m_LangTable.theTable(idx).Caption
             If frm.Caption = " " Then frm.Caption = vbNullString
@@ -197,8 +197,8 @@ Sub LocalizeForm(frm As VB.Form)
     End If
     
     For Each ctl In frm.Controls
-        If IsNumeric(ctl.Tag) Then
-            idx = LangIndexOfTag(Int(ctl.Tag), m_LangTable)
+        If IsNumeric(ctl.tag) Then
+            idx = LangIndexOfTag(Int(ctl.tag), m_LangTable)
             If idx <> -1 Then
                 ctl.Caption = m_LangTable.theTable(idx).Caption
                 If ctl.Caption = " " Then ctl.Caption = vbNullString

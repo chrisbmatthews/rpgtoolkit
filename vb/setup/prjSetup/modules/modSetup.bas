@@ -94,7 +94,7 @@ Public Function selfExtract( _
 End Function
 
 '=========================================================================
-' Register a COM server
+' Register or unregister a COM server
 '=========================================================================
 Private Sub registerServer(ByRef strServer As String, ByVal hWnd As Long, Optional ByVal bRegister As Boolean = True)
 

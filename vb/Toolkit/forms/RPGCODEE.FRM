@@ -117,6 +117,7 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
+      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -683,7 +684,7 @@ Public Sub mnuNotepadMode_Click()
             tkMainForm.mainToolbar.Visible = True
             tkMainForm.leftBarContainer.Visible = True
             tkMainForm.newBarContainerContainer.Visible = True
-            ' tkMainForm.Picture2.Visible = True
+            Call tkMainForm.ShowTabs
             tkMainForm.StatusBar1.Visible = True
             Form_Activate
             tkMainForm.popTray.Visible = True
@@ -702,7 +703,7 @@ Public Sub mnuNotepadMode_Click()
             tkMainForm.popTray.Visible = False
             tkMainForm.leftBarContainer.Visible = False
             tkMainForm.newBarContainerContainer.Visible = False
-            ' tkMainForm.Picture2.Visible = False
+            Call tkMainForm.hideTabs
             tkMainForm.StatusBar1.Visible = False
             hideAllTools
             WindowState = 2
@@ -715,6 +716,9 @@ Public Sub mnuNotepadMode_Click()
             mnuBookmarkToolbar_Click
 
     End Select
+
+    If (tkMainForm.Left < 0) Then tkMainForm.Left = 0
+    If (tkMainForm.Top < 0) Then tkMainForm.Top = 0
 
 End Sub
 
@@ -1407,13 +1411,14 @@ Private Sub SavePrgMnu_Click(): On Error Resume Next
 End Sub
 
 Private Sub splitLinesTimer_Timer()
+    On Error Resume Next
     splitLinesTimer.Enabled = False
-    If codeForm.tag <> "1" Then
+    ' If codeForm.tag <> "1" Then
         SplitLines
-        codeForm.SetFocus
+        Call codeForm.SetFocus
         codeForm.selStart = Len(codeForm.Text)
         blackLine = False
-    End If
+    ' End If
 End Sub
 
 ' VISUAL EDITOR MENU

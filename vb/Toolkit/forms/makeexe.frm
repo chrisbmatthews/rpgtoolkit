@@ -2,30 +2,38 @@ VERSION 5.00
 Begin VB.Form makeexe 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   0  'None
-   Caption         =   "EXE Builder"
-   ClientHeight    =   3015
-   ClientLeft      =   0
-   ClientTop       =   0
+   BorderStyle     =   4  'Fixed ToolWindow
+   Caption         =   "Make EXE"
+   ClientHeight    =   2625
+   ClientLeft      =   45
+   ClientTop       =   315
    ClientWidth     =   6015
    Icon            =   "makeexe.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
-   ScaleHeight     =   3015
+   MinButton       =   0   'False
+   ScaleHeight     =   2625
    ScaleWidth      =   6015
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1844"
-   Begin Toolkit.TKTopBar topBar 
-      Height          =   480
-      Left            =   0
-      TabIndex        =   6
-      Top             =   0
-      Width           =   4815
-      _ExtentX        =   8493
-      _ExtentY        =   847
-      Object.Width           =   4815
-      Caption         =   "Make EXE"
+   Begin VB.CommandButton Command3 
+      Cancel          =   -1  'True
+      Caption         =   "Cancel"
+      Height          =   375
+      Left            =   4560
+      TabIndex        =   4
+      Top             =   720
+      Width           =   1335
+   End
+   Begin VB.CommandButton Command1 
+      Caption         =   "Compile"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   4560
+      TabIndex        =   3
+      Top             =   240
+      Width           =   1335
    End
    Begin VB.Frame Frame2 
       Appearance      =   0  'Flat
@@ -34,16 +42,27 @@ Begin VB.Form makeexe
       ForeColor       =   &H80000008&
       Height          =   1095
       Left            =   120
-      TabIndex        =   4
-      Top             =   1800
+      TabIndex        =   2
+      Top             =   1320
       Width           =   2055
-      Begin VB.CommandButton cmdChange 
-         Caption         =   "Change"
+      Begin VB.PictureBox Picture2 
+         BackColor       =   &H80000009&
+         BorderStyle     =   0  'None
          Height          =   375
          Left            =   960
-         TabIndex        =   5
+         ScaleHeight     =   375
+         ScaleWidth      =   975
+         TabIndex        =   7
          Top             =   600
          Width           =   975
+         Begin VB.CommandButton cmdChange 
+            Caption         =   "Change"
+            Height          =   375
+            Left            =   0
+            TabIndex        =   8
+            Top             =   0
+            Width           =   975
+         End
       End
       Begin VB.Image iconPreview 
          Appearance      =   0  'Flat
@@ -55,28 +74,6 @@ Begin VB.Form makeexe
          Width           =   720
       End
    End
-   Begin Toolkit.TKButton Command1 
-      Height          =   495
-      Left            =   4560
-      TabIndex        =   3
-      Top             =   600
-      Width           =   1335
-      _ExtentX        =   820
-      _ExtentY        =   873
-      Object.Width           =   450
-      Caption         =   "Compile"
-   End
-   Begin Toolkit.TKButton Command3 
-      Height          =   495
-      Left            =   4560
-      TabIndex        =   2
-      Top             =   1200
-      Width           =   1215
-      _ExtentX        =   820
-      _ExtentY        =   661
-      Object.Width           =   450
-      Caption         =   "Cancel"
-   End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -86,21 +83,26 @@ Begin VB.Form makeexe
       Left            =   120
       TabIndex        =   0
       Tag             =   "1845"
-      Top             =   600
+      Top             =   120
       Width           =   4335
-      Begin VB.PictureBox command2 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
+      Begin VB.PictureBox Picture1 
+         BackColor       =   &H80000009&
          BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
          Height          =   375
-         Left            =   3650
-         Picture         =   "makeexe.frx":1994
+         Left            =   3720
          ScaleHeight     =   375
-         ScaleWidth      =   615
-         TabIndex        =   7
-         Top             =   400
-         Width           =   615
+         ScaleWidth      =   495
+         TabIndex        =   5
+         Top             =   480
+         Width           =   495
+         Begin VB.CommandButton Command2 
+            Caption         =   "..."
+            Height          =   255
+            Left            =   0
+            TabIndex        =   6
+            Top             =   0
+            Width           =   495
+         End
       End
       Begin VB.TextBox Text1 
          Height          =   285
@@ -109,12 +111,6 @@ Begin VB.Form makeexe
          Top             =   480
          Width           =   3495
       End
-   End
-   Begin VB.Shape shpBorder 
-      Height          =   3015
-      Left            =   0
-      Top             =   0
-      Width           =   6015
    End
 End
 Attribute VB_Name = "makeexe"
@@ -287,7 +283,6 @@ Private Sub Form_Load()
     SetParent Me.hwnd, tkMainForm.hwnd
     Command2.MousePointer = 99
     Command2.MouseIcon = Images.MouseLink
-    Set TopBar.theForm = Me
     ' Call LocalizeForm(Me)
     Text1.Text = GetSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, "")
 End Sub

@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin VB.Form Version1Palette 
-   BorderStyle     =   1  'Fixed Single
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "DOS Color Palette (16 Colors)"
    ClientHeight    =   2400
    ClientLeft      =   2775
-   ClientTop       =   2550
+   ClientTop       =   2430
    ClientWidth     =   4320
    BeginProperty Font 
       Name            =   "MS Sans Serif"
@@ -23,6 +23,7 @@ Begin VB.Form Version1Palette
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   2400
    ScaleWidth      =   4320
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1842"
    Begin VB.TextBox colCode 

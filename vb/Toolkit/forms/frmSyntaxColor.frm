@@ -80,6 +80,7 @@ Begin VB.Form frmColoringOptions
             _ExtentX        =   4260
             _ExtentY        =   2778
             _Version        =   393217
+            Enabled         =   -1  'True
             ScrollBars      =   3
             Appearance      =   0
             TextRTF         =   $"frmSyntaxColor.frx":0054
@@ -327,8 +328,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   8
             Top             =   480
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -337,8 +338,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   9
             Top             =   840
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -347,8 +348,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   10
             Top             =   1200
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -357,8 +358,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   11
             Top             =   1560
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -367,8 +368,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   12
             Top             =   1920
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin Toolkit.ctlBoldItalicUnderline BIU 
             Height          =   255
@@ -377,8 +378,8 @@ Begin VB.Form frmColoringOptions
             TabIndex        =   13
             Top             =   120
             Width           =   735
-            _extentx        =   1296
-            _extenty        =   450
+            _ExtentX        =   1296
+            _ExtentY        =   450
          End
          Begin VB.Shape Shape1 
             Height          =   2295

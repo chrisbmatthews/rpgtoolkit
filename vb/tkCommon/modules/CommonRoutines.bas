@@ -157,29 +157,29 @@ tabErr:
 
         On Error Resume Next
 
-        Dim X As Single, Y As Single
+        Dim x As Single, y As Single
 
         If detail = 2 Or detail = 4 Or detail = 6 Then
-            For X = 1 To 16
-                For Y = 1 To 16
-                    If tileMem(X, Y) = -1 Then
-                        tileMem(X, Y) = -1
+            For x = 1 To 16
+                For y = 1 To 16
+                    If tileMem(x, y) = -1 Then
+                        tileMem(x, y) = -1
                     Else
-                        tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
+                        tileMem(x, y) = GFXGetDOSColor(tileMem(x, y))
                     End If
-                Next Y
-            Next X
+                Next y
+            Next x
         ElseIf detail = 3 Or detail = 5 Then
-            For X = 1 To 32
-                For Y = 1 To 32
-                    If tileMem(X, Y) = -1 Then
-                        tileMem(X, Y) = -1
+            For x = 1 To 32
+                For y = 1 To 32
+                    If tileMem(x, y) = -1 Then
+                        tileMem(x, y) = -1
                     Else
-                        tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
+                        tileMem(x, y) = GFXGetDOSColor(tileMem(x, y))
                     End If
-                Next Y
-                Call vbPicFillRect(colordepth.status, 0, 0, (X / 32) * 100, 10, vbQBColor(9))
-            Next X
+                Next y
+                Call vbPicFillRect(colordepth.status, 0, 0, (x / 32) * 100, 10, vbQBColor(9))
+            Next x
             detail = 1
         End If
 
@@ -232,21 +232,21 @@ error:
 
         On Error Resume Next
 
-        Dim X As Long, Y As Long, xx As Long, yy As Long
+        Dim x As Long, y As Long, xx As Long, yy As Long
         Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
-        For X = 1 To 32
-            For Y = 1 To 32
-                xx = (X * 10) - 9
-                yy = (Y * 10) - 9
-                If tileMem(X, Y) <> -1 Then
+        For x = 1 To 32
+            For y = 1 To 32
+                xx = (x * 10) - 9
+                yy = (y * 10) - 9
+                If tileMem(x, y) <> -1 Then
                     If detail = 1 Then
-                        Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tileMem(X, Y))
+                        Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tileMem(x, y))
                     ElseIf detail = 3 Or detail = 5 Then
-                        Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tileMem(X, Y)))
+                        Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tileMem(x, y)))
                     End If
                 End If
-            Next Y
-        Next X
+            Next y
+        Next x
         openTileEditorDocs(activeTile.indice).grid = 0
 
     End Sub
@@ -272,29 +272,29 @@ error:
         If detail = 4 Then detail = 3
         If detail = 6 Then detail = 5
 
-        Dim X As Long, Y As Long
+        Dim x As Long, y As Long
         Dim xx As Long, yy As Long
 
-        For X = 1 To 16
-            For Y = 1 To 16
-                bufferTile(X, Y) = tileMem(X, Y)
-                tileMem(X, Y) = -1
-            Next Y
-        Next X
+        For x = 1 To 16
+            For y = 1 To 16
+                bufferTile(x, y) = tileMem(x, y)
+                tileMem(x, y) = -1
+            Next y
+        Next x
 
         'Increase detail
         xx = 1: yy = 1
-        For X = 1 To 16
-            For Y = 1 To 16
-                tileMem(xx, yy) = bufferTile(X, Y)
-                tileMem(xx, yy + 1) = bufferTile(X, Y)
-                tileMem(xx + 1, yy) = bufferTile(X, Y)
-                tileMem(xx + 1, yy + 1) = bufferTile(X, Y)
+        For x = 1 To 16
+            For y = 1 To 16
+                tileMem(xx, yy) = bufferTile(x, y)
+                tileMem(xx, yy + 1) = bufferTile(x, y)
+                tileMem(xx + 1, yy) = bufferTile(x, y)
+                tileMem(xx + 1, yy + 1) = bufferTile(x, y)
                 yy = yy + 2
-            Next Y
+            Next y
             yy = 1
             xx = xx + 2
-        Next X
+        Next x
 
     End Sub
 
@@ -305,22 +305,22 @@ error:
 
         On Error Resume Next
 
-        Dim X As Long, Y As Long, xx As Long, yy As Long
+        Dim x As Long, y As Long, xx As Long, yy As Long
     
         Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
-        For X = 1 To 16
-            For Y = 1 To 16
-                xx = (X * 20) - 19
-                yy = (Y * 20) - 19
-                If tileMem(X, Y) <> -1 Then
+        For x = 1 To 16
+            For y = 1 To 16
+                xx = (x * 20) - 19
+                yy = (y * 20) - 19
+                If tileMem(x, y) <> -1 Then
                     If detail = 2 Then
-                        Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tileMem(X, Y))
+                        Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tileMem(x, y))
                     ElseIf detail = 4 Or detail = 6 Then
-                        Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tileMem(X, Y)))
+                        Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tileMem(x, y)))
                     End If
                 End If
-            Next Y
-        Next X
+            Next y
+        Next x
         openTileEditorDocs(activeTile.indice).grid = 0
 
     End Sub
@@ -442,7 +442,7 @@ error:
 
         End If
     
-        Dim X As Long, Y As Long, xx As Long, yy As Long
+        Dim x As Long, y As Long, xx As Long, yy As Long
         Dim loopIt As Long, times As Long, tileerror As Integer
 
         Dim num As Long
@@ -470,17 +470,17 @@ error:
 
             If comp = 0 Then 'super-old gph
                 If detail = 1 Or detail = 3 Or detail = 5 Then
-                    For X = 1 To 32
-                        For Y = 1 To 32
-                            openTileEditorDocs(activeTile.indice).tileMem(X, Y) = fread(num) 'Pixel by pixel
-                        Next Y
-                    Next X
+                    For x = 1 To 32
+                        For y = 1 To 32
+                            openTileEditorDocs(activeTile.indice).tileMem(x, y) = fread(num) 'Pixel by pixel
+                        Next y
+                    Next x
                 ElseIf detail = 2 Or detail = 4 Or detail = 6 Then
-                    For X = 1 To 16
-                        For Y = 1 To 16
-                            openTileEditorDocs(activeTile.indice).tileMem(X, Y) = fread(num)
-                        Next Y
-                    Next X
+                    For x = 1 To 16
+                        For y = 1 To 16
+                            openTileEditorDocs(activeTile.indice).tileMem(x, y) = fread(num)
+                        Next y
+                    Next x
                 End If
 
             ElseIf comp = 1 Then    'If compression is used, pixel 'bundles' come in pairs of two.
@@ -635,7 +635,7 @@ loadtileerr:
         Dim num As Long
         num = FreeFile
         Open file For Output As num
-            Print #num, activeRPGCode.codeForm.Text
+            Print #num, activeRPGCode.CodeForm.Text
         Close num
     End Sub
 
@@ -664,24 +664,24 @@ loadtileerr:
             Print #num, minor                'Minor version (ie 2.0)
             Print #num, detail             'Detail level- 1 is 32x32, 2 is 16x16
 
-            Dim X As Integer, Y As Integer
+            Dim x As Integer, y As Integer
             Dim occurances As Long, older As Long
             Dim starting As Byte
 
             #If compression = 0 Then         'If no compression was usd, save it normally, pixel by pixel.
                 Print #num, 0
                 If detail = 1 Or detail = 3 Or detail = 5 Then
-                    For X = 1 To 32
-                        For Y = 1 To 32
-                            Print #num, tileMem(X, Y) 'Pixel by pixel
-                        Next Y
-                    Next X
+                    For x = 1 To 32
+                        For y = 1 To 32
+                            Print #num, tileMem(x, y) 'Pixel by pixel
+                        Next y
+                    Next x
                 ElseIf detail = 2 Or detail = 4 Or detail = 6 Then
-                    For X = 1 To 16
-                        For Y = 1 To 16
-                            Print #num, tileMem(X, Y)
-                        Next Y
-                    Next X
+                    For x = 1 To 16
+                        For y = 1 To 16
+                            Print #num, tileMem(x, y)
+                        Next y
+                    Next x
                 End If
 
             #ElseIf compression = 1 Then         'If there is compression, save it in bundles, count how many times pixels occur together, and write #of times, color of pixel
@@ -689,38 +689,38 @@ loadtileerr:
                 occurances = 1
                 older = tileMem(1, 1)
                 If detail = 1 Or detail = 3 Or detail = 5 Then
-                    For X = 1 To 32
-                        For Y = 1 To 32
-                            If Not (X = 1 And Y = 1) Then
-                                If tileMem(X, Y) = older Then
+                    For x = 1 To 32
+                        For y = 1 To 32
+                            If Not (x = 1 And y = 1) Then
+                                If tileMem(x, y) = older Then
                                     occurances = occurances + 1
                                 Else
                                     Print #num, occurances    'how many times it occurred.
                                     Print #num, older         'what color it is
-                                    older = tileMem(X, Y)
+                                    older = tileMem(x, y)
                                     occurances = 1
                                 End If
                             End If
-                        Next Y
-                    Next X
+                        Next y
+                    Next x
                     Print #num, occurances
                     Print #num, older
                 ElseIf detail = 2 Or detail = 4 Or detail = 6 Then
-                    For X = 1 To 16
-                        For Y = 1 To 16
-                            If Not (X = 1 And Y = 1) Then
-                                If tileMem(X, Y) = older Then
+                    For x = 1 To 16
+                        For y = 1 To 16
+                            If Not (x = 1 And y = 1) Then
+                                If tileMem(x, y) = older Then
                                     occurances = occurances + 1
                                 Else
                                     Print #num, occurances    'how many times it occurred.
                                     Print #num, older         'what color it is
-                                    older = tileMem(X, Y)
+                                    older = tileMem(x, y)
                                     occurances = 1
                                     starting = 0
                                 End If
                             End If
-                        Next Y
-                    Next X
+                        Next y
+                    Next x
                     Print #num, occurances
                     Print #num, older
                 End If
@@ -735,9 +735,8 @@ loadtileerr:
         '=======================================================
         On Error Resume Next
         Call StopTracing
-        Call CloseCanvasEngine
+        Call closeCanvasEngine
         Call GFXKill
-        Call Unload(configfile)
         Set configfile = Nothing
     End Sub
 
@@ -806,22 +805,22 @@ loadtileerr:
 
         On Error Resume Next
 
-        Dim X As Integer, Y As Integer
+        Dim x As Integer, y As Integer
     
         If openTileEditorDocs(activeTile.indice).oldDetail = 4 Or openTileEditorDocs(activeTile.indice).oldDetail = 6 Then
-            For X = 1 To 16
-                For Y = 1 To 16
-                    If tileMem(X, Y) = -1 Then tileMem(X, Y) = vbQBColor(15)
-                    tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
-                Next Y
-            Next X
+            For x = 1 To 16
+                For y = 1 To 16
+                    If tileMem(x, y) = -1 Then tileMem(x, y) = vbQBColor(15)
+                    tileMem(x, y) = GFXGetDOSColor(tileMem(x, y))
+                Next y
+            Next x
         ElseIf openTileEditorDocs(activeTile.indice).oldDetail = 3 Or openTileEditorDocs(activeTile.indice).oldDetail = 5 Then
-            For X = 1 To 32
-                For Y = 1 To 32
-                    If tileMem(X, Y) = -1 Then tileMem(X, Y) = vbQBColor(15)
-                    tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
-                Next Y
-            Next X
+            For x = 1 To 32
+                For y = 1 To 32
+                    If tileMem(x, y) = -1 Then tileMem(x, y) = vbQBColor(15)
+                    tileMem(x, y) = GFXGetDOSColor(tileMem(x, y))
+                Next y
+            Next x
         End If
 
     End Sub

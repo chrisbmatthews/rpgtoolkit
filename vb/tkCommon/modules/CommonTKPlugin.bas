@@ -12,7 +12,7 @@ Attribute VB_Name = "CommonTKPlugin"
 Option Explicit
 
 '=========================================================================
-' Old style plugin manager
+' Declarations
 '=========================================================================
 Public Declare Function PLUGInitSystem Lib "actkrt3.dll" (ByRef cbArray As Long, ByVal cbArrayCount As Long) As Long
 Public Declare Function PLUGShutdownSystem Lib "actkrt3.dll" () As Long
@@ -28,14 +28,10 @@ Public Declare Function PLUGFight Lib "actkrt3.dll" (ByVal plugFilename As Strin
 Public Declare Function PLUGFightInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal sourceHPLost As Long, ByVal sourceSMPLost As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal strMessage As String, ByVal attackCode As Long) As Long
 Public Declare Function PLUGInputRequested Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal inputCode As Long) As Long
 Public Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal x As Long, ByVal y As Long, ByVal Button As Long, ByVal Shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
-
-'=========================================================================
-' Win32 APIs
-'=========================================================================
-Private Declare Function CreateProcessA Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As String, ByVal lpProcessAttributes As Long, ByVal lpThreadAttributes As Long, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As Long, ByVal lpCurrentDirectory As Long, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Long
-Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
-Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
-Private Declare Function GetExitCodeProcess Lib "kernel32" (ByVal hProcess As Long, lpExitCode As Long) As Long
+Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Any, ByVal Msg As Any, ByVal wParam As Any, ByVal lParam As Any) As Long
+Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
+Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 
 '=========================================================================
 ' Plugin constants
@@ -64,49 +60,33 @@ Public Const FIGHT_WON_MANUAL = 3             ' Player party won - tell trans th
 Public Const FIGHT_LOST = 4                   ' Player party lost
 
 '=========================================================================
-' Win32 constants
-'=========================================================================
-Private Const NORMAL_PRIORITY_CLASS = &H20&
-Private Const INFINITE = -1&
-
-'=========================================================================
-' Win32 startup info structure
-'=========================================================================
-Private Type STARTUPINFO
-   cb As Long
-   lpReserved As String
-   lpDesktop As String
-   lpTitle As String
-   dwX As Long
-   dwY As Long
-   dwXSize As Long
-   dwYSize As Long
-   dwXCountChars As Long
-   dwYCountChars As Long
-   dwFillAttribute As Long
-   dwFlags As Long
-   wShowWindow As Integer
-   cbReserved2 As Integer
-   lpReserved2 As Long
-   hStdInput As Long
-   hStdOutput As Long
-   hStdError As Long
-End Type
-
-'=========================================================================
-' Win32 process information structure
-'=========================================================================
-Private Type PROCESS_INFORMATION
-   hProcess As Long
-   hThread As Long
-   dwProcessID As Long
-   dwThreadID As Long
-End Type
-
-'=========================================================================
-' COM plugins manager
+' Members
 '=========================================================================
 Private m_comPlugins() As CComPlugin
+
+'=========================================================================
+' Register or unregister a COM server
+'=========================================================================
+Public Sub registerServer(ByRef strServer As String, ByVal hWnd As Long, Optional ByVal bRegister As Boolean = True)
+
+    ' First, make sure the file exists
+    If (GetAttr(strServer) And vbDirectory) Then Exit Sub
+
+    ' Load the server
+    Dim pServer As Long
+    pServer = LoadLibrary(strServer)
+
+    ' Obtain the procedure address we want
+    Dim pProc As Long
+    pProc = GetProcAddress(pServer, IIf(bRegister, "DllRegisterServer", "DllUnregisterServer"))
+
+    ' Call the procedure
+    Call CallWindowProc(pProc, hWnd, 0&, 0&, 0&)
+
+    ' Unload the server
+    Call FreeLibrary(pServer)
+
+End Sub
 
 '=========================================================================
 ' Get description of a plugin
@@ -276,7 +256,7 @@ Private Function getObjectFromFile(ByVal filename As String) As String
 
     #If (isToolkit = 1) Then
         ' First (try to) register the file
-        Call ExecCmd("regsvr32 /s " & filename)
+        Call registerServer(filename, tkMainForm.hWnd, True)
     #End If
 
     ' Remove the path from the file
@@ -289,27 +269,3 @@ Private Function getObjectFromFile(ByVal filename As String) As String
     getObjectFromFile = getObjectFromFile & ".cls" & getObjectFromFile
 
 End Function
-
-'=========================================================================
-' Wait for a command to finish
-'=========================================================================
-Public Sub ExecCmd(ByVal cmdline As String)
-
-    Dim proc As PROCESS_INFORMATION
-    Dim start As STARTUPINFO
-    Dim ret As Long
-
-    ' Initialize the STARTUPINFO structure:
-    start.cb = Len(start)
-
-    ' Start the shelled application:
-    ret = CreateProcessA(0, cmdline, 0, 0, 1, _
-    NORMAL_PRIORITY_CLASS, 0, 0, start, proc)
-
-    ' Wait for the shelled application to finish:
-    ret = WaitForSingleObject(proc.hProcess, INFINITE)
-    Call GetExitCodeProcess(proc.hProcess, ret)
-    Call CloseHandle(proc.hThread)
-    Call CloseHandle(proc.hProcess)
-
-End Sub

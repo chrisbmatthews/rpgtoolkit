@@ -3,11 +3,10 @@ Begin VB.UserControl ctlNewBar
    ClientHeight    =   5115
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   1815
+   ClientWidth     =   1830
    ScaleHeight     =   5115
-   ScaleWidth      =   1815
+   ScaleWidth      =   1830
    Begin VB.PictureBox newBar 
-      Align           =   4  'Align Right
       BorderStyle     =   0  'None
       Height          =   5115
       Left            =   0

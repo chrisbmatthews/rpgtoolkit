@@ -67,8 +67,12 @@ Public Sub checkMusic(Optional ByVal forceNow As Boolean)
 
     If (LenB(boardMusic) = 0) Then
 
-        Call stopMedia
-        musicPlaying = vbNullString
+        If (LenB(musicPlaying)) Then
+
+            Call stopMedia
+            musicPlaying = vbNullString
+
+        End If
 
     Else
 

@@ -2,17 +2,18 @@ VERSION 5.00
 Begin VB.Form frmIndentWizard 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   1  'Fixed Single
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Indent Wizard"
    ClientHeight    =   2820
    ClientLeft      =   45
-   ClientTop       =   435
+   ClientTop       =   315
    ClientWidth     =   4335
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   2820
    ScaleWidth      =   4335
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Begin VB.CommandButton cmdIndent 
       Caption         =   "Indent"
@@ -237,14 +238,6 @@ Public Sub indentCode(ByVal ic As String)
     ' Re-color this code
     Call SplitLines
     DoEvents
-
-    ' Did something go wrong?
-    If (il <> 0) Then
-        Call frmCodeTip.showTip("RPGCode Error", _
-        "The amount of opening, {, and closing, }, brackets in your " _
-        & "code are not equal. This not only has caused incorrect indentation, " _
-        & "but it may cause errors in your program.")
-    End If
 
     ' Unload this form
     preventClose = 0
