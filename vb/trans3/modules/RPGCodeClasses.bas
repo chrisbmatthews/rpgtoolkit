@@ -1444,13 +1444,13 @@ End Sub
 '=========================================================================
 ' Free an object
 '=========================================================================
-Public Function freeObject(ByVal hObject As Long)
+Public Sub freeObject(ByVal hObject As Long)
 
     ' Make sure it's a real object
     If Not (isObject(hObject)) Then
 
         ' Bail
-        Exit Function
+        Exit Sub
 
     End If
 
@@ -1479,7 +1479,7 @@ Public Function freeObject(ByVal hObject As Long)
     ' Clear what the object was instanced from
     g_objects(hObject).strInstancedFrom = vbNullString
 
-End Function
+End Sub
 
 '=========================================================================
 ' Copy an object to a destination or new memory
