@@ -438,8 +438,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -2611,7 +2611,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "12:12 PM"
+            TextSave        =   "2:42 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3625,7 +3625,7 @@ Private Sub ReadCommandLine_Timer()
             If Top < 0 Then Top = 0
             DoEvents
             If fCaption <> "Untitled" Then
-                Call .OpenProgram(Command$())
+                Call .openProgram(Command$())
                 rpgcodeList(activeRPGCodeIndex).prgName = Command$()
                 CommonGlobals.filename(2) = Command$()
             End If
@@ -4029,10 +4029,6 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
     End Select
 End Sub
 '=========================================================================================
-
-Private Sub prgDebug_Click(): On Error Resume Next
-    Call activeRPGCode.prgDebug
-End Sub
 
 Private Sub prgEventEdit_Click(): On Error Resume Next
     Call activeRPGCode.prgEventEdit

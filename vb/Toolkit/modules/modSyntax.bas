@@ -45,7 +45,7 @@ ActiveModule = "SplitLines()"
 ' Synatx Coloring
 Dim linesArray() As String
 Dim runningTotal As Double
-Dim StartTime As Double
+Dim startTime As Double
 Dim StopTime As Double
 Dim TimeToColor As Double
 Dim x As Long
@@ -221,7 +221,7 @@ If Not noBookmarks Then addBookmark lineText
 ErrorHandler:
 End Function
 
-Private Sub addBookmark(ByVal lineText As String)
+Private Sub addBookmark(ByRef lineText As String)
 
     If (InStr(1, lineText, ":") <> 0) Or (InStr(1, lineText, "*") <> 0) Or (InStr(1, lineText, "//") <> 0) Or (InStr(1, LCase$(lineText), "method") <> 0) Then
 
@@ -423,13 +423,6 @@ Public Sub ReColorLine(Optional ByRef blackLine As Boolean = -2, _
     'We're supposed to give this line some color...
     ColorLine .SelText, .selStart '...make it happen!
    End If
-  End If
-
-  If Not colorBlack Then
-   'Properly capitalize that command!
-    '.SelText = CapitalizeRPGCode(.SelText)
-   'See if the user's using an old, bad habit...
-   cf.checkBadHabits .SelText
   End If
 
   'Select whatever was selected before...

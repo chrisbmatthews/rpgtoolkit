@@ -92,19 +92,9 @@ Begin VB.Form rpgcodeedit
          Width           =   2010
       End
    End
-   Begin VB.Timer RestartReColor 
-      Interval        =   1
-      Left            =   5880
-      Top             =   4080
-   End
-   Begin VB.Timer CheckReColor 
-      Interval        =   1
-      Left            =   6360
-      Top             =   4080
-   End
    Begin RichTextLib.RichTextBox CodeForm 
       Height          =   2655
-      Left            =   240
+      Left            =   120
       TabIndex        =   0
       Top             =   1080
       Width           =   7695
@@ -112,6 +102,7 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
+      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -374,122 +365,94 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'==========================================================================
+' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
+'==========================================================================
 
-'TBD: Option Explicit
+'==========================================================================
+' RPGCode Editor
+'==========================================================================
 
-Public dataIndex As Long    'index into the vector of ste maintained in commonenemy
-Private openingPorgram As Boolean  'flag to determine if a program is being opened.  Allows for loading large files in background
+Option Explicit
 
-Public blackLine As Boolean
-Private secondCombo As ComboBox
-Private MouseDownSelStart As Long
-Private MouseDownSelLength As Long
-Private lastType As String
-Private lastSecondCombo As String
-Private dragging As Boolean
-Private startX As Single
-Private startY As Single
-Private startTop As Single
-Private oldLine As Long
-Private undoBuffer() As String
-Private oldCaption As String
-Private meOldCaption As String
-Private formLoaded As Boolean
+'==========================================================================
+' Globals
+'==========================================================================
+Public dataIndex As Long            ' Index of this editor
+Public blackLine As Boolean         ' Editing a line?
 
-' What is Purpose of this Function ?
-' KSNiloc says:
-'  So you can go TKMainForm.ActiveForm.FormType and tell what type of form
-'  is active.
-Public Function formType() As Long
-On Error Resume Next
+'==========================================================================
+' Members
+'==========================================================================
+Private secondCombo As ComboBox     ' Second bookmark combo box
+Private mouseDownSelStart As Long   ' Current position at mouse down
+Private mouseDownSelLength As Long  ' Length of selection at mouse down
+Private oldLine As Long             ' Old line
 
-'Identify type of form
-formType = FT_RPGCODE
+'==========================================================================
+' Obtain type of form
+'==========================================================================
+Public Property Get formType() As Long
+    formType = FT_RPGCODE
+End Property
 
-End Function
+'==========================================================================
+' Open a program
+'==========================================================================
+Public Sub openProgram(ByVal filename As String)
 
-Public Sub checkBadHabits(ByVal txt As String)
- 'Select Case GetCommandName(AddNumberSignIfNeeded(txt))
- ' Case "LABEL"
- '  frmCodeTip.showTip "RPGCode Tip :: Labels", "You appear to be using a cod" _
-    & "e label. While these may seem to be a practical solution to many loop" _
-    & "ing or other program flow problems it will cause you much grief in " _
-    & "the end. It is a generally bad programming habit and it is highly " _
-    & "advised that you do not proceed to use them.", 1
- ' Case "BRANCH", "FBRANCH"
- '  frmCodeTip.showTip "RPGCode Tip :: Branching", "You appear to be using th" _
-    & "e Branch() command. While branching may seem a practical and sensible " _
-    & "way to access different parts of your program, it simply creates messy" _
-    & "code. Branch() is *never* truly required in a program. Consider lookin" _
-    & "g into the Method(), While(), and For() commands for a much nicer alte" _
-    & "rnative.", 2
- ' Case "MBOX"
- '  frmCodeTip.showTip "RPGCode Tip :: MWin() Command", "It appears you are " _
-    & "attempting to add a line of text to the message window by simply typi" _
-    & "ng the command. It is strongly urged you use the MWin(text$) command " _
-    & "to serve this purpose. Loose text is not supported with the use of " _
-    & "AutoCommand() and soon it will not be supported at all.", 3
- 'End Select
- 'If InStr(1, txt, "#", vbTextCompare) > 0 And _
- ' Not GetCommandName(AddNumberSignIfNeeded(txt)) = "AUTOCOMMAND" Then
- ' frmCodeTip.showTip "RPGCode Tip :: AutoCommand()", "You seem to be using" _
-   & " the ""#"" character to prefix a command. This is no longer required. " _
-   & "Simply place ""#AutoCommand()"" at the top of your program. If you are" _
-   & " using an existing program you can use the ""AutoCommand Wizard"" to " _
-   & "save you time.", 4
- 'End If
-End Sub
+    On Error GoTo ErrorHandler
 
-Sub OpenProgram(ByVal filename As String)
-On Error GoTo ErrorHandler
+    ' Load the Program into text box.
+    Call codeForm.LoadFile(filename, rtfText)
 
-' Load the Program into text box.
-CodeForm.LoadFile filename, rtfText
-
-' Call Syntax Color Routines
-Call SplitLines
-Exit Sub
+    ' Call Syntax Color Routines
+    Call SplitLines
+    Exit Sub
 
 ErrorHandler:
-MsgBox "Cannot open specified filename", vbInformation + vbOKOnly, "RPG Toolkit"
-Exit Sub
+    MsgBox "Cannot open specified filename", vbInformation + vbOKOnly, "RPG Toolkit"
+
 End Sub
 
+'==========================================================================
+' Open a file (called from tkMainForm)
+'==========================================================================
 Public Sub openFile(ByVal FileToOpen As String)
 On Error Resume Next
 
 Dim antiPath As String
 
 ' Create a new instant of the Program editor window
-activeRPGCode.Show
+Call activeRPGCode.Show
 
 ' Not Sure ?
-filename$(1) = FileToOpen
+filename(1) = FileToOpen
 antiPath = absNoPath(FileToOpen)
-FileCopy filename$(1), projectPath$ + prgPath$ + antiPath
+Call FileCopy(filename(1), projectPath & prgPath & antiPath)
 
 ' Open The Program
-Call OpenProgram(filename$(1))
+Call openProgram(filename(1))
 
 ' Not Sure ?
-rpgcodeList(activeRPGCodeIndex).prgName$ = antiPath$
+rpgcodeList(activeRPGCodeIndex).prgName = antiPath
 
 ' Localization ?
-activeRPGCode.Caption = LoadStringLoc(803, "RPGCode Program Editor") + "  (" + antiPath$ + ")"
+activeRPGCode.Caption = LoadStringLoc(803, "RPGCode Program Editor") & "  (" & antiPath & ")"
 
 ' We Haven't modified this file yet
 rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = False
 
 End Sub
 
+'==========================================================================
+' Save the file (called from tkMainForm)
+'==========================================================================
 Public Sub saveFile(): On Error Resume Next
 
 #If (False) Then
-
-    'saves the file.
     
     filename(2) = rpgcodeList(activeRPGCodeIndex).prgName
     
@@ -512,18 +475,18 @@ Public Sub saveFile(): On Error Resume Next
 
 End Sub
 
+'==========================================================================
+' Show the event editor
+'==========================================================================
 Private Sub cconmnu_Click()
-    Call frmEventEditor.Show(vbModal)
+    Call EventEdit.Show(vbModal)
 End Sub
 
-Private Sub mnuAutoCommandWizard_Click()
- frmAutoCommandWizard.Show 1
-End Sub
-
+'==========================================================================
+' Show/hide the bookmark toolbar
+'==========================================================================
 Private Sub mnuBookmarkToolbar_Click()
-
-    ' ADDED BY KSNiloc
-    
+  
     On Error Resume Next
 
     Select Case mnuBookmarkToolbar.Checked
@@ -538,146 +501,75 @@ Private Sub mnuBookmarkToolbar_Click()
     
     End Select
     
-    Form_Resize
+    Call Form_Resize
 
 End Sub
 
+'==========================================================================
+' Show the indentation wizard
+'==========================================================================
 Private Sub mnuIndentWizard_Click()
- frmIndentWizard.Show 1
+    Call frmIndentWizard.Show(vbModal)
 End Sub
 
-'============================================================================
-'Real-Time Syntax Coloring
-'Designed and Programmed by Colin James Fitzpatrick (KSNiloc)
-'============================================================================
-'Depends on modSyntax
-'============================================================================
-
+'==========================================================================
+' Obtain focus
+'==========================================================================
 Private Sub CodeForm_GotFocus()
-    If Not mnuNotepadMode.Checked Then blackLine = True
+    If Not (mnuNotepadMode.Checked) Then blackLine = True
 End Sub
 
+'==========================================================================
+' Key pressed in the code field
+'==========================================================================
 Private Sub CodeForm_KeyPress(KeyAscii As Integer): On Error Resume Next
 
-    'Alterations made.
+    ' Alterations made
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
 
     Select Case KeyAscii
-    
-        Case 22 ' Ctrl+V
-            colorPastedCode
-            addUndo
 
         Case 3  ' Ctrl+C
-            Clipboard.SetText CodeForm.SelText
-            
-        Case 26 ' Ctrl+Z
-            doUndo
+            Call Clipboard.SetText(codeForm.SelText, vbCFText)
 
-        Case 25 ' Ctrl+Y
-            doRedo
-            addUndo
-            
-        Case Else
-            addUndo
-            
     End Select
 
 End Sub
 
-Private Sub doUndo()
-    
-    On Error GoTo noUndo
-    Dim dat As String
-    dat = undoBuffer(-1)
-    
-    On Error Resume Next
-    Dim oSS As Long
-    Dim oSL As Long
-    oSS = CodeForm.selStart
-    oSL = CodeForm.SelLength
-    CodeForm.Text = undoBuffer(-1)
-    CodeForm.selStart = oSS
-    CodeForm.SelLength = oSL
-
-    Dim a As Long
-    ReDim Preserve undoBuffer(LBound(undoBuffer) To UBound(undoBuffer) + 1)
-    For a = UBound(undoBuffer) - 1 To LBound(undoBuffer) Step -1
-        undoBuffer(a + 1) = undoBuffer(a)
-    Next
-    ReDim Preserve undoBuffer(LBound(undoBuffer) + 1 To UBound(undoBuffer))
-
-noUndo:
-End Sub
-
-Private Sub doRedo()
-
-    On Error GoTo noRedo
-    Dim dat As String
-    dat = undoBuffer(1)
-
-    On Error Resume Next
-    Dim oSS As Long
-    Dim oSL As Long
-    oSS = CodeForm.selStart
-    oSL = CodeForm.SelLength
-    CodeForm.Text = undoBuffer(1)
-    CodeForm.selStart = oSS
-    CodeForm.SelLength = oSL
-    
-    Dim a As Long
-    ReDim Preserve undoBuffer(LBound(undoBuffer) - 1 To UBound(undoBuffer))
-    For a = UBound(undoBuffer) To LBound(undoBuffer) + 1 Step -1
-        undoBuffer(a - 1) = undoBuffer(a)
-    Next
-    ReDim Preserve undoBuffer(LBound(undoBuffer) To UBound(undoBuffer) - 1)
-    
-noRedo:
-End Sub
-
-Private Sub addUndo()
-
-    On Error Resume Next
-    Dim a As Long
-    
-    ReDim Preserve undoBuffer(LBound(undoBuffer) - 1 To UBound(undoBuffer))
-    For a = 0 To LBound(undoBuffer) + 1 Step -1
-        undoBuffer(a - 1) = undoBuffer(a)
-    Next a
-    
-    ReDim Preserve undoBuffer(LBound(undoBuffer) To UBound(undoBuffer) + 1)
-    For a = UBound(undoBuffer) - 1 To 1 Step -1
-        undoBuffer(a + 1) = undoBuffer(a)
-    Next a
-    
-    undoBuffer(0) = CodeForm.Text
-
-End Sub
-
+'==========================================================================
+' Colour code pasted into the field
+'==========================================================================
 Private Sub colorPastedCode()
 
     Dim oldSS As Long
     Dim oldSL As Long
-    oldSS = CodeForm.selStart
-    oldSL = CodeForm.SelLength
-    SplitLines oldLine, CodeForm.GetLineFromChar(oldSS)
-    CodeForm.selStart = oldSS
-    CodeForm.SelLength = oldSL
+    oldSS = codeForm.selStart()
+    oldSL = codeForm.SelLength()
+    Call SplitLines(oldLine, codeForm.GetLineFromChar(oldSS))
+    codeForm.selStart = oldSS
+    codeForm.SelLength = oldSL
     blackLine = True
-    CodeForm.SetFocus
+    Call codeForm.SetFocus
     blackLine = False
 
 End Sub
 
+'==========================================================================
+' File -> New for notepad mode
+'==========================================================================
 Private Sub mnuNewPRG_Click()
-    ' ! ADDED BY KSNiloc...
     On Error Resume Next
-    Shell App.path & "\" & App.EXEName & ".exe .prg", vbNormalFocus
+    Call Shell(App.path & "\" & App.EXEName & ".exe .prg", vbNormalFocus)
 End Sub
 
+'==========================================================================
+' Enter or exit notepad mode
+'==========================================================================
 Public Sub mnuNotepadMode_Click()
 
     On Error Resume Next
+
+    Static oldCaption As String, meOldCaption As String
 
     WindowState = 0
 
@@ -726,80 +618,52 @@ Public Sub mnuNotepadMode_Click()
 
 End Sub
 
-Private Sub mnuRedo_Click()
-    doRedo
+'==========================================================================
+' Mouse down the field
+'==========================================================================
+Private Sub codeform_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    mouseDownSelStart = codeForm.selStart
+    mouseDownSelLength = codeForm.SelLength
+    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
 End Sub
 
-Private Sub mnuUndo_Click()
-    doUndo
-End Sub
-
-Private Sub RestartReColor_Timer()
- 'Added by KSNiloc
- On Error Resume Next
- If programEditorCountDown = 0 Then CheckReColor.Enabled = True
- If CodeForm.SelText = "" And Not CodeForm.SelColor = _
-  &H0& Then CodeForm.SelColor = &H0&
-End Sub
-
-Private Sub CheckReColor_Timer()
-
- 'KSNiloc says:
- 'Even though this code is run every millisecond it won't cause any
- 'slow downs or flicker because if it isn't supposed to be re-coloing
- 'it will not even run.
- 
- If Not needsReColor Then Exit Sub
- SplitLines
- programEditorCountDown = programEditorCountDown - 1
- CheckReColor.Enabled = False
- If programEditorCountDown = 0 Then needsReColor = False
-
-End Sub
-
-'Added by KSNiloc...
-Private Sub codeform_MouseDown(Button As Integer, Shift As Integer, _
- x As Single, y As Single)
- 
- 'Record where we're moving from...
- MouseDownSelStart = CodeForm.selStart
- MouseDownSelLength = CodeForm.SelLength
- 
- oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
-
-End Sub
-
+'==========================================================================
+' Key down on the field
+'==========================================================================
 Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Resume Next
 
-    'Alterations made.
+    If ((Shift = 2) And (keyCode = 86)) Then
+
+        ' Paste
+        codeForm.SelText = Clipboard.GetText(vbCFText)
+        Call colorPastedCode
+        keyCode = 0: Shift = 0
+        Exit Sub
+
+    End If
+
+    ' Alterations made.
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
 
-    If Not mnuNotepadMode.Checked Then
+    If Not (mnuNotepadMode.Checked) Then
         Dim inf As TextLineInfo
-        inf = getTextLineInfo(CodeForm.Text, CodeForm.selStart)
-        tkMainForm.StatusBar1.Panels(3).Text = CStr(CodeForm.GetLineFromChar(CodeForm.selStart) + 1)
+        inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
+        tkMainForm.StatusBar1.Panels(3).Text = CStr(codeForm.GetLineFromChar(codeForm.selStart) + 1)
         tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
     End If
 
-    ''''''''''''''''''''''''''
-    '    Added by KSNiloc    '
-    ''''''''''''''''''''''''''
-    '[6/19/04]
-    
-    'This addition allows for real-time syntax coloring
-    
-    oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
-    
+    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+
     'Declare variables...
     Dim enterKey As String
     Dim a As Long
     Dim b As Long
-    
+
     'Certain keys don't require us to do anything...
     If keyCode = 20 Or keyCode = 124 Or keyCode = 17 Or _
         keyCode = 16 Or keyCode = 36 Or keyCode = 36 Or keyCode = 37 Or _
         keyCode = 39 Or keyCode = 35 Then Exit Sub
-    
+
     'We're leaving the line- color it!
     If keyCode = 38 Or keyCode = 40 Or keyCode = 13 Or keyCode = 18 Then
         If blackLine Then
@@ -808,315 +672,200 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
         End If
         Exit Sub
     End If
-    
+
     'The user is modifying the line- turn it black!
-    If Not blackLine Then
-        ReColorLine , True
+    If Not (blackLine) Then
+        Call ReColorLine(True, True)
         blackLine = True
     End If
     
-    ''''''''''''''''''''''''''
-    '      End Addition      '
-    ''''''''''''''''''''''''''
 End Sub
 
-Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, _
- x As Single, y As Single)
+'==========================================================================
+' Mouse up on the field
+'==========================================================================
+Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
-    '''''''''''''''''''''''''''''
-    'Color the line we just left'
-    '''''''''''''''''''''''''''''
-
-    oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
+    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
 
     'Make sure we aren't wasting time coloring a line that's already colored
     If blackLine Then
 
-        'Declarations...
+        ' Declarations
         Dim nSS As Long
         Dim nSL As Long
  
-        'Record where the mouse clicked down...
-        nSS = CodeForm.selStart
-        nSL = CodeForm.SelLength
+        ' Record where the mouse clicked down
+        nSS = codeForm.selStart
+        nSL = codeForm.SelLength
  
-        'Move back to the line we just left...
-        CodeForm.selStart = MouseDownSelStart
-        CodeForm.SelLength = MouseDownSelLength
+        ' Move back to the line we just left
+        codeForm.selStart = mouseDownSelStart
+        codeForm.SelLength = mouseDownSelLength
 
-        'Color the line we just left...
+        ' Color the line we just left
         ReColorLine
  
-        'Flag that the line is no longer black...
+        ' Flag that the line is no longer black
         blackLine = False
  
-        'Move back to where the mouse clicked down...
-        CodeForm.selStart = nSS
-        CodeForm.SelLength = nSL
+        ' Move back to where the mouse clicked down
+        codeForm.selStart = nSS
+        codeForm.SelLength = nSL
 
     End If
     
-    If Button = 2 Then
-
-        'Popup the right-click menu...
-        PopupMenu mnuEdit
-        
-    End If
-
 End Sub
 
-'============================================================================
-'End "Real-Time Syntax Coloring" code
-'============================================================================
-
-'============================================================================
-'RPGCode Bookmarks 1.0
-'Designed and Programmed by Colin James Fitzpatrick (KSNiloc)
-'============================================================================
-'Depends on modSyntax
-'============================================================================
-
+'==========================================================================
+' Change type of bookmarks shown
+'==========================================================================
 Private Sub cboBookmarkType_Change()
- On Error Resume Next
- cboMethodBookmarks.Visible = False
- cboCommentBookmarks.Visible = False
- cboLabelBookmarks.Visible = False
- Select Case cboBookmarkType.list(cboBookmarkType.ListIndex)
-  Case "(Methods)": Set secondCombo = cboMethodBookmarks
-  Case "(Comments)": Set secondCombo = cboCommentBookmarks
-  Case "(Labels)": Set secondCombo = cboLabelBookmarks
- End Select
- secondCombo.ListIndex = 1
- 'If secondCombo.text = "" Then secondCombo.text = secondCombo.List(0)
- Form_Resize
+    On Error Resume Next
+    cboMethodBookmarks.Visible = False
+    cboCommentBookmarks.Visible = False
+    cboLabelBookmarks.Visible = False
+    Select Case cboBookmarkType.list(cboBookmarkType.ListIndex)
+        Case "(Methods)": Set secondCombo = cboMethodBookmarks
+        Case "(Comments)": Set secondCombo = cboCommentBookmarks
+        Case "(Labels)": Set secondCombo = cboLabelBookmarks
+    End Select
+    secondCombo.ListIndex = 1
+    Call Form_Resize
 End Sub
 
+'==========================================================================
+' Add a bookmark
+'==========================================================================
 Public Sub addBookmark(ByVal bookmarkName As String, ByRef cbo As ComboBox)
 
- 'Declarations...
- Dim a As Long
+    Dim i As Long
 
- With cbo
- 
-  'First make sure it's not a duplicate bookmark...
-  For a = 0 To .ListCount - 1
-   If Trim(LCase(bookmarkName)) = Trim(LCase(.list(a))) Then
-   
-    'Remove the item so it won't be in the list twice...
-    .RemoveItem a
-    
-    'MsgBox "Duplicate bookmark name found-- " & bookmarkName & vbCrLf & _
-    ' "It is suggested that you correct this to prevent future errors." _
-    ' , vbCritical, "Duplicate bookmark!"
-    'Exit Sub
-   End If
-  Next a
-  
-  'Add the bookmark to the list...
-  .AddItem Trim(bookmarkName)
-  
- End With
+    For i = 0 To cbo.ListCount - 1
+        If (Trim$(LCase$(bookmarkName)) = Trim$(LCase$(cbo.list(i)))) Then
+            Call cbo.RemoveItem(i)
+        End If
+    Next i
+
+    Call cbo.AddItem(Trim$(bookmarkName))
+
 End Sub
 
+'==========================================================================
+' Remove a bookmark
+'==========================================================================
 Public Sub removeBookmark(ByVal bookmarkName As String, ByRef cbo As ComboBox)
 
- 'Declarations...
- Dim a As Long
- 
- With cbo
- 
-  'Find the bookmark in the combo box...
-  For a = 0 To .ListCount - 1
-   If Trim(LCase(bookmarkName)) = Trim(LCase(.list(a))) Then
-    'We found it!
-    .RemoveItem a
-    Exit Sub
-   End If
-  Next a
- 
- End With
+    Dim i As Long
+
+    For i = 0 To cbo.ListCount - 1
+        If (Trim$(LCase$(bookmarkName)) = Trim$(LCase$(cbo.list(i)))) Then
+            Call cbo.RemoveItem(i)
+            Exit Sub
+        End If
+    Next i
 
 End Sub
 
+'==========================================================================
+' Goto a boomark line
+'==========================================================================
 Private Sub gotoBookmark()
- GotoLine secondCombo.list(secondCombo.ListIndex)
+    Call GotoLine(secondCombo.list(secondCombo.ListIndex))
 End Sub
 
+'==========================================================================
+' Determine whether a bookmark change is in order
+'==========================================================================
 Private Sub checkBookmarkChange()
- On Error Resume Next
- If Not lastType = cboBookmarkType.list(cboBookmarkType.ListIndex) Then
-  lastType = cboBookmarkType.list(cboBookmarkType.ListIndex)
-  cboBookmarkType_Change
- End If
- If Not lastSecondCombo = secondCombo.list(secondCombo.ListIndex) Then
-  lastSecondCombo = secondCombo.list(secondCombo.ListIndex)
-  gotoBookmark
- End If
-End Sub
-
-Private Sub cboBookmarkType_Click()
- checkBookmarkChange
-End Sub
-
-Private Sub cboCommentBookmarks_Change()
- gotoBookmark
-End Sub
-
-Private Sub cboCommentBookmarks_Click()
- checkBookmarkChange
-End Sub
-
-Private Sub cboLabelBookmarks_Change()
- gotoBookmark
-End Sub
-
-Private Sub cboLabelBookmarks_Click()
- checkBookmarkChange
-End Sub
-
-Private Sub cboMethodBookmarks_Change()
- gotoBookmark
-End Sub
-
-Private Sub cboMethodBookmarks_Click()
- checkBookmarkChange
-End Sub
-
-'============================================================================
-'End of "RPGCode Bookmarks" code
-'============================================================================
-
-' CLOSE MENU
-Private Sub closemnu_Click()
-On Error GoTo ErrorHandler
-
-rpgcodeList(activeRPGCodeIndex).prgText$ = CodeForm.Text
-Unload Me
-
-Exit Sub
-
-'Begin error handling code:
-ErrorHandler:
-Call HandleError
-Resume Next
-
-End Sub
-
-Private Sub codeform_Click()
-On Error Resume Next
-
-Dim inf As TextLineInfo
-inf = getTextLineInfo(CodeForm.Text, CodeForm.selStart)
-tkMainForm.StatusBar1.Panels(3).Text = CStr(CodeForm.GetLineFromChar(CodeForm.selStart) + 1)
-tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
-End Sub
-
-Public Sub prgRun()
-On Error GoTo ErrorHandler
-
-Call rprg_Click
-
-Exit Sub
-
-'Begin error handling code:
-ErrorHandler:
-Call HandleError
-Resume Next
-End Sub
-
-Public Sub prgDebug()
-On Error GoTo ErrorHandler
-Call dbmnu_Click
-Exit Sub
-
-'Begin error handling code:
-ErrorHandler:
-Call HandleError
-Resume Next
-End Sub
-
-Public Sub prgEventEdit()
-On Error Resume Next
-
-' Edit as Event
-
-numLines = countTextLines(CodeForm.Text)
-ReDim evtList$(numLines + 500)
-Dim i As Integer
-For i = 0 To numLines - 1
-    evtList(i) = getTextLineNumber(CodeForm.Text, i)
-Next i
-EventEdit.Show
-
-End Sub
-
-' QUICK REFERENCE MENU
-Private Sub crefmnu_Click()
-On Error GoTo ErrorHandler
-
-' Show Command Reference Form
-commandRef.Show vbModal
-
-Exit Sub
-
-'Begin error handling code:
-ErrorHandler:
-Call HandleError
-Resume Next
-
-End Sub
-
-' DEBUG MENU
-Private Sub dbmnu_Click()
-On Error GoTo ErrorHandler
-
-tprg$ = ""
-If rpgcodeList(activeRPGCodeIndex).Ifont$ <> "" Then
-    tprg$ = tprg$ + "#font(" + rpgcodeList(activeRPGCodeIndex).Ifont$ + ")" + chr$(13) + chr$(10)
-End If
-If rpgcodeList(activeRPGCodeIndex).IfontSize < 8 Then rpgcodeList(activeRPGCodeIndex).IfontSize = 8
-    tprg$ = tprg$ + "#fontsize(" + str$(rpgcodeList(activeRPGCodeIndex).IfontSize) + ")" + chr$(13) + chr$(10)
-If rpgcodeList(activeRPGCodeIndex).Imwin$ <> "" Then
-    tprg$ = tprg$ + "#Wingraphic(" + rpgcodeList(activeRPGCodeIndex).Imwin$ + ")" + chr$(13) + chr$(10)
-End If
-For t = 0 To 4
-    If rpgcodeList(activeRPGCodeIndex).Ichar$(t) <> "" Then
-        tprg$ = tprg$ + "#addplayer(" + rpgcodeList(activeRPGCodeIndex).Ichar$(t) + ")" + chr$(13) + chr$(10)
-    End If
-Next t
-If rpgcodeList(activeRPGCodeIndex).Iboard$ <> "" Then
-    tprg$ = tprg$ + "#send(" + rpgcodeList(activeRPGCodeIndex).Iboard$ + ",9,5)" + chr$(13) + chr$(10)
-End If
-tprg$ = tprg$ + "#BREAK()" + chr$(13) + chr$(10)
-
-tprg$ = tprg$ + CodeForm.Text
-    
-' Save Test Program
-Call saveprogramtst(projectPath$ + prgPath$ + "sys_test.prg", tprg$)
-
-' Run Trans3
-a = Shell("trans3 " + mainFile$ + " sys_test.prg")
-
-Exit Sub
-
-'Begin error handling code:
-ErrorHandler:
-Call HandleError
-Resume Next
-
-End Sub
-
-Sub saveprogramtst(tprg$, file$)
-    'Save program
     On Error Resume Next
-    num = FreeFile
-    Open file$ For Output As #num
-'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-        Print #num, tprg$
-    Close #num
+    Static lastType As String, lastSecondCombo As String
+    If (lastType <> cboBookmarkType.list(cboBookmarkType.ListIndex)) Then
+        lastType = cboBookmarkType.list(cboBookmarkType.ListIndex)
+        Call cboBookmarkType_Change
+    End If
+    If (lastSecondCombo <> secondCombo.list(secondCombo.ListIndex)) Then
+        lastSecondCombo = secondCombo.list(secondCombo.ListIndex)
+        Call gotoBookmark
+    End If
 End Sub
 
-' FORM ACTIVATE
+'==========================================================================
+' Bookmark change events
+'==========================================================================
+Private Sub cboBookmarkType_Click()
+    Call checkBookmarkChange
+End Sub
+Private Sub cboCommentBookmarks_Change()
+    Call gotoBookmark
+End Sub
+Private Sub cboCommentBookmarks_Click()
+    Call checkBookmarkChange
+End Sub
+Private Sub cboLabelBookmarks_Change()
+    Call gotoBookmark
+End Sub
+Private Sub cboLabelBookmarks_Click()
+    Call checkBookmarkChange
+End Sub
+Private Sub cboMethodBookmarks_Change()
+    Call gotoBookmark
+End Sub
+Private Sub cboMethodBookmarks_Click()
+    Call checkBookmarkChange
+End Sub
+
+'==========================================================================
+' File -> Close
+'==========================================================================
+Private Sub closemnu_Click()
+    rpgcodeList(activeRPGCodeIndex).prgText = codeForm.Text
+    Call Unload(Me)
+End Sub
+
+'==========================================================================
+' Click on the field
+'==========================================================================
+Private Sub codeform_Click()
+    On Error Resume Next
+    Dim inf As TextLineInfo
+    inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
+    tkMainForm.StatusBar1.Panels(3).Text = CStr(codeForm.GetLineFromChar(codeForm.selStart) + 1)
+    tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
+End Sub
+
+'==========================================================================
+' Run the program in question
+'==========================================================================
+Public Sub prgRun()
+    Call rprg_Click
+End Sub
+
+'==========================================================================
+' Open the event editor
+'==========================================================================
+Public Sub prgEventEdit()
+    On Error Resume Next
+    Dim numLines As Long
+    numLines = countTextLines(codeForm.Text)
+    ReDim evtList(numLines + 500) As String
+    Dim i As Long
+    For i = 0 To numLines - 1
+        evtList(i) = getTextLineNumber(codeForm.Text, i)
+    Next i
+    Call EventEdit.Show
+End Sub
+
+'==========================================================================
+' Show the quick reference
+'==========================================================================
+Private Sub crefmnu_Click()
+    Call commandRef.Show(vbModal)
+End Sub
+
+'==========================================================================
+' Form activation
+'==========================================================================
 Private Sub Form_Activate(): On Error Resume Next
 
      Set activeRPGCode = Me
@@ -1128,50 +877,42 @@ Private Sub Form_Activate(): On Error Resume Next
      tkMainForm.rpgcodeTools.Visible = True
      tkMainForm.rpgcodeTools.Top = tkMainForm.toolTop
 
-     ' [KSNiloc] 3.0.4
-     GetLineColors
-     programEditorCount = programEditorCount + 1
-
 End Sub
 
-' FORM LOAD
+'==========================================================================
+' Form initialization
+'==========================================================================
 Private Sub Form_Load()
 On Error GoTo ErrorHandler
 
-' Localization
-' Call LocalizeForm(Me)
+Call GetLineColors
+programEditorCount = programEditorCount + 1
 
-' The Currently Active Form is this selected one (this is probably redundtant soon)
+' The Currently Active Form is this selected one
 Set activeRPGCode = Me
 
 ' Not Entirely Sure What Chris did here
 dataIndex = VectRPGCodeNewSlot()
 activeRPGCodeIndex = dataIndex
     
-CodeForm.width = Me.width * 0.9 - 255
-CodeForm.Height = Me.Height * 0.9 - 335
-CodeForm.Left = (Me.width * 0.1) / 2
-CodeForm.Top = Command1.Top + Command1.Height + 335
+codeForm.width = Me.width * 0.9 - 255
+codeForm.Height = Me.Height * 0.9 - 335
+codeForm.Left = (Me.width * 0.1) / 2
+codeForm.Top = 335
 
 WindowState = 0
 
-If tag <> "1" Then
+If (tag <> "1") Then
     mnuNotepadMode.Checked = False
 Else
-    mnuNotepadMode_Click
+    Call mnuNotepadMode_Click
 End If
 
-' KSNiloc...
-Form_Resize
+Call Form_Resize
 
-' ADDED BY KSNiloc...
-ReDim undoBuffer(0 To 0)
-
-CodeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", "")
-If CodeForm.Text <> "" Then CodeForm.Text = CodeForm.Text & vbCrLf
-CodeForm.selStart = Len(CodeForm.Text)
-
-formLoaded = True
+codeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", vbNullString)
+If (LenB(codeForm.Text)) Then codeForm.Text = codeForm.Text & vbCrLf
+codeForm.selStart = Len(codeForm.Text)
 
 Exit Sub
 
@@ -1182,34 +923,28 @@ Resume Next
 
 End Sub
 
-' RESIZING CODE
+'==========================================================================
+' Form resize
+'==========================================================================
 Private Sub Form_Resize()
-On Error GoTo ErrorHandler
 
-' ! KSNiloc...
-' If mnuNotepadMode.Checked And formLoaded Then
-    If WindowState <> 2 Then WindowState = 2
-' End If
+    If (WindowState <> 2) Then WindowState = 2
 
-'Numbers changed to work with bookmarks...
-Dim cfTop As Long
-If mnuBookmarkToolbar.Checked Then cfTop = 335
-CodeForm.Move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
-cboBookmarkType.width = (Me.width - 60) / 2
-secondCombo.Left = cboBookmarkType.width
-secondCombo.width = cboBookmarkType.width - 60
-secondCombo.Visible = True
-
-Exit Sub
-
-'Begin error handling code:
-ErrorHandler:
-Call HandleError
-Resume Next
+    Dim cfTop As Long
+    If (mnuBookmarkToolbar.Checked) Then cfTop = 335
+    codeForm.Move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
+    cboBookmarkType.width = (Me.width - 60) / 2
+    If Not (secondCombo Is Nothing) Then
+        secondCombo.Left = cboBookmarkType.width
+        secondCombo.width = cboBookmarkType.width - 60
+        secondCombo.Visible = True
+    End If
 
 End Sub
 
-' FORM UNLOAD CODE
+'==========================================================================
+' Form unload
+'==========================================================================
 Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
 
     'See if the program needs saving.
@@ -1235,57 +970,24 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     End If
 
     programEditorCount = programEditorCount - 1
-    rpgcodeList(activeRPGCodeIndex).prgText = CodeForm.Text
+    rpgcodeList(activeRPGCodeIndex).prgText = codeForm.Text
     Call hideAllTools
-    
-    ' KSNiloc...
-    If mnuNotepadMode.Checked Then
-        mnuNotepadMode_Click
-    End If
-    
-    If tag = "1" Then mnuexit_Click
-
+    If (mnuNotepadMode.Checked) Then Call mnuNotepadMode_Click
+    If (tag = "1") Then Call mnuexit_Click
     Call tkMainForm.refreshTabs
 
 End Sub
 
+'==========================================================================
+' Show options
+'==========================================================================
 Private Sub mnuColorCoding_Click()
- 'Added by KSNiloc...
- frmColoringOptions.Show 1
+    Call frmColoringOptions.Show(vbModal)
 End Sub
 
-' COPY MENU
-Private Sub mnuCopy_Click()
-On Error Resume Next
-
-Clipboard.SetText CodeForm.SelText
-End Sub
-
-' CUT MENU
-Private Sub mnuCut_Click()
-On Error Resume Next
-
-' Copy Selected Text Into Clipboard
-Clipboard.SetText CodeForm.SelText
-
-' Remove Selected Text From Text Box
-CodeForm.SelText = vbNullString
-End Sub
-
-' PASTE MENU
-Private Sub mnuPaste_Click()
-On Error Resume Next
-
-' MODIFIED BY KSNiloc...
-
-If Clipboard.GetFormat(vbCFText) = True Then
-    ' Place the contents of the clipboard into current location in text box
-    CodeForm.SelText = Clipboard.GetText
-    colorPastedCode
-End If
-
-End Sub
-
+'==========================================================================
+' Show the introduction
+'==========================================================================
 Private Sub rpgin_Click()
     On Error GoTo ErrorHandler
     Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help2, resourcePath$ + m_LangFile))
@@ -1297,6 +999,9 @@ ErrorHandler:
     Resume Next
 End Sub
 
+'==========================================================================
+' Show the reference
+'==========================================================================
 Private Sub rpgr_Click()
     On Error GoTo ErrorHandler
     Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help3, resourcePath$ + m_LangFile))
@@ -1308,23 +1013,18 @@ ErrorHandler:
     Resume Next
 End Sub
 
+'==========================================================================
+' Select all
+'==========================================================================
 Private Sub mnuSelectAll_Click()
-CodeForm.selStart = 0
-CodeForm.SelLength = Len(CodeForm.Text)
+    codeForm.selStart = 0
+    codeForm.SelLength = Len(codeForm.Text)
 End Sub
 
-' RUN CODE MENU
+'==========================================================================
+' Test the program in question
+'==========================================================================
 Private Sub rprg_Click()
-'==========================
-'EDITED: [Delano - 8/05/04]
-'FIXED: trans3 crashes when this button is pressed (sometimes)!
-'CAUSE: the Shell call windowstyle was set to default, which caused trans3 to be minimized,
-'       which caused trans3 to crash.
-'==========================
-
-'Called when Run Program is selected from the menu, F5 is pressed or the green arrow is clicked.
-'Creates the program "sys_test.prg" with the test preferences converted to rpg commands,
-'and passes this to trans3.exe as an arguement.
 
     On Error Resume Next
     
@@ -1338,6 +1038,7 @@ Private Sub rprg_Click()
     If rpgcodeList(activeRPGCodeIndex).Imwin$ <> "" Then
         TestPRG = TestPRG + "WinGraphic(" + rpgcodeList(activeRPGCodeIndex).Imwin$ + ")" + chr$(13) + chr$(10)
     End If
+    Dim t As Long
     For t = 0 To 4
         If rpgcodeList(activeRPGCodeIndex).Ichar$(t) <> "" Then
             TestPRG = TestPRG + "AddPlayer(" + rpgcodeList(activeRPGCodeIndex).Ichar$(t) + ")" + chr$(13) + chr$(10)
@@ -1348,9 +1049,8 @@ Private Sub rprg_Click()
     End If
     
     ' Complete TestPRG String
-    TestPRG = TestPRG & CodeForm.Text
+    TestPRG = TestPRG & codeForm.Text
 
-    ' ! MODIFIED BY KSNiloc...
     Dim num As Long
     num = FreeFile()
     Open projectPath & prgPath & "sys_test.prg" For Output As num
@@ -1364,7 +1064,9 @@ Private Sub rprg_Click()
 
 End Sub
 
-' SAVE AS MENU
+'==========================================================================
+' Save the program as...
+'==========================================================================
 Private Sub sasmnu_Click(): On Error Resume Next
 
     ChDir (currentDir)
@@ -1394,16 +1096,15 @@ Private Sub sasmnu_Click(): On Error Resume Next
     'Redraw the file tree, adding new file if created.
     Call tkMainForm.fillTree("", projectPath)
     
-    'File is now unaltered.
-    ' rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = False
-
 End Sub
 
-' SAVE PROGRAM MENU
+'==========================================================================
+' Save the program in question
+'==========================================================================
 Private Sub SavePrgMnu_Click(): On Error Resume Next
 
     filename(2) = rpgcodeList(activeRPGCodeIndex).prgName$
-    If filename(2) = "" Then sasmnu_Click: Exit Sub
+    If filename(2) = "" Then Call sasmnu_Click: Exit Sub
     
     Dim strFile As String
     
@@ -1430,10 +1131,12 @@ Private Sub SavePrgMnu_Click(): On Error Resume Next
 
 End Sub
 
-' VISUAL EDITOR MENU
+'==========================================================================
+' Show the visual editor
+'==========================================================================
 Private Sub tkvismnu_Click()
 On Error GoTo ErrorHandler
-tkvisual.Show
+Call tkvisual.Show
 Exit Sub
 
 'Begin error handling code:
@@ -1443,11 +1146,13 @@ Resume Next
 
 End Sub
 
-' TEST PREFERENCES MENU
+'==========================================================================
+' Show the test preferences
+'==========================================================================
 Private Sub tpref_Click()
 On Error GoTo ErrorHandler
 
-testprefs.Show vbModal
+Call testprefs.Show(vbModal)
 
 Exit Sub
 
@@ -1458,31 +1163,35 @@ Resume Next
 
 End Sub
 
+'==========================================================================
+' Main form menus
+'==========================================================================
+
+' TILE HORIZONTALLY MENU
 Private Sub mnutilehorizontally_Click()
-On Error Resume Next
-
-Call tkMainForm.tilehorizonatllymnu_Click
-
+    On Error Resume Next
+    Call tkMainForm.tilehorizonatllymnu_Click
 End Sub
 
+' TILE VERTICALLY MENU
 Private Sub mnutilevertically_Click()
-On Error Resume Next
-Call tkMainForm.tileverticallymnu_Click
+    On Error Resume Next
+    Call tkMainForm.tileverticallymnu_Click
 End Sub
 
-' TUTORIAL MENU
+' SHOW TUTORIAL MENU
 Private Sub mnuTutorial_Click()
     On Error Resume Next
     Call tkMainForm.tutorialmnu_Click
 End Sub
 
-' USER GUIDE MENU
+' SHOW GUIDE MENU
 Private Sub mnuusersguide_Click()
     On Error Resume Next
     Call tkMainForm.usersguidemnu_Click
 End Sub
 
-' ABOUT MENU
+' ABOUT SCREEN MENU
 Private Sub mnuAbout_Click()
     On Error Resume Next
     Call tkMainForm.aboutmnu_Click
@@ -1602,32 +1311,6 @@ Private Sub mnunewtilebitmap_Click()
     Call tkMainForm.newtilebitmapmnu_Click
 End Sub
 
-' OPEN FILE MENU
-Private Sub mnuopen_Click()
-On Error Resume Next
-
-If tag = "1" Then
-    ChDir (currentDir)
-    Dim antiPath As String
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath
-    dlg.strTitle = "Open"
-    dlg.strFileTypes = "RPGCode Programs (*.prg)|*.prg"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename(1) = dlg.strSelectedFile
-        antiPath = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir)
-    If filename(1) = "" Then Exit Sub
-    Shell App.path & "\" & App.EXEName & ".exe " & filename(1), vbNormalFocus
-Else
-    Call tkMainForm.openmnu_Click
-End If
-
-End Sub
-
 ' RPG CODE PRIMER MENU
 Private Sub mnuRPGCodePrimer_Click()
     On Error Resume Next
@@ -1680,4 +1363,30 @@ End Sub
 Private Sub mnuNewFightBackground_Click()
     On Error Resume Next
     Call tkMainForm.mnuNewFightBackground_Click
+End Sub
+
+' OPEN FILE MENU
+Private Sub mnuopen_Click()
+On Error Resume Next
+
+If tag = "1" Then
+    ChDir (currentDir)
+    Dim antiPath As String
+    Dim dlg As FileDialogInfo
+    dlg.strDefaultFolder = projectPath
+    dlg.strTitle = "Open"
+    dlg.strFileTypes = "RPGCode Programs (*.prg)|*.prg"
+    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
+        filename(1) = dlg.strSelectedFile
+        antiPath = dlg.strSelectedFileNoPath
+    Else
+        Exit Sub
+    End If
+    ChDir (currentDir)
+    If filename(1) = "" Then Exit Sub
+    Shell App.path & "\" & App.EXEName & ".exe " & filename(1), vbNormalFocus
+Else
+    Call tkMainForm.openmnu_Click
+End If
+
 End Sub
