@@ -192,10 +192,11 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         theProgram.programPos = foundIt
         
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
-        
+               
         'Get parameters from calling line
         dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
+        Dim running As Long
         For pList = 1 To number
             parameterList$(pList) = GetElement(dataUse$, pList)
         Next pList
@@ -207,12 +208,23 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             destList$(pList) = GetElement(dataUse$, pList)
         Next pList
 
+        ReDim quotes(1) As Long
+        Dim commaNum As Long
+        For pList = 1 To Len(Text)
+            If (Mid(Text, 1, 1) = Chr(34)) Then
+                commaNum = commaNum + 1
+                ReDim Preserve quotes(commaNum)
+                quotes(commaNum) = pList
+            End If
+        Next pList
+
         'create a new local scope for this method...
         Call AddHeapToStack(theProgram)
 
         Dim lit As String, num As Double
         Dim dataG As Long, dUse As String
         'Now to correspond the two lists
+               
         For pList = 1 To number
             'get the value from the previous stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
@@ -220,18 +232,28 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             'restore stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
             
+            'Call traceString("Running line - " & Text & " - at param - " & parameterList$(pList) & " - num: " & num & " - lit: " & lit)
+            'Call traceString("Type is " & dataG)
+                       
             If (dataG = 0) Then
                 dUse$ = CStr(num)
+                'Call traceString("Came up num, went with " & dUse)
             Else
-                If (Not (InStr(1, Mid(Text, InStr(1, Text, lit) - 1, 1), Chr(34)))) Then
+                'Call traceString("Came up lit")
+                If ((Mid(Text, quotes(pList - 1), 1) <> Chr(34))) _
+                 And (Right(lit, 1) <> "!") And (Right(lit, 1) <> "$") Then
+                    'Call traceString("Assuming object")
                     lit = lit & "!"
                     If (getValue(lit, lit, num, theProgram) = DT_NUM) Then
                         dUse = CStr(num)
+                        'Call traceString("Leaving at DT_NUM with: " & dUse)
                     Else
                         dUse = lit
+                        'Call traceString("Leaving at DT_LIT with: " & dUse)
                     End If
                 Else
                     dUse = lit
+                    'Call traceString("Leaving at DT_LIT with: " & dUse)
                 End If
             End If
             
