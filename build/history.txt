@@ -1,13 +1,13 @@
-======================================================================
+===================================================================================================
 RPG TOOLKIT DEVELOPMENT SYSTEM, 3.0 HISTORY
-======================================================================
+===================================================================================================
 
-======================================================================
+===================================================================================================
 RPGToolkit Development System 3.06
 Grand Bug Fix List
 March 14, 2005
-Copyright 2005, Jonathan Hughes (Delano), and Colin James Fitzpatrick
-======================================================================
+Copyright 2005, Jonathan Hughes (Delano), Colin James Fitzpatrick, Christopher B. Matthews, et al.
+===================================================================================================
 
 Toolkit Game Engine, trans3
 ===========================
@@ -107,9 +107,9 @@ Corrected
     * Crashes for some people during install
     * Help files rewritten
 
-======================================================================
+===================================================================================================
 - END 3.06
-======================================================================
+===================================================================================================
 
 RPG Toolkit Development System 3.0.5
 Instructions and What's New
@@ -991,8 +991,8 @@ MISC COMMANDS:
 #GameSpeed(speed!)
 	-Replaces #CharacterSpeed
 	-Defines the overall game speed.
-	-if speed! == 3, then the game will run it's fastest
-	-if speed! == 0, the game will run it's slowest.
+	-if speed! == 3, then the game will run its fastest
+	-if speed! == 0, the game will run its slowest.
 
 
 SCOPE COMMANDS:
@@ -1015,7 +1015,7 @@ SCOPE COMMANDS:
  
 #value$ = Local( varName$ [, value$] )
 #value! = Local( varName! [, value!] )
-	-Create a local variable, or explicitly get it's value.
+	-Create a local variable, or explicitly get its value.
 	-Example:
 		#AutoCommand
 		
@@ -1032,7 +1032,7 @@ SCOPE COMMANDS:
 
 #value$ = Global( varName$ [, value$] )
 #value! = Global( varName! [, value!] )
-	-Create a global variable, or explicitly get it's value.
+	-Create a global variable, or explicitly get its value.
 	-Example:
 		#AutoCommand
 		
@@ -1200,7 +1200,7 @@ id! = #GetThreadId( [id!] )
 		
 		#id! = GetThreadId()
 		#KillThread( id! )	*equivalent to #end
-		-When the mythread.prg starts to run, it can call this to get it's own thread id.
+		-When the mythread.prg starts to run, it can call this to get its own thread id.
 
 #ThreadSleep( id!, duration! )
 	-Put a thread to sleep for a certain amount of time.
@@ -1229,7 +1229,7 @@ id! = #GetThreadId( [id!] )
 	-command$ is an RPGCode command to run inside that thread
 	-The return value from that command is returned to us.
 	-Example:
-		Say we have a running thread, and it's id is stored in the 
+		Say we have a running thread, and its id is stored in the 
 		variable id!
 		
 		That thread has a method called #talk that retirns a number.
