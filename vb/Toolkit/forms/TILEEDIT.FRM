@@ -238,6 +238,12 @@ Begin VB.Form tileedit
          Shortcut        =   ^F
          Tag             =   "1678"
       End
+      Begin VB.Menu separator 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuRecursiveFlooding 
+         Caption         =   "Use Recursive Flooding"
+      End
    End
    Begin VB.Menu efmenu 
       Caption         =   "Effects"
@@ -884,15 +890,8 @@ End Sub
 '========================================================================
 ' Tile Tools
 '========================================================================
-
 'Fill
-Private Sub fillTile( _
-                        ByVal x As Long, _
-                        ByVal y As Long, _
-                        ByVal crColor As Long _
-                                                )
-
-    On Error Resume Next
+Private Sub gdiFillTile(ByVal x As Long, ByVal y As Long, ByVal crColor As Long): On Error Resume Next
 
     'Get the color where the user clicked down
     Dim clickColor As Long
@@ -980,9 +979,51 @@ Private Sub fillTile( _
     'Destroy the canvas
     Call destroyCanvas(cnv)
 
-    'Redraw the tile
-    Call tileRedraw
+End Sub
 
+'========================================================================
+' Recursive flooding - reintroduced as secondary option if gdi fails
+' Uses menu option / registry setting - same as board editor
+'========================================================================
+Private Sub fillTile(ByVal x As Long, ByVal y As Long, ByVal crColor As Long, _
+                     Optional ByVal lastX As Long = -1, Optional ByVal lastY As Long = -1)
+    On Error Resume Next
+    
+    Dim replaceCol As Long, x2 As Long, y2 As Long
+    replaceCol = tileMem(x, y)              'Colour at the location.
+    
+    If replaceCol = crColor Then Exit Sub
+
+    tileMem(x, y) = crColor                 'Set the new colour.
+    
+    'Check right (east).
+    x2 = x + 1
+    y2 = y
+    If (x2 <= xRange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
+        If tileMem(x2, y2) = replaceCol Then Call fillTile(x2, y2, crColor, x, y)
+    End If
+    
+    'Check up (north).
+    x2 = x
+    y2 = y - 1
+    If (x2 <= xRange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
+        If tileMem(x2, y2) = replaceCol Then Call fillTile(x2, y2, crColor, x, y)
+    End If
+    
+    'Check left (west).
+    x2 = x - 1
+    y2 = y
+    If (x2 <= xRange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
+        If tileMem(x2, y2) = replaceCol Then Call fillTile(x2, y2, crColor, x, y)
+    End If
+    
+    'Check down (south).
+    x2 = x
+    y2 = y + 1
+    If (x2 <= xRange And y2 <= 32 And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then '<-- Edit
+        If tileMem(x2, y2) = replaceCol Then Call fillTile(x2, y2, crColor, x, y)
+    End If
+    
 End Sub
 
 'Others
@@ -1107,7 +1148,11 @@ Private Sub Form_Activate(): On Error Resume Next
     tkMainForm.tileExtras.Visible = True
     tkMainForm.tileTools.Visible = True
     tkMainForm.tileTools.Top = tkMainForm.toolTop
-
+    
+    'Tick the flood option if entry made.
+    mnuRecursiveFlooding.Checked = False
+    If GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then mnuRecursiveFlooding.Checked = True
+    
 End Sub
 
 '========================================================================
@@ -1444,6 +1489,26 @@ Public Sub tileRedraw(): On Error Resume Next
 
 End Sub
 
+'========================================================================
+' Switch to recursive flood method (if gdi doesn't work)
+' Use same setting in tile and board editors
+'========================================================================
+Private Sub mnuRecursiveFlooding_Click(): On Error Resume Next
+
+    mnuRecursiveFlooding.Checked = Not mnuRecursiveFlooding.Checked
+    'Store a key for this setting.
+    
+    If mnuRecursiveFlooding.Checked Then
+        'Enabled - save setting.
+        Call SaveSetting("RPGToolkit3", "Settings", "Recursive Flooding", "1")
+    
+    ElseIf GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then
+        'Disabled - delete the setting if it exists.
+        Call DeleteSetting("RPGToolkit3", "Settings", "Recursive Flooding")
+        
+    End If
+End Sub
+
 Private Sub mnuRedo_Click()
     Call useRedo
 End Sub
@@ -1561,7 +1626,19 @@ Private Sub tileform_MouseDown(Button As Integer, Shift As Integer, x As Single,
             openTileEditorDocs(indice).tileMode = 0
             Call ToolSet(openTileEditorDocs(indice).tileMode)
         Case 2 'Fill
-            Call fillTile(mouseX + 1, mouseY + 1, coloruse)
+        
+            'Use gdi version as recursive routine crashes on large boards (3.0.6)
+            If GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then
+                'User has enabled recursive flooding - when gdi doesn't work.
+                Call fillTile(mouseX + 1, mouseY + 1, coloruse)
+            Else
+                'Use gdi if no setting exists (default).
+                Call gdiFillTile(mouseX + 1, mouseY + 1, coloruse)
+            End If
+            
+            'Redraw the tile
+            Call tileRedraw
+
     End Select
     
     DoEvents
