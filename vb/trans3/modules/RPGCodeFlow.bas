@@ -564,7 +564,7 @@ Public Function runBlock( _
 
             Case Else
 
-                If (runCommands = 1) Then
+                If (runCommands <> 0) Then
                     Call DoCommand(prg, retval)
                 Else
                     prg.programPos = increment(prg)

@@ -550,7 +550,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
             If (signs(idx) = "=") Then
 
                 ' Assignment operator
-                Call SetVariable(values(idx), CStr(strVal(idx + 1)), prg)
+                Call SetVariable(values(idx), strVal(idx + 1), prg)
                 idx = idx + 1
                 Dim y As Long
                 For y = idx To valueUb
@@ -1230,9 +1230,9 @@ Public Function replaceOutsideQuotes(ByRef Text As String, ByRef find As String,
         char = Mid$(Text, a, 1)
         Select Case char
             Case """"
-                ignore = (Not ignore)
+                ignore = Not (ignore)
         End Select
-        If Not ignore Then If char = find Then char = replace
+        If Not (ignore) Then If (char = find) Then char = replace
         build = build & char
     Next a
 

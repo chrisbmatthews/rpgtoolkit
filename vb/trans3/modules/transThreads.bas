@@ -450,7 +450,7 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
 
             Case TYPE_WHILE             'WHILE LOOP
                                         '----------
-                If evaluate(.condition, .prg) = 1 Then
+                If evaluate(.condition, .prg) <> 0 Then
                     .prg.programPos = .start
                     .end = False
                 Else
@@ -473,7 +473,7 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
                 oPP = .prg.programPos
                 .prg.programPos = DoSingleCommand(.increment, .prg, rV)
                 .prg.programPos = oPP
-                If evaluate(.condition, .prg) = 1 Then
+                If evaluate(.condition, .prg) <> 0 Then
                     .prg.programPos = .start
                     .end = False
                 Else

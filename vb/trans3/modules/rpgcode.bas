@@ -1798,11 +1798,11 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     theProgram.programPos = increment(theProgram)
     res = evaluate(u2, theProgram)
     
-    If res = 1 Then
+    If (res <> 0) Then
 
         If Not (isMultiTasking() And (Not theProgram.looping)) Then
     
-            Do While res = 1
+            Do While (res <> 0)
                 res = evaluate(u2, theProgram)
                 Dim oldLine As Long, newPos As Long, curLine As Long
         
@@ -3165,17 +3165,17 @@ Public Function IfThen( _
     'Re-written by KSNiloc
     '==========================================================================
 
-    'If(this!=that!)
+    'if (this! == that!)
     '{
     '   ...
     '   ...
     '}
-    'ElseIf(this!=floomy!)
+    'elseif (this! == floomy!)
     '{
     '   ...
     '   ...
     '}
-    'Else()
+    'else
     '{
     '   ...
     '   ...
@@ -3230,7 +3230,7 @@ Public Function IfThen( _
     Dim res As Long
     res = evaluate(GetBrackets(Text), prg)
 
-    If res = 1 Then
+    If (res <> 0) Then
     
         doneIf(UBound(doneIf)) = True
 
@@ -7953,7 +7953,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
     If isUntil Then
         okToRun = (res = 0)
     Else
-        okToRun = (res = 1)
+        okToRun = (res <> 0)
     End If
 
     If okToRun Then
@@ -7975,10 +7975,10 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
             Do Until done
                 res = evaluate(dataUseWhile$, theProgram)
                 
-                If isUntil Then
-                    If res = 0 Then
+                If (isUntil) Then
+                    If (res = 0) Then
                         res = 1
-                    ElseIf res = 1 Then
+                    ElseIf (res <> 0) Then
                         done = True
                         res = 0
                     End If

@@ -185,16 +185,16 @@ End Sub
 '=========================================================================
 ' Check if a key is being pressed
 '=========================================================================
-Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
+Public Function getKey(Optional ByVal milliSeconds As Long = 25) As String
 
     On Error Resume Next
 
     'Clear the last pressed key.
     keyWaitState = -1
 
-    If (milliSeconds = 0) Then milliSeconds = 15
+    If (milliSeconds = 0) Then milliSeconds = 25
 
-    'call processevent so we can get a key...
+    ' Call DoEvents so we can get a key...
     Call DoEventsFor(milliSeconds)
 
     'Check the joystick.
