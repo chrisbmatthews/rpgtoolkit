@@ -413,6 +413,8 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
     'Returns the index of the selected entry...
     On Error Resume Next
     
+    Call haltKeyDownScanning
+    
     'Save the screen into a canvas...
     Dim cnv As Long
     cnv = createCanvas(resX, resY)
@@ -507,6 +509,7 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
     Call destroyCanvas(cnv)
     runningProgram = bOldRunningProgram
     
+    Call startKeyDownScanning
     CursorMapRun = cursorNum
 End Function
 
