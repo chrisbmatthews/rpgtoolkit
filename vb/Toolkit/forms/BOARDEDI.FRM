@@ -650,7 +650,7 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     If UCase$(GetExt(tilesetFilename(file$))) = "ISO" Then
         Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, ISODETAIL)
     Else
-    Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
+        Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
     End If
     
     Dim X As Long, Y As Long
@@ -710,9 +710,14 @@ Public Sub fillBoard(ByVal X As Long, ByVal Y As Long, ByVal l As Long, ByVal ti
     ' check if old and new tile are the same
     If replaceTile = newTile Then Exit Sub
     
-    ' set grid reference to new tile
+    ' enter the tile data of the copying tile.
     boardList(activeBoardIndex).theData.board(X, Y, l) = newTile
     boardList(activeBoardIndex).theData.tiletype(X, Y, l) = boardList(activeBoardIndex).currentTileType
+                
+    ' set ambient details
+    boardList(activeBoardIndex).theData.ambientRed(X, Y, l) = boardList(activeBoardIndex).ambientR
+    boardList(activeBoardIndex).theData.ambientGreen(X, Y, l) = boardList(activeBoardIndex).ambientG
+    boardList(activeBoardIndex).theData.ambientBlue(X, Y, l) = boardList(activeBoardIndex).ambientB
     
     Dim sizex As Long, sizey As Long
     
@@ -1895,17 +1900,17 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     Call checkSave
     
     ' get path
-    filename$(1) = file$
+    filename(1) = file
 
     ' get filename
     Dim antiPath As String
     antiPath = absNoPath(file)
     
     ' copy board to directory
-    Call FileCopy(filename$(1), projectPath$ & brdPath$ & antiPath$)
+    Call FileCopy(filename(1), projectPath & brdPath & antiPath)
     
     ' open board
-    Call openBoard(filename$(1), boardList(activeBoardIndex).theData)
+    Call openBoard(filename(1), boardList(activeBoardIndex).theData)
     
     ' redraw board
     Call boardRedraw
@@ -1914,7 +1919,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     boardList(activeBoardIndex).boardName = antiPath
     
     ' update form caption
-    activeBoard.Caption = LoadStringLoc(802, "Board Editor (" + antiPath$ + ")")
+    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & antiPath & ")"
     
     ' set picture box auto redraw as true
     Call vbPicAutoRedraw(boardform, True)
