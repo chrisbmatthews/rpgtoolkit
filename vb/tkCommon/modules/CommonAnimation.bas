@@ -486,7 +486,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
     Dim tbm As TKTileBitmap
 
     ext = UCase$(GetExt(frameFile))
-    If (LenB(frameFile)) Or Left$(ext, 3) = "TST" Then
+    If (LenB(frameFile) <> 0) Or Left$(ext, 3) = "TST" Then
 
         ' We can draw the frame!
 
