@@ -282,8 +282,8 @@ Public Function CBRefreshScreen() As Long
     CBRefreshScreen = transPlugin.CBRefreshScreen()
 End Function
 
-Public Function CBCreateCanvas(ByVal Width As Long, ByVal height As Long) As Long
-    CBCreateCanvas = transPlugin.CBCreateCanvas(Width, height)
+Public Function CBCreateCanvas(ByVal width As Long, ByVal height As Long) As Long
+    CBCreateCanvas = transPlugin.CBCreateCanvas(width, height)
 End Function
 
 Public Function CBDestroyCanvas(ByVal canvasID As Long) As Long
@@ -294,16 +294,16 @@ Public Function CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As
     CBDrawCanvas = transPlugin.CBDrawCanvas(canvasID, x, y)
 End Function
 
-Public Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long) As Long
-    CBDrawCanvasPartial = transPlugin.CBDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, Width, height)
+Public Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long) As Long
+    CBDrawCanvasPartial = transPlugin.CBDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height)
 End Function
 
 Public Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTransparentColor As Long) As Long
     CBDrawCanvasTransparent = transPlugin.CBDrawCanvasTransparent(canvasID, x, y, crTransparentColor)
 End Function
 
-Public Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
-    CBDrawCanvasTransparentPartial = transPlugin.CBDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, Width, height, crTransparentColor)
+Public Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
+    CBDrawCanvasTransparentPartial = transPlugin.CBDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
 End Function
 
 Public Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
@@ -322,24 +322,24 @@ Public Function CBCanvasFill(ByVal canvasID As Long, ByVal crColor As Long) As L
     CBCanvasFill = transPlugin.CBCanvasFill(canvasID, crColor)
 End Function
 
-Public Function CBCanvasResize(ByVal canvasID As Long, ByVal Width As Long, ByVal height As Long) As Long
-    CBCanvasResize = transPlugin.CBCanvasResize(canvasID, Width, height)
+Public Function CBCanvasResize(ByVal canvasID As Long, ByVal width As Long, ByVal height As Long) As Long
+    CBCanvasResize = transPlugin.CBCanvasResize(canvasID, width, height)
 End Function
 
 Public Function CBCanvas2CanvasBlt(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long) As Long
     CBCanvas2CanvasBlt = transPlugin.CBCanvas2CanvasBlt(cnvSrc, cnvDest, xDest, yDest)
 End Function
 
-Public Function CBCanvas2CanvasBltPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long) As Long
-    CBCanvas2CanvasBltPartial = transPlugin.CBCanvas2CanvasBltPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, Width, height)
+Public Function CBCanvas2CanvasBltPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long) As Long
+    CBCanvas2CanvasBltPartial = transPlugin.CBCanvas2CanvasBltPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height)
 End Function
 
 Public Function CBCanvas2CanvasBltTransparent(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal crTransparentColor As Long) As Long
     CBCanvas2CanvasBltTransparent = transPlugin.CBCanvas2CanvasBltTransparent(cnvSrc, cnvDest, xDest, yDest, crTransparentColor)
 End Function
 
-Public Function CBCanvas2CanvasBltTransparentPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long, ByVal crTransparentColor) As Long
-    CBCanvas2CanvasBltTransparentPartial = transPlugin.CBCanvas2CanvasBltTransparentPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, Width, height, crTransparentColor)
+Public Function CBCanvas2CanvasBltTransparentPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTransparentColor) As Long
+    CBCanvas2CanvasBltTransparentPartial = transPlugin.CBCanvas2CanvasBltTransparentPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
 End Function
 
 Public Function CBCanvas2CanvasBltTranslucent(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
@@ -518,8 +518,8 @@ Public Sub CBSetEnemySMP(ByVal amount As Long, ByVal eneIdx As Long)
     transPlugin.CBSetEnemySMP amount, eneIdx
 End Sub
 
-Public Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
-    transPlugin.CBCanvasDrawBackground canvasID, bkgFile, x, y, Width, height
+Public Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long)
+    transPlugin.CBCanvasDrawBackground canvasID, bkgFile, x, y, width, height
 End Sub
 
 Public Function CBCreateAnimation(ByVal file As String) As Long
@@ -640,6 +640,16 @@ End Sub
 
 Public Sub CBReleaseScreenDC()
     Call ReleaseDC(host.hwnd, obtainedDC)
+End Sub
+
+Public Sub CBDrawImageHDC(ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal hdc As Long)
+    On Error Resume Next
+    Call transPlugin.CBDrawImageHDC(file, x, y, hdc)
+End Sub
+
+Public Sub CBDrawSizedImageHDC(ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal hdc As Long)
+    On Error Resume Next
+    Call transPlugin.CBDrawSizedImageHDC(file, x, y, width, height, hdc)
 End Sub
 
 #End If
