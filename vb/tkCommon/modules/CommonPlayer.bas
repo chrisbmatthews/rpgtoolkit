@@ -310,7 +310,7 @@ Function FindPlayerHandle(ByVal file As String) As String
     
     If UCase$(GetExt(file)) = "TEM" Then
         Dim plyr As TKPlayer
-        Call openchar(projectPath & temPath & file, plyr)
+        Call openChar(projectPath & temPath & file, plyr)
         FindPlayerHandle = plyr.charname
     Else
         'this is not a filename!
@@ -397,9 +397,12 @@ Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
 End Sub
 
 
-Sub openchar(ByVal file As String, ByRef thePlayer As TKPlayer)
-'opens character file
-On Error Resume Next
+Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
+
+    'opens character file
+
+    On Error Resume Next
+
     'minor ver 4-- version 2.20b character
     'minor ver 5-- 3.0 char
     Dim num As Long, tstName As String
@@ -1190,6 +1193,10 @@ Sub PlayerClear(ByRef thePlayer As TKPlayer)
     For t = 0 To UBound(thePlayer.customGfx)
         thePlayer.customGfx(t) = ""
     Next t
+    For t = 0 To UBound(thePlayer.standingGfx)
+        thePlayer.standingGfx(t) = ""
+    Next t
+    
     ReDim thePlayer.customGfx(5)
     ReDim thePlayer.customGfxNames(5)
 
