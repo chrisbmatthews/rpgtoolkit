@@ -16,6 +16,14 @@ Begin VB.Form tilesetadd
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1567"
+   Begin VB.CheckBox chkWelcome 
+      Caption         =   "Show welcome note"
+      Height          =   255
+      Left            =   3390
+      TabIndex        =   38
+      Top             =   5160
+      Width           =   1815
+   End
    Begin VB.CommandButton cmdSaveAs 
       Height          =   375
       Index           =   1
@@ -81,7 +89,7 @@ Begin VB.Form tilesetadd
       Style           =   1  'Graphical
       TabIndex        =   9
       ToolTipText     =   "Insert the selected tile from one tileset next to the tile selected in the this tileset"
-      Top             =   3000
+      Top             =   2880
       Width           =   375
    End
    Begin VB.CommandButton cmdSave 
@@ -104,7 +112,7 @@ Begin VB.Form tilesetadd
       Style           =   1  'Graphical
       TabIndex        =   15
       ToolTipText     =   "Move the selected tile down in the tileset"
-      Top             =   4200
+      Top             =   4080
       Width           =   375
    End
    Begin VB.CommandButton cmdMoveUp 
@@ -116,7 +124,7 @@ Begin VB.Form tilesetadd
       Style           =   1  'Graphical
       TabIndex        =   13
       ToolTipText     =   "Move the selected tile up in the tileset"
-      Top             =   3840
+      Top             =   3720
       Width           =   375
    End
    Begin VB.CommandButton cmdDelete 
@@ -127,7 +135,7 @@ Begin VB.Form tilesetadd
       Picture         =   "tilesetadd.frx":34C0
       Style           =   1  'Graphical
       TabIndex        =   11
-      Top             =   3360
+      Top             =   3240
       Width           =   375
    End
    Begin VB.CheckBox chkIso 
@@ -172,7 +180,7 @@ Begin VB.Form tilesetadd
       Style           =   1  'Graphical
       TabIndex        =   8
       ToolTipText     =   "Insert the selected tile from one tileset next to the tile selected in the this tileset"
-      Top             =   3000
+      Top             =   2880
       Width           =   375
    End
    Begin VB.CommandButton cmdSave 
@@ -192,7 +200,7 @@ Begin VB.Form tilesetadd
       Left            =   3390
       TabIndex        =   17
       ToolTipText     =   "Leave  without saving changes"
-      Top             =   5040
+      Top             =   4800
       Width           =   1815
    End
    Begin VB.CommandButton cmdOK 
@@ -201,7 +209,7 @@ Begin VB.Form tilesetadd
       Left            =   3390
       TabIndex        =   16
       ToolTipText     =   "Save changes and leave"
-      Top             =   4680
+      Top             =   4560
       Width           =   1815
    End
    Begin VB.CommandButton cmdMoveDown 
@@ -213,7 +221,7 @@ Begin VB.Form tilesetadd
       Style           =   1  'Graphical
       TabIndex        =   14
       ToolTipText     =   "Move the selected tile down in the tileset"
-      Top             =   4200
+      Top             =   4080
       Width           =   375
    End
    Begin VB.CommandButton cmdMoveUp 
@@ -225,7 +233,7 @@ Begin VB.Form tilesetadd
       Style           =   1  'Graphical
       TabIndex        =   12
       ToolTipText     =   "Move the selected tile up in the tileset"
-      Top             =   3840
+      Top             =   3720
       Width           =   375
    End
    Begin VB.CommandButton cmdDelete 
@@ -236,7 +244,7 @@ Begin VB.Form tilesetadd
       Picture         =   "tilesetadd.frx":7C80
       Style           =   1  'Graphical
       TabIndex        =   10
-      Top             =   3360
+      Top             =   3240
       Width           =   375
    End
    Begin VB.CheckBox chkIso 
@@ -358,7 +366,7 @@ Begin VB.Form tilesetadd
       Height          =   255
       Left            =   3690
       TabIndex        =   27
-      Top             =   3120
+      Top             =   3000
       Width           =   1215
    End
    Begin VB.Label lblFormat 
@@ -391,17 +399,17 @@ Begin VB.Form tilesetadd
    Begin VB.Label lblMoveDown 
       Caption         =   "Move down"
       Height          =   255
-      Left            =   3810
+      Left            =   3840
       TabIndex        =   23
-      Top             =   4320
-      Width           =   975
+      Top             =   4200
+      Width           =   885
    End
    Begin VB.Label lblMoveUp 
       Caption         =   "Move up"
       Height          =   255
-      Left            =   3967
+      Left            =   3960
       TabIndex        =   22
-      Top             =   3960
+      Top             =   3840
       Width           =   660
    End
    Begin VB.Label lblDelete 
@@ -410,7 +418,7 @@ Begin VB.Form tilesetadd
       Height          =   255
       Left            =   3570
       TabIndex        =   21
-      Top             =   3480
+      Top             =   3360
       Width           =   1455
    End
 End
@@ -494,6 +502,15 @@ Private Sub chkIso_Click(Index As Integer): On Error Resume Next
     
     Call drawTile(Index)
     
+End Sub
+
+Private Sub chkWelcome_Click(): On Error Resume Next
+'=============================
+'Show the welcome note.
+'=============================
+
+    configFile.advTilesetTips = chkWelcome.value
+
 End Sub
 
 Private Sub cmdCancel_Click(): On Error Resume Next
@@ -879,27 +896,32 @@ Private Sub Form_Load(): On Error Resume Next
     Call LocalizeForm(Me)       'Not done for this form.
     
     Me.Caption = "Advanced Tileset Editor"
+    chkWelcome.value = configFile.advTilesetTips
     
-    Call MsgBox("Welcome to the new-look tileset editor, which allows you to easily manage tilesets." _
-        & chr$(13) & chr$(13) _
-        & "You can move tiles around in their set by using the ""Move"" tools, " _
-        & "the ""Up"" and ""Down"" cursor arrows, or by dragging tiles around the window." _
-        & chr$(13) & chr$(13) _
-        & "You can delete tiles using the ""Delete"" tool or the ""Del"" button." _
-        & chr$(13) & chr$(13) _
-        & "You can open two sets at once and move tiles between sets using the ""Insert"" tool, " _
-        & "the ""Left"" or ""Right"" cursor arrows (the inserted tile appears in front of the selected " _
-        & "tile in the other set, or the end if no tile is selected) or you can drag tiles between sets." _
-        & chr$(13) & chr$(13) _
-        & "You can create a new tileset by inserting a tile into a blank set." _
-        & chr$(13) & chr$(13) _
-        & "All changes are temporary until you hit the ""Save"" button or the ""OK"" button (which saves and quits)." _
-        & chr$(13) & chr$(13) _
-        & "Warning! If you have already created boards (or other objects) from sets, rearranging the tiles will alter " _
-        & "which tiles appear on the boards! Tiles on boards are referenced by their index in the tileset!" _
-        & chr$(13) & chr$(13) _
-        & "If you have any problems please report them on the forums at http://www.rpgtoolkit.com.", , _
-        "RPGToolkit Tileset Editor")
+    If chkWelcome.value = 1 Then
+    
+        Call MsgBox("Welcome to the new-look tileset editor, which allows you to easily manage tilesets." _
+            & chr$(13) & chr$(13) _
+            & "You can move tiles around in their set by using the ""Move"" tools, " _
+            & "the ""Up"" and ""Down"" cursor arrows, or by dragging tiles around the window." _
+            & chr$(13) & chr$(13) _
+            & "You can delete tiles using the ""Delete"" tool or the ""Del"" button." _
+            & chr$(13) & chr$(13) _
+            & "You can open two sets at once and move tiles between sets using the ""Insert"" tool, " _
+            & "the ""Left"" or ""Right"" cursor arrows (the inserted tile appears in front of the selected " _
+            & "tile in the other set, or the end if no tile is selected) or you can drag tiles between sets." _
+            & chr$(13) & chr$(13) _
+            & "You can create a new tileset by inserting a tile into a blank set." _
+            & chr$(13) & chr$(13) _
+            & "All changes are temporary until you hit the ""Save"" button or the ""OK"" button (which saves and quits)." _
+            & chr$(13) & chr$(13) _
+            & "Warning! If you have already created boards (or other objects) from sets, rearranging the tiles will alter " _
+            & "which tiles appear on the boards! Tiles on boards are referenced by their index in the tileset!" _
+            & chr$(13) & chr$(13) _
+            & "If you have any problems please report them on the forums at http://www.rpgtoolkit.com.", , _
+            "RPGToolkit Tileset Editor")
+            
+    End If
         
     'Set some initial values.
     For Index = 0 To 1
@@ -935,7 +957,7 @@ Private Sub drawGrid(ByVal Index As Integer): On Error Resume Next
 'Draws the grid on top of the specified picture box.
 '===================================================
     
-    Dim X As Integer, Y As Integer, tileWidth As Integer, tileHeight As Integer
+    Dim x As Integer, y As Integer, tileWidth As Integer, tileHeight As Integer
     
     If chkGrid(Index).value = 0 Then Exit Sub
     
@@ -947,20 +969,20 @@ Private Sub drawGrid(ByVal Index As Integer): On Error Resume Next
     'Draw vertical lines.
     If chkIso(Index).value = 0 Then
         '2D. Vertical lines.
-        For X = 0 To tileWidth * 32 Step 32
-            Call vbPicLine(picTileset(Index), X, 0, X, tileHeight * 32, vbQBColor(1))
-        Next X
+        For x = 0 To tileWidth * 32 Step 32
+            Call vbPicLine(picTileset(Index), x, 0, x, tileHeight * 32, vbQBColor(1))
+        Next x
     Else
-        For X = 0 To tileWidth * 32 Step 64
-            Call vbPicLine(picTileset(Index), X, 0, X, tileHeight * 32, vbQBColor(1))
-        Next X
+        For x = 0 To tileWidth * 32 Step 64
+            Call vbPicLine(picTileset(Index), x, 0, x, tileHeight * 32, vbQBColor(1))
+        Next x
         
     End If
     
     'Draw horizontal lines.
-    For Y = 0 To (tileHeight + 1) * 32 Step 32
-        Call vbPicLine(picTileset(Index), 0, Y, tileWidth * 32, Y, vbQBColor(1))
-    Next Y
+    For y = 0 To (tileHeight + 1) * 32 Step 32
+        Call vbPicLine(picTileset(Index), 0, y, tileWidth * 32, y, vbQBColor(1))
+    Next y
     
     Call vbPicAutoRedraw(picTileset(Index), True)
     
@@ -1017,7 +1039,7 @@ Private Sub drawTile(ByVal Index As Integer): On Error Resume Next
 'Draws the selected tile in the preview box.
 '================================================
     
-    Dim X As Integer, Y As Integer, pixel As Long
+    Dim x As Integer, y As Integer, pixel As Long
     
     ChDir (currentDir$)
     
@@ -1028,22 +1050,22 @@ Private Sub drawTile(ByVal Index As Integer): On Error Resume Next
     End If
     
     'Clear the tilemem:
-    For X = 0 To 64
-        For Y = 0 To 32
-            tileMem(X, Y) = -1
-            ts(Index).selectedTile(X, Y) = -1
-        Next Y
-    Next X
+    For x = 0 To 64
+        For y = 0 To 32
+            tileMem(x, y) = -1
+            ts(Index).selectedTile(x, y) = -1
+        Next y
+    Next x
             
     'Load the tile into memory.
     Call openFromTileSet(projectPath$ + ts(Index).workingFilename$, ts(Index).selectedTileNum)
     
     'Copy across from tilemem:
-    For X = 0 To 64
-        For Y = 0 To 32
-            ts(Index).selectedTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    For x = 0 To 64
+        For y = 0 To 32
+            ts(Index).selectedTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
     
     Call vbPicAutoRedraw(picTile(Index), True)
 
@@ -1051,15 +1073,15 @@ Private Sub drawTile(ByVal Index As Integer): On Error Resume Next
     If chkIso(Index).value = 0 Then
         '2D.
         
-        For X = 1 To 32
-            For Y = 1 To 32
-                If ts(Index).selectedTile(X, Y) <> -1 Then
-                    Call vbPicPSet(picTile(Index), X - 1, Y - 1, ts(Index).selectedTile(X, Y))
+        For x = 1 To 32
+            For y = 1 To 32
+                If ts(Index).selectedTile(x, y) <> -1 Then
+                    Call vbPicPSet(picTile(Index), x - 1, y - 1, ts(Index).selectedTile(x, y))
                 Else
-                    Call vbPicPSet(picTile(Index), X - 1, Y - 1, RGB(255, 255, 255))
+                    Call vbPicPSet(picTile(Index), x - 1, y - 1, RGB(255, 255, 255))
                 End If
-            Next Y
-        Next X
+            Next y
+        Next x
         
     Else
         'Isometric.
@@ -1082,7 +1104,7 @@ End Sub
 
 
 
-Private Sub picTileset_DragDrop(Index As Integer, Source As Control, X As Single, Y As Single): On Error Resume Next
+Private Sub picTileset_DragDrop(Index As Integer, Source As Control, x As Single, y As Single): On Error Resume Next
 '====================================================================
 'Drag-drop on the tileset picture boxes, i.e. mouseUp after movement.
 '====================================================================
@@ -1100,17 +1122,17 @@ Private Sub picTileset_DragDrop(Index As Integer, Source As Control, X As Single
     
     'Calculate the selected tile.
     If chkIso(Index).value = 0 Then
-        X = Int(X / 32)
+        x = Int(x / 32)
         tileWidth = 6
     Else
-        X = Int(X / 64)
+        x = Int(x / 64)
         tileWidth = 3
     End If
     
-    Y = Int(Y / 32)
+    y = Int(y / 32)
     tileHeight = 9
     
-    number = Y * tileWidth + X + 1
+    number = y * tileWidth + x + 1
     number = number + scrVertical(Index).value * tileWidth
     
     'Work out if we're in the same tileset as we started in.
@@ -1134,7 +1156,7 @@ Private Sub picTileset_DragDrop(Index As Integer, Source As Control, X As Single
 
 End Sub
 
-Private Sub picTileset_DragOver(Index As Integer, Source As Control, X As Single, Y As Single, State As Integer): On Error Resume Next
+Private Sub picTileset_DragOver(Index As Integer, Source As Control, x As Single, y As Single, State As Integer): On Error Resume Next
 '===========================================================
 'Drag movement on the tileset picture boxes, i.e. mouseMove.
 '===========================================================
@@ -1151,15 +1173,15 @@ Private Sub picTileset_DragOver(Index As Integer, Source As Control, X As Single
     If State <> vbLeave Then
         
         'Draw the box only if we're not leaving the picture!
-        yPixel = Y - Y Mod 32
+        yPixel = y - y Mod 32
         If chkIso(Index).value = 0 Then
             '32x32 box.
-            xPixel = X - X Mod 32
+            xPixel = x - x Mod 32
             Call vbPicRect(picTileset(Index), xPixel, yPixel, xPixel + 32, yPixel + 32, vbQBColor(15))
             Call vbPicRect(picTileset(Index), xPixel - 1, yPixel - 1, xPixel + 33, yPixel + 33, vbQBColor(15))
         Else
             'Isometric 64x32.
-            xPixel = X - X Mod 64
+            xPixel = x - x Mod 64
             Call vbPicRect(picTileset(Index), xPixel, yPixel, xPixel + 64, yPixel + 32, vbQBColor(15))
             Call vbPicRect(picTileset(Index), xPixel - 1, yPixel - 1, xPixel + 65, yPixel + 33, vbQBColor(15))
         End If
@@ -1202,7 +1224,7 @@ Private Sub picTileset_KeyDown(Index As Integer, keyCode As Integer, Shift As In
 End Sub
 
 
-Private Sub picTileset_MouseDown(Index As Integer, button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub picTileset_MouseDown(Index As Integer, button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '======================================
 'Mouse down on the tileset picture box.
 '======================================
@@ -1211,17 +1233,17 @@ Private Sub picTileset_MouseDown(Index As Integer, button As Integer, Shift As I
     
     'Calculate the selected tile.
     If chkIso(Index).value = 0 Then
-        X = Int(X / 32)
+        x = Int(x / 32)
         tileWidth = 6
     Else
-        X = Int(X / 64)
+        x = Int(x / 64)
         tileWidth = 3
     End If
     
-    Y = Int(Y / 32)
+    y = Int(y / 32)
     tileHeight = 9
     
-    number = Y * tileWidth + X + 1
+    number = y * tileWidth + x + 1
     number = number + scrVertical(Index).value * tileWidth
     
     'Assign if is a valid number.
@@ -1240,7 +1262,7 @@ Private Sub picTileset_MouseDown(Index As Integer, button As Integer, Shift As I
     
 End Sub
 
-Private Sub picTileset_MouseMove(Index As Integer, button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub picTileset_MouseMove(Index As Integer, button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '===========================
 'Mouse move on the tilesets.
 '===========================
@@ -1269,7 +1291,7 @@ Private Sub insertTile(ByVal Index As Integer, ByVal position As Integer): On Er
 
     Dim Source As String, Destination As String, sourceNum As Integer, destNum As Integer
     Dim byteOffset As Long, tileOffset As Long
-    Dim X As Integer, Y As Integer
+    Dim x As Integer, y As Integer
     Dim r As Byte, g As Byte, b As Byte
     Dim element As Long, xCount As Integer, yCount As Integer
 
@@ -1292,32 +1314,32 @@ Private Sub insertTile(ByVal Index As Integer, ByVal position As Integer): On Er
     If ts(Index).tileFormat = ISOTYPE And ts(Abs(Index - 1)).tileFormat <> ISOTYPE Then
     
         'First load the tile into tilemem
-        For X = 0 To 32
-            For Y = 0 To 32
-                 tileMem(X, Y) = ts(Abs(Index - 1)).selectedTile(X, Y)
-            Next Y
-        Next X
+        For x = 0 To 32
+            For y = 0 To 32
+                 tileMem(x, y) = ts(Abs(Index - 1)).selectedTile(x, y)
+            Next y
+        Next x
         
         'Convert the tile. Operates on tilemem. We now have buftile in an isometric shape!
         Call tstToIsometric
         
         'Write buftile into the tile block.
         element = 0: xCount = 1: yCount = 1
-        For X = 1 To 64
-            For Y = 1 To 32
+        For x = 1 To 64
+            For y = 1 To 32
             
 'Call traceString("buftile(" & x & ", " & y & ") = " & buftile(x, y))
 
-                If isoMaskBmp(X, Y) = RGB(0, 0, 0) Then 'Black. Take pixel.
+                If isoMaskBmp(x, y) = RGB(0, 0, 0) Then 'Black. Take pixel.
                 
                     'Convert long colour to rgb byte values.
-                    If bufTile(X - 1, Y - 1) = -1 Then
+                    If bufTile(x - 1, y - 1) = -1 Then
                         'Transparent colour.
                         r = 0: g = 1: b = 2
                     Else
-                        r = red(bufTile(X - 1, Y - 1))
-                        g = green(bufTile(X - 1, Y - 1))
-                        b = blue(bufTile(X - 1, Y - 1))
+                        r = red(bufTile(x - 1, y - 1))
+                        g = green(bufTile(x - 1, y - 1))
+                        b = blue(bufTile(x - 1, y - 1))
                     End If
                     
                     'Set the bytes in the block.
@@ -1327,7 +1349,7 @@ Private Sub insertTile(ByVal Index As Integer, ByVal position As Integer): On Er
                     element = element + 3
                     
                     'Set the pixels in the selected tile.
-                    ts(Index).selectedTile(xCount, yCount) = bufTile(X - 1, Y - 1)
+                    ts(Index).selectedTile(xCount, yCount) = bufTile(x - 1, y - 1)
                     
 'Call traceString("selectedtile(" & xCount & ", " & yCount & ") = " & buftile(x - 1, y - 1))
 
@@ -1339,8 +1361,8 @@ Private Sub insertTile(ByVal Index As Integer, ByVal position As Integer): On Er
                     End If
                                         
                 End If
-            Next Y
-        Next X
+            Next y
+        Next x
                              
     Else
     
@@ -1430,7 +1452,7 @@ Private Sub moveTile(ByVal Index As Integer, ByVal position As Integer): On Erro
 'Called by the drag-drop event and the move up / down buttons.
 '=======================================================================
 
-    Dim X As Integer, Y As Integer, Source As String, Destination As String
+    Dim x As Integer, y As Integer, Source As String, Destination As String
     Dim byteOffset As Long, tileOffset As Long, direction As Long
     Dim sourceNum As Integer, destNum As Integer
 
@@ -1561,7 +1583,7 @@ Private Sub clearInfo(ByVal Index As Integer): On Error Resume Next
 'Clear the tileset information.
 '===========================================
 
-    Dim X As Integer, Y As Integer
+    Dim x As Integer, y As Integer
 
     ts(Index).filename = ""
     ts(Index).grid = False
@@ -1571,11 +1593,11 @@ Private Sub clearInfo(ByVal Index As Integer): On Error Resume Next
     ts(Index).isometric = False
     ts(Index).position = 0
     ts(Index).requireSave = False
-    For X = 0 To 64
-        For Y = 0 To 32
-            ts(Index).selectedTile(X, Y) = 0
-        Next Y
-    Next X
+    For x = 0 To 64
+        For y = 0 To 32
+            ts(Index).selectedTile(x, y) = 0
+        Next y
+    Next x
     ts(Index).selectedTileNum = 0
     ts(Index).tileFormat = 0
     ts(Index).workingFilename = ""
