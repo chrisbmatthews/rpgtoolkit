@@ -359,30 +359,6 @@ SOURCE=.\tkrpgcode\tkrpgcode.cpp
 SOURCE=.\tkrpgcode\tkrpgcode.h
 # End Source File
 # End Group
-# Begin Group "strings"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\inlineString\inlineString.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\inlineString\inlineString.h
-# End Source File
-# End Group
-# Begin Group "parser"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\tkrpgcode\parser.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\tkrpgcode\parser.h
-# End Source File
-# End Group
 # End Group
 # Begin Group "audiere"
 

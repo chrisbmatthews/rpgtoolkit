@@ -191,14 +191,14 @@ EXPORTS
 	endProgram			@233
 
 	;rpgcode parser
-	RPGCGetMethodName	@234
-	RPGCParseAfter		@235
-	RPGCParseBefore		@236
-	RPGCGetVarList		@238
-	RPGCParseWithin	    @239
-	RPGCValueNumber		@240
-	RPGCGetElement		@241
-	RPGCInStrOutsideQuotes	@242
-	RPGCReplaceOutsideQuotes	@243
-	RPGCGetBrackets		@244
-	RPGCGetCommandName	@245
+	;RPGCGetMethodName	@234
+	;RPGCParseAfter		@235
+	;RPGCParseBefore		@236
+	;RPGCGetVarList		@238
+	;RPGCParseWithin	    @239
+	;RPGCValueNumber		@240
+	;RPGCGetElement		@241
+	;RPGCInStrOutsideQuotes	@242
+	;RPGCReplaceOutsideQuotes	@243
+	;RPGCGetBrackets		@244
+	;RPGCGetCommandName	@245
