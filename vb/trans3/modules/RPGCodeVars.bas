@@ -12,9 +12,8 @@ Attribute VB_Name = "RPGCodeVars"
 Option Explicit
 
 '=========================================================================
-' Integral variables
+' Globals
 '=========================================================================
-Public bRPGCStarted As Boolean             ' Has rpgcode been initiated?
 Public globalHeap As Long                  ' The ID of the global heap
 
 '=========================================================================
@@ -1616,29 +1615,25 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
 End Function
 
 '=========================================================================
-' Initiate the variable system (probably redundant)
+' Initiate the variable system
 '=========================================================================
-Public Function initVarSystem() As Boolean
+Public Sub initVarSystem()
 
     On Error GoTo anErr
 
     Call RPGCInit
-    bRPGCStarted = True
-    initVarSystem = bRPGCStarted
     globalHeap = RPGCCreateHeap()
     Call initRPGCodeClasses
     Call buildSignArrays
     Call SetVariable("true", 1, errorKeep, True)
     Call SetVariable("false", 0, errorKeep, True)
 
-    Exit Function
+    Exit Sub
 
 anErr:
-    bRPGCStarted = False
-    initVarSystem = bRPGCStarted
     Call MsgBox("Cannot initialize heap system-- get the latest actkrt3.dll")
     gGameState = GS_QUIT
-End Function
+End Sub
 
 '=========================================================================
 ' Shutdown the variable system
