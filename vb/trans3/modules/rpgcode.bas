@@ -3469,7 +3469,7 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 If (tempPRG.methods(count).name <> "") Then
                     Call addMethodToPrg( _
                                            tempPRG.methods(count).name, _
-                                           tempPRG.methods(count).line, _
+                                           tempPRG.methods(count).line + .Length + 2, _
                                            theProgram)
                 End If
             Next count

@@ -14,28 +14,6 @@ Option Explicit
 '=========================================================================
 ' Integral variables
 '=========================================================================
-
-Public Type RPGCodeMethod            'rpgcode method structure
-    name As String                   '  name of the method
-    line As Long                     '  line method is defined on
-End Type
-
-Public Type RPGCodeProgram           'rpgcode program structure
-    program() As String              '  the program text
-    methods() As RPGCodeMethod       '  methods in this program
-    programPos As Long               '  current position in program
-    included(50) As String           '  included files
-    Length As Long                   '  length of program
-    heapStack() As Long              '  stack of local heaps
-    currentHeapFrame As Long         '  current heap frame
-    boardNum As Long                 '  the corresponding board index of the program (default to 0)
-    threadID As Long                 '  the thread id (-1 if not a thread)
-    compilerStack() As String        '  stack used by 'compiled' programs
-    currentCompileStackIdx As Long   '  current index of compilerStack
-    looping As Boolean               '  is a multitask program looping?
-    autoLocal As Boolean             '  force implicitly created variables to the local scope?
-End Type
-
 Public errorBranch As String         'label to branch to on error
 
 '=========================================================================
@@ -339,6 +317,9 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
         End If
     Next a
 
+    'Splice up the classes
+    Call spliceUpClasses(thePrg)
+
     'Return the result
     openProgram = thePrg
 
@@ -354,10 +335,10 @@ End Function
 '=========================================================================
 ' Strip comments off a line
 '=========================================================================
-Public Function stripComments(ByVal Text As String) As String
+Public Function stripComments(ByVal text As String) As String
     Dim a As Long, char As String, ignore As Boolean
-    For a = 1 To Len(Text)
-        char = Mid(Text, a, 2)
+    For a = 1 To Len(text)
+        char = Mid(text, a, 2)
         If (Left(char, 1) = Chr(34)) Then
             If (ignore) Then
                 ignore = False
@@ -365,11 +346,11 @@ Public Function stripComments(ByVal Text As String) As String
                 ignore = True
             End If
         ElseIf (char = "//") And (Not ignore) Then
-            stripComments = Mid(Text, 1, a - 1)
+            stripComments = Mid(text, 1, a - 1)
             Exit Function
         End If
     Next a
-    stripComments = Text
+    stripComments = text
 End Function
 
 '=========================================================================
