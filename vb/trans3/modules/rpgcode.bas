@@ -3395,7 +3395,7 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 If (tempPRG.methods(count).name <> "") Then
                     Call addMethodToPrg( _
                                            tempPRG.methods(count).name, _
-                                           tempPRG.methods(count).line + .Length + 2, _
+                                           tempPRG.methods(count).line + .length + 2, _
                                            theProgram)
                 End If
             Next count
@@ -3405,18 +3405,18 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Next count
 
             'Make the program large enough for the code we're adding...
-            ReDim Preserve .program(UBound(.program) + 2 + tempPRG.Length)
+            ReDim Preserve .program(UBound(.program) + 2 + tempPRG.length)
 
             'Don't let any loose code in the .prg file be run...
-            .program(.Length + 1) = "Stop()"
+            .program(.length + 1) = "Stop()"
 
             'Add each line from the included file to the main file...
             For count = 0 To UBound(tempPRG.program)
-                .program(.Length + 2 + count) = tempPRG.program(count)
+                .program(.length + 2 + count) = tempPRG.program(count)
             Next count
 
             'Update the length of the program...
-            .Length = .Length + 2 + UBound(tempPRG.program)
+            .length = .length + 2 + UBound(tempPRG.program)
 
         End With
 
@@ -8263,7 +8263,7 @@ Sub Branch(Text$, ByRef theProgram As RPGCodeProgram)
     'Now to find where this is at:
     Dim foundIt As Long, t As Long, test As String
     foundIt = -1
-    For t = 0 To theProgram.Length
+    For t = 0 To theProgram.length
         test$ = theProgram.program$(t)
         If UCase$(test$) = UCase$(useIt$) Then
             foundIt = t
@@ -8513,8 +8513,8 @@ Sub CharAtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     If redc = 0 Or greenc = 1 Then
         Call debugger("Error: CharAt data type must be lit, num, lit!-- " + Text$)
     Else
-        Dim Length As Long, cH As String
-        Length = Len(lit1$)
+        Dim length As Long, cH As String
+        length = Len(lit1$)
         'num2 = inbounds(num2, 1, length)
         cH$ = Mid$(lit1$, num2, 1)
         If number = 3 Then
@@ -9125,7 +9125,7 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 1 Then
         Call debugger("Error: Fade data type must be numerical!-- " + Text$)
     Else
-        Dim xx1 As Double, xx2 As Double, yy1 As Double, yy2 As Double, size As Long
+        Dim xx1 As Double, xx2 As Double, yy1 As Double, yy2 As Double, Size As Long
         Select Case num
             Case 0:
                 stepSize = 5
@@ -9134,7 +9134,7 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                 yy1 = (tilesY * 32) / 2
                 yy2 = yy1
                 'Call CanvasLock(cnvRPGCodeScreen)
-                For size = 0 To (tilesX * 32) / 2 Step stepSize
+                For Size = 0 To (tilesX * 32) / 2 Step stepSize
                     Call CanvasFillBox(cnvRPGCodeScreen, xx1, yy1, xx2, yy2, fontColor)
                     DXDrawCanvasPartial cnvRPGCodeScreen, _
                                         xx1, yy1, xx1, yy1, _
@@ -9144,8 +9144,8 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                     yy1 = yy1 - stepSize
                     xx2 = xx2 + stepSize
                     yy2 = yy2 + stepSize
-                Next size
-                For size = 0 To (tilesX * 32) / 2 Step stepSize
+                Next Size
+                For Size = 0 To (tilesX * 32) / 2 Step stepSize
                     Call CanvasFill(cnvRPGCodeScreen, 0)
                     Call CanvasFillBox(cnvRPGCodeScreen, xx1, yy1, xx2, yy2, fontColor)
                     'Call renderRPGCodeScreen
@@ -9157,33 +9157,33 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                     yy1 = yy1 + stepSize
                     xx2 = xx2 - stepSize
                     yy2 = yy2 - stepSize
-                Next size
+                Next Size
                 Call CanvasFill(cnvRPGCodeScreen, 0)
                 'Call CanvasUnlock(cnvRPGCodeScreen)
                 Call renderRPGCodeScreen
             Case 1:
                 stepSize = 5
-                For size = 0 To (tilesX * 32) / 2 Step stepSize * 2
-                    Call CanvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, fontColor)
-                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) / 2, 0, size + (tilesX * 32) / 2 + stepSize, 2000, fontColor)
+                For Size = 0 To (tilesX * 32) / 2 Step stepSize * 2
+                    Call CanvasFillBox(cnvRPGCodeScreen, Size, 0, Size + stepSize, 2000, fontColor)
+                    Call CanvasFillBox(cnvRPGCodeScreen, Size + (tilesX * 32) / 2, 0, Size + (tilesX * 32) / 2 + stepSize, 2000, fontColor)
                     Call renderRPGCodeScreen
-                Next size
-                For size = stepSize To (tilesX * 32) / 2 Step stepSize * 2
-                    Call CanvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, fontColor)
-                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) / 2, 0, size + (tilesX * 32) / 2 + stepSize, 2000, fontColor)
+                Next Size
+                For Size = stepSize To (tilesX * 32) / 2 Step stepSize * 2
+                    Call CanvasFillBox(cnvRPGCodeScreen, Size, 0, Size + stepSize, 2000, fontColor)
+                    Call CanvasFillBox(cnvRPGCodeScreen, Size + (tilesX * 32) / 2, 0, Size + (tilesX * 32) / 2 + stepSize, 2000, fontColor)
                     Call renderRPGCodeScreen
-                Next size
+                Next Size
                 Call CanvasFill(cnvRPGCodeScreen, fontColor)
-                For size = 0 To (tilesX * 32) / 2 Step stepSize * 2
-                    Call CanvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, 0)
-                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) / 2, 0, size + (tilesX * 32) / 2 + stepSize, 2000, 0)
+                For Size = 0 To (tilesX * 32) / 2 Step stepSize * 2
+                    Call CanvasFillBox(cnvRPGCodeScreen, Size, 0, Size + stepSize, 2000, 0)
+                    Call CanvasFillBox(cnvRPGCodeScreen, Size + (tilesX * 32) / 2, 0, Size + (tilesX * 32) / 2 + stepSize, 2000, 0)
                     Call renderRPGCodeScreen
-                Next size
-                For size = stepSize To (tilesX * 32) / 2 Step stepSize * 2
-                    Call CanvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, 0)
-                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) / 2, 0, size + (tilesX * 32) / 2 + stepSize, 2000, 0)
+                Next Size
+                For Size = stepSize To (tilesX * 32) / 2 Step stepSize * 2
+                    Call CanvasFillBox(cnvRPGCodeScreen, Size, 0, Size + stepSize, 2000, 0)
+                    Call CanvasFillBox(cnvRPGCodeScreen, Size + (tilesX * 32) / 2, 0, Size + (tilesX * 32) / 2 + stepSize, 2000, 0)
                     Call renderRPGCodeScreen
-                Next size
+                Next Size
                 Call CanvasFill(cnvRPGCodeScreen, fontColor)
                 Call renderRPGCodeScreen
             Case 2:
@@ -11903,6 +11903,66 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     End If
     host.mousePointer = paras(1).lit
     If (theFile <> "") Then Call Kill(theFile)
+End Sub
+
+' Added by Shao, for 3.0.5
+'=========================================================================
+' width! = GetTextWidth(text$)
+' height! = GetTextHeight(text$)
+'=========================================================================
+Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+    On Error Resume Next
+    If (CountData(Text) <> 1) Then
+        Call debugger("GetTextWidth()/GetTextHeight() requires one data element-- " & Text)
+        Exit Sub
+    End If
+    Dim paras() As parameters
+    paras() = GetParameters(Text, prg)
+    If (paras(0).dataType <> DT_LIT) Then
+        Call debugger("GetTextWidth()/GetTextHeight() parameter must be lit-- " & Text)
+        Exit Sub
+    End If
+    
+    Dim hdc As Long, textWidth As Long, textHeight As Long, stringin As String
+    
+    stringin = paras(0).lit
+      
+    If UCase(GetExt(fontName)) = "FNT" Then
+        'tk2 fixed-width font
+        textWidth = Len(stringin) * fontSize
+        textHeight = fontSize
+    Else
+        'using a true type font!
+        
+        hdc = CanvasOpenHDC(cnvRPGCodeScreen)
+   
+        Dim theAttrib As fontAttribs
+        theAttrib.name = fontName
+        theAttrib.Size = fontSize
+        theAttrib.Italics = Italics
+        theAttrib.Bold = Bold
+        theAttrib.Underline = Underline
+        
+        Dim hFontNew As Long, hFontOld As Long, textRectSize As Size
+        hFontOld = SetDeviceFont(hdc, theAttrib, hFontNew)
+        
+        textRectSize.cx = 0: textRectSize.cy = 0
+        Call GetTextExtentPoint32(hdc, stringin, Len(stringin), textRectSize)
+        textWidth = textRectSize.cx: textHeight = textRectSize.cy
+        
+        Call SelectObject(hdc, hFontOld)
+        Call DeleteObject(hFontNew)
+        
+        Call CanvasCloseHDC(cnvRPGCodeScreen, hdc)
+    End If
+
+    retval.dataType = DT_NUM
+    
+    Select Case LCase(GetCommandName(Text))
+        Case "gettextwidth": retval.num = textWidth
+        Case "gettextheight": retval.num = textHeight
+    End Select
+    
 End Sub
 
 '=========================================================================

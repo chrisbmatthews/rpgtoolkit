@@ -804,7 +804,7 @@ Public Sub runProgram( _
         theProgram.programPos = 0
         Do While _
                    ((theProgram.programPos >= 0) _
-                   And (theProgram.programPos <= theProgram.Length) _
+                   And (theProgram.programPos <= theProgram.length) _
                    And (runningProgram))
 
             prgPos = theProgram.programPos
@@ -2352,6 +2352,11 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
             
         Case "NEW"
             Call NewRPG(splice, theProgram, retval)
+            DoSingleCommand = increment(theProgram)
+            Exit Function
+            
+        Case "GETTEXTWIDTH", "GETTEXTHEIGHT"
+            Call GetTextWidthRPG(splice, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
             

@@ -24,6 +24,8 @@ Public Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObje
 Public Declare Function AddFontResource Lib "gdi32" Alias "AddFontResourceA" (ByVal lpFileName As String) As Long
 Public Declare Function RemoveFontResource Lib "gdi32" Alias "RemoveFontResourceA" (ByVal lpFileName As String) As Long
 Public Declare Function SetTextAlign Lib "gdi32" (ByVal hdc As Long, ByVal wFlags As Long) As Long
+Public Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hdc As Long, ByVal lpsz As String, ByVal cbString As Long, lpSize As Size) As Long
+
 
 '=========================================================================
 ' Text alignments
@@ -67,6 +69,10 @@ Public Type DRAWTEXTPARAMS
     iLeftMargin As Long
     iRightMargin As Long
     uiLengthDrawn As Long
+End Type
+Public Type Size
+    cx As Long
+    cy As Long
 End Type
 
 '=========================================================================
@@ -153,12 +159,12 @@ Public Const FF_SWISS = 32       'Variable stroke width, sans-serifed.
 '=========================================================================
 ' Determines if a font is a toolkit font
 '=========================================================================
-Public Function isToolkitFont(ByVal fileName As String) As Boolean
+Public Function isToolkitFont(ByVal filename As String) As Boolean
     On Error Resume Next
     Dim num As Long
     num = FreeFile()
-    fileName = PakLocate(fileName)
-    Open fileName For Input As num
+    filename = PakLocate(filename)
+    Open filename For Input As num
         If UCase(fread(num)) = "RPGTLKIT FONT" Then
             isToolkitFont = True
         End If
@@ -198,7 +204,7 @@ End Sub
 '=========================================================================
 ' Assign a font to a device
 '=========================================================================
-Public Function SelectFontToDevice(ByVal fontName As String, ByVal hdc As Long, ByVal size As Long, ByRef hFontNew As Long, Optional ByVal italic As Boolean, Optional ByVal Bold As Boolean, Optional ByVal Underline As Boolean, Optional ByVal centred As Boolean = False) As Long
+Public Function SelectFontToDevice(ByVal fontName As String, ByVal hdc As Long, ByVal Size As Long, ByRef hFontNew As Long, Optional ByVal italic As Boolean, Optional ByVal Bold As Boolean, Optional ByVal Underline As Boolean, Optional ByVal centred As Boolean = False) As Long
     On Error Resume Next
     Dim weight As Long
     If Bold Then
@@ -207,7 +213,7 @@ Public Function SelectFontToDevice(ByVal fontName As String, ByVal hdc As Long, 
         weight = FW_NORMAL
     End If
     Dim hFont As Long
-    hFont = CreateFont(size, 0, 0, 0, weight, italic, Underline, False, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, fontName)
+    hFont = CreateFont(Size, 0, 0, 0, weight, italic, Underline, False, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, fontName)
     If hFont <> 0 Then
         Dim a As Long
         a = SelectObject(hdc, hFont)
