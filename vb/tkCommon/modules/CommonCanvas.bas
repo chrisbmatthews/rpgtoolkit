@@ -1,8 +1,8 @@
 Attribute VB_Name = "CommonCanvas"
 '=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
 '=========================================================================
 
 '=========================================================================
@@ -41,18 +41,18 @@ Private Declare Function CNVShiftLeft Lib "actkrt3.dll" (ByVal handle As Long, B
 Private Declare Function CNVShiftRight Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftUp Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftDown Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
-Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
+Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
 Private Declare Function CNVCreateCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long) As Long
-Private Declare Function CNVBltCanvasTranslucentPart Lib "actkrt3.dll" (ByVal cnvSource As Long, ByVal cnvTarget As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
+Private Declare Function CNVBltCanvasTranslucentPart Lib "actkrt3.dll" (ByVal cnvSource As Long, ByVal cnvTarget As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
 Private Declare Sub CNVKillCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long, ByVal hCanvasHostDC As Long)
 
 '=========================================================================
 ' Member variables
 '=========================================================================
-Private canvasHost As Long      ' This variable contains a handle to a device
+Private m_canvasHost As Long    ' This variable contains a handle to a device
                                 ' context (created in initCanvasEngine) which
-                                ' all other canvas' dc's are based upon.
+                                ' all other canvas' DCs are based upon
 
 '=========================================================================
 ' Draw a background onto a canvas
@@ -135,7 +135,7 @@ End Sub
 '=========================================================================
 ' Partially blt one canvas to another, using translucency
 '=========================================================================
-Public Function canvas2canvasBltTranslucentPartial(ByVal cnvSource As Long, ByVal cnvTarget As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
+Public Function canvas2canvasBltTranslucentPartial(ByVal cnvSource As Long, ByVal cnvTarget As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
 
     ' If both canvases exist
     If ((canvasOccupied(cnvSource)) And (canvasOccupied(cnvTarget))) Then
@@ -143,7 +143,7 @@ Public Function canvas2canvasBltTranslucentPartial(ByVal cnvSource As Long, ByVa
         ' Execute the blt
         canvas2canvasBltTranslucentPartial = CNVBltCanvasTranslucentPart( _
             cnvSource, cnvTarget, _
-            x, y, xSrc, ySrc, _
+            x, y, xsrc, ysrc, _
             width, height, _
             dIntensity, crUnaffectedColor, crTransparentColor _
         )
@@ -319,26 +319,26 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
                                                 ByVal newHeight As Long, _
                                                 ByVal cnvTarget As Long, _
                                                 ByVal crTranspColor As Long) As Long
-    
+
     On Error Resume Next
-    
-    If canvasOccupied(cnvSource) Then
-    
+
+    If (canvasOccupied(cnvSource)) Then
+
         Dim w As Long, h As Long, hdcMask As Long, hdcSource As Long
         Dim hdcInt As Long, cnvInt As Long
-        
+
         w = getCanvasWidth(cnvSource)
         h = getCanvasHeight(cnvSource)
-        
-        'Create an intermediate canvas.
+
+        ' Create an intermediate canvas.
         cnvInt = createCanvas(newWidth, newHeight)
         Call canvasFill(cnvInt, crTranspColor)
-        
+
         hdcInt = canvasOpenHDC(cnvInt)
-        
-        'Stretch the mask onto the intermediate canvas.
+
+        ' Stretch the mask onto the intermediate canvas
         hdcMask = canvasOpenHDC(cnvMask)
-        canvasMaskBltStretchTransparent = StretchBlt(hdcInt, _
+        Call StretchBlt(hdcInt, _
                            0, 0, _
                            newWidth, _
                            newHeight, _
@@ -347,10 +347,10 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
                            w, h, _
                            SRCAND)
         Call canvasCloseHDC(cnvMask, hdcMask)
-                           
-        'Stretch the image onto the intermediate canvas.
+
+        ' Stretch the image onto the intermediate canvas
         hdcSource = canvasOpenHDC(cnvSource)
-        canvasMaskBltStretchTransparent = StretchBlt(hdcInt, _
+        Call StretchBlt(hdcInt, _
                            0, 0, _
                            newWidth, _
                            newHeight, _
@@ -359,19 +359,22 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
                            w, h, _
                            SRCPAINT)
         Call canvasCloseHDC(cnvSource, hdcSource)
-        
+
         Call canvasCloseHDC(cnvInt, hdcInt)
-        
-        'Blt the intermediate canvas to the target canvas.
+
+        ' Blt the intermediate canvas to the target canvas
         Call canvas2CanvasBltTransparent(cnvInt, cnvTarget, destX, destY, crTranspColor)
-        
-        'Destroy the intermediate canvas.
+
+        ' Destroy the intermediate canvas
         Call destroyCanvas(cnvInt)
-        
+
     Else
+
+        ' Failed
         canvasMaskBltStretchTransparent = -1
+
     End If
-    
+
 End Function
 
 '=========================================================================
@@ -812,13 +815,13 @@ Public Sub closeCanvasEngine()
 
     On Error Resume Next
 
-    'Kill the canvas host (new sub by KSNiloc!)
-    Call CNVKillCanvasHost(App.hInstance, canvasHost)
+    ' Kill the canvas host
+    Call CNVKillCanvasHost(App.hInstance, m_canvasHost)
 
-    'Shutdown the canvas engine
+    ' Shutdown the canvas engine
     Call CNVShutdown
 
-    'Shutdown the FreeImage library
+    ' Shutdown the FreeImage library
     Call CloseImage
 
 End Sub
@@ -829,7 +832,7 @@ End Sub
 Public Function createCanvas(ByVal width As Long, ByVal height As Long, Optional ByVal bUseDX As Boolean = True) As Long
     On Error Resume Next
     If ((width <> 0) And (height <> 0)) Then
-        createCanvas = CNVCreate(canvasHost, width, height, 1)
+        createCanvas = CNVCreate(m_canvasHost, width, height, 1)
     Else
         createCanvas = -1
     End If
@@ -852,22 +855,22 @@ Public Sub initCanvasEngine()
 
     On Error Resume Next
 
-    'Create an hdc for the canvases to be based upon (new function by KSNiloc!)
-    canvasHost = CNVCreateCanvasHost(App.hInstance)
+    ' Create an hdc for the canvases to be based upon
+    m_canvasHost = CNVCreateCanvasHost(App.hInstance)
 
-    'Check if we were successful
+    ' Check if we were successful
     If (canvasHost = 0) Then
         Call MsgBox("Failed to initiate the canvas engine! " & _
                     "Make sure you are using the latest actkrt3.dll file! " & _
                     "(September 8th, 2004)")
-        'We can't proceed without the canvasHost, so just end
+        ' We can't proceed without the canvasHost, so just end
         End
     End If
 
-    'Init the canvas engine
+    ' Init the canvas engine
     Call CNVInit
 
-    'Init the FreeImage library
+    ' Init the FreeImage library
     Call InitImage
 
 End Sub
@@ -878,7 +881,7 @@ End Sub
 Public Sub setCanvasSize(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     On Error Resume Next
     If canvasOccupied(canvasID) Then
-        Call CNVResize(canvasID, canvasHost, newWidth, newHeight)
+        Call CNVResize(canvasID, m_canvasHost, newWidth, newHeight)
     End If
 End Sub
 
@@ -886,5 +889,5 @@ End Sub
 ' Determine if a canvas exists
 '=========================================================================
 Public Property Get canvasOccupied(ByVal handle As Long) As Boolean
-    canvasOccupied = (CNVExists(handle))
+    canvasOccupied = CBool(CNVExists(handle))
 End Property
