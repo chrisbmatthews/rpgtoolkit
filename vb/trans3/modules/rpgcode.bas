@@ -7390,10 +7390,10 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
         ChDir (projectPath$)
         If pakFileRunning Then
             Call ChangeDir(PakTempPath$)
-            Call GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
+            Call GFXDrawBoardCNV(VarPtr(boardList(activeBoardIndex).theData), cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
             Call ChangeDir(currentDir$)
         Else
-            Call GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
+            Call GFXDrawBoardCNV(VarPtr(boardList(activeBoardIndex).theData), cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
             'a = GFXdrawboard(brdpath & brd$, 0, num2 - 1, num3 - 1, 0, 0, 0, tilesX, tilesY, vbpichdc(mainForm.boardform))
         End If
         'boardList(activeBoardIndex).theData = boardTemp
