@@ -927,7 +927,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     Next a
 
     'Record the object
-    object = UCase(Trim(Mid(text, start, begin - start)))
+    object = parseArray(UCase(Trim(Mid(text, start, begin - start))), prg)
 
     'Get its handle
     If (object <> "THIS") Then
