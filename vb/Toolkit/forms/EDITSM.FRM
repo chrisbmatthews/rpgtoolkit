@@ -723,7 +723,7 @@ End Sub
 '==============================================================================
 Private Sub chkBattleDriven_Click(): On Error Resume Next
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smBattle = chkBattleDriven.value
+    specialMoveList(activeSpecialMoveIndex).theData.smBattle = Abs(chkBattleDriven.value - 1)
 End Sub
 
 '==============================================================================
@@ -731,7 +731,7 @@ End Sub
 '==============================================================================
 Private Sub chkBoardDriven_Click(): On Error Resume Next
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smMenu = chkBoardDriven.value
+    specialMoveList(activeSpecialMoveIndex).theData.smMenu = Abs(chkBoardDriven.value - 1)
 End Sub
 
 '==============================================================================
