@@ -362,12 +362,12 @@ Public Function NoExtention(ByVal file As String) As String
     'Returns the file passed in without its extension
     '=======================================================
     On Error Resume Next
-    Dim workOn As String, running As String, col As Long, Length As Long, part As String
+    Dim workOn As String, running As String, col As Long, length As Long, part As String
     workOn = file
     running = ""
     col = 1
-    Length = Len(file)
-    Do While part <> "." And col <= Length + 1
+    length = Len(file)
+    Do While part <> "." And col <= length + 1
         running = running & part
         part = Mid(workOn, col, 1)
         col = col + 1
@@ -383,30 +383,30 @@ Public Function noPath(ByVal Text As String) As String
 
     On Error Resume Next
 
-    Dim a As String, t As Long, Length As Long, aPath As Long, ll As Long, part _
+    Dim a As String, t As Long, length As Long, aPath As Long, ll As Long, part _
     As String, pathUse As String, path As String, term As String, lastOne As Long
 
     a = Text
-    Length = Len(a)
+    length = Len(a)
     'first, see if there IS a path:
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid(a, t, 1)
         If part = ":" Or part = "\" Then aPath = 1
     Next t
     If aPath = 0 Then noPath = a$: Exit Function
     'Now see if the path terminates with a \ or a :
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid(a, t, 1)
         If part = ":" Or part = "\" Then term = part
     Next t
     If term = ":" Then
         'if it terminates with a :, then the filename is right after :
-        For t = 1 To Length
+        For t = 1 To length
             part = Mid(a, t, 1)
             pathUse = pathUse & part
             If part = ":" Then
                 path = ""
-                For ll = t To Length
+                For ll = t To length
                     part = Mid(a, ll, 1)
                     path = path & part
                 Next ll
@@ -417,13 +417,13 @@ Public Function noPath(ByVal Text As String) As String
     ElseIf term = "\" Then
         lastOne = 1
         'If it terminates with a "\" then we've got problems.  where is the last one at?
-        For t = 1 To Length
+        For t = 1 To length
             part = Mid(a, t, 1)
             If part = "\" Then lastOne = t
         Next t
         'Now let's scoop out the path"
         pathUse = ""
-        For t = lastOne To Length
+        For t = lastOne To length
             part = Mid(a, t, 1)
             pathUse = pathUse & part
         Next t
@@ -657,25 +657,25 @@ Public Function pathOf(ByVal Text As String) As String
 
     On Error Resume Next
 
-    Dim Length As Long, aPath As Byte, part As String, t As Long
+    Dim length As Long, aPath As Byte, part As String, t As Long
     Dim pathUse As String, term As String, lastOne As Long, path As String
 
-    Length = Len(Text)
+    length = Len(Text)
     'first, see if there IS a path:
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid(Text, t, 1)
         If part = ":" Or part = "\" Then aPath = 1
     Next t
     If aPath = 0 Then pathOf = ""
     'Now see if the path terminates with a \ or a :
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid(Text, t, 1)
         If part = ":" Or part = "\" Then term = part
     Next t
     pathUse = ""
     If term = ":" Then
         'if it terminates with a :, then the filename is right after :
-        For t = 1 To Length
+        For t = 1 To length
             part = Mid(Text, t, 1)
             pathUse = pathUse & part
             If part = ":" Then pathOf = pathUse
@@ -683,7 +683,7 @@ Public Function pathOf(ByVal Text As String) As String
     ElseIf term = "\" Then
         lastOne = 1
         'If it terminates with a "\" then we've got problems.  where is the last one at?
-        For t = 1 To Length
+        For t = 1 To length
             part = Mid(Text, t, 1)
             If part = "\" Then lastOne = t
         Next t
@@ -969,13 +969,6 @@ Public Sub winColor()
         Next x
     End If
 
-End Sub
-
-Public Sub ChangeBoolean(ByRef bol As Boolean)
-    '=======================================================
-    'Swap a boolean's value
-    '=======================================================
-    bol = Not bol
 End Sub
 
 Public Function BooleanToLong(ByVal bol As Boolean) As Long

@@ -85,63 +85,38 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'---Properties---
-
-'The properties are variants because of a strange
-'error I got...
-
-'---Bold---
-
-Public Property Get Bold()
- Bold = integerToBoolean(chkBold.value)
+Public Property Get Bold() As Boolean
+    Bold = integerToBoolean(chkBold.value)
 End Property
 
-Public Property Set Bold(bol)
- chkBold.value = CInt(BooleanToLong(bol))
+Public Property Let Bold(ByVal bol As Boolean)
+    chkBold.value = CInt(BooleanToLong(bol))
 End Property
 
-Public Property Let Bold(bol)
- chkBold.value = CInt(BooleanToLong(bol))
+Public Property Get Italics() As Boolean
+    Italics = integerToBoolean(chkItalics.value)
 End Property
 
-'---Italics---
-
-Public Property Get Italics()
- Italics = integerToBoolean(chkItalics.value)
+Public Property Let Italics(ByVal bol As Boolean)
+    chkItalics.value = CInt(BooleanToLong(bol))
 End Property
 
-Public Property Set Italics(bol)
- chkItalics.value = CInt(BooleanToLong(bol))
+Public Property Get Underline() As Boolean
+    Underline = integerToBoolean(chkUnderline.value)
 End Property
 
-Public Property Let Italics(bol)
- chkItalics.value = CInt(BooleanToLong(bol))
+Public Property Let Underline(ByVal bol As Boolean)
+    chkUnderline.value = CInt(BooleanToLong(bol))
 End Property
-
-'---Underline---
-
-Public Property Get Underline()
- Underline = integerToBoolean(chkUnderline.value)
-End Property
-
-Public Property Set Underline(bol)
- chkUnderline.value = CInt(BooleanToLong(bol))
-End Property
-
-Public Property Let Underline(bol)
- chkUnderline.value = CInt(BooleanToLong(bol))
-End Property
-
-'---End of Properties---
 
 Private Sub chkBold_Click()
- ChangeBoolean Bold
+    Bold = Not Bold
 End Sub
 
 Private Sub chkItalics_Click()
- ChangeBoolean Italics
+    Italics = Not Italics
 End Sub
 
 Private Sub chkUnderline_Click()
- ChangeBoolean Underline
+    Underline = Not Underline
 End Sub
