@@ -91,7 +91,7 @@ Option Explicit
 
 Private Sub Command1_Click()
     On Error Resume Next
-    Call Unload(commandref_)
+    Call Unload(commandref)
 End Sub
 
 Private Sub commands_Click()
@@ -101,8 +101,7 @@ Private Sub commands_Click()
     num = FreeFile()
     Open helpPath$ + ObtainCaptionFromTag(DB_QuickRefFile, resourcePath$ + m_LangFile) For Input As #num
         Do While Not EOF(num)
-            Line Input #num, a$
-            If UCase$(a$) = ":DESCR" Then
+            If UCase$(fread(num)) = ":DESCR" Then
                 cnt = cnt + 1
                 If cnt = whichOne Then
                     dest = fread(num)
