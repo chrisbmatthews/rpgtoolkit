@@ -24,6 +24,13 @@ Attribute VB_Exposed = False
 Option Explicit
 
 '=========================================================================
+' Globals
+'=========================================================================
+Public hwnd As Long                 ' Handle to this window
+Public cursorHotSpotX As Long       ' Cursor HotSpot X
+Public cursorHotSpotY As Long       ' Cursor HotSpot Y
+
+'=========================================================================
 ' Members
 '=========================================================================
 Private m_created As Boolean        ' Window created?
@@ -34,20 +41,42 @@ Private m_createStyle As Long       ' Style to create window with
 Private m_createX As Long           ' X position window should start at
 Private m_createY As Long           ' Y position window should start at
 Private m_class As String           ' The windows class
-Private m_hCursor As Long           ' The window's cursor
 
 '=========================================================================
 ' Declarations
 '=========================================================================
 Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal className As String, ByVal hCursor As Long) As Long
 Private Declare Sub killHostWindow Lib "actkrt3.dll" (ByVal className As String, ByVal hInstance As Long)
-Private Declare Sub IMGCreateIcon Lib "actkrt3.dll" (ByVal cnv As Long, ByVal strFilename As String)
 Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Long) As Long
 Private Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function LoadCursorFromFile Lib "user32" Alias "LoadCursorFromFileA" (ByVal lpFileName As String) As Long
-Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
-Private Declare Function SetClassWord Lib "user32" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal wNewWord As Long) As Long
+Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal dwrop As Long) As Long
+Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal nPlanes As Long, ByVal nBitCount As Long, lpBits As Any) As Long
+Private Declare Function SetBkColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
+Private Declare Function CreateIconIndirect Lib "user32" (ByRef pIconInfo As ICONINFO) As Long
+
+'=========================================================================
+' Information on an icon
+'=========================================================================
+Private Type ICONINFO
+    fIcon As Long
+    xHotspot As Long
+    yHotspot As Long
+    hbmMask As Long
+    hbmColor As Long
+End Type
+
+'=========================================================================
+' Constants
+'=========================================================================
+Private Const GCL_HCURSOR = (-12)
 
 '=========================================================================
 ' Member enumerations
@@ -56,11 +85,6 @@ Public Enum STYLE_ENUM
     FullScreenMode
     windowed
 End Enum
-
-'=========================================================================
-' Window's handle
-'=========================================================================
-Public hwnd As Long
 
 '=========================================================================
 ' Window's device context
@@ -102,66 +126,100 @@ End Property
 '=========================================================================
 ' Window's mouse pointer
 '=========================================================================
-Public Property Let mousePointer(ByVal newValue As String)
+Public Property Let mousePointer(ByRef newValue As String)
 
-    On Error Resume Next
+    ' Bail on invalid file
+    If (LenB(newValue) = 0) Then Exit Property
 
-    ' Destroy any existing cursor
-    If (m_hCursor) Then
-        Call DestroyCursor(m_hCursor)
-        m_hCursor = 0
-    End If
+    ' Obtain a compatible DC
+    Dim hCompatibleDc As Long
+    hCompatibleDc = hdc()
 
-    ' Create a canvas
-    Dim cnv As Long
-    cnv = createCanvas(32, 32)
-
-    ' Fill with transp color
-    Call canvasFill(cnv, mainMem.transpcolor)
-
-    ' Save the cursor path
-    Dim strCursorFileName As String
-    strCursorFileName = TempDir() & "tkCur.cur"
+    ' Declarations for the color bitmap
+    Dim hColorDc As Long, hColorBmp As Long
+    hColorDc = CreateCompatibleDC(hCompatibleDc)
 
     ' If it's the default cursor
     If (newValue = "TK DEFAULT") Then
 
-        ' Save from resource file
-        Call Kill(strCursorFileName)
-        Call SavePicture(LoadResPicture(103, vbResBitmap), strCursorFileName)
-        newValue = strCursorFileName
-
-    ElseIf (LenB(newValue) = 0) Then
-
-        ' No image passed in
-        Exit Property
+        ' Obtain the bitmap from the resource file
+        Dim objBitmap As Object
+        Set objBitmap = LoadResPicture(103, vbResBitmap)
+        hColorBmp = objBitmap.handle()
+        Call SelectObject(hColorDc, hColorBmp)
 
     Else
 
-        ' Alter the path
-        newValue = projectPath & bmpPath & newValue
+        ' Create a canvas
+        Dim cnv As Long
+        cnv = createCanvas(32, 32)
+
+        ' Draw to a canvas
+        Call drawSizedImageCNV(projectPath & bmpPath & newValue, 0, 0, 32, 32, cnv)
+
+        ' Create a DC and bitmap for the color cursor
+        hColorBmp = CreateCompatibleBitmap(hCompatibleDc, 32, 32)
+
+        ' Select the bitmap into the DC
+        Call SelectObject(hColorDc, hColorBmp)
+
+        ' Obtain the canvas' DC
+        Dim hCanvasDc As Long
+        hCanvasDc = canvasOpenHDC(cnv)
+
+        ' Blt to the bitmap's DC (and ultimately the bitmap)
+        Call BitBlt(hColorDc, 0, 0, 32, 32, hCanvasDc, 0, 0, vbSrcCopy)
+
+        ' Release the canvas' DC
+        Call canvasCloseHDC(cnv, hCanvasDc)
+
+        ' Destroy the canvas
+        Call destroyCanvas(cnv)
 
     End If
 
-    ' Draw to a canvas
-    Call drawSizedImageCNV(newValue, 0, 0, 32, 32, cnv)
+    ' Create a DC and bitmap for the mask
+    Dim hMaskDc As Long, hMaskBmp As Long
+    hMaskDc = CreateCompatibleDC(hCompatibleDc)
+    hMaskBmp = CreateBitmap(32, 32, 1, 1, 0&)
 
-    ' Draw to a *.ico file
-    Call IMGCreateIcon(cnv, strCursorFileName)
+    ' Select the mask bitmap into the DC
+    Call SelectObject(hMaskDc, hMaskBmp)
 
-    ' Destroy the canvas
-    Call destroyCanvas(cnv)
+    ' Set the background color to the cursor transp color
+    Call SetBkColor(hColorDc, mainMem.transpcolor)
 
-    ' Load the cursor
-    m_hCursor = LoadCursorFromFile(strCursorFileName)
+    ' Blt the cursor onto the mask, ignoring the transp color
+    Call BitBlt(hMaskDc, 0, 0, 32, 32, hColorDc, 0, 0, vbSrcCopy)
 
-    ' If the window is open
-    If (hwnd) Then
+    ' Blt back over to the cursor
+    Call BitBlt(hColorDc, 0, 0, 32, 32, hMaskDc, 0, 0, vbSrcInvert)
 
-        ' Switch in this new cursor
-        Call SetClassWord(hwnd, -12, m_hCursor)
+    ' Delete the DCs
+    Call DeleteDC(hMaskDc)
+    Call DeleteDC(hColorDc)
+    Call ReleaseDC(hwnd, hCompatibleDc)
 
-    End If
+    ' Setup some icon information
+    Dim theCursor As ICONINFO
+    theCursor.hbmColor = hColorBmp
+    theCursor.hbmMask = hMaskBmp
+    theCursor.xHotspot = cursorHotSpotX
+    theCursor.yHotspot = cursorHotSpotY
+
+    ' Create the cursor
+    Dim hCursor As Long
+    hCursor = CreateIconIndirect(theCursor)
+
+    ' Select in the new cursor
+    Call SetClassLong(hwnd, GCL_HCURSOR, hCursor)
+
+    ' Delete the cursor
+    Call DestroyIcon(hCursor)
+
+    ' Delete the bitmaps
+    Call DeleteObject(hColorBmp)
+    Call DeleteObject(hMaskBmp)
 
 End Property
 
@@ -235,7 +293,7 @@ Public Sub Create(ByRef strClass As String)
         m_createCaption, _
         App.hInstance, _
         strClass, _
-        IIf(m_hCursor, m_hCursor, LoadResPicture(101, vbResCursor).handle) _
+        LoadResPicture(101, vbResCursor).handle _
     )
 
     ' Flag the window has been created
@@ -243,15 +301,5 @@ Public Sub Create(ByRef strClass As String)
 
     ' Record the class
     m_class = strClass
-
-End Sub
-
-'========================================================================='
-' Deconstructor
-'=========================================================================
-Private Sub Class_Terminate()
-
-    ' Kill any loaded cursor
-    Call DestroyCursor(m_hCursor)
 
 End Sub

@@ -11681,8 +11681,8 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Call debugger("MouseCursor() takes lit, num, num, num, num, num-- " & Text)
         Exit Sub
     End If
-    ' host.cursorHotSpotX = paras(1).num
-    ' host.cursorHotSpotY = paras(2).num
+    host.cursorHotSpotX = paras(1).num
+    host.cursorHotSpotY = paras(2).num
     mainMem.transpcolor = RGB(paras(3).num, paras(4).num, paras(5).num)
     Dim ext As String, theFile As String
     ext = UCase$(commonRoutines.extention(paras(0).lit))

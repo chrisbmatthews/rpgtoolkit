@@ -401,6 +401,8 @@ End Sub
 Public Sub setupMain(): On Error Resume Next
 
     ' Setup the cursor
+    host.cursorHotSpotX = 1
+    host.cursorHotSpotY = 1
     host.mousePointer = mainMem.mouseCursor
 
     ' Set default shop colors
