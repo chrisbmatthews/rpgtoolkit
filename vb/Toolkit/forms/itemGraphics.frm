@@ -657,6 +657,7 @@ Private Sub picPlay_Click(): On Error Resume Next
             Dim repeat As Long
             For repeat = 1 To 3
                Call AnimateAt(anm, 0, 0, anm.animSizeX, anm.animSizeY, picAnim)
+               Call animDelay(CDbl(txtFrameTime.Text))
                DoEvents
             Next repeat
             
