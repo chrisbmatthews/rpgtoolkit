@@ -1,11 +1,4 @@
 @echo off
-
-rem =====================================================
-rem All contents copyright 2004, Colin James Fitzpatrick
-rem All rights reserved. YOU MAY NOT REMOVE THIS NOTICE
-rem Read LICENSE.txt for licensing info
-rem =====================================================
-
 cls
 echo.
 echo RPGToolkit, Version 3 :: RegOcx
