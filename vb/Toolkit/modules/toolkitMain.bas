@@ -84,7 +84,7 @@ Private Sub initTimer()
     ElseIf GetSetting("RPGToolkit3", "Settings", "Splash", "1") = "0" Then
         frmMain.Visible = False
     Else
-        frmMain.Timer1.interval = 1000
+        frmMain.Timer1.interval = 3800
     End If
 End Sub
 
