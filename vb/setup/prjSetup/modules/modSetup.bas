@@ -23,22 +23,80 @@ Private Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVa
 Private Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
 Private Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, lpData As Any, ByVal cbData As Long) As Long
 Private Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
-Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Any, ByVal Msg As Any, ByVal wParam As Any, ByVal lParam As Any) As Long
+Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hwnd As Any, ByVal Msg As Any, ByVal wParam As Any, ByVal lParam As Any) As Long
 Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function InitCommonControlsEx Lib "comctl32.dll" (ByRef iccex As tagInitCommonControlsEx) As Boolean
 
 '=========================================================================
 ' Constants
 '=========================================================================
-Private Const S_OK = 0
 Private Const REG_SZ = 1
 Private Const HKEY_LOCAL_MACHINE = &H80000002
+Private Const ICC_USEREX_CLASSES = &H200
+
+'=======================================================================
+' Common controls structure
+'=======================================================================
+Private Type tagInitCommonControlsEx
+   lngSize As Long
+   lngICC As Long
+End Type
+
+'=======================================================================
+' Initiate the common controls
+'=======================================================================
+Public Function initCommonControls() As Boolean
+    On Error Resume Next
+    Dim iccex As tagInitCommonControlsEx
+    iccex.lngSize = LenB(iccex)
+    iccex.lngICC = ICC_USEREX_CLASSES
+    Call InitCommonControlsEx(iccex)
+    initCommonControls = (Err.Number = 0)
+End Function
+
+'=========================================================================
+' Main entry point
+'=========================================================================
+Public Sub Main()
+ 
+    ' First, initiate the common controls
+    Call initCommonControls
+
+    ' Next, show the main form
+    Call frmMain.Show
+
+End Sub
+
+'=========================================================================
+' Register or unregister a COM server
+'=========================================================================
+Private Sub registerServer(ByRef strServer As String, ByVal hwnd As Long, Optional ByVal bRegister As Boolean = True)
+
+    ' First, make sure the file exists
+    If (GetAttr(strServer) And vbDirectory) Then Exit Sub
+
+    ' Load the server
+    Dim pServer As Long
+    pServer = LoadLibrary(strServer)
+
+    ' Obtain the procedure address we want
+    Dim pProc As Long
+    pProc = GetProcAddress(pServer, IIf(bRegister, "DllRegisterServer", "DllUnregisterServer"))
+
+    ' Call the procedure
+    Call CallWindowProc(pProc, hwnd, 0&, 0&, 0&)
+
+    ' Unload the server
+    Call FreeLibrary(pServer)
+
+End Sub
 
 '=========================================================================
 ' Pull a file off another file
 '=========================================================================
-Public Function selfExtract( _
+Private Function selfExtract( _
                                ByVal file As String, _
                                ByVal saveExtractedFileAs As String, _
                                Optional ByVal startAt As Long _
@@ -94,30 +152,6 @@ Public Function selfExtract( _
 End Function
 
 '=========================================================================
-' Register or unregister a COM server
-'=========================================================================
-Private Sub registerServer(ByRef strServer As String, ByVal hWnd As Long, Optional ByVal bRegister As Boolean = True)
-
-    ' First, make sure the file exists
-    If (GetAttr(strServer) And vbDirectory) Then Exit Sub
-
-    ' Load the server
-    Dim pServer As Long
-    pServer = LoadLibrary(strServer)
-
-    ' Obtain the procedure address we want
-    Dim pProc As Long
-    pProc = GetProcAddress(pServer, IIf(bRegister, "DllRegisterServer", "DllUnregisterServer"))
-
-    ' Call the procedure
-    Call CallWindowProc(pProc, hWnd, 0&, 0&, 0&)
-
-    ' Unload the server
-    Call FreeLibrary(pServer)
-
-End Sub
-
-'=========================================================================
 ' Perform the installation
 '=========================================================================
 Public Sub performSetup()
@@ -132,6 +166,9 @@ Public Sub performSetup()
     ' Make sure destination directory exists
     Call MkDir(strPath)
 
+    ' Change status text
+    frmMain.progress.Text = "Initializing..."
+
     ' Obtain tkzip.dll
     Dim lngPosistion As Long
     lngPosistion = selfExtract(strExe, "tkzip.dll")
@@ -143,8 +180,8 @@ Public Sub performSetup()
     Call extractDir("zip.zip", strPath)
 
     ' Register ActiveX controls
-    Call registerServer(strPath & "richtx32.ocx", frmMain.hWnd)
-    Call registerServer(strPath & "tabctl32.ocx", frmMain.hWnd)
+    Call registerServer(strPath & "richtx32.ocx", frmMain.hwnd)
+    Call registerServer(strPath & "tabctl32.ocx", frmMain.hwnd)
 
     ' Store path in a key
     Call SaveSetting("RPGToolkit3", "Settings", "Path", strPath)
@@ -158,6 +195,8 @@ Public Sub performSetup()
     Call RegSetValueEx(hKey, "DisplayName", 0, REG_SZ, ByVal "RPGToolkit, Version 3.05", Len("RPGToolkit, Version 3.05"))
     Call RegSetValueEx(hKey, "UninstallString", 0, REG_SZ, ByVal (strPath & "uninstall.exe"), Len(strPath & "uninstall.exe"))
     Call RegSetValueEx(hKey, "DisplayIcon", 0, REG_SZ, ByVal (strPath & "trans3.exe,0"), Len(strPath & "trans3.exe,0"))
+    Call RegSetValueEx(hKey, "URLInfoAbout", 0, REG_SZ, ByVal "http://www.toolkitzone.com", Len("http://www.toolkitzone.com"))
+    Call RegSetValueEx(hKey, "URLUpdateInfo", 0, REG_SZ, ByVal "http://www.toolkitzone.com", Len("http://www.toolkitzone.com"))
     Call RegCloseKey(hKey)
 
     ' Create start menu icons
@@ -183,14 +222,13 @@ Private Sub extractDir( _
     Dim fileIdx As Long, cnt As Long, perc As Long
     Call ZIPOpen(zipFile)
     cnt = ZIPGetFileCount()
-    ' Call statusBar.Show
+    frmMain.progress.Min = 0
+    frmMain.progress.Max = cnt - 1
     For fileIdx = 0 To (cnt - 1)
-        perc = (((fileIdx + 1) \ cnt) * 100)
-        ' Call statusBar.setStatus(perc, vbNullString)
         Dim strName As String
         strName = GetZipFilename(fileIdx)
-        frmMain.shpProgress.Width = perc * frmMain.shpPogressMax.Width / 100
-        frmMain.lblProgress = CStr(perc) & "% complete"
+        frmMain.progress.Value = fileIdx
+        frmMain.progress.Text = CStr(frmMain.progress.Percent) & "% complete"
         Call ZIPExtract(strName, extractInto & strName)
         DoEvents
     Next fileIdx

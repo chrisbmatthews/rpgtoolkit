@@ -13,18 +13,53 @@ Begin VB.Form frmMain
    ScaleHeight     =   5520
    ScaleWidth      =   7560
    StartUpPosition =   2  'CenterScreen
+   Begin VB.PictureBox Picture1 
+      BorderStyle     =   0  'None
+      Height          =   375
+      Left            =   480
+      ScaleHeight     =   375
+      ScaleWidth      =   6495
+      TabIndex        =   28
+      Top             =   4850
+      Width           =   6495
+      Begin VB.CommandButton cmdBack 
+         Caption         =   "< Back"
+         Height          =   375
+         Left            =   3120
+         TabIndex        =   31
+         Top             =   0
+         Width           =   1455
+      End
+      Begin VB.CommandButton cmdExit 
+         Caption         =   "Exit"
+         Height          =   375
+         Left            =   0
+         TabIndex        =   30
+         Top             =   0
+         Width           =   1455
+      End
+      Begin VB.CommandButton cmdNext 
+         Caption         =   "Next >"
+         Default         =   -1  'True
+         Height          =   375
+         Left            =   5040
+         TabIndex        =   29
+         Top             =   0
+         Width           =   1455
+      End
+   End
    Begin VB.Frame fraTop 
       Height          =   4335
       Index           =   4
       Left            =   120
-      TabIndex        =   29
+      TabIndex        =   23
       Top             =   120
       Visible         =   0   'False
       Width           =   7320
       Begin VB.Frame Frame6 
          Height          =   855
          Left            =   120
-         TabIndex        =   32
+         TabIndex        =   26
          Top             =   120
          Width           =   6975
          Begin VB.Label Label11 
@@ -40,7 +75,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   33
+            TabIndex        =   27
             Top             =   270
             Width           =   2775
          End
@@ -49,7 +84,7 @@ Begin VB.Form frmMain
          BorderStyle     =   0  'None
          Height          =   3015
          Left            =   120
-         TabIndex        =   30
+         TabIndex        =   24
          Top             =   1080
          Width           =   6975
          Begin VB.Label Label9 
@@ -65,7 +100,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   735
             Left            =   120
-            TabIndex        =   31
+            TabIndex        =   25
             Top             =   120
             Width           =   6735
          End
@@ -75,7 +110,7 @@ Begin VB.Form frmMain
       Height          =   4335
       Index           =   3
       Left            =   120
-      TabIndex        =   23
+      TabIndex        =   18
       Top             =   120
       Visible         =   0   'False
       Width           =   7320
@@ -83,28 +118,31 @@ Begin VB.Form frmMain
          BorderStyle     =   0  'None
          Height          =   3015
          Left            =   120
-         TabIndex        =   26
+         TabIndex        =   21
          Top             =   1080
          Width           =   6975
-         Begin VB.Label lblProgress 
-            Height          =   255
-            Left            =   120
-            TabIndex        =   28
-            Top             =   1320
-            Width           =   6735
-         End
-         Begin VB.Shape shpProgress 
-            FillStyle       =   0  'Solid
+         Begin prjSetup.vbalProgressBar progress 
             Height          =   375
             Left            =   120
-            Top             =   720
-            Width           =   15
-         End
-         Begin VB.Shape shpPogressMax 
-            Height          =   375
-            Left            =   120
+            TabIndex        =   35
             Top             =   720
             Width           =   6735
+            _ExtentX        =   11880
+            _ExtentY        =   661
+            Picture         =   "frmMain.frx":0CCA
+            ForeColor       =   0
+            BarPicture      =   "frmMain.frx":0CE6
+            ShowText        =   -1  'True
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            XpStyle         =   -1  'True
          End
          Begin VB.Label Label10 
             Caption         =   "Please wait while RPGToolkit3 is installed to your computer."
@@ -119,7 +157,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   375
             Left            =   120
-            TabIndex        =   27
+            TabIndex        =   22
             Top             =   120
             Width           =   6735
          End
@@ -127,7 +165,7 @@ Begin VB.Form frmMain
       Begin VB.Frame Frame3 
          Height          =   855
          Left            =   120
-         TabIndex        =   24
+         TabIndex        =   19
          Top             =   120
          Width           =   6975
          Begin VB.Label Label7 
@@ -143,7 +181,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   25
+            TabIndex        =   20
             Top             =   270
             Width           =   2775
          End
@@ -153,14 +191,14 @@ Begin VB.Form frmMain
       Height          =   4335
       Index           =   2
       Left            =   120
-      TabIndex        =   15
+      TabIndex        =   10
       Top             =   120
       Visible         =   0   'False
       Width           =   7320
       Begin VB.Frame Frame2 
          Height          =   855
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   13
          Top             =   120
          Width           =   6975
          Begin VB.Label Label4 
@@ -176,7 +214,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   19
+            TabIndex        =   14
             Top             =   270
             Width           =   2535
          End
@@ -185,7 +223,7 @@ Begin VB.Form frmMain
          BorderStyle     =   0  'None
          Height          =   3015
          Left            =   120
-         TabIndex        =   16
+         TabIndex        =   11
          Top             =   1080
          Width           =   6975
          Begin VB.Label Label5 
@@ -201,7 +239,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   495
             Left            =   120
-            TabIndex        =   21
+            TabIndex        =   16
             Top             =   2520
             Width           =   6735
          End
@@ -217,12 +255,12 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   495
             Left            =   120
-            TabIndex        =   20
+            TabIndex        =   15
             Top             =   1320
             Width           =   6735
          End
          Begin VB.Label Label3 
-            Caption         =   $"frmMain.frx":0CCA
+            Caption         =   $"frmMain.frx":0D02
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   12
@@ -234,7 +272,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   975
             Left            =   120
-            TabIndex        =   17
+            TabIndex        =   12
             Top             =   120
             Width           =   6735
          End
@@ -244,7 +282,7 @@ Begin VB.Form frmMain
       Height          =   4335
       Index           =   1
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   120
       Visible         =   0   'False
       Width           =   7320
@@ -252,24 +290,34 @@ Begin VB.Form frmMain
          BorderStyle     =   0  'None
          Height          =   3015
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   7
          Top             =   1080
          Width           =   6975
-         Begin VB.CommandButton cmdBrowse 
-            Caption         =   "..."
-            Height          =   255
-            Left            =   6240
-            TabIndex        =   14
-            Top             =   960
-            Width           =   615
-         End
-         Begin VB.TextBox txtDirecory 
-            Height          =   285
+         Begin VB.PictureBox Picture2 
+            BorderStyle     =   0  'None
+            Height          =   375
             Left            =   120
-            TabIndex        =   13
-            Text            =   "C:\Program Files\Toolkit3"
-            Top             =   960
-            Width           =   5895
+            ScaleHeight     =   375
+            ScaleWidth      =   6735
+            TabIndex        =   32
+            Top             =   840
+            Width           =   6735
+            Begin VB.TextBox txtDirecory 
+               Height          =   285
+               Left            =   0
+               TabIndex        =   34
+               Text            =   "C:\Program Files\Toolkit3"
+               Top             =   0
+               Width           =   5895
+            End
+            Begin VB.CommandButton cmdBrowse 
+               Caption         =   "..."
+               Height          =   255
+               Left            =   6120
+               TabIndex        =   33
+               Top             =   0
+               Width           =   615
+            End
          End
          Begin VB.Label Label6 
             Caption         =   "Press 'Next' to continue."
@@ -284,7 +332,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   495
             Left            =   120
-            TabIndex        =   22
+            TabIndex        =   17
             Top             =   2520
             Width           =   6735
          End
@@ -301,7 +349,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   735
             Left            =   120
-            TabIndex        =   12
+            TabIndex        =   9
             Top             =   120
             Width           =   6735
          End
@@ -309,7 +357,7 @@ Begin VB.Form frmMain
       Begin VB.Frame fraTopTop 
          Height          =   855
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   6
          Top             =   120
          Width           =   6975
          Begin VB.Label Label2 
@@ -325,7 +373,7 @@ Begin VB.Form frmMain
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   11
+            TabIndex        =   8
             Top             =   270
             Width           =   2535
          End
@@ -337,31 +385,6 @@ Begin VB.Form frmMain
       TabIndex        =   2
       Top             =   4560
       Width           =   7335
-      Begin VB.CommandButton cmdNext 
-         Caption         =   "Next >"
-         Default         =   -1  'True
-         Height          =   375
-         Left            =   5400
-         TabIndex        =   5
-         Top             =   280
-         Width           =   1455
-      End
-      Begin VB.CommandButton cmdExit 
-         Caption         =   "Exit"
-         Height          =   375
-         Left            =   360
-         TabIndex        =   4
-         Top             =   280
-         Width           =   1455
-      End
-      Begin VB.CommandButton cmdBack 
-         Caption         =   "< Back"
-         Height          =   375
-         Left            =   3480
-         TabIndex        =   3
-         Top             =   280
-         Width           =   1455
-      End
    End
    Begin VB.Frame fraTop 
       Height          =   4335
@@ -376,7 +399,7 @@ Begin VB.Form frmMain
          ForeColor       =   &H80000008&
          Height          =   4065
          Left            =   120
-         Picture         =   "frmMain.frx":0D8B
+         Picture         =   "frmMain.frx":0DC3
          ScaleHeight     =   4035
          ScaleWidth      =   1875
          TabIndex        =   1
@@ -395,7 +418,7 @@ Begin VB.Form frmMain
          EndProperty
          Height          =   3135
          Left            =   2280
-         TabIndex        =   7
+         TabIndex        =   4
          Top             =   960
          Width           =   4575
       End
@@ -412,7 +435,7 @@ Begin VB.Form frmMain
          EndProperty
          Height          =   615
          Left            =   2280
-         TabIndex        =   6
+         TabIndex        =   3
          Top             =   240
          Width           =   4695
       End
