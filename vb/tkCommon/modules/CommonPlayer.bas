@@ -571,7 +571,7 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             Else
                 thePlayer.idleTime = 3
 #If (isToolkit = 1) Then
-                thePlayer.speed = 0.01
+                thePlayer.speed = 0.05
 #Else
                 thePlayer.speed = MISC_DELAY
 #End If
@@ -1178,7 +1178,7 @@ End Sub
 '=========================================================================
 Public Sub PlayerClear(ByRef thePlayer As TKPlayer)
     On Error Resume Next
-    thePlayer.speed = 0.01
+    thePlayer.speed = 0.05
     thePlayer.idleTime = 3
     thePlayer.charname = vbNullString
     thePlayer.experienceVar = vbNullString

@@ -255,7 +255,7 @@ End Function
 Public Sub ItemClear(ByRef theItem As TKItem)
     On Error Resume Next
     With theItem
-        .speed = 0.01
+        .speed = 0.05
         .idleTime = 3
         .itemName = vbNullString
         .itmDescription = vbNullString
