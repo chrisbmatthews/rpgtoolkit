@@ -3,6 +3,19 @@ Attribute VB_Name = "Scroll"
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
+'=======================================================
+'Cleaned up a bit, 3.0.4 by KSNiloc
+'
+' --What is done
+' + Option Explicit added
+' + 'As Any' fixed
+' + Proper scope applied to procedures
+' + Replaced type declaration characters with 'as such'
+' + Fixed various subtle isometric bugs
+' + Swapped +s for &s where appropriate
+'
+'=======================================================
+
 Option Explicit
 
 Private miSavedBitmaps(3) As Long
