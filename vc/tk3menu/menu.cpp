@@ -14,8 +14,8 @@
 #include "stdafx.h"
 #include "menu.h"
 
-CNVID g_cnvMenu;					//canvas of menu
-long g_crTranspColor;			//transparent color
+CNVID g_cnvMenu;							//canvas of menu
+long g_crTranspColor;						//transparent color
 long g_crTextColor = rgb(255, 240, 230);	//text color to use
 
 long g_nButton;		//button we're pointing at right now...
@@ -24,17 +24,19 @@ long g_nItemPage;	//item page we're on
 
 long g_nEquipTop;	//top of equip list
 
-//lists for item selection in equip
-std::string g_strList[501];
+std::string g_strList[501];	//lists for item selection in equip
 int g_nMap[501];
 
 long g_nSpecialMoveCount;	//number of special moves the player can do.
-long g_nAbilitiesTop;	//top of equip list
+long g_nAbilitiesTop;		//top of equip list
 
-#define SIZEX 640
+int g_nOffsetX;				// Offset of the menu on the screen.
+int g_nOffsetY;
+
+#define SIZEX 640			// Dimensions of this menu.
 #define SIZEY 480
 
-void BeginMenu()
+void BeginMenu(void)
 {
 	//get transparent color...
 	g_crTranspColor = CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0);
@@ -43,7 +45,7 @@ void BeginMenu()
 }
 
 
-void EndMenu()
+void EndMenu(void)
 {
 	if (g_cnvMenu)
 	{
@@ -54,8 +56,12 @@ void EndMenu()
 
 
 //Launch the main menu!
-void MainMenu()
+void MainMenu(void)
 {
+	// Calculate the offsets.
+	g_nOffsetX = (CBGetGeneralNum(GEN_RESX, 0, 0) - SIZEX) / 2;
+	g_nOffsetY = (CBGetGeneralNum(GEN_RESY, 0, 0) - SIZEY) / 2;
+
 	RenderMainMenu();
 	g_nButton = 0;
 	DrawCursor();
@@ -65,7 +71,7 @@ void MainMenu()
 	CBRpgCode("#ClearBuffer()");
 }
 
-void RenderMainMenu()
+void RenderMainMenu(void)
 {
 	CBCanvasLoadSizedImage(g_cnvMenu, CBGetGeneralString(GEN_MENUGRAPHIC, 0, 0));
 
@@ -80,14 +86,7 @@ void RenderMainMenu()
 	//create options buttons...
 	RenderMainMenuOptions(g_cnvMenu);
 
-	//calculate offset for centering...
-	int nWidth = CBGetGeneralNum(GEN_RESX, 0, 0);
-	int nHeight = CBGetGeneralNum(GEN_RESY, 0, 0);
-	int nOffsetX = (nWidth - SIZEX) / 2;
-	int nOffsetY = (nHeight - SIZEY) / 2;
-
-	//CBCanvasPopup(g_cnvMenu, nOffsetX, nOffsetY, 20, POPUP_VERTICAL);
-	CBDrawCanvas(g_cnvMenu, nOffsetX, nOffsetY);
+	CBDrawCanvas(g_cnvMenu, g_nOffsetX, g_nOffsetY);
 	CBRefreshScreen();
 }
 
@@ -139,7 +138,7 @@ void RenderMainMenuOptions(CNVID cnv)
 
 
 //check for key presses on the main menu...
-int MainMenuScanKeys()
+int MainMenuScanKeys(void)
 {
 	bool bDone = false;
 	std::string strFile = "";
@@ -203,19 +202,25 @@ int MainMenuScanKeys()
 					break;
 
 				case 4:
-					//save
+					//Save
 					strFile = CBFileDialog(CBGetPathString(PATH_SAVE), "*.sav");
 					if (strFile.compare("") != 0)
 					{
 						CBRpgCode("#Save("+strFile+")");
 						CBMessageWindow(CBLoadString(834, "Save Complete!"), rgb(255, 255, 255), rgb(0,0,0), "", MW_OK);
 					}
+
 					RenderMainMenu();
 					DrawCursor();
+
+					// Clear the queue to prevent sticking.
+					Sleep(90);
+					FlushInputEvents();
+
 					break;
 
 				case 5:
-					//load
+					//Load
 					strFile = CBFileDialog(CBGetPathString(PATH_SAVE), "*.sav");
 					if (strFile.compare("") != 0)
 					{
@@ -228,8 +233,13 @@ int MainMenuScanKeys()
 				case 6:
 					//Quit
 					//remove cursor...
-					CBDrawCanvas(g_cnvMenu, 0, 0);
+					CBDrawCanvas(g_cnvMenu, g_nOffsetX, g_nOffsetY);
 					int nRet = CBMessageWindow(CBLoadString(835, "Exit to Windows.  Are You Sure?"), rgb(255, 255, 255), 0, "", MW_YESNO);
+					
+					// Clear the queue to prevent sticking.
+					Sleep(90);
+					FlushInputEvents();
+					
 					if (nRet == MWR_YES)
 					{
 						CBRpgCode("#Dos()");
@@ -289,7 +299,7 @@ int MainMenuScanKeys()
 
 
 //Show the inventory menu...
-void ItemMenu()
+void ItemMenu(void)
 {
 	RenderItemMenu();
 	g_nButton = 0;
@@ -318,14 +328,7 @@ void RenderItemMenu(bool bShowContent)
 	//show the item page...
 	CBCanvasDrawText(g_cnvMenu, Int2String(g_nItemPage+1), "Arial", 18, 1.5, 23, g_crTextColor, 0, 0, 0, 0);
 
-	//calculate offset for centering...
-	int nWidth = CBGetGeneralNum(GEN_RESX, 0, 0);
-	int nHeight = CBGetGeneralNum(GEN_RESY, 0, 0);
-	int nOffsetX = (nWidth - SIZEX) / 2;
-	int nOffsetY = (nHeight - SIZEY) / 2;
-
-	//CBCanvasPopup(g_cnvMenu, nOffsetX, nOffsetY, 20, POPUP_VERTICAL);
-	CBDrawCanvas(g_cnvMenu, nOffsetX, nOffsetY);
+	CBDrawCanvas(g_cnvMenu, g_nOffsetX, g_nOffsetY);
 	CBRefreshScreen();
 
 }
@@ -445,7 +448,7 @@ void RenderItemOptions(CNVID cnv)
 //select an item off the item list...
 //return array index of the selected item...
 //return -1 if cancelled
-int SelectItem()
+int SelectItem(void)
 {
 	int nCursorX = 0;
 	int nCursorY = 0;
@@ -463,7 +466,7 @@ int SelectItem()
 		x = y = 0;
 		x = 45 + 120 * nCursorX;
 		y = 185 + 20 * nCursorY;
-		CBDrawHand(x, y);
+		CBDrawHand(x + g_nOffsetX, y + g_nOffsetY);
 		CBRefreshScreen();
 
 		if (ie.strKey.compare("DOWN") == 0 || CBCheckKey("JOYDOWN"))
@@ -692,7 +695,7 @@ void ItemUse(int nItemID, int nPlayerID)
 
 
 //check for key presses on the item menu...
-int ItemMenuScanKeys()
+int ItemMenuScanKeys(void)
 {
 	bool bDone = false;
 	int nItemID = 0;
@@ -869,14 +872,7 @@ void RenderAbilitiesMenu(int nPlayerID, bool bRenderInfo)
 	//options
 	RenderAbilitiesOptions(g_cnvMenu);
 
-	//calculate offset for centering...
-	int nWidth = CBGetGeneralNum(GEN_RESX, 0, 0);
-	int nHeight = CBGetGeneralNum(GEN_RESY, 0, 0);
-	int nOffsetX = (nWidth - SIZEX) / 2;
-	int nOffsetY = (nHeight - SIZEY) / 2;
-
-	//CBCanvasPopup(g_cnvMenu, nOffsetX, nOffsetY, 20, POPUP_VERTICAL);
-	CBDrawCanvas(g_cnvMenu, nOffsetX, nOffsetY);
+	CBDrawCanvas(g_cnvMenu, g_nOffsetX, g_nOffsetY);
 	CBRefreshScreen();
 }
 
@@ -1147,7 +1143,7 @@ int SelectAbility(int nPlayerID)
 		x = y = 0;
 		x = 145;
 		y = 185 + 20 * nCursor;
-		CBDrawHand(x, y);
+		CBDrawHand(x + g_nOffsetX, y + g_nOffsetY);
 		CBRefreshScreen();
 
 		if (ie.strKey.compare("DOWN") == 0 || CBCheckKey("JOYDOWN"))
@@ -1245,14 +1241,7 @@ void RenderEquipMenu(int nPlayerID)
 	//options
 	RenderEquipOptions(g_cnvMenu);
 
-	//calculate offset for centering...
-	int nWidth = CBGetGeneralNum(GEN_RESX, 0, 0);
-	int nHeight = CBGetGeneralNum(GEN_RESY, 0, 0);
-	int nOffsetX = (nWidth - SIZEX) / 2;
-	int nOffsetY = (nHeight - SIZEY) / 2;
-
-	//CBCanvasPopup(g_cnvMenu, nOffsetX, nOffsetY, 20, POPUP_VERTICAL);
-	CBDrawCanvas(g_cnvMenu, nOffsetX, nOffsetY);
+	CBDrawCanvas(g_cnvMenu, g_nOffsetX, g_nOffsetY);
 	CBRefreshScreen();
 }
 
@@ -1381,7 +1370,7 @@ int SelectEquip(int nPlayerID)
 		x = y = 0;
 		x = 145;
 		y = 185 + 20 * nCursor;
-		CBDrawHand(x, y);
+		CBDrawHand(x + g_nOffsetX, y + g_nOffsetY);
 		CBRefreshScreen();
 
 		if (ie.strKey.compare("DOWN") == 0 || CBCheckKey("JOYDOWN"))
@@ -1530,7 +1519,7 @@ int SelectEquippableItem(int nPlayerID, int nEquipID)
 		x = y = 0;
 		x = 145;
 		y = 185 + 20 * nCursor;
-		CBDrawHand(x, y);
+		CBDrawHand(x + g_nOffsetX, y + g_nOffsetY);
 		CBRefreshScreen();
 
 		if (ie.strKey.compare("DOWN") == 0 || CBCheckKey("JOYDOWN"))
@@ -1815,43 +1804,45 @@ int EquipMenuScanKeys(int nPlayerID)
 
 
 //draw the cursor based on the button we're pointing at (g_nButton)
-void DrawCursor()
+void DrawCursor(void)
 {
-	CBDrawCanvas(g_cnvMenu, 0, 0);
-	int x, y;
-	x = y = 0;
+	CBDrawCanvas(g_cnvMenu, g_nOffsetX, g_nOffsetY);
+
+	int x = 0, y = 0;
+
 	switch(g_nButton)
 	{
-		case 0:
+		case 0: // Inventory
 			x = 46;
 			y = 108;
 			break;
-		case 1:
+		case 1: // Equipment
 			x = 153;
 			y = 108;
 			break;
-		case 2:
+		case 2: // Abilities
 			x = 260;
 			y = 108;
 			break;
-		case 3:
+		case 3: // Return
 			x = 63;
 			y = 445;
 			break;
-		case 4:
+		case 4: // Save
 			x = 210;
 			y = 445;
 			break;
-		case 5:
+		case 5: // Load
 			x = 357;
 			y = 445;
 			break;
-		case 6:
+		case 6: // Quit
 			x = 504;
 			y = 445;
 			break;
 	}
-	CBDrawHand(x, y);
+
+	CBDrawHand(x + g_nOffsetX, y + g_nOffsetY);
 	CBRefreshScreen();
 }
 
@@ -2048,7 +2039,7 @@ int SelectPlayer(bool bDrawPlayers)
 		int x, y;
 		x = 45 + 120 * nCursor;
 		y = 185;
-		CBDrawHand(x, y);
+		CBDrawHand(x + g_nOffsetX, y + g_nOffsetY);
 		CBRefreshScreen();
 
 		if (ie.strKey.compare("RIGHT") == 0 || CBCheckKey("JOYRIGHT"))
