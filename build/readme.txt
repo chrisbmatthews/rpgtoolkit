@@ -7,7 +7,7 @@ i.	Prelude
 ii.	The System Is Not Bug Free
 iii.	Help Files
 iv.	Threading
-v.	Additions
+v.	Usability Optimizations
 vi.	Afterword
 
 i. PRELUDE
@@ -57,13 +57,14 @@ method func(i!)
 
 The general idea is simple: keep the time consuming stuff in the main process.
 
-v. ADDITIONS
+v. USABILITY OPTIMIZATIONS
 ----------------------------------------------------------------------
 
-This is not exclusively a bug-fix release, and several small additions have been made to improve the editor's usablity:
-+ RGB colour labels in the tile and animation editors.
-+ Layer tile, scroll, rotate and flip tools enabled for isometric tiles.
-+ New blur tool for all tiles.
+Throughout our work on 3.0.6, it has been made clear that several key areas lacked integral user-friendliness. As a result, we have made a few minor changes to the editor.
+
++ RGB colour labels in the tile and animation editors
++ Layer tile, scroll, rotate and flip tools enabled for isometric tiles
++ New blur tool for all tiles
 
 vi. AFTERWORD
 ----------------------------------------------------------------------
