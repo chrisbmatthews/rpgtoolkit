@@ -560,22 +560,6 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
 End Function
 
 '=========================================================================
-' Advances until a { is found
-'=========================================================================
-Public Sub moveToStartOfBlock(ByRef prg As RPGCodeProgram)
-
-    '=========================================================================
-    ' prg - the rpgcode program (in & out)
-    '=========================================================================
-
-    Do Until (prg.program(prg.programPos) = "{")
-        Call processEvent
-        prg.programPos = increment(prg)
-    Loop
-    
-End Sub
-
-'=========================================================================
 ' Runs a block of code (or skips it)
 '=========================================================================
 Public Function runBlock(ByVal runCommands As Long, ByRef prg As RPGCodeProgram, Optional ByVal bIsFunction As Boolean) As Long
