@@ -84,7 +84,7 @@ End Property
 '=========================================================================
 Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
 
-    On Error Resume Next
+    On Error GoTo skip
     
     Dim num As Long, a As Long
     num = FreeFile()
@@ -110,7 +110,7 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
             lastTileset = BinReadString(num)
         Else
             Close num
-            Open file For Input As num
+            Open file For Input Access Read As num
             Call fread(num)
             Call fread(num)
             tipsOnOff = 1
@@ -138,6 +138,7 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
         wallpaper = ""
     End If
 
+skip:
 End Sub
 
 '=========================================================================

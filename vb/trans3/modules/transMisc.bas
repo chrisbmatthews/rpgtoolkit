@@ -341,22 +341,44 @@ End Sub
 Public Sub CreateCharacter(ByVal file As String, ByVal number As Long)
     On Error Resume Next
     If number < 0 Or number > 4 Then Exit Sub
-    Call openchar(file$, playerMem(number))
-    'Initialize this character:
-    playerListAr$(number) = playerMem(number).charname 'Save player handle
-    
-    playerFile$(number) = file$
-    Call setIndependentVariable(playerMem(number).experienceVar$, CStr(playerMem(number).initExperience))
-    Call setIndependentVariable(playerMem(number).defenseVar$, CStr(playerMem(number).initDefense))
-    Call setIndependentVariable(playerMem(number).fightVar$, CStr(playerMem(number).initFight))
-    Call setIndependentVariable(playerMem(number).healthVar$, CStr(playerMem(number).initHealth))
-    Call setIndependentVariable(playerMem(number).maxHealthVar$, CStr(playerMem(number).initMaxHealth))
-    Call setIndependentVariable(playerMem(number).nameVar$, playerMem(number).charname$)
-    Call setIndependentVariable(playerMem(number).smVar$, CStr(playerMem(number).initSm))
-    Call setIndependentVariable(playerMem(number).smMaxVar$, CStr(playerMem(number).initSmMax))
-    Call setIndependentVariable(playerMem(number).leVar$, CStr(playerMem(number).initLevel))
-    playerMem(number).nextLevel = playerMem(number).levelType
-    playerMem(number).levelProgression = playerMem(number).levelType
+    Call openchar(file, playerMem(number))
+    With playerMem(number)
+        playerListAr$(number) = .charname
+        playerFile$(number) = file$
+        Call setIndependentVariable(.experienceVar$, CStr(.initExperience))
+        Call setIndependentVariable(.defenseVar$, CStr(.initDefense))
+        Call setIndependentVariable(.fightVar$, CStr(.initFight))
+        Call setIndependentVariable(.healthVar$, CStr(.initHealth))
+        Call setIndependentVariable(.maxHealthVar$, CStr(.initMaxHealth))
+        Call setIndependentVariable(.nameVar$, .charname$)
+        Call setIndependentVariable(.smVar$, CStr(.initSm))
+        Call setIndependentVariable(.smMaxVar$, CStr(.initSmMax))
+        Call setIndependentVariable(.leVar$, CStr(.initLevel))
+        Call calcLevels(playerMem(number))
+    End With
+End Sub
+
+'=========================================================================
+' Calculate level up stuff
+'=========================================================================
+Private Sub calcLevels(ByRef player As TKPlayer)
+    On Error Resume Next
+    With player
+        .nextLevel = .levelType
+        .levelProgression = .levelType - .initExperience
+        ReDim .levelStarts(.maxLevel)
+        Dim levIdx As Long, running As Long, exp As Long
+        .levelStarts(.initLevel) = .initExperience
+        exp = .levelType
+        For levIdx = (.initLevel + 1) To (.maxLevel)
+            .levelStarts(levIdx) = .levelStarts(levIdx - 1) + exp
+            If (.charLevelUpType = 0) Then
+                exp = exp + .experienceIncrease
+            Else
+                exp = exp * (1 + .experienceIncrease)
+            End If
+        Next levIdx
+    End With
 End Sub
 
 '=========================================================================

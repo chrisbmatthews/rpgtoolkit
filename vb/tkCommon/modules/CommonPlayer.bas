@@ -55,7 +55,7 @@ Type TKPlayer
                                   '1-head,2-neck,3-lh,4-rh,5-body,6-legs
     levelType As Long             'Initial Level progression
     experienceIncrease As Integer 'Experience increase Factor
-    ''
+
     maxLevel As Long              'Maximum level.
     levelHp As Integer            'HP incrase by % when level increaes
     levelDp As Integer            'dP incrase by % when level increaes
@@ -73,6 +73,7 @@ Type TKPlayer
     status(10) As FighterStatus
     nextLevel As Integer
     levelProgression As Integer
+    levelStarts() As Double
 End Type
 
 

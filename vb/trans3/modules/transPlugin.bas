@@ -956,7 +956,7 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
     '   19- level up type 0=exponential, 1=linear
     '   20- direction we are facing (1-s, 2-w, 3-n, 4-e)    facing
     '   21- percent till next level
-    On Error GoTo errorhandler
+    On Error Resume Next
     Dim Temp As Long
 
     playerSlot = inBounds(playerSlot, 0, 4)
@@ -1031,25 +1031,14 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
             CBGetPlayerNum = facing
             Exit Function
         Case 21:
-            Dim amtleft As Double
-            Dim perc As Double
-            amtleft = playerMem(playerSlot).levelProgression - playerMem(playerSlot).nextLevel
-            perc = 0
-            If playerMem(playerSlot).levelProgression > 0 Then
-                perc = (amtleft / playerMem(playerSlot).levelProgression)
-                perc = perc * 100
-                perc = Int(perc)
-            End If
-            CBGetPlayerNum = perc
-            Exit Function
+            With playerMem(playerSlot)
+                Dim levStart As Long, perc As Long
+                levStart = .levelStarts(CBGetNumerical(.leVar) - 1)
+                perc = (CBGetNumerical(.experienceVar) - levStart) / (.nextLevel - levStart) * 100
+                CBGetPlayerNum = perc
+            End With
     End Select
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 Function CBGetPlayerString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal playerSlot As Long) As String
@@ -2214,7 +2203,7 @@ Function CBGetItemString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal i
             CBGetItemString = theItem.itmChars$(arrayPos)
             Exit Function
         Case 9:
-            CBGetItemString = theItem.ITMDescription
+            CBGetItemString = theItem.itmDescription
             Exit Function
         Case 10:
             CBGetItemString = theItem.itmAnimation
@@ -2274,7 +2263,7 @@ Function CBGetItemNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal itmS
             Exit Function
         Case 4:
             arrayPos = inBounds(arrayPos, 1, 7)
-            CBGetItemNum = theItem.itemarmor(arrayPos)
+            CBGetItemNum = theItem.itemArmor(arrayPos)
             Exit Function
         Case 5:
             CBGetItemNum = theItem.equipHP
