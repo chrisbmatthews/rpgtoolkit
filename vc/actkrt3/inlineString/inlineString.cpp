@@ -37,7 +37,7 @@ inlineString::inlineString(std::string cFrom, int length)
 ///////////////////////////////////////////////////////////////////////////
 // Get character(s) from the inlineString
 ///////////////////////////////////////////////////////////////////////////
-inlineString inlineString::mid(int start, int length)
+inlineString& inlineString::mid(int start, int length)
 {
 
 	//check for potential error
@@ -52,14 +52,14 @@ inlineString inlineString::mid(int start, int length)
 		else
 		{
 			//not fixable (starting past end of string)
-			inlineString toRet = 1;
+			static inlineString toRet(1);
 			return toRet;
 		}
 	}
 
-	inlineString toRet(length);		//string to return
-	int pos = 0;					//position in string
-	int chrIdx = 0;					//character index
+	static inlineString toRet(length + 1);	//string to return
+	int pos = 0;							//position in string
+	int chrIdx = 0;							//character index
 
 	//set in the characters
 	for (chrIdx = (start - 1); chrIdx <= ((start - 1) + (length - 1)); chrIdx++)
@@ -68,14 +68,8 @@ inlineString inlineString::mid(int start, int length)
 		pos++;
 	}
 
-	//set in the escape sequence (signals end of the string)
-	toRet[pos] = (unsigned char)'/0';
-
-	//fill in the rest with NULL
-	for (chrIdx = pos; chrIdx <= len(); chrIdx++)
-	{
-		toRet[chrIdx] = NULL;
-	}
+	//set in NULL (signals end of the string)
+	toRet[pos] = NULL;
 
 	//return the result
 	return toRet;
@@ -85,7 +79,7 @@ inlineString inlineString::mid(int start, int length)
 ///////////////////////////////////////////////////////////////////////////
 // Get characters from the left of the string
 ///////////////////////////////////////////////////////////////////////////
-inlineString inlineString::left(int length)
+inlineString& inlineString::left(int length)
 {
 	return mid(1, length);
 }
@@ -93,7 +87,7 @@ inlineString inlineString::left(int length)
 ///////////////////////////////////////////////////////////////////////////
 // Get characters from the right of the string
 ///////////////////////////////////////////////////////////////////////////
-inlineString inlineString::right(int length)
+inlineString& inlineString::right(int length)
 {
 	return mid(len() - length, length);
 }

@@ -41,9 +41,9 @@ class inlineString
 
 		//mainipulation
 		int len();											// return length of the string
-		inlineString mid(int start, int length);			// get character(s) from the string
-		inlineString left(int length);						// get character(s) from left of string
-		inlineString right(int length);						// get character(s) from right of string
+		inlineString& mid(int start, int length);			// get character(s) from the string
+		inlineString& left(int length);						// get character(s) from left of string
+		inlineString& right(int length);					// get character(s) from right of string
 		bool contains(char* text);							// check if we contain a pointer to a string
 		bool contains(std::string text);					// check if we contain an STL string
 		bool contains(inlineString text);					// check if we contain an inlineString
