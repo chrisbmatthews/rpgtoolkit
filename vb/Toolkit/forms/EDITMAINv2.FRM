@@ -76,14 +76,14 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "fraSettings"
-      Tab(1).Control(1)=   "startframe"
+      Tab(1).Control(0)=   "startframe"
+      Tab(1).Control(1)=   "fraSettings"
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "actionframe"
-      Tab(2).Control(1)=   "prgframe"
+      Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(1)=   "actionframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -98,9 +98,9 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label24"
+      Tab(5).Control(0)=   "Frame3"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Frame3"
+      Tab(5).Control(2)=   "Label24"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
@@ -2711,11 +2711,6 @@ Private Sub mnusaveas_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    If fileExists(filename(1)) Then
-        Dim bb As VbMsgBoxResult
-        bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
-        If bb = 7 Then Exit Sub
-    End If
     Call saveMain(filename$(1), mainMem)
     mainFile$ = antiPath$
     editmainfile.Caption = LoadStringLoc(800, "Project Properties") + " (" + antiPath$ + ")"

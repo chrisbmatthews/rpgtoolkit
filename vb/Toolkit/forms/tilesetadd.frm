@@ -862,13 +862,7 @@ Private Sub cmdSaveAs_Click(Index As Integer): On Error Resume Next
     End If
     
     If newName$ = "" Then Exit Sub
-    
-    'Check if the file exists.
-    If fileExists(newName$) Then
-        result = MsgBox("That file exists. Are you sure you want to overwrite it?", vbYesNo + vbExclamation + vbDefaultButton2)
-        If result = vbNo Then Exit Sub
-    End If
-    
+     
     'Kill the file and copy the working file across.
     ChDir (currentDir$)
     Kill (newName$)

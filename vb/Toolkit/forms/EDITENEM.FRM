@@ -1075,10 +1075,7 @@ Private Sub mnusaveas_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    If fileExists(filename(1)) Then
-        bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
-        If bb = 7 Then Exit Sub
-    End If
+
     enemylist(activeEnemyIndex).eneFile$ = antiPath$
     Call saveEnemy(filename$(1), enemylist(activeEnemyIndex).theData)
     activeEnemy.Caption = LoadStringLoc(806, "Edit Enemy") + " (" + antiPath$ + ")"

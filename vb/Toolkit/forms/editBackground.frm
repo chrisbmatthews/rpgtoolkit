@@ -956,10 +956,7 @@ Private Sub mnusaveas_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    If fileExists(filename(1)) Then
-        bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
-        If bb = 7 Then Exit Sub
-    End If
+
     bkgList(activeBkgIndex).filename = antiPath$
     Call saveBackground(filename$(1), bkgList(activeBkgIndex).theData)
     activeBackground.Caption = LoadStringLoc(1435, "Edit Background") + " (" + antiPath$ + ")"

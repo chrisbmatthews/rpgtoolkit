@@ -598,7 +598,7 @@ Private Sub Form_Activate()
     Set activeForm = Me
     activeTileBmpIndex = dataIndex
     Call hideAllTools
-    tkMainForm.bottomFrame.Visible = True
+    tkMainForm.bBar.Visible = True
     tkMainForm.tileBmpExtras.Visible = True
     tkMainForm.tilebmpTools.Visible = True
     tkMainForm.tilebmpTools.Top = tkMainForm.toolTop
@@ -664,11 +664,6 @@ Private Sub mnusaveas_Click()
     End If
     ChDir (currentDir$)
     tileBmpList(activeTileBmpIndex).needUpdate = False
-
-    If fileExists(filename(1)) Then
-        bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
-        If bb = 7 Then Exit Sub
-    End If
     
     Call SaveTileBitmap(filename$(1), tileBmpList(activeTileBmpIndex).theData)
     tileBmpList(activeTileBmpIndex).filename = antiPath$

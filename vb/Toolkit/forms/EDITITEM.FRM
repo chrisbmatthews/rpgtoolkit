@@ -766,7 +766,7 @@ Public Sub saveFile()
         Call saveasmnu_Click
         Exit Sub
     End If
-    Call saveitem(projectPath & itmPath & filename(2), itemList(activeItemIndex).theData)
+    Call saveItem(projectPath & itmPath & filename(2), itemList(activeItemIndex).theData)
 End Sub
 
 '=========================================================================
@@ -916,7 +916,7 @@ Private Sub infofill()
 
     Check1.value = itemList(activeItemIndex).theData.keyItem
     
-    Text3.Text = itemList(activeItemIndex).theData.ITMDescription
+    Text3.Text = itemList(activeItemIndex).theData.itmDescription
 
     Exit Sub
 'Begin error handling code:
@@ -1011,12 +1011,7 @@ Private Sub saveasmnu_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    If fileExists(filename(1)) Then
-        Dim bb As VbMsgBoxResult
-        bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
-        If bb = 7 Then Exit Sub
-    End If
-    Call saveitem(filename$(1), itemList(activeItemIndex).theData)
+    Call saveItem(filename$(1), itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemFile$ = antiPath$
     activeItem.Caption = LoadStringLoc(805, "Item Editor") + " (" + antiPath$ + ")"
     itemList(activeItemIndex).itemNeedUpdate = False
@@ -1030,7 +1025,7 @@ Private Sub savemnu_Click()
     On Error Resume Next
     filename(2) = itemList(activeItemIndex).itemFile
     If filename(2) = "" Then saveasmnu_Click: Exit Sub
-    Call saveitem(projectPath & itmPath & filename(2), itemList(activeItemIndex).theData)
+    Call saveItem(projectPath & itmPath & filename(2), itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemNeedUpdate = False
 End Sub
 
@@ -1048,7 +1043,7 @@ Private Sub Text2_Change()
 End Sub
 Private Sub Text3_Change()
     On Error Resume Next
-    itemList(activeItemIndex).theData.ITMDescription = Text3.Text
+    itemList(activeItemIndex).theData.itmDescription = Text3.Text
 End Sub
 
 '=========================================================================

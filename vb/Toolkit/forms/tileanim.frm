@@ -627,11 +627,7 @@ Private Sub saveasmnu_Click()
     ChDir (currentDir)
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
     If filename(1) = "" Then Exit Sub
-    If fileExists(filename(1)) Then
-        Dim result As VbMsgBoxResult
-        result = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
-        If result = vbNo Then Exit Sub
-    End If
+
     Call saveTileAnm(filename(1), tileAnmList(activeTileAnmIndex).theData)
     animationList(activeAnimationIndex).animFile = antiPath
     Me.Caption = LoadStringLoc(1814, "Create Animated Tile") + " (" + antiPath$ + ")"

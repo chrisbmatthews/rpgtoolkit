@@ -2450,30 +2450,30 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single
         ' make sure all menu items are enabled
         With mnuPop_Type_T
             For i = 0 To 5
-                .Item(i).Enabled = True
+                .item(i).Enabled = True
             Next i
         End With
         With mnuPop_Type_L
             For i = 11 To 18
-                .Item(i).Enabled = True
+                .item(i).Enabled = True
             Next i
         End With
         
         ' disable current tile type
-        If boardList(activeBoardIndex).currentTileType < 11 Then mnuPop_Type_T.Item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
-        If boardList(activeBoardIndex).currentTileType >= 11 Then mnuPop_Type_L.Item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
+        If boardList(activeBoardIndex).currentTileType < 11 Then mnuPop_Type_T.item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
+        If boardList(activeBoardIndex).currentTileType >= 11 Then mnuPop_Type_L.item(boardList(activeBoardIndex).theData.tiletype(xx, yy, boardList(activeBoardIndex).currentLayer)).Enabled = False
         
         ' setup popup menu
         If boardList(activeBoardIndex).theData.bSizeL = 4 Then
             With mnuPop_Type_L
                 For i = 15 To 18
-                    .Item(i).Visible = False
+                    .item(i).Visible = False
                 Next i
             End With
         Else
             With mnuPop_Type_L
                 For i = 15 To 18
-                    .Item(i).Visible = True
+                    .item(i).Visible = True
                 Next i
             End With
         End If
@@ -2725,6 +2725,7 @@ Private Sub Form_Activate(): On Error Resume Next
     tkMainForm.boardTools.Visible = True
     tkMainForm.boardTools.Top = tkMainForm.toolTop
     tkMainForm.bBar.Visible = True
+    tkMainForm.frmBoardExtras.Visible = True
     
     tkMainForm.boardToolbar.Display.Refresh
     
@@ -2895,7 +2896,6 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
         tkMainForm.popButton(3).Visible = False
         tkMainForm.pTools.Visible = False
         tkMainForm.bBar.Visible = False
-        tkMainForm.bottomFrame.Visible = True
     End If
 
     Call hideAllTools
@@ -3211,12 +3211,6 @@ Private Sub savebrdasmnu_click(): On Error Resume Next
     
     ' if no filename entered
     If filename$(1) = "" Then Exit Sub
-    
-    ' confirm user wants to overwrite file
-    If fileExists(filename(1)) Then
-        bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
-        If bb = 7 Then Exit Sub
-    End If
     
     ' save board
     Call saveBoard(filename$(1), boardList(activeBoardIndex).theData)

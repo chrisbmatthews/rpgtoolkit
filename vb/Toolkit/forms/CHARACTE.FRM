@@ -1338,7 +1338,7 @@ Public Sub saveFile()
             Call scharasmnu_Click
             Exit Sub
         End If
-        Call savechar(projectPath$ + temPath$ + filename$(2), playerList(activePlayerIndex).theData)
+        Call saveChar(projectPath$ + temPath$ + filename$(2), playerList(activePlayerIndex).theData)
     'End If
 
     Exit Sub
@@ -1356,7 +1356,7 @@ Public Sub openFile(file$)
     antiPath$ = absNoPath(file$)
     FileCopy filename$(1), projectPath$ + temPath$ + antiPath$
     Call clearchar
-    Call openchar(filename$(1), playerList(activePlayerIndex).theData)
+    Call openChar(filename$(1), playerList(activePlayerIndex).theData)
     activePlayer.Caption = LoadStringLoc(804, "Character Editor") + "  (" + antiPath$ + ")"
     playerList(activePlayerIndex).charFile$ = antiPath$
     namedefault.value = False
@@ -1842,7 +1842,7 @@ Private Sub savecharmenu_Click()
     On Error GoTo ErrorHandler
     filename$(2) = playerList(activePlayerIndex).charFile$
     If filename$(2) = "" Then Call scharasmnu_Click: Exit Sub
-    Call savechar(projectPath$ + temPath$ + filename$(2), playerList(activePlayerIndex).theData)
+    Call saveChar(projectPath$ + temPath$ + filename$(2), playerList(activePlayerIndex).theData)
     playerList(activePlayerIndex).charNeedUpdate = False
 
     Exit Sub
@@ -1869,12 +1869,8 @@ Private Sub scharasmnu_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    If fileExists(filename(1)) Then
-        bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
-        If bb = 7 Then Exit Sub
-    End If
     
-    Call savechar(filename$(1), playerList(activePlayerIndex).theData)
+    Call saveChar(filename$(1), playerList(activePlayerIndex).theData)
     playerList(activePlayerIndex).charFile$ = antiPath$
     activePlayer.Caption = LoadStringLoc(804, "Character Editor") + " (" + antiPath$ + ")"
     playerList(activePlayerIndex).charNeedUpdate = False

@@ -704,11 +704,7 @@ Private Sub saveasmnu_Click()
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     
     If filename$(1) = "" Then Exit Sub
-    If fileExists(filename(1)) Then
-        bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
-        If bb = 7 Then Exit Sub
-    End If
-    
+
     Call saveStatus(filename$(1), statusEffectList(activeStatusEffectIndex).theData)
     statusEffectList(activeStatusEffectIndex).statusFile$ = antiPath$
     activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + antiPath$ + ")"

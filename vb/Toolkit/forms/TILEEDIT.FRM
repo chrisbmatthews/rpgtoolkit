@@ -1135,7 +1135,7 @@ Private Sub Form_Activate(): On Error GoTo ErrorHandler
     'Hide tools/extra's
     Call hideAllTools
     'Show the ones we need
-    tkMainForm.bottomFrame.Visible = True
+    tkMainForm.bBar.Visible = True
     tkMainForm.tileExtras.Visible = True
     tkMainForm.tileTools.Visible = True
     tkMainForm.tileTools.Top = tkMainForm.toolTop
@@ -2124,11 +2124,7 @@ Private Sub savetile2_Click(): On Error Resume Next
     Else
     
         '.gph
-        If fileExists(filename(1)) Then
-            Dim bb As VbMsgBoxResult
-            bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
-            If bb = vbNo Then Exit Sub
-        End If
+
         Call saveTile(filename(1))
         openTileEditorDocs(indice).tileName = antiPath
         Caption = LoadStringLoc(801, "Tile Editor") + " (" + antiPath$ + ")"

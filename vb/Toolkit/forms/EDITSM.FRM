@@ -938,10 +938,6 @@ Private Sub saveasmnu_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    If fileExists(filename(1)) Then
-        bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
-        If bb = 7 Then Exit Sub
-    End If
     Call saveSpecialMove(filename$(1), specialMoveList(activeSpecialMoveIndex).theData)
     specialMoveList(activeSpecialMoveIndex).smFile$ = antiPath$
     activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") + " (" + antiPath$ + ")"
