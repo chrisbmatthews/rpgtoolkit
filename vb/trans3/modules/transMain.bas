@@ -44,14 +44,14 @@ Public Sub Main()
     Call initDefaults
 
     'Get a main filename
-    Dim mainFile As String
-    mainFile = getMainFilename()
+    Dim mainfile As String
+    mainfile = getMainFilename()
 
     'If we got one
-    If mainFile <> "" Then
+    If mainfile <> "" Then
 
         'Open the main file
-        Call openMain(mainFile, mainMem)
+        Call openMain(mainfile, mainMem)
 
         'Startup
         Call openSystems
@@ -60,6 +60,9 @@ Public Sub Main()
         Call host.mainEventLoop
 
     End If
+
+    'Force everything to be unloaded
+    End
 
 End Sub
 
@@ -133,8 +136,8 @@ Private Function getMainFilename() As String
         ElseIf UBound(args) = 1 Then
 
             'run program
-            mainFile = gamPath & args(0)
-            Call openMain(mainFile, mainMem)
+            mainfile = gamPath & args(0)
+            Call openMain(mainfile, mainMem)
             Call openSystems(True)
             Call runProgram(projectPath & prgPath & args(1))
             Call closeSystems
