@@ -51,7 +51,7 @@ Dim TimeToColor As Double
 Dim X As Long
 
 Dim currentObject As RichTextBox
-Set currentObject = activeRPGCode.codeForm
+Set currentObject = activeRPGCode.CodeForm
 
 Call GetLineColors
 
@@ -114,19 +114,19 @@ Dim moveFromStart As Long
 ' Set the active code text box as CurrentObject
 
 Dim currentObject As RichTextBox
-Set currentObject = activeRPGCode.codeForm
+Set currentObject = activeRPGCode.CodeForm
 
-SpaceLessLine = LTrim( _
+SpaceLessLine = _
  replace(replace(lineText, " ", ""), vbTab, "") _
- ) ': CurrentObject.SelText = RTrim(CurrentObject.SelText) ' Remove spaces, tabs and line feed from the line of code
+ ': CurrentObject.SelText = RTrim(CurrentObject.SelText) ' Remove spaces, tabs and line feed from the line of code
 
-If Mid(SpaceLessLine, 1, 2) = "//" Then
+If Mid$(SpaceLessLine, 1, 2) = "//" Then
     ColorSelection currentObject, 1
     If Not noBookmarks Then addBookmark lineText
     Exit Function
 End If
 
-Select Case Mid(SpaceLessLine, 1, 1) ' Check first character of the line
+Select Case Mid$(SpaceLessLine, 1, 1) ' Check first character of the line
 Case "@"
     ColorSelection currentObject, 0
 Case "*"
@@ -223,20 +223,24 @@ End Function
 
 Private Sub addBookmark(ByVal lineText As String)
 
-    'Bookmarks...
-    Dim af As rpgcodeedit
-    Set af = tkMainForm.activeForm
-    With af
-        Select Case LCase(GetCommandName(Trim(lineText)))
-            Case "label": .addBookmark lineText, .cboLabelBookmarks
-            'Case "method": .AddBookmark RemoveNumberSignIfThere(lineText), .cboMethodBookmarks
-            Case "*": .addBookmark lineText, .cboCommentBookmarks
-        End Select
-    End With
+    If (InStr(1, lineText, ":") <> 0) Or (InStr(1, lineText, "*") <> 0) Or (InStr(1, lineText, "//") <> 0) Or (InStr(1, LCase$(lineText), "method") <> 0) Then
 
-    If LCase(GetCommandName(Trim("#" & RemoveNumberSignIfThere(lineText)))) = "method" _
-        Then af.addBookmark _
-        RemoveNumberSignIfThere(lineText), af.cboMethodBookmarks
+        'Bookmarks...
+        Dim af As rpgcodeedit
+        Set af = tkMainForm.activeForm
+        With af
+            Select Case LCase$(GetCommandName(Trim(lineText)))
+                Case "label": .addBookmark lineText, .cboLabelBookmarks
+                'Case "method": .AddBookmark RemoveNumberSignIfThere(lineText), .cboMethodBookmarks
+                Case "*": .addBookmark lineText, .cboCommentBookmarks
+            End Select
+        End With
+
+        If LCase$(GetCommandName(Trim("#" & RemoveNumberSignIfThere(lineText)))) = "method" _
+            Then af.addBookmark _
+            RemoveNumberSignIfThere(lineText), af.cboMethodBookmarks
+
+    End If
 
     'Remove trailing spaces...
     'CurrentObject.SelText = RTrim(CurrentObject.SelText)
@@ -252,7 +256,7 @@ Function ColorSection(SectionStart As Double, SectionLen As Double, SectionColor
 
  'Access the RTF box...
  Dim currentObject As RichTextBox
- Set currentObject = tkMainForm.activeForm.codeForm
+ Set currentObject = tkMainForm.activeForm.CodeForm
  
  'Select the text...
  currentObject.selStart = SectionStart
@@ -279,7 +283,7 @@ Public Sub GotoLine(ByVal lineText As String)
  Dim a As Long
  
  Dim currentObject As RichTextBox
- Set currentObject = activeRPGCode.codeForm
+ Set currentObject = activeRPGCode.CodeForm
 
  With currentObject
  
@@ -338,7 +342,7 @@ Public Sub ReColorLine(Optional ByRef blackLine As Boolean = -2, _
  Dim b As Long
  
  Dim currentObject As RichTextBox
- Set currentObject = activeRPGCode.codeForm
+ Set currentObject = activeRPGCode.CodeForm
  
  With currentObject 'cf.codeform
  
@@ -347,7 +351,7 @@ Public Sub ReColorLine(Optional ByRef blackLine As Boolean = -2, _
   'enterKey = vbCrLf
   'Find the start of the line...
   'For a = (.selStart - 1) To 1 Step -1
-  ' If Mid(.text, a + 1, 1) = Mid(enterKey, 2, 1) Then Exit For
+  ' If mid$(.text, a + 1, 1) = mid$(enterKey, 2, 1) Then Exit For
   'Next a
   'Find the end of the line...
   'b = InStr(.selStart, .text & vbCrLf, enterKey, vbTextCompare)
@@ -442,7 +446,7 @@ End Sub
 Private Sub makeLineBlack(ByVal lineText As String)
  'Take away its bookmark (if there is one...)
  With activeRPGCode
-  Select Case LCase(GetCommandName(AddNumberSignIfNeeded(lineText)))
+  Select Case LCase$(GetCommandName(AddNumberSignIfNeeded(lineText)))
    Case "label": .removeBookmark lineText, .cboLabelBookmarks
    Case "method": .removeBookmark RemoveNumberSignIfThere(lineText), .cboMethodBookmarks
    Case "*": .removeBookmark lineText, .cboCommentBookmarks
@@ -494,7 +498,7 @@ Public Function AddNumberSignIfNeeded(ByVal txt As String) As String
    build = "" 'We aren't passing the same text back to empty this
    For a = 1 To Len(txt) 'For each character...
     If a = " " Or a = vbTab Then    'Check for indentation in the code,
-     build = build & Mid(txt, a, 1) 'we don't want to touch this.
+     build = build & Mid$(txt, a, 1) 'we don't want to touch this.
     Else
      'This is where the indentation ends!
      If a = "#" Then
@@ -503,7 +507,7 @@ Public Function AddNumberSignIfNeeded(ByVal txt As String) As String
       Exit For 'Exit the loop to save time.
      End If
      'Stick on the number sign... AND the rest of the text...
-     build = build & "#" & Mid(txt, a, Len(txt) - a + 1)
+     build = build & "#" & Mid$(txt, a, Len(txt) - a + 1)
      'Our job here is done; exit the loop...
      Exit For
     End If
