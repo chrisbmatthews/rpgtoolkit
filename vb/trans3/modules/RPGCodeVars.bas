@@ -421,17 +421,17 @@ End Function
 Public Function getRedirect(ByVal originalMethod As String) As String
 
     On Error Resume Next
-    Dim length As Long
+    Dim Length As Long
     
     originalMethod = UCase$(replace(originalMethod, "#", ""))
     If redirectExists(originalMethod) Then
         Dim getStr As String * 4048
-        length = RPGCGetRedirect(originalMethod, getStr)
-        If length = 0 Then
+        Length = RPGCGetRedirect(originalMethod, getStr)
+        If Length = 0 Then
             getRedirect = originalMethod
             Exit Function
         End If
-        getRedirect = Mid$(getStr, 1, length)
+        getRedirect = Mid$(getStr, 1, Length)
     Else
         getRedirect = vbNullString
     End If
@@ -446,14 +446,14 @@ Public Function getRedirectName(ByVal Index As Long) As String
     On Error Resume Next
     
     Dim max As Long
-    Dim length As Long
+    Dim Length As Long
     max = RPGCCountRedirects()
     If Index > max - 1 Or Index < 0 Then
         getRedirectName = vbNullString
     Else
         Dim inBuf As String * 4024
-        length = RPGCGetRedirectName(Index, inBuf)
-        getRedirectName = Mid$(inBuf, 1, length)
+        Length = RPGCGetRedirectName(Index, inBuf)
+        getRedirectName = Mid$(inBuf, 1, Length)
     End If
 
 End Function
@@ -802,7 +802,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
     Dim numA As Double      ' Numerical value
     Dim litA As String      ' Literal value
     Dim p As Long           ' For loop control variable
-    Dim length As Long      ' Length of text
+    Dim Length As Long      ' Length of text
     Dim part As String      ' A character
     Dim checkIt As Boolean  ' In quotes?
     Dim newPos As Long      ' New position
@@ -866,10 +866,10 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                             '------
 
             ' Get the length of the text
-            length = Len(Text)
+            Length = Len(Text)
 
             ' Check if text is in quotes
-            For p = 1 To length
+            For p = 1 To Length
                 If Mid$(Text, p, 1) = ("""") Then
                     checkIt = True
                     Exit For
@@ -878,13 +878,13 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
 
             If (checkIt) Then
                 ' It is!
-                For p = 1 To length
+                For p = 1 To Length
                     If Mid$(Text, p, 1) = ("""") Then
                         newPos = p
                         Exit For
                     End If
                 Next p
-                For p = (newPos + 1) To (length)
+                For p = (newPos + 1) To (Length)
                     part = Mid$(Text, p, 1)
                     If ((part = ("""")) Or (LenB(part) = 0)) Then
                         lit = sendText
@@ -965,14 +965,14 @@ End Sub
 Public Function GetNumName(ByVal Index As Integer, ByVal heapID As Long) As String
     On Error Resume Next
     
-    Dim max As Long, length As Long
+    Dim max As Long, Length As Long
     max = RPGCCountNum(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetNumName = vbNullString
     Else
         Dim inBuf As String * 4024
-        length = RPGCGetNumName(Index, inBuf, heapID)
-        GetNumName = Mid$(inBuf, 1, length)
+        Length = RPGCGetNumName(Index, inBuf, heapID)
+        GetNumName = Mid$(inBuf, 1, Length)
     End If
 End Function
 
@@ -982,14 +982,14 @@ End Function
 Public Function GetLitName(ByVal Index As Integer, ByVal heapID As Long) As String
     On Error Resume Next
     
-    Dim max As Long, length As Long
+    Dim max As Long, Length As Long
     max = RPGCCountLit(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetLitName = vbNullString
     Else
         Dim inBuf As String * 4024
-        length = RPGCGetLitName(Index, inBuf, heapID)
-        GetLitName = Mid$(inBuf, 1, length)
+        Length = RPGCGetLitName(Index, inBuf, heapID)
+        GetLitName = Mid$(inBuf, 1, Length)
     End If
 End Function
 
@@ -1014,40 +1014,66 @@ End Function
 ' Return a numerical variable belonging to a program's value
 '=========================================================================
 Public Function SearchNumVar(ByVal varname As String, ByRef thePrg As RPGCodeProgram) As Double
-    On Error Resume Next
-    'first search the local heap...
-    If thePrg.currentHeapFrame >= 0 Then
-        If numVarExists(varname, thePrg.heapStack(thePrg.currentHeapFrame)) Then
-            'try local heap...
+
+    ' If actkrt3 errors out, we'll just check the global heap
+    On Error GoTo invalidFrame
+
+    If (thePrg.currentHeapFrame >= 0) Then
+        If (numVarExists(varname, thePrg.heapStack(thePrg.currentHeapFrame))) Then
+            ' Found on the local heap
             SearchNumVar = GetNumVar(varname, thePrg.heapStack(thePrg.currentHeapFrame))
         Else
-            'try global heap...
+            ' Not found: use the global heap
             SearchNumVar = GetNumVar(varname, globalHeap)
         End If
     Else
-        'obtain from global heap...
+        ' No local heap: use global heap
         SearchNumVar = GetNumVar(varname, globalHeap)
     End If
+
+    Exit Function
+
+invalidFrame:
+    
+    ' Don't recurse
+    On Error Resume Next
+
+    ' Check the global heap:
+    SearchNumVar = GetNumVar(varname, globalHeap)
+
 End Function
 
 '=========================================================================
 ' Return a literal variable belonging to a program's value
 '=========================================================================
 Public Function SearchLitVar(ByVal varname As String, ByRef thePrg As RPGCodeProgram) As String
-    On Error Resume Next
-    'first search the local heap...
-    If thePrg.currentHeapFrame >= 0 Then
-        If litVarExists(varname, thePrg.heapStack(thePrg.currentHeapFrame)) Then
-            'try local heap...
+
+    ' If actkrt3 errors out, we'll just check the global heap
+    On Error GoTo invalidFrame
+
+    If (thePrg.currentHeapFrame >= 0) Then
+        If (litVarExists(varname, thePrg.heapStack(thePrg.currentHeapFrame))) Then
+            ' Found on the local heap
             SearchLitVar = GetLitVar(varname, thePrg.heapStack(thePrg.currentHeapFrame))
         Else
-            'try global heap...
+            ' Not found: use the global heap
             SearchLitVar = GetLitVar(varname, globalHeap)
         End If
     Else
-        'obtain from global heap...
+        ' No local heap: use global heap
         SearchLitVar = GetLitVar(varname, globalHeap)
     End If
+
+    Exit Function
+
+invalidFrame:
+    
+    ' Don't recurse
+    On Error Resume Next
+
+    ' Check the global heap:
+    SearchLitVar = GetLitVar(varname, globalHeap)
+
 End Function
 
 '=========================================================================
@@ -1068,10 +1094,10 @@ Public Function variType(ByVal var As String, ByVal heapID As Long) As Long
 
     On Error Resume Next
     
-    Dim a As String, length As Long, pos As Long, typeIt As Long, part As String
+    Dim a As String, Length As Long, pos As Long, typeIt As Long, part As String
     a$ = var$
-    length = Len(a$)
-    For pos = 1 To length
+    Length = Len(a$)
+    For pos = 1 To Length
         part$ = Mid$(a$, pos, 1)
         If part$ = "$" Then typeIt = 1
         If part$ = "!" Then typeIt = 2
@@ -1360,14 +1386,14 @@ End Function
 '=========================================================================
 Public Function GetLitVar(ByVal varname As String, ByVal heapID As Long) As String
     On Error Resume Next
-    Dim l As Long, length As Long
+    Dim l As Long, Length As Long
     
     l = RPGCGetLitVarLen(UCase$(varname), heapID)
     If l > 0 Then
         l = l + 1
         Dim getStr As String * 4048
-        length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
-        GetLitVar = Mid$(getStr, 1, length)
+        Length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
+        GetLitVar = Mid$(getStr, 1, Length)
     Else
         GetLitVar = vbNullString
     End If

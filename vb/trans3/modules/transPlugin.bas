@@ -1,17 +1,17 @@
 Attribute VB_Name = "transPlugin"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'plug in manager
-'added in 2.14
-'(Sept 28, 2000)
-'Updated for 3.0 (beginning Nov 14, 2002)
+'=========================================================================
+' Plugin callbacks
+'=========================================================================
+
 Option Explicit
 
-
-
-'callbacks:
+'=========================================================================
 '0-CBRpgCode(byval rpgcodeCommand as string)
 '1-CBGetString(ByVal varName As String) As String
 '2-CBGetNumerical(ByVal varName As String) As Double
@@ -57,7 +57,6 @@ Option Explicit
 '42-CBSetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arrayPos2 As Long, ByVal arrayPos3 As Long, ByVal newVal As String)
 '43-CBGetHwnd(ByVal infoCode As Long, ByVal eneSlot As Long) As Long
 '44-CBRefreshScreen() As Long
-'version 3.0
 '45-CBCreateCanvas(ByVal width As Long, ByVal height As Long) As Long
 '46-CBDestroyCanvas(ByVal canvasID As Long) As Long
 '47-CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) As Long
@@ -146,12 +145,19 @@ Option Explicit
 '130-Sub CBcall processevent()
 '131-Sub CBFighterAddStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
 '132-Sub CBFighterRemoveStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
+'=========================================================================
 
+'=========================================================================
+' Globals
+'=========================================================================
 Public plugtest As Long
+Public obtainedDC As Long
+
+'=========================================================================
+' Members
+'=========================================================================
 Private specialMoveList() As String
 Private plugItems() As TKItem
-
-Public obtainedDC As Long
 
 Function CBGetHwnd() As Long
     'obtain the hwnd of the mainForm window
@@ -168,19 +174,16 @@ errorhandler:
     Resume Next
 End Function
 
+'=========================================================================
+' Initialize all the plugins
+'=========================================================================
+Public Sub BeginPlugins()
 
-Sub BeginPlugins()
-    'calls tkplugbegin for each plugin...
-    On Error GoTo errorhandler
-    
-    'call tracestring("In BeginPlugins")
     Dim t As Long
     For t = 0 To UBound(mainMem.plugins)
         If LenB(mainMem.plugins(t)) <> 0 Then
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
-
-            ' ! MODIFIED BY KSNiloc...
             If isComPlugin(plugName) Then
                 Call comPlugin(plugName).Initialize
             Else
@@ -189,55 +192,43 @@ Sub BeginPlugins()
         End If
     Next t
 
-    'call tracestring("Done BeginPlugins")
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    'call tracestring("BeginPlugins error")
-    
-    Resume Next
 End Sub
 
-
-Function CBRefreshScreen() As Long
-    'refresh the screen (redraw)
-    'callback 44
-    
+'=========================================================================
+' Refresh the screen
+'=========================================================================
+Public Function CBRefreshScreen() As Long
     Call DXRefresh
 End Function
 
-Sub EndPlugins()
-    'calls tkplugend for each plugin...
-    On Error GoTo errorhandler
-    
+'=========================================================================
+' Shut down the plugin system
+'=========================================================================
+Public Sub EndPlugins()
+
     Dim t As Long
     For t = 0 To UBound(mainMem.plugins)
-        If LenB(mainMem.plugins(t)) <> 0 Then
+        If (LenB(mainMem.plugins(t)) <> 0) Then
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
-            ' ! MODIFIED BY KSNiloc...
-            If isComPlugin(plugName) Then
-                comPlugin(plugName).Terminate
+            If (isComPlugin(plugName)) Then
+                Call comPlugin(plugName).Terminate
             Else
-                PLUGEnd plugName
+                Call PLUGEnd(plugName)
             End If
         End If
     Next t
-    
-    Call PLUGShutdownSystem
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    Call PLUGShutdownSystem
+    Call releaseComPlugins
+
 End Sub
 
-Sub generateCallbacks(cbList() As Long)
-    'generate the callbacks for us...
-    On Error GoTo errorhandler
-    
+'=========================================================================
+' Generate an array of callback addresses (only required for backwards
+' compatibility)
+'=========================================================================
+Private Sub generateCallbacks(ByRef cbList() As Long)
     cbList(0) = GFXFunctionPtr(AddressOf CBRpgCode)
     cbList(1) = GFXFunctionPtr(AddressOf CBGetString)
     cbList(2) = GFXFunctionPtr(AddressOf CBGetNumerical)
@@ -283,7 +274,6 @@ Sub generateCallbacks(cbList() As Long)
     cbList(42) = GFXFunctionPtr(AddressOf CBSetBoardString)
     cbList(43) = GFXFunctionPtr(AddressOf CBGetHwnd)
     cbList(44) = GFXFunctionPtr(AddressOf CBRefreshScreen)
-    '3.0
     cbList(45) = GFXFunctionPtr(AddressOf CBCreateCanvas)
     cbList(46) = GFXFunctionPtr(AddressOf CBDestroyCanvas)
     cbList(47) = GFXFunctionPtr(AddressOf CBDrawCanvas)
@@ -372,101 +362,81 @@ Sub generateCallbacks(cbList() As Long)
     cbList(130) = GFXFunctionPtr(AddressOf CBDoEvents)
     cbList(131) = GFXFunctionPtr(AddressOf CBFighterAddStatusEffect)
     cbList(132) = GFXFunctionPtr(AddressOf CBFighterRemoveStatusEffect)
-      
-    Exit Sub
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
-Sub InitPlugins()
-    'init the plugins
-    'first, ask if we should use the plugins...
-    'determine if game actually uses plugins...
-    On Error GoTo errorhandler
-    'call tracestring("In InitPlugins")
-      
-    'first, set up the callbacks...
+
+'=========================================================================
+' Initiate the plugin system
+'=========================================================================
+Public Sub InitPlugins()
+
+    ' Create the callback list
     ReDim cbList(255) As Long
     Call generateCallbacks(cbList())
-    ReDim plugItems(0)
-    
-    'array length is max index + 1
     Call PLUGInitSystem(cbList(0), 133)
-    
-    'call tracestring("Done InitPlugins")
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    'call tracestring("Initplugins error")
-    
-    Resume Next
+    ' Dimension the private plugin item array
+    ReDim plugItems(0)
+
 End Sub
 
+'=========================================================================
+' Query all plugins to see if they support a command
+'=========================================================================
 Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef retval As RPGCODE_RETURN) As Boolean
-    'mname$ is the name of a method to call.  text$ is the full command.
-    'this fuction checks if a plugin can perform this command.
-    'if it can, the command is performed and we return true.
-    'we return false else.
-    On Error GoTo errorhandler
    
     Dim t As Long
-    Dim aa As Long
     For t = 0 To UBound(mainMem.plugins)
-        If LenB(mainMem.plugins(t)) <> 0 Then
-            Dim tt As Long
-           
+
+        If (LenB(mainMem.plugins(t)) <> 0) Then
+
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
 
-            ' ! MODIFIED BY KSNiloc...
-            If isComPlugin(plugName) Then
-                Debug.Print comPlugin(plugName) Is Nothing
-                tt = comPlugin(plugName).plugType(PT_RPGCODE)
+            Dim com As Boolean, doesRPGCode As Boolean, cobj As CComPlugin
+            com = isComPlugin(plugName)
+
+            If (com) Then
+                Set cobj = comPlugin(plugName)
+                doesRPGCode = (cobj.plugType(PT_RPGCODE) = 1)
             Else
-                tt = plugType(plugName, PT_RPGCODE)
+                doesRPGCode = (plugType(plugName, PT_RPGCODE) = 1)
             End If
-           
-            If tt = 1 Then
 
-                ' ! MODIFIED BY KSNiloc...
-                If isComPlugin(plugName) Then
-                    aa = comPlugin(plugName).Query(LCase$(mName))
+            If (doesRPGCode) Then
+
+                Dim canHandle As Boolean
+                If (com) Then
+                    canHandle = (cobj.Query(LCase$(mName)) = 1)
                 Else
-                    aa = PLUGQuery(plugName, LCase$(mName$))
+                    canHandle = (PLUGQuery(plugName, LCase$(mName$)) = 1)
                 End If
-                If aa = 1 Then
-                    'the plugin can handle the command!
-                    'so, pass execution to the plugin!
 
-                    ' ! MODIFIED BY KSNiloc...
-                    If isComPlugin(plugName) Then
-                        aa = comPlugin(plugName).Execute(Text, retval.dataType, retval.lit, retval.num, retval.usingReturnData)
+                If (canHandle) Then
+
+                    Dim exec As Boolean
+                    If (com) Then
+                        exec = (cobj.Execute(Text, retval.dataType, retval.lit, retval.num, retval.usingReturnData) = 1)
                     Else
-                        aa = PLUGExecute(plugName, Text$)
+                        exec = (PLUGExecute(plugName, Text$) = 1)
                     End If
-                    If aa = 0 Then
-                        Call debugger("Error: Plugin could not execute command!-- " + Text$)
+
+                    If (Not exec) Then
+                        ' Plugin errored out
+                        Call debugger("Error: Plugin could not execute command!-- " & Text$)
                     End If
+
+                    ' All's good
                     QueryPlugins = True
                     Exit Function
+
                 End If
+
             End If
+
         End If
+
     Next t
-   
-    'couldn't do it!
-    QueryPlugins = False
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 Sub CBRpgCode(ByVal rpgcodeCommand As String)
@@ -1822,34 +1792,21 @@ errorhandler:
     Resume Next
 End Function
 
+'=========================================================================
+' Get the value of a literal parameter
+'=========================================================================
+Public Function CBGetStringElementValue(ByVal element As String) As String
 
-Function CBGetStringElementValue(ByVal rpgcodeCommand As String) As String
-    'callback 28
-    'calls GetValue (assuming string)
-    'returns the value of one of the elements from the brackets.
-    'if the element is a string variable, it returns the contents
-    'of the variable.  if it's a string constant, it returns the
-    'constant.
-    On Error GoTo errorhandler
-    Dim lit As String
-    Dim num As Double
-    Dim a As Long
-    Dim aProgram As RPGCodeProgram
-    ReDim aProgram.program(10)
-    aProgram.boardNum = -1
-    a = getValue(rpgcodeCommand, lit$, num, aProgram)
-    CBGetStringElementValue = lit$
+    ' Get the element's value
+    Dim lit As String, num As Double, prg As RPGCodeProgram
+    Call getValue(element, lit, num, prg)
 
-    Exit Function
+    ' Return it
+    CBGetStringElementValue = lit
 
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
-
-Function CBGetNumElementValue(ByVal rpgcodeCommand As String) As Double
+Public Function CBGetNumElementValue(ByVal rpgcodeCommand As String) As Double
     'callback 29
     'calls GetValue (assuming number)
     'returns the value of one of the elements from the brackets.
