@@ -15,7 +15,7 @@ Option Explicit
 ' Integral variables
 '=========================================================================
 
-#Const enableTracer = True          'tracer is enabled?
+#Const enableTracer = False         'tracer is enabled?
 
 #If (enableTracer) Then
 Private traceFile As String         'file to save to
