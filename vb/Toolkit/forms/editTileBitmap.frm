@@ -83,11 +83,11 @@ Begin VB.Form editTileBitmap
          Shortcut        =   ^O
       End
       Begin VB.Menu mnuSave 
-         Caption         =   "Save"
+         Caption         =   "Save Tile Bitmap"
          Shortcut        =   ^S
       End
       Begin VB.Menu mnuSaveAs 
-         Caption         =   "Save As"
+         Caption         =   "Save Tile Bitmap As..."
          Shortcut        =   ^A
       End
       Begin VB.Menu mnuSaveAll 
@@ -840,12 +840,15 @@ Private Sub mnurpgcodereference_Click()
     Call tkMainForm.rpgcodereferencemnu_Click
 End Sub
 
+Private Sub mnusave_Click()
+    On Error Resume Next
+    Call tkMainForm.savemnu_Click
+End Sub
 
 Private Sub mnusaveall_Click()
     On Error Resume Next
     Call tkMainForm.saveallmnu_Click
 End Sub
-
 
 Private Sub mnuselectlanguage_Click()
     On Error Resume Next
