@@ -14,6 +14,7 @@ Option Explicit
 '=========================================================================
 ' Integral variables
 '=========================================================================
+
 Public Type parameters          'rpgcode parmater structure
     num As Double               '  numerical
     lit As String               '  literal
@@ -21,19 +22,67 @@ Public Type parameters          'rpgcode parmater structure
     dataType As RPGC_DT         '  type returned (lit or num)
 End Type
 
+Private m_mathSigns(21) As String
+Private m_compSigns(9) As String
+
+'=========================================================================
+' Build the sign arrays
+'=========================================================================
+Public Sub buildSignArrays()
+
+    ' Build m_mathSigns
+    m_mathSigns(0) = vbNullChar ' Prefixed NULL
+    m_mathSigns(1) = "|="
+    m_mathSigns(2) = "&="
+    m_mathSigns(3) = "`="
+    m_mathSigns(4) = "%="
+    m_mathSigns(5) = "+="
+    m_mathSigns(6) = "-="
+    m_mathSigns(7) = "++"
+    m_mathSigns(8) = "--"
+    m_mathSigns(9) = "*="
+    m_mathSigns(10) = "/="
+    m_mathSigns(11) = "="
+    m_mathSigns(12) = "+"
+    m_mathSigns(13) = "-"
+    m_mathSigns(14) = "/"
+    m_mathSigns(15) = "*"
+    m_mathSigns(16) = "^"
+    m_mathSigns(17) = "\"
+    m_mathSigns(18) = "|"
+    m_mathSigns(19) = "&"
+    m_mathSigns(20) = "`"
+    m_mathSigns(21) = "%"
+
+    ' Build m_compSigns
+    m_compSigns(0) = vbNullChar ' Prefixed NULL
+    m_compSigns(1) = "~="
+    m_compSigns(2) = "=="
+    m_compSigns(3) = "<="
+    m_compSigns(4) = "=<"
+    m_compSigns(5) = ">="
+    m_compSigns(6) = "=>"
+    m_compSigns(7) = ">"
+    m_compSigns(8) = "<"
+    m_compSigns(9) = "="
+
+End Sub
+
 '=========================================================================
 ' Returns the name of the method from a method delcaration
 '=========================================================================
-Public Function GetMethodName(ByVal Text As String) As String
+Public Function GetMethodName(ByRef Text As String) As String
 
     On Error Resume Next
-    
+
+    '// Passing Text ByRef for preformance related reasons
+
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     Dim Length As Long
     Dim t As Long
     Dim startHere As Long
     Dim mName As String
-    
+
     dataUse$ = Text$
     Length = Len(dataUse$)
     Dim part As String
@@ -81,9 +130,11 @@ End Function
 '=========================================================================
 ' Return content in text after startSymbol is located
 '=========================================================================
-Public Function ParseAfter(ByVal Text As String, ByVal startSymbol As String) As String
+Public Function ParseAfter(ByRef Text As String, ByRef startSymbol As String) As String
 
     On Error Resume Next
+
+    '// Passing Text and startSymbol ByRef for preformance related reasons
 
     Dim Length As Integer
     Dim t As Integer
@@ -108,7 +159,7 @@ Public Function ParseAfter(ByVal Text As String, ByVal startSymbol As String) As
     If foundIt Then
         For t = startAt + 1 To Length
             part = Mid$(Text, t, 1)
-            toRet = toRet + part
+            toRet = toRet & part
         Next t
     End If
     
@@ -118,9 +169,11 @@ End Function
 '=========================================================================
 ' Return content from text until startSymbol is located
 '=========================================================================
-Public Function ParseBefore(ByVal Text As String, ByVal startSymbol As String) As String
+Public Function ParseBefore(ByRef Text As String, ByRef startSymbol As String) As String
 
     On Error Resume Next
+
+    '// Passing Text and startSymbol ByRef for preformance related reasons
 
     Dim Length As Integer
     Dim t As Integer
@@ -139,8 +192,9 @@ Public Function ParseBefore(ByVal Text As String, ByVal startSymbol As String) A
             toRet = toRet & part
         End If
     Next t
-    
+
     ParseBefore = vbNullString
+
 End Function
 
 '=========================================================================
@@ -148,61 +202,42 @@ End Function
 '=========================================================================
 Public Function lowest(ByRef values() As Long, Optional ByRef whichSpot As Long) As Long
     On Error Resume Next
-    Dim a As Long
-    For a = 0 To UBound(values)
-        If a = 0 Then
-            lowest = values(a)
+    Dim idx As Long
+    For idx = 0 To UBound(values)
+        If (idx = 0) Then
+            lowest = values(idx)
             whichSpot = 0
         Else
-            If (values(a) < lowest Or lowest = 0) And values(a) > 0 Then
-                lowest = values(a)
-                whichSpot = a
+            If ((values(idx) < lowest Or lowest = 0) And (values(idx) > 0)) Then
+                lowest = values(idx)
+                whichSpot = idx
             End If
         End If
-    Next a
+    Next idx
 End Function
 
 '=========================================================================
 ' Returns the math function at pos num, optionally including comparsion
 '=========================================================================
-Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional ByVal comparison As Boolean) As String
+Public Function MathFunction(ByRef Text As String, ByVal num As Long, Optional ByVal comparison As Boolean) As String
 
     On Error Resume Next
 
-    Dim signs() As String   'Array of math operators
-    Dim p() As Long         'Positions of those operators
-    Dim whichSpot As Long   'The spot containing the value returned
-    Dim start As Long       'Position to start at in text
-    Dim a As Long           'For loop control variable
-    Dim S As Long           'For loop control variable
+    '// Passing Text ByRef for performance related reasons
 
-    ReDim signs(20)
-    signs(0) = "|="
-    signs(1) = "&="
-    signs(2) = "`="
-    signs(3) = "%="
-    signs(4) = "+="
-    signs(5) = "-="
-    signs(6) = "++"
-    signs(7) = "--"
-    signs(8) = "*="
-    signs(9) = "/="
-    signs(10) = "="
-    signs(11) = "+"
-    signs(12) = "-"
-    signs(13) = "/"
-    signs(14) = "*"
-    signs(15) = "^"
-    signs(16) = "\"
-    signs(17) = "|"
-    signs(18) = "&"
-    signs(19) = "`"
-    signs(20) = "%"
-    If (comparison) Then
-        ReDim Preserve signs(23)
-        signs(21) = "<"
-        signs(22) = ">"
-        signs(23) = "~"
+    Dim signs() As String   ' Array of math operators
+    Dim p() As Long         ' Positions of those operators
+    Dim whichSpot As Long   ' The spot containing the value returned
+    Dim start As Long       ' Position to start at in text
+    Dim a As Long           ' For loop control variable
+    Dim S As Long           ' For loop control variable
+
+    If (Not comparison) Then
+        ' Use m_mathSigns
+        signs = m_mathSigns
+    Else
+        ' Use m_compSigns
+        signs = m_compSigns
     End If
 
     'Dimension p to have room for all the signs
@@ -215,7 +250,7 @@ Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional B
             p(S) = inStrOutsideQuotes(start, Text, signs(S))
         Next S
         start = lowest(p, whichSpot) + 1
-        If a <> num Then
+        If (a <> num) Then
             ReDim p(UBound(signs))
         Else
             MathFunction = signs(whichSpot)
@@ -227,172 +262,218 @@ End Function
 '=========================================================================
 ' Evaluates if the text passed in is true (1) or false (0)
 '=========================================================================
-Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
+Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As Long
 
-    On Error GoTo errorhandler
+    '=========================================================================
+    ' Re-written by Colin [November 13, 2004]
+    ' + Allows math in the text
+    '=========================================================================
 
-    Dim use As String, Length As Long, val1 As String, val2 As String, part As String, p As Long
-    Dim eqtype As String, startAt As Long, equ As String, val1type As Long, val2type As Long, var1type As Long, var2type As Long
+    '// Passing text ByRef for preformance related reasons
 
-    'Text = "Eval( " & Text & " )"
-    'Text = ParseRPGCodeCommand(Text, theProgram)
-    'Text = Trim$(Mid$(Text, 7, Len(Text) - 8))
-   
-    use$ = Text$
-    Length = Len(use$)
-    val1$ = vbNullString
-       
-    Dim andOr() As String
-    Dim checkBoth As Long
-    Dim runThrough As Long
-    Dim stillOK As Boolean
-    Dim c As String
-       
-    For checkBoth = 1 To 4
-    
-        If checkBoth = 1 Then c = "&&"
-        If checkBoth = 2 Then c = " and "
-        If checkBoth = 3 Then c = "||"
-        If checkBoth = 4 Then c = " or "
+    ' Declare a variable to work on
+    Dim str As String
+    str = Trim$(Text)
 
-        'Split up the line...
-        andOr() = Split(LCase$(use), c, , vbTextCompare)
-               
-        If Not UBound(andOr) = 0 Then
-            stillOK = (checkBoth = 1 Or checkBoth = 2)
-            stillOK = (Not (checkBoth = 3 Or checkBoth = 4))
-            For runThrough = 0 To UBound(andOr)
-                Select Case checkBoth
-                
-                    Case 1, 2 ' AND
-                        If evaluate(andOr(runThrough), theProgram) = 0 Then
-                            stillOK = False
-                            Exit For
-                        End If
-                        
-                    Case 3, 4 ' OR
-                        If evaluate(andOr(runThrough), theProgram) = 1 Then
-                            stillOK = True
-                            Exit For
-                        End If
+    ' Check for logic
+    Dim logic(3) As String
+    logic(0) = "&&"
+    logic(1) = " AND "
+    logic(2) = "||"
+    logic(3) = " OR "
 
-                End Select
-                
-            Next runThrough
-            
-            'Return the result...
-            evaluate = booleanToLong(stillOK)
-            
-            'Exit this function...
+    Dim idx As Long
+    For idx = 0 To 3
+
+        ' Split the text
+        Dim parts() As String
+        parts = Split(str, logic(idx), , vbTextCompare) ' vbTextCompare makes things simple, though
+                                                        ' more coding could provide a better
+                                                        ' alternative here.
+
+        ' Check if logic was found
+        Dim partUb As Long
+        partUb = UBound(parts)
+        If (partUb <> 0) Then
+
+            Dim toRet As Long
+
+            ' Set initital toRet value
+            Select Case idx
+                Case 0, 1: toRet = 1 ' Logical AND
+                Case 2, 3: toRet = 0 ' Logical OR
+            End Select
+
+            ' Loop over each part
+            Dim pIdx As Long, doneLoop As Boolean
+            For pIdx = 0 To partUb
+
+                ' Evaluate this part
+                Dim run As Long
+                run = evaluate(parts(pIdx), prg)
+
+                ' Check how toRet should change
+                If ((run = 1) And (Not doneLoop)) Then
+                    Select Case idx
+                        Case 2, 3
+                            ' Fin
+                            toRet = 1
+                            doneLoop = True
+                    End Select
+                Else
+                    Select Case idx
+                        Case 0, 1
+                            ' Fin
+                            toRet = 0
+                            doneLoop = True
+                    End Select
+                End If
+
+            Next pIdx
+
+            ' Return the result
+            evaluate = toRet
             Exit Function
-            
+
         End If
-    Next checkBoth
-   
-    'Get first variable
-    For p = 1 To Length
-        part$ = Mid$(use$, p, 1)
-        If part$ = "=" Or part$ = "~" Or part$ = ">" Or part$ = "<" Then
-            'Found equality operator
-            eqtype$ = part$
-            startAt = p
-            p = Length
-        Else
-            If part$ <> " " Then val1$ = val1 & part$
+
+    Next idx
+
+    ' Declare an array for signs
+    ReDim signs(0) As String
+
+    ' First, parse out all the signs
+    idx = 0
+    Do
+
+        ' Increment idx
+        idx = idx + 1
+
+        ' Get the sign here
+        ReDim Preserve signs(idx - 1)
+        signs(idx - 1) = MathFunction(str, idx, True)
+
+        ' Check if we got a sign
+        If (signs(idx - 1) = vbNullChar) Then
+
+            ' Leave this loop
+            Exit Do
+
         End If
-    Next p
-    equ$ = eqtype$
-    For p = startAt + 1 To Length
-        part$ = Mid$(use$, p, 1)
-        If part$ <> " " Then
-            If part$ = "=" Or part$ = ">" Or part$ = "<" Then
-                equ$ = equ & part$
-                startAt = p + 1
-                p = Length
-            Else
-                startAt = p
-                p = Length
+
+        ' Remove said sign from the text
+        str = replace(str, signs(idx - 1), vbNullChar)
+
+    Loop
+
+    ' Now just use Split() to get all the values
+    Dim values() As String
+    values = Split(str, vbNullChar)
+
+    ' Create arrays for the values
+    Dim valueUb As Long
+    valueUb = UBound(values)
+    ReDim strVal(valueUb) As String, numVal(valueUb) As Double, typeVal(valueUb) As RPGC_DT
+
+    ' Loop over each values
+    For idx = 0 To valueUb
+
+        ' Trim this value
+        values(idx) = Trim$(values(idx))
+
+        ' If the value is prefixed with a "~", *logically* NOT it. VB's not operator
+        ' cannot acomplish this (it is ~, what we really want is !, but RPGCode already
+        ' uses that), so just calculate it here.
+        If (LeftB$(values(idx), 2) = "~") Then
+
+            ' Remove the tilda
+            values(idx) = Mid$(values(idx), 2)
+
+            ' Get its value
+            typeVal(idx) = getValue(values(idx), strVal(idx), numVal(idx), prg)
+
+            ' Check for type problems
+            If (typeVal(idx) <> DT_NUM) Then
+
+                ' Error out
+                Call debugger("Logical not is invalid on strings-- " & Text)
+                Exit Function
+
             End If
-        End If
-    Next p
-    'Now get the other variable
-    val2$ = vbNullString
-    For p = startAt To Length
-         part$ = Mid$(use$, p, 1)
-        If part$ <> " " Then val2$ = val2 & part$
-    Next p
 
-    If (LenB(equ) = 0) Then
-        ' If only one value was passed, check if it's non-zero
-        equ = "~="
-        val2 = "0"
-    End If
+            If (numVal(idx) <> 0) Then
+                ' Becomes false
+                numVal(idx) = 0
+            Else
+                ' Becomes true
+                numVal(idx) = 1
+            End If
 
-    Dim lit1 As String, lit2 As String, num1 As Double, num2 As Double
-    val1type = getValue(val1$, lit1$, num1, theProgram)
-    val2type = getValue(val2$, lit2$, num2, theProgram)
-    var1type = val1type
-    var2type = val2type
-
-    'Mop up some crazy possibilities:
-    If val1type <> val2type Then Exit Function
-    If LenB(val1) = 0 And LenB(val2$) = 0 Then Exit Function
-    If (LenB(val1) <> 0) And (LenB(val2) = 0) Then
-        If val1type = 0 Then
-            evaluate = num1
-            Exit Function
         Else
-            Exit Function
+
+            ' Get its value
+            typeVal(idx) = getValue(values(idx), strVal(idx), numVal(idx), prg)
+
         End If
-    End If
-    Dim returnVal As Long
-    returnVal = 0
-    If equ = "=" Or equ = "==" Then
-        If var1type = 0 Then
-            'numerical
-            If num1 = num2 Then returnVal = 1
-        Else
-            If lit1 = lit2 Then returnVal = 1
+
+        If (idx <> 0) Then
+
+            ' Check for type mismatch
+            If (typeVal(idx) <> typeVal(0)) Then
+
+                ' Error out
+                Call debugger("Type mismatch-- " & Text)
+                Exit Function
+
+            End If
+
         End If
-    End If
-    If equ = "~" Or equ = "~=" Or equ = "=~" Then
-        If var1type = 0 Then
-            'numerical
-            If num1 <> num2 Then returnVal = 1
-        Else
-            If lit1 <> lit2 Then returnVal = 1
-        End If
-    End If
-    If equ = "<=" Or equ = "=<" Then
-        If var1type = 0 Then
-            'numerical
-            If num1 <= num2 Then returnVal = 1
-        End If
-    ElseIf equ = ">=" Or equ$ = "=>" Then
-        If var1type = 0 Then
-            'numerical
-            If num1 >= num2 Then returnVal = 1
-        End If
-    ElseIf equ = ">" Or equ$ = ">" Then
-        If var1type = 0 Then
-            'numerical
-            If num1 > num2 Then returnVal = 1
-        End If
-    ElseIf equ = "<" Or equ$ = "<" Then
-        If var1type = 0 Then
-            'numerical
-            If num1 < num2 Then returnVal = 1
-        End If
+
+    Next idx
+
+    ' Evaluate from left to right (for now, anyway):
+    If (typeVal(0) = DT_NUM) Then
+
+        ' Numerical
+
+        For idx = 0 To valueUb - 1
+
+            ' Switch on the sign
+            Select Case signs(idx)
+                Case "==", "=": numVal(idx + 1) = (numVal(idx) = numVal(idx + 1))
+                Case "~=": numVal(idx + 1) = (numVal(idx) <> numVal(idx + 1))
+                Case ">=": numVal(idx + 1) = (numVal(idx) >= numVal(idx + 1))
+                Case "<=": numVal(idx + 1) = (numVal(idx) <= numVal(idx + 1))
+                Case ">": numVal(idx + 1) = (numVal(idx) > numVal(idx + 1))
+                Case "<": numVal(idx + 1) = (numVal(idx) < numVal(idx + 1))
+            End Select
+
+        Next idx
+
+        evaluate = -(numVal(valueUb) <> 0)
+
+    Else
+
+        ' Literal
+
+        For idx = 0 To valueUb - 1
+
+            ' Switch on the sign
+            Select Case signs(idx)
+                Case "==", "=": strVal(idx + 1) = CStr(CLng(strVal(idx) = strVal(idx + 1)))
+                Case "~=": strVal(idx + 1) = CStr(CLng(strVal(idx) <> strVal(idx + 1)))
+                Case ">=": strVal(idx + 1) = CStr(CLng(strVal(idx) >= strVal(idx + 1)))
+                Case "<=": strVal(idx + 1) = CStr(CLng(strVal(idx) <= strVal(idx + 1)))
+                Case ">": strVal(idx + 1) = CStr(CLng(strVal(idx) > strVal(idx + 1)))
+                Case "<": strVal(idx + 1) = CStr(CLng(strVal(idx) < strVal(idx + 1)))
+            End Select
+
+        Next idx
+
+        evaluate = -((CLng(strVal(valueUb))) <> 0)
+
     End If
 
-    evaluate = returnVal
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 '=========================================================================
@@ -661,9 +742,9 @@ Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBr
     location = LocateBrackets(use)
     Length = Len(Text)
     
-    If Not doNotCheckForBrackets Then
-        If Not stringContains(Text, "(") Then
-            If Not stringContains(Text, ")") Then
+    If (Not doNotCheckForBrackets) Then
+        If (InStrB(Text, "(") = 0) Then
+            If (InStrB(Text, ")") = 0) Then
                 'No (s or )s here!
                 Exit Function
             End If
@@ -694,9 +775,11 @@ End Function
 '=========================================================================
 ' Get the command name in the text passed in
 '=========================================================================
-Public Function GetCommandName(ByVal splice As String) As String
+Public Function GetCommandName(ByRef splice As String) As String
 
     On Error Resume Next
+
+    '// Passing splice ByRef for preformance related reasons
 
     If (LenB(splice) = 0) Then Exit Function
 
@@ -1080,7 +1163,8 @@ End Function
 '=========================================================================
 ' InStr outside quotes
 '=========================================================================
-Public Function inStrOutsideQuotes(ByVal start As Long, ByVal Text As String, ByVal find As String) As Long
+Public Function inStrOutsideQuotes(ByVal start As Long, ByRef Text As String, ByRef find As String) As Long
+    '// Passing Text and find ByRef for preformance related reasons
     On Error Resume Next
     Dim a As Long, ignore As Boolean, char As String
     For a = start To Len(Text)
@@ -1106,14 +1190,14 @@ Public Function MWinPrepare(ByVal Text As String, ByRef prg As RPGCodeProgram) A
     firstLocation = InStr(1, Text, "<")
 
     'If we found one
-    If firstLocation > 0 Then
+    If firstLocation <> 0 Then
 
         'Find the associated >
         Dim secondLocation As Long
         secondLocation = InStr(1, Text, ">")
 
         'If we found one
-        If secondLocation > 0 Then
+        If secondLocation <> 0 Then
 
             'Get the name of the variable between them
             Dim theVar As String

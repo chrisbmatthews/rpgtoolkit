@@ -927,8 +927,8 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
    
     Dim checkIt As String
     checkIt = replace(replace(replace _
-        (LCase$(rpgcodeCommand), " ", "" _
-        ), vbTab, ""), "#", "")
+        (LCase$(rpgcodeCommand), " ", vbNullString _
+        ), vbTab, vbNullString), "#", vbNullString)
 
     If checkIt = "onerrorresumenext" Then ' On Error Resume Next
         onError "OnError(Resume Next)", theProgram

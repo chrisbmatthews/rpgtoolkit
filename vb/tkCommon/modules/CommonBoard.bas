@@ -422,33 +422,37 @@ Public Function BoardTileInLUT(ByVal filename As String, ByRef theBoard As TKBoa
 End Function
 
 '=========================================================================
-' Change a board's size
+' Get a board's size
 '=========================================================================
-Public Sub boardSize(ByVal fName As String, ByRef x As Long, ByRef y As Long)
-    'give board x, y size
+Public Sub boardSize(ByRef fName As String, ByRef x As Long, ByRef y As Long)
+
+    '// Passing fName ByRef for speed reasons
+
     On Error Resume Next
+
     Dim fileOpen As String, xx As Long, yy As Long, num As Long
-    
+
     fileOpen$ = fName$
     fileOpen$ = PakLocate(fileOpen$)
     xx = 19: yy = 11
     num = FreeFile
-    Open fileOpen For Binary As #num
+    Open fileOpen For Binary Access Read As num
         Dim b As Byte
-        Get #num, 15, b
+        Get num, 15, b
         If b <> 0 Then
             Close #num
             GoTo ver2oldboard
         End If
-    Close #num
-    
+    Close num
+
     Dim fileHeader As String, majorVer As Long, minorVer As Long, regYN As Long, regCode As String, l As Long
     Open fileOpen For Binary As #num
         fileHeader$ = BinReadString(num)      'Filetype
         'If fileheader$ <> "RPGTLKIT BOARD" Then Close #num: GoTo Ver1Board
         majorVer = BinReadInt(num)       'Version
         minorVer = BinReadInt(num)      'Minor version (ie 2.0)
-        If minorVer <> 2 Then
+
+        If minorVer < 2 Then
             Close #num
             GoTo ver2oldboard
         End If

@@ -186,15 +186,12 @@ End Sub
 '=========================================================================
 Public Sub DoEventsFor(ByVal milliSeconds As Long)
 
-    Dim StartTime As Long
-    Dim done As Boolean
+    Dim startTime As Double
 
-    StartTime = Timer()
-    Do Until done
+    startTime = Timer()
+    Do Until (Timer() - startTime >= milliSeconds / 1000)
+        ' Don't lock up
         Call processEvent
-        If Timer() - StartTime >= milliSeconds / 1000 Then
-            done = True
-        End If
     Loop
 
 End Sub

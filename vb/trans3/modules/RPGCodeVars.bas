@@ -423,7 +423,7 @@ Public Function getRedirect(ByVal originalMethod As String) As String
     On Error Resume Next
     Dim Length As Long
     
-    originalMethod = UCase$(replace(originalMethod, "#", ""))
+    originalMethod = UCase$(replace(originalMethod, "#", vbNullString))
     If redirectExists(originalMethod) Then
         Dim getStr As String * 4048
         Length = RPGCGetRedirect(originalMethod, getStr)
@@ -463,7 +463,7 @@ End Function
 '=========================================================================
 Public Sub killRedirect(ByVal methodName As String)
     On Error Resume Next
-    methodName = UCase$(replace(methodName, "#", ""))
+    methodName = UCase$(replace(methodName, "#", vbNullString))
     Call RPGCKillRedirect(methodName)
 End Sub
 
@@ -471,7 +471,7 @@ End Sub
 ' Determine if a redirect exists for the text passed in
 '=========================================================================
 Public Function redirectExists(ByVal methodToCheck As String) As Boolean
-    redirectExists = (RPGCRedirectExists(UCase$(replace(methodToCheck, "#", ""))) = 1)
+    redirectExists = (RPGCRedirectExists(UCase$(replace(methodToCheck, "#", vbNullString))) = 1)
 End Function
 
 '=========================================================================
@@ -505,7 +505,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     If (Not noVar) Then ' If there's a var
 
         ' Get the destination variable and remove unwanted characters
-        Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", ""), " ", ""), vbTab, ""), theProgram)
+        Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", ""), " ", vbNullString), vbTab, vbNullString), theProgram)
         If (Right$(Destination, 1) <> "!" And Right$(Destination, 1) <> "$") Then
             ' Append a "!"
             Destination = Destination & "!"
@@ -697,9 +697,11 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             ' Build the equation into a string
             Dim build As String
             For tokenIdx = 2 To number
-                build = build & numberUse(tokenIdx) & conjunctions(tokenIdx)
+                build = build & numberUse(tokenIdx)
+                If (tokenIdx <> number) Then
+                    build = build & conjunctions(tokenIdx)
+                End If
             Next tokenIdx
-            build = Mid$(build, 1, Len(build) - 2)
 
             ' Now actually evaluate the quation
             Dim dRes As Double
@@ -1082,8 +1084,8 @@ End Function
 Public Sub SetRedirect(ByVal originalMethod As String, ByVal targetMethod As String)
     'add to redirect list
     On Error Resume Next
-    originalMethod = replace(originalMethod, "#", "")
-    targetMethod = replace(targetMethod, "#", "")
+    originalMethod = replace(originalMethod, "#", vbNullString)
+    targetMethod = replace(targetMethod, "#", vbNullString)
     Call RPGCSetRedirect(UCase$(originalMethod), UCase$(targetMethod))
 End Sub
 
@@ -1141,7 +1143,7 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
 
     'Get the variable's name
     Dim theVar As String
-    theVar = parseArray(replace(varname, " ", ""), theProgram)
+    theVar = parseArray(replace(varname, " ", vbNullString), theProgram)
 
     'Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
@@ -1235,7 +1237,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
 
     ' Get the variable
     Dim theVar As String
-    theVar = parseArray(replace(varname, " ", ""), theProgram)
+    theVar = parseArray(replace(varname, " ", vbNullString), theProgram)
 
     ' Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
@@ -1332,13 +1334,13 @@ End Function
 Public Function initVarSystem() As Boolean
 
     On Error GoTo anErr
-    
-    Call RPGCInit
 
+    Call RPGCInit
     bRPGCStarted = True
     initVarSystem = bRPGCStarted
     globalHeap = RPGCCreateHeap()
     Call initRPGCodeClasses
+    Call buildSignArrays
 
     Exit Function
     
