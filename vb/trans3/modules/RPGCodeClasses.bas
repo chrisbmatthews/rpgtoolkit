@@ -996,9 +996,6 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
     Dim retval As RPGCODE_RETURN    ' Return value
     Dim obj As Object               ' An object
 
-    ' Return -1 on error
-    hClass = -1
-
     ' Check if we can instance this class
     If ((canInstanceClass(theClass, prg)) Or (isInternalClass(theClass, obj))) Then
         ' Create a new handle

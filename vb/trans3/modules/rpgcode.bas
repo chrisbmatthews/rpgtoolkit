@@ -11897,7 +11897,7 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     End If
     host.cursorHotSpotX = paras(1).num
     host.cursorHotSpotY = paras(2).num
-    mainMem.transpColor = RGB(paras(3).num, paras(4).num, paras(5).num)
+    mainMem.transpcolor = RGB(paras(3).num, paras(4).num, paras(5).num)
     Dim ext As String, theFile As String
     ext = UCase$(commonRoutines.extention(paras(0).lit))
     If (ext = "TST" Or ext = "GPH") Then
@@ -11976,26 +11976,26 @@ End Sub
 '=========================================================================
 ' object = new(class [,constructParams])
 '=========================================================================
-Public Sub NewRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub newRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     On Error Resume Next
     If (CountData(Text) < 1) Then
         Call debugger("New() requires at least one data element-- " & Text)
         Exit Sub
     End If
-    Dim paras() As parameters, a As Long, Construct() As String
+    Dim paras() As parameters, a As Long, construct() As String
     paras() = GetParameters(Text, prg)
-    ReDim Construct(0)
+    ReDim construct(0)
     For a = 1 To UBound(paras)
-        ReDim Preserve Construct(a - 1)
+        ReDim Preserve construct(a - 1)
         If (paras(a).dataType = DT_LIT) Then
-            Construct(a - 1) = """" & paras(a).lit & """"
+            construct(a - 1) = """" & paras(a).lit & """"
         Else
-            Construct(a - 1) = CStr(paras(a).num)
+            construct(a - 1) = CStr(paras(a).num)
         End If
     Next a
     retval.dataType = DT_NUM
-    retval.num = createRPGCodeObject(paras(0).lit, prg, Construct(), (UBound(paras) = 0))
-    If (retval.num = -1) Then
+    retval.num = createRPGCodeObject(paras(0).lit, prg, construct, (UBound(paras) = 0))
+    If (retval.num = 0) Then
         Call debugger("Error creating object-- " & Text)
     End If
 End Sub
@@ -12043,20 +12043,20 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     End If
 
     ' Declare variables for the coming blt
-    Dim x As Long, y As Long, width As Long, transpColor As Long
+    Dim x As Long, y As Long, width As Long, transpcolor As Long
     Dim height As Long, cnvSource As Long
 
     ' In all cases, record x, y, r, g, b and the canvas
     cnvSource = CLng(paras(0).num)
     x = CLng(paras(1).num)
     y = CLng(paras(2).num)
-    transpColor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
+    transpcolor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
 
     ' If we only have six params, just finish this now
     If (UBound(paras) = 5) Then
 
         ' Draw the canvas
-        Call DXDrawCanvasTransparent(cnvSource, x, y, transpColor)
+        Call DXDrawCanvasTransparent(cnvSource, x, y, transpcolor)
 
         ' Bail
         Exit Sub
@@ -12086,12 +12086,12 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     If (UBound(paras) = 7) Then
 
         ' Blt to the screen
-        Call DXDrawCanvasTransparent(cnv, x, y, transpColor)
+        Call DXDrawCanvasTransparent(cnv, x, y, transpcolor)
 
     Else
 
         ' Blt to another canvas
-        Call Canvas2CanvasBltTransparent(cnv, CLng(paras(8).num), x, y, transpColor)
+        Call Canvas2CanvasBltTransparent(cnv, CLng(paras(8).num), x, y, transpcolor)
 
     End If
 
