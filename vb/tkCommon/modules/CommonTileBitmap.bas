@@ -132,8 +132,13 @@ Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long,
                 End If
             Else
                 If cnv <> -1 And cnvMask <> -1 Then
+#If (isToolkit = 0) Then
                     Call canvasFillBox(cnv, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, TRANSP_COLOR_ALT)
                     Call canvasFillBox(cnvMask, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, TRANSP_COLOR)
+#Else
+                    Call canvasFillBox(cnv, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, 0)
+                    Call canvasFillBox(cnvMask, oldX + x * 32, oldY + y * 32, oldX + 32 + x * 32, oldY + 32 + y * 32, RGB(255, 255, 255))
+#End If
                 End If
             End If
         Next y
