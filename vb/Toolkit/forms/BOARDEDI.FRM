@@ -3726,8 +3726,8 @@ End Function
 '   +autoTileset:
 'returns the index of an autotst, or -1 if invalid
 'if its not presently an autotst, make it one now
-Private Function autoTileset(ByVal tileset As String, Optional ByVal allowAdd As Boolean = True) As Integer
-    Dim i As Integer, ub As Integer ', sGrpCode As String
+Private Function autoTileset(ByVal tileset As String, Optional ByVal allowAdd As Boolean = True) As Long
+    Dim i As Long, ub As Long ', sGrpCode As String
 
     ub = UBound(autoTilerSets)
 
@@ -3756,9 +3756,9 @@ End Function
 
 '   +autoTilerPutTile
 'change a tile and update surrounding autotiles to match it
-Private Sub autoTilerPutTile(ByVal tst As String, ByVal tilex As Integer, ByVal tiley As Integer, Optional ByVal iso As Boolean = False, Optional ByVal eo As Boolean = False, Optional ByVal ignoreOthers As Boolean = False)
-    Dim ix As Integer, iy As Integer, morphTileIndex As Byte, currentTileset As String, currentAutotileset As Integer, thisAutoTileset As Integer
-    Dim brdWidth As Integer, brdHeight As Integer, startY As Integer, endY As Integer, startX As Integer, endX As Integer
+Private Sub autoTilerPutTile(ByVal tst As String, ByVal tilex As Long, ByVal tiley As Long, Optional ByVal iso As Boolean = False, Optional ByVal eo As Boolean = False, Optional ByVal ignoreOthers As Boolean = False)
+    Dim ix As Long, iy As Long, morphTileIndex As Byte, currentTileset As String, currentAutotileset As Long, thisAutoTileset As Long
+    Dim brdWidth As Long, brdHeight As Long, startY As Long, endY As Long, startX As Long, endX As Long
 
     currentTileset = tilesetFilename(tst)
      
@@ -3829,14 +3829,14 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tilex As Integer, ByVal 
                     If (ix < brdWidth) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
                 
                     'draw and set the new tile
-                    Call drawTile(boardform.hdc, tilePath$ & autoTilerSets(thisAutoTileset) & CStr(TileMorphs(morphTileIndex)), _
+                    Call drawTile(boardform.hdc, tilePath$ & autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), _
                                    ix - boardList(activeBoardIndex).topX, iy - boardList(activeBoardIndex).topY, _
                                    boardList(activeBoardIndex).theData.ambientRed(ix, iy, boardList(activeBoardIndex).currentLayer), _
                                    boardList(activeBoardIndex).theData.ambientGreen(ix, iy, boardList(activeBoardIndex).currentLayer), _
                                    boardList(activeBoardIndex).theData.ambientBlue(ix, iy, boardList(activeBoardIndex).currentLayer), _
                                    False, False, iso, eo)
                  
-                    Call BoardSetTile(ix, iy, boardList(activeBoardIndex).currentLayer, autoTilerSets(thisAutoTileset) & CStr(TileMorphs(morphTileIndex)), boardList(activeBoardIndex).theData)
+                    Call BoardSetTile(ix, iy, boardList(activeBoardIndex).currentLayer, autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), boardList(activeBoardIndex).theData)
     
                 End If
             Next ix
@@ -3876,14 +3876,14 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tilex As Integer, ByVal 
                     If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
                     
                     'draw and set the new tile
-                    Call drawTile(boardform.hdc, tilePath$ & autoTilerSets(thisAutoTileset) & CStr(TileMorphs(morphTileIndex)), _
+                    Call drawTile(boardform.hdc, tilePath$ & autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), _
                                    ix - boardList(activeBoardIndex).topX, iy - boardList(activeBoardIndex).topY, _
                                    boardList(activeBoardIndex).theData.ambientRed(ix, iy, boardList(activeBoardIndex).currentLayer), _
                                    boardList(activeBoardIndex).theData.ambientGreen(ix, iy, boardList(activeBoardIndex).currentLayer), _
                                    boardList(activeBoardIndex).theData.ambientBlue(ix, iy, boardList(activeBoardIndex).currentLayer), _
                                    False, False, iso, eo)
                  
-                    Call BoardSetTile(ix, iy, boardList(activeBoardIndex).currentLayer, autoTilerSets(thisAutoTileset) & CStr(TileMorphs(morphTileIndex)), boardList(activeBoardIndex).theData)
+                    Call BoardSetTile(ix, iy, boardList(activeBoardIndex).currentLayer, autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), boardList(activeBoardIndex).theData)
                 End If
             Next ix
         Next iy
