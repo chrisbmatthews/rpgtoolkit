@@ -1027,51 +1027,29 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GameSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '==========================
-    'EDITED: [Delano - 3/05/04]
-    'Altered delay for speed! = 3; runs too fast on some machines.
-    'Added the assignment of cursorDelayTime, which is called between cursor movements.
-    'Renamed variables: num >> speed
-    '                   a >> parameter1Type
-    'Removed unneeded variables.
-    '==========================
+Public Sub GameSpeedRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+    '==================================================================================
+    'Set the overall walking speed. Changes the walking speed proportionally.
+    '+ve values increase speed, -ve decrease, by a factor of 10% per increment.
+    'Allowed values range from -MAX_GAMESPEED to +MAX_GAMESPEED.
+    '==================================================================================
+    On Error Resume Next
     
-    'Changes game speed, like in the customize menu.
-    'speed! is 0 (slowest) to 3 (fastest)
-    'Also controls the speed of the cursor on the menus - see Mod transDialogs Sub cursordelay
+    Dim paras() As parameters, count As Long
     
-    On Error GoTo errorhandler
-    
-    Dim use As String, dataUse As String, number As Long, useIt As String
-    Dim lit As String, speed As Double, parameter1Type As Long
-    
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)        'Get text inside brackets
-    number = CountData(dataUse$)        'how many data elements are there?
-    
-    If number <> 1 Then
-        Call debugger("Warning: GameSpeed has only 1 data element!-- " + Text$)
+    paras = getParameters(Text, theProgram, count)
+      
+    If count <> 1 Then
+        Call debugger("Error: GameSpeed() has 1 data element!-- " & Text)
+        Exit Sub
     End If
     
-    useIt$ = GetElement(dataUse$, 1)
-    
-    parameter1Type = getValue(useIt$, lit$, speed, theProgram)
-    
-    If parameter1Type = 1 Then
-        'If parameter is literal.
-        Call debugger("Error: GameSpeed data type must be numerical!-- " + Text$)
+    If paras(0).dataType = DT_NUM Then
+        Call gameSpeed(inBounds(paras(0).num, -MAX_GAMESPEED, MAX_GAMESPEED))
     Else
-        'Parameter is numerical.
-        speed = inBounds(speed, 0, MAX_GAMESPEED)
-        Call gameSpeed(speed)
+        Call debugger("Error: GameSpeed() data type must be numerical!-- " & Text)
     End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
     
-    Resume Next
 End Sub
 
 
@@ -9610,7 +9588,7 @@ Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Call canvasCloseHDC(cnvRPGCodeScreen, hdc)
             Call canvasCloseHDC(cnv, hdc2)
             Call renderRPGCodeScreen
-            Call delay(walkDelay)
+            Call delay(MISC_DELAY)
         Next tt
         Call destroyCanvas(cnv)
     End If
@@ -9665,22 +9643,22 @@ Sub earthquakeRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Call canvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
             Call canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, 0, 0, offx, offy, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
-            Call delay(walkDelay)
+            Call delay(MISC_DELAY)
         
             Call canvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
             Call canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, offx, 0, 0, offy, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
-            Call delay(walkDelay)
+            Call delay(MISC_DELAY)
         
             Call canvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
             Call canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, 0, offy, offx, 0, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
-            Call delay(walkDelay)
+            Call delay(MISC_DELAY)
         
             Call canvasFill(cnvRPGCodeScreen, boardList(activeBoardIndex).theData.brdColor)
             Call canvas2CanvasBltPartial(cnv, cnvRPGCodeScreen, offx, offy, 0, 0, tilesX * 32 - offx, tilesY * 32 - offy)
             Call renderRPGCodeScreen
-            Call delay(walkDelay)
+            Call delay(MISC_DELAY)
         Next tt
         Call canvas2CanvasBlt(cnv, cnvRPGCodeScreen, 0, 0)
         Call destroyCanvas(cnv)
@@ -11351,26 +11329,27 @@ Public Sub replaceRPG( _
 End Sub
 
 Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
-    'PixelMovement(ON/OFF)
+    '=========================================================================================================
+    'PixelMovement(usingPixelMovement$ [, usingPixelPush$])
+    'status! = PixelMovement()
+    'usingPixelMovement$ = "ON" or "OFF" only.
+    'usingPixelPush$ = "ON" or "OFF" only; defaults to off. Pushes in increments of 1/4 tile (ON) or 1 tile.
+    '                                                       Ineffective for tile movement.
+    '=========================================================================================================
 
-    Dim elements As Long
-    elements = CountData(Text)
+    Dim paras() As parameters, count As Long
+    paras() = getParameters(Text, prg, count)
 
-    If (elements) And (elements <> 1) Then
-        Call debugger("PixelMovement() requires zero or one data element-- " & Text)
+    If (count > 2) Then
+        Call debugger("PixelMovement() requires zero, one or two data elements-- " & Text)
         Exit Sub
     End If
 
-    If (elements = 0) Then
+    If (count = 0) Then
         retval.dataType = DT_NUM
-        If ((movementSize <> 1)) Then
-            retval.num = 1
-        End If
+        If ((movementSize <> 1)) Then retval.num = 1
         Exit Sub
     End If
-
-    Dim paras() As parameters
-    paras() = getParameters(Text, prg)
 
     If paras(0).dataType <> DT_LIT Then
         Call debugger("PixelMovement() requires a literal data element-- " & Text)
@@ -11378,17 +11357,26 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, B
     End If
 
     Select Case Trim$(LCase$(paras(0).lit))
-
         Case "on"
             movementSize = 8 / 32
-
+            mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH
         Case "off"
             movementSize = 1
-
+            mainMem.pixelMovement = TILE_MOVEMENT
         Case Else
-            Call debugger("PixelMovement()'s data element must be ON or OFF-- " & Text)
-
+            Call debugger("PixelMovement()'s 1st data element must be ON or OFF-- " & Text)
     End Select
+    
+    If count = 2 And movementSize <> 1 Then
+        Select Case Trim$(LCase$(paras(1).lit))
+            Case "on"
+                mainMem.pixelMovement = PIXEL_MOVEMENT_PIXEL_PUSH
+            Case "off"
+                mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH
+            Case Else
+                Call debugger("PixelMovement()'s 2nd data element must be ON or OFF --" & Text)
+        End Select
+    End If
 
 End Sub
 
