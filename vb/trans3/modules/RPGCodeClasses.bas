@@ -36,8 +36,6 @@ Private Type RPGCodeMethod
     name As String                          ' Name of the method
     line As Long                            ' Line method is defined on
     override As String                      ' Name used in inheritance situations
-    isVirtual As Boolean                    ' Virtual method?
-    isPure As Boolean                       ' Pure specifier?
 End Type
 
 '=========================================================================
@@ -503,13 +501,6 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
     If (Text = "") Then
         ' No text, no method, no wasted time
         Exit Sub
-    End If
-
-    ' Check for 'virtual' key word
-    Dim iStrVirtual As Long
-    iStrVirtual = InStr(1, Text, "virtual", vbTextCompare)
-    If (iStrVirtual > 0) Then
-        
     End If
 
     ' Get the method's name
@@ -1175,7 +1166,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                     value = " " & CStr(retVal.num)
                 ElseIf (retVal.dataType = DT_LIT) Then
                     value = " " & Chr(34) & retVal.lit & Chr(34)
-                ElseIf (retVal.dataType = DT_REFERNCE) Then
+                ElseIf (retVal.dataType = DT_REFERENCE) Then
                     value = " " & retVal.ref
                 End If
 
