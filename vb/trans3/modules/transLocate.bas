@@ -45,11 +45,9 @@ Public Function linkIso(ByVal linkBoard As String) As Boolean
         Exit Function
     End If
     lastRender.canvas = -1
-    Dim aBoard As TKBoard
-    Call openBoard(linkBoard, aBoard)
-    If aBoard.isIsometric = 1 Then
-        linkIso = True
-    End If
+    Dim brd As TKBoard
+    Call openBoard(linkBoard, brd)
+    linkIso = (brd.isIsometric = 1)
 End Function
 
 '=========================================================================
@@ -125,51 +123,51 @@ Public Sub incrementPosition( _
 
                 Case MV_NE
                     If pend.yOrig Mod 2 = 0 Then
-                        .x = .x
-                        .y = .y - moveFraction
+                        .X = .X
+                        .Y = .Y - moveFraction
                     Else
-                        .x = .x + moveFraction
-                        .y = .y - moveFraction
+                        .X = .X + moveFraction
+                        .Y = .Y - moveFraction
                     End If
             
                 Case MV_NW
                     If pend.yOrig Mod 2 = 0 Then
-                        .x = .x - moveFraction
-                        .y = .y - moveFraction
+                        .X = .X - moveFraction
+                        .Y = .Y - moveFraction
                     Else
-                        .x = .x
-                        .y = .y - moveFraction
+                        .X = .X
+                        .Y = .Y - moveFraction
                     End If
             
                 Case MV_SE
                     If pend.yOrig Mod 2 = 0 Then
-                        .x = .x
-                        .y = .y + moveFraction
+                        .X = .X
+                        .Y = .Y + moveFraction
                     Else
-                        .x = .x + moveFraction
-                        .y = .y + moveFraction
+                        .X = .X + moveFraction
+                        .Y = .Y + moveFraction
                     End If
             
                 Case MV_SW
                     If pend.yOrig Mod 2 = 0 Then
-                        .x = .x - moveFraction
-                        .y = .y + moveFraction
+                        .X = .X - moveFraction
+                        .Y = .Y + moveFraction
                     Else
-                        .x = .x
-                        .y = .y + moveFraction
+                        .X = .X
+                        .Y = .Y + moveFraction
                     End If
             
                 Case MV_NORTH
-                    .y = .y - moveFraction * 2
+                    .Y = .Y - moveFraction * 2
             
                 Case MV_SOUTH
-                    .y = .y + moveFraction * 2
+                    .Y = .Y + moveFraction * 2
             
                 Case MV_EAST
-                    .x = .x + moveFraction
+                    .X = .X + moveFraction
             
                 Case MV_WEST
-                    .x = .x - moveFraction
+                    .X = .X - moveFraction
             
             End Select
 
@@ -178,32 +176,32 @@ Public Sub incrementPosition( _
             Select Case pend.direction
 
                 Case MV_NE
-                    .x = .x + moveFraction
-                    .y = .y - moveFraction
+                    .X = .X + moveFraction
+                    .Y = .Y - moveFraction
             
                 Case MV_NW
-                    .x = .x - moveFraction
-                    .y = .y - moveFraction
+                    .X = .X - moveFraction
+                    .Y = .Y - moveFraction
             
                 Case MV_SE
-                    .x = .x + moveFraction
-                    .y = .y + moveFraction
+                    .X = .X + moveFraction
+                    .Y = .Y + moveFraction
             
                 Case MV_SW
-                    .x = .x - moveFraction
-                    .y = .y + moveFraction
+                    .X = .X - moveFraction
+                    .Y = .Y + moveFraction
             
                 Case MV_NORTH
-                    .y = .y - moveFraction
+                    .Y = .Y - moveFraction
             
                 Case MV_SOUTH
-                    .y = .y + moveFraction
+                    .Y = .Y + moveFraction
             
                 Case MV_EAST
-                    .x = .x + moveFraction
+                    .X = .X + moveFraction
             
                 Case MV_WEST
-                    .x = .x - moveFraction
+                    .X = .X - moveFraction
             
             End Select
 
