@@ -368,7 +368,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
         End If
 
         ' Remove said sign from the text
-        str = replace(str, signs(idx - 1), vbNullChar)
+        str = replace(str, signs(idx - 1), vbNullChar, , 1)
 
     Loop
 
