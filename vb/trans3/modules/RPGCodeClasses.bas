@@ -1779,25 +1779,27 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         Select Case char
 
             Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "(", ")", _
-            "%", "`", "|", "&", "~", "!"
+            "%", "`", "|", "&", "~", "!", "[", "]"
                 ' It's a divider
-                If ((Not (ignore)) And (arrayDepth = 0)) Then
-                    start = a + 1
-                    Exit For
+                If Not (ignore) Then
+                    If (char = "]") Then
+                        arrayDepth = arrayDepth + 1
+                    ElseIf (char = "[") Then
+                        arrayDepth = arrayDepth - 1
+                        If (arrayDepth = -1) Then
+                            start = a + 1
+                            Exit For
+                        End If
+                    Else
+                        start = a + 1
+                        Exit For
+                    End If
                 End If
 
             Case """"
                 ' Found a quote
                 ignore = Not (ignore)
                 spacesOK = False
-
-            Case "["
-                ' Entering array
-                arrayDepth = arrayDepth + 1
-
-            Case "]"
-                ' Leaving array
-                arrayDepth = arrayDepth - 1
 
             Case Else
                 ' Not a space, so they aren't okay anymore

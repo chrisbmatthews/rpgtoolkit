@@ -1169,10 +1169,10 @@ Public Function ParseRPGCodeCommand( _
                                 Case ")": If Not (ignore) Then depth = depth + 1
 
                                 ' Divider
-                                Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "%", "`", "|", "&", "~", "!"
+                                Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "%", "`", "|", "&", "~", "!", "[", "]"
 
                                     If ((depth = 0) And (Not (ignore)) And (b > startAt)) Then
-                                        ' We' ve found a space. This means that the name of the
+                                        ' We've found a space. This means that the name of the
                                         ' command is now to the right of us. Hence, it's between
                                         ' B and A.
 
