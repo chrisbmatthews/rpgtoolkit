@@ -17,6 +17,8 @@ Option Compare Text
 '=========================================================================
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function RPGCGetMethodName Lib "actkrt3.dll" (ByVal Text As String, ByRef size As Long) As Long
+Private Declare Function RPGCParseAfter Lib "actkrt3.dll" (ByVal Text As String, ByVal startSymbol As String, ByRef size As Long) As Long
+Private Declare Function RPGCParseBefore Lib "actkrt3.dll" (ByVal Text As String, ByVal endSymbol As String, ByRef size As Long) As Long
 
 '=========================================================================
 ' Integral variables
@@ -42,65 +44,20 @@ End Function
 ' Return content in text after startSymbol is located
 '=========================================================================
 Public Function ParseAfter(ByVal Text As String, ByVal startSymbol As String) As String
-
     On Error Resume Next
-
-    Dim Length As Integer
-    Dim t As Integer
-    Dim part As String
-    Dim toRet As String
-    
-    Length = Len(Text)
-    Dim foundIt As Boolean, startAt As Long
-    
-    foundIt = False
-    'find opening symbol...
-    For t = 1 To Length
-        part = Mid$(Text, t, 1)
-        If part = startSymbol Then
-            'found start symbol.
-            startAt = t
-            foundIt = True
-            Exit For
-        End If
-    Next t
-    
-    If foundIt Then
-        For t = startAt + 1 To Length
-            part = Mid$(Text, t, 1)
-            toRet = toRet + part
-        Next t
-    End If
-    
-    ParseAfter = toRet
+    Dim size As Long, memPos As Long
+    memPos = RPGCParseAfter(Text, startSymbol, size)
+    Call CopyMemory(ParseAfter, memPos, size)
 End Function
 
 '=========================================================================
 ' Return content from text until startSymbol is located
 '=========================================================================
-Public Function ParseBefore(ByVal Text As String, ByVal startSymbol As String) As String
-
+Public Function ParseBefore(ByVal Text As String, ByVal endSymbol As String) As String
     On Error Resume Next
-
-    Dim Length As Integer
-    Dim t As Integer
-    Dim part As String
-    Dim toRet As String
-    
-    Length = Len(Text)
-    'find opening symbol...
-    For t = 1 To Length
-        part = Mid$(Text, t, 1)
-        If part = startSymbol Then
-            'found start symbol.
-            ParseBefore = toRet
-            Exit Function
-        Else
-            toRet = toRet + part
-        End If
-    Next t
-    
-    ParseBefore = ""
+    Dim size As Long, memPos As Long
+    memPos = RPGCParseBefore(Text, endSymbol, size)
+    Call CopyMemory(ParseBefore, memPos, size)
 End Function
 
 '=========================================================================
