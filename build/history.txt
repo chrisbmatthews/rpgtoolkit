@@ -1,4 +1,109 @@
+======================================================================
 RPG TOOLKIT DEVELOPMENT SYSTEM, 3.0 HISTORY
+======================================================================
+
+======================================================================
+RPGToolkit Development System 3.06
+Grand Bug Fix List
+March 14, 2005
+Copyright 2005, Jonathan Hughes (Delano), and Colin James Fitzpatrick
+======================================================================
+
+Toolkit Game Engine, trans3
+===========================
+
+Corrected
+
+    * Various bugs with produced EXEs
+    * Stretching of images is poor
+    * Diagonal solidity in tile movement
+    * Minor default battle system bugs
+    * callshop() is broken
+    * Internal copy should physically copy objects, not handles
+    * board backgrounds smaller than screen are not centred
+    * Other party characters cause jumpy player movement sometimes
+    * Parsing problems between array brackets
+    * Mwin() should have a variable translucency setting -- setMwinTranslucency(percent!) added
+    * North-South and East-West tiletypes ineffective
+    * Calling an outside method from within a class that accesses variables named as class members indirectly causes crashing
+    * Linking to boards with solid edges sometimes render the player immobile when moving to new board
+    * Player and item animation sounds don't work
+    * DrawCanvasTransparent() partially broken
+    * Kill() with multiple variables doesn't kill first one
+    * Negative numbers don't work properly in all situations
+    * Assignment operators other than "=" don't work in the middle of equations
+    * Members "double" in inheritance sometimes (?)
+    * Slow rpgcode graphic commands
+    * Threads almost completely broken
+    * Get() buggy
+    * RestoreScreenArray(), SaveScreen() broken
+    * TileType() broken
+    * PushItem(), ItemStep() always moves the zeroth item
+    * elseif and else broken
+    * Day/Night system partially dysfunctional -- removed
+    * Disable Progress Saving board option ineffective -- Default menu updated
+    * Players & items freeze when colliding diagonally with other items (tile movement only)
+    * Board player position should default > 1,1,1
+    * mp3s aren't handled correctly
+    * Music playback jumpy (?)
+    * fps-in-title-bar problems
+    * idle animation delays
+
+Live
+
+    * callPlayerSwap() needs to be written (suggestions?)
+    * Plugins sometimes don't work
+    * Transparency problems with animations
+    * *The* windows 9x bug
+
+Toolkit Editor, toolkit3
+========================
+
+Corrected
+
+    * Editors should be able to window
+    * Isometric boards size incorrectly in editor at certain resolutions
+    * Editing tools for isometric tiles enabled: rotate / flip, scroll (diagonally), layer tile.
+    * Flood fill in board/tile editor broken for some Win9x users
+    * Board Editor "Delete layer" option ineffective
+    * Tile bitmap editor
+    * the two small buttons in the board editor under the currently selected tile don't work
+    * switching between board editors while an animated tile is open gives problems
+    * When choosing tiles using "L", the tile is sometimes placed under the point clicked in the tileset window
+    * Animated tile editor does not save correctly
+    * Comments "flow" onto the next line in the RPGCode editor
+    * RPGCode editor colouring defects after switching to and from another document
+    * Enviroment doesn't change completely after creating a new project
+    * Editors should show an error when trying to save Read-Only files
+    * Tileset browser on right sometimes displays sets starting at the wrong row
+    * Placing a partly transparent tile on a board doesn't erase the replaced tile from the screen
+    * "select colour" dialog in tile editor doesn't work with multiple tiles open
+    * Editors sometimes window themselves
+    * Creating an animation with tiles, deleting, altering the tiles, remaking, the tiles aren't updated
+    * Animation editor adds extra frames
+    * Board editor cannot flood large boards (> 100 x 100)
+    * Problems pasting into/copying out of rpgcode editor
+    * Cannot open isometric tiles using "L"
+    * Layering tiles sometimes converts tile to isometric
+    * Switching between tile editors, tile data sometimes converts to isometric
+    * Tile grabber sometimes misses isometric tiles
+    * Editor will not load after "Tip of the Day" (several reports)
+
+Miscellaneous Items
+===================
+
+Corrected
+
+    * Update quick reference -- OC
+    * Crashes for some people during install
+
+Live
+
+    * Major help files being rewritten
+
+======================================================================
+- END 3.06
+======================================================================
 
 RPG Toolkit Development System 3.0.5
 Instructions and What's New
