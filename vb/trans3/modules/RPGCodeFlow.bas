@@ -223,7 +223,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             If (dataG = 0) Then
                 dUse$ = CStr(num)
             Else
-                If (Not (InStr(1, parameterList$(pList), Chr(34)))) Then
+                If (Not (InStr(1, Mid(Text, InStr(1, Text, lit) - 1, 1), Chr(34)))) Then
                     lit = lit & "!"
                     If (getValue(lit, lit, num, theProgram) = DT_NUM) Then
                         dUse = CStr(num)
