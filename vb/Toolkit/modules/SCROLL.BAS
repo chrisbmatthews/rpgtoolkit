@@ -13,20 +13,13 @@ Attribute VB_Name = "Scroll"
 ' + Replaced type declaration characters with 'as such'
 ' + Fixed various subtle isometric bugs
 ' + Swapped +s for &s where appropriate
+' + Obsolete functions removed
 '
 '=======================================================
 
 Option Explicit
 
-Private miSavedBitmaps(3) As Long
-Private Declare Function bitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal dwrop As Long) As Long
-Private Declare Function createCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function createBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal nPlanes As Long, ByVal nBitCount As Long, ByVal lpBits As Double) As Long
-Private Declare Function createCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function selectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
-Private Declare Function deleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function deleteDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function setPixelV Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" Alias "bitBlt" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal dwrop As Long) As Long
 
 Private Sub scrollDown(ByVal isIsometric As Long)
 
@@ -42,9 +35,9 @@ Private Sub scrollDown(ByVal isIsometric As Long)
     Call vbPicAutoRedraw(activeBoard.boardform, True)
     Call vbPicAutoRedraw(activeBoard.rowstrip, True)
 
-    Dim tx As Long, ty As Long
-    tx = boardList(activeBoardIndex).tilesX
-    ty = boardList(activeBoardIndex).tilesY
+    Dim tX As Long, tY As Long
+    tX = boardList(activeBoardIndex).tilesX
+    tY = boardList(activeBoardIndex).tilesY
 
     Dim iso As Boolean
     If isIsometric = 1 Then
@@ -54,22 +47,22 @@ Private Sub scrollDown(ByVal isIsometric As Long)
     If iso Then
     
         'shift board down...
-        Call bitBlt(vbPicHDC(activeBoard.boardform), _
-            0, 16, tx * 64 - 32, ty * 16 - 16, _
+        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+            0, 16, tX * 64 - 32, tY * 16 - 16, _
         vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
     
         Call vbPicFillRect(activeBoard.boardform, _
-            0, 0, tx * 64 - 32, 16 - 1, _
+            0, 0, tX * 64 - 32, 16 - 1, _
             boardList(activeBoardIndex).theData.brdColor)
         
     Else
 
-        Call bitBlt(vbPicHDC(activeBoard.boardform), _
-            0, 32, tx * 32, ty * 32, _
+        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+            0, 32, tX * 32, tY * 32, _
             vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
         
         Call vbPicFillRect(activeBoard.boardform, _
-            0, 0, tx * 32, 32 - 1, _
+            0, 0, tX * 32, 32 - 1, _
             boardList(activeBoardIndex).theData.brdColor)
 
     End If
@@ -81,7 +74,7 @@ Private Sub scrollDown(ByVal isIsometric As Long)
     If iso Then
         'must redraw the row of tiles just below the top, cos they are cut off
         cnt = 1
-        For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tx
+        For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
             xx = boardList(activeBoardIndex).topX + cnt
             y = boardList(activeBoardIndex).topY + 2
             lay = boardList(activeBoardIndex).currentLayer
@@ -95,14 +88,14 @@ Private Sub scrollDown(ByVal isIsometric As Long)
             Else
                 eo = True
             End If
-            Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilepath & tName, t - boardList(activeBoardIndex).topX, 2, ar, ag, ab, False, True, iso, eo)
+            Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, t - boardList(activeBoardIndex).topX, 2, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
     End If
     
     'draw stuff above...
     cnt = 1
-    For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tx
+    For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
         xx = boardList(activeBoardIndex).topX + cnt
         y = boardList(activeBoardIndex).topY + 1
         lay = boardList(activeBoardIndex).currentLayer
@@ -116,7 +109,7 @@ Private Sub scrollDown(ByVal isIsometric As Long)
         Else
             eo = False
         End If
-        Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilepath & tName, t - boardList(activeBoardIndex).topX, 1, ar, ag, ab, False, True, iso, eo)
+        Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, t - boardList(activeBoardIndex).topX, 1, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
 
@@ -129,9 +122,9 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
 
     On Error Resume Next
 
-    Dim tx As Long, ty As Long
-    tx = boardList(activeBoardIndex).tilesX
-    ty = boardList(activeBoardIndex).tilesY
+    Dim tX As Long, tY As Long
+    tX = boardList(activeBoardIndex).tilesX
+    tY = boardList(activeBoardIndex).tilesY
 
     Dim iso As Boolean
     If isIsometric = 1 Then
@@ -140,22 +133,22 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
 
     If iso Then
     
-        Call bitBlt(vbPicHDC(activeBoard.boardform), _
-            -64, 0, tx * 64 - 32, ty * 16 - 16, _
+        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+            -64, 0, tX * 64 - 32, tY * 16 - 16, _
             vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
         
         Call vbPicFillRect(activeBoard.boardform, _
-            tx * 64 - 96, 0, tx * 64 - 32, tx * 64 - 32, _
+            tX * 64 - 96, 0, tX * 64 - 32, tX * 64 - 32, _
             boardList(activeBoardIndex).theData.brdColor)
 
 
     Else
-        Call bitBlt(vbPicHDC(activeBoard.boardform), _
-            -32, 0, tx * 32, ty * 32, _
+        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+            -32, 0, tX * 32, tY * 32, _
             vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
             
         Call vbPicFillRect(activeBoard.boardform, _
-            tx * 32 - 32, 0, tx * 32, tx * 32, _
+            tX * 32 - 32, 0, tX * 32, tX * 32, _
             boardList(activeBoardIndex).theData.brdColor)
 
     End If
@@ -173,8 +166,8 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
     If iso Then
         'must redraw the row of tiles just above the bottom, cos they are cut off
         cnt = 1
-        For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + ty
-            xx = boardList(activeBoardIndex).topX + tx - 1
+        For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
+            xx = boardList(activeBoardIndex).topX + tX - 1
             y = boardList(activeBoardIndex).topY + cnt
             lay = boardList(activeBoardIndex).currentLayer
 
@@ -182,15 +175,15 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
             ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
             ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
             ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
-            Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilepath & tName$, tx - 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
+            Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName$, tX - 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
     End If
     
     'draw stuff below...
     cnt = 1
-    For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + ty
-        xx = boardList(activeBoardIndex).topX + tx
+    For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
+        xx = boardList(activeBoardIndex).topX + tX
         y = boardList(activeBoardIndex).topY + cnt
         lay = boardList(activeBoardIndex).currentLayer
 
@@ -198,7 +191,7 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
         ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
         ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
         ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
-        Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilepath & tName, tx, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
+        Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, tX, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
     
@@ -215,27 +208,27 @@ Private Sub scrollRight(ByVal isIsometric As Long)
         iso = True
     End If
 
-    Dim tx As Long, ty As Long
-    tx = boardList(activeBoardIndex).tilesX
-    ty = boardList(activeBoardIndex).tilesY
+    Dim tX As Long, tY As Long
+    tX = boardList(activeBoardIndex).tilesX
+    tY = boardList(activeBoardIndex).tilesY
 
     If iso Then
     
-        Call bitBlt(vbPicHDC(activeBoard.boardform), _
-            64, 0, tx * 64 - 32, ty * 16 - 16, _
+        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+            64, 0, tX * 64 - 32, tY * 16 - 16, _
             vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
         
         Call vbPicFillRect(activeBoard.boardform, _
-            0, 0, 64 - 1, tx * 64 - 32, _
+            0, 0, 64 - 1, tX * 64 - 32, _
             boardList(activeBoardIndex).theData.brdColor)
         
     Else
-        Call bitBlt(vbPicHDC(activeBoard.boardform), _
-            32, 0, tx * 32, ty * 32, _
+        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+            32, 0, tX * 32, tY * 32, _
         vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
 
         Call vbPicFillRect(activeBoard.boardform, _
-            0, 0, 32 - 1, tx * 32, _
+            0, 0, 32 - 1, tX * 32, _
             boardList(activeBoardIndex).theData.brdColor)
 
     End If
@@ -253,7 +246,7 @@ Private Sub scrollRight(ByVal isIsometric As Long)
     If iso Then
         'must redraw the row of tiles just above the bottom, cos they are cut off
         cnt = 1
-        For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + ty
+        For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
             xx = boardList(activeBoardIndex).topX + 2
             y = boardList(activeBoardIndex).topY + cnt
             lay = boardList(activeBoardIndex).currentLayer
@@ -262,14 +255,14 @@ Private Sub scrollRight(ByVal isIsometric As Long)
             ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
             ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
             ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
-            Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilepath & tName$, 2, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
+            Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName$, 2, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
     End If
     
     'draw stuff below...
     cnt = 1
-    For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + ty
+    For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
         xx = boardList(activeBoardIndex).topX + 1
         y = boardList(activeBoardIndex).topY + cnt
         lay = boardList(activeBoardIndex).currentLayer
@@ -278,7 +271,7 @@ Private Sub scrollRight(ByVal isIsometric As Long)
         ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
         ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
         ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
-        Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilepath & tName, 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
+        Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
 
@@ -298,27 +291,27 @@ Private Sub scrollUp(ByVal isIsometric As Long)
 
     Call vbPicAutoRedraw(activeBoard.boardform, True)
 
-    Dim tx As Long, ty As Long
-    tx = boardList(activeBoardIndex).tilesX
-    ty = boardList(activeBoardIndex).tilesY
+    Dim tX As Long, tY As Long
+    tX = boardList(activeBoardIndex).tilesX
+    tY = boardList(activeBoardIndex).tilesY
 
     If iso Then
 
-        Call bitBlt(vbPicHDC(activeBoard.boardform), _
-            0, -16, tx * 64 - 32, ty * 16 - 16, _
+        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+            0, -16, tX * 64 - 32, tY * 16 - 16, _
             vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
         
         Call vbPicFillRect(activeBoard.boardform, _
-            0, ty * 16 - 32, tx * 64 - 32, ty * 16 - 16, _
+            0, tY * 16 - 32, tX * 64 - 32, tY * 16 - 16, _
             boardList(activeBoardIndex).theData.brdColor)
     Else
 
-        Call bitBlt(vbPicHDC(activeBoard.boardform), _
-            0, -32, tx * 32, ty * 32, _
+        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+            0, -32, tX * 32, tY * 32, _
         vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
     
         Call vbPicFillRect(activeBoard.boardform, _
-            0, ty * 32 - 32, tx * 32, ty * 32, _
+            0, tY * 32 - 32, tX * 32, tY * 32, _
             boardList(activeBoardIndex).theData.brdColor)
     End If
     
@@ -328,9 +321,9 @@ Private Sub scrollUp(ByVal isIsometric As Long)
     If iso Then
         'must redraw the row of tiles just above the bottom, cos they are cut off
         cnt = 1
-        For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tx
+        For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
             xx = boardList(activeBoardIndex).topX + cnt
-            y = boardList(activeBoardIndex).topY + ty - 1
+            y = boardList(activeBoardIndex).topY + tY - 1
             lay = boardList(activeBoardIndex).currentLayer
     
             tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
@@ -342,16 +335,16 @@ Private Sub scrollUp(ByVal isIsometric As Long)
             Else
                 eo = True
             End If
-            Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilepath & tName, t - boardList(activeBoardIndex).topX, ty - 1, ar, ag, ab, False, True, iso, eo)
+            Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, t - boardList(activeBoardIndex).topX, tY - 1, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
     End If
 
     'draw stuff below...
     cnt = 1
-    For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tx
+    For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
         xx = boardList(activeBoardIndex).topX + cnt
-        y = boardList(activeBoardIndex).topY + ty
+        y = boardList(activeBoardIndex).topY + tY
         lay = boardList(activeBoardIndex).currentLayer
 
         tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
@@ -363,7 +356,7 @@ Private Sub scrollUp(ByVal isIsometric As Long)
         Else
             eo = False
         End If
-        Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilepath & tName, t - boardList(activeBoardIndex).topX, ty, ar, ag, ab, False, True, iso, eo)
+        Call drawtile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, t - boardList(activeBoardIndex).topX, tY, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
 
