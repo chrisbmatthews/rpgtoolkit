@@ -125,7 +125,10 @@ Private Function evaluate(ByVal Text As String) As Double
         If ((num = "") And (char = "-")) Then
             'See if adding it to the next character will make
             'a valid number
-            isValid = (isNumber(char & Mid(Text, idx + 1, 1)))
+            isValid = ( _
+                          isNumber(char & Mid(Text, idx + 1, 1)) And _
+                          (Mid(Text, idx - 1, 1) <> ")") _
+                                                           )
         Else
             'Else, check if adding this character to the current
             'number would produce a valid number
