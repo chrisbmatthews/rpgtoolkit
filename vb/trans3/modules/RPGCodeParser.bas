@@ -446,8 +446,8 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
             Select Case signs(idx)
                 Case "==", "=": numVal(idx + 1) = (numVal(idx) = numVal(idx + 1))
                 Case "~=": numVal(idx + 1) = (numVal(idx) <> numVal(idx + 1))
-                Case ">=": numVal(idx + 1) = (numVal(idx) >= numVal(idx + 1))
-                Case "<=": numVal(idx + 1) = (numVal(idx) <= numVal(idx + 1))
+                Case ">=", "=>": numVal(idx + 1) = (numVal(idx) >= numVal(idx + 1))
+                Case "<=", "=<": numVal(idx + 1) = (numVal(idx) <= numVal(idx + 1))
                 Case ">": numVal(idx + 1) = (numVal(idx) > numVal(idx + 1))
                 Case "<": numVal(idx + 1) = (numVal(idx) < numVal(idx + 1))
             End Select
@@ -466,8 +466,8 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
             Select Case signs(idx)
                 Case "==", "=": strVal(idx + 1) = CStr(CLng(strVal(idx) = strVal(idx + 1)))
                 Case "~=": strVal(idx + 1) = CStr(CLng(strVal(idx) <> strVal(idx + 1)))
-                Case ">=": strVal(idx + 1) = CStr(CLng(strVal(idx) >= strVal(idx + 1)))
-                Case "<=": strVal(idx + 1) = CStr(CLng(strVal(idx) <= strVal(idx + 1)))
+                Case ">=", "=>": strVal(idx + 1) = CStr(CLng(strVal(idx) >= strVal(idx + 1)))
+                Case "<=", "=<": strVal(idx + 1) = CStr(CLng(strVal(idx) <= strVal(idx + 1)))
                 Case ">": strVal(idx + 1) = CStr(CLng(strVal(idx) > strVal(idx + 1)))
                 Case "<": strVal(idx + 1) = CStr(CLng(strVal(idx) < strVal(idx + 1)))
             End Select
