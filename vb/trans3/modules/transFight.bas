@@ -84,22 +84,22 @@ End Sub
 Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
 
     On Error Resume Next
-   
+    
     '====================================================================================
     'Re-written by KSNiloc
     '====================================================================================
-   
+    
     'Check that we have an enemy
     If Not (parties(partyIdx).fighterList(fightIdx).isPlayer) Then
 
         'Create a pointer
         Dim ene As TKEnemy
         ene = parties(partyIdx).fighterList(fightIdx).enemy
-       
+        
         'Check if there is an AI program
         If ene.eneRPGCode <> "" Then
             'Yep-- there is
-       
+        
             Dim a As Long
             Dim b As Long
             Dim indices(5) As Long
@@ -117,14 +117,14 @@ Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
             'Randomly choose one of them
             Dim toAttack As Long
             toAttack = indices(Int(Rnd(1) * b) + 1)
-           
+            
             'Set target, source, and run the program
             CBSetTarget toAttack, TYPE_PLAYER
             CBSetSource fightIdx, TYPE_ENEMY
             runProgram projectPath & prgPath & ene.eneRPGCode, , False
-           
+            
         Else
-       
+        
             'No AI program, use internal AI
             Select Case ene.eneAI
                 Case 0
@@ -136,9 +136,9 @@ Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
                 Case 3
                     AIThree partyIdx, fightIdx
             End Select
-       
+        
         End If
-       
+        
     End If
 
 End Sub
@@ -158,11 +158,17 @@ Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex A
             
             Dim plugName As String
             plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
-            a = PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
+            
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                a = VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
+            Else
+                a = PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
+            End If
+
         End If
     End If
 End Sub
-
 
 Sub fightInformRemoveStat(ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal amountLost As Long, ByVal toSMP As Boolean, Optional ByVal msg As String = "")
     'call into the fight plugin
@@ -180,10 +186,22 @@ Sub fightInformRemoveStat(ByVal targetPartyIndex As Long, ByVal targetFighterInd
             
             If toSMP Then
                 code = INFORM_REMOVE_HP
-                a = PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                
+                ' ! MODIFIED BY KSNiloc...
+                If isVBPlugin(plugName) Then
+                    a = VBPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                Else
+                    a = PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                End If
+                
             Else
                 code = INFORM_REMOVE_SMP
-                a = PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, 0, amountLost, msg, code)
+                ' ! MODIFIED BY KSNiloc...
+                If isVBPlugin(plugName) Then
+                    a = VBPlugin(plugName).fightInform(-1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                Else
+                    a = PLUGFightInform(plugName, -1, -1, targetPartyIndex, targetFighterIndex, 0, 0, amountLost, 0, msg, code)
+                End If
             End If
         End If
     End If
@@ -205,7 +223,14 @@ Sub fightInformItemUse(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex 
             code = INFORM_SOURCE_ITEM
             Dim plugName As String
             plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
-            a = PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
+
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                a = VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
+            Else
+                a = PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, itemFile, code)
+            End If
+
         End If
     End If
 End Sub
@@ -223,7 +248,14 @@ Sub fightInformSpecialMove(ByVal sourcePartyIndex As Long, ByVal sourceFighterIn
             code = INFORM_SOURCE_SMP
             Dim plugName As String
             plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
-            a = PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
+            
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                a = VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
+            Else
+                a = PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, sourceSMPLost, targetHPLost, targetSMPLost, moveFile, code)
+            End If
+            
         End If
     End If
 End Sub
@@ -243,7 +275,14 @@ Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
             code = INFORM_SOURCE_PARTY_DEFEATED
             Dim plugName As String
             plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
-            a = PLUGFightInform(plugName, sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
+            
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                a = VBPlugin(plugName).fightInform(sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
+            Else
+                a = PLUGFightInform(plugName, sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
+            End If
+            
         End If
     End If
 End Sub
@@ -263,7 +302,14 @@ Sub fightInformCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
             code = INFORM_SOURCE_CHARGED
             Dim plugName As String
             plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
-            a = PLUGFightInform(plugName, partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
+            
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                a = VBPlugin(plugName).fightInform(partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
+            Else
+                a = PLUGFightInform(plugName, partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
+            End If
+            
         End If
     End If
 End Sub
@@ -331,10 +377,10 @@ Sub fightTick()
                         Next S
                         
                         If Not (parties(t).fighterList(u).freezeCharge) Then
-                       
+                        
                             'KSNiloc says:
                             '   Should lock BEFORE calling plugin
-                       
+                        
                             'now lock the player from charging again...
                             parties(t).fighterList(u).freezeCharge = True
                             'tell the plugin that the plyer is charged...
@@ -498,10 +544,23 @@ Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As String)
         Dim plugName As String
         plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
         
-        aa = PLUGType(plugName, PT_FIGHT)
+        ' ! MODIFIED BY KSNiloc...
+        If isVBPlugin(plugName) Then
+            aa = VBPlugin(plugName).PLUGType(PT_FIGHT)
+        Else
+            aa = PLUGType(plugName, PT_FIGHT)
+        End If
+        
         If aa = 1 Then
             Dim a As Long
-            a = PLUGFight(plugName, num, -1, bkg, canrun)
+            
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                a = VBPlugin(plugName).fight(num, -1, bkg, canrun)
+            Else
+                a = PLUGFight(plugName, num, -1, bkg, canrun)
+            End If
+            
             Select Case a
                 Case FIGHT_RUN_AUTO:
                     'run the run away program...
@@ -593,7 +652,14 @@ Sub startFightPlugin()
     If mainMem.fightPlugin <> "" Then
         Dim plugName As String
         plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
-        Call PLUGBegin(plugName)
+        
+        ' ! MODIFIED BY KSNiloc...
+        
+        If Not isVBPlugin(plugName) Then
+            PLUGBegin plugName
+        Else
+            VBPlugin(plugName).Initialize
+        End If
     End If
 End Sub
 
@@ -604,7 +670,16 @@ Sub stopFightPlugin()
     If mainMem.fightPlugin <> "" Then
         Dim plugName As String
         plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
-        Call PLUGEnd(plugName)
+        
+        ' ! MODIFIED BY KSNiloc...
+        If isVBPlugin(plugName) Then
+            VBPlugin(plugName).Terminate
+        Else
+            PLUGEnd plugName
+        End If
+        
     End If
 End Sub
+
+
 

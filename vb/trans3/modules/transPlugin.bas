@@ -177,7 +177,13 @@ Sub BeginPlugins()
         If mainMem.plugins(t) <> "" Then
             Dim plugName As String
             plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.plugins(t))
-            Call PLUGBegin(plugName)
+
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                VBPlugin(plugName).Initialize
+            Else
+                PLUGBegin plugName
+            End If
         End If
     Next t
 
@@ -208,7 +214,12 @@ Sub EndPlugins()
         If mainMem.plugins(t) <> "" Then
             Dim plugName As String
             plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.plugins(t))
-            Call PLUGEnd(plugName)
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                VBPlugin(plugName).Terminate
+            Else
+                PLUGEnd plugName
+            End If
         End If
     Next t
     
@@ -393,31 +404,50 @@ errorhandler:
     Call HandleError
     Resume Next
 End Sub
-Function QueryPlugins(mName$, text$, ByRef retval As RPGCODE_RETURN) As Boolean
+
+Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef retval As RPGCODE_RETURN) As Boolean
     'mname$ is the name of a method to call.  text$ is the full command.
     'this fuction checks if a plugin can perform this command.
     'if it can, the command is performed and we return true.
     'we return false else.
     On Error GoTo errorhandler
-    
+   
     Dim t As Long
     Dim aa As Long
     For t = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(t) <> "" Then
             Dim tt As Long
-            
+           
             Dim plugName As String
             plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.plugins(t))
-            
-            tt = PLUGType(plugName, PT_RPGCODE)
+
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                tt = VBPlugin(plugName).PLUGType(PT_RPGCODE)
+            Else
+                tt = PLUGType(plugName, PT_RPGCODE)
+            End If
+           
             If tt = 1 Then
-                aa = PLUGQuery(plugName, LCase$(mName$))
+
+                ' ! MODIFIED BY KSNiloc...
+                If isVBPlugin(plugName) Then
+                    aa = VBPlugin(plugName).Query(LCase(mName))
+                Else
+                    aa = PLUGQuery(plugName, LCase$(mName$))
+                End If
                 If aa = 1 Then
                     'the plugin can handle the command!
                     'so, pass execution to the plugin!
-                    aa = PLUGExecute(plugName, text$)
+
+                    ' ! MODIFIED BY KSNiloc...
+                    If isVBPlugin(plugName) Then
+                        aa = VBPlugin(plugName).Execute(Text, retval.dataType, retval.lit, retval.num, retval.usingReturnData)
+                    Else
+                        aa = PLUGExecute(plugName, Text$)
+                    End If
                     If aa = 0 Then
-                        Call debugger("Error: Plugin could not execute command!-- " + text$)
+                        Call debugger("Error: Plugin could not execute command!-- " + Text$)
                     End If
                     QueryPlugins = True
                     Exit Function
@@ -425,7 +455,7 @@ Function QueryPlugins(mName$, text$, ByRef retval As RPGCODE_RETURN) As Boolean
             End If
         End If
     Next t
-    
+   
     'couldn't do it!
     QueryPlugins = False
 
@@ -2942,7 +2972,7 @@ Function CBLoadString(ByVal id As Long, ByVal defaultString As String) As String
     CBLoadString = LoadStringLoc(id, defaultString)
 End Function
 
-Function CBCanvasDrawText(ByVal canvasID As Long, ByVal text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
+Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
     'callback 63
     'draw text to a canvas
     On Error Resume Next
@@ -2967,7 +2997,7 @@ Function CBCanvasDrawText(ByVal canvasID As Long, ByVal text As String, ByVal fo
         outlined = True
     End If
     
-    Call CanvasDrawText(canvasID, text, font, size, x, y, crColor, bold, italics, underline, centred, outlined)
+    Call CanvasDrawText(canvasID, Text, font, size, x, y, crColor, bold, italics, underline, centred, outlined)
     CBCanvasDrawText = 1
 End Function
 
@@ -3069,11 +3099,11 @@ Function CBPlaySound(ByVal soundFile As String) As Long
     CBPlaySound = 1
 End Function
 
-Function CBMessageWindow(ByVal text As String, ByVal textColor As Long, ByVal bgColor As Long, ByVal bgPic As String, ByVal mbtype As Long) As Long
+Function CBMessageWindow(ByVal Text As String, ByVal textColor As Long, ByVal bgColor As Long, ByVal bgPic As String, ByVal mbtype As Long) As Long
     'callback 74
     'pop up a message box
     On Error Resume Next
-    CBMessageWindow = MBox(text, "", mbtype, textColor, bgColor, PakLocate(projectPath$ + bmpPath$ + bgPic))
+    CBMessageWindow = MBox(Text, "", mbtype, textColor, bgColor, PakLocate(projectPath$ + bmpPath$ + bgPic))
 End Function
 
 Function CBFileDialog(ByVal initialPath As String, ByVal fileFilter As String) As String
@@ -3498,11 +3528,11 @@ Sub CBFightTick()
     Call fightTick
 End Sub
 
-Function CBDrawTextAbsolute(ByVal text As String, ByVal font As String, ByVal size As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
+Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
     'callback 125
     'draw text directly to the screen at x, y (pixels)
     On Error Resume Next
-    CBDrawTextAbsolute = DXDrawText(x, y, text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
+    CBDrawTextAbsolute = DXDrawText(x, y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
 End Function
 
 Sub CBReleaseFighterCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)

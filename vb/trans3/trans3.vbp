@@ -75,6 +75,7 @@ Module=transInventory; modules\transInventory.bas
 Module=transFightAI; modules\transFightAI.bas
 Module=CommonTKAudiere; ..\tkCommon\modules\CommonTKAudiere.bas
 Module=ClassRoutines; modules\RPGCodeClasses.bas
+Class=clsVbPlugin; ..\tkCommon\classes\clsVBPlugin.cls
 IconForm="endform"
 Startup="Sub Main"
 HelpFile=""

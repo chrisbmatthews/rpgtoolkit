@@ -10,53 +10,72 @@ Option Explicit
 
 Public bInMenu As Boolean   'currently running a menu?
 
-Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
+Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
     'show menu system
     'version 3 menus run through plugins :)
     On Error Resume Next
-    
+   
     'quit if we're already shpwing the menu...
     If bInMenu Then Exit Sub
     If fightInProgress Then Exit Sub
-    
+   
     If mainMem.menuPlugin <> "" Then
         Dim aa As Long
-        
+       
         Dim plugName As String
         plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.menuPlugin)
-        
-        aa = PLUGType(plugName, PT_MENU)
+       
+        ' ! MODIFIED BY KSNiloc...
+        If isVBPlugin(plugName) Then
+            aa = VBPlugin(plugName).PLUGType(PT_MENU)
+        Else
+            aa = PLUGType(plugName, PT_MENU)
+        End If
+       
         If aa = 1 Then
             Dim a As Long
             bInMenu = True
-            a = PLUGMenu(plugName, requestedMenu)
+           
+            ' ! MODIFIED BY KSNiloc...
+            If isVBPlugin(plugName) Then
+                a = VBPlugin(plugName).Menu(requestedMenu)
+            Else
+                a = PLUGMenu(plugName, requestedMenu)
+            End If
+           
             bInMenu = False
-            'Call WaitForKey
         End If
     End If
-    'mainmenu.Show 1
 End Sub
 
-
-Sub startMenuPlugin()
+Public Sub startMenuPlugin()
     'init menu plugin
     'InitPlugins must have been called first
     On Error Resume Next
     If mainMem.menuPlugin <> "" Then
         Dim plugName As String
         plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.menuPlugin)
-        Call PLUGBegin(plugName)
+        ' ! MODIFIED BY KSNiloc...
+        If isVBPlugin(plugName) Then
+            VBPlugin(plugName).Initialize
+        Else
+            PLUGBegin plugName
+        End If
     End If
 End Sub
 
-Sub stopMenuPlugin()
+Public Sub stopMenuPlugin()
     'end menu plugin
     'InitPlugins must have been called first
     On Error Resume Next
     If mainMem.menuPlugin <> "" Then
         Dim plugName As String
         plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.menuPlugin)
-        Call PLUGEnd(plugName)
+        ' ! MODIFIED BY KSNiloc...
+        If isVBPlugin(plugName) Then
+            VBPlugin(plugName).Terminate
+        Else
+            PLUGEnd plugName
+        End If
     End If
 End Sub
-
