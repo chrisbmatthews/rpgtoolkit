@@ -60,7 +60,7 @@ End Sub
 
 Public Function Query(ByVal commandName As String) As Long: On Error Resume Next
     'Querys a plugin to see if it can do a command
-    Query = BooleanToLong(obj.RPGCode_Query(commandName))
+    Query = booleanToLong(obj.RPGCode_Query(commandName))
 End Function
 
 Public Function Execute( _
@@ -74,7 +74,7 @@ Public Function Execute( _
     On Error Resume Next
 
     'Executes an RPGCode command using a plugin
-    Execute = BooleanToLong(obj.RPGCode_Execute(commandLine, retValDT, retValLit, retValNum, usingReturnData))
+    Execute = booleanToLong(obj.RPGCode_Execute(commandLine, retValDT, retValLit, retValNum, usingReturnData))
 
 End Function
 
@@ -95,7 +95,7 @@ End Function
 
 Public Function plugType(ByVal requestedFeature As Long) As Long: On Error Resume Next
     'Detects what this plugin does
-    plugType = BooleanToLong(obj.plugType(requestedFeature))
+    plugType = booleanToLong(obj.plugType(requestedFeature))
 End Function
 
 '============================================================
@@ -290,24 +290,24 @@ Public Function CBDestroyCanvas(ByVal canvasID As Long) As Long
     CBDestroyCanvas = transPlugin.CBDestroyCanvas(canvasID)
 End Function
 
-Public Function CBDrawCanvas(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long) As Long
-    CBDrawCanvas = transPlugin.CBDrawCanvas(canvasID, X, Y)
+Public Function CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) As Long
+    CBDrawCanvas = transPlugin.CBDrawCanvas(canvasID, x, y)
 End Function
 
 Public Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long) As Long
     CBDrawCanvasPartial = transPlugin.CBDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, Width, height)
 End Function
 
-Public Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crTransparentColor As Long) As Long
-    CBDrawCanvasTransparent = transPlugin.CBDrawCanvasTransparent(canvasID, X, Y, crTransparentColor)
+Public Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTransparentColor As Long) As Long
+    CBDrawCanvasTransparent = transPlugin.CBDrawCanvasTransparent(canvasID, x, y, crTransparentColor)
 End Function
 
 Public Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal Width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
     CBDrawCanvasTransparentPartial = transPlugin.CBDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, Width, height, crTransparentColor)
 End Function
 
-Public Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
-    CBDrawCanvasTranslucent = transPlugin.CBDrawCanvasTranslucent(canvasID, X, Y, dIntensity, crUnaffectedColor, crTransparentColor)
+Public Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
+    CBDrawCanvasTranslucent = transPlugin.CBDrawCanvasTranslucent(canvasID, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
 End Function
 
 Public Function CBCanvasLoadImage(ByVal canvasID As Long, ByVal filename As String) As Long
@@ -354,12 +354,12 @@ Public Function CBLoadString(ByVal id As Long, ByVal defaultString As String) As
     CBLoadString = transPlugin.CBLoadString(id, defaultString)
 End Function
 
-Public Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Double, ByVal Y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long) As Long
-    CBCanvasDrawText = transPlugin.CBCanvasDrawText(canvasID, Text, font, size, X, Y, crColor, isBold, isItalics, isUnderline, isCentred)
+Public Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long) As Long
+    CBCanvasDrawText = transPlugin.CBCanvasDrawText(canvasID, Text, font, size, x, y, crColor, isBold, isItalics, isUnderline, isCentred)
 End Function
 
-Public Function CBCanvasPopup(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal stepSize As Long, ByVal popupType As Long) As Long
-    CBCanvasPopup = transPlugin.CBCanvasPopup(canvasID, X, Y, stepSize, popupType)
+Public Function CBCanvasPopup(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal stepSize As Long, ByVal popupType As Long) As Long
+    CBCanvasPopup = transPlugin.CBCanvasPopup(canvasID, x, y, stepSize, popupType)
 End Function
 
 Public Function CBCanvasWidth(ByVal canvasID As Long) As Long
@@ -518,8 +518,8 @@ Public Sub CBSetEnemySMP(ByVal amount As Long, ByVal eneIdx As Long)
     transPlugin.CBSetEnemySMP amount, eneIdx
 End Sub
 
-Public Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal height As Long)
-    transPlugin.CBCanvasDrawBackground canvasID, bkgFile, X, Y, Width, height
+Public Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
+    transPlugin.CBCanvasDrawBackground canvasID, bkgFile, x, y, Width, height
 End Sub
 
 Public Function CBCreateAnimation(ByVal file As String) As Long
@@ -530,12 +530,12 @@ Public Sub CBDestroyAnimation(ByVal idx As Long)
     transPlugin.CBDestroyAnimation idx
 End Sub
 
-Public Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal X As Long, ByVal Y As Long, ByVal forceDraw As Long)
-    transPlugin.CBCanvasDrawAnimation canvasID, idx, X, Y, forceDraw, 0
+Public Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal forceDraw As Long)
+    transPlugin.CBCanvasDrawAnimation canvasID, idx, x, y, forceDraw, 0
 End Sub
 
-Public Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal frame As Long, ByVal X As Long, ByVal Y As Long, ByVal forceTranspFill As Long)
-    transPlugin.CBCanvasDrawAnimationFrame canvasID, idx, frame, X, Y, forceTranspFill
+Public Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal frame As Long, ByVal x As Long, ByVal y As Long, ByVal forceTranspFill As Long)
+    transPlugin.CBCanvasDrawAnimationFrame canvasID, idx, frame, x, y, forceTranspFill
 End Sub
 
 Public Function CBAnimationCurrentFrame(ByVal idx As Long) As Long
@@ -602,8 +602,8 @@ Public Sub CBFightTick()
     transPlugin.CBFightTick
 End Sub
 
-Public Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long) As Long
-    CBDrawTextAbsolute = transPlugin.CBDrawTextAbsolute(Text, font, size, X, Y, crColor, isBold, isItalics, isUnderline, isCentred)
+Public Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long) As Long
+    CBDrawTextAbsolute = transPlugin.CBDrawTextAbsolute(Text, font, size, x, y, crColor, isBold, isItalics, isUnderline, isCentred)
 End Function
 
 Public Sub CBReleaseFighterCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)

@@ -84,6 +84,8 @@ Public Sub closeSystems()
     Call killMedia
     Call DeletePakTemp
     Call CloseWindow(host.hwnd)
+    Call DestroyWindow(host.hwnd)
+    Call UnregisterClass(host.className, App.hInstance)
 End Sub
 
 '==========================================
@@ -396,7 +398,7 @@ Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
 
         'Do events ten times
         For a = 1 To 10
-            DoEvents
+            Call processEvent
         Next a
 
         'Get tick count again

@@ -1678,7 +1678,7 @@ Public Sub renderRPGCodeScreen()
     End If
 
     Call DXRefresh
-    DoEvents '[KSNiloc]
+    Call processEvent '[KSNiloc]
 End Sub
 
 

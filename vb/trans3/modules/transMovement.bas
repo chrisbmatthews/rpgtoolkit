@@ -258,7 +258,7 @@ Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer,
     'to have another array
     
     Do
-        DoEvents
+        Call processEvent
         bChanged = False
         For sx = 1 To boardList(activeBoardIndex).theData.Bsizex
             For sy = 1 To boardList(activeBoardIndex).theData.Bsizey
@@ -425,7 +425,7 @@ Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer,
             sx = bestX
             sy = bestY
             
-            DoEvents
+            Call processEvent
         Loop
         
         'Edit: we now have a string with an extra comma on the end, so:

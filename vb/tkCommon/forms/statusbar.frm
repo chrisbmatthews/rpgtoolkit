@@ -69,7 +69,11 @@ Option Explicit
 Public Sub setStatus(ByVal sPercent As Long, ByVal cap As String)
     On Error Resume Next
     imgLoading.Width = sPercent * maxProgress.Width / 100
-    DoEvents
+    #If isToolkit = 0 Then
+        Call processEvent
+    #Else
+        DoEvents
+    #End If
 End Sub
 
 Private Sub Form_Load()
@@ -77,6 +81,8 @@ Private Sub Form_Load()
     imgLoading.Width = 0
     #If isToolkit = 1 Then
         Call SetParent(Me.hwnd, tkMainForm.hwnd)
+        DoEvents
+    #Else
+        Call processEvent
     #End If
-    DoEvents
 End Sub

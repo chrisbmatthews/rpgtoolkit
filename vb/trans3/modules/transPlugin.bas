@@ -143,7 +143,7 @@ Option Explicit
 '127-Function CBFightDoAttack(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal amount As Long, ByVal toSMP As Long) As Long
 '128-Sub CBFightUseItem(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal itemFile As String)
 '129-Sub CBFightUseSpecialMove(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal moveFile As String)
-'130-Sub CBDoEvents()
+'130-Sub CBcall processevent()
 '131-Sub CBFighterAddStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
 '132-Sub CBFighterRemoveStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
 
@@ -1504,10 +1504,10 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
             CBGetGeneralNum = equipFPadd(playerSlot)
             Exit Function
         Case 5:
-            CBGetGeneralNum = ppos(playerSlot).X
+            CBGetGeneralNum = ppos(playerSlot).x
             Exit Function
         Case 6:
-            CBGetGeneralNum = ppos(playerSlot).Y
+            CBGetGeneralNum = ppos(playerSlot).y
             Exit Function
         Case 7:
             CBGetGeneralNum = ppos(playerSlot).l
@@ -1562,11 +1562,11 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
             Exit Function
         Case 24:
             playerSlot = inBounds(playerSlot, 0, 3)
-            CBGetGeneralNum = enemyMem(playerSlot).X
+            CBGetGeneralNum = enemyMem(playerSlot).x
             Exit Function
         Case 25:
             playerSlot = inBounds(playerSlot, 0, 3)
-            CBGetGeneralNum = enemyMem(playerSlot).Y
+            CBGetGeneralNum = enemyMem(playerSlot).y
             Exit Function
         Case 26:
             CBGetGeneralNum = 0
@@ -1634,7 +1634,7 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
             Call checkMusic
             Exit Sub
         Case 9:
-            Call openboard(projectPath$ + brdPath$ + newVal, boardList(activeBoardIndex).theData)
+            Call openBoard(projectPath$ + brdPath$ + newVal, boardList(activeBoardIndex).theData)
             'clear non-persistent threads...
             Call ClearNonPersistentThreads
             lastRender.canvas = -1
@@ -1710,10 +1710,10 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
             equipFPadd(playerSlot) = newVal
             Exit Sub
         Case 5:
-            ppos(playerSlot).X = newVal
+            ppos(playerSlot).x = newVal
             Exit Sub
         Case 6:
-            ppos(playerSlot).Y = newVal
+            ppos(playerSlot).y = newVal
             Exit Sub
         Case 7:
             ppos(playerSlot).l = newVal
@@ -1774,11 +1774,11 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
             Exit Sub
         Case 24:
             playerSlot = inBounds(playerSlot, 0, 3)
-            enemyMem(playerSlot).X = newVal
+            enemyMem(playerSlot).x = newVal
             Exit Sub
         Case 25:
             playerSlot = inBounds(playerSlot, 0, 3)
-            enemyMem(playerSlot).X = newVal
+            enemyMem(playerSlot).x = newVal
             Exit Sub
         Case 26:
             'fwOffsetX = newVal
@@ -2818,12 +2818,12 @@ Function CBDestroyCanvas(ByVal canvasID As Long) As Long
     CBDestroyCanvas = 1
 End Function
 
-Function CBDrawCanvas(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long) As Long
+Function CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) As Long
     'callback 47
     'display an offscreen canvas
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvas(canvasID, X, Y)
+        Call DXDrawCanvas(canvasID, x, y)
         CBDrawCanvas = 1
     Else
         CBDrawCanvas = 0
@@ -2842,12 +2842,12 @@ Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal 
     End If
 End Function
 
-Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crTransparentColor As Long) As Long
+Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTransparentColor As Long) As Long
     'callback 49
     'display an offscreen canvas with transparency
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTransparent(canvasID, X, Y, crTransparentColor)
+        Call DXDrawCanvasTransparent(canvasID, x, y, crTransparentColor)
         CBDrawCanvasTransparent = 1
     Else
         CBDrawCanvasTransparent = 0
@@ -2866,13 +2866,13 @@ Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As L
     End If
 End Function
 
-Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
+Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
     'callback 51
     'display an offscreen canvas with translucency
     On Error Resume Next
     
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTranslucent(canvasID, X, Y, dIntensity, crUnaffectedColor, crTransparentColor)
+        Call DXDrawCanvasTranslucent(canvasID, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
         CBDrawCanvasTranslucent = 1
     Else
         CBDrawCanvasTranslucent = 0
@@ -2972,7 +2972,7 @@ Function CBLoadString(ByVal id As Long, ByVal defaultString As String) As String
     CBLoadString = LoadStringLoc(id, defaultString)
 End Function
 
-Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Double, ByVal Y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
+Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
     'callback 63
     'draw text to a canvas
     On Error Resume Next
@@ -2997,16 +2997,16 @@ Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal fo
         outlined = True
     End If
     
-    Call CanvasDrawText(canvasID, Text, font, size, X, Y, crColor, Bold, Italics, Underline, centred, outlined)
+    Call CanvasDrawText(canvasID, Text, font, size, x, y, crColor, Bold, Italics, Underline, centred, outlined)
     CBCanvasDrawText = 1
 End Function
 
-Function CBCanvasPopup(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal stepSize As Long, ByVal popupType As Long) As Long
+Function CBCanvasPopup(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal stepSize As Long, ByVal popupType As Long) As Long
     'callback 64
     'draw canvas (but pop it up)
     On Error Resume Next
     stepSize = inBounds(stepSize, 1, 100)
-    Call PopupCanvas(canvasID, X, Y, stepSize, popupType)
+    Call PopupCanvas(canvasID, x, y, stepSize, popupType)
     CBCanvasPopup = 1
 End Function
 
@@ -3356,11 +3356,11 @@ Sub CBSetEnemySMP(ByVal amount As Long, ByVal eneIdx As Long)
     Call setEnemySMP(amount, enemyMem(eneIdx))
 End Sub
 
-Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal height As Long)
+Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
     'callback 104
     'draw fight background to canvas
     On Error Resume Next
-    Call CanvasDrawBackground(canvasID, projectPath$ + bkgPath$ + bkgFile, X, Y, Width, height)
+    Call CanvasDrawBackground(canvasID, projectPath$ + bkgPath$ + bkgFile, x, y, Width, height)
 End Sub
 
 Function CBCreateAnimation(ByVal file As String) As Long
@@ -3377,7 +3377,7 @@ Sub CBDestroyAnimation(ByVal idx As Long)
     Call DestroyAnimation(idx)
 End Sub
 
-Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal X As Long, ByVal Y As Long, ByVal forceDraw As Long, ByVal forceTranspFill As Long)
+Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal forceDraw As Long, ByVal forceTranspFill As Long)
     'callback 107
     'draw a loaded animation inot a canvas -- advance the frame if necissary
     'if forcedraw = 1 then it will force the frma eot be re-drawn
@@ -3394,10 +3394,10 @@ Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal X As 
         forceFill = True
     End If
     
-    Call DrawAnimationIndexCanvas(idx, X, Y, canvasID, force, forceFill)
+    Call DrawAnimationIndexCanvas(idx, x, y, canvasID, force, forceFill)
 End Sub
 
-Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal frame As Long, ByVal X As Long, ByVal Y As Long, ByVal forceTranspFill As Long)
+Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal frame As Long, ByVal x As Long, ByVal y As Long, ByVal forceTranspFill As Long)
     'callback 108
     'draw a loaded animation inot a canvas (specific frame)
     On Error Resume Next
@@ -3408,7 +3408,7 @@ Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal 
         forceFill = True
     End If
     
-    Call DrawAnimationIndexCanvasFrame(idx, frame, X, Y, canvasID, forceFill)
+    Call DrawAnimationIndexCanvasFrame(idx, frame, x, y, canvasID, forceFill)
 End Sub
 
 
@@ -3528,11 +3528,11 @@ Sub CBFightTick()
     Call fightTick
 End Sub
 
-Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
+Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
     'callback 125
     'draw text directly to the screen at x, y (pixels)
     On Error Resume Next
-    CBDrawTextAbsolute = DXDrawText(X, Y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
+    CBDrawTextAbsolute = DXDrawText(x, y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
 End Function
 
 Sub CBReleaseFighterCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
@@ -3572,7 +3572,7 @@ Sub CBDoEvents()
     'callback 130
     'do events
     On Error Resume Next
-    DoEvents
+    Call processEvent
 End Sub
 
 Sub CBFighterAddStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)

@@ -286,8 +286,6 @@ Public Sub mainEventLoop()
     Loop
 
     'Clean up
-    Call DestroyWindow(m_hwnd)
-    Call UnregisterClass(WINDOWS_CLASS, App.hInstance)
     Call closeSystems
     Call endform.Show(vbModal)
 

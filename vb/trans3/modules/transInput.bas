@@ -147,7 +147,7 @@ Sub FlushKB()
     Loop
 End Sub
 
-Public Sub doEventsFor(ByVal milliSeconds As Long)
+Public Sub DoEventsFor(ByVal milliSeconds As Long)
 
     '================================================
     'Do events for a certain period of time [KSNiloc]
@@ -173,7 +173,7 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
     'Fixed error in Get command where LEFT and RIGHT are inversed.
     'Added recognition for SPACE.
     'Renamed variables: t >> repeat
-    'Removed: ll: DoEvents does not need to return a value.
+    'Removed: ll: call processevent does not need to return a value.
     '=============================
     'Gets the contents of the keyboard or joystick buffer.
     
@@ -184,8 +184,8 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
     'Clear the last pressed key.
     keyWaitState = -1
 
-    'DoEvents so we can get a key...
-    doEventsFor milliSeconds
+    'call processevent so we can get a key...
+    Call DoEventsFor(milliSeconds)
 
     'Check the joystick.
     Dim jButton(4) As Boolean
@@ -238,7 +238,7 @@ End Function
 Function getAsciiKey() As String
     '=============================
     'Renamed variables: t >> repeat
-    'Removed: ll: DoEvents does not need to return a value.
+    'Removed: ll: call processevent does not need to return a value.
     '=============================
     'Gets whatever is in keyboard buffer (ASCII values!)
     
@@ -251,7 +251,7 @@ Function getAsciiKey() As String
     
     Dim repeat As Integer
     
-    'Call DoEvents 10 times(!). Give enough time for an input.
+    'Call call processevent 10 times(!). Give enough time for an input.
     For repeat = 0 To 10
         Call processEvent
     Next repeat
@@ -442,7 +442,7 @@ Public Sub getMouseNoWait(ByRef x As Long, ByRef y As Long)
     On Error Resume Next
     
     bWaitingForInput = True
-    Call doEventsFor(15)
+    Call DoEventsFor(15)
     bWaitingForInput = False
 
     x = Round(mouseX)
@@ -599,7 +599,7 @@ Function isPressed(ByVal theKey As String) As Boolean
             End If
     End Select
     
-    DoEvents
+    Call processEvent
     
 End Function
 

@@ -17,7 +17,7 @@ Option Explicit
 
 Public target As Long             'targeted player number
 Public targetType As TARGET_TYPE  'targetted type
-Public source As Long             'source player number
+Public Source As Long             'source player number
 Public sourceType As TARGET_TYPE  'source type
 
 Public Enum TARGET_TYPE           'targetted type
@@ -496,3 +496,12 @@ Public Sub gameSpeed(ByVal speed As Integer)
             walkDelay = 0.005
     End Select
 End Sub
+
+'=========================================================================
+' Returns radians from degrees
+'=========================================================================
+Public Function radians(ByVal degrees As Double) As Double
+    On Error Resume Next
+    Const PI = 3.14159265358979
+    radians = degrees / 180 * PI
+End Function

@@ -106,7 +106,11 @@ Public Function WndProc( _
 
         Case WM_DESTROY
             'Window was closed-- bail!
-            If Not gShuttingDown Then Call PostQuitMessage(0)
+            If Not gShuttingDown Then
+                Call closeSystems
+                Call endform.Show(vbModal)
+                End
+            End If
 
         Case WM_CHAR
             'Key was pressed
@@ -123,7 +127,7 @@ Public Function WndProc( _
         Case WM_LBUTTONDOWN
             'Left mouse button pressed
             Call mouseDownEvent(LoWord(lParam), HiWord(lParam), LoWord(wParam), 1)
-            
+
         Case WM_ACTIVATE
             If wParam <> WA_INACTIVE Then
                 'Window is being *activated*

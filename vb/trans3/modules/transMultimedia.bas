@@ -232,7 +232,7 @@ Public Sub playVideo(ByVal file As String, Optional ByVal windowed As Boolean)
     windowStateNow = video.WindowState
 
     Do Until (pos.CurrentPosition = pos.StopTime) Or (video.WindowState <> windowStateNow)
-        DoEvents
+        Call processEvent
     Loop
 
     video.Visible = False

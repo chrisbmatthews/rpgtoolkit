@@ -1280,7 +1280,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CosRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub CosRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error Resume Next
     
@@ -1289,25 +1289,22 @@ Sub CosRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retva
     Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
+    If Not paras(0).dataType = DT_NUM Then
+        Call debugger("Cos() requires a numerical data element-- " & Text)
+        Exit Sub
+    End If
+
     Select Case CountData(Text)
     
         Case 1
-            If Not paras(0).dataType = DT_NUM Then
-                debugger "Cos() requires a numerical data element-- " & Text
-                Exit Sub
-            End If
             retval.dataType = DT_NUM
-            retval.num = Cos(paras(0).num)
+            retval.num = Cos(radians(paras(0).num))
         
         Case 2
-            If Not paras(0).dataType = DT_NUM Then
-                debugger "Cos() requires a numerical data element-- " & Text
-                Exit Sub
-            End If
-            SetVariable paras(1).dat, Cos(paras(0).num), theProgram
+            Call SetVariable(paras(1).dat, Cos(radians(paras(0).num)), theProgram)
         
         Case Else
-            debugger "Cos() requires one or two data elements-- " & Text
+            Call debugger("Cos() requires one or two data elements-- " & Text)
     
     End Select
 
@@ -1928,7 +1925,7 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
         End If
         
-    Else
+    'Else
     
         'If isMultiTasking() Then
         '
@@ -2811,7 +2808,7 @@ Public Sub GetRPG( _
             If retval.usingReturnData Then
                 
                 'We're using the return data. That means that it's
-                'specifying the number of milliSeconds to doEvents for.
+                'specifying the number of milliSeconds to call processevent for.
                 
                 If Not paras(0).dataType = DT_NUM Then
                     debugger "Get()'s millisecond specification must be numerical-- " & Text
@@ -4207,13 +4204,13 @@ Sub MidiPlayRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: MediaPlay data type must be literal!-- " + Text$)
     Else
         boardList(activeBoardIndex).theData.boardMusic$ = lit$
-        DoEvents
+        Call processEvent
         Dim oi As Boolean
         oi = bWaitingForInput
         bWaitingForInput = False
         Call checkMusic
         bWaitingForInput = oi
-        DoEvents
+        Call processEvent
     End If
 
     Exit Sub
@@ -4230,13 +4227,13 @@ Sub MidiRestRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'Stops media
     On Error GoTo errorhandler
     boardList(activeBoardIndex).theData.boardMusic$ = ""
-    DoEvents
+    Call processEvent
     Dim oi As Boolean
     oi = bWaitingForInput
     bWaitingForInput = False
     Call checkMusic
     bWaitingForInput = oi
-    DoEvents
+    Call processEvent
 
     Exit Sub
 'Begin error handling code:
@@ -4381,7 +4378,7 @@ Sub Mp3PauseRPG(Text$, ByRef theProgram As RPGCodeProgram)
         dataUse$ = PakLocate(dataUse$)
         Call playSoundFX(dataUse$)
         Do While (TKAudiereIsPlaying(fgDevice) = 1)
-            DoEvents
+            Call processEvent
         Loop
     End If
 
@@ -4402,7 +4399,7 @@ Sub MWinClsRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Call hideMsgBox
     Call renderRPGCodeScreen
     
-    DoEvents
+    Call processEvent
 
     Exit Sub
 'Begin error handling code:
@@ -6906,7 +6903,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub SinRPG(Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub SinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error Resume Next
     
@@ -6923,14 +6920,14 @@ Public Sub SinRPG(Text As String, ByRef theProgram As RPGCodeProgram, ByRef retv
                 Exit Sub
             End If
             retval.dataType = DT_NUM
-            retval.num = Sin(paras(0).num)
+            retval.num = Sin(radians(paras(0).num))
         
         Case 2
             If Not paras(0).dataType = DT_NUM Then
                 debugger "Sin() requires a numerical data element-- " & Text
                 Exit Sub
             End If
-            SetVariable paras(1).dat, Sin(paras(0).num), theProgram
+            SetVariable paras(1).dat, Sin(radians(paras(0).num)), theProgram
         
         Case Else
             debugger "Sin() requires one or two data elements-- " & Text
@@ -7471,7 +7468,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub TanRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub TanRPG(ByVal Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error Resume Next
     
@@ -7488,14 +7485,14 @@ Sub TanRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RE
                 Exit Sub
             End If
             retval.dataType = DT_NUM
-            retval.num = Tan(paras(0).num)
+            retval.num = Tan(radians(paras(0).num))
         
         Case 2
             If Not paras(0).dataType = DT_NUM Then
                 debugger "Tan() requires a numerical data element-- " & Text
                 Exit Sub
             End If
-            SetVariable paras(1).dat, Tan(paras(0).num), theProgram
+            SetVariable paras(1).dat, Tan(radians(paras(0).num)), theProgram
 
         Case Else
             debugger "Tan() requires one or two data elements-- " & Text
@@ -8589,7 +8586,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
                 curLine = oldLine
                 theProgram.programPos = oldLine
 
-                DoEvents 'Let windows do events so we don't lock up.
+                Call processEvent 'Let windows do events so we don't lock up.
             Loop
             
         End If
@@ -9739,8 +9736,8 @@ Sub FightEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Next t
     bk$ = addExt(bk$, ".bkg")
     Call runFight(en$(), number - 1, bk$)
-    Do While fightInProgress = True
-        a = DoEvents
+    Do While fightInProgress
+        Call processEvent
     Loop
 
     Exit Sub
@@ -9773,8 +9770,8 @@ Sub FightRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     lit2$ = addExt(lit2$, ".bkg")
     Call skilledFight(num, lit2$)
-    Do While fightInProgress = True
-        a = DoEvents
+    Do While fightInProgress
+        Call processEvent
     Loop
 
     Exit Sub
@@ -9894,11 +9891,7 @@ Public Function addExt(ByVal Text As String, ByVal ext As String) As String
 
     On Error Resume Next
     
-    Dim txt As String
-    Dim theext As String
-    
-    theext = GetExt(Text)
-    If theext = "" Then
+    If GetExt(Text) = "" Then
         Text = Text & ext
     End If
     addExt = Text
@@ -9921,7 +9914,7 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Dim pPic As String
     Dim f As String
     
-    DoEvents
+    Call processEvent
     If lineNum = 1 Then
         If MWinBkg <> -1 Then
             Call CanvasFill(cnvMsgBox, MWinBkg)
@@ -9935,7 +9928,7 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
             End If
         End If
     End If
-    'DoEvents
+    'call processevent
 
     Dim yHeight As Long
     Dim xHeight As Long

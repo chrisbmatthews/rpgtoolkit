@@ -74,7 +74,7 @@ Public Sub debugger(ByVal Text As String)
         If debugYN = 1 Then
             Call debugwin.Show
             debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
-            DoEvents
+            Call processEvent
         Else
             Call Unload(debugwin)
         End If
@@ -551,7 +551,7 @@ Public Sub moveToStartOfBlock(ByRef prg As RPGCodeProgram)
                 Exit Do
             
         End Select
-        DoEvents
+        Call processEvent
         prg.programPos = increment(prg)
     Loop
     
@@ -607,14 +607,14 @@ Public Function runBlock( _
                        Or prg.programPos = -2 _
                        Or (Not runningProgram) _
                                                  Then done = True
-       
+
        'Prevent lockup...
-       DoEvents
-       
+       Call processEvent
+
     Loop
 
     runBlock = prg.programPos
-    
+
 End Function
 
 '=========================================================================
@@ -837,7 +837,7 @@ Public Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1
                 errorsA = 0
                 theProgram.programPos = -1
             End If
-            DoEvents
+            Call processEvent
         Loop
     Else
         theProgram.programPos = -1

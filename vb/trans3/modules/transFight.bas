@@ -380,7 +380,7 @@ Public Sub fightTick()
         Call fightInformPartyDefeated(ENEMY_PARTY)
     End If
     
-    DoEvents
+    Call processEvent
 
 End Sub
 

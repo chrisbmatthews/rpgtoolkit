@@ -460,7 +460,7 @@ Public Sub incrementThreadLoop(ByVal num As Long)
     End Select
 
     'Don't let us lock up...
-    DoEvents
+    Call processEvent
 
     loopPRG(num) = prg
     If loopDepth(num) = 0 Then endThreadLoop num
