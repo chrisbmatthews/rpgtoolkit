@@ -457,11 +457,10 @@ Public Sub gameOver()
         Call DXClearScreen(0)
         Call DXDrawText(1, 1, "Game Over...", "Arial", 48, RGB(255, 255, 255), 1, 0, 0, 0, 0)
         Call WaitForKey
+        Call ResetRPG(theProgram)
     Else
         Call runProgram(projectPath & prgPath & mainMem.gameOverPrg)
     End If
-    ' Colin, 3.0.6: Do not reset the game
-    ' Call ResetRPG(theProgram)
 End Sub
 
 '=========================================================================
