@@ -24,8 +24,7 @@ Public Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObje
 Public Declare Function AddFontResource Lib "gdi32" Alias "AddFontResourceA" (ByVal lpFileName As String) As Long
 Public Declare Function RemoveFontResource Lib "gdi32" Alias "RemoveFontResourceA" (ByVal lpFileName As String) As Long
 Public Declare Function SetTextAlign Lib "gdi32" (ByVal hdc As Long, ByVal wFlags As Long) As Long
-Public Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hdc As Long, ByVal lpsz As String, ByVal cbString As Long, lpSize As Size) As Long
-
+Public Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hdc As Long, ByVal lpsz As String, ByVal cbString As Long, lpSize As size) As Long
 
 '=========================================================================
 ' Text alignments
@@ -70,7 +69,7 @@ Public Type DRAWTEXTPARAMS
     iRightMargin As Long
     uiLengthDrawn As Long
 End Type
-Public Type Size
+Public Type size
     cx As Long
     cy As Long
 End Type
@@ -146,15 +145,15 @@ Public Const PROOF_QUALITY = 2
 '=========================================================================
 ' Font pitch and family
 '=========================================================================
-Public Const DEFAULT_PITCH = 0   'default pitch
-Public Const FIXED_PITCH = 1     'fixed pitch (cannot change)
-Public Const VARIABLE_PITCH = 2  'variable pitch (able to change)
-Public Const FF_DECORATIVE = 80  'Old English, etc.
-Public Const FF_DONTCARE = 0     'Don't care or don't know.
-Public Const FF_MODERN = 48      'Constant stroke width, serifed or sans-serifed.
-Public Const FF_ROMAN = 16       'Variable stroke width, serifed.
-Public Const FF_SCRIPT = 64      'Cursive, etc.
-Public Const FF_SWISS = 32       'Variable stroke width, sans-serifed.
+Public Const DEFAULT_PITCH = 0   ' default pitch
+Public Const FIXED_PITCH = 1     ' fixed pitch (cannot change)
+Public Const VARIABLE_PITCH = 2  ' variable pitch (able to change)
+Public Const FF_DECORATIVE = 80  ' Old English, etc.
+Public Const FF_DONTCARE = 0     ' Don't care or don't know.
+Public Const FF_MODERN = 48      ' Constant stroke width, serifed or sans-serifed.
+Public Const FF_ROMAN = 16       ' Variable stroke width, serifed.
+Public Const FF_SCRIPT = 64      ' Cursive, etc.
+Public Const FF_SWISS = 32       ' Variable stroke width, sans-serifed.
 
 '=========================================================================
 ' Determines if a font is a toolkit font
@@ -204,7 +203,7 @@ End Sub
 '=========================================================================
 ' Assign a font to a device
 '=========================================================================
-Public Function SelectFontToDevice(ByVal fontName As String, ByVal hdc As Long, ByVal Size As Long, ByRef hFontNew As Long, Optional ByVal italic As Boolean, Optional ByVal Bold As Boolean, Optional ByVal Underline As Boolean, Optional ByVal centred As Boolean = False) As Long
+Public Function SelectFontToDevice(ByVal fontName As String, ByVal hdc As Long, ByVal size As Long, ByRef hFontNew As Long, Optional ByVal italic As Boolean, Optional ByVal Bold As Boolean, Optional ByVal Underline As Boolean, Optional ByVal centred As Boolean = False) As Long
     On Error Resume Next
     Dim weight As Long
     If Bold Then
@@ -213,7 +212,7 @@ Public Function SelectFontToDevice(ByVal fontName As String, ByVal hdc As Long, 
         weight = FW_NORMAL
     End If
     Dim hFont As Long
-    hFont = CreateFont(Size, 0, 0, 0, weight, italic, Underline, False, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, fontName)
+    hFont = CreateFont(size, 0, 0, 0, weight, italic, Underline, False, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, fontName)
     If hFont <> 0 Then
         Dim a As Long
         a = SelectObject(hdc, hFont)
