@@ -908,7 +908,7 @@ Private Sub fillTile( _
     clickColor = tileMem(X, Y)
 
     If clickColor = crColor Then
-        'Click color and color we're changing are the same- don't bother
+        'Click color and color we're changing to are the same- don't bother
         Exit Sub
     End If
 

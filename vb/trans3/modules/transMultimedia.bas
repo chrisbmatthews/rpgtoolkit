@@ -52,7 +52,6 @@ errorhandler:
     Resume Next
 End Sub
 
-
 Sub InitMedia()
     'create bkg music device
     On Error Resume Next
@@ -76,7 +75,7 @@ Function IsMediaPlaying(file As String) As Boolean
         Case "MID", "MIDI", "WAV", "MLP":
             'check mm control...
             pos = mediaContainer.media.Position
-            le = mediaContainer.media.length
+            le = mediaContainer.media.Length
             If pos < le Then
                 IsMediaPlaying = True
             Else
@@ -321,4 +320,39 @@ errorhandler:
     Resume Next
 End Sub
 
+Public Sub playVideo(ByVal file As String, Optional ByVal windowed As Boolean)
 
+    '============================================================
+    'Plays a video file [Colin]
+    '============================================================
+    
+    On Error Resume Next
+
+    Dim quartz As New FilgraphManager
+    Dim video As IVideoWindow
+    Dim pos As IMediaPosition
+    
+    'Set the interfaces to quartz
+    Set video = quartz
+    Set pos = quartz
+    
+    'Render the movie
+    Call quartz.RenderFile(file)
+
+    With video
+        .FullScreenMode = True
+        .Owner = Me.hwnd
+    End With
+    
+    Call quartz.run
+    
+    Do Until pos.CurrentPosition = pos.StopTime
+        DoEvents
+    Loop
+    
+    video.Visible = False
+    Set video = Nothing
+    Set pos = Nothing
+    Set quartz = Nothing
+    
+End Sub

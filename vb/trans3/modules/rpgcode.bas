@@ -3613,9 +3613,9 @@ Sub ItalicsRPG(Text$, ByRef theProgram As RPGCodeProgram)
         ' ! MODIFIED BY KSNiloc...
     
         If UCase$(lit$) = "ON" Then
-            italics = True
+            Italics = True
         Else
-            italics = False
+            Italics = False
         End If
     End If
 
@@ -4721,35 +4721,15 @@ Sub PlayAviRPG(Text$, ByRef theProgram As RPGCodeProgram)
         lit$ = addext(lit$, ".avi")
         lit$ = projectPath$ + mediaPath$ + lit$
         lit$ = PakLocate(lit$)
-        'old$ = boardlist(activeboardindex).thedata.boardMusic$
-        'boardlist(activeboardindex).thedata.boardMusic = ""
-        'ob = bWaitingForInput
-        'bWaitingForInput = False
-        'Call checkMusic
-        Dim returnstring As String
-        returnstring = Space(127)
+        'KSNiloc...
+        Dim oldMusic As String
+        oldMusic = musicPlaying
+        boardList(activeBoardIndex).theData.boardMusic = ""
+        Call checkMusic(True)
+        Call playVideo(lit)
+        boardList(activeBoardIndex).theData.boardMusic = oldMusic
+        Call checkMusic(True)
         
-        'Call mciSendString("open " & Chr$(34) & lit$ & Chr$(34) & " type avivideo alias video", returnstring, 127, 0)
-        'Call mciSendString("set video time format ms", returnstring, 127, 0)
-        'Call mciSendString("play video from 0", returnstring, 127, 0)
-        'Call mciSendString("close video", returnstring, 127, 0)
-        
-        Dim aa As String
-        aa$ = mciSendString("play " + lit$ + " fullscreen", 0&, 0, 0&)
-        
-        'ensure proper screen resolution
-        Dim sw As Integer, sh As Integer
-        sw = screenWidth
-        sh = screenHeight
-        'Call ChangeRes(sw, sh)
-        'Call mainForm.sizeScreen
-        'If mainmem.mainScreenType = 1 Then
-        '    'switch to 640x480
-        '    Call ChangeRes(640, 480)
-        'End If
-        'boardlist(activeboardindex).thedata.boardMusic$ = old$
-        'Call checkMusic
-        'bWaitingForInput = ob
     End If
 
     Exit Sub
@@ -7916,9 +7896,9 @@ Sub UnderlineRPG(Text$, ByRef theProgram As RPGCodeProgram)
         ' ! MODIFIED BY KSNiloc...
     
         If UCase$(lit$) = "ON" Then
-            underline = True
+            Underline = True
         Else
-            underline = False
+            Underline = False
         End If
     End If
 
@@ -8848,9 +8828,9 @@ Sub BoldRPG(Text$, ByRef theProgram As RPGCodeProgram)
         ' ! MODIFIED BY KSNiloc...
     
         If UCase$(lit$) = "ON" Then
-            bold = True
+            Bold = True
         Else
-            bold = False
+            Bold = False
         End If
     End If
 
