@@ -36,6 +36,8 @@ Public Type RPGCodeMethod
     lngParams As Long                       ' Count of params
     paramNames() As String                  ' Names of parameters
     classTypes() As String                  ' Types of classes required for parameters
+    bIsPureVirtual As Boolean               ' Is this method pure, virtual?
+    strDeclaration As String                ' Declaration line
 End Type
 
 '=========================================================================
@@ -56,6 +58,7 @@ Public Type RPGCODE_CLASS
     scopePublic As RPGCODE_CLASS_SCOPE      ' Public scope
     isInterface As Boolean                  ' Is an interface?
     strDerived() As String                  ' Derives from these classes
+    bIsAbstract As Boolean                  ' Is this class abstract?
 End Type
 
 '=========================================================================
@@ -348,24 +351,23 @@ Private Sub deriveClass(ByVal classIdx As Long, ByVal toInherit As String, ByRef
             End If
 
             ' Loop over each method
-            If Not (theClass.isInterface) Then
-                For idx = 0 To UBound(theScope.methods)
+            For idx = 0 To UBound(theScope.methods)
+                If Not ((theClass.isInterface) Or (theScope.methods(idx).bIsPureVirtual)) Then
+                    ' Method should be inherit
                     If (scopeIdx = SCOPE_PUBLIC) Then
-                        Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic, toInherit, True, , True)
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).strDeclaration, prg, prg.classes.classes(classIdx).scopePublic, toInherit, True, , True)
                     Else
-                        Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePrivate, toInherit, True, , True)
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).strDeclaration, prg, prg.classes.classes(classIdx).scopePrivate, toInherit, True, , True)
                     End If
-                Next idx
-            Else
-                ' Inheriting class should implement an interface's methods
-                For idx = 0 To UBound(theScope.methods)
+                Else
+                    ' Only its name should be inherit
                     If (scopeIdx = SCOPE_PUBLIC) Then
-                        Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic)
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).strDeclaration, prg, prg.classes.classes(classIdx).scopePublic)
                     Else
-                        Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePrivate)
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).strDeclaration, prg, prg.classes.classes(classIdx).scopePrivate)
                     End If
-                Next idx
-            End If
+                End If
+            Next idx
 
             ' Loop over each var
             For idx = 0 To UBound(theScope.strVars)
@@ -520,6 +522,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 ReDim prg.classes.classes(classIdx).strDerived(0)
                 prg.classes.classes(classIdx).isInterface = (cmd = "INTERFACE")
                 prg.classes.classes(classIdx).strName = strName
+                prg.classes.classes(classIdx).bIsAbstract = False
 
                 If (cmd = "STRUCT") Then
                     ' It's a structure, default to public visibility
@@ -556,9 +559,9 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                         End If
                     Loop
                     If (scope = SCOPE_PRIVATE) Then
-                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePrivate, , (prg.classes.classes(classIdx).isInterface))
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePrivate, , (prg.classes.classes(classIdx).isInterface), , , prg.classes.classes(classIdx).bIsAbstract)
                     Else
-                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePublic, , (prg.classes.classes(classIdx).isInterface))
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePublic, , (prg.classes.classes(classIdx).isInterface), , , prg.classes.classes(classIdx).bIsAbstract)
                     End If
                 Else
                     Call debugger("Methods are not valid in structures-- " & prg.program(lineIdx))
@@ -779,7 +782,7 @@ End Sub
 '=========================================================================
 ' Add a method to a scope
 '=========================================================================
-Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = vbNullString, Optional ByVal needNotExist As Boolean, Optional ByVal internalClass As Boolean, Optional ByVal noErrorOnRedefine As Boolean)
+Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = vbNullString, Optional ByVal needNotExist As Boolean, Optional ByVal internalClass As Boolean, Optional ByVal noErrorOnRedefine As Boolean, Optional ByRef bWasPureVirtual As Boolean)
 
     On Error Resume Next
 
@@ -795,6 +798,20 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
     End If
 
     If Not (internalClass) Then
+
+        ' Check if this baby is pure, virtual
+        Dim str As String
+        str = replace(Text, " ", vbNullString)
+        Dim lngPos As Long
+        lngPos = InStr(1, str, ")")
+        If (lngPos) Then
+            If (InStr(lngPos, str, "=0")) Then
+                ' It is!
+                needNotExist = True
+                bWasPureVirtual = True
+                Text = Mid$(Text, 1, lngPos + 1)
+            End If
+        End If
 
         ' Get the method's name
         origName = GetMethodName(Text)
@@ -865,6 +882,8 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
     ' Add in the data
     scope.methods(pos) = theMethod
     scope.methods(pos).override = overrideName
+    scope.methods(pos).bIsPureVirtual = bWasPureVirtual
+    scope.methods(pos).strDeclaration = Text
 
 End Sub
 
@@ -1247,33 +1266,54 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
 
     Dim hClass As Long              ' Handle to use
     Dim retval As RPGCODE_RETURN    ' Return value
+    Dim Class As RPGCODE_CLASS      ' The class
+
+    ' Obtain the class
+    Class = classFromName(theClass, prg)
 
     ' Check if we can instance this class
-    If (canInstanceClass(theClass, prg)) Then
-        ' Create a new handle
-        hClass = newHandle()
-        ' Make sure we have enough room in the instances array
-        If (UBound(g_objects) < hClass) Then
-            ' Enlarge the array
-            ReDim Preserve g_objects(hClass + 250)
-        End If
-        ' Write in the data
-        g_objects(hClass).strInstancedFrom = UCase$(theClass)
-        Dim address As Long
-        address = VarPtr(g_objects(hClass))
-        g_objects(hClass).hClass = address
-        ' Clear the object
-        Call clearObject(g_objects(hClass), prg)
-        hClass = address
-        ' Call the constructor(s)
-        Dim i As Long, cls As RPGCODE_CLASS
-        cls = getClass(hClass, prg)
-        For i = 0 To UBound(cls.strDerived)
-            If (LenB(cls.strDerived(i))) Then
-                Call callObjectMethod(hClass, cls.strDerived(i), prg, retval, cls.strDerived(i))
+    If (LenB(Class.strName)) Then
+
+        If Not (Class.bIsAbstract) Then
+
+            ' Create a new handle
+            hClass = newHandle()
+
+            ' Make sure we have enough room in the instances array
+            If (UBound(g_objects) < hClass) Then
+                ' Enlarge the array
+                ReDim Preserve g_objects(hClass + 250)
             End If
-        Next i
-        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
+
+            ' Write in the data
+            g_objects(hClass).strInstancedFrom = UCase$(theClass)
+            Dim address As Long
+            address = VarPtr(g_objects(hClass))
+            g_objects(hClass).hClass = address
+
+            ' Clear the object
+            Call clearObject(g_objects(hClass), prg)
+
+            ' Record the class' address
+            hClass = address
+
+            ' Call the constructor(s)
+            Dim i As Long, cls As RPGCODE_CLASS
+            cls = getClass(hClass, prg)
+            For i = 0 To UBound(cls.strDerived)
+                If (LenB(cls.strDerived(i))) Then
+                    Call callObjectMethod(hClass, cls.strDerived(i), prg, retval, cls.strDerived(i))
+                End If
+            Next i
+            Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
+
+        Else
+
+            ' Cannot create an abstract class
+            Call debugger("Abstract classes like " & theClass & " can only be inherit, not created directly!")
+
+        End If
+
     End If
 
     ' Return a pointer to the class
