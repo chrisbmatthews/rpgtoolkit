@@ -62,7 +62,7 @@ Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal re
     ReDim aProgram.program(10)
     aProgram.boardNum = -1
     If number = selectedPlayer And newPlyrName$ <> "" Then
-        Call NewPlyr("#newplyr(" + Chr$(34) + newPlyrName$ + Chr$(34) + ")", aProgram)
+        Call NewPlyr("#newplyr(" + Chr$(34) + newPlyrName & Chr$(34) + ")", aProgram)
     End If
     
     'now calculate level up stuff:
@@ -142,7 +142,7 @@ Public Sub LoadState(ByVal file As String)
                 'Now, all the numerical variables:
                 For t = 0 To 8000
                     Line Input #num, vName$
-                    vName$ = vName$ + "!"
+                    vName$ = vName & "!"
                     Line Input #num, Temp$
                     'internationalisation-- convert ',' to '.'
                     Temp$ = replace(Temp$, ",", ".")
@@ -153,7 +153,7 @@ Public Sub LoadState(ByVal file As String)
                 'Now all the lit vars:
                 For t = 0 To 3000
                     Line Input #num, vName$
-                    vName$ = vName$ + "$"
+                    vName$ = vName & "$"
                     Line Input #num, Temp$
                     'internationalisation-- convert ',' to '.'
                     If vName$ <> "" Then
@@ -248,12 +248,12 @@ Public Sub LoadState(ByVal file As String)
             Input #num, currentBoard$
             fn$ = currentBoard$
             fn$ = RemovePath(currentBoard$)
-            currentBoard$ = projectPath$ + brdPath$ + fn$
+            currentBoard$ = projectPath & brdPath & fn$
             'Current x, y and layer:
             For t = 0 To 4
-                ppos(t).x = fread(num)
-                ppos(t).y = fread(num)
-                ppos(t).l = fread(num)
+                pPos(t).x = fread(num)
+                pPos(t).y = fread(num)
+                pPos(t).l = fread(num)
             Next t
             For t = 0 To 4
                 Input #num, playerMem(t).nextLevel 'next level for players
@@ -381,13 +381,13 @@ Public Sub LoadState(ByVal file As String)
         currentBoard$ = BinReadString(num)
         fn$ = currentBoard$
         fn$ = RemovePath(currentBoard$)
-        currentBoard$ = projectPath$ + brdPath$ + fn$
+        currentBoard$ = projectPath & brdPath & fn$
         
         'Current x, y and layer:
         For t = 0 To 4
-            ppos(t).x = BinReadDouble(num)
-            ppos(t).y = BinReadDouble(num)
-            ppos(t).l = BinReadLong(num)
+            pPos(t).x = BinReadDouble(num)
+            pPos(t).y = BinReadDouble(num)
+            pPos(t).l = BinReadLong(num)
         Next t
         For t = 0 To 4
             playerMem(t).nextLevel = BinReadLong(num) 'next level for players
@@ -573,9 +573,9 @@ Public Sub SaveState(ByVal file As String)
         Call BinWriteString(num, currentBoard$)
         'Current x, y and layer:
         For t = 0 To 4
-            Call BinWriteDouble(num, ppos(t).x)
-            Call BinWriteDouble(num, ppos(t).y)
-            Call BinWriteLong(num, ppos(t).l)
+            Call BinWriteDouble(num, pPos(t).x)
+            Call BinWriteDouble(num, pPos(t).y)
+            Call BinWriteLong(num, pPos(t).l)
         Next t
         For t = 0 To 4
             Call BinWriteLong(num, playerMem(t).nextLevel) 'next level for players

@@ -45,25 +45,25 @@ Public Sub fightTest()
         Exit Sub
     End If
 
-    Dim a As Long, b As Long
+    Dim random As Long
     If mainMem.fightgameYN = 0 Then
         'fighting has been enbabled in this game
         If boardList(activeBoardIndex).theData.fightingYN = 1 Then
             'Built in fighting engine
             If mainMem.fightType = 0 Then
                 'Random fights
-                a = Int(Rnd(1) * mainMem.chances) + 1
-                If a = Int(mainMem.chances / 2) Then
+                random = Int(Rnd(1) * mainMem.chances) + 1
+                If random = Int(mainMem.chances / 2) Then
                     If mainMem.fprgYN = 0 Then
                         'Built in fight
                         If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 And boardList(activeBoardIndex).theData.BoardNightBattleOverride = 1 Then
                             If IsNight() Then
                                 Call skilledFight(boardList(activeBoardIndex).theData.BoardSkillNight, boardList(activeBoardIndex).theData.BoardBackgroundNight$)
                             Else
-                                Call skilledFight(boardList(activeBoardIndex).theData.boardskill, boardList(activeBoardIndex).theData.boardBackground$)
+                                Call skilledFight(boardList(activeBoardIndex).theData.boardSkill, boardList(activeBoardIndex).theData.boardBackground$)
                             End If
                         Else
-                            Call skilledFight(boardList(activeBoardIndex).theData.boardskill, boardList(activeBoardIndex).theData.boardBackground$)
+                            Call skilledFight(boardList(activeBoardIndex).theData.boardSkill, boardList(activeBoardIndex).theData.boardBackground$)
                         End If
                     ElseIf mainMem.fprgYN = 1 Then
                         'RPGCode fight
@@ -72,19 +72,18 @@ Public Sub fightTest()
                 End If
             ElseIf mainMem.fightType = 1 Then
                 'Planned fights
-                a = stepsTaken
-                b = Int(a / mainMem.chances)
-                If (b * mainMem.chances) = a Then
+                random = Int(stepsTaken / mainMem.chances)
+                If (random * mainMem.chances) = stepsTaken Then
                     If mainMem.fprgYN = 0 Then
                         'Built in fight
                         If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 And boardList(activeBoardIndex).theData.BoardNightBattleOverride = 1 Then
                             If IsNight() Then
                                 Call skilledFight(boardList(activeBoardIndex).theData.BoardSkillNight, boardList(activeBoardIndex).theData.BoardBackgroundNight$)
                             Else
-                                Call skilledFight(boardList(activeBoardIndex).theData.boardskill, boardList(activeBoardIndex).theData.boardBackground$)
+                                Call skilledFight(boardList(activeBoardIndex).theData.boardSkill, boardList(activeBoardIndex).theData.boardBackground$)
                             End If
                         Else
-                            Call skilledFight(boardList(activeBoardIndex).theData.boardskill, boardList(activeBoardIndex).theData.boardBackground$)
+                            Call skilledFight(boardList(activeBoardIndex).theData.boardSkill, boardList(activeBoardIndex).theData.boardBackground$)
                         End If
                     ElseIf mainMem.fprgYN = 1 Then
                         'RPGCode fight
@@ -161,7 +160,7 @@ Public Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighter
             code = INFORM_SOURCE_ATTACK
             
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             
             If isVBPlugin(plugName) Then
                 Call VBPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
@@ -268,7 +267,7 @@ Public Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
             Dim code As Long
             code = INFORM_SOURCE_PARTY_DEFEATED
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             If isVBPlugin(plugName) Then
                 Call VBPlugin(plugName).fightInform(sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
             Else
@@ -332,7 +331,7 @@ Public Sub fightTick()
                         For S = 0 To UBound(parties(t).fighterList(u).enemy.status)
                             If parties(t).fighterList(u).enemy.status(S).roundsLeft > 0 And _
                                 parties(t).fighterList(u).enemy.status(S).statusFile <> "" Then
-                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).enemy.status(S).statusFile, status)
+                                Call openStatus(projectPath & statusPath & parties(t).fighterList(u).enemy.status(S).statusFile, status)
                                 
                                 'now apply the effects of the status...
                                 Call invokeStatus(t, u, status, parties(t).fighterList(u).enemy.status(S).statusFile)
@@ -356,7 +355,7 @@ Public Sub fightTick()
                         For S = 0 To UBound(parties(t).fighterList(u).player.status)
                             If parties(t).fighterList(u).player.status(S).roundsLeft > 0 And _
                                 parties(t).fighterList(u).player.status(S).statusFile <> "" Then
-                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).player.status(S).statusFile, status)
+                                Call openStatus(projectPath & statusPath & parties(t).fighterList(u).player.status(S).statusFile, status)
                                 
                                 'now apply the effects of the status...
                                 Call invokeStatus(t, u, status, parties(t).fighterList(u).player.status(S).statusFile)
@@ -398,7 +397,7 @@ Public Sub loadEnemies(ByRef eneList() As String, ByVal num As Long)
     On Error Resume Next
     Dim t As Long
     For t = 0 To num - 1
-        Call openEnemy(projectPath & enePath & eneList(t), enemyMem(t))
+        enemyMem(t) = openEnemy(projectPath & enePath & eneList(t))
     Next t
 End Sub
 
@@ -444,7 +443,7 @@ Public Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     
     'run rpgcode program, if any
     If rewardPrg <> "" Then
-        Call runProgram(projectPath$ + prgPath$ + rewardPrg)
+        Call runProgram(projectPath & prgPath & rewardPrg)
     End If
 End Sub
 
@@ -633,7 +632,7 @@ Public Sub skilledFight(ByVal skill As Long, ByVal bkg As String)
     For t = 0 To numEne - 1
         enemies(t) = getEnemy(skill)
         If enemies(t) = "" Then
-            Call MBox(LoadStringLoc(829, "No Enemies of skill ") + str$(skill) + LoadStringLoc(830, " found!!!"), LoadStringLoc(831, "Can't Fight"), 0, menuColor, projectPath$ + bmpPath$ + mainMem.skinWindow$, projectPath$ + bmpPath$ + mainMem.skinButton$)
+            Call MBox(LoadStringLoc(829, "No Enemies of skill ") + str$(skill) + LoadStringLoc(830, " found!!!"), LoadStringLoc(831, "Can't Fight"), 0, menuColor, projectPath & bmpPath & mainMem.skinWindow$, projectPath & bmpPath & mainMem.skinButton$)
             Exit Sub
         End If
     Next t

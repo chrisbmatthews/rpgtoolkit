@@ -714,16 +714,16 @@ Sub PlayerStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     If theOne = -1 Then Exit Sub 'Player handle not found
     
-    p$ = PathFind(ppos(theOne).x, ppos(theOne).y, num2, num3, ppos(theOne).l, False, True)
+    p$ = PathFind(pPos(theOne).x, pPos(theOne).y, num2, num3, pPos(theOne).l, False, True)
         
     tt$ = p$
     h$ = Mid$(tt$, 1, 1)
     Select Case h$
         Case "N":
             pendingPlayerMovement(theOne).direction = MV_NORTH
-            pendingPlayerMovement(theOne).xOrig = ppos(theOne).x
-            pendingPlayerMovement(theOne).yOrig = ppos(theOne).y
-            pendingPlayerMovement(theOne).lOrig = ppos(theOne).l
+            pendingPlayerMovement(theOne).xOrig = pPos(theOne).x
+            pendingPlayerMovement(theOne).yOrig = pPos(theOne).y
+            pendingPlayerMovement(theOne).lOrig = pPos(theOne).l
             Call insertTarget(pendingPlayerMovement(theOne))
             
             movementCounter = 0
@@ -736,9 +736,9 @@ Sub PlayerStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
         Case "S":
             pendingPlayerMovement(theOne).direction = MV_SOUTH
-            pendingPlayerMovement(theOne).xOrig = ppos(theOne).x
-            pendingPlayerMovement(theOne).yOrig = ppos(theOne).y
-            pendingPlayerMovement(theOne).lOrig = ppos(theOne).l
+            pendingPlayerMovement(theOne).xOrig = pPos(theOne).x
+            pendingPlayerMovement(theOne).yOrig = pPos(theOne).y
+            pendingPlayerMovement(theOne).lOrig = pPos(theOne).l
             Call insertTarget(pendingPlayerMovement(theOne))
             
             movementCounter = 0
@@ -751,9 +751,9 @@ Sub PlayerStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
         Case "E":
             pendingPlayerMovement(theOne).direction = MV_EAST
-            pendingPlayerMovement(theOne).xOrig = ppos(theOne).x
-            pendingPlayerMovement(theOne).yOrig = ppos(theOne).y
-            pendingPlayerMovement(theOne).lOrig = ppos(theOne).l
+            pendingPlayerMovement(theOne).xOrig = pPos(theOne).x
+            pendingPlayerMovement(theOne).yOrig = pPos(theOne).y
+            pendingPlayerMovement(theOne).lOrig = pPos(theOne).l
             Call insertTarget(pendingPlayerMovement(theOne))
             
             movementCounter = 0
@@ -766,9 +766,9 @@ Sub PlayerStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
         Case "W":
             pendingPlayerMovement(theOne).direction = MV_WEST
-            pendingPlayerMovement(theOne).xOrig = ppos(theOne).x
-            pendingPlayerMovement(theOne).yOrig = ppos(theOne).y
-            pendingPlayerMovement(theOne).lOrig = ppos(theOne).l
+            pendingPlayerMovement(theOne).xOrig = pPos(theOne).x
+            pendingPlayerMovement(theOne).yOrig = pPos(theOne).y
+            pendingPlayerMovement(theOne).lOrig = pPos(theOne).l
             Call insertTarget(pendingPlayerMovement(theOne))
             
             movementCounter = 0
@@ -929,7 +929,7 @@ Sub AddPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Call debugger("Error: AddPlayer cannot add another member- Party is full!-- " + Text$)
             Exit Sub
         End If
-        Call CreateCharacter(projectPath$ + temPath$ + lit$, slot)
+        Call CreateCharacter(projectPath & temPath & lit$, slot)
     End If
 
     Exit Sub
@@ -1144,17 +1144,10 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CallPlayerSwapRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#CallPlayerSwap()
-    'calls player swap window.
-    On Error GoTo errorhandler
-    pswap.Show 1    'shows swap modally.
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+Public Sub CallPlayerSwapRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+    'CallPlayerSwap()
+    On Error Resume Next
+    Call debugger("Warning: CallPlayerShop() is temporarily unavaliable; use AddPlayer() and RemovePlayer() player!")
 End Sub
 
 Sub CharacterSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -1453,7 +1446,7 @@ Sub DestroyPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 Next t
             Case "TEM":
                 num = FreeFile
-                file$ = projectPath$ + temPath$ + lit$
+                file$ = projectPath & temPath & lit$
                 'file$ = PakLocate(file$)
                 'Open file$ For Input As #num
                 '    Input #num, fileheader$        'Filetype
@@ -1585,14 +1578,13 @@ Sub DrawEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
         x = num2
         y = num3
         en$ = addExt(lit$, ".ene")
-        enemyMem(4).eneFileName$ = projectPath$ + enePath$ + en$
-        'Call openEnemy(projectPath$ + enepath$ + en$, 4)
+        enemyMem(4).eneFileName$ = projectPath & enePath & en$
         eenum = 4
         'quick draw the enemy
         ChDir (projectPath$)
         fn$ = enemyMem(eenum).eneFileName$
         fn$ = RemovePath(fn$)
-        fn$ = enePath$ + fn$
+        fn$ = enePath & fn$
         hdc = CanvasOpenHDC(cnv)
         'TBD: draw enemy...
         'a = GFXdrawEnemy(fn$, x, y, 0, 0, 0, hdc)
@@ -1815,7 +1807,7 @@ Sub FontRPG(Text$, ByRef theProgram As RPGCodeProgram)
         fontName$ = lit$
         If UCase$(GetExt(lit$)) = "FNT" Then
             'tk font
-            Call loadFont(projectPath$ + fontPath$ + lit$)
+            Call loadFont(projectPath & fontPath & lit$)
         Else
             'true type font
         End If
@@ -1995,9 +1987,9 @@ Sub GetBoardTileRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     Else
         Dim f As String
         
-        num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-        num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-        num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.Bsizel)
+        num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
+        num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
+        num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.bSizeL)
         f$ = BoardGetTile(num1, num2, num3, boardList(activeBoardIndex).theData)
         If number = 4 Then
             Call SetVariable(useIt4$, f$, theProgram)
@@ -2037,9 +2029,9 @@ Sub GetBoardTileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval 
     If ax = 1 Or ay = 1 Or al = 1 Then
         Call debugger("Error: GetBoardTileType data must be numeric, numeric, numeric, literal!-- " + Text$)
     Else
-        num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-        num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-        num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.Bsizel)
+        num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
+        num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
+        num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.bSizeL)
         ll = boardList(activeBoardIndex).theData.tiletype(num1, num2, num3)
         Select Case ll
             Case 0:
@@ -3836,30 +3828,11 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If ax = 1 Or ay = 1 Or al = 1 Or ag = 0 Then
         Call debugger("Error: LayerPut data must be numeric, numeric, numeric, literal!-- " + Text$)
     Else
-        Select Case boardList(activeBoardIndex).theData.ambienteffect
-            Case 0
-                addOnR = 0
-                addOnG = 0
-                addOnB = 0
-            Case 1
-                addOnR = 75
-                addOnG = 75
-                addOnB = 75
-            Case 2
-                addOnR = -75
-                addOnG = -75
-                addOnB = -75
-            Case 3
-                addOnR = 0
-                addOnG = 0
-                addOnB = 75
-        End Select
+        Call ambienteffect
         'internal engine drawing routines
         'first, get the shade color of the board...
-        Dim l As String, shadeR As Double, shadeG As Double, shadeB As Double, lightShade As Long
-        a = getVariable("AmbientRed!", l$, shadeR, theProgram)
-        a = getVariable("AmbientGreen!", l$, shadeG, theProgram)
-        a = getVariable("AmbientBlue!", l$, shadeB, theProgram)
+        Dim shadeR As Double, shadeG As Double, shadeB As Double, lightShade As Long
+        Call ambientRGB(shadeR, shadeG, shadeB)
         'now check day and night info...
         If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
             lightShade = DetermineLightLevel()
@@ -3875,9 +3848,9 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'now redraw the layers...
         Dim file As String
         file$ = lit1$
-        num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-        num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-        num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.Bsizel)
+        num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
+        num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
+        num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.bSizeL)
         Call BoardSetTile(num1, num2, num3, file$, boardList(activeBoardIndex).theData)
         Dim xx As Double, yy As Double, lll As Long, hdc As Long, hdcMask As Long
         xx = num1 - scTopX
@@ -3887,27 +3860,27 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 If Not (usingDX()) Then
                     
                     Call drawTileCNV(cnvScrollCache, _
-                                  projectPath$ + tilePath$ + BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
+                                  projectPath & tilePath & BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
                                   xx, _
                                   yy, _
-                                  boardList(activeBoardIndex).theData.ambientred(num1, num2, lll) + addOnR, _
-                                  boardList(activeBoardIndex).theData.ambientgreen(num1, num2, lll) + addOnG, _
-                                  boardList(activeBoardIndex).theData.ambientblue(num1, num2, lll) + addOnB, False)
+                                  boardList(activeBoardIndex).theData.ambientRed(num1, num2, lll) + addOnR, _
+                                  boardList(activeBoardIndex).theData.ambientGreen(num1, num2, lll) + addOnG, _
+                                  boardList(activeBoardIndex).theData.ambientBlue(num1, num2, lll) + addOnB, False)
                     Call drawTileCNV(cnvScrollCacheMask, _
-                                  projectPath$ + tilePath$ + BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
+                                  projectPath & tilePath & BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
                                   xx, _
                                   yy, _
-                                  boardList(activeBoardIndex).theData.ambientred(num1, num2, lll) + addOnR, _
-                                  boardList(activeBoardIndex).theData.ambientgreen(num1, num2, lll) + addOnG, _
-                                  boardList(activeBoardIndex).theData.ambientblue(num1, num2, lll) + addOnB, True)
+                                  boardList(activeBoardIndex).theData.ambientRed(num1, num2, lll) + addOnR, _
+                                  boardList(activeBoardIndex).theData.ambientGreen(num1, num2, lll) + addOnG, _
+                                  boardList(activeBoardIndex).theData.ambientBlue(num1, num2, lll) + addOnB, True)
                 Else
                     Call drawTileCNV(cnvScrollCache, _
-                                  projectPath$ + tilePath$ + BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
+                                  projectPath & tilePath & BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
                                   xx, _
                                   yy, _
-                                  boardList(activeBoardIndex).theData.ambientred(num1, num2, lll) + addOnR, _
-                                  boardList(activeBoardIndex).theData.ambientgreen(num1, num2, lll) + addOnG, _
-                                  boardList(activeBoardIndex).theData.ambientblue(num1, num2, lll) + addOnB, False)
+                                  boardList(activeBoardIndex).theData.ambientRed(num1, num2, lll) + addOnR, _
+                                  boardList(activeBoardIndex).theData.ambientGreen(num1, num2, lll) + addOnG, _
+                                  boardList(activeBoardIndex).theData.ambientBlue(num1, num2, lll) + addOnB, False)
                 End If
             End If
         Next lll
@@ -3955,7 +3928,7 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: Load data type must be literal!-- " + Text$)
     Else
         lit$ = addExt(lit$, ".sav")
-        Call LoadState(savPath$ + lit$)
+        Call LoadState(savPath & lit$)
         'Now to place the character where it should be:
         'Create characters:
         Dim t As Long
@@ -3970,7 +3943,7 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
         lastRender.canvas = -1
         scTopX = -1
         scTopY = -1
-        Call alignBoard(ppos(0).x, ppos(0).y)
+        Call alignBoard(pPos(0).x, pPos(0).y)
         Call openItems
         Call renderNow
         Call renderNow(cnvRPGCodeScreen)
@@ -4008,7 +3981,7 @@ Sub MainFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: MainFile data type must be literal!-- " + Text$)
     Else
         lit$ = addExt(lit$, ".gam")
-        lit$ = gamPath$ + lit$
+        lit$ = gamPath & lit$
         Call EmptyRPG("", theProgram)
         For num = 0 To 11
             Dim t As Long
@@ -4396,9 +4369,7 @@ Sub Mp3PauseRPG(Text$, ByRef theProgram As RPGCodeProgram)
         dataUse$ = projectPath$ & mediaPath$ & lit$
         dataUse$ = PakLocate(dataUse$)
         Call playSoundFX(dataUse$)
-        Do While (TKAudiereIsPlaying(fgDevice) = 1)
-            Call processEvent
-        Loop
+        Call waitOnSFX
     End If
 
     Exit Sub
@@ -4535,10 +4506,10 @@ Sub NewPlyr(Text$, ByRef theProgram As RPGCodeProgram)
                 
                 Dim tbmName As String, anmName As String, file As String
                 tbmName$ = replace(RemovePath(lit$), ".", "_") + "_newplyr" + ".tbm"
-                Call SaveTileBitmap(projectPath$ + bmpPath$ + tbmName$, tbm)
+                Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
                 anm.animFrame(0) = tbmName$
                 anmName$ = replace(RemovePath(file$), ".", "_") + "_newplyr" + ".anm"
-                Call saveAnimation(projectPath$ + miscPath$ + anmName$, anm)
+                Call saveAnimation(projectPath & miscPath & anmName$, anm)
                 playerMem(selectedPlayer).gfx(PLYR_WALK_N) = anmName$
                 playerMem(selectedPlayer).gfx(PLYR_WALK_S) = anmName$
                 playerMem(selectedPlayer).gfx(PLYR_WALK_E) = anmName$
@@ -4605,7 +4576,7 @@ Sub PathFindRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
     useIt3$ = GetElement(dataUse$, 3)
     useIt4$ = GetElement(dataUse$, 4)
     useIt5$ = GetElement(dataUse$, 5)
-    If number = 6 Then useIt6$ = GetElement(dataUse$, 6) Else useIt6$ = toString(ppos(selectedPlayer).l)
+    If number = 6 Then useIt6$ = GetElement(dataUse$, 6) Else useIt6$ = toString(pPos(selectedPlayer).l)
     
     Dim e1 As Long, e2 As Long, e3 As Long, e4 As Long, e5 As Long, e6 As Long
     Dim lit4 As String, lit5 As String, lit6 As String
@@ -4620,11 +4591,11 @@ Sub PathFindRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
         Exit Sub
     End If
     
-    num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-    num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-    num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.Bsizex)
-    num4 = inBounds(num4, 1, boardList(activeBoardIndex).theData.Bsizey)
-    num6 = inBounds(num6, 1, boardList(activeBoardIndex).theData.Bsizel)
+    num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
+    num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
+    num3 = inBounds(num3, 1, boardList(activeBoardIndex).theData.bSizeX)
+    num4 = inBounds(num4, 1, boardList(activeBoardIndex).theData.bSizeY)
+    num6 = inBounds(num6, 1, boardList(activeBoardIndex).theData.bSizeL)
 
     Dim p As String
     p$ = PathFind(num1, num2, num3, num4, num6, False, True)
@@ -4660,7 +4631,7 @@ Sub PlayAviRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: PlayAvi data type must be literal!-- " + Text$)
     Else
         lit$ = addExt(lit$, ".avi")
-        lit$ = projectPath$ + mediaPath$ + lit$
+        lit$ = projectPath & mediaPath & lit$
         lit$ = PakLocate(lit$)
         'KSNiloc...
         Dim oldMusic As String
@@ -4701,7 +4672,7 @@ Sub PlayAviSmallRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: PlayAviSmall data type must be literal!-- " + Text$)
     Else
         lit$ = addExt(lit$, ".avi")
-        lit$ = projectPath$ + mediaPath$ + lit$
+        lit$ = projectPath & mediaPath & lit$
         lit$ = PakLocate(lit$)
         Call playVideo(lit, True)
     End If
@@ -4750,7 +4721,7 @@ Sub PostureRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'MsgBox Str$(theone)
         'MsgBox Str$(num) + text$
         num = inBounds(num, 0, 9)
-        ppos(theOne).stance = "Custom " + toString(num)
+        pPos(theOne).stance = "Custom " + toString(num)
         Call renderNow
         Call CanvasGetScreen(cnvRPGCodeScreen)
         Call renderRPGCodeScreen
@@ -4841,7 +4812,7 @@ Sub PrintRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim hdc As Long
     hdc = CanvasOpenHDC(cnvRPGCodeScreen)
     Call putText(lit$, textX, textY, fontColor, fontSize, fontSize, hdc)
-    Call CNVCloseHDC(cnvRPGCodeScreen, hdc)
+    Call CanvasCloseHDC(cnvRPGCodeScreen, hdc)
     'Call renderRPGCodeScreen
     DXDrawCanvasPartial cnvRPGCodeScreen, _
                         textX, textY, textX, textY, _
@@ -5136,9 +5107,9 @@ Sub PushRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End Select
         
         pendingPlayerMovement(handleNum).direction = direction
-        pendingPlayerMovement(handleNum).xOrig = ppos(handleNum).x
-        pendingPlayerMovement(handleNum).yOrig = ppos(handleNum).y
-        pendingPlayerMovement(handleNum).lOrig = ppos(handleNum).l
+        pendingPlayerMovement(handleNum).xOrig = pPos(handleNum).x
+        pendingPlayerMovement(handleNum).yOrig = pPos(handleNum).y
+        pendingPlayerMovement(handleNum).lOrig = pPos(handleNum).l
         Call insertTarget(pendingPlayerMovement(handleNum))
         
         movementCounter = 0
@@ -5188,7 +5159,7 @@ Sub PutItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt4$ = GetElement(dataUse$, 4)
     
     'If layer not supplied, then use the current player's layer.
-    If number = 3 Then useIt4$ = str$(ppos(selectedPlayer).l)
+    If number = 3 Then useIt4$ = str$(pPos(selectedPlayer).l)
     
     ah = getValue(useIt1$, lit1$, num1, theProgram)
     ax = getValue(useIt2$, lit2$, num2, theProgram)
@@ -5261,7 +5232,7 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt4$ = GetElement(dataUse$, 4)
     
     'If layer not supplied, then use the current player's layer.
-    If number = 3 Then useIt4$ = str$(ppos(selectedPlayer).l)
+    If number = 3 Then useIt4$ = str$(pPos(selectedPlayer).l)
     
     'Literals not needed for 2-4:
     parameter1Type = getValue(useIt1$, handeName$, num1, theProgram)
@@ -5306,16 +5277,16 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
     'Else, the player exists and we can place him:
     
-    ppos(theOne).x = targetX
-    ppos(theOne).y = targetY
-    ppos(theOne).l = targetL
+    pPos(theOne).x = targetX
+    pPos(theOne).y = targetY
+    pPos(theOne).l = targetL
     showPlayer(theOne) = True
     
     'Isometric fix:
-    pendingPlayerMovement(theOne).xOrig = ppos(theOne).x
-    pendingPlayerMovement(theOne).yOrig = ppos(theOne).y
-    pendingPlayerMovement(theOne).xTarg = ppos(theOne).x
-    pendingPlayerMovement(theOne).yTarg = ppos(theOne).y
+    pendingPlayerMovement(theOne).xOrig = pPos(theOne).x
+    pendingPlayerMovement(theOne).yOrig = pPos(theOne).y
+    pendingPlayerMovement(theOne).xTarg = pPos(theOne).x
+    pendingPlayerMovement(theOne).yTarg = pPos(theOne).y
     
     Call alignBoard(targetX, targetY)
     Call renderNow
@@ -5352,30 +5323,11 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If ax = 1 Or ay = 1 Or ag = 0 Then
         Call debugger("Error: Put data must be numeric, numeric, literal!-- " + Text$)
     Else
-        Select Case boardList(activeBoardIndex).theData.ambienteffect
-            Case 0
-                addOnR = 0
-                addOnG = 0
-                addOnB = 0
-            Case 1
-                addOnR = 75
-                addOnG = 75
-                addOnB = 75
-            Case 2
-                addOnR = -75
-                addOnG = -75
-                addOnB = -75
-            Case 3
-                addOnR = 0
-                addOnG = 0
-                addOnB = 75
-        End Select
+        Call ambienteffect
         'internal engine drawing routines
         'first, get the shade color of the board...
-        Dim l As String, shadeR As Double, shadeG As Double, shadeB As Double, lightShade As Long
-        a = getVariable("AmbientRed!", l$, shadeR, theProgram)
-        a = getVariable("AmbientGreen!", l$, shadeG, theProgram)
-        a = getVariable("AmbientBlue!", l$, shadeB, theProgram)
+        Dim shadeR As Double, shadeG As Double, shadeB As Double, lightShade As Long
+        Call ambientRGB(shadeR, shadeG, shadeB)
         'now check day and night info...
         If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
             lightShade = DetermineLightLevel()
@@ -5591,7 +5543,7 @@ Sub removeStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
         theHandle$ = ""
         ex$ = GetExt(lit2$)
         If UCase$(ex$) = "STE" Then
-            Call openStatus(projectPath$ + lit2$, statusMem)
+            Call openStatus(projectPath & lit2$, statusMem)
             theHandle$ = statusMem.statusName$
         Else
             theHandle$ = lit2$
@@ -5665,7 +5617,7 @@ Sub ResetRPG(ByRef theProgram As RPGCodeProgram)
     runningProgram = False
     'Call openMainFile(loadedMainFile$)
     Call setupMain
-    Call runProgram(projectPath$ + prgPath$ + mainMem.startupPrg)
+    Call runProgram(projectPath & prgPath & mainMem.startupPrg)
 
     Exit Sub
 'Begin error handling code:
@@ -5706,7 +5658,7 @@ Sub RestorePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Call debugger("Error: RestorePlayer cannot add another member- Party is full!-- " + Text$)
             Exit Sub
         End If
-        Call RestoreCharacter(projectPath$ + temPath$ + lit$, slot, True)
+        Call RestoreCharacter(projectPath & temPath & lit$, slot, True)
     End If
 
     Exit Sub
@@ -6110,7 +6062,7 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         
         Dim tID As Long
         lit1$ = addExt(lit1$, ".prg")
-        tID = CreateThread(projectPath$ + prgPath$ + lit1$, bPersist)
+        tID = CreateThread(projectPath & prgPath & lit1$, bPersist)
         
         If number = 3 Then
             'save value in destination var...
@@ -6145,7 +6097,7 @@ Sub SaveRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: Save data type must be literal!-- " + Text$)
     Else
         lit$ = addExt(lit$, ".sav")
-        Call SaveState(savPath$ + lit$)
+        Call SaveState(savPath & lit$)
     End If
 
     Exit Sub
@@ -6329,7 +6281,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     targetBoardName$ = addExt(lit1$, ".brd")
     
     'Put the dimensions of the target board into targetBoardWidth, targetBoardHeight
-    Call boardSize(projectPath$ + brdPath$ + targetBoardName$, targetBoardWidth, targetBoardHeight)
+    Call boardSize(projectPath & brdPath & targetBoardName$, targetBoardWidth, targetBoardHeight)
     
     'Check the target is valid.
     targetX = inBounds(num2, 1, targetBoardWidth)
@@ -6341,9 +6293,9 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     topYtemp = topY
     
     'Original test... what's it checking?!
-    'targetTileType = TestBoard(projectPath$ + brdPath$ + targetBoardName$, ppos(selectedPlayer).x, 1, ppos(selectedPlayer).l)
+    'targetTileType = TestBoard(projectPath & brdPath & targetBoardName$, ppos(selectedPlayer).x, 1, ppos(selectedPlayer).l)
     
-    targetTileType = TestBoard(projectPath$ + brdPath$ + targetBoardName$, targetX, targetY, targetL)
+    targetTileType = TestBoard(projectPath & brdPath & targetBoardName$, targetX, targetY, targetL)
 
     'If targetTileType = -1 Or targetTileType = SOLID Then
     If targetTileType = -1 Then
@@ -6376,15 +6328,15 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     ' ! ADDED BY KSNiloc...
     launchBoardThreads boardList(activeBoardIndex).theData
     
-    ppos(selectedPlayer).x = targetX
-    ppos(selectedPlayer).y = targetY
-    ppos(selectedPlayer).l = targetL
+    pPos(selectedPlayer).x = targetX
+    pPos(selectedPlayer).y = targetY
+    pPos(selectedPlayer).l = targetL
     
     'Isometric fix:
-    pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-    pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
-    pendingPlayerMovement(selectedPlayer).xTarg = ppos(selectedPlayer).x
-    pendingPlayerMovement(selectedPlayer).yTarg = ppos(selectedPlayer).y
+    pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+    pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+    pendingPlayerMovement(selectedPlayer).xTarg = pPos(selectedPlayer).x
+    pendingPlayerMovement(selectedPlayer).yTarg = pPos(selectedPlayer).y
     
     Call renderNow
     Call CanvasGetScreen(cnvRPGCodeScreen)
@@ -6498,9 +6450,9 @@ Sub setConstants()
         yy$ = removeChar("playerY[" + str$(t) + "]!", " ")
         ll$ = removeChar("playerLayer[" + str$(t) + "]!", " ")
         hh$ = removeChar("playerHandle[" + str$(t) + "]$", " ")
-        Call setIndependentVariable(xx$, str$(ppos(t).x))
-        Call setIndependentVariable(yy$, str$(ppos(t).y))
-        Call setIndependentVariable(ll$, str$(ppos(t).l))
+        Call setIndependentVariable(xx$, str$(pPos(t).x))
+        Call setIndependentVariable(yy$, str$(pPos(t).y))
+        Call setIndependentVariable(ll$, str$(pPos(t).l))
         Call setIndependentVariable(hh$, playerListAr$(t))
     Next t
     For t = 0 To 10
@@ -6517,11 +6469,11 @@ Sub setConstants()
             Call setIndependentVariable("BoardSkill!", str$(boardList(activeBoardIndex).theData.BoardSkillNight))
             Call setIndependentVariable("BoardBackground$", boardList(activeBoardIndex).theData.BoardBackgroundNight$)
         Else
-            Call setIndependentVariable("BoardSkill!", str$(boardList(activeBoardIndex).theData.boardskill))
+            Call setIndependentVariable("BoardSkill!", str$(boardList(activeBoardIndex).theData.boardSkill))
             Call setIndependentVariable("BoardBackground$", boardList(activeBoardIndex).theData.boardBackground$)
         End If
     Else
-        Call setIndependentVariable("BoardSkill!", str$(boardList(activeBoardIndex).theData.boardskill))
+        Call setIndependentVariable("BoardSkill!", str$(boardList(activeBoardIndex).theData.boardSkill))
         Call setIndependentVariable("BoardBackground$", boardList(activeBoardIndex).theData.boardBackground$)
     End If
     
@@ -7181,8 +7133,8 @@ Sub SourceLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
     var2$ = GetElement(dataUse$, 2)
     If sourceType = 0 Then
         'player
-        tarX$ = str$(ppos(Source).x)
-        tarY$ = str$(ppos(Source).y)
+        tarX$ = str$(pPos(Source).x)
+        tarY$ = str$(pPos(Source).y)
     End If
     If sourceType = 1 Then
         'item
@@ -7195,7 +7147,7 @@ Sub SourceLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
         tarX$ = str$(enemyMem(Source).x)
         tarY$ = str$(enemyMem(Source).y)
     End If
-    'MsgBox tarx$ + "," + tary$ + "   " + Str$(curx(0)) + Str$(cury(0))
+    'MsgBox tarx & "," + tary & "   " + Str$(curx(0)) + Str$(cury(0))
     Call SetVariable(var1$, tarX$, theProgram)
     Call SetVariable(var2$, tarY$, theProgram)
 
@@ -7280,52 +7232,52 @@ Sub StanceRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         If within(num, 1, 4) = 1 Then
             'facing south
-            ppos(theOne).frame = num - 1
-            ppos(theOne).stance = "WALK_S"
+            pPos(theOne).frame = num - 1
+            pPos(theOne).stance = "WALK_S"
         End If
         If within(num, 5, 8) = 1 Then
             'facing south
-            ppos(theOne).frame = num - 5
-            ppos(theOne).stance = "WALK_E"
+            pPos(theOne).frame = num - 5
+            pPos(theOne).stance = "WALK_E"
         End If
         If within(num, 9, 12) = 1 Then
             'facing south
-            ppos(theOne).frame = num - 9
-            ppos(theOne).stance = "WALK_N"
+            pPos(theOne).frame = num - 9
+            pPos(theOne).stance = "WALK_N"
         End If
         If within(num, 13, 16) = 1 Then
             'facing south
-            ppos(theOne).frame = num - 13
-            ppos(theOne).stance = "WALK_W"
+            pPos(theOne).frame = num - 13
+            pPos(theOne).stance = "WALK_W"
         End If
         If within(num, 17, 20) = 1 Then
             'facing south
-            ppos(theOne).frame = num - 17
-            ppos(theOne).stance = "FIGHT"
+            pPos(theOne).frame = num - 17
+            pPos(theOne).stance = "FIGHT"
         End If
         If within(num, 21, 24) = 1 Then
             'facing south
-            ppos(theOne).frame = num - 21
-            ppos(theOne).stance = "SPC"
+            pPos(theOne).frame = num - 21
+            pPos(theOne).stance = "SPC"
         End If
         If within(num, 25, 28) = 1 Then
             'facing south
-            ppos(theOne).frame = num - 25
-            ppos(theOne).stance = "DEFEND"
+            pPos(theOne).frame = num - 25
+            pPos(theOne).stance = "DEFEND"
         End If
         If within(num, 29, 32) = 1 Then
             'facing south
-            ppos(theOne).frame = num - 29
-            ppos(theOne).stance = "DIE"
+            pPos(theOne).frame = num - 29
+            pPos(theOne).stance = "DIE"
         End If
         If within(num, 33, 42) = 1 Then
             'facing south
-            ppos(theOne).frame = 0
-            ppos(theOne).stance = "CUSTOM " + toString(num - 33)
+            pPos(theOne).frame = 0
+            pPos(theOne).stance = "CUSTOM " + toString(num - 33)
         End If
         If num = 43 Then
-            ppos(theOne).frame = 0
-            ppos(theOne).stance = "REST"
+            pPos(theOne).frame = 0
+            pPos(theOne).stance = "REST"
         End If
         
         Call renderNow
@@ -7582,8 +7534,8 @@ Sub TargetLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
             tarX$ = str$(xx)
             tarY$ = str$(yy)
         Else
-            tarX$ = str$(ppos(target).x)
-            tarY$ = str$(ppos(target).y)
+            tarX$ = str$(pPos(target).x)
+            tarY$ = str$(pPos(target).y)
         End If
     End If
     If targetType = 1 Then
@@ -7597,7 +7549,7 @@ Sub TargetLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
         tarX$ = str$(enemyMem(target).x)
         tarY$ = str$(enemyMem(target).y)
     End If
-    'MsgBox tarx$ + "," + tary$ + "   " + Str$(curx(0)) + Str$(cury(0))
+    'MsgBox tarx & "," + tary & "   " + Str$(curx(0)) + Str$(cury(0))
     Call SetVariable(var1$, tarX$, theProgram)
     Call SetVariable(var2$, tarY$, theProgram)
 
@@ -7652,7 +7604,6 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim hdc As Long
         hdc = CanvasOpenHDC(cnv)
 
-        '! ADDITION BY KSNiloc
         Select Case LCase(GetCommandName(Text, theProgram))
             Case "text": putText lit1$, num1, num2, fontColor, fontSize, fontSize, hdc
             Case "pixeltext"
@@ -7661,7 +7612,7 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
                                                        fontColor, fontSize, fontSize, hdc
         End Select
 
-        Call CNVCloseHDC(cnv, hdc)
+        Call CanvasCloseHDC(cnv, hdc)
         If cnv = cnvRPGCodeScreen Then
             Call renderRPGCodeScreen
             'If LCase(GetCommandName(Text, theProgram)) = "text" Then
@@ -7740,9 +7691,9 @@ Sub TileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If xx = 1 Or yy = 1 Or lay = 1 Or typea = 0 Then
         Call debugger("Error: TileType data type must be num, num, lit, num!-- " + Text$)
     Else
-        theX = inBounds(num1, 1, boardList(activeBoardIndex).theData.Bsizex)
-        theY = inBounds(num2, 1, boardList(activeBoardIndex).theData.Bsizey)
-        theLay = inBounds(num4, 1, boardList(activeBoardIndex).theData.Bsizel)
+        theX = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
+        theY = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
+        theLay = inBounds(num4, 1, boardList(activeBoardIndex).theData.bSizeL)
         Select Case UCase$(lit1$)
             Case "NORMAL":
                 boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 0
@@ -7984,11 +7935,11 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
         ChDir (projectPath$)
         If pakFileRunning Then
             Call ChangeDir(PakTempPath$)
-            Call GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, 0, 0, 0, 0)
+            Call GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
             Call ChangeDir(currentDir$)
         Else
-            Call GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, 0, 0, 0, 0)
-            'a = GFXdrawboard(brdpath$ + brd$, 0, num2 - 1, num3 - 1, 0, 0, 0, tilesX, tilesY, vbpichdc(mainForm.boardform))
+            Call GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, 0, 0, 0, 0)
+            'a = GFXdrawboard(brdpath & brd$, 0, num2 - 1, num3 - 1, 0, 0, 0, tilesX, tilesY, vbpichdc(mainForm.boardform))
         End If
         'boardList(activeBoardIndex).theData = boardTemp
         ChDir (currentDir$)
@@ -8514,7 +8465,7 @@ Sub WavStopRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'Stop wav
     On Error GoTo errorhandler
     
-    Call TKAudiereStop(fgDevice)
+    Call stopSFX
 
     Exit Sub
 'Begin error handling code:
@@ -9685,8 +9636,8 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                 'circle down to player
                 stepSize = -2
                 Dim pX As Long, pY As Long, wi As Long, radius As Long
-                pX = ((ppos(selectedPlayer).x - topX) * 32) - 16
-                pY = ((ppos(selectedPlayer).y - topY) * 32) - 16
+                pX = ((pPos(selectedPlayer).x - topX) * 32) - 16
+                pY = ((pPos(selectedPlayer).y - topY) * 32) - 16
                 'wi = (mainForm.boardform.width / Screen.TwipsPerPixelX) + 100 * ddx
                 wi = tilesX * 32 + 200
                 'MsgBox Str$(cury(selectedplayer))
@@ -9956,7 +9907,7 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
         Else
             pPic$ = projectPath$ & bmpPath$ & MWinPic$
             If pakFileRunning Then
-                f$ = PakLocate(bmpPath$ + MWinPic$)
+                f$ = PakLocate(bmpPath & MWinPic$)
                 Call CanvasLoadSizedPicture(cnvMsgBox, f$)
             Else
                 Call CanvasLoadSizedPicture(cnvMsgBox, pPic$)
@@ -10027,7 +9978,7 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
         Else
             pPic$ = projectPath$ & bmpPath$ & MWinPic$
             If pakFileRunning Then
-                f$ = PakLocate(bmpPath$ + MWinPic$)
+                f$ = PakLocate(bmpPath & MWinPic$)
                 Call CanvasLoadSizedPicture(cnvMsgBox, f$)
             Else
                 Call CanvasLoadSizedPicture(cnvMsgBox, pPic$)

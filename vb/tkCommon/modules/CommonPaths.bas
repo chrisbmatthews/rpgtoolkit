@@ -97,7 +97,7 @@ Public Function GetExt(inFile As String) As String
     theext$ = ""
     For t = theloc + 1 To Len(inFile)
         part$ = Mid$(inFile, t, 1)
-        theext$ = theext$ + part$
+        theext$ = theext & part$
     Next t
     
     GetExt = theext$
@@ -130,7 +130,7 @@ Public Function GetPath(inFile As String) As String
     thept$ = ""
     For t = 1 To theloc
         part$ = Mid$(inFile, t, 1)
-        thept$ = thept$ + part$
+        thept$ = thept & part$
     Next t
     
     GetPath = thept$
@@ -163,7 +163,7 @@ Public Function GetPathNoSlash(inFile As String) As String
     thept$ = ""
     For t = 1 To theloc - 1
         part$ = Mid$(inFile, t, 1)
-        thept$ = thept$ + part$
+        thept$ = thept & part$
     Next t
     
     GetPathNoSlash = thept$
@@ -196,7 +196,7 @@ Public Function RemovePath(inFile As String) As String
     thefn$ = ""
     For t = theloc + 1 To Len(inFile)
         part$ = Mid$(inFile, t, 1)
-        thefn$ = thefn$ + part$
+        thefn$ = thefn & part$
     Next t
     
     RemovePath = thefn$

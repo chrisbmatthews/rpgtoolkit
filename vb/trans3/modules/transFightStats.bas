@@ -90,7 +90,7 @@ Function getPlayerFP(ByRef thePlayer As TKPlayer) As Double
     On Error Resume Next
 
     Dim stat As Double, l As String, a As Long
-    a = GetIndependentVariable(thePlayer.fightVar$, l$, stat)
+    a = getIndependentVariable(thePlayer.fightVar$, l$, stat)
     getPlayerFP = stat
 End Function
 
@@ -99,7 +99,7 @@ Function getPlayerName(ByRef thePlayer As TKPlayer) As String
     On Error Resume Next
 
     Dim stat As Double, l As String, a As Long
-    a = GetIndependentVariable(thePlayer.nameVar$, l$, stat)
+    a = getIndependentVariable(thePlayer.nameVar$, l$, stat)
     getPlayerName = l
 End Function
 
@@ -108,7 +108,7 @@ Function getPlayerDP(ByRef thePlayer As TKPlayer) As Double
     On Error Resume Next
 
     Dim stat As Double, l As String, a As Long
-    a = GetIndependentVariable(thePlayer.defenseVar$, l$, stat)
+    a = getIndependentVariable(thePlayer.defenseVar$, l$, stat)
     getPlayerDP = stat
 End Function
 
@@ -117,7 +117,7 @@ Function getPlayerMaxSMP(ByRef thePlayer As TKPlayer) As Double
     On Error Resume Next
 
     Dim stat As Double, l As String, a As Long
-    a = GetIndependentVariable(thePlayer.smMaxVar$, l$, stat)
+    a = getIndependentVariable(thePlayer.smMaxVar$, l$, stat)
     getPlayerMaxSMP = stat
 End Function
 
@@ -126,7 +126,7 @@ Function getPlayerHP(ByRef thePlayer As TKPlayer) As Double
     On Error Resume Next
 
     Dim stat As Double, l As String, a As Long
-    a = GetIndependentVariable(thePlayer.healthVar$, l$, stat)
+    a = getIndependentVariable(thePlayer.healthVar$, l$, stat)
     getPlayerHP = stat
 End Function
 
@@ -136,7 +136,7 @@ Sub giveExperience(amount, thePlayer As TKPlayer)
     Dim expr As Double
     Dim aa As Long
     Dim l As String
-    aa = GetIndependentVariable(thePlayer.experienceVar$, l$, expr)
+    aa = getIndependentVariable(thePlayer.experienceVar$, l$, expr)
     expr = expr + amount
     Call setIndependentVariable(thePlayer.experienceVar$, str$(expr))
     thePlayer.nextLevel = thePlayer.nextLevel - amount
@@ -167,16 +167,16 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     If thePlayer.charLevelUpRPGCode$ <> "" Then
         target = num
         targetType = 0
-        source = num
+        Source = num
         sourceType = 0
-        Call runProgram(projectPath$ + prgPath$ + thePlayer.charLevelUpRPGCode$)
+        Call runProgram(projectPath & prgPath & thePlayer.charLevelUpRPGCode$)
     End If
     
     'level up:
     Dim lev As Double
     Dim aa As Long
     Dim l As String
-    aa = GetIndependentVariable(thePlayer.leVar$, l$, lev)
+    aa = getIndependentVariable(thePlayer.leVar$, l$, lev)
     If lev >= thePlayer.maxLevel Then Exit Sub
     lev = lev + 1
     Call setIndependentVariable(thePlayer.leVar$, str$(lev))
@@ -189,7 +189,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     
     'hp up:
     Dim hp As Double
-    aa = GetIndependentVariable(thePlayer.maxHealthVar$, l$, hp)
+    aa = getIndependentVariable(thePlayer.maxHealthVar$, l$, hp)
     If thePlayer.charLevelUpType = 0 Then
         hp = hp + ((hp - equipHPadd(num)) * thePlayer.levelHp / 100)
     Else
@@ -199,7 +199,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     Call setIndependentVariable(thePlayer.maxHealthVar$, str$(hp))
     
     'dp up:
-    aa = GetIndependentVariable(thePlayer.defenseVar$, l$, hp)
+    aa = getIndependentVariable(thePlayer.defenseVar$, l$, hp)
     If thePlayer.charLevelUpType = 0 Then
         hp = hp + ((hp - equipDPadd(num)) * thePlayer.levelDp / 100)
     Else
@@ -209,7 +209,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     Call setIndependentVariable(thePlayer.defenseVar$, str$(hp))
     
     'fp up:
-    aa = GetIndependentVariable(thePlayer.fightVar$, l$, hp)
+    aa = getIndependentVariable(thePlayer.fightVar$, l$, hp)
     If thePlayer.charLevelUpType = 0 Then
         hp = hp + ((hp - equipFPadd(num)) * thePlayer.levelFp / 100)
     Else
@@ -219,7 +219,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     Call setIndependentVariable(thePlayer.fightVar$, str$(hp))
 
     'smp up:
-    aa = GetIndependentVariable(thePlayer.smMaxVar$, l$, hp)
+    aa = getIndependentVariable(thePlayer.smMaxVar$, l$, hp)
     If thePlayer.charLevelUpType = 0 Then
         hp = hp + ((hp - equipSMadd(num)) * thePlayer.levelSm / 100)
     Else
@@ -238,7 +238,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     
     Call CanvasGetScreen(cnvRPGCodeScreen)
     lineNum = 1
-    Call AddToMsgBox(h$ + " " + LoadStringLoc(2047, "Level Up!"), thePrg)
+    Call AddToMsgBox(h & " " + LoadStringLoc(2047, "Level Up!"), thePrg)
     Call renderRPGCodeScreen
     Call WaitForKey
 End Sub
@@ -248,7 +248,7 @@ Function getPlayerMaxHP(ByRef thePlayer As TKPlayer) As Double
     On Error Resume Next
 
     Dim stat As Double, l As String, a As Long
-    a = GetIndependentVariable(thePlayer.maxHealthVar$, l$, stat)
+    a = getIndependentVariable(thePlayer.maxHealthVar$, l$, stat)
     getPlayerMaxHP = stat
 End Function
 
@@ -257,7 +257,7 @@ Function getPlayerSMP(ByRef thePlayer As TKPlayer) As Double
     On Error Resume Next
 
     Dim stat As Double, l As String, a As Long
-    a = GetIndependentVariable(thePlayer.smVar$, l$, stat)
+    a = getIndependentVariable(thePlayer.smVar$, l$, stat)
     getPlayerSMP = stat
 End Function
 

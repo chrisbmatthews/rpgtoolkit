@@ -610,7 +610,7 @@ End Sub
 '========================================================================
 ' Opens animation
 '========================================================================
-Public Sub openFile(file$)
+Public Sub openFile(ByVal file As String)
     On Error Resume Next
     'In tkMainForm, there has already been created a new animation form, let's show
     'that now
@@ -622,7 +622,7 @@ Public Sub openFile(file$)
     antiPath$ = absNoPath(file$)
     
     'Copy the file to the misc folder of the current project
-    FileCopy filename$(1), projectPath$ + miscPath$ + antiPath
+    FileCopy filename$(1), projectPath$ & miscPath$ & antiPath
     'Open the animation
     Call openAnimation(filename$(1), animationList(activeAnimationIndex).theData)
     'Fill the info
@@ -749,24 +749,28 @@ End Sub
 ' and resizes it. Also updates the framecount caption, sound textbox and
 ' transparent picturebox.
 '========================================================================
-Private Sub DrawFrame(framenum As Variant)
+Private Sub DrawFrame(ByVal frameNum As Long)
+
     On Error Resume Next
+
     'Clear picturebox
     Call vbPicCls(arena)
+
     'Draw the frame
-    Call AnimDrawFrame(animationList(activeAnimationIndex).theData, framenum, 0, 0, vbPicHDC(arena))
+    Call AnimDrawFrame(animationList(activeAnimationIndex).theData, frameNum, 0, 0, vbPicHDC(arena))
+
     'Refresh the picturebox
     Call vbPicRefresh(arena)
-    
+
     'Get the total number of frames
     Dim maxFrame As Long
     maxFrame = animGetMaxFrame(animationList(activeAnimationIndex).theData)
-    'Update framecount caption, sound textbox and transparent picturebox
-    '(EDIT for 3.0.4 by Woozy)
-    tkMainForm.framecount.Caption = "Frame " + toString(animationList(activeAnimationIndex).theData.animCurrentFrame + 1) + " / " + toString(maxFrame + 1)
-    
+
+    'Update the boxes and such
+    tkMainForm.framecount.Caption = "Frame " & toString(animationList(activeAnimationIndex).theData.animCurrentFrame + 1) & " / " & toString(maxFrame + 1)
     tkMainForm.soundeffect.Text = animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame)
     Call vbPicFillRect(tkMainForm.transpcolor, 0, 0, 1000, 1000, animationList(activeAnimationIndex).theData.animTransp(animationList(activeAnimationIndex).theData.animCurrentFrame))
+
 End Sub
 '========================================================================
 ' Back button in tkMainForm

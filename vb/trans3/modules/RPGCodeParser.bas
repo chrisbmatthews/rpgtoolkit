@@ -74,7 +74,7 @@ Public Function GetMethodName(ByVal Text As String, ByRef thePrg As RPGCodeProgr
         If part$ = " " Or part$ = "(" Then
             t = Length
         Else
-            mName$ = mName$ + part$
+            mName$ = mName & part$
         End If
     Next t
     GetMethodName = mName$
@@ -319,7 +319,7 @@ Public Function Evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             startAt = p
             p = Length
         Else
-            If part$ <> " " Then val1$ = val1$ + part$
+            If part$ <> " " Then val1$ = val1 & part$
         End If
     Next p
     equ$ = eqtype$
@@ -327,7 +327,7 @@ Public Function Evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         part$ = Mid$(use$, p, 1)
         If part$ <> " " Then
             If part$ = "=" Or part$ = ">" Or part$ = "<" Then
-                equ$ = equ$ + part$
+                equ$ = equ & part$
                 startAt = p + 1
                 p = Length
             Else
@@ -340,7 +340,7 @@ Public Function Evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     val2$ = ""
     For p = startAt To Length
          part$ = Mid$(use$, p, 1)
-        If part$ <> " " Then val2$ = val2$ + part$
+        If part$ <> " " Then val2$ = val2 & part$
     Next p
         
     If equ = "" Then
@@ -832,7 +832,7 @@ Public Function GetCommandName( _
     For p = starting To Length
         part$ = Mid$(splice$, p, 1)
         If part$ = " " Or part$ = "(" Or part$ = "=" Then p = Length: part$ = ""
-        commandName$ = commandName$ + part$
+        commandName$ = commandName & part$
     Next p
     'Now, before sending this back, let's see if it's a varibale
     If commandName$ = "{" Then commandName$ = "OPENBLOCK"

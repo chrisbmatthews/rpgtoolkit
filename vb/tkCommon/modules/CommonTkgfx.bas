@@ -77,11 +77,11 @@ Public Sub drawTile(ByVal dc As Long, ByVal file As String, ByVal x As Double, B
                 'numof = getTileNum(temp$)
                 Temp$ = tilesetFilename(Temp$)
             End If
-            file$ = PakLocate(tilePath$ + Temp$)
+            file$ = PakLocate(tilePath & Temp$)
         
             If UCase$(ex$) = "TAN" Then
                 ff$ = RemovePath(Temp$)
-                Call openTileAnm(projectPath$ + tilePath$ + ff$, anm)
+                Call openTileAnm(projectPath & tilePath & ff$, anm)
                 file$ = TileAnmGet(anm, 0)
             End If
         
@@ -104,8 +104,8 @@ Public Sub drawTile(ByVal dc As Long, ByVal file As String, ByVal x As Double, B
         ex$ = GetExt(file$)
         If UCase$(ex$) = "TAN" Then
             ff$ = RemovePath(file$)
-            Call openTileAnm(projectPath$ + tilePath$ + ff$, anm)
-            file$ = projectPath$ + tilePath$ + TileAnmGet(anm, 0)
+            Call openTileAnm(projectPath & tilePath & ff$, anm)
+            file$ = projectPath & tilePath & TileAnmGet(anm, 0)
         End If
         Call ChDir(projectPath)
         ff$ = RemovePath(file$)
@@ -157,11 +157,11 @@ Public Sub drawTileCNV(ByVal cnv As Long, ByVal file As String, ByVal x As Doubl
                 'numof = getTileNum(temp$)
                 Temp$ = tilesetFilename(Temp$)
             End If
-            file$ = PakLocate(tilePath$ + Temp$)
+            file$ = PakLocate(tilePath & Temp$)
         
             If UCase$(ex$) = "TAN" Then
                 ff$ = RemovePath(Temp$)
-                Call openTileAnm(projectPath$ + tilePath$ + ff$, anm)
+                Call openTileAnm(projectPath & tilePath & ff$, anm)
                 file$ = TileAnmGet(anm, 0)
             End If
         
@@ -184,8 +184,8 @@ Public Sub drawTileCNV(ByVal cnv As Long, ByVal file As String, ByVal x As Doubl
         ex$ = GetExt(file$)
         If UCase$(ex$) = "TAN" Then
             ff$ = RemovePath(file$)
-            Call openTileAnm(projectPath$ + tilePath$ + ff$, anm)
-            file$ = projectPath$ + tilePath$ + TileAnmGet(anm, 0)
+            Call openTileAnm(projectPath & tilePath & ff$, anm)
+            file$ = projectPath & tilePath & TileAnmGet(anm, 0)
         End If
         ChDir (projectPath$)
         ff$ = RemovePath(file$)
@@ -223,7 +223,7 @@ Public Function GFXBoardTile(ByVal x As Long, ByVal y As Long, ByVal z As Long) 
     If GetExt(UCase$(res)) = "TAN" Then
         'it's an animated tile-- pass back the first frame
         If UCase$(lastAnmFile) <> UCase$(res) Then
-            Call openTileAnm(tilePath$ + res, lastAnm)
+            Call openTileAnm(tilePath & res, lastAnm)
             lastAnmFile = res
         End If
         res = TileAnmGet(lastAnm, 0)
@@ -240,7 +240,7 @@ End Function
 '=========================================================================
 Public Function GFXBoardRed(ByVal x As Long, ByVal y As Long, ByVal l As Long) As Long
     On Error Resume Next
-    GFXBoardRed = boardList(activeBoardIndex).theData.ambientred(x, y, l)
+    GFXBoardRed = boardList(activeBoardIndex).theData.ambientRed(x, y, l)
 End Function
 
 '=========================================================================
@@ -248,7 +248,7 @@ End Function
 '=========================================================================
 Public Function GFXBoardGreen(ByVal x As Long, ByVal y As Long, ByVal l As Long) As Long
     On Error Resume Next
-    GFXBoardGreen = boardList(activeBoardIndex).theData.ambientgreen(x, y, l)
+    GFXBoardGreen = boardList(activeBoardIndex).theData.ambientGreen(x, y, l)
 End Function
 
 '=========================================================================
@@ -256,7 +256,7 @@ End Function
 '=========================================================================
 Public Function GFXBoardBlue(ByVal x As Long, ByVal y As Long, ByVal l As Long) As Long
     On Error Resume Next
-    GFXBoardBlue = boardList(activeBoardIndex).theData.ambientblue(x, y, l)
+    GFXBoardBlue = boardList(activeBoardIndex).theData.ambientBlue(x, y, l)
 End Function
 
 '=========================================================================

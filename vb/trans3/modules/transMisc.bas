@@ -120,13 +120,13 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
     Dim effectiveTilesY As Long
     
     If boardIso() Then
-        effectiveSizeX = boardList(activeBoardIndex).theData.Bsizex
-        effectiveSizeY = boardList(activeBoardIndex).theData.Bsizey
+        effectiveSizeX = boardList(activeBoardIndex).theData.bSizeX
+        effectiveSizeY = boardList(activeBoardIndex).theData.bSizeY
         effectiveTilesX = tilesX / 2 '= isoTilesX
         effectiveTilesY = tilesY * 2
     Else
-        effectiveSizeX = boardList(activeBoardIndex).theData.Bsizex
-        effectiveSizeY = boardList(activeBoardIndex).theData.Bsizey
+        effectiveSizeX = boardList(activeBoardIndex).theData.bSizeX
+        effectiveSizeY = boardList(activeBoardIndex).theData.bSizeY
         effectiveTilesX = tilesX
         effectiveTilesY = tilesY
     End If
@@ -215,6 +215,7 @@ Public Sub openItems()
     For itemNum = 0 To maxItem
         Call DestroyCanvas(cnvSprites(itemNum))
     Next itemNum
+
     'Create new item canvases
     For itemNum = 0 To maxItem
         cnvSprites(itemNum) = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
@@ -315,10 +316,10 @@ Public Function GetSpacedElement(ByVal Text As String, ByVal eleeNum As Long) As
                     returnVal$ = ""
                 End If
             Else
-                returnVal$ = returnVal$ + part$
+                returnVal$ = returnVal & part$
             End If
         Else
-            returnVal$ = returnVal$ + part$
+            returnVal$ = returnVal & part$
         End If
     Next p
 End Function
@@ -396,9 +397,9 @@ Public Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     
     If playerEquip$(equipNum, playerNum) = "" Then Exit Sub
     
-    anItem = openItem(projectPath$ + itmPath$ + playerEquip$(equipNum, playerNum))
+    anItem = openItem(projectPath & itmPath & playerEquip$(equipNum, playerNum))
     If anItem.prgRemove$ <> "" Then
-        Call runProgram(projectPath$ + prgPath$ + anItem.prgRemove$)
+        Call runProgram(projectPath & prgPath & anItem.prgRemove$)
     End If
     
     'Put the equipment back in the item list:

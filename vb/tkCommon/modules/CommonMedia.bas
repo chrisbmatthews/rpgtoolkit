@@ -1,196 +1,146 @@
 Attribute VB_Name = "CommonMedia"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'Multimedia system
-'replaces MCI OCX control
-'should do midi and wav for sure
-'can also do mp3 if codec is installed
+'=========================================================================
+' Common media functions
+'=========================================================================
+
+'=========================================================================
+'NOTE
+' + This file is not redundant! Audiere does *not* play WAV, or MIDI
+'=========================================================================
+
 Option Explicit
 
-Declare Function GetShortPathName Lib "kernel32" Alias "GetShortPathNameA" (ByVal lpszLongPath As String, ByVal lpszShortPath As String, ByVal cchBuffer As Long) As Long
-Declare Function mciGetErrorString Lib "winmm.dll" Alias "mciGetErrorStringA" (ByVal dwError As Long, ByVal lpstrBuffer As String, ByVal uLength As Long) As Long
-Declare Function mciSendString Lib "winmm.dll" Alias "mciSendStringA" (ByVal lpstrCommand As String, ByVal lpstrReturnString As String, ByVal uReturnLength As Long, ByVal hwndCallback As Long) As Long
+'=========================================================================
+' Member Win32 declarations
+'=========================================================================
+Private Declare Function GetShortPathName Lib "kernel32" Alias "GetShortPathNameA" (ByVal lpszLongPath As String, ByVal lpszShortPath As String, ByVal cchBuffer As Long) As Long
+Private Declare Function mciGetErrorString Lib "winmm.dll" Alias "mciGetErrorStringA" (ByVal dwError As Long, ByVal lpstrBuffer As String, ByVal uLength As Long) As Long
+Private Declare Function mciSendString Lib "winmm.dll" Alias "mciSendStringA" (ByVal lpstrCommand As String, ByVal lpstrReturnString As String, ByVal uReturnLength As Long, ByVal hwndCallback As Long) As Long
 
-Declare Function sndPlaySound Lib "winmm" Alias "sndPlaySoundA" (ByVal lpSound As String, ByVal flag As Long) As Long
+'=========================================================================
+' Public Win32 declarations
+'=========================================================================
+Public Declare Function sndPlaySound Lib "winmm" Alias "sndPlaySoundA" (ByVal lpSound As String, ByVal lpType As Long) As Long
 
-Global Const SND_SYNC = &H0
-Global Const SND_ASYNC = &H1
-Global Const SND_NODEFAULT = &H2
-Global Const SND_LOOP = &H8
-Global Const SND_NOSTOP = &H10
+'=========================================================================
+' Public constants
+'=========================================================================
+Public Const SND_SYNC = &H0
+Public Const SND_ASYNC = &H1
+Public Const SND_NODEFAULT = &H2
+Public Const SND_LOOP = &H8
+Public Const SND_NOSTOP = &H10
 
+'=========================================================================
+' File types the TK supports
+'=========================================================================
+Public Const strFileDialogFilterMedia = "Sound Files|*.mid;*.midi;*.wav;*.mod;*.s3m;*.it;*.xm;*.mp3;*.mp1;*.mp2;*.669;*.amf;*.ams;*.dbm;*.dsm;*.far;*.med;*.mdl;*.mtm;*.nst;*.okt;*.ptm;*.stm;*.ult;*.umx;*.wow|MIDI Sequence (*.mid)|*.mid;*.midi|MPEG (*.mp3, *.mp2, *.mp1)|*.mp1;*.mp2;*.mp3|WAV Waveform Audio(*.wav)|*.wav|ProTracker Module (*.mod)|*.mod|UNIS 669 Composer (*.669)|*.669|Asylum/DSMI (*.amf)|*.amf|Velvet Studio (*.ams)|*.ams|DigiBooster Pro (*.dbm)|*.dbm|DSIK Internal (*.dsm)|*.dsm|Farandole Composer (*.far)|*.far|Impulse Tracker (*.it)|*.it|OctaMed (*.med)|*.med|DigiTracker 1.x (*.mdl)|*.mdl|MultiTracker (*.mtm)|*.mtm|NoiseTracker (*.nst)|*.nst|OktaLyser (*.okt)|*.okt|PolyTracker (*.ptm)|*.ptm|ScreamTracker III (*.s3m)|*.s3m|ScreamTracker II (*.stm)|*.stm|UltraTracker (*.ult)|*.ult|Unreal Music (*.umx)|*.umx|Grave Composer (*.wow)|*.wow|FastTracker (*.xm)|*.xm|All files(*.*)|*.*"
+Public Const strFileDialogFilterMediaPlayList = "Sound Files|*.m3u;*.mid;*.midi;*.wav;*.mod;*.s3m;*.it;*.xm;*.mp3;*.mp1;*.mp2;*.669;*.amf;*.ams;*.dbm;*.dsm;*.far;*.med;*.mdl;*.mtm;*.nst;*.okt;*.ptm;*.stm;*.ult;*.umx;*.wow|Winamp Playlist (*.m3u)|*.m3u|MIDI Sequence (*.mid)|*.mid;*.midi|MPEG (*.mp3, *.mp2, *.mp1)|*.mp1;*.mp2;*.mp3|WAV Waveform Audio(*.wav)|*.wav|ProTracker Module (*.mod)|*.mod|UNIS 669 Composer (*.669)|*.669|Asylum/DSMI (*.amf)|*.amf|Velvet Studio (*.ams)|*.ams|DigiBooster Pro (*.dbm)|*.dbm|DSIK Internal (*.dsm)|*.dsm|Farandole Composer (*.far)|*.far|Impulse Tracker (*.it)|*.it|OctaMed (*.med)|*.med|DigiTracker 1.x (*.mdl)|*.mdl|MultiTracker (*.mtm)|*.mtm|NoiseTracker (*.nst)|*.nst|OktaLyser (*.okt)|*.okt|PolyTracker (*.ptm)|*.ptm|ScreamTracker III (*.s3m)|*.s3m|ScreamTracker II (*.stm)|*.stm|UltraTracker (*.ult)|*.ult|Unreal Music (*.umx)|*.umx|Grave Composer (*.wow)|*.wow|FastTracker (*.xm)|*.xm|All files(*.*)|*.*"
+
+'=========================================================================
+' Convert a pointer to a null-terminated string to a VB string
+'=========================================================================
 Private Function APIString2VBString(ByVal str As String) As String
-    'convert a null terminated string into a vb string
     On Error Resume Next
-    
-    Dim toRet As String
-    Dim part As String
-    Dim t As Integer
-    For t = 0 To Len(str)
-        part = Mid$(str, t, 1)
-        If part = Chr$(0) Then
+    Dim part As String, stringPos As Integer
+    For stringPos = 0 To Len(str)
+        part = Mid(str, stringPos, 1)
+        If part = Chr(0) Then
             Exit For
         Else
-            toRet = toRet + part
+            APIString2VBString = APIString2VBString & part
         End If
-    Next t
-    
-    APIString2VBString = toRet
+    Next stringPos
 End Function
 
-
-
+'=========================================================================
+' Get the length of the file that is playing
+'=========================================================================
 Public Function GetLengthMCI(Optional ByVal strIdentifier As String = "defDevice") As Long
     On Error Resume Next
-    'check if media is playing
-    'strIdentifier is the identifier of the file you are playing
-    
     Dim returnStr As String * 255
-    Dim x&
-    
-    x = mciSendString("status " + strIdentifier + " length", returnStr, 255, 0)
-    If x <> 0 Then
-        GetLengthMCI = 0
-        Exit Function 'StopMIDI() was pressed or error
-    End If
-    
-    Dim theLen As String
-    theLen$ = APIString2VBString(returnStr)
-    GetLengthMCI = val(theLen$)
+    Call mciSendString("status " & strIdentifier & " length", returnStr, 255, 0)
+    GetLengthMCI = CLng(APIString2VBString(returnStr))
 End Function
 
-
-
+'=========================================================================
+' Get the position in the currently playing file
+'=========================================================================
 Public Function GetPositionMCI(Optional ByVal strIdentifier As String = "defDevice") As Long
     On Error Resume Next
-    'check position of media file
-    'strIdentifier is the identifier of the file you are playing
-    
     Dim returnStr As String * 255
-    Dim x&
-    
-    x = mciSendString("status " + strIdentifier + " position", returnStr, 255, 0)
-    If x <> 0 Then
-        GetPositionMCI = 0
-        Exit Function 'StopMIDI() was pressed or error
-    End If
-    
-    Dim theLen As String
-    theLen$ = APIString2VBString(returnStr)
-    GetPositionMCI = val(theLen$)
+    Call mciSendString("status " & strIdentifier & " position", returnStr, 255, 0)
+    GetPositionMCI = CLng(APIString2VBString(returnStr))
 End Function
 
-
-
-
+'=========================================================================
+' Determine if a file is playing
+'=========================================================================
 Public Function IsPlayingMCI(Optional ByVal strIdentifier As String = "defDevice") As Boolean
     On Error Resume Next
-    'check if media is playing
-    'strIdentifier is the identifier of the file you are playing
-    
     Dim returnStr As String * 255
-    Dim x&
-    
-    x = mciSendString("status " + strIdentifier + " mode", returnStr, 255, 0)
-    If x <> 0 Then
-        IsPlayingMCI = False
-        Exit Function 'StopMIDI() was pressed or error
-    End If
-    
-    If Left$(returnStr, 7) = "stopped" Then
-        'x = mciSendString("play yada from 1", returnStr, 255, 0)
-        IsPlayingMCI = False
-    Else
+    Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
+    If Not (Left(returnStr, 7) = "stopped") Then
         IsPlayingMCI = True
     End If
-
 End Function
 
-
-Public Function PlayMCI(DriveDirFile As String, Optional ByVal strIdentifier As String = "defDevice") As String
-    'play a media file
-    'optionally identify it with strIdentifier
-    
+'=========================================================================
+' Play a file
+'=========================================================================
+Public Sub PlayMCI(DriveDirFile As String, Optional ByVal strIdentifier As String = "defDevice")
     On Error Resume Next
-    
-
-    Dim returnStr As String * 255
-    Dim Shortpath$, x&
-    Shortpath = Space(Len(DriveDirFile))
-    
-    x = GetShortPathName(DriveDirFile, Shortpath, Len(Shortpath))
-    
-    If x > Len(DriveDirFile) Then 'not a long filename
-      Shortpath = DriveDirFile
+    Dim returnStr As String * 255, returnLen As Long
+    Dim shortPath As String
+    shortPath = Space(Len(DriveDirFile))
+    returnLen = GetShortPathName(DriveDirFile, shortPath, Len(shortPath))
+    If returnLen > Len(DriveDirFile) Then 'not a long filename
+        shortPath = DriveDirFile
     Else                          'it is a long filename
-      Shortpath = Left$(Shortpath, x) 'x is the length of the return buffer
+        shortPath = Left(shortPath, returnLen) 'x is the length of the return buffer
     End If
-    
-    x = mciSendString("close " + strIdentifier, returnStr, 255, 0) 'just in case
-    x = mciSendString("open " & Chr(34) & Shortpath & Chr(34) & " alias " + strIdentifier, returnStr, 255, 0)
-    
-    If x <> 0 Then GoTo theEnd  'invalid filename or path
-    
-    x = mciSendString("play " + strIdentifier, returnStr, 255, 0)
-    
-    If x <> 0 Then GoTo theEnd  'device busy or not ready
-     
-    Exit Function
+    Call mciSendString("close " & strIdentifier, returnStr, 255, 0) 'just in case
+    Call mciSendString("open " & Chr(34) & shortPath & Chr(34) & " alias " & strIdentifier, returnStr, 255, 0)
+    Call mciSendString("play " & strIdentifier, returnStr, 255, 0)
+End Sub
 
-theEnd:  'MIDI errorhandler
-    returnStr = Space(255)
-    x = mciGetErrorString(x, returnStr, 255)
-    'MsgBox Trim(returnStr), vbExclamation 'error message
-    x = mciSendString("close " + strIdentifier, returnStr, 255, 0)
-    Exit Function
-
-End Function
-
-Sub SetPositionMCI(ByVal newPos As Long, Optional ByVal strIdentifier As String = "defDevice")
-    'set the media file to a new positon.
+'=========================================================================
+' Set the file to a certain position
+'=========================================================================
+Public Sub SetPositionMCI(ByVal newPos As Long, Optional ByVal strIdentifier As String = "defDevice")
     On Error Resume Next
-    
-    Dim returnStr As String * 255
-    Dim x&
-    
-    Dim theLen As Long
+    Dim returnStr As String * 255, theLen As Long
     theLen = GetLengthMCI(strIdentifier)
     If newPos > theLen Then
         newPos = theLen
     End If
-    
-    x = mciSendString("status " + strIdentifier + " mode", returnStr, 255, 0)
-    If Left$(returnStr, 7) = "playing" Then
-        x = mciSendString("stop " + strIdentifier, returnStr, 255, 0)
+    Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
+    If Left(returnStr, 7) = "playing" Then
+        Call mciSendString("stop " & strIdentifier, returnStr, 255, 0)
     End If
-    
-    x = mciSendString("seek " + strIdentifier + " to " + str$(newPos), returnStr, 0, 0)
-    
-    x = mciSendString("play " + strIdentifier, returnStr, 255, 0)
-    
+    Call mciSendString("seek " & strIdentifier & " to " & CStr(newPos), returnStr, 0, 0)
+    Call mciSendString("play " & strIdentifier, returnStr, 255, 0)
 End Sub
 
-Public Function StopMCI(Optional ByVal strIdentifier As String = "defDevice") As String
-    'play a media file
-    'optionally identify it with strIdentifier
-    
+'=========================================================================
+' Stop the playing file
+'=========================================================================
+Public Sub StopMCI(Optional ByVal strIdentifier As String = "defDevice")
     On Error Resume Next
-    
-    Dim x&
     Dim returnStr As String * 255
-       
-    x = mciSendString("status " + strIdentifier + " mode", returnStr, 255, 0)
-    If Left$(returnStr, 7) = "playing" Then
-        x = mciSendString("stop " + strIdentifier, returnStr, 255, 0)
+    Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
+    If Left(returnStr, 7) = "playing" Then
+        Call mciSendString("stop " & strIdentifier, returnStr, 255, 0)
     End If
-    
     returnStr = Space(255)
-    
-    x = mciSendString("status " + strIdentifier + " mode", returnStr, 255, 0)
-    If Left$(returnStr, 7) = "stopped" Then
-        x = mciSendString("close " + strIdentifier, returnStr, 255, 0)
+    Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
+    If Left(returnStr, 7) = "stopped" Then
+        Call mciSendString("close " & strIdentifier, returnStr, 255, 0)
     End If
-End Function
-
+End Sub

@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form pswap 
+Begin VB.Form transPlayerSwap 
    Appearance      =   0  'Flat
    BackColor       =   &H00404040&
    BorderStyle     =   0  'None
@@ -12,13 +12,20 @@ Begin VB.Form pswap
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   7200
-   ScaleWidth      =   9600
+   ScaleHeight     =   480
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   640
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1980"
+   Begin VB.Timer eventTimer 
+      Interval        =   1
+      Left            =   360
+      Top             =   2040
+   End
    Begin VB.CommandButton Command3 
       Caption         =   "OK"
+      Default         =   -1  'True
       Height          =   375
       Left            =   7800
       Style           =   1  'Graphical
@@ -45,7 +52,7 @@ Begin VB.Form pswap
       Top             =   2640
       Width           =   495
    End
-   Begin VB.ListBox oplayers 
+   Begin VB.ListBox oPlayers 
       Appearance      =   0  'Flat
       BackColor       =   &H00808080&
       BeginProperty Font 
@@ -63,7 +70,7 @@ Begin VB.Form pswap
       Top             =   1320
       Width           =   3135
    End
-   Begin VB.ListBox cplayers 
+   Begin VB.ListBox cPlayers 
       Appearance      =   0  'Flat
       BackColor       =   &H00808080&
       BeginProperty Font 
@@ -146,148 +153,146 @@ Begin VB.Form pswap
       Width           =   1815
    End
 End
-Attribute VB_Name = "pswap"
+Attribute VB_Name = "transPlayerSwap"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'=========================================================================
+' Player swap window -- needs serious re-writing!!!
+' Status: C-
+'=========================================================================
 
-Sub infofill()
-    On Error GoTo errorhandler
-    cplayers.clear
-    For t = 0 To 4
-        cplayers.addItem (playerListAr$(t))
-    Next t
-    oplayers.clear
-    For t = 0 To 25
-        oplayers.addItem (otherPlayersHandle$(t))
-    Next t
+Option Explicit
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+'=========================================================================
+' Win32 APIs
+'=========================================================================
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+
+'=========================================================================
+' Fill in this form
+'=========================================================================
+Private Sub infoFill()
+    Call cPlayers.clear
+    Call oPlayers.clear
+    Dim playerIdx As Long
+    For playerIdx = 0 To UBound(playerListAr)
+        Call cPlayers.addItem(playerListAr(playerIdx))
+    Next playerIdx
+    For playerIdx = 0 To UBound(otherPlayersHandle)
+        Call oPlayers.addItem(otherPlayersHandle(playerIdx))
+    Next playerIdx
 End Sub
 
-
-Sub skin()
-    'skins this window
+'=========================================================================
+' Skin this window
+'=========================================================================
+Private Sub skin()
     On Error Resume Next
     If mainMem.skinWindow$ <> "" Then
-        Call vbFrmAutoRedraw(pswap, True)
+        Call vbFrmAutoRedraw(Me, True)
         If pakFileRunning Then
-            f$ = PakLocate(bmpPath$ + mainMem.skinWindow$)
-            'pswap.Picture = LoadPicture(F$)
-            Call drawImage(f$, 0, 0, vbFrmHDC(pswap))
+            Call drawImage(PakLocate(bmpPath$ & mainMem.skinWindow$), 0, 0, vbFrmHDC(Me))
         Else
-            'pswap.Picture = LoadPicture(projectPath$ + bmppath$ + mainMem.skinWindow$)
-            Call drawImage(projectPath$ + bmpPath$ + mainMem.skinWindow$, 0, 0, vbFrmHDC(pswap))
+            Call drawImage(projectPath$ & bmpPath$ & mainMem.skinWindow$, 0, 0, vbFrmHDC(Me))
         End If
-        Call vbFrmRefresh(pswap)
+        Call vbFrmRefresh(Me)
     End If
     If mainMem.skinButton$ <> "" Then
         If pakFileRunning Then
-            f$ = PakLocate(bmpPath$ + mainMem.skinButton$)
-            Command1.Picture = LoadPicture(f$)
-            Command2.Picture = LoadPicture(f$)
-            Command3.Picture = LoadPicture(f$)
+            Dim theFile As String
+            theFile = PakLocate(bmpPath$ & mainMem.skinButton$)
+            Command1.Picture = LoadPicture(theFile)
+            Command2.Picture = LoadPicture(theFile)
+            Command3.Picture = LoadPicture(theFile)
         Else
-            Command1.Picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
-            Command2.Picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
-            Command3.Picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
+            Command1.Picture = LoadPicture(projectPath$ & bmpPath$ & mainMem.skinButton$)
+            Command2.Picture = LoadPicture(projectPath$ & bmpPath$ & mainMem.skinButton$)
+            Command3.Picture = LoadPicture(projectPath$ & bmpPath$ & mainMem.skinButton$)
         End If
     End If
 End Sub
 
+'=========================================================================
+' Restore player button clicked
+'=========================================================================
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
-    num = oplayers.ListIndex
-    If otherPlayers$(num) <> "" Then
-        Dim aProgram As RPGCodeProgram
-        ReDim aProgram.program(10)
-        aProgram.boardNum = -1
-        Call RestorePlayerRPG("#RestorePlayer(" + otherPlayers$(num) + ")", aProgram)
-        otherPlayers$(num) = ""
-        otherPlayersHandle$(num) = ""
-        Call infofill
+    On Error Resume Next
+    Dim rV As RPGCODE_RETURN
+    If otherPlayers(oPlayers.ListIndex) <> "" Then
+        Call DoIndependentCommand("RestorePlayer(" & otherPlayers(oPlayers.ListIndex) & ")", rV)
+        otherPlayers(oPlayers.ListIndex) = ""
+        otherPlayersHandle(oPlayers.ListIndex) = ""
+        Call infoFill
     End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
+'=========================================================================
+' Remove player button clicked
+'=========================================================================
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
-    num = cplayers.ListIndex
-    If num = -1 Or num = 0 Then
-        abc = MBox(LoadStringLoc(855, "You cannot remove the first player"), LoadStringLoc(856, "Remove Player"), 0, menuColor, projectPath$ + bmpPath$ + mainMem.skinWindow$, projectPath$ + bmpPath$ + mainMem.skinButton$)
-        'MsgBox "You cannot remove the first player"
-        Exit Sub
+    On Error Resume Next
+    Dim rV As RPGCODE_RETURN
+    If cPlayers.ListIndex = -1 Or cPlayers.ListIndex = 0 Then
+        Call MBox(LoadStringLoc(855, "You cannot remove the first player"), LoadStringLoc(856, "Remove Player"), 0, menuColor, projectPath$ & bmpPath$ & mainMem.skinWindow$, projectPath$ & bmpPath$ & mainMem.skinButton$)
+    Else
+        If playerListAr(cPlayers.ListIndex) <> "" Then
+            Call DoIndependentCommand("RemovePlayer(" & playerListAr(cPlayers.ListIndex) & ")", rV)
+            Call infoFill
+        End If
     End If
-    If playerListAr$(num) <> "" Then
-        Dim aProgram As RPGCodeProgram
-        ReDim aProgram.program(10)
-        aProgram.boardNum = -1
-        Call RemovePlayerRPG("#RemovePlayer(" + playerListAr$(num) + ")", aProgram)
-        Call infofill
-    End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
-
+'=========================================================================
+' Close button clicked
+'=========================================================================
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
-    Unload pswap
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    Call Unload(Me)
 End Sub
 
-
-Private Sub Command4_Click()
-
+'=========================================================================
+' Don't lock up
+'=========================================================================
+Private Sub eventTimer_Timer()
+    Call processEvent
 End Sub
 
-
-Private Sub Form_Activate()
-    Call skin
-
-End Sub
-
+'=========================================================================
+' Form loaded
+'=========================================================================
 Private Sub Form_Load()
-    On Error GoTo errorhandler
-    Call LocalizeForm(Me)
-    shopwindow.BackColor = menuColor
-    rr = red(menuColor)
-    gg = green(menuColor)
-    bb = blue(menuColor)
-    cplayers.BackColor = RGB(rr + 128, gg + 128, bb + 128)
-    oplayers.BackColor = RGB(rr + 128, gg + 128, bb + 128)
+    On Error Resume Next
+    Dim theColor As Long
+    theColor = RGB(red(menuColor) + 128, green(menuColor) + 128, blue(menuColor) + 128)
+    cPlayers.BackColor = theColor
+    oPlayers.BackColor = theColor
     Call skin
-    Call infofill
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    Call infoFill
+    With Me
+        If Not usingFullScreen() Then
+            Call SetParent(.hwnd, host.hwnd)
+        Else
+            Call host.Hide
+        End If
+        .Left = 0
+        .Top = 0
+        .Width = host.Width
+        .height = host.height
+    End With
 End Sub
 
-
+'=========================================================================
+' Form unloaded
+'=========================================================================
+Private Sub Form_Unload(ByRef Cancel As Integer)
+    If usingFullScreen() Then
+        Call host.Show
+    End If
+End Sub

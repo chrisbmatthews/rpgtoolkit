@@ -729,7 +729,7 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Public Sub openFile(file$)
+Public Sub openFile(ByVal file$)
     On Error Resume Next
     'Call checkSave
     activeEnemy.Show
@@ -737,7 +737,7 @@ Public Sub openFile(file$)
     Dim antiPath As String
     antiPath$ = absNoPath(file$)
     FileCopy filename$(1), projectPath$ + enePath$ + antiPath$
-    Call openEnemy(filename$(1), enemylist(activeEnemyIndex).theData)
+    enemylist(activeEnemyIndex).theData = openEnemy(filename$(1))
     enemylist(activeEnemyIndex).eneFile$ = antiPath$
     activeEnemy.Caption = LoadStringLoc(806, "Edit Enemy") + " (" + antiPath$ + ")"
     Call infofill

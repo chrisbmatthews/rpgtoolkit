@@ -83,6 +83,7 @@ Public Sub closeSystems()
     Call CloseWindow(host.hwnd)
     Call DestroyWindow(host.hwnd)
     Call UnregisterClass(host.className, App.hInstance)
+    Call Unload(debugwin)
 End Sub
 
 '=======================================================================
@@ -244,11 +245,14 @@ Public Sub gameLogic()
     Select Case gGameState
 
         Case GS_IDLE
-            Call checkMusic         'keep the music looping
             Call renderNow          'render the scene
+            Call checkMusic         'keep the music looping
             Call multiTaskNow       'run rpgcode multitasking
             Call scanKeys           'scan for important keys
             Call updateGameTime     'update time game has been running for
+
+        Case GS_PAUSE
+            Call checkMusic         'just keep the music looping
 
         Case GS_MOVEMENT
 
@@ -286,8 +290,8 @@ Public Sub gameLogic()
             'The pending movements have to be cleared *before* any programs are run,
             'whereas the movement direction can only be cleared afterwards.
             For cnt = 0 To UBound(pendingPlayerMovement)
-                pendingPlayerMovement(cnt).xOrig = ppos(cnt).x
-                pendingPlayerMovement(cnt).yOrig = ppos(cnt).y
+                pendingPlayerMovement(cnt).xOrig = pPos(cnt).x
+                pendingPlayerMovement(cnt).yOrig = pPos(cnt).y
             Next cnt
 
             'check if player moved...
@@ -296,7 +300,7 @@ Public Sub gameLogic()
                 'the target location for that players' movement.
                 'lets us test solid tiles, etc
                 Dim tempPos As PLAYER_POSITION
-                tempPos = ppos(selectedPlayer)
+                tempPos = pPos(selectedPlayer)
 
                 tempPos.l = pendingPlayerMovement(selectedPlayer).lTarg
                 tempPos.x = pendingPlayerMovement(selectedPlayer).xTarg
@@ -327,10 +331,10 @@ Public Sub gameLogic()
             Next cnt
 
             'Convert *STUPID* string positions to numerical
-            If UCase(ppos(selectedPlayer).stance) = "WALK_S" Then facing = South
-            If UCase(ppos(selectedPlayer).stance) = "WALK_W" Then facing = West
-            If UCase(ppos(selectedPlayer).stance) = "WALK_N" Then facing = North
-            If UCase(ppos(selectedPlayer).stance) = "WALK_E" Then facing = East
+            If UCase(pPos(selectedPlayer).stance) = "WALK_S" Then facing = South
+            If UCase(pPos(selectedPlayer).stance) = "WALK_W" Then facing = West
+            If UCase(pPos(selectedPlayer).stance) = "WALK_N" Then facing = North
+            If UCase(pPos(selectedPlayer).stance) = "WALK_E" Then facing = East
 
             'Back to idle state
             gGameState = GS_IDLE
@@ -474,29 +478,41 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     'the program editor, send the player to the initial board
     If (Not saveFileLoaded) And (Not testingPRG) Then
 
+        'Nullify some variables
         scTopX = -1000
         scTopY = -1000
         lastRender.canvas = -1
 
+        'Open up the starting board
         Call ClearNonPersistentThreads
         Call openBoard(projectPath & brdPath & mainMem.initBoard, boardList(activeBoardIndex).theData)
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)
         Call openItems
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
 
-        'Setup player position.
-        ppos(0).x = boardList(activeBoardIndex).theData.playerX
-        ppos(0).y = boardList(activeBoardIndex).theData.playerY
-        ppos(0).l = boardList(activeBoardIndex).theData.playerLayer
-        ppos(0).stance = "WALK_S"
-        ppos(0).frame = 0
+        'Setup player position
+        With boardList(activeBoardIndex).theData
+            pPos(0).x = .playerX
+            pPos(0).y = .playerY
+            pPos(0).l = .playerLayer
+            pPos(0).stance = "WALK_S"
+            pPos(0).frame = 0
+        End With
+    
+        'Set to use player 0 as walking graphics
         selectedPlayer = 0
 
+        'Hide all players except the walking graphic one
         Dim pNum As Long
         For pNum = 0 To UBound(showPlayer)
-            showPlayer(pNum) = False
+            If pNum <> selectedPlayer Then
+                showPlayer(pNum) = False
+            Else
+                showPlayer(pNum) = True
+            End If
         Next pNum
-        showPlayer(selectedPlayer) = True
+
+        'Start him facing south
         facing = South
 
     End If

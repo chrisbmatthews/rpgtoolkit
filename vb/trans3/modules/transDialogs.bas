@@ -108,18 +108,18 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
             End If
         End If
         If isPressed("BUTTON1") Then
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorSelectSound)
             ShowPromptDialog = textBoxContents
             done = True
         End If
         If isPressed("ENTER") Then
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorSelectSound)
             ShowPromptDialog = textBoxContents
             done = True
         End If
         If isPressed("ESC") Or isPressed("BUTTON2") Then
             'cancel
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorCancelSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorCancelSound)
             ShowPromptDialog = ""
             done = True
         End If
@@ -295,7 +295,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
                 topFile = topFile - 1
                 If topFile < 0 Then topFile = 0
             End If
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorMoveSound)
             textBoxContents = Files(cursorNum + topFile)
             Call cursorDelay
         End If
@@ -312,29 +312,29 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
                     End If
                 End If
             End If
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorMoveSound)
             textBoxContents = Files(cursorNum + topFile)
             Call cursorDelay
         End If
         If isPressed("BUTTON1") Then
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorSelectSound)
             ShowFileDialog = Files(cursorNum + topFile)
             done = True
         End If
         If isPressed("ENTER") Then
             If textBoxContents = "" Then
-                Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+                Call playSoundFX(projectPath & mediaPath & mainMem.cursorSelectSound)
                 ShowFileDialog = Files(cursorNum + topFile)
                 done = True
             Else
-                Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+                Call playSoundFX(projectPath & mediaPath & mainMem.cursorSelectSound)
                 ShowFileDialog = addExt(textBoxContents, "." + GetExt(ext))
                 done = True
             End If
         End If
         If isPressed("ESC") Or isPressed("BUTTON2") Then
             'cancel
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorCancelSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorCancelSound)
             ShowFileDialog = ""
             done = True
         End If
@@ -424,7 +424,7 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             End If
             If cursorNum < 0 Then cursorNum = ctable.Length - 1
             If cursorNum >= ctable.Length Then cursorNum = 0
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorMoveSound)
             Call cursorDelay
         End If
         If isPressed("LEFT") Or isPressed("NUMPAD4") Then
@@ -435,7 +435,7 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             End If
             If cursorNum < 0 Then cursorNum = ctable.Length - 1
             If cursorNum >= ctable.Length Then cursorNum = 0
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorMoveSound)
             Call cursorDelay
         End If
         If isPressed("DOWN") Or isPressed("NUMPAD2") Then
@@ -446,7 +446,7 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             End If
             If cursorNum < 0 Then cursorNum = ctable.Length - 1
             If cursorNum >= ctable.Length Then cursorNum = 0
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorMoveSound)
             Call cursorDelay
         End If
         If isPressed("RIGHT") Or isPressed("NUMPAD6") Then
@@ -457,15 +457,15 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             End If
             If cursorNum >= ctable.Length Then cursorNum = 0
             If cursorNum < 0 Then cursorNum = ctable.Length - 1
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorMoveSound)
             Call cursorDelay
         End If
         If isPressed("ENTER") Or isPressed("SPACE") Or isPressed("BUTTON1") Then
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorSelectSound)
             done = True
         End If
         If isPressed("ESC") Or isPressed("BUTTON2") Then
-            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorSelectSound)
             cursorNum = -1
             done = True
         End If
@@ -635,3 +635,41 @@ Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional 
     Call DXRefresh
     Call FlushKB
 End Function
+
+Private Function countSubStrings( _
+                                   ByVal theString As String, _
+                                   ByVal stringSeperator As String _
+                                                                     ) As Long
+
+    'count the numbver of substrings contained in the string
+    'seperated by stringSeperator
+    
+    On Error Resume Next
+    
+    If theString = "" Then
+        countSubStrings = 0
+    Else
+        Dim parse() As String
+        parse() = Split(theString, stringSeperator)
+        countSubStrings = UBound(parse) + 1
+    End If
+
+End Function
+
+Private Function getSubString( _
+                                ByVal theString As String, _
+                                ByVal stringSeperator As String, _
+                                ByVal idx As Long _
+                                                    ) As String
+
+    'return the substring at index idx (starting at 0)
+    'seperated by stringSeperator
+
+    On Error Resume Next
+
+    Dim parse() As String
+    parse() = Split(theString, stringSeperator)
+    getSubString = parse(idx)
+
+End Function
+

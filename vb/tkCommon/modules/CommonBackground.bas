@@ -38,14 +38,14 @@ Sub BackgroundClear(ByRef theBkg As TKBackground)
     theBkg.bkgCantDoWav = ""
 End Sub
 
-Sub DrawBackground(ByRef theBkg As TKBackground, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal height As Long, ByVal hdc As Long)
+Sub DrawBackground(ByRef theBkg As TKBackground, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long, ByVal hdc As Long)
     On Error Resume Next
     'draw the fight background
     Dim file As String
-    file = projectPath$ + bmpPath$ + theBkg.image
+    file = projectPath & bmpPath & theBkg.image
     file = PakLocate(file)
     If fileExists(file) Then
-        Call DrawSizedImage(file, X, Y, Width, height, hdc)
+        Call DrawSizedImage(file, x, y, Width, height, hdc)
     End If
 End Sub
 
@@ -121,7 +121,7 @@ Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
 ver2bkg:
     'open background (ver 2)
         
-    Dim X As Long, Y As Long, user As Long
+    Dim x As Long, y As Long, user As Long
     
     Dim tbm As TKTileBitmap
     Call TileBitmapClear(tbm)
@@ -139,11 +139,11 @@ ver2bkg:
             user = MsgBox("This Background was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
             If user = 7 Then Close #num: Exit Sub     'selected no
         End If
-        For X = 1 To 19
-            For Y = 1 To 11
-                tbm.tiles(X - 1, Y - 1) = fread(num)
-            Next Y
-        Next X
+        For x = 1 To 19
+            For y = 1 To 11
+                tbm.tiles(x - 1, y - 1) = fread(num)
+            Next y
+        Next x
         theBkg.bkgMusic = fread(num)
         theBkg.bkgSelWav = fread(num)
         theBkg.bkgChooseWav = fread(num)
@@ -151,18 +151,18 @@ ver2bkg:
         theBkg.bkgCantDoWav = fread(num)
         Call fread(num) 'dummy
         
-        For X = 1 To 19
-            For Y = 1 To 11
-                tbm.redS(X - 1, Y - 1) = fread(num)
-                tbm.greenS(X - 1, Y - 1) = fread(num)
-                tbm.blueS(X - 1, Y - 1) = fread(num)
-            Next Y
-        Next X
+        For x = 1 To 19
+            For y = 1 To 11
+                tbm.redS(x - 1, y - 1) = fread(num)
+                tbm.greenS(x - 1, y - 1) = fread(num)
+                tbm.blueS(x - 1, y - 1) = fread(num)
+            Next y
+        Next x
     
         Dim tbmName As String
         tbmName$ = replace(RemovePath(file$), ".", "_") + ".tbm"
         theBkg.image = tbmName
-        tbmName$ = projectPath$ + bmpPath$ + tbmName$
+        tbmName$ = projectPath & bmpPath & tbmName$
         Call SaveTileBitmap(tbmName, tbm)
     Close #num
 End Sub

@@ -50,121 +50,120 @@ Private Const FILE_HEADER = "RPGTLKIT BOARD"
 ' A RPGToolkit board
 '=========================================================================
 Public Type TKBoard
-    Bsizex As Integer            'board size x
-    Bsizey As Integer            'board size y
-    Bsizel As Integer            'board size layer
-    tileIndex() As String       'lookup table for tiles
-    board() As Integer          'board tiles -- codes indicating where the tiles are on the board
-    ambientred() As Integer     'ambiebnt tile red
-    ambientgreen() As Integer   'boardList(activeBoardIndex).ambient tile green
-    ambientblue() As Integer    'boardList(activeBoardIndex).ambient tile blue
-    tiletype() As Byte          'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
-    brdBack As String           'board background img (parallax layer)
-    brdFore As String           'board foreground image (parallax)
-    borderBack As String        'border background img
-    brdColor As Long           'board color
-    borderColor As Long         'Border color
-    ambienteffect As Integer    'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
-    dirLink(4) As String        'Direction links 1- N, 2- S, 3- E, 4-W
-    boardskill As Integer       'Board skill level
-    boardBackground As String   'Fighting background
-    fightingYN As Integer       'Fighting on boardYN (1- yes, 0- no)
-    BoardDayNight As Integer     'board is affected by day/night? 0=no, 1=yes
-    BoardNightBattleOverride As Integer 'use custom battle options at night? 0=no, 1=yes
-    BoardSkillNight As Integer   'Board skill level at night
-    BoardBackgroundNight As String   'Fighting background at night
-    brdConst(10) As Integer     'Board Constants (1-10)
-    boardMusic As String        'Background music file
-    boardTitle(8) As String     'Board title (layer)
-    programName(500) As String   'Board program filenames
-    progX(500) As Integer        'program x
-    progY(500) As Integer        'program y
-    progLayer(500) As Integer    'program layer
-    progGraphic(500) As String   'program graphic
-    progActivate(500) As Integer    'program activation: 0- always active, 1- conditional activation.
-    progVarActivate(500) As String 'activation variable
-    progDoneVarActivate(500) As String 'activation variable at end of prg.
-    activateInitNum(500) As String 'initial number of activation
-    activateDoneNum(500) As String 'what to make variable at end of activation.
-    activationType(500) As Integer 'activation type- 0-step on, 1- conditional (activation key)
-    enterPrg As String           'program to run on entrance''''''''''''''''''
-    bgPrg As String              'background program
-    itmName() As String        'filenames of items
-    itmX() As Double          'x coord
-    itmY() As Double          'y coord
-    itmLayer() As Double      'layer coord'''''''''''''
-    itmActivate() As Integer   'itm activation: 0- always active, 1- conditional activation.
-    itmVarActivate() As String  'activation variable
-    itmDoneVarActivate() As String 'activation variable at end of itm.
-    itmActivateInitNum() As String 'initial number of activation
-    itmActivateDoneNum() As String 'what to make variable at end of activation.
-    itmActivationType() As Integer  'activation type- 0-step on, 1- conditional (activation key)
-    itemProgram() As String         'program to run when item is touched.
-    itemMulti() As String           'multitask program for item
-    playerX As Integer           'player x ccord
-    playerY As Integer           'player y coord
-    playerLayer As Integer       'player layer coord
-    brdSavingYN As Integer       'can player save on board? 0-yes, 1-no
-    isIsometric As Byte         'is it an isometric board? (0- no, 1-yes)
-    threads() As String
-    'volatile (not in the file or anything)
-    hasAnmTiles As Boolean  'does board have anim tiles?
-    animatedTile() As TKBoardAnimTile 'animated tiles associated with this board
-    anmTileInsertIdx As Long    'index of animated tile insertion
-    anmTileLUTIndices() As Long     'indices into LUT of animated tiles
-    anmTileLUTInsertIdx As Long    'index of LUT table insertion
+    bSizeX As Integer                     'board size x
+    bSizeY As Integer                     'board size y
+    bSizeL As Integer                     'board size layer
+    tileIndex() As String                 'lookup table for tiles
+    board() As Integer                    'board tiles -- codes indicating where the tiles are on the board
+    ambientRed() As Integer               'ambient tile red
+    ambientGreen() As Integer             'ambient tile green
+    ambientBlue() As Integer              'ambient tile blue
+    tiletype() As Byte                    'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
+    brdBack As String                     'board background img (parallax layer)
+    brdFore As String                     'board foreground image (parallax)
+    borderBack As String                  'border background img
+    brdColor As Long                      'board color
+    borderColor As Long                   'Border color
+    ambienteffect As Integer              'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
+    dirLink(4) As String                  'Direction links 1- N, 2- S, 3- E, 4-W
+    boardSkill As Integer                 'Board skill level
+    boardBackground As String             'Fighting background
+    fightingYN As Integer                 'Fighting on boardYN (1- yes, 0- no)
+    BoardDayNight As Integer              'board is affected by day/night? 0=no, 1=yes
+    BoardNightBattleOverride As Integer   'use custom battle options at night? 0=no, 1=yes
+    BoardSkillNight As Integer            'Board skill level at night
+    BoardBackgroundNight As String        'Fighting background at night
+    brdConst(10) As Integer               'Board Constants (1-10)
+    boardMusic As String                  'Background music file
+    boardTitle(8) As String               'Board title (layer)
+    programName(500) As String            'Board program filenames
+    progX(500) As Integer                 'program x
+    progY(500) As Integer                 'program y
+    progLayer(500) As Integer             'program layer
+    progGraphic(500) As String            'program graphic
+    progActivate(500) As Integer          'program activation: 0- always active, 1- conditional activation.
+    progVarActivate(500) As String        'activation variable
+    progDoneVarActivate(500) As String    'activation variable at end of prg.
+    activateInitNum(500) As String        'initial number of activation
+    activateDoneNum(500) As String        'what to make variable at end of activation.
+    activationType(500) As Integer        'activation type- 0-step on, 1- conditional (activation key)
+    enterPrg As String                    'program to run on entrance
+    bgPrg As String                       'background program
+    itmName() As String                   'filenames of items
+    itmX() As Double                      'x coord
+    itmY() As Double                      'y coord
+    itmLayer() As Double                  'layer coord
+    itmActivate() As Integer              'itm activation: 0- always active, 1- conditional activation.
+    itmVarActivate() As String            'activation variable
+    itmDoneVarActivate() As String        'activation variable at end of itm.
+    itmActivateInitNum() As String        'initial number of activation
+    itmActivateDoneNum() As String        'what to make variable at end of activation.
+    itmActivationType() As Integer        'activation type- 0-step on, 1- conditional (activation key)
+    itemProgram() As String               'program to run when item is touched.
+    itemMulti() As String                 'multitask program for item
+    playerX As Integer                    'player x ccord
+    playerY As Integer                    'player y coord
+    playerLayer As Integer                'player layer coord
+    brdSavingYN As Integer                'can player save on board? 0-yes, 1-no
+    isIsometric As Byte                   'is it an isometric board? (0- no, 1-yes)
+    threads() As String                   'filenames of threads on board
+    hasAnmTiles As Boolean                'does board have anim tiles?
+    animatedTile() As TKBoardAnimTile     'animated tiles associated with this board
+    anmTileInsertIdx As Long              'index of animated tile insertion
+    anmTileLUTIndices() As Long           'indices into LUT of animated tiles
+    anmTileLUTInsertIdx As Long           'index of LUT table insertion
 End Type
 
 '=========================================================================
 ' A board editor document
 '=========================================================================
 Public Type boardDoc
-    boardName As String     'filename
-    boardNeedUpdate As Boolean
-    tilesX As Long
-    tilesY As Long       'size of the board in the board editor...
-    boardAboutToDefineGradient As Boolean    'about to define a gradient?
-    boardGradTop As Integer         'top tile of board gradient
-    boardGradLeft As Integer        'left tile of board gradient
-    boardGradBottom As Integer      'bottom tile of board gradient
-    boardGradRight As Integer       'right tile of board gradient
+    boardName As String                   'filename
+    boardNeedUpdate As Boolean            'something changed?
+    tilesX As Long                        'x size
+    tilesY As Long                        'y size
+    boardAboutToDefineGradient As Boolean 'about to define a gradient?
+    boardGradTop As Integer               'top tile of board gradient
+    boardGradLeft As Integer              'left tile of board gradient
+    boardGradBottom As Integer            'bottom tile of board gradient
+    boardGradRight As Integer             'right tile of board gradient
     boardGradientType As Integer          'gradient type 0- l to r, 1- t to b, 2- nw to se, 3- ne to sw
     boardGradientColor1 As Long           'grad color1
     boardGradientColor2 As Long           'grad color2
-    boardGradMaintainPrev As Boolean     'retain previous shades?
-    BoardDetail As Integer         'Detail of selected board tile
-    gridBoard As Integer           'Board openTileEditorDocs(activeTile.indice).grid on off
-    BoardTile(32, 32) As Long    'Tile selected by board
-    currentTileType As Integer     'boardList(activeBoardIndex).currentTileType
-    currentLayer As Integer         ' Current board layer
-    selectedTile As String        'Selected tile (board)
-    ambient As Long              'boardList(activeBoardIndex).ambient light
-    ambientR As Long             'boardList(activeBoardIndex).ambient red
-    ambientG As Long             'boardList(activeBoardIndex).ambient GREEN
-    ambientB As Long             'boardList(activeBoardIndex).ambient blue
-    infoX As Long                'Dummy x value, used for tile info
-    infoY As Long                'Dummy y value, used for tile info
-    drawState As Integer            'determines boardList(activeBoardIndex).drawState.  0- draw lock, 1- type lock, 2- program set, 3- itm set
-    spotLight As Integer            'spot lighting on (1)/ off (0)
-    spotLightRadius As Double      'Radius of spot light
-    percentFade As Double          'percent fade of boardList(activeBoardIndex).spotLight
-    prgCondition As Integer         'conditions the program set window- if -1, then we start a new prg.
-    itmCondition As Integer        'conditions the item set window- if -1, then we start a new itm.    theData As TKBoard
-    topX As Double
-    topY As Double   'the top x and y coords. (offset)
-    theData As TKBoard
+    boardGradMaintainPrev As Boolean      'retain previous shades?
+    BoardDetail As Integer                'Detail of selected board tile
+    gridBoard As Integer                  'Board grid on off
+    BoardTile(32, 32) As Long             'Tile selected by board
+    currentTileType As Integer            'The current tile type
+    currentLayer As Integer               'Current board layer
+    selectedTile As String                'Selected tile (board)
+    ambient As Long                       'ambient light
+    ambientR As Long                      'ambient red
+    ambientG As Long                      'ambient green
+    ambientB As Long                      'ambient blue
+    infoX As Long                         'Dummy x value, used for tile info
+    infoY As Long                         'Dummy y value, used for tile info
+    drawState As Integer                  'determines drawState 0- draw lock, 1- type lock, 2- program set, 3- itm set
+    spotLight As Integer                  'spot lighting on (1)/ off (0)
+    spotLightRadius As Double             'Radius of spot light
+    percentFade As Double                 'percent fade of boardList(activeBoardIndex).spotLight
+    prgCondition As Integer               'conditions the program set window- if -1, then we start a new prg.
+    itmCondition As Integer               'conditions the item set window- if -1, then we start a new itm.    theData As TKBoard
+    topX As Double                        'top x coord
+    topY As Double                        'top y coord
+    theData As TKBoard                    'actual contents of board
 End Type
 
 '=========================================================================
-' List of board documents
+' Integral variables
 '=========================================================================
-Public boardList() As boardDoc         'list of board documents
-Public boardListOccupied() As Boolean  'position used?
-Public currentBoard As String          'current board
-Public multiList() As String           'list of 10 multitask programs
-Public multiOpen() As Integer          'are the multitask programs open? 0-n, 1-y
-Public tilesX As Double                'tiles screen can hold on x
-Public tilesY As Double                'tiles screen can hold on y
+Public boardList() As boardDoc            'list of board documents
+Public boardListOccupied() As Boolean     'position used?
+Public currentBoard As String             'current board
+Public multiList() As String              'list of item multitask programs
+Public multiOpen() As Boolean             'are the item multitask programs open?
+Public tilesX As Double                   'tiles screen can hold on x
+Public tilesY As Double                   'tiles screen can hold on y
 
 '=========================================================================
 ' Enlarge item related arrays
@@ -225,7 +224,7 @@ Public Sub BoardAddTileAnmRef(ByRef theBoard As TKBoard, ByVal file As String, B
     'add tile...
     
     If UCase$(lastAnmFile) <> UCase$(file) Then
-        Call openTileAnm(projectPath$ + tilePath$ + file, lastAnm)
+        Call openTileAnm(projectPath & tilePath & file, lastAnm)
         lastAnmFile = file
     End If
     theBoard.animatedTile(theBoard.anmTileInsertIdx).theTile = lastAnm
@@ -272,9 +271,9 @@ Public Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByR
     Dim theRed As Long, theGreen As Long, theBlue As Long, theType As Long
     
     theTile = theBoard.board(x, y, l)
-    theRed = theBoard.ambientred(x, y, l)
-    theGreen = theBoard.ambientgreen(x, y, l)
-    theBlue = theBoard.ambientblue(x, y, l)
+    theRed = theBoard.ambientRed(x, y, l)
+    theGreen = theBoard.ambientGreen(x, y, l)
+    theBlue = theBoard.ambientBlue(x, y, l)
     theType = theBoard.tiletype(x, y, l)
     
     Dim count As Long, sx As Long, sy As Long, sl As Long
@@ -287,14 +286,14 @@ Public Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByR
     sl = l
     
     'now finf the consecutive similar ones...
-    For ll = sl To theBoard.Bsizel
-        For yy = sy To theBoard.Bsizey
-            For xx = sx To theBoard.Bsizex
+    For ll = sl To theBoard.bSizeL
+        For yy = sy To theBoard.bSizeY
+            For xx = sx To theBoard.bSizeX
                 sx = 1: sy = 1: sl = 1
                 If theBoard.board(xx, yy, ll) <> theTile Or _
-                    theBoard.ambientred(xx, yy, ll) <> theRed Or _
-                    theBoard.ambientgreen(xx, yy, ll) <> theGreen Or _
-                    theBoard.ambientblue(xx, yy, ll) <> theBlue Or _
+                    theBoard.ambientRed(xx, yy, ll) <> theRed Or _
+                    theBoard.ambientGreen(xx, yy, ll) <> theGreen Or _
+                    theBoard.ambientBlue(xx, yy, ll) <> theBlue Or _
                     theBoard.tiletype(xx, yy, ll) <> theType Then
                     'does not match-- return!
                     x = xx: y = yy: l = ll
@@ -331,21 +330,21 @@ Public Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLa
     sizeLayer = newLayer
     
     'create backup...
-    ReDim brd(theBoard.Bsizex, theBoard.Bsizey, theBoard.Bsizel) As Integer
-    ReDim r(theBoard.Bsizex, theBoard.Bsizey, theBoard.Bsizel) As Integer
-    ReDim g(theBoard.Bsizex, theBoard.Bsizey, theBoard.Bsizel) As Integer
-    ReDim b(theBoard.Bsizex, theBoard.Bsizey, theBoard.Bsizel) As Integer
-    ReDim t(theBoard.Bsizex, theBoard.Bsizey, theBoard.Bsizel) As Byte
+    ReDim brd(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Integer
+    ReDim r(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Integer
+    ReDim g(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Integer
+    ReDim b(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Integer
+    ReDim t(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Byte
     
     Dim x As Long, y As Long, l As Long
     
-    For x = 0 To theBoard.Bsizex
-        For y = 0 To theBoard.Bsizey
-            For l = 0 To theBoard.Bsizel
+    For x = 0 To theBoard.bSizeX
+        For y = 0 To theBoard.bSizeY
+            For l = 0 To theBoard.bSizeL
                 brd(x, y, l) = theBoard.board(x, y, l)
-                r(x, y, l) = theBoard.ambientred(x, y, l)
-                g(x, y, l) = theBoard.ambientgreen(x, y, l)
-                b(x, y, l) = theBoard.ambientblue(x, y, l)
+                r(x, y, l) = theBoard.ambientRed(x, y, l)
+                g(x, y, l) = theBoard.ambientGreen(x, y, l)
+                b(x, y, l) = theBoard.ambientBlue(x, y, l)
                 t(x, y, l) = theBoard.tiletype(x, y, l)
             Next l
         Next y
@@ -353,33 +352,33 @@ Public Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLa
     
     'resize...
     ReDim theBoard.board(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientred(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientgreen(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientblue(sizex, sizey, sizeLayer)
+    ReDim theBoard.ambientRed(sizex, sizey, sizeLayer)
+    ReDim theBoard.ambientGreen(sizex, sizey, sizeLayer)
+    ReDim theBoard.ambientBlue(sizex, sizey, sizeLayer)
     ReDim theBoard.tiletype(sizex, sizey, sizeLayer)
     
     Dim xx As Long, yy As Long, ll As Long
     
-    If sizex < theBoard.Bsizex Then xx = sizex Else xx = theBoard.Bsizex
-    If sizey < theBoard.Bsizey Then yy = sizey Else yy = theBoard.Bsizey
-    If sizeLayer < theBoard.Bsizel Then ll = sizeLayer Else ll = theBoard.Bsizel
+    If sizex < theBoard.bSizeX Then xx = sizex Else xx = theBoard.bSizeX
+    If sizey < theBoard.bSizeY Then yy = sizey Else yy = theBoard.bSizeY
+    If sizeLayer < theBoard.bSizeL Then ll = sizeLayer Else ll = theBoard.bSizeL
     
     'now fill it in with the old info...
     For x = 0 To xx
         For y = 0 To yy
             For l = 0 To ll
                 theBoard.board(x, y, l) = brd(x, y, l)
-                theBoard.ambientred(x, y, l) = r(x, y, l)
-                theBoard.ambientgreen(x, y, l) = g(x, y, l)
-                theBoard.ambientblue(x, y, l) = b(x, y, l)
+                theBoard.ambientRed(x, y, l) = r(x, y, l)
+                theBoard.ambientGreen(x, y, l) = g(x, y, l)
+                theBoard.ambientBlue(x, y, l) = b(x, y, l)
                 theBoard.tiletype(x, y, l) = t(x, y, l)
             Next l
         Next y
     Next x
     
-    theBoard.Bsizex = sizex
-    theBoard.Bsizey = sizey
-    theBoard.Bsizel = sizeLayer
+    theBoard.bSizeX = sizex
+    theBoard.bSizeY = sizey
+    theBoard.bSizeL = sizeLayer
 End Sub
 
 '=========================================================================
@@ -511,13 +510,13 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
         ReDim .tileIndex(5)
         Dim x As Long, y As Long, layer As Long, t As Long
         Call dimensionItemArrays
-        For x = 0 To .Bsizex
-            For y = 0 To .Bsizey
-                For layer = 0 To .Bsizel
+        For x = 0 To .bSizeX
+            For y = 0 To .bSizeY
+                For layer = 0 To .bSizeL
                     .board(x, y, layer) = 0
-                    .ambientred(x, y, layer) = 0
-                    .ambientgreen(x, y, layer) = 0
-                    .ambientblue(x, y, layer) = 0
+                    .ambientRed(x, y, layer) = 0
+                    .ambientGreen(x, y, layer) = 0
+                    .ambientBlue(x, y, layer) = 0
                     .tiletype(x, y, layer) = 0
                 Next layer
             Next y
@@ -530,7 +529,7 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
         For t = 0 To 4
             .dirLink(t) = ""
         Next t
-        .boardskill = 0
+        .boardSkill = 0
         .boardBackground = ""
         .fightingYN = 0
         For t = 0 To 10
@@ -573,9 +572,9 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
         .playerY = 0
         .playerLayer = 0
         .brdSavingYN = 0
-        .Bsizex = UBound(.board, 1)
-        .Bsizey = UBound(.board, 2)
-        .Bsizel = UBound(.board, 3)
+        .bSizeX = UBound(.board, 1)
+        .bSizeY = UBound(.board, 2)
+        .bSizeL = UBound(.board, 3)
         .BoardDayNight = 0
         .BoardNightBattleOverride = 0
         .BoardSkillNight = 0
@@ -588,7 +587,7 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
         .hasAnmTiles = False
         For t = 0 To UBound(.itemMulti)
             multiList(t) = ""
-            multiOpen(t) = 0
+            multiOpen(t) = False
         Next t
     End With
 End Sub
@@ -617,9 +616,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
         Call BinWriteString(num, "NOCODE")            'No reg code
         
         'first is the board size...
-        Call BinWriteInt(num, theBoard.Bsizex)
-        Call BinWriteInt(num, theBoard.Bsizey)
-        Call BinWriteInt(num, theBoard.Bsizel)
+        Call BinWriteInt(num, theBoard.bSizeX)
+        Call BinWriteInt(num, theBoard.bSizeY)
+        Call BinWriteInt(num, theBoard.bSizeL)
     
         'now some player and saving info...
         Call BinWriteInt(num, theBoard.playerX)            'player x ccord
@@ -634,9 +633,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
             Call BinWriteString(num, theBoard.tileIndex(t))
         Next t
         'now the board tiles...
-        For l = 1 To theBoard.Bsizel
-            For y = 1 To theBoard.Bsizey
-                For x = 1 To theBoard.Bsizex
+        For l = 1 To theBoard.bSizeL
+            For y = 1 To theBoard.bSizeY
+                For x = 1 To theBoard.bSizeX
                     Dim x2 As Integer, y2 As Integer, l2 As Integer
                     x2 = x: y2 = y: l2 = l
                     Dim rep As Long
@@ -649,9 +648,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
                         Call BinWriteInt(num, rep)
                         'now write out the board data...
                         Call BinWriteInt(num, theBoard.board(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientred(x, y, l))  'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientgreen(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientblue(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientRed(x, y, l))  'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientGreen(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientBlue(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
                         Call BinWriteByte(num, theBoard.tiletype(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
                         'set the new x, y, l...
                         x2 = x2 - 1
@@ -659,9 +658,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
                     Else
                         'no repetitions-- just write as normal...
                         Call BinWriteInt(num, theBoard.board(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientred(x, y, l))  'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientgreen(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientblue(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientRed(x, y, l))  'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientGreen(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientBlue(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
                         Call BinWriteByte(num, theBoard.tiletype(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
                     End If
                 Next x
@@ -676,7 +675,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
         For t = 1 To 4
             Call BinWriteString(num, theBoard.dirLink(t)) 'Direction links 1- N, 2- S, 3- E, 4-W
         Next t
-        Call BinWriteInt(num, theBoard.boardskill) 'Board skill level
+        Call BinWriteInt(num, theBoard.boardSkill) 'Board skill level
         Call BinWriteString(num, theBoard.boardBackground) 'Fighting background
         Call BinWriteInt(num, theBoard.fightingYN)  'Fighting on boardYN (1- yes, 0- no)
         Call BinWriteInt(num, theBoard.BoardDayNight) 'board is affected by day/night? 0=no, 1=yes
@@ -749,9 +748,9 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
 
     With theBoard
 
-        .Bsizex = 50
-        .Bsizey = 50
-        .Bsizel = 8
+        .bSizeX = 50
+        .bSizeY = 50
+        .bSizeL = 8
     
         topX = 0: topY = 0
         boardList(activeBoardIndex).boardNeedUpdate = False
@@ -795,10 +794,10 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
         
             'new style boards.
             'first is the board size...
-            .Bsizex = BinReadInt(num)
-            .Bsizey = BinReadInt(num)
-            .Bsizel = BinReadInt(num)
-            Call BoardSetSize(.Bsizex, .Bsizey, .Bsizel, theBoard)
+            .bSizeX = BinReadInt(num)
+            .bSizeY = BinReadInt(num)
+            .bSizeL = BinReadInt(num)
+            Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, theBoard)
 
             'now some player and saving info...
             .playerX = BinReadInt(num)            'player x ccord
@@ -837,15 +836,15 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                         'numof = getTileNum(temp$)
                         Temp$ = tilesetFilename(Temp$)
                     End If
-                    'PakLocate (tilePath$ + Temp$)
+                    'PakLocate (tilePath & Temp$)
                 End If
             Next t
 
             'now the board tiles...
             Dim l As Long, y As Long, x As Long
-            For l = 1 To .Bsizel
-                For y = 1 To .Bsizey
-                    For x = 1 To .Bsizex
+            For l = 1 To .bSizeL
+                For y = 1 To .bSizeY
+                    For x = 1 To .bSizeX
                         Dim test As Integer
                         test = BinReadInt(num)
                         If test < 0 Then
@@ -858,9 +857,9 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                             tt = BinReadByte(num)  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
                             For cnt = 1 To test
                                 .board(x, y, l) = bb   'board tiles -- codes indicating where the tiles are on the board
-                                .ambientred(x, y, l) = rr 'ambiebnt tile red
-                                .ambientgreen(x, y, l) = gg 'boardList(activeBoardIndex).ambient tile green
-                                .ambientblue(x, y, l) = bl 'boardList(activeBoardIndex).ambient tile blue
+                                .ambientRed(x, y, l) = rr 'ambiebnt tile red
+                                .ambientGreen(x, y, l) = gg 'boardList(activeBoardIndex).ambient tile green
+                                .ambientBlue(x, y, l) = bl 'boardList(activeBoardIndex).ambient tile blue
                                 .tiletype(x, y, l) = tt  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
                                 Dim tAnm As Long
                                 'check tile type for animations
@@ -871,13 +870,13 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                                     End If
                                 Next tAnm
                                 x = x + 1
-                                If x > .Bsizex Then
+                                If x > .bSizeX Then
                                     x = 1
                                     y = y + 1
-                                    If y > .Bsizey Then
+                                    If y > .bSizeY Then
                                         y = 1
                                         l = l + 1
-                                        If l > .Bsizel Then
+                                        If l > .bSizeL Then
                                             GoTo exitTheFor
                                         End If
                                     End If
@@ -886,9 +885,9 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                             x = x - 1
                         Else
                             .board(x, y, l) = test   'board tiles -- codes indicating where the tiles are on the board
-                            .ambientred(x, y, l) = BinReadInt(num) 'ambiebnt tile red
-                            .ambientgreen(x, y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile green
-                            .ambientblue(x, y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile blue
+                            .ambientRed(x, y, l) = BinReadInt(num) 'ambiebnt tile red
+                            .ambientGreen(x, y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile green
+                            .ambientBlue(x, y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile blue
                             .tiletype(x, y, l) = BinReadByte(num)  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
                     
                             'check tile type for animations
@@ -912,7 +911,7 @@ exitTheFor:
             For t = 1 To 4
                 .dirLink(t) = BinReadString(num)  'Direction links 1- N, 2- S, 3- E, 4-W
             Next t
-            .boardskill = BinReadInt(num) 'Board skill level
+            .boardSkill = BinReadInt(num) 'Board skill level
             .boardBackground = BinReadString(num) 'Fighting background
             .fightingYN = BinReadInt(num)  'Fighting on boardYN (1- yes, 0- no)
             .BoardDayNight = BinReadInt(num) 'board is affected by day/night? 0=no, 1=yes
@@ -1008,24 +1007,24 @@ ver2oldboard:
             regCode$ = fread(num)            'reg code
             'old style boards.
             If minorVer = 1 Then
-                .Bsizex = fread(num)        'size x
-                .Bsizey = fread(num)        'size y
-                Call BoardSetSize(.Bsizex, .Bsizey, .Bsizel, theBoard)
+                .bSizeX = fread(num)        'size x
+                .bSizeY = fread(num)        'size y
+                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, theBoard)
             ElseIf minorVer = 0 Then
-                .Bsizex = 19
-                .Bsizey = 11
-                .Bsizel = 8
-                Call BoardSetSize(.Bsizex, .Bsizey, .Bsizel, theBoard)
+                .bSizeX = 19
+                .bSizeY = 11
+                .bSizeL = 8
+                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, theBoard)
             End If
             Dim lay As Long
-            For x = 1 To .Bsizex
-                For y = 1 To .Bsizey
-                    For lay = 1 To .Bsizel
+            For x = 1 To .bSizeX
+                For y = 1 To .bSizeY
+                    For lay = 1 To .bSizeL
                         Temp$ = fread(num)              'Board tiles (the ,8 on the end is 8 layers)
                         Call BoardSetTile(x, y, lay, Temp$, theBoard)
-                        .ambientred(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile red
-                        .ambientgreen(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile green
-                        .ambientblue(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile blue
+                        .ambientRed(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile red
+                        .ambientGreen(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile green
+                        .ambientBlue(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile blue
                         .tiletype(x, y, lay) = fread(num) 'Board tile types... 0- Normal, 1- solid
                     Next lay
                 Next y
@@ -1038,7 +1037,7 @@ ver2oldboard:
             For loopControl = 1 To 4
                 .dirLink$(loopControl) = fread(num)      'Direction links 1- N, 2- S, 3- E, 4-W
             Next loopControl
-            .boardskill = fread(num)      'Board skill level
+            .boardSkill = fread(num)      'Board skill level
             .boardBackground$ = fread(num) 'Fighting background
             .fightingYN = fread(num)      'Fighting on boardYN (1- yes, 0- no)
             For loopControl = 1 To 10
@@ -1098,9 +1097,9 @@ Ver1Board:
         'We come here if we (apparently) have a version 1 board.
 
         Call BoardSetSize(19, 11, 8, theBoard)
-        .Bsizex = 19
-        .Bsizey = 11
-        .Bsizel = 8
+        .bSizeX = 19
+        .bSizeY = 11
+        .bSizeL = 8
 
         Dim pth As String, errorsA As Long
         pth = GetPath(fileOpen$)
@@ -1122,7 +1121,7 @@ Ver1Board:
                 For x = 1 To 19
                     Temp$ = fread(num)
                     If Temp$ = "VOID" Then Temp$ = ""
-                    Temp$ = pth$ + Temp$
+                    Temp$ = pth & Temp$
                     Call BoardSetTile(x, y, 1, Temp$, theBoard)
                 Next x
             Next y
@@ -1150,7 +1149,7 @@ Ver1Board:
             Else
                 .fightingYN = 0
             End If
-            .boardskill = fread(num)            ' BOARD FIGHTING SKILL
+            .boardSkill = fread(num)            ' BOARD FIGHTING SKILL
             .boardBackground$ = fread(num)             ' BACKGROUND
             .brdConst(1) = fread(num)                ' BOARD CONSTANT
             Call fread(num)                  'Space for clarity
@@ -1197,14 +1196,14 @@ Public Sub BoardSetSize(ByVal sizex As Integer, ByVal sizey As Integer, ByVal si
     On Error Resume Next
     
     ReDim theBoard.board(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientred(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientgreen(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientblue(sizex, sizey, sizeLayer)
+    ReDim theBoard.ambientRed(sizex, sizey, sizeLayer)
+    ReDim theBoard.ambientGreen(sizex, sizey, sizeLayer)
+    ReDim theBoard.ambientBlue(sizex, sizey, sizeLayer)
     ReDim theBoard.tiletype(sizex, sizey, sizeLayer)
 
-    theBoard.Bsizex = sizex
-    theBoard.Bsizey = sizey
-    theBoard.Bsizel = sizeLayer
+    theBoard.bSizeX = sizex
+    theBoard.bSizeY = sizey
+    theBoard.bSizeL = sizeLayer
 End Sub
 
 '=========================================================================
@@ -1256,9 +1255,9 @@ Public Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer A
     
     'now set the other info...
     theBoard.tiletype(x - 1, y - 1, layer - 1) = ttype
-    theBoard.ambientred(x - 1, y - 1, layer - 1) = r
-    theBoard.ambientgreen(x - 1, y - 1, layer - 1) = g
-    theBoard.ambientblue(x - 1, y - 1, layer - 1) = b
+    theBoard.ambientRed(x - 1, y - 1, layer - 1) = r
+    theBoard.ambientGreen(x - 1, y - 1, layer - 1) = g
+    theBoard.ambientBlue(x - 1, y - 1, layer - 1) = b
 End Sub
 
 '=========================================================================

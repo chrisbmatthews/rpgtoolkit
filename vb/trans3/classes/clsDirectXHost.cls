@@ -50,7 +50,7 @@ Private m_createY As Long           'y position window should start at
 ' Member enumerations
 '=========================================================================
 Public Enum STYLE_ENUM
-    fullScreen = 0
+    FullScreenMode = 0
     windowed = 1
 End Enum
 
@@ -70,7 +70,7 @@ End Property
 ' Style of window
 '=========================================================================
 Public Property Let style(ByVal newValue As STYLE_ENUM)
-    If newValue = fullScreen Then
+    If newValue = FullScreenMode Then
         m_createStyle = WS_POPUP
     ElseIf newValue = windowed Then
         m_createStyle = WS_OVERLAPPEDWINDOW Or WS_MINIMIZEBOX
@@ -154,6 +154,13 @@ End Property
 '=========================================================================
 Public Sub Show()
     Call ShowWindow(hwnd, 10)
+End Sub
+
+'=========================================================================
+' Hide the console
+'=========================================================================
+Public Sub Hide()
+    Call CloseWindow(hwnd)
 End Sub
 
 '=========================================================================

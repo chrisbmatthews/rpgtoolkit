@@ -191,7 +191,7 @@ tabErr:
         On Error Resume Next
         Dim num As Long
         num = FreeFile()
-        Open file For Input As num
+        Open file For Input Access Read As num
             Do Until EOF(num)
                 Call fread(num)
                 getTipCount = getTipCount + 1
@@ -206,8 +206,8 @@ tabErr:
         Dim a As Long
         Dim ff As Long
         ff = FreeFile()
-        Open file For Input As ff
-            Do While True
+        Open file For Input Access Read As ff
+            Do
                 Dim readData As String
                 readData = fread(ff)
                 a = a + 1
@@ -917,8 +917,8 @@ loadtileerr:
     
         'set gfx mode...
         If resX = 0 Then
-            resX = (screenWidth) / screen.TwipsPerPixelX
-            resY = screenHeight / screen.TwipsPerPixelY
+            resX = (screenWidth) / Screen.TwipsPerPixelX
+            resY = screenHeight / Screen.TwipsPerPixelY
         End If
 
     End Sub

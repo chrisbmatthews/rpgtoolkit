@@ -5,8 +5,15 @@ Attribute VB_Name = "CommonAnimation"
 'Read LICENSE.txt for licensing info
 '========================================================================
 
-'animation routines
-'Requires commontkgfx, commoncanvas and commonmedia
+'=========================================================================
+' RPGToolkit animation file format (*.anm)
+'=========================================================================
+
+'=========================================================================
+'EDITED [KSNiloc] [September 2, 2004]
+'------------------------------------
+' + New binary animation format
+'=========================================================================
 
 Option Explicit
 
@@ -73,10 +80,12 @@ Declare Function TransparentBlt Lib "msimg32" (ByVal hdcDest As Long, _
                                                ByVal nHeightSrc As Long, _
                                                ByVal crTransparent As Long) As Long
 
+Private Const FILE_HEADER = "RPGTLKIT ANIM"
+
 '========================================================================
 ' Shutdown animation system
 '========================================================================
-Sub AnimationShutdown()
+Public Sub AnimationShutdown()
     On Error Resume Next
     Dim t As Long
     For t = 0 To UBound(anmCache)
@@ -90,11 +99,11 @@ End Sub
 ' renderings of this frame, if not found, it is rendered here and copied
 ' to the animation cache.
 '========================================================================
-Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal frame As Long, ByVal x As Long, ByVal y As Long)
+Public Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal frame As Long, ByVal x As Long, ByVal y As Long)
     Dim anm As TKAnimation
     
     If file <> "" Then 'Only if it exists, we can open it
-        Call openAnimation(projectPath$ + miscPath$ + file, anm)
+        Call openAnimation(projectPath$ & miscPath$ & file, anm)
         
         Dim maxF As Long
         'Get number of frames
@@ -143,6 +152,7 @@ Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal frame As
         Dim tbm As TKTileBitmap
         ext = GetExt(frameFile)
         If frameFile <> "" Or Left(UCase(ext), 3) = "TST" Then
+
             'we can draw the frame!
             Dim W As Long
             Dim h As Long
@@ -151,13 +161,12 @@ Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal frame As
             If W <> anm.animSizeX Or h <> anm.animSizeY Then
                 Call SetCanvasSize(cnv, anm.animSizeX, anm.animSizeY)
             End If
-            Call CanvasFill(cnv, gTranspColor)
-            
-            If UCase$(ext) = "TBM" Then
-                
+            Call CanvasFill(cnv, TRANSP_COLOR)
+
+            If UCase(ext) = "TBM" Then
                 'you *must* load a tile bitmap before opening an hdc
                 'because it'll lock up on windows 98 if you don't
-                Call OpenTileBitmap(projectPath$ + bmpPath$ + frameFile, tbm)
+                Call OpenTileBitmap(projectPath$ & bmpPath$ & frameFile, tbm)
                 hdc = CanvasOpenHDC(cnv)
                 Call DrawSizedTileBitmap(tbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
                 Call CanvasCloseHDC(cnv, hdc)
@@ -172,11 +181,11 @@ Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal frame As
                 'have to blt it across from an image...
                 Dim c2 As Long
                 c2 = CreateCanvas(anm.animSizeX, anm.animSizeY)
-                Call CanvasLoadSizedPicture(c2, projectPath$ + bmpPath$ + frameFile)
+                Call CanvasLoadSizedPicture(c2, projectPath$ & bmpPath$ & frameFile)
                 Call Canvas2CanvasBltTransparent(c2, cnv, x, y, anm.animTransp(frame))
                 Call DestroyCanvas(c2)
             End If
-        
+
             'now place this frame in the sprite cache...
             t = nextAnmCacheIdx
             If GetCanvasWidth(cnv) <> GetCanvasWidth(anmCache(t).cnv) Or _
@@ -203,57 +212,83 @@ End Sub
 '========================================================================
 ' Open the animation
 '========================================================================
-Sub openAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
-    On Error Resume Next
-    'If the file is empty, exit sub
-    If file$ = "" Then Exit Sub
+Public Sub openAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
 
-    'Clear the current animation data
+    On Error Resume Next
+
+    'Get ready to read the animation
+    If Not fileExists(file) Then Exit Sub
     Call AnimationClear(theAnim)
-    'Get the file
-    file$ = PakLocate(file$)
-    'No need to update
+    file = PakLocate(file)
     #If isToolkit = 1 Then
         animationList(activeAnimationIndex).animNeedUpdate = False
     #End If
-    
-    Dim num As Long, t As Long
-    Dim fileHeader As String
-    Dim majorVer As Long, minorVer As Long
-    'Open new file
-    num = FreeFile
-    
-    Open file$ For Input As #num
-        Input #num, fileHeader$ 'Filetype
-        If fileHeader$ <> "RPGTLKIT ANIM" Then 'Check if it's really a Tk animation
-            Close #num
-            MsgBox "This is not a valid animaton file.  " + file$
-            Exit Sub
-        End If
-        'If we got here, it's a real Tk animation
-        Input #num, majorVer                        'Version
-        Input #num, minorVer                        'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This animation was created with an unrecognised version of the Toolkit", , "Unable to open animation": Close #num: Exit Sub
 
-        'Data
-        Input #num, theAnim.animSizeX               'As Integer, width
-        Input #num, theAnim.animSizeY               'As Integer, height
-        Input #num, theAnim.animFrames              'As Integer, total number of frames
-        For t = 0 To 50
-            Line Input #num, theAnim.animFrame(t)   'As String, filenames of each image in animation
-            Input #num, theAnim.animTransp(t)       'As Long, transparent color for each frame
-            Line Input #num, theAnim.animSound(t)   'As String, sounds for each frame
-        Next t
-        Input #num, theAnim.animPause               'Pause length (sec) between each frame
-    Close #num
-    'Cut the path of the file
-    theAnim.animFile = RemovePath(file)
+    Dim num As Long         'file position
+    Dim frameIdx As Long    'frame index
+    Dim majorVer As Long    'major version of TK
+
+    num = FreeFile()
+
+    With theAnim
+
+        Open file For Binary Access Read As num
+            If (BinReadString(num) = FILE_HEADER) Then
+                'Binary mode!
+                Call BinReadInt(num)
+                If (BinReadInt(num) = 3) Then
+                    'New binary animation format
+                    .animSizeX = BinReadLong(num)
+                    .animSizeY = BinReadLong(num)
+                    .animFrames = BinReadLong(num)
+                    For frameIdx = 0 To (.animFrames - 1)
+                        .animFrame(frameIdx) = BinReadString(num)
+                        .animTransp(frameIdx) = BinReadLong(num)
+                        .animSound(frameIdx) = BinReadString(num)
+                    Next frameIdx
+                    .animPause = BinReadLong(num)
+                Else
+                    Call MsgBox("This is not a valid animaton file. " & file)
+                End If
+            Else
+                'Not in binary mode!
+                Close num
+                Open file For Input Access Read As num
+                If fread(num) <> FILE_HEADER Then
+                    Close num
+                    Call MsgBox("This is not a valid animaton file. " & file)
+                    Exit Sub
+                End If
+                majorVer = fread(num)
+                Call fread(num)
+                If majorVer <> major Then
+                    Call MsgBox("This animation was created with an unrecognised" _
+                                & " version of the Toolkit", , "Unable to open animation")
+                    Close num
+                    Exit Sub
+                End If
+                .animSizeX = fread(num)
+                .animSizeY = fread(num)
+                .animFrames = fread(num)
+                For frameIdx = 0 To 50
+                    .animFrame(frameIdx) = fread(num)
+                    .animTransp(frameIdx) = fread(num)
+                    .animSound(frameIdx) = fread(num)
+                Next frameIdx
+                .animPause = fread(num)
+            End If
+        Close num
+
+        .animFile = RemovePath(file)
+
+    End With
+
 End Sub
 
 '========================================================================
 ' Clear animation
 '========================================================================
-Sub AnimationClear(ByRef theAnim As TKAnimation)
+Public Sub AnimationClear(ByRef theAnim As TKAnimation)
     On Error Resume Next
 
     theAnim.animSizeX = 64                  'X-size
@@ -274,7 +309,7 @@ End Sub
 '========================================================================
 ' Get the current frame of animation at idx
 '========================================================================
-Function AnimationIndexCurrentFrame(ByVal idx As Long) As Long
+Public Function AnimationIndexCurrentFrame(ByVal idx As Long) As Long
     On Error Resume Next
     If anmListOccupied(idx) Then
         AnimationIndexCurrentFrame = anmList(idx).theData.currentAnmFrame
@@ -284,7 +319,7 @@ End Function
 '========================================================================
 ' Get the frame count of animation at idx
 '========================================================================
-Function AnimationIndexMaxFrames(ByVal idx As Long) As Long
+Public Function AnimationIndexMaxFrames(ByVal idx As Long) As Long
     On Error Resume Next
     If anmListOccupied(idx) Then
         AnimationIndexMaxFrames = animGetMaxFrame(anmList(idx).theData)
@@ -294,7 +329,7 @@ End Function
 '========================================================================
 ' Get the frame image filename of animation at idx
 '========================================================================
-Function AnimationIndexFrameImage(ByVal idx As Long, ByVal frame As Long) As String
+Public Function AnimationIndexFrameImage(ByVal idx As Long, ByVal frame As Long) As String
     On Error Resume Next
     If anmListOccupied(idx) Then
         AnimationIndexFrameImage = anmList(idx).theData.animFrame(frame)
@@ -308,7 +343,7 @@ End Function
 ' This will return true if it's time to draw this frame again. It will
 ' return false otherwise, but will advance the timer counter.
 '========================================================================
-Function AnimationShouldDrawFrame(ByRef theAnm As TKAnimation) As Boolean
+Public Function AnimationShouldDrawFrame(ByRef theAnm As TKAnimation) As Boolean
     On Error Resume Next
     
     Dim toRet As Boolean
@@ -329,7 +364,7 @@ End Function
 '========================================================================
 ' Delays for x numbers of seconds
 '========================================================================
-Sub animDelay(ByVal sec As Double)
+Public Sub animDelay(ByVal sec As Double)
     On Error GoTo errorhandler
     Dim aa As Long
     aa = Timer
@@ -353,7 +388,7 @@ End Sub
 '========================================================================
 ' Animate at xx, yy (Animation is presumed to be loaded)
 '========================================================================
-Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As Long, ByVal pixelsMaxX As Long, ByVal pixelsMaxY As Long, ByRef pic As PictureBox)
+Public Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As Long, ByVal pixelsMaxX As Long, ByVal pixelsMaxY As Long, ByRef pic As PictureBox)
     On Error GoTo errorhandler
     
     'Initialize
@@ -413,53 +448,49 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long, Optional ByVal playSound As Boolean = True)
+Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal frameNum As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long, Optional ByVal playSound As Boolean = True)
+
     'draw the frame referenced by framenum
     'loads a file into a picture box and resizes it.
-    'On Error Resume Next
-    On Error GoTo errorhandler
+
+    On Error Resume Next
+
     Dim ex As String, f As String, a As Long
     
-    ex$ = GetExt(theAnim.animFrame(framenum))
-    If fileExists(projectPath$ + bmpPath$ + theAnim.animFrame(framenum)) Or Left(UCase(ex), 3) = "TST" Then
+    ex$ = GetExt(theAnim.animFrame(frameNum))
+    If fileExists(projectPath$ & bmpPath$ & theAnim.animFrame(frameNum)) Or Left(UCase(ex), 3) = "TST" Then
         If UCase$(ex$) = "TBM" Then
             #If isToolkit = 0 Then
                 If pakFileRunning Then
-                    f$ = PakLocate(bmpPath$ + theAnim.animFrame(framenum))
+                    f$ = PakLocate(bmpPath & theAnim.animFrame(frameNum))
                     Call DrawSizedImage(f$, x, y, theAnim.animSizeX, theAnim.animSizeY, hdc)
             #Else
                 If 1 = 0 Then
             #End If
             Else
-                Call DrawSizedImage(projectPath$ + bmpPath$ + theAnim.animFrame(framenum), x, y, theAnim.animSizeX, theAnim.animSizeY, hdc)
+                Call DrawSizedImage(projectPath$ & bmpPath$ & theAnim.animFrame(frameNum), x, y, theAnim.animSizeX, theAnim.animSizeY, hdc)
             End If
         ElseIf Left(UCase(ex), 3) = "TST" Or UCase(ex) = "GPH" Then
             Dim tbm As TKTileBitmap
             Call TileBitmapSize(tbm, 1, 1)
-            tbm.tiles(0, 0) = theAnim.animFrame(framenum)
+            tbm.tiles(0, 0) = theAnim.animFrame(frameNum)
             Call DrawSizedTileBitmap(tbm, 0, 0, theAnim.animSizeX, theAnim.animSizeY, hdc)
         Else
             Dim backBuffer As Long, cnv As Long, transp As Long, bufHDC As Long
             backBuffer = CreateCanvas(theAnim.animSizeX, theAnim.animSizeY)
             #If isToolkit = 0 Then
                 If pakFileRunning Then
-                    f$ = PakLocate(bmpPath$ + theAnim.animFrame(framenum))
+                    f$ = PakLocate(bmpPath & theAnim.animFrame(frameNum))
                     Call CanvasLoadSizedPicture(allPurposeCanvas, f$)
             #Else
                 If 1 = 0 Then
             #End If
             Else
-                Call CanvasLoadSizedPicture(backBuffer, projectPath$ + bmpPath$ + theAnim.animFrame(framenum))
+                Call CanvasLoadSizedPicture(backBuffer, projectPath$ & bmpPath$ & theAnim.animFrame(frameNum))
             End If
-            
-            'get transparent pixel
-            cnv = CreateCanvas(32, 32)
-            Call CanvasSetPixel(cnv, 1, 1, theAnim.animTransp(framenum))
-            transp = CanvasGetPixel(cnv, 1, 1)
-            Call DestroyCanvas(cnv)
-            
-            bufHDC = CanvasOpenHDC(backBuffer)
 
+            'Blt it on
+            bufHDC = CanvasOpenHDC(backBuffer)
             Call TransparentBlt(hdc, _
                                 x, _
                                 y, _
@@ -470,57 +501,29 @@ Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, ByVal x 
                                 0, _
                                 theAnim.animSizeX - 1, _
                                 theAnim.animSizeY - 1, _
-                                transp)
+                                theAnim.animTransp(frameNum))
             Call CanvasCloseHDC(backBuffer, bufHDC)
-            If a = 0 Then
-                'dll
-                Dim r As Long, g As Long, b As Long
-                bufHDC = CanvasOpenHDC(backBuffer)
-                r = red(transp)
-                g = green(transp)
-                b = blue(transp)
-                Call GFXBitBltTransparent(hdc, _
-                                         x, _
-                                         y, _
-                                         theAnim.animSizeX - 1, _
-                                         theAnim.animSizeY - 1, _
-                                         bufHDC, _
-                                         0, _
-                                         0, _
-                                         r, _
-                                         g, _
-                                         b)
-                Call CanvasCloseHDC(backBuffer, bufHDC)
-            End If
-            
             Call DestroyCanvas(backBuffer)
+           
         End If
+            
     End If
-    If playSound And (theAnim.animSound(framenum)) <> "" Then
-        Dim wFlags As Integer
-        wFlags = SND_ASYNC Or SND_NODEFAULT
-        
+
+    If (playSound) And (theAnim.animSound(frameNum) <> "") Then
         #If isToolkit = 0 Then
             If pakFileRunning Then
-                wFlags = SND_ASYNC Or SND_NODEFAULT
-                Call sndPlaySound(PakLocate(mediaPath$ + theAnim.animSound(framenum)), wFlags)
+                Call sndPlaySound(PakLocate(mediaPath$ & theAnim.animSound(frameNum)), SND_ASYNC Or SND_NODEFAULT)
         #Else
             If 1 = 0 Then
         #End If
         Else
-            wFlags = SND_ASYNC Or SND_NODEFAULT
-            Call sndPlaySound(projectPath$ + mediaPath$ + theAnim.animSound(framenum), wFlags)
+            Call sndPlaySound(projectPath$ & mediaPath$ & theAnim.animSound(frameNum), SND_ASYNC Or SND_NODEFAULT)
         End If
     End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
-Sub AnimDrawFrameCanvas(ByRef theAnim As TKAnimation, ByVal framenum As Long, ByVal x As Long, ByVal y As Long, ByVal cnv As Long, Optional ByVal playSound As Boolean = True)
+Public Sub AnimDrawFrameCanvas(ByRef theAnim As TKAnimation, ByVal frameNum As Long, ByVal x As Long, ByVal y As Long, ByVal cnv As Long, Optional ByVal playSound As Boolean = True)
     'draw the frame referenced by framenum
     'loads a file into a canvas and resizes it.
     On Error Resume Next
@@ -528,50 +531,33 @@ Sub AnimDrawFrameCanvas(ByRef theAnim As TKAnimation, ByVal framenum As Long, By
     Dim cnvTemp As Long
     cnvTemp = CreateCanvas(32, 32)
     
-    Call renderAnimationFrame(cnvTemp, theAnim.animFile, framenum, 0, 0)
-    Call Canvas2CanvasBltTransparent(cnvTemp, cnv, x, y, gTranspColor)
+    Call renderAnimationFrame(cnvTemp, theAnim.animFile, frameNum, 0, 0)
+    Call Canvas2CanvasBltTransparent(cnvTemp, cnv, x, y, TRANSP_COLOR)
     Call DestroyCanvas(cnvTemp)
     
-    If playSound And (theAnim.animSound(framenum)) <> "" Then
+    If playSound And (theAnim.animSound(frameNum)) <> "" Then
         Dim wFlags As Integer
         wFlags% = SND_ASYNC Or SND_NODEFAULT
         #If isToolkit = 0 Then
             If pakFileRunning Then
                 wFlags% = SND_ASYNC Or SND_NODEFAULT
-                Call sndPlaySound(PakLocate(mediaPath$ + theAnim.animSound(framenum)), wFlags%)
-                'Call PlaySoundFX(PakLocate(mediapath$ + theAnim.animSound(framenum)))
+                Call sndPlaySound(PakLocate(mediaPath & theAnim.animSound(frameNum)), wFlags%)
         #Else
             If 1 = 0 Then
         #End If
         Else
             wFlags% = SND_ASYNC Or SND_NODEFAULT
-            Call sndPlaySound(projectPath$ + mediaPath$ + theAnim.animSound(framenum), wFlags%)
-            'Call PlaySoundFX(projectPath$ + mediapath$ + theAnim.animSound(framenum))
+            Call sndPlaySound(projectPath$ & mediaPath$ & theAnim.animSound(frameNum), wFlags%)
         End If
     End If
 End Sub
 
 Public Function animGetMaxFrame(ByRef theAnim As TKAnimation) As Long
-    'return the number of frames in the anim
-    On Error GoTo errorhandler
-    Dim mf As Long, t As Long
-    mf = 0
-    For t = 0 To 50
-        If theAnim.animFrame(t) <> "" Then
-            mf = mf + 1
-        End If
-    Next t
-    animGetMaxFrame = mf - 1
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    On Error Resume Next
+    animGetMaxFrame = theAnim.animFrames
 End Function
 
-Sub DrawAnimationIndex(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long)
+Public Sub DrawAnimationIndex(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long)
     'draw an animation from the anmList array
     'call this every 5ms and it'll draw it accroding to the animation speed
     'it will only advance the frame when required.  neato
@@ -598,7 +584,7 @@ Sub DrawAnimationIndex(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVa
     End If
 End Sub
 
-Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal cnv As Long, Optional ByVal forceDraw As Boolean = False, Optional ByVal forceTranspFill As Boolean = False)
+Public Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal cnv As Long, Optional ByVal forceDraw As Boolean = False, Optional ByVal forceTranspFill As Boolean = False)
     'draw an animation from the anmList array to a canvas
     'call this every 5ms and it'll draw it accroding to the animation speed
     'it will only advance the frame when required.  neato
@@ -619,7 +605,7 @@ Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y As Long
             End If
             playSound = True
             If forceTranspFill Then
-                Call CanvasFill(cnv, gTranspColor)
+                Call CanvasFill(cnv, TRANSP_COLOR)
             End If
             Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, x, y, cnv, playSound)
         Else
@@ -627,7 +613,7 @@ Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y As Long
             playSound = False
             If forceDraw Then
                 If forceTranspFill Then
-                    Call CanvasFill(cnv, gTranspColor)
+                    Call CanvasFill(cnv, TRANSP_COLOR)
                 End If
                 Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, x, y, cnv, playSound)
             End If
@@ -635,7 +621,7 @@ Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y As Long
     End If
 End Sub
 
-Sub DrawAnimationIndexCanvasFrame(ByVal idx As Long, ByVal frame As Long, ByVal x As Long, ByVal y As Long, ByVal cnv As Long, Optional ByVal forceTranspFill As Boolean = False)
+Public Sub DrawAnimationIndexCanvasFrame(ByVal idx As Long, ByVal frame As Long, ByVal x As Long, ByVal y As Long, ByVal cnv As Long, Optional ByVal forceTranspFill As Boolean = False)
     'draw an animation from the anmList array to a canvas
     'if forceTranspFill is true, we'll fill the cnavas with the transparent color before drawing the frame
     On Error Resume Next
@@ -649,20 +635,20 @@ Sub DrawAnimationIndexCanvasFrame(ByVal idx As Long, ByVal frame As Long, ByVal 
             anmList(idx).theData.currentAnmFrame = 0
         End If
         If forceTranspFill Then
-            Call CanvasFill(cnv, gTranspColor)
+            Call CanvasFill(cnv, TRANSP_COLOR)
         End If
         Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, x, y, cnv, False)
         
     End If
 End Sub
 
-Sub DestroyAnimation(ByVal idx As Long)
+Public Sub DestroyAnimation(ByVal idx As Long)
     On Error Resume Next
     'free up memory in the ste list vector
     anmListOccupied(idx) = False
 End Sub
 
-Function CreateAnimation(ByVal file As String) As Long
+Public Function CreateAnimation(ByVal file As String) As Long
     On Error GoTo vecterr
     'create an animation and return the index into the anmList array
        
@@ -704,30 +690,36 @@ vecterr:
     
 End Function
 
-Sub saveAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
+Public Sub saveAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
+
     On Error Resume Next
-    Dim num As Long, t As Long
-    
-    num = FreeFile
-    If file = "" Then Exit Sub
-    
+
+    'Get ready to write the file
+    If Not fileExists(file) Then Exit Sub
+    Call Kill(file)
     #If isToolkit = 1 Then
         animationList(activeAnimationIndex).animNeedUpdate = False
     #End If
 
-    Call Kill(file)
-    Open file For Output As #num
-        Print #num, "RPGTLKIT ANIM"    'Filetype
-        Print #num, major               'Version
-        Print #num, minor                   'Minor version (ie 2.1)
-        Print #num, theAnim.animSizeX 'As Integer 'width
-        Print #num, theAnim.animSizeY 'As Integer 'height
-        Print #num, theAnim.animFrames 'As Integer 'total number of frames
-        For t = 0 To 50
-            Print #num, theAnim.animFrame(t) 'As String  'filenames of each image in animation
-            Print #num, theAnim.animTransp(t) 'As Long   'tarnsparent color for frame
-            Print #num, theAnim.animSound(t) 'As String  'sounds for each frame
-        Next t
-        Print #num, theAnim.animPause '          'pause length (sec) between each frame.
-    Close #num
+    Dim num As Long, frameIdx As Long
+
+    num = FreeFile()
+
+    With theAnim
+        Open file For Binary Access Write As num
+            Call BinWriteString(num, FILE_HEADER)
+            Call BinWriteInt(num, major)
+            Call BinWriteInt(num, 3)
+            Call BinWriteLong(num, .animSizeX)
+            Call BinWriteLong(num, .animSizeY)
+            Call BinWriteLong(num, .animFrames)
+            For frameIdx = 0 To (.animFrames - 1)
+                Call BinWriteString(num, .animFrame(frameIdx))
+                Call BinWriteLong(num, .animTransp(frameIdx))
+                Call BinWriteString(num, .animSound(frameIdx))
+            Next frameIdx
+            Call BinWriteLong(num, .animPause)
+        Close num
+    End With
+
 End Sub

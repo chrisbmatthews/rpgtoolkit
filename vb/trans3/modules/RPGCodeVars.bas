@@ -418,7 +418,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                         getValue = 1
                         Exit Function
                     Else
-                        sendText$ = sendText$ + part$
+                        sendText$ = sendText & part$
                     End If
                 Next p
             Else
@@ -680,9 +680,7 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
     If chat < 32 Then v$ = ""
 
     a = parseArray(a, theProgram)
-
-    If setReservedStructure(varname, value, theProgram) Then Exit Sub
-    
+   
     vtype = variType(a$, globalHeap)
     
     Dim errorsA As Long, valUse As Double
@@ -753,26 +751,6 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
             End If
         End If
 
-        Dim fromClass As String
-        If VarBelongsToClass(a$, fromClass) Then
-            IncreaseClassNestle fromClass
-            Dim prop As String
-            Dim propCall As String
-            Dim propData As String
-            Dim RPGCode As String
-            Dim passData As RPGCODE_RETURN
-            prop = ParseAfter(a$, ".")
-            propCall = Left(prop, Len(prop) - 1)
-            Select Case vtype
-                Case DT_NUM
-                    RPGCode = fromClass & "." & propCall & "_Set(" & CStr(valUse) & ")"
-                Case DT_LIT
-                    RPGCode = fromClass & "." & propCall & "_Set(""" & v$ & """)"
-            End Select
-            DoIndependentCommand RPGCode, passData
-            DecreaseClassNestle
-        End If
-
     End If
 
     Exit Sub
@@ -837,27 +815,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
             lit$ = SearchLitVar(a$, theProgram)
             getVariable = 1
         End If
- 
-        Dim fromClass As String
-        If VarBelongsToClass(a$, fromClass) Then
-            IncreaseClassNestle fromClass
-            Dim prop As String
-            Dim propCall As String
-            Dim RPGCode As String
-            Dim passData As RPGCODE_RETURN
-            prop = ParseAfter(a$, ".")
-            propCall = Left(prop, Len(prop) - 1)
-            RPGCode = "#" & fromClass & "." & propCall & "_Get()"
-            DoIndependentCommand RPGCode, passData
-            With passData
-                Select Case .dataType
-                    Case DT_NUM: num = .num
-                    Case DT_LIT: lit$ = .lit
-                End Select
-            End With
-            DecreaseClassNestle
-        End If
-   
+  
     End If
 
     Exit Function
@@ -937,43 +895,6 @@ Public Function GetLitVar(ByVal varname As String, ByVal heapID As Long) As Stri
     Else
         GetLitVar = ""
     End If
-End Function
-
-'=========================================================================
-' Determine if a variable belongs to a class
-'=========================================================================
-Public Function VarBelongsToClass(ByVal var As String, Optional ByRef theClass As String) As Boolean
-
-    'Declare and populate variables...
-    Dim dot As Long
-    dot = InStr(1, var, ".", vbTextCompare)
-    If dot = 0 Then VarBelongsToClass = False: Exit Function
-    Dim Class As String
-    Class = ParseBefore(var, ".")
-    Dim prop As String
-    prop = ParseAfter(var, ".")
-    Dim from As String
-    Dim a As Long
-    Dim b As String
- 
-    'Look through all the instances...
-    If IsNonInstanceableClass(Class) Then
-        from = Class
-    Else
-        For a = 0 To ClassMemory
-            b = CStr(a)
-            If b = "" Then b = "0"
-            If LCase(CBGetString("CreatedClasses[" + b + "]$")) = LCase(Class) Then Exit For
-            If a = ClassMemory Then VarBelongsToClass = False: Exit Function 'Didn't find it...
-        Next a
-        'Found it!
-        from = CBGetString("CreatedFrom[" + b + "]$") 'what was it created from?
-    End If
- 
-    'Pass the data back...
-    VarBelongsToClass = True
-    theClass = from
-  
 End Function
 
 '=========================================================================

@@ -310,7 +310,7 @@ End Property
 Private Sub updateItemInfo(ByVal pos As Long)
     Dim cnv As Long
     cnv = CreateCanvas(172, 399)
-    Call CanvasFill(cnv, gTranspColor)
+    Call CanvasFill(cnv, TRANSP_COLOR)
     With item(pos)
         If .itemName <> "" Then
             Call CanvasDrawText(cnv, .itemName, fontName, 25, 1, 1, 0, , , True)
@@ -404,7 +404,7 @@ Private Sub shopMenuScanKeys(ByVal baseCanvas As Long, ByVal theType As SHOP_TYP
 
     Do
         Call DXDrawCanvas(cnv, 0, 0)
-        Call DXDrawCanvasTransparent(m_itemInfo, 200, 60, gTranspColor)
+        Call DXDrawCanvasTransparent(m_itemInfo, 200, 60, TRANSP_COLOR)
         Call CBDrawHand(411.01, pos + 60.01 + ((pos) * 25) + 12.5)
         Call DXRefresh
         If isPressed("UP") Then

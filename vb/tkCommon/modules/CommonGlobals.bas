@@ -62,7 +62,7 @@ Option Explicit
     'config options
     Public configfile As New clsConfig
 
-    Public gTranspColor As Long 'not used
+    Public TRANSP_COLOR As Long 'not used
     Public topX As Long
     Public topY As Long
     Public fontName As String

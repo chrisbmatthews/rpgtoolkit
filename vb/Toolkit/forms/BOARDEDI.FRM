@@ -557,7 +557,7 @@ End Function
 '========================================================================
 ' update board editor tool settings
 '========================================================================
-Private Sub boardToolSettings(draw As Integer, typel As Integer, eraser As Integer, fill As Integer)
+Private Sub boardToolSettings(ByVal draw As Integer, ByVal typel As Integer, ByVal eraser As Integer, ByVal fill As Integer)
     ignore = 1
     ' set appropiate main form control values
     tkMainForm.boardDrawLock.value = draw
@@ -834,7 +834,7 @@ End Sub
 '========================================================================
 ' draw all layers {from tkMainForm: Command21_Click}
 '========================================================================
-Public Sub drawLayers(Optional buttonClick As Boolean = False): On Error Resume Next
+Public Sub drawLayers(Optional ByVal buttonClick As Boolean = False): On Error Resume Next
 
     If buttonClick = False Then
         If tkMainForm.boardToolbar.Display.Setting(eRedrawAll) = 0 Then
@@ -897,11 +897,10 @@ End Sub
 '========================================================================
 ' identify type of form
 '========================================================================
-Public Function formType() As Long: On Error Resume Next
-
+Public Property Get formType() As Long: On Error Resume Next
+    On Error Resume Next
     formType = FT_BOARD
-    
-End Function
+End Property
 
 '========================================================================
 ' get current board y co-ord from pixel co-ords
@@ -1174,7 +1173,7 @@ End Sub
 '========================================================================
 ' select new tile type {from tkMainForm: tiletypes_MouseDown}
 '========================================================================
-Public Sub ChangeTileType(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Public Sub ChangeTileType(ByRef button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single): On Error Resume Next
     
     Dim ttype As Long, colorCode As Long, levelnum As Long, aPoint As Long, xx As Long, yy As Long
     
@@ -1244,21 +1243,21 @@ End Sub
 '========================================================================
 Public Sub selectAmbientColor(): On Error Resume Next
 
-    Dim c As Long
-    
     ' open colour dialog
-    c = ColorDialog()
-    
+    Dim theColor As Long
+    theColor = ColorDialog(True)    'FIX:   Requires true flag so it will return
+                                    '       -1 and not 0 on cancel
+
     ' if colour selected
-    If (c <> -1) Then
+    If (theColor <> -1) Then
     
         ' update ambient colour settings
-        boardList(activeBoardIndex).ambientR = red(c)
-        boardList(activeBoardIndex).ambientG = green(c)
-        boardList(activeBoardIndex).ambientB = blue(c)
+        boardList(activeBoardIndex).ambientR = red(theColor)
+        boardList(activeBoardIndex).ambientG = green(theColor)
+        boardList(activeBoardIndex).ambientB = blue(theColor)
         
         ' update picture box with new color
-        Call vbPicFillRect(tkMainForm.Picture1, 0, 0, 1000, 1000, c)
+        Call vbPicFillRect(tkMainForm.Picture1, 0, 0, 1000, 1000, theColor)
         
         ' update ambient number text box value
         tkMainForm.ambientnumber.Text = "0"
@@ -1295,7 +1294,7 @@ Public Sub saveAsFile(): On Error Resume Next
     ' check if board has been altered
     If boardList(activeBoardIndex).boardNeedUpdate = True Then
 
-        Me.Show
+        Call Show
         
         ' call save routine
         savebrdasmnu_click
@@ -1876,23 +1875,22 @@ End Sub
 '========================================================================
 ' toggle grid off/on
 '========================================================================
-Public Sub openFile(file$): On Error Resume Next
+Public Sub openFile(ByVal file As String): On Error Resume Next
 
-    activeBoard.Show
+    Call activeBoard.Show
     
     ' check if current board needs saving
     Call checkSave
     
     ' get path
     filename$(1) = file$
-    
-    Dim antiPath As String
-    
+
     ' get filename
-    antiPath$ = absNoPath(file$)
+    Dim antiPath As String
+    antiPath = absNoPath(file)
     
     ' copy board to directory
-    FileCopy filename$(1), projectPath$ & brdPath$ & antiPath$
+    Call FileCopy(filename$(1), projectPath$ & brdPath$ & antiPath$)
     
     ' open board
     Call openBoard(filename$(1), boardList(activeBoardIndex).theData)
@@ -1901,7 +1899,7 @@ Public Sub openFile(file$): On Error Resume Next
     Call boardRedraw
     
     ' set board path value
-    boardList(activeBoardIndex).boardName$ = antiPath$
+    boardList(activeBoardIndex).boardName = antiPath
     
     ' update form caption
     activeBoard.Caption = LoadStringLoc(802, "Board Editor (" + antiPath$ + ")")
@@ -1909,15 +1907,14 @@ Public Sub openFile(file$): On Error Resume Next
     ' set picture box auto redraw as true
     Call vbPicAutoRedraw(boardform, True)
     
-    ' ! ADDED BY KSNiloc...
-    Form_Resize
+    Call Form_Resize
     
 End Sub
 
 '========================================================================
 ' !UPDATE! resize form
 '========================================================================
-Public Sub resizeForm(a As Long, b As Long): On Error Resume Next
+Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
 '=====================================================
 'Alterations for isometric sizing, for 3.0.4 by Delano
 
@@ -2031,8 +2028,8 @@ Public Sub saveFile(): On Error Resume Next
         
     ' if new board then call save as routine
     If filename$(2) = "" Then
-        Me.Show
-        savebrdasmnu_click
+        Call Show
+        Call savebrdasmnu_click
         Exit Sub
     End If
         
@@ -3060,7 +3057,7 @@ End Sub
 '========================================================================
 ' redraw board layer
 '========================================================================
-' FIXIT: FillStyle property has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
+
 Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
 '=====================================================
 'Alterations for isometric sizing, for 3.0.4 by Delano
@@ -3243,7 +3240,7 @@ End Sub
 '========================================================================
 ' display tile types - adapted to allow for individual tile redraw
 '========================================================================
-Public Sub viewtiletypes(Optional X As Long = 0, Optional Y As Long = 0): On Error Resume Next
+Public Sub viewtiletypes(Optional ByVal X As Long = 0, Optional ByVal Y As Long = 0): On Error Resume Next
 '=====================================================
 'Alterations for isometric sizing, for 3.0.4 by Delano
 
@@ -3319,7 +3316,7 @@ End Sub
 '========================================================================
 ' display programs
 '========================================================================
-Sub drawPrograms(Optional fromTileType As Boolean = False)
+Sub drawPrograms(Optional ByVal fromTileType As Boolean = False)
 
     If fromTileType = True Or tkMainForm.boardToolbar.Display.Setting(eShowPrograms) = 1 Then
     
@@ -3389,7 +3386,7 @@ End Sub
 '========================================================================
 ' display warp tiles
 '========================================================================
-Sub drawWarps(Optional fromTileType As Boolean = False)
+Sub drawWarps(Optional ByVal fromTileType As Boolean = False)
 
     If fromTileType = True Or tkMainForm.boardToolbar.Display.Setting(eShowWarps) = 1 Then
     
@@ -3459,7 +3456,7 @@ End Sub
 '========================================================================
 ' display items
 '========================================================================
-Sub drawItems(Optional fromTileType As Boolean = False)
+Sub drawItems(Optional ByVal fromTileType As Boolean = False)
 
     If fromTileType = True Or tkMainForm.boardToolbar.Display.Setting(eShowItems) = 1 Then
 
@@ -3623,7 +3620,7 @@ End Sub
 '========================================================================
 ' !NEW! get tiles amount from twips and vice versa + isometric versions.
 '========================================================================
-Private Function tilesX(twips As Long) As Long
+Private Function tilesX(ByVal twips As Long) As Long
 
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
         tilesX = Round(((twips / Screen.TwipsPerPixelX) + 32) / 64)
@@ -3632,7 +3629,7 @@ Private Function tilesX(twips As Long) As Long
     End If
     
 End Function
-Private Function tilesY(twips As Long) As Long
+Private Function tilesY(ByVal twips As Long) As Long
     
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
         tilesY = Round(((twips / Screen.TwipsPerPixelY) + 16) / 16)
@@ -3641,7 +3638,7 @@ Private Function tilesY(twips As Long) As Long
     End If
 
 End Function
-Private Function TwipsX(tiles As Long) As Long
+Private Function TwipsX(ByVal tiles As Long) As Long
 
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
         TwipsX = Screen.TwipsPerPixelX * (tiles * 64 - 32)
@@ -3650,7 +3647,7 @@ Private Function TwipsX(tiles As Long) As Long
     End If
     
 End Function
-Private Function TwipsY(tiles As Long) As Long
+Private Function TwipsY(ByVal tiles As Long) As Long
 
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
         TwipsY = Screen.TwipsPerPixelY * (tiles * 16 - 16)

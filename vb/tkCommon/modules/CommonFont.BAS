@@ -420,7 +420,7 @@ Function toBinary(ByVal decimala As Long) As String
     newNum$ = ""
     For t = 1 To Length
         part$ = Mid$(binNum$, t, 1)
-        If part$ <> " " Then newNum$ = newNum$ + part$
+        If part$ <> " " Then newNum$ = newNum & part$
     Next t
     toBinary$ = newNum$
 
@@ -439,9 +439,9 @@ Function toDecimal(ByVal bin As String) As Long
     If Length < 8 Then
         toadd = 8 - Length
         For t = 1 To toadd
-            addon$ = addon$ + "0"
+            addon$ = addon & "0"
         Next t
-        bin$ = addon$ + bin$
+        bin$ = addon & bin$
     End If
     dec = 0
     For t = 1 To 8

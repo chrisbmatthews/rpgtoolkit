@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form statusbar 
+Begin VB.Form statusBar 
    BackColor       =   &H00FFFFFF&
    BorderStyle     =   0  'None
    Caption         =   "Status"
@@ -12,7 +12,7 @@ Begin VB.Form statusbar
    LockControls    =   -1  'True
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   Palette         =   "statusbar.frx":000C
+   Palette         =   "statusbar.frx":0CCA
    ScaleHeight     =   1275
    ScaleWidth      =   4830
    ShowInTaskbar   =   0   'False
@@ -22,7 +22,7 @@ Begin VB.Form statusbar
       BorderStyle     =   0  'None
       Height          =   690
       Left            =   0
-      Picture         =   "statusbar.frx":982E
+      Picture         =   "statusbar.frx":A4EC
       ScaleHeight     =   690
       ScaleWidth      =   4845
       TabIndex        =   1
@@ -33,7 +33,7 @@ Begin VB.Form statusbar
       BorderStyle     =   0  'None
       Height          =   600
       Left            =   0
-      Picture         =   "statusbar.frx":14718
+      Picture         =   "statusbar.frx":153D6
       ScaleHeight     =   600
       ScaleWidth      =   4845
       TabIndex        =   0
@@ -42,7 +42,7 @@ Begin VB.Form statusbar
       Begin VB.Image imgLoading 
          Height          =   230
          Left            =   270
-         Picture         =   "statusbar.frx":1DF3A
+         Picture         =   "statusbar.frx":1EBF8
          Stretch         =   -1  'True
          Top             =   159
          Width           =   375
@@ -68,6 +68,13 @@ Attribute VB_Exposed = False
 
 '=========================================================================
 ' All-purpose status bar
+' Status: N/A
+'=========================================================================
+
+'=========================================================================
+'NOTE
+'   + This form will never be removed; it is required to give trans3
+'     its icon (VB is very stupid in that respect)
 '=========================================================================
 
 Option Explicit

@@ -117,17 +117,17 @@ Sub TileAnmClear(ByRef theAnm As TKTileAnm)
     theAnm.currentAnmFrame = 0
 End Sub
 
-Sub TileAnmDrawNextFrame(ByRef theAnm As TKTileAnm, ByVal hdc As Long, ByVal X As Double, ByVal Y As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long, Optional ByVal advanceFrame As Boolean = True, Optional ByVal DrawFrame As Boolean = True, Optional ByVal drawMask As Boolean = False, Optional ByVal hdcIso As Long = -1)
+Sub TileAnmDrawNextFrame(ByRef theAnm As TKTileAnm, ByVal hdc As Long, ByVal x As Double, ByVal y As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long, Optional ByVal advanceFrame As Boolean = True, Optional ByVal DrawFrame As Boolean = True, Optional ByVal drawMask As Boolean = False, Optional ByVal hdcIso As Long = -1)
     'draw next frame
     'if drawFrame is false, it will not draw it, but it will advance the counter
     'if hdcIso <> -1 then we also draw it isometricall to the isoHdc
     
     On Error Resume Next
     If DrawFrame Then
-        Call drawTile(hdc, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y, r, g, b, drawMask, False)
+        Call drawTile(hdc, projectPath & tilePath & TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y, r, g, b, drawMask, False)
         
         If hdcIso <> -1 Then
-            Call drawTile(hdcIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y + 1, r, g, b, drawMask, False, True, True)
+            Call drawTile(hdcIso, projectPath & tilePath & TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y + 1, r, g, b, drawMask, False, True, True)
         End If
     End If
     
@@ -139,17 +139,17 @@ Sub TileAnmDrawNextFrame(ByRef theAnm As TKTileAnm, ByVal hdc As Long, ByVal X A
     End If
 End Sub
 
-Sub TileAnmDrawNextFrameCNV(ByRef theAnm As TKTileAnm, ByVal cnv As Long, ByVal X As Double, ByVal Y As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long, Optional ByVal advanceFrame As Boolean = True, Optional ByVal DrawFrame As Boolean = True, Optional ByVal drawMask As Boolean = False, Optional ByVal cnvIso As Long = -1)
+Sub TileAnmDrawNextFrameCNV(ByRef theAnm As TKTileAnm, ByVal cnv As Long, ByVal x As Double, ByVal y As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long, Optional ByVal advanceFrame As Boolean = True, Optional ByVal DrawFrame As Boolean = True, Optional ByVal drawMask As Boolean = False, Optional ByVal cnvIso As Long = -1)
     'draw next frame
     'if drawFrame is false, it will not draw it, but it will advance the counter
     'if cnvIso <> -1 then we also draw it isometricall to the isoCnv
     
     On Error Resume Next
     If DrawFrame Then
-        Call drawTileCNV(cnv, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y, r, g, b, drawMask, False)
+        Call drawTileCNV(cnv, projectPath & tilePath & TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y, r, g, b, drawMask, False)
         
         If cnvIso <> -1 Then
-            Call drawTileCNV(cnvIso, projectPath$ + tilePath$ + TileAnmGet(theAnm, theAnm.currentAnmFrame), X, Y + 1, r, g, b, drawMask, False, True, True)
+            Call drawTileCNV(cnvIso, projectPath & tilePath & TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y + 1, r, g, b, drawMask, False, True, True)
         End If
     End If
     
@@ -203,7 +203,7 @@ Sub TileAnmInsert(ByVal theFile As String, ByRef theAnm As TKTileAnm, ByVal nFra
             If Left(UCase$(ex$), 3) = "TST" Then
                 Temp$ = tilesetFilename(Temp$)
             End If
-            Call PakLocate(tilePath$ + Temp$)
+            Call PakLocate(tilePath & Temp$)
         End If
     #End If
 

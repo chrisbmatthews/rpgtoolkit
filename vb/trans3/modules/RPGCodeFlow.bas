@@ -132,23 +132,18 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         mName = commandName
     End If
 
+    If QueryPlugins(mName, Text, retval) Then
+        'Found the command in a plugin, don't waste time checking for a method!
+        Exit Sub
+    End If
+
     includeFile = ParseBefore(mName, ".")
     methodName = ParseAfter(mName, ".")
 
-    If Not InClass.DoNotCheckForClass Then
-        If Not methodName = "" Then
-            If IsClassRPG(includeFile, methodName, Text, theProgram, retval) Then
-                Exit Sub
-            End If
-        End If
-    End If
-    
-    InClass.DoNotCheckForClass = False
-    
     If methodName <> "" Then
         'include file...
         includeFile = addExt(includeFile, ".prg")
-        Call IncludeRPG("include(" + Chr$(34) + includeFile$ + Chr$(34) + ")", theProgram)
+        Call IncludeRPG("include(" + Chr$(34) + includeFile & Chr$(34) + ")", theProgram)
         mName = methodName
     End If
 
@@ -165,18 +160,9 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             End If
         End If
     Next t
-    InClass.MethodWasFound = True
     If foundIt = -1 Then
-        'didn't find it in prg code, but it may exist in a plugin...
-        canDoIt = QueryPlugins(mName$, Text$, retval)
-        If canDoIt = False Then
-            'InClass.MethodWasFound = False
-            If InClass.PopupMethodNotFound Then
-                Call debugger("Error: Method not found!-- " + Text$)
-            End If
-        Else
-            Exit Sub
-        End If
+        Call debugger("Error: Method not found!-- " & Text$)
+        Exit Sub
     Else
         'Alright! we found this method!
         'increment calldepth(total number of calls)
@@ -342,9 +328,9 @@ Public Sub openMulti()
     Dim t As Long
     For t = 0 To UBound(multiList)
         If multiList(t) <> "" Then
-            If multiOpen(t) = 0 Then
+            If Not multiOpen(t) Then
                 program(t + 1) = openProgram(projectPath & prgPath & multiList(t))
-                multiOpen(t) = 1
+                multiOpen(t) = True
             End If
         End If
     Next t
@@ -386,7 +372,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                     val(boardList(activeBoardIndex).theData.progY(t)) = pos.y And _
                     val(boardList(activeBoardIndex).theData.progLayer(t)) = pos.l Then
                     'all right! we stepped on it!
-                    toRet = runprgYN(t)
+                    toRet = runPrgYN(t)
                 End If
                 
             ElseIf boardList(activeBoardIndex).theData.activationType(t) = 1 Then
@@ -436,7 +422,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                         
                     If keyWaitState = mainMem.Key Then
                         'yes, we pressed the right key
-                        toRet = runprgYN(t)
+                        toRet = runPrgYN(t)
                     End If
                 End If
                 
@@ -661,10 +647,10 @@ Public Function runItmYN(ByVal itmNum As Long) As Boolean
     End If
     If runIt = 1 Then
         If boardList(activeBoardIndex).theData.itemProgram$(t) <> "" And UCase$(boardList(activeBoardIndex).theData.itemProgram$(t)) <> "NONE" Then
-            Call runProgram(projectPath$ + prgPath$ + boardList(activeBoardIndex).theData.itemProgram$(t))
+            Call runProgram(projectPath$ & prgPath$ & boardList(activeBoardIndex).theData.itemProgram$(t))
             toRet = True
         Else
-            Call runProgram(projectPath$ + prgPath$ + itemMem(t).itmPrgPickUp)
+            Call runProgram(projectPath$ & prgPath$ & itemMem(t).itmPrgPickUp)
             toRet = True
         End If
         'Now see if we have to set the conditional variable to something
@@ -706,7 +692,7 @@ End Function
 '=========================================================================
 ' Returns if the program passed in can be run
 '=========================================================================
-Public Function runprgYN(ByVal prgnum As Long) As Boolean
+Public Function runPrgYN(ByVal prgNum As Long) As Boolean
 
     On Error GoTo errorhandler
     
@@ -721,7 +707,7 @@ Public Function runprgYN(ByVal prgnum As Long) As Boolean
     Dim valueTest As Double
     Dim valueTes As String
     
-    t = prgnum
+    t = prgNum
     If boardList(activeBoardIndex).theData.progActivate(t) = 0 Then
         'always active
         runIt = 1
@@ -742,7 +728,7 @@ Public Function runprgYN(ByVal prgnum As Long) As Boolean
         End If
     End If
     If runIt = 1 Then
-        Call runProgram(projectPath$ + prgPath$ + boardList(activeBoardIndex).theData.programName$(t), t)
+        Call runProgram(projectPath & prgPath & boardList(activeBoardIndex).theData.programName$(t), t)
         toRet = True
         'Now see if we have to set the conditional variable to something
         If wentToNewBoard Then
@@ -777,7 +763,7 @@ Public Function runprgYN(ByVal prgnum As Long) As Boolean
         End If
     End If
     
-    runprgYN = toRet
+    runPrgYN = toRet
 
     Exit Function
 'Begin error handling code:

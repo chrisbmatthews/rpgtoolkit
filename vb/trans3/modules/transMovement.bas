@@ -58,7 +58,7 @@ Public Type PLAYER_POSITION
     l As Long
 End Type
 
-Public ppos(4) As PLAYER_POSITION       'player positions of 5 players
+Public pPos(4) As PLAYER_POSITION       'player positions of 5 players
 Public selectedPlayer As Long           'number of player graphic
 
 Public Type PENDING_MOVEMENT
@@ -128,10 +128,10 @@ Function checkAbove(ByVal x As Long, ByVal y As Long, ByVal layer As Long) As Lo
     '0- no, 1-yes
     On Error GoTo errorhandler
     
-    If layer = boardList(activeBoardIndex).theData.Bsizel Then checkAbove = 0: Exit Function
+    If layer = boardList(activeBoardIndex).theData.bSizeL Then checkAbove = 0: Exit Function
     Dim lay As Long
     Dim uptile As String
-    For lay = layer + 1 To boardList(activeBoardIndex).theData.Bsizel
+    For lay = layer + 1 To boardList(activeBoardIndex).theData.bSizeL
         uptile$ = BoardGetTile(x, y, lay, boardList(activeBoardIndex).theData)
         If uptile$ <> "" Then
         
@@ -249,7 +249,7 @@ Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer,
     Dim bestX As Integer, bestY As Integer
     Dim BestScore As Integer
     
-    ReDim Score(boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey) As Integer
+    ReDim Score(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY) As Integer
     
     'Initialise target square
     Score(x2, y2) = 1
@@ -262,8 +262,8 @@ Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer,
     Do
         Call processEvent
         bChanged = False
-        For sx = 1 To boardList(activeBoardIndex).theData.Bsizex
-            For sy = 1 To boardList(activeBoardIndex).theData.Bsizey
+        For sx = 1 To boardList(activeBoardIndex).theData.bSizeX
+            For sy = 1 To boardList(activeBoardIndex).theData.bSizeY
                 If Score(sx, sy) <> 0 Then
                     'This square has been travelled to
                     'Check to see if we can go one step
@@ -276,8 +276,8 @@ Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer,
                                 'ignore diagonals.
                             Else
                                 If Not (iX = sx And iY = sy) Then
-                                    If iX >= 0 And iX <= boardList(activeBoardIndex).theData.Bsizex Then
-                                        If iY >= 0 And iY <= boardList(activeBoardIndex).theData.Bsizey Then
+                                    If iX >= 0 And iX <= boardList(activeBoardIndex).theData.bSizeX Then
+                                        If iY >= 0 And iY <= boardList(activeBoardIndex).theData.bSizeY Then
                                             'Now we check to see if
                                             'we can move a bit further
                                             'from (sX, sY) to (iX, iY)
@@ -334,8 +334,8 @@ Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer,
                     'Cull some squares (those not on map
                     'or those that are already moved to)
                     If Not (iX = sx And iY = sy) Then
-                        If iX >= 0 And iX <= boardList(activeBoardIndex).theData.Bsizex Then
-                            If iY >= 0 And iY <= boardList(activeBoardIndex).theData.Bsizey Then
+                        If iX >= 0 And iX <= boardList(activeBoardIndex).theData.bSizeX Then
+                            If iY >= 0 And iY <= boardList(activeBoardIndex).theData.bSizeY Then
                                 
                                 If Score(iX, iY) < BestScore And Score(iX, iY) <> 0 Then
                                     BestScore = Score(iX, iY)
@@ -369,52 +369,52 @@ Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer,
                     'If boardlist(activeboardindex).thedata.tiletype(lastX, bestY, layer) <> 1 Then
                         
                         'Edit!: Added commas for compatibility with the #Push/#PushItem commands.
-                        toRet$ = toRet$ + "S,E,"
+                        toRet$ = toRet & "S,E,"
                     Else
-                        toRet$ = toRet$ + "E,S,"
+                        toRet$ = toRet & "E,S,"
                     End If
                 End If
                 If bestY > lastY And bestX < lastX Then
                     'SW
                     If EffectiveTileType(lastX, bestY, layer, bFaster) <> 1 Then
                     'If boardlist(activeboardindex).thedata.tiletype(lastX, bestY, layer) <> 1 Then
-                        toRet$ = toRet$ + "S,W,"
+                        toRet$ = toRet & "S,W,"
                     Else
-                        toRet$ = toRet$ + "W,S,"
+                        toRet$ = toRet & "W,S,"
                     End If
                 End If
                 If bestY < lastY And bestX > lastX Then
                     'NE
                     If EffectiveTileType(lastX, bestY, layer, bFaster) <> 1 Then
                     'If boardlist(activeboardindex).thedata.tiletype(lastX, bestY, layer) <> 1 Then
-                        toRet$ = toRet$ + "N,E,"
+                        toRet$ = toRet & "N,E,"
                     Else
-                        toRet$ = toRet$ + "E,N,"
+                        toRet$ = toRet & "E,N,"
                     End If
                 End If
                 If bestY < lastY And bestX < lastX Then
                     'NW
                     If EffectiveTileType(lastX, bestY, layer, bFaster) <> 1 Then
                     'If boardlist(activeboardindex).thedata.tiletype(lastX, bestY, layer) <> 1 Then
-                        toRet$ = toRet$ + "N,W,"
+                        toRet$ = toRet & "N,W,"
                     Else
-                        toRet$ = toRet$ + "W,N,"
+                        toRet$ = toRet & "W,N,"
                     End If
                 End If
             Else
                 If bestY > lastY Then
-                    toRet$ = toRet$ + "S,"
+                    toRet$ = toRet & "S,"
                 Else
                     If bestY <> lastY Then
-                        toRet$ = toRet$ + "N,"
+                        toRet$ = toRet & "N,"
                     End If
                 End If
                 
                 If bestX > lastX Then
-                    toRet$ = toRet$ + "E,"
+                    toRet$ = toRet & "E,"
                 Else
                     If bestX <> lastX Then
-                        toRet$ = toRet$ + "W,"
+                        toRet$ = toRet & "W,"
                     End If
                 End If
             End If
@@ -534,7 +534,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     Dim ex As String
     ex$ = GetExt(targetBoard$)
     If UCase$(ex$) = "PRG" Then
-        Call runProgram(projectPath$ + prgPath$ + targetBoard$)
+        Call runProgram(projectPath & prgPath & targetBoard$)
         TestLink = True
         Exit Function
     End If
@@ -542,9 +542,9 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     Dim testX As Long
     Dim testY As Long
     Dim testLayer As Long
-    testX = ppos(playerNum).x
-    testY = ppos(playerNum).y
-    testLayer = ppos(playerNum).l
+    testX = pPos(playerNum).x
+    testY = pPos(playerNum).y
+    testLayer = pPos(playerNum).l
     
     'Isometric addition: sprites jump when moving to new boards.
     'Y has to remain even or odd during transition, rather than just moving to the bottom row.
@@ -555,14 +555,14 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     
     If thelink = LINK_NORTH Then
         'Get dimensions of target board.
-        Call boardSize(projectPath$ + brdPath$ + targetBoard$, targetX, targetY)
+        Call boardSize(projectPath & brdPath & targetBoard$, targetX, targetY)
 
         testY = targetY 'The bottom row of the board
         
         'Only notice if you move from iso to normal boards
         'Trial with new function. If bad then use boardIso()
-        If linkIso(projectPath$ + brdPath$ + targetBoard$) Then
-            If ppos(playerNum).y Mod 2 <> targetY Mod 2 Then
+        If linkIso(projectPath & brdPath & targetBoard$) Then
+            If pPos(playerNum).y Mod 2 <> targetY Mod 2 Then
                 testY = testY - 1
             End If
         End If
@@ -573,11 +573,11 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
         testY = 1
         
         'Trial with new function. If bad then use boardIso()
-        If linkIso(projectPath$ + brdPath$ + targetBoard$) Then
+        If linkIso(projectPath & brdPath & targetBoard$) Then
             
             testY = 3 'This fixes sprites starting off top of screen also!
             
-            If ppos(playerNum).y Mod 2 = 0 Then
+            If pPos(playerNum).y Mod 2 = 0 Then
                 testY = testY - 1
             End If
         End If
@@ -591,7 +591,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     If thelink = LINK_WEST Then
     
         'Get the dimensions of the target board.
-        Call boardSize(projectPath$ + brdPath$ + targetBoard$, targetX, targetY)
+        Call boardSize(projectPath & brdPath & targetBoard$, targetX, targetY)
         testX = targetX
         
     End If
@@ -599,7 +599,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
         
     'now see if the space is ok...
     Dim targetTile As Long
-    targetTile = TestBoard(projectPath$ + brdPath$ + targetBoard$, testX, testY, testLayer)
+    targetTile = TestBoard(projectPath & brdPath & targetBoard$, testX, testY, testLayer)
     
     If targetTile = -1 Or targetTile = SOLID Then
         'If board doesn't exist or board smaller than target location (-1) OR target tile is solid.
@@ -613,9 +613,9 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     'Else targetTile is passable.
 
     'If we can go, then we will
-    ppos(playerNum).x = testX
-    ppos(playerNum).y = testY
-    ppos(playerNum).l = testLayer
+    pPos(playerNum).x = testX
+    pPos(playerNum).y = testY
+    pPos(playerNum).l = testLayer
     
     Call ClearNonPersistentThreads
     
@@ -624,7 +624,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     scTopX = -1000
     scTopY = -1000
     
-    Call alignBoard(ppos(selectedPlayer).x, ppos(selectedPlayer).y)
+    Call alignBoard(pPos(selectedPlayer).x, pPos(selectedPlayer).y)
     Call openItems
     Call renderNow
     Call CanvasGetScreen(cnvRPGCodeScreen)
@@ -657,7 +657,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
             CheckEdges = True
             Exit Function
         End If
-    ElseIf pend.yTarg > boardList(activeBoardIndex).theData.Bsizey Then
+    ElseIf pend.yTarg > boardList(activeBoardIndex).theData.bSizeY Then
         'too far south!
         bWentThere = TestLink(playerNum, LINK_SOUTH)
         If bWentThere Then
@@ -677,7 +677,7 @@ Function CheckEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum As Long) As 
             CheckEdges = True
             Exit Function
         End If
-    ElseIf pend.xTarg > boardList(activeBoardIndex).theData.Bsizex Then
+    ElseIf pend.xTarg > boardList(activeBoardIndex).theData.bSizeX Then
         'too far east!
         bWentThere = TestLink(playerNum, LINK_EAST)
         If bWentThere Then
@@ -724,13 +724,13 @@ Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_NE, _
-                              ppos(pNum))
+                              pPos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pNum).stance = "walk_ne"
+    pPos(pNum).stance = "walk_ne"
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pNum).frame
+    incrementFrame pPos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -747,9 +747,9 @@ Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
             If boardIso() Then
                 'PushEast code. SHOULD BE EXACTLY THE SAME AS FOR pushSouthEast! ANY CHANGES SHOULD BE COPIED!
                 
-                If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.Bsizex) Or _
-                    (ppos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
-                    (ppos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
+                If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
+                    (pPos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
+                    (pPos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
                     pNum <> selectedPlayer Then
                     scrollEast = False
                     
@@ -758,9 +758,9 @@ Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
                 'SAME AS pushSouthEast.
                 'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
                 
-                If (topX + tilesX >= boardList(activeBoardIndex).theData.Bsizex) Or _
-                    (ppos(pNum).x < (tilesX / 2) And topX = 0) Or _
-                    (ppos(pNum).x - topX < (tilesX / 2)) Or _
+                If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
+                    (pPos(pNum).x < (tilesX / 2) And topX = 0) Or _
+                    (pPos(pNum).x - topX < (tilesX / 2)) Or _
                     pNum <> selectedPlayer Then
                     scrollEast = False
                 End If
@@ -772,7 +772,7 @@ Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double)
                 Call scrollDownLeft(moveFraction, scrollEast, scrollNorth)
             End If
             
-            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Advance the frame but don't move.
@@ -813,14 +813,14 @@ Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_NW, _
-                              ppos(pNum))
+                              pPos(pNum))
                               'didItem)
     
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pNum).stance = "walk_nw"
+    pPos(pNum).stance = "walk_nw"
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pNum).frame
+    incrementFrame pPos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -836,9 +836,9 @@ Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
             
             If boardIso() Then
                 'pushWest code. SHOULD BE EXACTLY THE SAME AS FOR pushSouthWest! ANY CHANGES SHOULD BE COPIED
-                If (ppos(pNum).x > boardList(activeBoardIndex).theData.Bsizex - (isoTilesX / 2) And _
-                    topX + 1 = boardList(activeBoardIndex).theData.Bsizex - isoTilesX) Or _
-                    (ppos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
+                If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
+                    topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
+                    (pPos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
                     ((topX + 1) - 1 < 0) Or _
                     pNum <> selectedPlayer Then
                     
@@ -847,9 +847,9 @@ Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
             Else
                 'This is pushWest standard code.
                 
-                If (ppos(pNum).x > boardList(activeBoardIndex).theData.Bsizex - (tilesX / 2) And _
-                    topX = boardList(activeBoardIndex).theData.Bsizex - tilesX) Or _
-                    (ppos(pNum).x - topX > (tilesX / 2)) Or _
+                If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
+                    topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
+                    (pPos(pNum).x - topX > (tilesX / 2)) Or _
                     (topX <= 0) Or _
                     pNum <> selectedPlayer Then
                     
@@ -863,7 +863,7 @@ Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double)
                 Call scrollDownRight(moveFraction, scrollWest, scrollNorth)
             End If
             
-            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Walk on the spot.
@@ -902,7 +902,7 @@ Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double)
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_SE, _
-                              ppos(pNum))
+                              pPos(pNum))
                               'didItem)
     
     'Introducing new independent direction variables.
@@ -918,33 +918,33 @@ Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double)
             'Accounting for isometrics:
             If boardIso() Then
                 'This is the PushEast code. + 0.5 modif - does it work?
-                If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.Bsizex) Or _
-                    (ppos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
-                    (ppos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
+                If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
+                    (pPos(pNum).x < (isoTilesX / 2) And topX = 0) Or _
+                    (pPos(pNum).x - topX + 0.5 < (isoTilesX / 2)) Or _
                     pNum <> selectedPlayer Then
                     scrollEast = False
                 End If
                 'pushSouth code with topY modification. ANY CHANGES SHOULD BE COPIED TO pushSouthWest
-                If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-                    (ppos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
-                    (ppos(pNum).y - (topY) < (isoTilesY / 2)) Or _
+                If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+                    (pPos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
+                    (pPos(pNum).y - (topY) < (isoTilesY / 2)) Or _
                     pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
                     scrollsouth = False
                 End If
             Else
                 'Original code was incomplete even for standard boards!! FIXED.
                 'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-                If (topX + tilesX >= boardList(activeBoardIndex).theData.Bsizex) Or _
-                    (ppos(pNum).x < (tilesX / 2) And topX = 0) Or _
-                    (ppos(pNum).x - topX < (tilesX / 2)) Or _
+                If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
+                    (pPos(pNum).x < (tilesX / 2) And topX = 0) Or _
+                    (pPos(pNum).x - topX < (tilesX / 2)) Or _
                     pNum <> selectedPlayer Then
                     scrollEast = False
                 End If
                 'TRIAL ADDITION: pushSouth code w/scrollSouth
                 'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-                If (topY + tilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-                    (ppos(pNum).y < (tilesY / 2) And topY = 0) Or _
-                    (ppos(pNum).y - topY < (tilesY / 2)) Or _
+                If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+                    (pPos(pNum).y < (tilesY / 2) And topY = 0) Or _
+                    (pPos(pNum).y - topY < (tilesY / 2)) Or _
                     pNum <> selectedPlayer Then
                     scrollsouth = False
                 End If
@@ -954,17 +954,17 @@ Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double)
                 Call scrollUpLeft(moveFraction, scrollEast, scrollsouth)
             End If
             
-            ppos(pNum).stance = "walk_se"
+            pPos(pNum).stance = "walk_se"
             ' MODIFIED BY KSNiloc...
-            incrementFrame ppos(pNum).frame
+            incrementFrame pPos(pNum).frame
             'ppos(pNum).frame = ppos(pNum).frame + 1
-            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         Case SOLID:
             'Walk on the spot.
-            ppos(pNum).stance = "walk_se"
+            pPos(pNum).stance = "walk_se"
             ' MODIFIED BY KSNiloc...
-            incrementFrame ppos(pNum).frame
+            incrementFrame pPos(pNum).frame
             'ppos(pNum).frame = ppos(pNum).frame + 1
     End Select
 End Sub
@@ -1001,7 +1001,7 @@ Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double)
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_SW, _
-                              ppos(pNum))
+                              pPos(pNum))
                               'didItem)
     
     'Introducing new independent direction variables
@@ -1017,35 +1017,35 @@ Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double)
             'Accounting for isometrics:
             If boardIso() Then
                 'This is the pushWest code. MIGHT NEED TO CHANGE cf. SouthEast 0.5
-                If (ppos(pNum).x > boardList(activeBoardIndex).theData.Bsizex - (isoTilesX / 2) And _
-                    topX + 1 = boardList(activeBoardIndex).theData.Bsizex - isoTilesX) Or _
-                    (ppos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
+                If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
+                    topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
+                    (pPos(pNum).x - (topX + 1) > (isoTilesX / 2)) Or _
                     ((topX + 1) - 1 < 0) Or _
                     pNum <> selectedPlayer Then
                     scrollWest = False
                 End If
                 'pushSouth code. SHOULD BE EXACTLY THE SAME AS FOR pushSouthEast! ANY CHANGES SHOULD BE COPIED
-                If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-                    (ppos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
-                    (ppos(pNum).y - (topY) < (isoTilesY / 2)) Or _
+                If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+                    (pPos(pNum).y < (isoTilesY / 2) And topY = 0) Or _
+                    (pPos(pNum).y - (topY) < (isoTilesY / 2)) Or _
                     pNum <> selectedPlayer Then '^Doesn't work with topy * 2...
                     scrollsouth = False
                 End If
             Else
                 'Original code was incomplete! This is pushWest standard code.
                 'Swapping " - 1 <" for "<=" (boards do not scroll to edges)
-                If (ppos(pNum).x > boardList(activeBoardIndex).theData.Bsizex - (tilesX / 2) And _
-                    topX = boardList(activeBoardIndex).theData.Bsizex - tilesX) Or _
-                    (ppos(pNum).x - topX > (tilesX / 2)) Or _
+                If (pPos(pNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
+                    topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
+                    (pPos(pNum).x - topX > (tilesX / 2)) Or _
                     (topX <= 0) Or _
                     pNum <> selectedPlayer Then
                     scrollWest = False
                 End If
                 'pushSouth standard board code with topY modification. ANY CHANGES SHOULD BE COPIED TO pushSouthEast
                 'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
-                If (topY + tilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-                    (ppos(pNum).y < (tilesY / 2) And topY = 0) Or _
-                    (ppos(pNum).y - topY < (tilesY / 2)) Or _
+                If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+                    (pPos(pNum).y < (tilesY / 2) And topY = 0) Or _
+                    (pPos(pNum).y - topY < (tilesY / 2)) Or _
                     pNum <> selectedPlayer Then
                     scrollsouth = False
                 End If
@@ -1055,17 +1055,17 @@ Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double)
                 Call scrollUpRight(moveFraction, scrollWest, scrollsouth)
             End If
             
-            ppos(pNum).stance = "walk_sw"
+            pPos(pNum).stance = "walk_sw"
             ' MODIFIED BY KSNiloc...
-            incrementFrame ppos(pNum).frame
+            incrementFrame pPos(pNum).frame
             'ppos(pNum).frame = ppos(pNum).frame + 1
-            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         Case SOLID:
             'Walk on the spot.
-            ppos(pNum).stance = "walk_sw"
+            pPos(pNum).stance = "walk_sw"
             ' MODIFIED BY KSNiloc...
-            incrementFrame ppos(pNum).frame
+            incrementFrame pPos(pNum).frame
             'ppos(pNum).frame = ppos(pNum).frame + 1
     End Select
 End Sub
@@ -1103,14 +1103,14 @@ Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_NORTH, _
-                              ppos(pNum))
+                              pPos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pNum).stance = "walk_n"
+    pPos(pNum).stance = "walk_n"
     
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pNum).frame
+    incrementFrame pPos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -1124,7 +1124,7 @@ Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
             If scrollNorth Then Call scrollDown(moveFraction)
             'shift the screen drawing co-ords down (topY).
             
-            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Walk on the spot.
@@ -1165,13 +1165,13 @@ Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_SOUTH, _
-                              ppos(pNum))
+                              pPos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pNum).stance = "walk_s"
+    pPos(pNum).stance = "walk_s"
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pNum).frame
+    incrementFrame pPos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -1185,7 +1185,7 @@ Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
             If scrollsouth Then Call scrollUp(moveFraction)
             'shift the screen drawing co-ords up (topY).
             
-            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Walk on the spot.
@@ -1226,14 +1226,14 @@ Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_EAST, _
-                              ppos(pNum))
+                              pPos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pNum).stance = "walk_e"
+    pPos(pNum).stance = "walk_e"
     
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pNum).frame
+    incrementFrame pPos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -1248,7 +1248,7 @@ Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
             If scrollEast Then Call scrollLeft(moveFraction)
             'shift the screen drawing co-ords left (topX).
             
-            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
                         
         'Case SOLID:
             'Walk on the spot.
@@ -1288,13 +1288,13 @@ Sub pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double)
                               pendingPlayerMovement(pNum).yTarg, _
                               pendingPlayerMovement(pNum).lTarg, _
                               MV_WEST, _
-                              ppos(pNum))
+                              pPos(pNum))
                               'didItem)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
-    ppos(pNum).stance = "walk_w"
+    pPos(pNum).stance = "walk_w"
     ' MODIFIED BY KSNiloc...
-    incrementFrame ppos(pNum).frame
+    incrementFrame pPos(pNum).frame
     'ppos(pNum).frame = ppos(pNum).frame + 1
     
     Select Case typetile
@@ -1308,7 +1308,7 @@ Sub pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double)
             If scrollWest Then Call scrollRight(moveFraction)
             'shift the screen drawing co-ords right (topX).
             
-            Call incrementPosition(ppos(pNum), pendingPlayerMovement(pNum), moveFraction)
+            Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         'Case SOLID:
             'Walk on the spot.
@@ -1712,8 +1712,8 @@ Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
     'Check board dimensions.
     If item.yTarg < 1 _
         Or item.xTarg < 1 _
-        Or item.yTarg > boardList(activeBoardIndex).theData.Bsizey _
-        Or item.xTarg > boardList(activeBoardIndex).theData.Bsizex Then
+        Or item.yTarg > boardList(activeBoardIndex).theData.bSizeY _
+        Or item.xTarg > boardList(activeBoardIndex).theData.bSizeX Then
         
         Exit Sub
         
@@ -1723,9 +1723,9 @@ Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
     If Not (usingPixelMovement) Then
     
         'Tile movement.
-        If (item.yTarg = Int(ppos(selectedPlayer).y) Or _
+        If (item.yTarg = Int(pPos(selectedPlayer).y) Or _
             item.yTarg = pendingPlayerMovement(selectedPlayer).yTarg) And _
-           (item.xTarg = Int(ppos(selectedPlayer).x) Or _
+           (item.xTarg = Int(pPos(selectedPlayer).x) Or _
             item.xTarg = pendingPlayerMovement(selectedPlayer).xTarg) Then
             'If target is the player's location or their destination.
             Exit Sub
@@ -1734,8 +1734,8 @@ Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
     Else
     
         'Pixel movement. Current and target locations.
-        If Abs(item.yTarg - ppos(selectedPlayer).y) <= movementSize _
-            And Abs(item.xTarg - ppos(selectedPlayer).x) < 1 Then
+        If Abs(item.yTarg - pPos(selectedPlayer).y) <= movementSize _
+            And Abs(item.xTarg - pPos(selectedPlayer).x) < 1 Then
             Exit Sub
         End If
             
@@ -1885,10 +1885,10 @@ Sub runQueuedMovements()
         pendingItemMovement(cnt).direction = MV_IDLE
     Next cnt
 
-    If UCase$(ppos(selectedPlayer).stance) = "WALK_S" Then facing = South
-    If UCase$(ppos(selectedPlayer).stance) = "WALK_W" Then facing = West
-    If UCase$(ppos(selectedPlayer).stance) = "WALK_N" Then facing = North
-    If UCase$(ppos(selectedPlayer).stance) = "WALK_E" Then facing = East
+    If UCase$(pPos(selectedPlayer).stance) = "WALK_S" Then facing = South
+    If UCase$(pPos(selectedPlayer).stance) = "WALK_W" Then facing = West
+    If UCase$(pPos(selectedPlayer).stance) = "WALK_N" Then facing = North
+    If UCase$(pPos(selectedPlayer).stance) = "WALK_E" Then facing = East
 End Sub
 
 
@@ -1907,9 +1907,9 @@ On Error Resume Next
         'OR in lower half of screen
         
         If ((topY * 2 + 1) - 1 < 0) Or _
-            (ppos(playerNum).y > boardList(activeBoardIndex).theData.Bsizey - (isoTilesY / 2) And _
-            (topY * 2) + 1 = boardList(activeBoardIndex).theData.Bsizey - isoTilesY) Or _
-            (ppos(playerNum).y - ((topY * 2) + 1) > (isoTilesY / 2)) Or _
+            (pPos(playerNum).y > boardList(activeBoardIndex).theData.bSizeY - (isoTilesY / 2) And _
+            (topY * 2) + 1 = boardList(activeBoardIndex).theData.bSizeY - isoTilesY) Or _
+            (pPos(playerNum).y - ((topY * 2) + 1) > (isoTilesY / 2)) Or _
             playerNum <> selectedPlayer Then
             
             checkScrollNorth = False
@@ -1918,9 +1918,9 @@ On Error Resume Next
         'Swapping " - 1 <" for "<=" (boards do not scroll to edges)
         
         If (topY <= 0) Or _
-            (ppos(playerNum).y > boardList(activeBoardIndex).theData.Bsizey - (tilesY / 2) And _
-            topY = boardList(activeBoardIndex).theData.Bsizey - tilesY) Or _
-            (ppos(playerNum).y - topY > (tilesY / 2)) Or _
+            (pPos(playerNum).y > boardList(activeBoardIndex).theData.bSizeY - (tilesY / 2) And _
+            topY = boardList(activeBoardIndex).theData.bSizeY - tilesY) Or _
+            (pPos(playerNum).y - topY > (tilesY / 2)) Or _
             playerNum <> selectedPlayer Then
             
             checkScrollNorth = False
@@ -1944,9 +1944,9 @@ On Error Resume Next
         'OR in middle and pos less than half screen height
         'Trading + 1 for ">="
         
-        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-            (ppos(playerNum).y < (isoTilesY / 2) And topY = 0) Or _
-            (ppos(playerNum).y - (topY * 2) < (isoTilesY / 2)) Or _
+        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+            (pPos(playerNum).y < (isoTilesY / 2) And topY = 0) Or _
+            (pPos(playerNum).y - (topY * 2) < (isoTilesY / 2)) Or _
             playerNum <> selectedPlayer Then '^Doesn't work with topy * 2 + 1
             
             checkScrollSouth = False
@@ -1954,9 +1954,9 @@ On Error Resume Next
     Else
         'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
         
-        If (topY + tilesY >= boardList(activeBoardIndex).theData.Bsizey) Or _
-            (ppos(playerNum).y < (tilesY / 2) And topY = 0) Or _
-            (ppos(playerNum).y - topY < (tilesY / 2)) Or _
+        If (topY + tilesY >= boardList(activeBoardIndex).theData.bSizeY) Or _
+            (pPos(playerNum).y < (tilesY / 2) And topY = 0) Or _
+            (pPos(playerNum).y - topY < (tilesY / 2)) Or _
             playerNum <> selectedPlayer Then
             
             checkScrollSouth = False
@@ -1981,9 +1981,9 @@ On Error Resume Next
         'OR in middle and pos less than half screen width
         'Trading + 1 for ">=", adding + 0.5 because each tile has two columns
         
-        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.Bsizex) Or _
-            (ppos(playerNum).x < (isoTilesX / 2) And topX = 0) Or _
-            (ppos(playerNum).x - topX < (isoTilesX / 2)) Or _
+        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Or _
+            (pPos(playerNum).x < (isoTilesX / 2) And topX = 0) Or _
+            (pPos(playerNum).x - topX < (isoTilesX / 2)) Or _
             playerNum <> selectedPlayer Then
             
             checkScrollEast = False
@@ -1991,9 +1991,9 @@ On Error Resume Next
     Else
         'Swapping " + 1 >" for ">=" (boards do not scroll to edges)
         
-        If (topX + tilesX >= boardList(activeBoardIndex).theData.Bsizex) Or _
-            (ppos(playerNum).x < (tilesX / 2) And topX = 0) Or _
-            (ppos(playerNum).x - topX < (tilesX / 2)) Or _
+        If (topX + tilesX >= boardList(activeBoardIndex).theData.bSizeX) Or _
+            (pPos(playerNum).x < (tilesX / 2) And topX = 0) Or _
+            (pPos(playerNum).x - topX < (tilesX / 2)) Or _
             playerNum <> selectedPlayer Then
             
             checkScrollEast = False
@@ -2018,9 +2018,9 @@ On Error Resume Next
         'OR at left edge of board.
         'isoTopX = topX + 1
         
-        If (ppos(playerNum).x > boardList(activeBoardIndex).theData.Bsizex - (isoTilesX / 2) And _
-            topX + 1 = boardList(activeBoardIndex).theData.Bsizex - isoTilesX) Or _
-            (ppos(playerNum).x - (topX + 1) > (isoTilesX / 2)) Or _
+        If (pPos(playerNum).x > boardList(activeBoardIndex).theData.bSizeX - (isoTilesX / 2) And _
+            topX + 1 = boardList(activeBoardIndex).theData.bSizeX - isoTilesX) Or _
+            (pPos(playerNum).x - (topX + 1) > (isoTilesX / 2)) Or _
             ((topX + 1) - 1 < 0) Or _
             playerNum <> selectedPlayer Then
             
@@ -2029,9 +2029,9 @@ On Error Resume Next
     Else
         'Swapping " - 1 <" for "<=" (boards do not scroll to edges)
         
-        If (ppos(playerNum).x > boardList(activeBoardIndex).theData.Bsizex - (tilesX / 2) And _
-            topX = boardList(activeBoardIndex).theData.Bsizex - tilesX) Or _
-            (ppos(playerNum).x - topX > (tilesX / 2)) Or _
+        If (pPos(playerNum).x > boardList(activeBoardIndex).theData.bSizeX - (tilesX / 2) And _
+            topX = boardList(activeBoardIndex).theData.bSizeX - tilesX) Or _
+            (pPos(playerNum).x - topX > (tilesX / 2)) Or _
             (topX <= 0) Or _
             playerNum <> selectedPlayer Then
             
@@ -2070,7 +2070,7 @@ Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY As Lon
     Dim aBoard As TKBoard
     Call openBoard(file, aBoard)
     lastRender.canvas = -1
-    If testX > aBoard.Bsizex Or testY > aBoard.Bsizey Or testL > aBoard.Bsizel Then
+    If testX > aBoard.bSizeX Or testY > aBoard.bSizeY Or testL > aBoard.bSizeL Then
         TestBoard = -1
         Exit Function
     End If

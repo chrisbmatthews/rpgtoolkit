@@ -650,16 +650,16 @@ Public Sub renderMultiAnimations( _
         'Draw the frame onto a canvas
         Dim cnv As Long
         cnv = CreateCanvas(anim.animSizeX, anim.animSizeY)
-        Call CanvasFill(cnv, gTranspColor)
+        Call CanvasFill(cnv, TRANSP_COLOR)
         Call AnimDrawFrameCanvas(anim, frame, 0, 0, cnv, True)
 
         'Render the frame
         If cnvTarget <> -1 Then
             'To a canvas
-            Call Canvas2CanvasBltTransparent(cnv, cnvTarget, x, y, gTranspColor)
+            Call Canvas2CanvasBltTransparent(cnv, cnvTarget, x, y, TRANSP_COLOR)
         Else
             'To the screen
-            Call DXDrawCanvasTransparent(cnv, x, y, gTranspColor)
+            Call DXDrawCanvasTransparent(cnv, x, y, TRANSP_COLOR)
         End If
 
         'Destroy that canvas

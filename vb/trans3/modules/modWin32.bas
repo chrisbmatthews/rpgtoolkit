@@ -83,6 +83,7 @@ Public Declare Function RegisterClass Lib "user32" Alias "RegisterClassA" (ByRef
 Public Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Public Declare Function SetFocus Lib "user32" (ByVal hwnd As Long) As Long
 Public Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
+Public Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
 
 '=========================================================================
 ' Win32 Constants
@@ -173,6 +174,9 @@ Public Sub showEndForm(ByVal endProgram As Boolean)
             .hInstance = App.hInstance 'instance of owning application
             .lpszClassName = WINDOW_CLASS 'name of this class
             .hbrBackground = GetStockObject(BLACK_BRUSH)
+            .hIcon = statusbar.Icon.handle  'grab the icon from the status bar form
+                                            '(only until I figure out why VB doesn't
+                                            'like CBM's sword icon)
         End With
 
         'Register the class so windows knows of its existence
@@ -185,8 +189,8 @@ Public Sub showEndForm(ByVal endProgram As Boolean)
                                         WINDOW_CLASS, _
                                         "RPGToolkit Development System", _
                                         WS_OVERLAPPEDWINDOW Or WS_VISIBLE, _
-                                        1, _
-                                        1, _
+                                        ((Screen.Width - (340 * Screen.TwipsPerPixelX)) / 2) / Screen.TwipsPerPixelX, _
+                                        ((Screen.height - (140 * Screen.TwipsPerPixelY)) / 2) / Screen.TwipsPerPixelY, _
                                         340, _
                                         142, _
                                         0, 0, App.hInstance, _
@@ -221,6 +225,7 @@ Public Sub showEndForm(ByVal endProgram As Boolean)
 
     If endProgram Then
         'End the program!
+        Call DeleteDC(endFormBackgroundHDC)
         End
     End If
 

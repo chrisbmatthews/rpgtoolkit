@@ -298,7 +298,7 @@ Public Function openItem(ByVal file As String) As TKItem
     detail = 1
     Dim tstName As String
     tstName$ = replace(RemovePath(file$), ".", "_") + ".tst"
-    tstName$ = projectPath$ + tilePath$ + tstName$
+    tstName$ = projectPath & tilePath & tstName$
     
     file$ = PakLocate(file$)
     
@@ -416,11 +416,11 @@ Public Function openItem(ByVal file As String) As TKItem
             walkFix$ = "S"
             For x = 0 To 15
                 Dim anmName As String, tbmName As String
-                anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
-                anmName$ = projectPath$ + miscPath$ + anmName$
+                anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
+                anmName$ = projectPath & miscPath & anmName$
                 
                 tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
-                tbmName$ = projectPath$ + bmpPath$ + tbmName$
+                tbmName$ = projectPath & bmpPath & tbmName$
                 
                 Call TileBitmapClear(tbm)
                 Call TileBitmapResize(tbm, 1, 2)
@@ -462,10 +462,10 @@ Public Function openItem(ByVal file As String) As TKItem
             anm.animPause = 0.167
             
             anmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
-            anmName$ = projectPath$ + miscPath$ + anmName$
+            anmName$ = projectPath & miscPath & anmName$
             
             tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
-            tbmName$ = projectPath$ + bmpPath$ + tbmName$
+            tbmName$ = projectPath & bmpPath & tbmName$
             Call TileBitmapClear(tbm)
             Call TileBitmapResize(tbm, 1, 2)
             For y = 0 To 1
@@ -614,11 +614,11 @@ ver2olditem:
         xx = 0
         walkFix$ = "S"
         For x = 0 To 15
-            anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix$ + "_" + ".anm"
-            anmName$ = projectPath$ + miscPath$ + anmName$
+            anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
+            anmName$ = projectPath & miscPath & anmName$
             
             tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + toString(x) + ".tbm"
-            tbmName$ = projectPath$ + bmpPath$ + tbmName$
+            tbmName$ = projectPath & bmpPath & tbmName$
             
             Call TileBitmapClear(tbm)
             Call TileBitmapResize(tbm, 1, 2)
@@ -660,10 +660,10 @@ ver2olditem:
         anm.animPause = 0.167
         
         anmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
-        anmName$ = projectPath$ + miscPath$ + anmName$
+        anmName$ = projectPath & miscPath & anmName$
         
         tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
-        tbmName$ = projectPath$ + bmpPath$ + tbmName$
+        tbmName$ = projectPath & bmpPath & tbmName$
         Call TileBitmapClear(tbm)
         Call TileBitmapResize(tbm, 1, 2)
         For y = 0 To 1

@@ -176,7 +176,7 @@ Sub BeginPlugins()
     For t = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(t) <> "" Then
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.plugins(t))
+            plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
 
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
@@ -213,7 +213,7 @@ Sub EndPlugins()
     For t = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(t) <> "" Then
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.plugins(t))
+            plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
                 VBPlugin(plugName).Terminate
@@ -419,7 +419,7 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
             Dim tt As Long
            
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.plugins(t))
+            plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
 
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
@@ -675,7 +675,7 @@ Sub CBLoadEnemy(ByVal file As String, ByVal eneSlot As Long)
     'callback 11
     On Error GoTo errorhandler
     eneSlot = inBounds(eneSlot, 0, 3)
-    Call openEnemy(projectPath$ + enePath$ + file, enemyMem(eneSlot))
+    enemyMem(eneSlot) = openEnemy(projectPath$ & enePath$ & file)
 
     Exit Sub
 'Begin error handling code:
@@ -1504,13 +1504,13 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
             CBGetGeneralNum = equipFPadd(playerSlot)
             Exit Function
         Case 5:
-            CBGetGeneralNum = ppos(playerSlot).x
+            CBGetGeneralNum = pPos(playerSlot).x
             Exit Function
         Case 6:
-            CBGetGeneralNum = ppos(playerSlot).y
+            CBGetGeneralNum = pPos(playerSlot).y
             Exit Function
         Case 7:
-            CBGetGeneralNum = ppos(playerSlot).l
+            CBGetGeneralNum = pPos(playerSlot).l
             Exit Function
         Case 8:
             CBGetGeneralNum = selectedPlayer
@@ -1575,7 +1575,7 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
             CBGetGeneralNum = 0
             Exit Function
         Case 28:
-            CBGetGeneralNum = gTranspColor
+            CBGetGeneralNum = TRANSP_COLOR
     End Select
 
     Exit Function
@@ -1602,7 +1602,7 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
             Exit Sub
         Case 1:
             playerFile$(playerSlot) = newVal
-            Call openchar(projectPath$ + temPath$ + newVal, playerMem(playerSlot))
+            Call openchar(projectPath & temPath & newVal, playerMem(playerSlot))
             Exit Sub
         Case 2:
             arrayPos = inBounds(arrayPos, 0, 25)
@@ -1654,12 +1654,12 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
             MWinPic$ = newVal
             Exit Sub
         Case 13:
-            Call loadFont(projectPath$ + fontPath$ + newVal)
+            Call loadFont(projectPath & fontPath & newVal)
             fontName$ = newVal
             Exit Sub
         Case 14:
             playerSlot = inBounds(playerSlot, 0, 3)
-            Call openEnemy(projectPath$ + enePath$ + newVal, enemyMem(playerSlot))
+            enemyMem(playerSlot) = openEnemy(projectPath$ & enePath$ & newVal)
             enemies$(playerSlot) = newVal
             Exit Sub
         Case 15:
@@ -1710,13 +1710,13 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
             equipFPadd(playerSlot) = newVal
             Exit Sub
         Case 5:
-            ppos(playerSlot).x = newVal
+            pPos(playerSlot).x = newVal
             Exit Sub
         Case 6:
-            ppos(playerSlot).y = newVal
+            pPos(playerSlot).y = newVal
             Exit Sub
         Case 7:
-            ppos(playerSlot).l = newVal
+            pPos(playerSlot).l = newVal
             Exit Sub
         Case 8:
             newVal = inBounds(newVal, 0, 4)
@@ -2334,28 +2334,28 @@ Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal ar
     
     Select Case infoCode
         Case 0:
-            CBGetBoardNum = boardList(activeBoardIndex).theData.Bsizex
+            CBGetBoardNum = boardList(activeBoardIndex).theData.bSizeX
             Exit Function
         Case 1:
-            CBGetBoardNum = boardList(activeBoardIndex).theData.Bsizey
+            CBGetBoardNum = boardList(activeBoardIndex).theData.bSizeY
             Exit Function
         Case 2:
             arrayPos1 = inBounds(arrayPos1, 1, 50)
             arrayPos2 = inBounds(arrayPos2, 1, 50)
             arrayPos3 = inBounds(arrayPos3, 1, 8)
-            CBGetBoardNum = boardList(activeBoardIndex).theData.ambientred(arrayPos1, arrayPos2, arrayPos3)
+            CBGetBoardNum = boardList(activeBoardIndex).theData.ambientRed(arrayPos1, arrayPos2, arrayPos3)
             Exit Function
         Case 3:
             arrayPos1 = inBounds(arrayPos1, 1, 50)
             arrayPos2 = inBounds(arrayPos2, 1, 50)
             arrayPos3 = inBounds(arrayPos3, 1, 8)
-            CBGetBoardNum = boardList(activeBoardIndex).theData.ambientgreen(arrayPos1, arrayPos2, arrayPos3)
+            CBGetBoardNum = boardList(activeBoardIndex).theData.ambientGreen(arrayPos1, arrayPos2, arrayPos3)
             Exit Function
         Case 4:
             arrayPos1 = inBounds(arrayPos1, 1, 50)
             arrayPos2 = inBounds(arrayPos2, 1, 50)
             arrayPos3 = inBounds(arrayPos3, 1, 8)
-            CBGetBoardNum = boardList(activeBoardIndex).theData.ambientblue(arrayPos1, arrayPos2, arrayPos3)
+            CBGetBoardNum = boardList(activeBoardIndex).theData.ambientBlue(arrayPos1, arrayPos2, arrayPos3)
             Exit Function
         Case 5:
             arrayPos1 = inBounds(arrayPos1, 1, 50)
@@ -2370,7 +2370,7 @@ Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal ar
             CBGetBoardNum = boardList(activeBoardIndex).theData.borderColor
             Exit Function
         Case 8:
-            CBGetBoardNum = boardList(activeBoardIndex).theData.boardskill
+            CBGetBoardNum = boardList(activeBoardIndex).theData.boardSkill
             Exit Function
         Case 9:
             CBGetBoardNum = boardList(activeBoardIndex).theData.fightingYN
@@ -2567,32 +2567,32 @@ Sub CBSetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arrayPo
     Select Case infoCode
         Case 0:
             nValue = inBounds(nValue, 1, 50)
-            boardList(activeBoardIndex).theData.Bsizex = nValue
+            boardList(activeBoardIndex).theData.bSizeX = nValue
             Exit Sub
         Case 1:
             nValue = inBounds(nValue, 1, 50)
-            boardList(activeBoardIndex).theData.Bsizey = nValue
+            boardList(activeBoardIndex).theData.bSizeY = nValue
             Exit Sub
         Case 2:
             arrayPos1 = inBounds(arrayPos1, 1, 50)
             arrayPos2 = inBounds(arrayPos2, 1, 50)
             arrayPos3 = inBounds(arrayPos3, 1, 8)
             nValue = inBounds(nValue, -255, 255)
-            boardList(activeBoardIndex).theData.ambientred(arrayPos1, arrayPos2, arrayPos3) = nValue
+            boardList(activeBoardIndex).theData.ambientRed(arrayPos1, arrayPos2, arrayPos3) = nValue
             Exit Sub
         Case 3:
             arrayPos1 = inBounds(arrayPos1, 1, 50)
             arrayPos2 = inBounds(arrayPos2, 1, 50)
             arrayPos3 = inBounds(arrayPos3, 1, 8)
             nValue = inBounds(nValue, -255, 255)
-            boardList(activeBoardIndex).theData.ambientgreen(arrayPos1, arrayPos2, arrayPos3) = nValue
+            boardList(activeBoardIndex).theData.ambientGreen(arrayPos1, arrayPos2, arrayPos3) = nValue
             Exit Sub
         Case 4:
             arrayPos1 = inBounds(arrayPos1, 1, 50)
             arrayPos2 = inBounds(arrayPos2, 1, 50)
             arrayPos3 = inBounds(arrayPos3, 1, 8)
             nValue = inBounds(nValue, -255, 255)
-            boardList(activeBoardIndex).theData.ambientblue(arrayPos1, arrayPos2, arrayPos3) = nValue
+            boardList(activeBoardIndex).theData.ambientBlue(arrayPos1, arrayPos2, arrayPos3) = nValue
             Exit Sub
         Case 5:
             arrayPos1 = inBounds(arrayPos1, 1, 50)
@@ -2611,7 +2611,7 @@ Sub CBSetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arrayPo
             'boardList(activeBoardIndex).theData.borderColor = nValue
             Exit Sub
         Case 8:
-            boardList(activeBoardIndex).theData.boardskill = nValue
+            boardList(activeBoardIndex).theData.boardSkill = nValue
             Exit Sub
         Case 9:
             nValue = inBounds(nValue, 0, 1)
@@ -2885,7 +2885,7 @@ Function CBCanvasLoadImage(ByVal canvasID As Long, ByVal filename As String) As 
     'adds path info
     On Error Resume Next
     
-    CBCanvasLoadImage = CanvasLoadPicture(canvasID, PakLocate(projectPath$ + bmpPath$ + filename))
+    CBCanvasLoadImage = CanvasLoadPicture(canvasID, PakLocate(projectPath & bmpPath & filename))
 End Function
 
 Function CBCanvasLoadSizedImage(ByVal canvasID As Long, ByVal filename As String) As Long
@@ -2894,7 +2894,7 @@ Function CBCanvasLoadSizedImage(ByVal canvasID As Long, ByVal filename As String
     'adds path info
     On Error Resume Next
     
-    Call CanvasLoadSizedPicture(canvasID, PakLocate(projectPath$ + bmpPath$ + filename))
+    Call CanvasLoadSizedPicture(canvasID, PakLocate(projectPath & bmpPath & filename))
     CBCanvasLoadSizedImage = 1
 End Function
 
@@ -3094,7 +3094,7 @@ Function CBPlaySound(ByVal soundFile As String) As Long
     'callback 73
     'play a sound effect (do not include path info!)
     On Error Resume Next
-    Call playSoundFX(projectPath$ + mediaPath$ + soundFile)
+    Call playSoundFX(projectPath & mediaPath & soundFile)
     CBPlaySound = 1
 End Function
 
@@ -3102,7 +3102,7 @@ Function CBMessageWindow(ByVal Text As String, ByVal textColor As Long, ByVal bg
     'callback 74
     'pop up a message box
     On Error Resume Next
-    CBMessageWindow = MBox(Text, "", mbtype, textColor, bgColor, PakLocate(projectPath$ + bmpPath$ + bgPic))
+    CBMessageWindow = MBox(Text, "", mbtype, textColor, bgColor, PakLocate(projectPath & bmpPath & bgPic))
 End Function
 
 Function CBFileDialog(ByVal initialPath As String, ByVal fileFilter As String) As String
@@ -3150,7 +3150,7 @@ Sub CBRunProgram(ByVal prgFile As String)
     'run a program
     On Error Resume Next
     
-    Call runProgram(projectPath$ + prgPath$ + prgFile, -1, False)
+    Call runProgram(projectPath & prgPath & prgFile, -1, False)
 End Sub
 
 Sub CBSetTarget(ByVal targetIdx As Long, ByVal ttype As Long)
@@ -3359,14 +3359,14 @@ Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVa
     'callback 104
     'draw fight background to canvas
     On Error Resume Next
-    Call CanvasDrawBackground(canvasID, projectPath$ + bkgPath$ + bkgFile, x, y, Width, height)
+    Call CanvasDrawBackground(canvasID, projectPath & bkgPath & bkgFile, x, y, Width, height)
 End Sub
 
 Function CBCreateAnimation(ByVal file As String) As Long
     'callback 105
     'load an animation file, return an id to refer to it with
     On Error Resume Next
-    CBCreateAnimation = CreateAnimation(projectPath$ + miscPath$ + file)
+    CBCreateAnimation = CreateAnimation(projectPath & miscPath & file)
 End Function
 
 Sub CBDestroyAnimation(ByVal idx As Long)

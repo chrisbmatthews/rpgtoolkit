@@ -83,7 +83,7 @@ Sub EnemyAddStatus(ByVal statusFile As String, ByRef theEnemy As TKEnemy)
     
     'open the status effect...
     Dim theEffect As TKStatusEffect
-    Call openStatus(projectPath$ + statusPath$ + statusFile, theEffect)
+    Call openStatus(projectPath & statusPath & statusFile, theEffect)
     
     Dim t As Long
     Dim clearSlot As Long
@@ -266,8 +266,7 @@ Sub saveEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
     Close #num
 End Sub
 
-
-Sub openEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
+Public Function openEnemy(ByVal file As String) As TKEnemy
     '========================================================
     'EDITED: [Delano - 11/05/04]
     'Fixed bug where enemies die in one hit: eneMaxHP was not assigned for TK3 enemies.
@@ -280,8 +279,10 @@ Sub openEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
     Dim num As Long, x As Long, y As Long, t As Long, user As Long
     Dim fileHeader As String, majorVer As Long, minorVer As Long
     
-    num = FreeFile
-    If file$ = "" Then Exit Sub
+    Dim theEnemy As TKEnemy
+
+    num = FreeFile()
+    If file$ = "" Then Exit Function
     #If isToolkit = 1 Then
         enemylist(activeEnemyIndex).eneNeedUpdate = False
     #End If
@@ -292,21 +293,21 @@ Sub openEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
     file = PakLocate(file)
        
     num = FreeFile
-    Open file$ For Binary As #num
+    Open file For Binary Access Read As num
         Dim b As Byte
-        Get #num, 15, b
+        Get num, 15, b
         If b <> 0 Then
-            Close #num
+            Close num
             GoTo ver2oldenemy
         End If
-    Close #num
+    Close num
 
-    Open file$ For Binary As #num
+    Open file For Binary Access Read As num
         fileHeader$ = BinReadString(num)      'Filetype
-        If fileHeader$ <> "RPGTLKIT ENEMY" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Enemy": Exit Sub
+        If fileHeader$ <> "RPGTLKIT ENEMY" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Enemy": Exit Function
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit", , "Unable to open Enemy": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit", , "Unable to open Enemy": Close #num: Exit Function
         
         theEnemy.eneName$ = BinReadString(num)
         theEnemy.eneHP = BinReadLong(num)
@@ -350,24 +351,24 @@ Sub openEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
             theEnemy.customGfx(t) = BinReadString(num)
             theEnemy.customGfxNames(t) = BinReadString(num)
         Next t
-    Close #num
+    Close num
     
-    'Bug fix: these values were not assigned upon opening a TK3 enemy.
     theEnemy.eneMaxHP = theEnemy.eneHP
     theEnemy.eneMaxSMP = theEnemy.eneSMP
     
-    Exit Sub
+    openEnemy = theEnemy
+    Exit Function
     
 ver2oldenemy:
-    Open file For Input As #num
+    Open file For Input Access Read As num
         fileHeader$ = fread(num)      'Filetype
-        If fileHeader$ <> "RPGTLKIT ENEMY" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Enemy": Exit Sub
+        If fileHeader$ <> "RPGTLKIT ENEMY" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Enemy": Exit Function
         majorVer = val(fread(num))         'Version
         minorVer = val(fread(num))         'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit " + file$, , "Unable to open Enemy": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Enemy was created with an unrecognised version of the Toolkit " + file$, , "Unable to open Enemy": Close #num: Exit Function
         If minorVer <> minor Then
             user = MsgBox("This Enemy was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
-            If user = 7 Then Close #num: Exit Sub     'selected no
+            If user = 7 Then Close #num: Exit Function 'selected no
         End If
         theEnemy.eneName$ = fread(num)  'Name
         theEnemy.eneHP = fread(num)     'HP
@@ -391,7 +392,7 @@ ver2oldenemy:
         'create tile bitmap...
         Dim tbmName As String, anmName As String
         tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
-        tbmName$ = projectPath$ + bmpPath$ + tbmName$
+        tbmName$ = projectPath & bmpPath & tbmName$
         Dim tbm As TKTileBitmap
         Call TileBitmapClear(tbm)
         Call TileBitmapResize(tbm, eneSizeX, eneSizeY)
@@ -403,7 +404,7 @@ ver2oldenemy:
         Call SaveTileBitmap(tbmName$, tbm)
         'create animation...
         anmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
-        anmName$ = projectPath$ + miscPath$ + anmName$
+        anmName$ = projectPath & miscPath & anmName$
         Dim anm As TKAnimation
         Call AnimationClear(anm)
         anm.animSizeX = eneSizeX * 32
@@ -441,10 +442,9 @@ ver2oldenemy:
     Close #num
     theEnemy.eneMaxHP = theEnemy.eneHP
     theEnemy.eneMaxSMP = theEnemy.eneSMP
-    
-    
-Exit Sub
-End Sub
+    openEnemy = theEnemy
+
+End Function
 
 
 Sub EnemyClear(ByRef theEnemy As TKEnemy)

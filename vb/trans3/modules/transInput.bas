@@ -645,7 +645,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     For Index = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(Index) <> "" Then
             'If there is a plugin in this slot, get the name.
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.plugins(Index))
+            plugName = PakLocate(projectPath & plugPath & mainMem.plugins(Index))
             
             If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
                 'If an input is requested, return that input to the plugin.
@@ -656,7 +656,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     
     'Check the menu plugin.
     If mainMem.menuPlugin <> "" Then
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
+        plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
             Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
@@ -665,7 +665,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     
     'Check the fight plugin.
     If mainMem.fightPlugin <> "" Then
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
+        plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
             Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
@@ -690,12 +690,12 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         If UCase$(str$(mainMem.Key)) = UCase$(str$(keyCode)) Then
             'User pressed the activation key.
             'Check to see if there is a program to be activated at this location.
-            Call programTest(ppos(selectedPlayer))
+            Call programTest(pPos(selectedPlayer))
         End If
         
         'Check primary runtime key: run its associated program if so.
         If UCase$(str$(keyCode)) = UCase$(str$(mainMem.runKey)) Then
-            Call runProgram(projectPath$ + prgPath$ + mainMem.runTime$)
+            Call runProgram(projectPath & prgPath & mainMem.runTime$)
             Exit Sub
         End If
         
@@ -704,7 +704,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
             If UCase$(Chr$(keyCode)) = UCase$(Chr$(mainMem.runTimeKeys(Index))) Then
                 If mainMem.runTimePrg$(Index) <> "" Then
                 
-                    Call runProgram(projectPath$ + prgPath$ + mainMem.runTimePrg$(Index))
+                    Call runProgram(projectPath & prgPath & mainMem.runTimePrg$(Index))
                     Exit Sub
                 
                 End If
@@ -742,7 +742,7 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Intege
     For Index = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(Index) <> "" Then
             'If there is a plugin in this slot, get the name.
-            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.plugins(Index))
+            plugName = PakLocate(projectPath & plugPath & mainMem.plugins(Index))
             
             If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
                 'If an input is requested, return that input to the plugin.
@@ -753,7 +753,7 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Intege
     
     'Check the menu plugin.
     If mainMem.menuPlugin <> "" Then
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
+        plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
             Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
@@ -762,7 +762,7 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Intege
     
     'Check the fight plugin.
     If mainMem.fightPlugin <> "" Then
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
+        plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
             Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
@@ -811,9 +811,9 @@ Sub scanKeys()
         'Update the origin location to the current location (however this is already done
         'by the isometric "jump" correction in the mainLoop).
         pendingPlayerMovement(selectedPlayer).direction = MV_NE
-        pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
+        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         
         'Insert the target co-ordinates based on the movement direction.
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
@@ -832,9 +832,9 @@ Sub scanKeys()
         'Move NorthWest
         
         pendingPlayerMovement(selectedPlayer).direction = MV_NW
-        pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
+        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
         movementCounter = 0
@@ -846,9 +846,9 @@ Sub scanKeys()
         'Move SouthEast
         
         pendingPlayerMovement(selectedPlayer).direction = MV_SE
-        pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
+        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
         movementCounter = 0
@@ -860,9 +860,9 @@ Sub scanKeys()
         'Move SouthWest
         
         pendingPlayerMovement(selectedPlayer).direction = MV_SW
-        pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
+        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
         movementCounter = 0
@@ -875,9 +875,9 @@ Sub scanKeys()
         'Move North
         
         pendingPlayerMovement(selectedPlayer).direction = MV_NORTH
-        pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
+        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
         movementCounter = 0
@@ -890,9 +890,9 @@ Sub scanKeys()
         'Move South
         
         pendingPlayerMovement(selectedPlayer).direction = MV_SOUTH
-        pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
+        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
         movementCounter = 0
@@ -905,9 +905,9 @@ Sub scanKeys()
         'Move East
         
         pendingPlayerMovement(selectedPlayer).direction = MV_EAST
-        pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
+        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
         movementCounter = 0
@@ -920,9 +920,9 @@ Sub scanKeys()
         'Move West
         
         pendingPlayerMovement(selectedPlayer).direction = MV_WEST
-        pendingPlayerMovement(selectedPlayer).xOrig = ppos(selectedPlayer).x
-        pendingPlayerMovement(selectedPlayer).yOrig = ppos(selectedPlayer).y
-        pendingPlayerMovement(selectedPlayer).lOrig = ppos(selectedPlayer).l
+        pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
+        pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
+        pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
         
         movementCounter = 0
@@ -934,7 +934,7 @@ Sub scanKeys()
         'Let joystick button 1 act as the activation key.
         
         keyWaitState = mainMem.Key
-        Call programTest(ppos(selectedPlayer))
+        Call programTest(pPos(selectedPlayer))
         Exit Sub
     End If
     
