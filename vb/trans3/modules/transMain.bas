@@ -544,7 +544,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     shopColors(0) = -1
 
     ' If we're running as an exe, don't show the debug window!
-    If (Not runningAsEXE) Then
+    If Not (runningAsEXE) Then
         debugYN = 1
     Else
         debugYN = 0
@@ -598,13 +598,13 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     ' Unless we're testing a program from the PRG editor, run the
     ' startup program
-    If (Not testingPRG) Then
+    If Not (testingPRG) Then
         Call runProgram(projectPath & prgPath & mainMem.startupPrg, , , True)
     End If
 
     ' Unless we loaded a game (using Load()) or we're testing a PRG from
     ' the program editor, send the player to the initial board
-    If (Not saveFileLoaded) And (Not testingPRG) Then
+    If ((Not (saveFileLoaded)) And (Not (testingPRG))) Then
 
         ' Nullify some variables
         scTopX = -1000
@@ -613,7 +613,9 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
         ' Open up the starting board
         Call ClearNonPersistentThreads
-        Call openBoard(projectPath & brdPath & mainMem.initBoard, boardList(activeBoardIndex).theData)
+        If (LenB(mainMem.initBoard)) Then
+            Call openBoard(projectPath & brdPath & mainMem.initBoard, boardList(activeBoardIndex).theData)
+        End If
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)
         Call openItems
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
@@ -623,9 +625,11 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
         ' Setup player position
         With pPos(selectedPlayer)
-            .x = boardList(activeBoardIndex).theData.playerX
-            .y = boardList(activeBoardIndex).theData.playerY
-            .l = boardList(activeBoardIndex).theData.playerLayer
+            If (LenB(mainMem.initBoard)) Then
+                .x = boardList(activeBoardIndex).theData.playerX
+                .y = boardList(activeBoardIndex).theData.playerY
+                .l = boardList(activeBoardIndex).theData.playerLayer
+            End If
             .stance = "WALK_S"
             .frame = 0
             pendingPlayerMovement(selectedPlayer).xOrig = .x
