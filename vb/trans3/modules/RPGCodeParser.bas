@@ -407,7 +407,11 @@ Public Function CountData(ByVal text As String) As Long
     On Error Resume Next
 
     'If there is no text, there are no elements
-    If (Trim(GetBrackets(text)) = "") Then Exit Function
+    If (Not (InStr(1, text, "("))) Then
+        If (Trim(text) = "") Then Exit Function
+    Else
+        If (Trim(GetBrackets(text)) = "") Then Exit Function
+    End If
 
     'Setup delimiter array
     Dim c(1) As String
@@ -766,9 +770,6 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
             build = build & ")"
         End If
     Next a
-
-    'Parse for commands
-    build = ParseRPGCodeCommand(build, prg)
 
     Dim arrayElements() As parameters
     'Use my getParameters() function to retrieve the values of the dimensions
