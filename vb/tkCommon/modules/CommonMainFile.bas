@@ -183,7 +183,7 @@ Private Sub upgradeBattleSystem()
 
                     'It's trans3 and the DLL is supposed to already be registered
                     'but it's not-- make it happen
-                    Call ExecCmd("regsrv32 /s " & chr(34) & fullPath & chr(34))
+                    Call ExecCmd("regsrv32 /s " & Chr(34) & fullPath & Chr(34))
 
                     'Now setup the plugin for usage
                     Call setupVBPlugin(fullPath)
@@ -369,6 +369,8 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
             
             If minorVer >= 5 Then
                 .mouseCursor = BinReadByte(num)
+            Else
+                .mouseCursor = 1
             End If
 
         Close num
