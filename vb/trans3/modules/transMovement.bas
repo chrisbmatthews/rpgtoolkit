@@ -84,10 +84,16 @@ Public facing As FACING_DIRECTION       'which direction are you facing? 1-s, 2-
 
 Private mVarAnimationDelay As Double
 
-Public Const FRAMESPERMOVE = 4          'Number of (animation) frames per TILE movement
+'Public Const framesPerMove = 4          'Number of (animation) frames per TILE movement
                                         'Pixel and tile movement use same number of .frames.
 
 Public loopOffset As Long               '3.0.5 main loop offset.
+
+Public Property Get framesPerMove() As Long
+    framesPerMove = 4 * movementSize
+    '1 fpm just looks bad, in 1/4 tile movement at least.
+    If framesPerMove < 2 Then framesPerMove = 2
+End Property
 
 Public Property Get animationDelay() As Double
     animationDelay = mVarAnimationDelay
@@ -1311,7 +1317,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
 'If singleItem supplied, will only move this item.
 'Called by: gameLogic, runQueuedMovements
 '===========================================================
-   
+    
     Dim itmIdx As Long
     Static staticTileType() As Byte
     ReDim Preserve staticTileType(UBound(pendingItemMovement))
@@ -1357,24 +1363,24 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                     'We can start moving.
                     itmPos(itmIdx).loopFrame = 0
                     
+                    With itemMem(itmIdx)
+                        'Normalise the speed to the average mainloop time.
+                        .loopSpeed = Round(.speed / gAvgTime)
+                        
+                        '.loopSpeed = CLng(.speed)    'If not using decimal delay.
+                        
+                        'Check divide by zero.
+                        If .loopSpeed = 0 Then .loopSpeed = 1
+                        
+Call traceString("ITM.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
+                        
+                    End With
+                    
                 End If '.direction <> MV_IDLE
                 
             End If '.loopFrame < 0
                 
             If pendingItemMovement(itmIdx).direction <> MV_IDLE Then
-            
-                
-                 With itemMem(itmIdx)
-                    'Normalise the speed to the average mainloop time.
-                    '.loopSpeed = CLng(.speed / gAvgTime)
-                    
-                    .loopSpeed = CLng(.speed)    'If not using decimal delay.
-                    
-                    'Check divide by zero.
-                    If .loopSpeed = 0 Then .loopSpeed = 1
-                    
-                    
-                End With
                
                 If pushItem(itmIdx, staticTileType(itmIdx)) Then
                     'Only increment the frames if movement was successful.
@@ -1389,7 +1395,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                                     
                         .loopFrame = .loopFrame + 1
                         
-                        If .loopFrame = FRAMESPERMOVE * (itemMem(itmIdx).loopSpeed + loopOffset) Then
+                        If .loopFrame = framesPerMove * (itemMem(itmIdx).loopSpeed + loopOffset) Then
                             'The item has finished moving, update origin, reset the counter.
                             
                             With pendingItemMovement(itmIdx)
@@ -1470,7 +1476,7 @@ Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) A
     testPend = pendingItemMovement(itemNum)
     
     'moveFraction is a fraction of the tile.
-    moveFraction = movementSize / (FRAMESPERMOVE * (itemMem(itemNum).loopSpeed + loopOffset))
+    moveFraction = movementSize / (framesPerMove * (itemMem(itemNum).loopSpeed + loopOffset))
     
     'Insert the new fractional co-ords into the test location.
     Call incrementPosition(testPos, testPend, moveFraction)
@@ -1499,7 +1505,7 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
 'If singlePlayer supplied, will only move that player.
 'Called by: gameLogic, runQueuedMovements
 '======================================================
-
+    
     Dim playerIdx As Long, mvOccured As Boolean
     Static staticTileType() As Byte
     ReDim Preserve staticTileType(UBound(pendingPlayerMovement))
@@ -1553,6 +1559,24 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                 
                     'We can start movement!
                     pPos(playerIdx).loopFrame = 0
+                    
+                    With playerMem(playerIdx)
+                        'Normalise the speed to the average mainloop time.
+                        .loopSpeed = Round(.speed / gAvgTime)
+                        
+                        '.loopSpeed = CLng(.speed)    'If not using decimal delay.
+                        
+                        'Check divide by zero.
+                        If .loopSpeed = 0 Then .loopSpeed = 1
+                        
+   Call traceString(" ")
+   Call traceString("PLY.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
+                        
+                        'Set all players to move at the selected player's speed regardless,
+                        '(won't work otherwise!).
+                        .loopSpeed = playerMem(selectedPlayer).loopSpeed
+                    End With
+                
                 Else
                     'Get out of the mainloop state.
                     gGameState = GS_IDLE
@@ -1561,26 +1585,13 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                 
             End If '.loopFrame = 0
             
-'Call traceString("MVPLY.x=" & pPos(playerIdx).x & ".y=" & pPos(playerIdx).y & _
-                ".lpf=" & pPos(playerIdx).loopFrame & _
+Call traceString("MVPLY.x=" & pPos(playerIdx).x & ".y=" & pPos(playerIdx).y & _
                 " .dir=" & pendingPlayerMovement(playerIdx).direction & _
-                " stt=" & staticTileType(playerIdx))
+                ".loopFrame=" & pPos(playerIdx).loopFrame & _
+                " topX=" & topX & " topY=" & topY)
                 
             If pendingPlayerMovement(playerIdx).direction <> MV_IDLE Then
         
-                With playerMem(playerIdx)
-                    'Normalise the speed to the average mainloop time.
-                    '.loopSpeed = CLng(.speed / gAvgTime)
-                    
-                    .loopSpeed = CLng(.speed)    'If not using decimal delay.
-                    
-                    'Check divide by zero.
-                    If .loopSpeed = 0 Then .loopSpeed = 1
-                    
-                    'Set all players to move at the selected player's speed regardless,
-                    '(won't work otherwise!).
-                    .loopSpeed = playerMem(selectedPlayer).loopSpeed
-                End With
                 
                 'Always increment the position as a fraction of the total movement.
                 mvOccured = pushPlayer(playerIdx, staticTileType(playerIdx))
@@ -1598,7 +1609,7 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                                     
                         .loopFrame = .loopFrame + 1
                         
-                        If .loopFrame = FRAMESPERMOVE * (playerMem(playerIdx).loopSpeed + loopOffset) Then
+                        If .loopFrame = framesPerMove * (playerMem(playerIdx).loopSpeed + loopOffset) Then
                             'Movement has ended, update origin, reset the counter.
                             
                             'Do not set the direction to idle, do it after prg check in main loop.
@@ -1678,7 +1689,7 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
     testPend = pendingPlayerMovement(pNum)
     
     'moveFraction is a fraction of the tile.
-    moveFraction = movementSize / (FRAMESPERMOVE * (playerMem(pNum).loopSpeed + loopOffset))
+    moveFraction = movementSize / (framesPerMove * (playerMem(pNum).loopSpeed + loopOffset))
     
     'Insert the new fractional co-ords into the test location.
     Call incrementPosition(testPos, testPend, moveFraction)
@@ -1697,29 +1708,58 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
     Select Case pendingPlayerMovement(pNum).direction
         Case MV_NORTH
             testPos.stance = "walk_n"
-            If checkScrollNorth(pNum) Then Call scrollDown(moveFraction)
+            If checkScrollNorth(pNum) Then topY = topY - moveFraction   'Call scrollDown(moveFraction)
         Case MV_SOUTH
             testPos.stance = "walk_s"
-            If checkScrollSouth(pNum) Then Call scrollUp(moveFraction)
+            If checkScrollSouth(pNum) Then topY = topY + moveFraction   'Call scrollUp(moveFraction)
         Case MV_EAST
             testPos.stance = "walk_e"
-            If checkScrollEast(pNum) Then Call scrollLeft$(moveFraction)
+            If checkScrollEast(pNum) Then topX = topX + moveFraction    'Call scrollLeft(moveFraction)
         Case MV_WEST
             testPos.stance = "walk_w"
-            If checkScrollWest(pNum) Then Call scrollRight$(moveFraction)
+            If checkScrollWest(pNum) Then topX = topX - moveFraction    'Call scrollRight(moveFraction)
         Case MV_NE
             testPos.stance = "walk_ne"
-            Call scrollDownLeft$(moveFraction, checkScrollEast(pNum), checkScrollNorth(pNum))
+            'Call scrollDownLeft(moveFraction, checkScrollEast(pNum), checkScrollNorth(pNum))
+            If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+                If checkScrollEast(pNum) Then topX = topX + moveFraction / 2
+                If checkScrollNorth(pNum) Then topY = topY - moveFraction / 2
+            Else
+                If checkScrollEast(pNum) Then topX = topX + moveFraction
+                If checkScrollNorth(pNum) Then topY = topY - moveFraction
+            End If
+
         Case MV_NW
             testPos.stance = "walk_nw"
-            Call scrollDownRight$(moveFraction, checkScrollWest(pNum), checkScrollNorth(pNum))
+            'Call scrollDownRight(moveFraction, checkScrollWest(pNum), checkScrollNorth(pNum))
+            If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+                If checkScrollWest(pNum) Then topX = topX - moveFraction / 2
+                If checkScrollNorth(pNum) Then topY = topY - moveFraction / 2
+            Else
+                If checkScrollWest(pNum) Then topX = topX - moveFraction
+                If checkScrollNorth(pNum) Then topY = topY - moveFraction
+            End If
         Case MV_SE
             testPos.stance = "walk_se"
-            Call scrollUpLeft$(moveFraction, checkScrollEast(pNum), checkScrollSouth(pNum))
+            'Call scrollUpLeft(moveFraction, checkScrollEast(pNum), checkScrollSouth(pNum))
+            If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+                If checkScrollEast(pNum) Then topX = topX + moveFraction / 2
+                If checkScrollSouth(pNum) Then topY = topY + moveFraction / 2
+            Else
+                If checkScrollEast(pNum) Then topX = topX + moveFraction
+                If checkScrollSouth(pNum) Then topY = topY + moveFraction
+            End If
         Case MV_SW
             testPos.stance = "walk_sw"
-            Call scrollUpRight$(moveFraction, checkScrollWest(pNum), checkScrollSouth(pNum))
-        
+            'Call scrollUpRight(moveFraction, checkScrollWest(pNum), checkScrollSouth(pNum))
+            If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+                If checkScrollWest(pNum) Then topX = topX - moveFraction / 2
+                If checkScrollSouth(pNum) Then topY = topY + moveFraction / 2
+            Else
+                If checkScrollWest(pNum) Then topX = topX - moveFraction
+                If checkScrollSouth(pNum) Then topY = topY + moveFraction
+            End If
+            
     End Select
     
     'We can move, put the test location into the true loc.
