@@ -39,17 +39,17 @@ Public Const PLAYER_PARTY = 1            'player party
 '=========================================================================
 ' Attack a fighter
 '=========================================================================
-Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long, ByVal toSMP As Boolean) As Long
+Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long, ByVal toSMP As Boolean, ByVal lngCrit As Long) As Long
     'amount is the amount of FP to attack with (use a negative number to *give* hp or SMP)
     'if toSMP is true, then we remove (or add) amount to SMP
     'adjust FP to the figher's DP
     'Does not call into the fight plugin to tell the plugin that the member was attacked
     'return amount (adjusted to DP)
     On Error Resume Next
-    
+
     Dim dp As Double
     Dim randomHit As Long
-    
+
     If theFighter.isPlayer Then
         'hitting a player...
         dp = getPlayerDP(theFighter.player)
@@ -59,20 +59,20 @@ Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long
             randomHit = Int(Rnd(1) * 20) - 10
             amount = Int(amount + (randomHit / 100# * amount))
         End If
-        
+
         'randomly do a critical hit (1 in 20 chance)
-        randomHit = Int(Rnd(1) * 20)
+        randomHit = Int(Rnd(1) * lngCrit)
         If randomHit <> 10 And amount > 0 Then
             amount = amount - dp
         End If
-        
+
         If amount <= 0 Then amount = 1
-        
+
         'adjust the hp or smp accordingly...
         If toSMP Then
-            Call addPlayerSMP(-1 * amount, theFighter.player)
+            Call addPlayerSMP(-amount, theFighter.player)
         Else
-            Call addPlayerHP(-1 * amount, theFighter.player)
+            Call addPlayerHP(-amount, theFighter.player)
         End If
     Else
         'hitting an enemy...
@@ -83,15 +83,15 @@ Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long
             randomHit = Int(Rnd(1) * 20) - 10
             amount = Int(amount + (randomHit / 100# * amount))
         End If
-        
+    
         'randomly do a critical hit (1 in 20 chance)
-        randomHit = Int(Rnd(1) * 20)
+        randomHit = Int(Rnd(1) * lngCrit)
         If randomHit <> 10 And amount > 0 Then
             amount = amount - dp
         End If
-        
+
         If amount <= 0 Then amount = 1
-        
+
         'adjust the hp or smp accordingly...
         If toSMP Then
             Call addEnemySMP(-amount, theFighter.enemy)
@@ -99,23 +99,19 @@ Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long
             Call addEnemyHP(-amount, theFighter.enemy)
         End If
     End If
-    
+
     AttackFighter = amount
 End Function
 
 '=========================================================================
 ' Attack a fighter belonging to a party
 '=========================================================================
-Public Function AttackPartyMember(ByVal partyIndex As Long, ByVal fighterIndex As Long, ByVal amount As Long, ByVal toSMP As Boolean) As Long
+Private Function AttackPartyMember(ByVal partyIndex As Long, ByVal fighterIndex As Long, ByVal amount As Long, ByVal toSMP As Boolean, ByVal lngCrit As Long) As Long
     'if amount < 0, it *adds* to the player/emeny
     'return actual amount
     'call into the plugin to inform the system that the player/enemy was attacked
     On Error Resume Next
-    
-    Dim toRet As Long
-    toRet = AttackFighter(parties(partyIndex).fighterList(fighterIndex), amount, toSMP)
-       
-    AttackPartyMember = toRet
+    AttackPartyMember = AttackFighter(parties(partyIndex).fighterList(fighterIndex), amount, toSMP, lngCrit)
 End Function
 
 '=========================================================================
@@ -225,27 +221,27 @@ End Function
 Public Function doAttack(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal amount As Long, ByVal toSMP As Boolean) As Long
 
     On Error Resume Next
-    
+
     'only do the attack if the source has HP left...
     If (getPartyMemberHP(sourcePartyIdx, sourceFightIdx) <= 0) Then
         doAttack = 0
         Exit Function
     End If
-    
-    'now do the attack...
+
     Dim actualAmount As Long
-    actualAmount = AttackPartyMember(targetPartyIdx, targetFightIdx, amount, toSMP)
-    
+    actualAmount = AttackPartyMember(targetPartyIdx, targetFightIdx, amount, toSMP, IIf(sourcePartyIdx = PLAYER_PARTY, parties(ENEMY_PARTY).fighterList(targetFightIdx).enemy.eneSneakChances, parties(ENEMY_PARTY).fighterList(sourceFightIdx).enemy.eneSneakUp))
+
     Dim hp As Long, smp As Long
     If toSMP Then
         smp = actualAmount
     Else
         hp = actualAmount
     End If
-    
+
     'report that this took place...
     Call fightInformAttack(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, hp, smp)
     doAttack = actualAmount
+
 End Function
 
 '=========================================================================
