@@ -5752,11 +5752,22 @@ Sub ReturnMethodRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 methodReturn.num = num
             
             Else
+
+                'If (Not InStr(1, lit, Chr(34))) Then
+
+                '    methodReturn.dataType = DT_NUM
+                '    Call getValue(dataUse & "!", lit, num, theProgram)
+                '    methodReturn.num = num
+                '    datu = CStr(num)
+                    
+                'Else
+
+                    datu$ = lit$
             
-                datu$ = lit$
-            
-                methodReturn.dataType = DT_LIT
-                methodReturn.lit = lit$
+                    methodReturn.dataType = DT_LIT
+                    methodReturn.lit = lit$
+
+                'End If
             
             End If
             'go to previous stack...
@@ -5765,7 +5776,9 @@ Sub ReturnMethodRPG(Text$, ByRef theProgram As RPGCodeProgram)
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
         End If
     Next t
-    If foundIt = -1 Then
+    
+    'f foundIt = -1 Then
+    
         'it wasn't found in the argument list
         'thus, put it in the return value
         'Call debugger("Error: ReturnMethod variable not found!--" + text$)
@@ -5777,14 +5790,15 @@ Sub ReturnMethodRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Else
             If (Not InStr(1, lit, Chr(34))) Then
                 methodReturn.dataType = DT_NUM
-                Call getValue(dataUse$, lit$ & "!", num, theProgram)
+                Call getValue(dataUse & "!", lit, num, theProgram)
                 methodReturn.num = num
                 Exit Sub
             End If
             methodReturn.dataType = DT_LIT
             methodReturn.lit = lit$
         End If
-    End If
+        
+    'End If
 
     Exit Sub
 'Begin error handling code:
