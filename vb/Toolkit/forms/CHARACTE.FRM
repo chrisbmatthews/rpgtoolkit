@@ -137,6 +137,393 @@ Begin VB.Form characteredit
          Top             =   1560
          Width           =   1575
       End
+      Begin VB.Frame frStats 
+         Caption         =   "Stats"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   3615
+         Left            =   480
+         TabIndex        =   7
+         Tag             =   "1303"
+         Top             =   840
+         Width           =   4935
+         Begin VB.TextBox txtStats 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   7
+            Left            =   2400
+            TabIndex        =   16
+            Text            =   "0"
+            Top             =   2760
+            Width           =   2175
+         End
+         Begin VB.TextBox txtStats 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   8
+            Left            =   2400
+            TabIndex        =   15
+            Text            =   "0"
+            Top             =   3120
+            Width           =   2175
+         End
+         Begin VB.TextBox txtStats 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   6
+            Left            =   2400
+            TabIndex        =   14
+            Text            =   "0"
+            Top             =   2400
+            Width           =   2175
+         End
+         Begin VB.TextBox txtStats 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   5
+            Left            =   2400
+            TabIndex        =   13
+            Text            =   "0"
+            Top             =   2040
+            Width           =   2175
+         End
+         Begin VB.TextBox txtStats 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   4
+            Left            =   2400
+            TabIndex        =   12
+            Text            =   "0"
+            Top             =   1680
+            Width           =   2175
+         End
+         Begin VB.TextBox txtStats 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   3
+            Left            =   2400
+            TabIndex        =   11
+            Text            =   "0"
+            Top             =   1320
+            Width           =   2175
+         End
+         Begin VB.TextBox txtStats 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   2
+            Left            =   2400
+            TabIndex        =   10
+            Text            =   "0"
+            Top             =   960
+            Width           =   2175
+         End
+         Begin VB.TextBox txtStats 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   1
+            Left            =   2400
+            TabIndex        =   9
+            Text            =   "0"
+            Top             =   600
+            Width           =   2175
+         End
+         Begin VB.TextBox txtStats 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   285
+            Index           =   0
+            Left            =   2400
+            TabIndex        =   8
+            Text            =   "Undefined"
+            Top             =   240
+            Width           =   2175
+         End
+         Begin VB.Label Label3 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Starting Max S Move Power:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Index           =   8
+            Left            =   120
+            TabIndex        =   25
+            Tag             =   "1312"
+            Top             =   2760
+            Width           =   2175
+         End
+         Begin VB.Label Label3 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Starting Level:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Index           =   7
+            Left            =   120
+            TabIndex        =   24
+            Tag             =   "1311"
+            Top             =   3120
+            Width           =   2175
+         End
+         Begin VB.Label Label3 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Starting S Move Power:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Index           =   6
+            Left            =   120
+            TabIndex        =   23
+            Tag             =   "1310"
+            Top             =   2400
+            Width           =   2175
+         End
+         Begin VB.Label Label3 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Starting FP:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Index           =   5
+            Left            =   120
+            TabIndex        =   22
+            Tag             =   "1309"
+            Top             =   2040
+            Width           =   2175
+         End
+         Begin VB.Label Label3 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Starting DP:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Index           =   4
+            Left            =   120
+            TabIndex        =   21
+            Tag             =   "1308"
+            Top             =   1680
+            Width           =   2175
+         End
+         Begin VB.Label Label3 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Initial Max Health:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Index           =   3
+            Left            =   120
+            TabIndex        =   20
+            Tag             =   "1307"
+            Top             =   1320
+            Width           =   2175
+         End
+         Begin VB.Label Label3 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Starting Health:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Index           =   2
+            Left            =   120
+            TabIndex        =   19
+            Tag             =   "1306"
+            Top             =   960
+            Width           =   2175
+         End
+         Begin VB.Label Label3 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Starting Experience:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Index           =   1
+            Left            =   120
+            TabIndex        =   18
+            Tag             =   "1305"
+            Top             =   600
+            Width           =   2175
+         End
+         Begin VB.Label Label2 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "Character Name:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   375
+            Index           =   0
+            Left            =   120
+            TabIndex        =   17
+            Tag             =   "1304"
+            Top             =   240
+            Width           =   2175
+         End
+      End
       Begin VB.Frame frVariables 
          Caption         =   "Variables"
          BeginProperty Font 
@@ -744,393 +1131,6 @@ Begin VB.Form characteredit
             Strikethrough   =   0   'False
          EndProperty
       End
-      Begin VB.Frame frStats 
-         Caption         =   "Stats"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   3615
-         Left            =   480
-         TabIndex        =   7
-         Tag             =   "1303"
-         Top             =   840
-         Width           =   4935
-         Begin VB.TextBox txtStats 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Index           =   7
-            Left            =   2400
-            TabIndex        =   16
-            Text            =   "0"
-            Top             =   2760
-            Width           =   2175
-         End
-         Begin VB.TextBox txtStats 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Index           =   8
-            Left            =   2400
-            TabIndex        =   15
-            Text            =   "0"
-            Top             =   3120
-            Width           =   2175
-         End
-         Begin VB.TextBox txtStats 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Index           =   6
-            Left            =   2400
-            TabIndex        =   14
-            Text            =   "0"
-            Top             =   2400
-            Width           =   2175
-         End
-         Begin VB.TextBox txtStats 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Index           =   5
-            Left            =   2400
-            TabIndex        =   13
-            Text            =   "0"
-            Top             =   2040
-            Width           =   2175
-         End
-         Begin VB.TextBox txtStats 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Index           =   4
-            Left            =   2400
-            TabIndex        =   12
-            Text            =   "0"
-            Top             =   1680
-            Width           =   2175
-         End
-         Begin VB.TextBox txtStats 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Index           =   3
-            Left            =   2400
-            TabIndex        =   11
-            Text            =   "0"
-            Top             =   1320
-            Width           =   2175
-         End
-         Begin VB.TextBox txtStats 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Index           =   2
-            Left            =   2400
-            TabIndex        =   10
-            Text            =   "0"
-            Top             =   960
-            Width           =   2175
-         End
-         Begin VB.TextBox txtStats 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Index           =   1
-            Left            =   2400
-            TabIndex        =   9
-            Text            =   "0"
-            Top             =   600
-            Width           =   2175
-         End
-         Begin VB.TextBox txtStats 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Index           =   0
-            Left            =   2400
-            TabIndex        =   8
-            Text            =   "Undefined"
-            Top             =   240
-            Width           =   2175
-         End
-         Begin VB.Label Label3 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "Starting Max S Move Power:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   375
-            Index           =   8
-            Left            =   120
-            TabIndex        =   25
-            Tag             =   "1312"
-            Top             =   2760
-            Width           =   2175
-         End
-         Begin VB.Label Label3 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "Starting Level:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   375
-            Index           =   7
-            Left            =   120
-            TabIndex        =   24
-            Tag             =   "1311"
-            Top             =   3120
-            Width           =   2175
-         End
-         Begin VB.Label Label3 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "Starting S Move Power:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   375
-            Index           =   6
-            Left            =   120
-            TabIndex        =   23
-            Tag             =   "1310"
-            Top             =   2400
-            Width           =   2175
-         End
-         Begin VB.Label Label3 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "Starting FP:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   375
-            Index           =   5
-            Left            =   120
-            TabIndex        =   22
-            Tag             =   "1309"
-            Top             =   2040
-            Width           =   2175
-         End
-         Begin VB.Label Label3 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "Starting DP:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   375
-            Index           =   4
-            Left            =   120
-            TabIndex        =   21
-            Tag             =   "1308"
-            Top             =   1680
-            Width           =   2175
-         End
-         Begin VB.Label Label3 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "Initial Max Health:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   375
-            Index           =   3
-            Left            =   120
-            TabIndex        =   20
-            Tag             =   "1307"
-            Top             =   1320
-            Width           =   2175
-         End
-         Begin VB.Label Label3 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "Starting Health:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   375
-            Index           =   2
-            Left            =   120
-            TabIndex        =   19
-            Tag             =   "1306"
-            Top             =   960
-            Width           =   2175
-         End
-         Begin VB.Label Label3 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "Starting Experience:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   375
-            Index           =   1
-            Left            =   120
-            TabIndex        =   18
-            Tag             =   "1305"
-            Top             =   600
-            Width           =   2175
-         End
-         Begin VB.Label Label2 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "Character Name:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   375
-            Index           =   0
-            Left            =   120
-            TabIndex        =   17
-            Tag             =   "1304"
-            Top             =   240
-            Width           =   2175
-         End
-      End
    End
    Begin VB.Menu charfilemenu 
       Caption         =   "File"
@@ -1336,9 +1336,6 @@ End Function
 '==============================================================================
 Public Sub saveFile(): On Error Resume Next
     
-    'Player file is up to date.
-    playerList(activePlayerIndex).charNeedUpdate = False
-    
     If playerList(activePlayerIndex).charFile = vbNullString Then
         'Untitled; prompt Save As.
         Me.Show
@@ -1348,6 +1345,9 @@ Public Sub saveFile(): On Error Resume Next
     
     'Save the .tem file.
     Call saveChar(projectPath & temPath & playerList(activePlayerIndex).charFile, playerList(activePlayerIndex).theData)
+    
+    'Player file is up to date.
+    playerList(activePlayerIndex).charNeedUpdate = False
 
 End Sub
 
@@ -1356,21 +1356,21 @@ End Sub
 '==============================================================================
 Public Sub openFile(ByVal file As String): On Error Resume Next
 
-    Dim antipath As String
+    Dim antiPath As String
     
     activePlayer.Show
     
-    antipath = RemovePath(file)
-    FileCopy file, projectPath & temPath & antipath
+    antiPath = RemovePath(file)
+    FileCopy file, projectPath & temPath & antiPath
     
     Call PlayerClear(playerList(activePlayerIndex).theData)
     Call openChar(file, playerList(activePlayerIndex).theData)
     
-    activePlayer.Caption = LoadStringLoc(804, "Character Editor") & "  (" & antipath & ")"
-    playerList(activePlayerIndex).charFile = antipath
+    activePlayer.Caption = LoadStringLoc(804, "Character Editor") & "  (" & antiPath & ")"
+    playerList(activePlayerIndex).charFile = antiPath
     
     Dim i As Integer
-    For i = 0 To chkDefault.uBound
+    For i = 0 To chkDefault.UBound
         chkDefault(i).value = 0
     Next i
     
@@ -1417,7 +1417,7 @@ End Sub
 '==============================================================================
 'File -> Save Character
 '==============================================================================
-Private Sub mnuSave_Click(): On Error Resume Next
+Private Sub mnusave_Click(): On Error Resume Next
 
     If playerList(activePlayerIndex).charFile = vbNullString Then
         Call mnuSaveAs_Click
@@ -1622,8 +1622,10 @@ Private Sub infoFill(): On Error Resume Next
 
     With playerList(activePlayerIndex).theData
     
-        Call DrawSizedImage(projectPath & bmpPath & .profilePic, 0, 0, 64, 64, profile.hdc)
-        profile.Refresh
+        If .profilePic <> "" Then
+            Call DrawSizedImage(projectPath & bmpPath & .profilePic, 0, 0, 64, 64, profile.hdc)
+            profile.Refresh
+        End If
     
         If .nameVar <> "" Then txtVariables(0).Text = .nameVar Else txtVariables(0).Text = "Undefined!"
         If .experienceVar <> "" Then txtVariables(1).Text = .experienceVar Else txtVariables(1).Text = "Undefined$"
@@ -1662,7 +1664,7 @@ Private Sub txtStats_Change(Index As Integer): On Error Resume Next
             
                     'Create RPGCode variables containing the character name.
                     Dim i As Integer
-                    For i = 0 To chkDefault.uBound
+                    For i = 0 To chkDefault.UBound
                         Call chkDefault_Click(i)
                     Next i
 
