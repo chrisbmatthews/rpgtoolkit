@@ -81,6 +81,11 @@ Public Enum FACING_DIRECTION
     East = 4
 End Enum
 
+Private Enum PLAYER_OR_ITEM
+    POI_PLAYER = 1
+    POI_ITEM = 2
+End Enum
+
 Public facing As FACING_DIRECTION     'which direction are you facing? 1-s, 2-w, 3-n, 4-e
 
 Private mVarAnimationDelay As Double
@@ -732,7 +737,7 @@ Private Sub pushPlayerNorthEast(ByVal pNum As Long, ByVal moveFraction As Double
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_ne"
-    Call incrementFrame(pPos(pNum).frame)
+    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -819,7 +824,7 @@ Private Sub pushPlayerNorthWest(ByVal pNum As Long, ByVal moveFraction As Double
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_nw"
-    Call incrementFrame(pPos(pNum).frame)
+    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -953,13 +958,13 @@ Private Sub pushPlayerSouthEast(ByVal pNum As Long, ByVal moveFraction As Double
             End If
             
             pPos(pNum).stance = "walk_se"
-            Call incrementFrame(pPos(pNum).frame)
+            Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
             Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         Case SOLID:
             'Walk on the spot.
             pPos(pNum).stance = "walk_se"
-            Call incrementFrame(pPos(pNum).frame)
+            Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     End Select
 End Sub
 
@@ -1050,13 +1055,13 @@ Private Sub pushPlayerSouthWest(ByVal pNum As Long, ByVal moveFraction As Double
             End If
             
             pPos(pNum).stance = "walk_sw"
-            Call incrementFrame(pPos(pNum).frame)
+            Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
             Call incrementPosition(pPos(pNum), pendingPlayerMovement(pNum), moveFraction)
             
         Case SOLID:
             'Walk on the spot.
             pPos(pNum).stance = "walk_sw"
-            Call incrementFrame(pPos(pNum).frame)
+            Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     End Select
 End Sub
 
@@ -1098,7 +1103,7 @@ Private Sub pushPlayerNorth(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_n"
-    Call incrementFrame(pPos(pNum).frame)
+    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -1157,7 +1162,7 @@ Private Sub pushPlayerSouth(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_s"
-    Call incrementFrame(pPos(pNum).frame)
+    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -1215,7 +1220,7 @@ Private Sub pushPlayerEast(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_e"
-    Call incrementFrame(pPos(pNum).frame)
+    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
     
@@ -1274,7 +1279,7 @@ Private Sub pushPlayerWest(ByVal pNum As Long, ByVal moveFraction As Double)
     
     'Advance the frame for all tile types (if SOLID, will walk on spot.)
     pPos(pNum).stance = "walk_w"
-    Call incrementFrame(pPos(pNum).frame)
+    Call incrementFrame(pPos(pNum).frame, POI_PLAYER)
     
     Select Case typetile
         Case NORMAL, UNDER:
@@ -1655,7 +1660,7 @@ Public Sub moveItems()
     On Error Resume Next
 
     'Increase movedThisFrame
-    Call incrementFrame(-1)
+    Call incrementFrame(-1, POI_ITEM)
 
     Dim moveFraction As Double
     moveFraction = movementSize / FRAMESPERMOVE
@@ -1672,7 +1677,7 @@ Public Sub moveItems()
     Next itmIdx
 
     'Check if we should reset movedThisFrame
-    Call incrementFrame(-2)
+    Call incrementFrame(-2, POI_ITEM)
 
 End Sub
 
@@ -1751,13 +1756,13 @@ Private Sub pushItem(ByVal itemNum As Long, ByVal moveFraction As Double)
 
             Case NORMAL, UNDER
                 .stance = stance
-                Call incrementFrame(.frame)
+                Call incrementFrame(.frame, POI_ITEM)
                 Call incrementPosition(itmPos(itemNum), pendingItemMovement(itemNum), moveFraction)
 
             Case SOLID
                 'Walk on the spot.
                 .stance = stance
-                Call incrementFrame(.frame)
+                Call incrementFrame(.frame, POI_ITEM)
 
         End Select
 
@@ -1774,7 +1779,7 @@ Public Sub movePlayers()
     moveFraction = movementSize / FRAMESPERMOVE
 
     'Increase movedThisFrame
-    Call incrementFrame(-1)
+    Call incrementFrame(-1, POI_PLAYER)
 
     'Loop over each player, moving them
     Dim playerIdx As Long
@@ -1792,27 +1797,27 @@ Public Sub movePlayers()
     Next playerIdx
 
     'Check if we should reset movedThisFrame
-    Call incrementFrame(-2)
+    Call incrementFrame(-2, POI_PLAYER)
 
 End Sub
 
-Public Sub incrementFrame(ByRef frame As Long)
+Private Sub incrementFrame(ByRef frame As Long, ByVal arrayPos As PLAYER_OR_ITEM)
 
-    Static movedThisFrame As Double     'How far have we moved this frame?
+    Static movedThisFrame(1 To 2) As Double
 
     Dim fraction As Double
     fraction = (1 / FRAMESPERMOVE) / movementSize
 
     If (frame = -2) Then
-        If (movedThisFrame >= fraction) Then
+        If (movedThisFrame(arrayPos) >= fraction) Then
             'Reset counter
-            movedThisFrame = 0
+            movedThisFrame(arrayPos) = 0
         End If
     ElseIf (frame = -1) Then
         'Increment movement counter
-        movedThisFrame = movedThisFrame + movementSize
+        movedThisFrame(arrayPos) = movedThisFrame(arrayPos) + movementSize
     Else
-        If (movedThisFrame >= fraction) Then
+        If (movedThisFrame(arrayPos) >= fraction) Then
             'Increment frame
             frame = frame + 1
         End If
