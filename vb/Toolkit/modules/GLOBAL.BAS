@@ -215,7 +215,6 @@ Global Images As New clsImages
 Public itemMem() As Boolean
 Public itmPos() As Boolean
 
-Public xrange As Long
 Public Sub ChangeBoolean(ByRef bol As Boolean)
  If bol = True Then bol = False Else bol = True
 End Sub
