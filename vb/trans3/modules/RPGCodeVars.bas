@@ -639,15 +639,10 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                     ' If we found one
                     If (toFind <> 0) Then
                         ' Check for operator overloading on previous token
-                        Dim tdc As String, prevToken As String
+                        Dim prevToken As String
                         prevToken = valueList(tokenIdx + toFind)
-                        tdc = Right$(prevToken, 1)
-                        If ((tdc <> "$") And (tdc <> "!")) Then
-                            ' Append a "!"
-                            prevToken = prevToken & "!"
-                        End If
                         ' Get its value
-                        If (getVariable(prevToken, lit, num, theProgram) = DT_NUM) Then
+                        If (getVariable(prevToken & "!", lit, num, theProgram) = DT_NUM) Then
                             ' If it's not NULL
                             If (num <> 0) Then
                                 ' See if it's an object
