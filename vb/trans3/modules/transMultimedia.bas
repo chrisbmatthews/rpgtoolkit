@@ -1,32 +1,18 @@
 Attribute VB_Name = "transMultimedia"
 '=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
 '=========================================================================
 
 '=========================================================================
 ' TK Multimedia Engine
 '=========================================================================
 
-'=========================================================================
-'EDITED [KSNiloc] [Augest 31, 2004]
-'----------------------------------
-' + Remove dependencies on forms
-' + Added support for video
-' + Privatized some things
-'=========================================================================
-
-'=========================================================================
-'EDITED [KSNiloc] [September 2, 2004]
-'------------------------------------
-' + Moved audiere declarations here
-'=========================================================================
-
 Option Explicit
 
 '=========================================================================
-' Audiere declarations
+' Declarations
 '=========================================================================
 Private Declare Sub TKAudiereInit Lib "actkrt3.dll" ()
 Private Declare Sub TKAudiereKill Lib "actkrt3.dll" ()
@@ -38,23 +24,28 @@ Private Declare Sub TKAudiereDestroyHandle Lib "actkrt3.dll" (ByVal handle As Lo
 Private Declare Function TKAudiereCreateHandle Lib "actkrt3.dll" () As Long
 Private Declare Function TKAudiereGetPosition Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Sub TKAudiereSetPosition Lib "actkrt3.dll" (ByVal handle As Long, ByVal pos As Long)
+Private Declare Function DXInitMusic Lib "actkrt3.dll" (ByVal hWnd As Long) As Long
+Private Declare Sub DXKillMusic Lib "actkrt3.dll" ()
+Private Declare Sub DXPlayMidi Lib "actkrt3.dll" (ByVal strFileName As String, Optional ByVal bLoop As Boolean = False)
+Private Declare Sub DXStopMidi Lib "actkrt3.dll" ()
+Private Declare Function DXIsMidiPlaying Lib "actkrt3.dll" () As Boolean
 
 '=========================================================================
 ' Public variables
 '=========================================================================
-Public musicPlaying As String            'current song playing
-Public fgDevice As Long                  'foreground music device
+Public musicPlaying As String            ' Current song playing
+Public fgDevice As Long                  ' Foreground music device
 
 '=========================================================================
 ' Member variables
 '=========================================================================
-Private bkgDevice As Long                'background music device (audiere)
+Private bkgDevice As Long                ' Background music device (audiere)
 
 '=========================================================================
 ' Member constants
 '=========================================================================
-Private Const SFX_DEVICE = "sfxDevive"   'sound effect device (MCI)
-Private Const MID_DEVICE = "midDevice"   'music device (MCI)
+Private Const SFX_DEVICE = "sfxDevive"   ' Sound effect device (MCI)
+Private Const MID_DEVICE = "midDevice"   ' Music device (MCI)
 
 '=========================================================================
 ' Checks to make sure the correct music is playing
@@ -96,8 +87,13 @@ End Sub
 Public Sub initMedia()
 
     On Error Resume Next
-    
+
     Call TKAudiereInit
+
+    If (DXInitMusic(host.hWnd) = 0) Then
+        Call MsgBox("Could not initiate DirectMusic - please make sure you have DirectX 8 or higher installed!")
+    End If
+
     bkgDevice = TKAudiereCreateHandle()
     fgDevice = TKAudiereCreateHandle()
 
@@ -106,18 +102,23 @@ End Sub
 '=========================================================================
 ' Checks if media is playing
 '=========================================================================
-Public Function isMediaPlaying(ByVal file As String) As Boolean
+Public Function isMediaPlaying(ByRef file As String) As Boolean
 
     On Error Resume Next
 
-    'Get extension
+    ' Get extension
     Dim ext As String
     ext = UCase$(GetExt(file))
 
-    If (isPlayedByMCI(ext)) Then
+    If (isPlayedByDX(ext)) Then
+        isMediaPlaying = DXIsMidiPlaying()
+
+    ElseIf (isPlayedByMCI(ext)) Then
         isMediaPlaying = IsPlayingMCI(MID_DEVICE)
+
     ElseIf (isPlayedByAudiere(ext)) Then
         isMediaPlaying = (TKAudiereIsPlaying(bkgDevice) = 1)
+
     End If
 
 End Function
@@ -132,6 +133,7 @@ Public Sub killMedia()
     Call TKAudiereDestroyHandle(bkgDevice)
     Call TKAudiereDestroyHandle(fgDevice)
     Call TKAudiereKill
+    Call DXKillMusic
 
 End Sub
 
@@ -149,34 +151,49 @@ Public Sub playMedia(ByVal file As String)
     Dim ext As String
     ext = UCase$(GetExt(file))
 
-    If (isPlayedByMCI(ext)) Then
+    If (isPlayedByDX(ext)) Then
+        Call DXPlayMidi(file)
+
+    ElseIf (isPlayedByMCI(ext)) Then
         Call PlayMCI(file, MID_DEVICE)
+
     ElseIf (isPlayedByAudiere(ext)) Then
         Call TKAudierePlay(bkgDevice, file, 1, 0)
+
     End If
 
 End Sub
 
 '=========================================================================
-' Checks if MCI supports a format
+' Check if MCI supports a format
 '=========================================================================
-Private Function isPlayedByMCI(ByVal ext As String) As Boolean
-    On Error Resume Next
+Private Function isPlayedByMCI(ByRef ext As String) As Boolean
     Select Case ext
-        Case "MID", "MIDI", "MPL", "MP3"
-            'MCI plays this
+        Case "MID", "MIDI", "RMI", "MPL", "MP3"
+            ' MCI plays this
             isPlayedByMCI = True
+    End Select
+End Function
+
+'=========================================================================
+' Check if DirectMusic supports a format
+'=========================================================================
+Private Function isPlayedByDX(ByRef ext As String) As Boolean
+    Select Case ext
+        Case "MID", "MIDI", "RMI", "MPL"
+            ' DirectMusic plays this
+            isPlayedByDX = True
     End Select
 End Function
 
 '=========================================================================
 ' Check if audiere supports a format
 '=========================================================================
-Private Function isPlayedByAudiere(ByVal ext As String) As Boolean
+Private Function isPlayedByAudiere(ByRef ext As String) As Boolean
     On Error Resume Next
     Select Case ext
         Case "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "WAV", "MLP", "OOG", "OGG"
-            'Audiere plays this
+            ' Audiere plays this
             isPlayedByAudiere = True
     End Select
 End Function
@@ -202,8 +219,10 @@ Public Sub playSoundFX(ByVal file As String)
 
     If (isPlayedByMCI(ext)) Then
         Call PlayMCI(file, SFX_DEVICE)
+
     ElseIf (isPlayedByAudiere(ext)) Then
         Call TKAudierePlay(bkgDevice, file, 1, 0)
+
     End If
 
 End Sub
@@ -219,6 +238,7 @@ Public Sub stopMedia()
     Call StopMCI(SFX_DEVICE)
     Call TKAudiereStop(fgDevice)
     Call TKAudiereStop(bkgDevice)
+    Call DXStopMidi
 
 End Sub
 
@@ -244,7 +264,7 @@ Public Sub playVideo(ByVal file As String, Optional ByVal windowed As Boolean)
 
     With video
         .FullScreenMode = Not windowed
-        .Owner = host.hwnd
+        .Owner = host.hWnd
     End With
 
     Call quartz.run
