@@ -583,6 +583,13 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     ' Check what type of conjuction we have
     equal = MathFunction(Text, 1)
+    Select Case equal
+        Case "+", "-", "*", "/", "^", "&", "|", "`", "<<", ">>"
+            ' Not a "real" conjuction
+            noVar = True
+            Text = "x=" & Text
+            equal = "="
+    End Select
 
     ' Remove the conjuction from the text
     Text = replace(Text, equal, "=")
@@ -704,10 +711,10 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                                         If (isObject(hTokenClass, theProgram)) Then
                                             ' See if it handles said conjuction
                                             Dim cnj As String
-                                            cnj = "operator" & conjunctions(tokenIdx + toFind)
+                                            cnj = "operator" & conjunctions(tokenIdx - 1)
                                             If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
                                                 ' Call the method
-                                                Call callObjectMethod(hTokenClass, cnj & "(" & CStr(numberUse(tokenIdx)) & ")", theProgram, retval, cnj)
+                                                Call callObjectMethod(hTokenClass, cnj & "(" & valueList(tokenIdx) & ")", theProgram, retval, cnj)
                                                 ' Switch on returned type
                                                 Dim theVal As String
                                                 Select Case retval.dataType

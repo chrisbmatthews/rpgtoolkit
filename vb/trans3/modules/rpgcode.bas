@@ -6089,21 +6089,21 @@ Public Sub setConstants()
     Call setIndependentVariable("GameTime!", CStr(gameTime))
     Call setIndependentVariable("Music$", RemovePath(musicPlaying))
     For t = 0 To 4
-        xx$ = replace("playerX[""" & CStr(t) & """]!", " ", vbNullString)
-        yy$ = replace("playerY[""" & CStr(t) & """]!", " ", vbNullString)
-        ll$ = replace("playerLayer[""" & CStr(t) & """]!", " ", vbNullString)
-        hh$ = replace("playerHandle[""" & CStr(t) & """]$", " ", vbNullString)
+        xx$ = replace("playerX[" & CStr(t) & "]!", " ", vbNullString)
+        yy$ = replace("playerY[" & CStr(t) & "]!", " ", vbNullString)
+        ll$ = replace("playerLayer[" & CStr(t) & "]!", " ", vbNullString)
+        hh$ = replace("playerHandle[" & CStr(t) & "]$", " ", vbNullString)
         Call setIndependentVariable(xx$, CStr(pPos(t).x))
         Call setIndependentVariable(yy$, CStr(pPos(t).y))
         Call setIndependentVariable(ll$, CStr(pPos(t).l))
         Call setIndependentVariable(hh$, playerListAr$(t))
     Next t
     For t = 0 To 10
-        cc$ = replace("Constant[""" & CStr(t) & """]!", " ", vbNullString)
+        cc$ = replace("Constant[" & CStr(t) & "]!", " ", vbNullString)
         Call setIndependentVariable(cc$, CStr(boardList(activeBoardIndex).theData.brdConst(t)))
     Next t
     For t = 1 To 8
-        cc$ = replace("BoardTitle[""" & CStr(t) & """]$", " ", vbNullString)
+        cc$ = replace("BoardTitle[" & CStr(t) & "]$", " ", vbNullString)
         Call setIndependentVariable(cc$, boardList(activeBoardIndex).theData.boardTitle$(t))
     Next t
     'board skill and background
