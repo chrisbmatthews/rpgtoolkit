@@ -9798,9 +9798,9 @@ Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
  End If
 
  openFile(ff) = file 'record the filename
- openFullFile(ff) = App.path & "\" & fullfolder & file
+ openFullFile(ff) = fullfolder & file
 
- Open App.path & "\" & fullfolder & file For Append As #ff: Close #ff
+ Open fullfolder & file For Append As #ff: Close #ff
  DoOpenFile = ff
 
  Exit Function
