@@ -196,6 +196,7 @@ Public Sub performSetup()
     ' Register ActiveX controls
     Call registerServer(strPath & "richtx32.ocx", frmMain.hwnd)
     Call registerServer(strPath & "tabctl32.ocx", frmMain.hwnd)
+    Call registerServer(strPath & "mscomctl.ocx", frmMain.hwnd)
 
     ' Store some settings
     Call SaveSetting("RPGToolkit3", "Settings", "Path", strPath)
