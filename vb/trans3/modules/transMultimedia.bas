@@ -44,6 +44,14 @@ Private Const SFX_DEVICE = "sfxDevive"   ' Sound effect device (MCI)
 Private Const MID_DEVICE = "midDevice"   ' Music device (MCI)
 
 '=========================================================================
+' Expose DirecMusic
+'=========================================================================
+Public Property Get getDirectMusic() As CDirectMusic
+    ' Return a reference to our member
+    Set getDirectMusic = m_dm
+End Property
+
+'=========================================================================
 ' Checks to make sure the correct music is playing
 '=========================================================================
 Public Sub checkMusic(Optional ByVal forceNow As Boolean)
@@ -144,6 +152,9 @@ Public Sub playMedia(ByRef file As String)
 
     ' Stop everything
     Call stopMedia
+
+    ' Make sure it exists
+    If Not (fileExists(file)) Then Exit Sub
 
     ' Get extension
     Dim ext As String

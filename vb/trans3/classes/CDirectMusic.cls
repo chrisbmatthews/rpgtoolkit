@@ -81,13 +81,21 @@ End Sub
 '=========================================================================
 ' Play a MIDI
 '=========================================================================
-Public Sub playMidi(ByRef strFilename As String)
+Public Sub playMidi(ByRef strFilename As String, Optional ByVal bLoopMidi As Boolean = True)
 
     ' Use the loader to create a segment
     Set m_directMusic.segment = m_directMusic.loader.LoadSegment(strFilename)
 
     ' Set the format to MIDI
     Call m_directMusic.segment.SetStandardMidiFile
+
+    ' If we should loop
+    If (bLoopMidi) Then
+
+        ' Set it to loop
+        Call m_directMusic.segment.SetRepeats(4294967295#) ' [ Infinite repeats ]
+
+    End If
 
     ' Play the segment
     Set m_directMusic.segmentState = _
