@@ -7,6 +7,7 @@ Attribute VB_Name = "transMain"
 
 '=======================================================================
 ' Trans engine entry procedures
+' Status: A-
 '=======================================================================
 
 Option Explicit
@@ -27,15 +28,15 @@ Public Enum GAME_LOGIC_STATE      'state of gameLogic() procedure
 End Enum
 
 Public movementCounter As Long    'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
-Public saveFileLoaded As Boolean  'was the game loaded from start menu? 0-no, 1-yes
+Public saveFileLoaded As Boolean  'was the game loaded from start menu?
 Public runningAsEXE As Boolean    'are we running as an exe file?
 Public gShuttingDown As Boolean   'Has the shutdown process been initiated?
 Public slackTime As Double        'cpu speed estimate
 Public host As New clsDirectXHost 'DirectX host window
 
-'==========================================
+'=======================================================================
 ' Main entry point
-'==========================================
+'=======================================================================
 Public Sub Main()
 
     On Error Resume Next
@@ -61,14 +62,11 @@ Public Sub Main()
 
     End If
 
-    'Force everything to be unloaded
-    End
-
 End Sub
 
-'==========================================
+'=======================================================================
 ' Close systems
-'==========================================
+'=======================================================================
 Public Sub closeSystems()
     On Error Resume Next
     gShuttingDown = True
@@ -88,9 +86,9 @@ Public Sub closeSystems()
     Call UnregisterClass(host.className, App.hInstance)
 End Sub
 
-'==========================================
+'=======================================================================
 ' Get a main filename
-'==========================================
+'=======================================================================
 Private Function getMainFilename() As String
 
     'Precedurence is as follows:
@@ -99,11 +97,7 @@ Private Function getMainFilename() As String
     ' + File dialog
 
     On Error Resume Next
-
-    Dim toRet As String
-    Dim antiPath As String
-    
-    Dim ex As String
+   
     If Command <> "" Then
 
         Dim args() As String
@@ -116,9 +110,8 @@ Private Function getMainFilename() As String
                 Call setupPakSystem(TempDir & Command)
                 Call Kill(PakFileMounted)
                 Call ChDir(currentDir)
-                toRet = "main.gam"
+                getMainFilename = "main.gam"
                 projectPath = ""
-                getMainFilename = toRet
                 errorBranch = "Resume Next"
                 savPath = GetSetting("TK3 EXE HOST", "Settings", "Save Path", "")
                 Call SaveSetting("TK3 EXE HOST", "Settings", "Save Path", "")
@@ -130,8 +123,7 @@ Private Function getMainFilename() As String
 
             Else
 
-                toRet = gamPath & Command
-                getMainFilename = toRet
+                getMainFilename = gamPath & Command
 
             End If
 
@@ -150,9 +142,8 @@ Private Function getMainFilename() As String
 
         If fileExists(gamPath & "main.gam") Then
 
-            'mainForm.gam exists.
-            toRet = gamPath & "main.gam"
-            getMainFilename = toRet
+            'main.gam exists.
+            getMainFilename = gamPath & "main.gam"
 
         Else
 
@@ -169,7 +160,6 @@ Private Function getMainFilename() As String
                     Exit Function
                 End If
                 loadedMainFile = .strSelectedFile
-                antiPath = .strSelectedFileNoPath
             End With
 
             Call ChDir(currentDir)
@@ -179,14 +169,12 @@ Private Function getMainFilename() As String
 
             If UCase(whichType) = "TPK" Then
                 Call setupPakSystem(loadedMainFile)
-                toRet = "main.gam"
+                getMainFilename = "main.gam"
                 projectPath = ""
             Else
-                toRet = loadedMainFile
+                getMainFilename = loadedMainFile
             End If
-
-            getMainFilename = toRet
-
+        
         End If
 
     End If
@@ -198,9 +186,9 @@ Private Function getMainFilename() As String
 
 End Function
 
-'==========================================
+'=======================================================================
 ' Init some common stuff
-'==========================================
+'=======================================================================
 Private Sub initGame()
     On Error Resume Next
     Call Randomize(Timer)
@@ -219,9 +207,9 @@ Private Sub initGame()
     Call InitLocalizeSystem
 End Sub
 
-'==========================================
+'=======================================================================
 ' Set the defaults
-'==========================================
+'=======================================================================
 Private Sub initDefaults()
     On Error Resume Next
     initTime = Timer()
@@ -237,9 +225,9 @@ Private Sub initDefaults()
     Call initGame
 End Sub
 
-'==========================================
+'=======================================================================
 ' Runs one 'frame' of the game logic
-'==========================================
+'=======================================================================
 Public Sub gameLogic()
 
     'NOTE: This is no longer the main loop. The main
@@ -355,9 +343,9 @@ Public Sub gameLogic()
 
 End Sub
 
-'==========================================
+'=======================================================================
 ' Open systems
-'==========================================
+'=======================================================================
 Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     On Error Resume Next
     Call initActiveX
@@ -374,9 +362,9 @@ Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call calculateSlackTime
 End Sub
 
-'==========================================
+'=======================================================================
 ' Get an estimate speed of this CPU
-'==========================================
+'=======================================================================
 Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
 
     Dim a As Long
@@ -414,9 +402,9 @@ Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
 
 End Sub
 
-'==========================================
+'=======================================================================
 ' Register ActiveX components
-'==========================================
+'=======================================================================
 Private Sub initActiveX()
     On Error Resume Next
     Dim a As Long
@@ -429,9 +417,9 @@ Private Sub initActiveX()
     Next a
 End Sub
 
-'==========================================
+'=======================================================================
 ' Set some things based on the main file
-'==========================================
+'=======================================================================
 Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     On Error Resume Next
@@ -479,7 +467,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     'Unless we're testing a program from the PRG editor, run the
     'startup program
     If Not testingPRG Then
-        Call runProgram(projectPath & prgPath & mainMem.startupPrg)
+        Call runProgram(projectPath & prgPath & mainMem.startupPrg, , , True)
     End If
 
     'Unless we loaded a game (using Load()) or we're testing a PRG from

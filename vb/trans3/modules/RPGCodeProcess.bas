@@ -107,25 +107,35 @@ skipheap:
 End Sub
 
 '=========================================================================
-' Open the program passed in into thePrg
+' Return a compiled object of the program passed in
 '=========================================================================
-Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
+Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
-    'This sub-routine processes the file passed in and makes it readable. It places the
-    'readable ('compiled') program in thePrg.
+    'This sub-routine processes the file passed in and makes it readable. It returns
+    'the compiled PRG.
 
     On Error Resume Next
 
-    'init the process...
+    If Not fileExists(file) Then
+        'File doesn't exist-- bail!
+        Exit Function
+    End If
+
+    Dim p As Long                 'Ongoing length of program
+    Dim num As Long               'File number
+    Dim theLine As String         'Line read from file
+    Dim thePrg As RPGCodeProgram  'Return value
+
+    'Init the PRG
     Call InitRPGCodeProcess(thePrg)
 
-    Dim p As Long, errorsA As Long, num As Long, theLine As String
-
+    'Get the location in the PAK file
     file = PakLocate(file)
+
+    'Get a free file number
     num = FreeFile()
 
-    If Not fileExists(file) Then Exit Sub
-
+    'Open the file
     Open file For Input As num
 
         'Dimension the .program() array...
@@ -147,9 +157,10 @@ Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
             If Right(theLine, 1) = "_" Then
                 'This line is actually only part of a line, let's get the
                 'whole line...
-                
+
                 Dim buildLine As String
                 Dim buildTemp As String
+
                 buildLine = Trim(Mid(theLine, 1, Len(theLine) - 1))
 
                 Dim done As Boolean
@@ -172,9 +183,10 @@ Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
 
             End If
 
-            'Make sure we have something worth our while...
-            If Left(theLine, 1) = "#" Then theLine = _
-                Right(theLine, Len(theLine) - 1)
+            'Remove prefixed #
+            If Left(theLine, 1) = "#" Then theLine = Right(theLine, Len(theLine) - 1)
+
+            'Read line if not comment
             If (Not Left(theLine, 1) = "*") And Not (Left(theLine, 2) = "//") Then
 
                 'Fix the problem with commands on the same line as an if(),
@@ -195,24 +207,24 @@ Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
 
                 'Add each line to the program...
                 For a = 0 To (UBound(lines) + 1)
-                        
+
                     If (a = UBound(lines) + 1) Then
                         If Not uD(UBound(lines)) = "" Then
                             thePrg.program(p + a) = uD(UBound(lines))
                         End If
-                
+
                     ElseIf a = 0 Then
                         thePrg.program(p + a) = lines(a)
-                
+
                     Else
-                  
+
                         Select Case uD(a - 1)
                 
                             Case "{", "}"
                                 thePrg.program(p + a) = uD(a - 1)
                                 thePrg.program(p + a + 1) = lines(a)
                                 p = p + 1
-                  
+
                             Case "#"
                                 If Left(lines(a), 1) = " " Then
                                     thePrg.program(p + a) = uD(a - 1) & lines(a)
@@ -220,26 +232,26 @@ Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
                                     thePrg.program(p + a - 1) = _
                                         thePrg.program(p + a - 1) & uD(a - 1) & lines(a)
                                 End If
-                  
+
                             Case Else
                                 thePrg.program(p + a) = lines(a)
 
                         End Select
-                        
+
                     End If
-                    
+
                 Next a
 
+                'Update p
                 p = UBound(thePrg.program) + 1
-                
+
             End If
-                
+
+            'Update length of program
             thePrg.Length = p
-            
-            'Set back to the old error handler...
-            On Error GoTo errOpenPrg
-      
-        Loop
+
+        Loop '(until end of file)
+
     Close num
 
     'Now remove all #s because they are evil...
@@ -247,16 +259,17 @@ Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
         thePrg.program(a) = replaceOutsideQuotes(thePrg.program(a), "#", "")
     Next a
 
-errOpenPrg:
-    errorsA = 1
-    Resume Next
+    'Return the result
+    openProgram = thePrg
+
+    Exit Function
 
 enlargeProgram:
-    'Uh-oh! The array's too small. We can fix that...
+    'Uh-oh! The array is too small. We can fix that...
     ReDim Preserve thePrg.program(UBound(thePrg.program) + 1)
     Resume
 
-End Sub
+End Function
 
 '=========================================================================
 ' Remove a heap from a stack

@@ -6,57 +6,72 @@ Attribute VB_Name = "transAnim"
 '=========================================================================
 
 '=========================================================================
-' Procedures for displaying toolkit animations (*.anm)
+' Procedures for displaying toolkit animations during RPGCode programs
+' Status: A+
 '=========================================================================
 
 Option Explicit
 
 '=========================================================================
-' Integral variables
+' Plays the loaded animation at x, y
 '=========================================================================
-
-Public GS_ANIMATING As Boolean                    'are we animating in the main loop?
-Public multitaskAnimations() As TKAnimation       'loaded animations
-Public multitaskAnimationX() As Long              'x position of these animations
-Public multitaskAnimationY() As Long              'y position of these animations
-Public multitaskAnimationFrame() As Long          'current frame of these animations
-Public multitaskCurrentlyAnimating As Long        'current index in array
-Public multitaskAnimationPersistent() As Boolean  'are these animations persistent?
-
-'=========================================================================
-' Plays the loaded animation at xx, yy
-'=========================================================================
-Public Sub TransAnimateAt(ByVal xx As Long, ByVal yy As Long)
+Public Sub TransAnimateAt(ByVal x As Long, ByVal y As Long)
     On Error Resume Next
-    Call AnimateAtCanvas(animationMem, xx, yy, tilesX * 32, tilesY * 32, cnvRPGCodeScreen)
+    Call AnimateAtCanvas( _
+                            animationMem, _
+                            x, _
+                            y, _
+                            tilesX * 32, _
+                            tilesY * 32, _
+                            cnvRPGCodeScreen _
+                                               )
 End Sub
 
 '=========================================================================
 ' Plays an animation on a canvas
 '=========================================================================
-Public Sub AnimateAtCanvas(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As Long, ByVal pixelsMaxX As Long, ByVal pixelsMaxY As Long, ByVal cnv As Long)
+Private Sub AnimateAtCanvas( _
+                               ByRef theAnim As TKAnimation, _
+                               ByVal x As Long, _
+                               ByVal y As Long, _
+                               ByVal pixelsMaxX As Long, _
+                               ByVal pixelsMaxY As Long, _
+                               ByVal cnv As Long _
+                                                   )
 
     On Error Resume Next
-    
-    Dim allPurposeC2 As Long
-    allPurposeC2 = CreateCanvas(pixelsMaxX, pixelsMaxY)
-    Call Canvas2CanvasBlt(cnv, allPurposeC2, 0, 0)
-    
-    Dim frames As Long, aXX As Long, aYY As Long, t As Long
-    
+
+    'Create a temp canvas a blt the canvas passed in onto it
+    Dim cnvTemp As Long
+    cnvTemp = CreateCanvas(pixelsMaxX, pixelsMaxY)
+    Call Canvas2CanvasBlt(cnv, cnvTemp, 0, 0)
+
+    Dim frames As Long          'frames in animation
+    Dim currentFrame As Long    'current frame in animation
+
+    'Get max frames
     frames = animGetMaxFrame(theAnim)
-    aXX = xx
-    aYY = yy
-    For t = 0 To frames
-        Call Canvas2CanvasBlt(allPurposeC2, cnv, 0, 0)
-        
-        Call AnimDrawFrameCanvas(theAnim, t, aXX, aYY, cnv)
-        
-        'Assumption: cnv is actually the rpgcode canvas
-        Call renderCanvas(cnv)
-        
+
+    'For each frame
+    For currentFrame = 0 To frames
+
+        'Draw the frame
+        Call Canvas2CanvasBlt(cnvTemp, cnv, 0, 0)
+        Call AnimDrawFrameCanvas(theAnim, currentFrame, x, y, cnv)
+
+        'Render the screen
+        If cnv = cnvRPGCodeScreen Then
+            Call renderRPGCodeScreen
+        Else
+            Call renderCanvas(cnv)
+        End If
+
+        'Delay
         Call animDelay(theAnim.animPause)
-    Next t
-    Call DestroyCanvas(allPurposeC2)
+
+    Next currentFrame
+
+    'Destroy the temp canvas
+    Call DestroyCanvas(cnvTemp)
 
 End Sub

@@ -60,12 +60,21 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
+
+'=========================================================================
+' All-purpose status bar
+'=========================================================================
 
 Option Explicit
 
+'=========================================================================
+' Set status on bar
+'=========================================================================
 Public Sub setStatus(ByVal sPercent As Long, ByVal cap As String)
     On Error Resume Next
     imgLoading.Width = sPercent * maxProgress.Width / 100
@@ -76,6 +85,9 @@ Public Sub setStatus(ByVal sPercent As Long, ByVal cap As String)
     #End If
 End Sub
 
+'=========================================================================
+' Load bar
+'=========================================================================
 Private Sub Form_Load()
     On Error Resume Next
     imgLoading.Width = 0

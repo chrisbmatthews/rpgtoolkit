@@ -334,7 +334,7 @@ Public Sub openMulti()
     For t = 0 To UBound(multilist)
         If multilist(t) <> "" Then
             If multiopen(t) = 0 Then
-                Call openProgram(projectPath & prgPath & multilist(t), program(t + 1))
+                program(t + 1) = openProgram(projectPath & prgPath & multilist(t))
                 multiopen(t) = 1
             End If
         End If
@@ -438,14 +438,14 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
     If usingPixelMovement() Then
         'If we're using pixel movement then round item
         'coordinates and backup the old ones
-        ReDim tempitems(MAXITEM) As PLAYER_POSITION
-        For t = 0 To MAXITEM
+        ReDim tempitems(maxItem) As PLAYER_POSITION
+        For t = 0 To maxItem
             tempitems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
         Next t
     End If
     
     'Ouch.  Now test for items:
-    For t = 0 To MAXITEM
+    For t = 0 To maxItem
         If itemMem(t).BoardYN = 1 Then  'yeah, it's a board item
             If boardList(activeBoardIndex).theData.itmName$(t) <> "" Then
                 runIt = 1
@@ -780,8 +780,13 @@ End Function
 '=========================================================================
 ' Run the rpgcode program passed in
 '=========================================================================
-Public Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1, Optional ByVal setSourceAndTarget As Boolean = True)
-       
+Public Sub runProgram( _
+                         ByVal file As String, _
+                         Optional ByVal boardNum As Long = -1, _
+                         Optional ByVal setSourceAndTarget As Boolean = True, _
+                         Optional ByVal startupProgram As Boolean _
+                                                                    )
+
     On Error GoTo runPrgErr
     
     If Trim(Right(file, 1)) = "\" Then Exit Sub
@@ -796,25 +801,30 @@ Public Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1
     Call hideMsgBox
     Call setconstants   'set variable constants
     Call clearButtons
-    
+
     If setSourceAndTarget Then
         target = selectedPlayer
-        targetType = 0
+        targetType = TYPE_PLAYER
         Source = selectedPlayer
-        sourceType = 0
+        sourceType = TYPE_PLAYER
     End If
 
     Dim theProgram As RPGCodeProgram
-    Call openProgram(file, theProgram)
+    theProgram = openProgram(file)
     lineNum = 1
     theProgram.threadID = -1
-        
+
     Call FlushKB
     Dim retval As RPGCODE_RETURN
-       
-    'copy the screen to the rpgcode canvas for drawing onto...
-    Call CanvasGetScreen(cnvRPGCodeScreen)
-       
+
+    If startupProgram Then
+        Call CanvasFill(cnvRPGCodeScreen, 0)
+    Else
+        Call CanvasGetScreen(cnvRPGCodeScreen)
+    End If
+
+    Call renderRPGCodeScreen
+
     Dim prgPos As Long, errorsA As Long
        
     theProgram.programPos = 0
@@ -822,7 +832,7 @@ Public Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1
 
     Dim mainRetVal As RPGCODE_RETURN
     mainRetVal.usingReturnData = True
-    DoSingleCommand "Main()", theProgram, mainRetVal
+    Call DoSingleCommand("Main()", theProgram, mainRetVal)
     If Not mainRetVal.num = 1 Then
         theProgram.programPos = 0
         Do While _
@@ -837,6 +847,7 @@ Public Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1
                 errorsA = 0
                 theProgram.programPos = -1
             End If
+
             Call processEvent
         Loop
     Else

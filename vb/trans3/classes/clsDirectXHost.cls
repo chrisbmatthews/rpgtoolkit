@@ -19,12 +19,13 @@ Attribute VB_Exposed = False
 
 '=========================================================================
 ' DirectX host class
+' Status: A-
 '=========================================================================
 
 '=========================================================================
 ' This class replaces the host form with more more correct and rebust
 ' code. It also harbours the engine's main loop (mainEventLoop). Keyboard
-' and mouse input is now picked up in transEvents.
+' and mouse input are now picked up in transEvents.
 '=========================================================================
 
 Option Explicit
@@ -109,7 +110,6 @@ Private Const WS_OVERLAPPEDWINDOW = (WS_OVERLAPPED Or WS_CAPTION Or WS_SYSMENU)
 Private Const IDI_APPLICATION = 32512&
 Private Const IDC_ARROW = 32512&
 Private Const BLACK_BRUSH = 4
-Private Const PM_REMOVE = &H1
 Private Const WINDOWS_CLASS = "DirectXHost"
 Private Const WS_POPUP = &H80000000
 Private Const IDC_NO = 32648&
@@ -128,7 +128,6 @@ Private m_createStyle As Long
 Private m_createX As Long
 Private m_createY As Long
 Private m_buttonHwnd As Long
-Private m_showingCornerButton As Boolean
 
 '=========================================================================
 ' Public properties
@@ -203,6 +202,13 @@ End Property
 ' Show the console
 '=========================================================================
 Public Sub Show()
+    Call ShowWindow(m_hwnd, 10)
+End Sub
+
+'=========================================================================
+' Create the console
+'=========================================================================
+Public Sub Create()
 
     On Error Resume Next
 
@@ -216,9 +222,6 @@ Public Sub Show()
         If fileExists("icon.ico") Then
             .hIcon = LoadIcon(0, "icon.ico")
             .hIconSm = LoadIcon(0, "icon.ico")
-        Else
-            .hIcon = LoadIcon(0, IDI_APPLICATION) 'generic icon
-            .hIconSm = LoadIcon(0, IDI_APPLICATION) 'generic icon
         End If
         .hbrBackground = GetStockObject(BLACK_BRUSH) 'black background
         .lpszClassName = WINDOWS_CLASS 'name of this class
@@ -243,7 +246,7 @@ Public Sub Show()
                                0, _
                                WINDOWS_CLASS, _
                                m_createCaption, _
-                               m_createStyle Or WS_VISIBLE, _
+                               m_createStyle, _
                                m_createX / screen.TwipsPerPixelX, _
                                m_createY / screen.TwipsPerPixelY, _
                                m_createWidth / screen.TwipsPerPixelX, _

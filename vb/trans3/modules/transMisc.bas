@@ -7,6 +7,7 @@ Attribute VB_Name = "transMisc"
 
 '=========================================================================
 ' Misc trans supporting functions
+' Status: B+
 '=========================================================================
 
 Option Explicit
@@ -196,66 +197,88 @@ Public Sub openItems()
 
     On Error Resume Next
 
-    Dim runIt As Long, itemNum As Long, lit As String, num As Double, checkIt As Long
-    Dim valueTest As Double, valueTes As String
-    runIt = 1
+    Dim runIt As Boolean        'run item activation program?
+    Dim itemNum As Long         'item loop control variables
+    Dim lit As String           'literal variable
+    Dim num As Double           'numerical variables
+    Dim checkIt As RPGC_DT      'data type of conditional variable
+    Dim valueTestNum As Double  'numerical test value
+    Dim valueTestLit As String  'literal test value
 
-    ReDim pendingItemMovement(MAXITEM)
-    ReDim itmPos(MAXITEM)
-    ReDim itemMem(MAXITEM)
-    ReDim cnvSprites(MAXITEM)
+    'Redimension related arrays
+    ReDim pendingItemMovement(maxItem)
+    ReDim lastItemRender(maxItem)
+    ReDim itmPos(maxItem)
+    ReDim itemMem(maxItem)
+    ReDim cnvSprites(maxItem)
+
+    'Create item canvases
     Dim a As Long
-    For a = 0 To MAXITEM
-        'Create item canvases
+    For a = 0 To maxItem
         cnvSprites(a) = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
     Next a
-    
-    ReDim lastItemRender(MAXITEM)
 
-    For itemNum = 0 To MAXITEM '? If the item has a position?
-        itmPos(itemNum).frame = 0
-        itmPos(itemNum).x = boardList(activeBoardIndex).theData.itmX(itemNum)
-        itmPos(itemNum).y = boardList(activeBoardIndex).theData.itmY(itemNum)
-        itmPos(itemNum).l = boardList(activeBoardIndex).theData.itmLayer(itemNum)
-        itmPos(itemNum).stance = "REST"
-        lastItemRender(itemNum).canvas = -1
-        
-        'Isometric addition: jumping fix for moving to new boards
-        pendingItemMovement(itemNum).xOrig = itmPos(itemNum).x
-        pendingItemMovement(itemNum).xTarg = itmPos(itemNum).x
-        pendingItemMovement(itemNum).yOrig = itmPos(itemNum).y
-        pendingItemMovement(itemNum).yTarg = itmPos(itemNum).y
+    'Loop over each item
+    For itemNum = 0 To maxItem
 
-        If boardList(activeBoardIndex).theData.itmActivate(itemNum) = 1 Then
-            runIt = 0
-            'conditional activation
-            checkIt = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(itemNum), lit$, num)
-            If checkIt = 0 Then
-                'it's a numerical variable
-                valueTest = num
-                If valueTest = val(boardList(activeBoardIndex).theData.itmActivateInitNum$(itemNum)) Then runIt = 1
-            ElseIf checkIt = 1 Then
-                'it's a literal variable
-                valueTes$ = lit$
-                If valueTes$ = boardList(activeBoardIndex).theData.itmActivateInitNum$(itemNum) Then runIt = 1
-            End If
-        End If
-        'OK, if runit=1 then we activate it!
-        If runIt = 1 And boardList(activeBoardIndex).theData.itmName$(itemNum) <> "" Then
-            itemMem(itemNum) = openItem(projectPath$ + itmPath$ + boardList(activeBoardIndex).theData.itmName$(itemNum))
-            itemMem(itemNum).bIsActive = True
-            'multilist(itemnum) = CreateThread(projectPath$ + prgpath$ + boardList(activeBoardIndex).theData.itemMulti$(itemnum), False)
-            If boardList(activeBoardIndex).theData.itemMulti$(itemNum) <> "" Then
-                multilist$(itemNum) = boardList(activeBoardIndex).theData.itemMulti$(itemNum)
+        'With the active board
+        With boardList(activeBoardIndex).theData
+
+            'Copy item values to itmPos() array
+            itmPos(itemNum).frame = 0
+            itmPos(itemNum).x = .itmX(itemNum)
+            itmPos(itemNum).y = .itmY(itemNum)
+            itmPos(itemNum).l = .itmLayer(itemNum)
+            itmPos(itemNum).stance = "REST"
+
+            'Indicate that there was no last render
+            lastItemRender(itemNum).canvas = -1
+
+            'Copy values to pending item movements
+            With pendingItemMovement(itemNum)
+                .xOrig = itmPos(itemNum).x
+                .xTarg = itmPos(itemNum).x
+                .yOrig = itmPos(itemNum).y
+                .yTarg = itmPos(itemNum).y
+            End With
+
+            'Check if we should run this item
+            If boardList(activeBoardIndex).theData.itmActivate(itemNum) = 1 Then
+                runIt = False
+                checkIt = getIndependentVariable(.itmVarActivate(itemNum), lit, num)
+                If checkIt = DT_NUM Then
+                    valueTestNum = num
+                    If valueTestNum = .itmActivateInitNum(itemNum) Then
+                        runIt = True
+                    End If
+                ElseIf checkIt = DT_LIT Then
+                    valueTestLit = lit
+                    If valueTestLit = .itmActivateInitNum(itemNum) Then
+                        runIt = True
+                    End If
+                End If
             Else
-                multilist$(itemNum) = itemMem(itemNum).itmPrgOnBoard
+                runIt = True
             End If
-        Else
-            itemMem(itemNum).bIsActive = False
-            multilist$(itemNum) = ""
-        End If
+
+            'If we should and there is a program then open it!
+            If (runIt) And (.itmName(itemNum) <> "") Then
+                itemMem(itemNum) = openItem(projectPath & itmPath & .itmName(itemNum))
+                itemMem(itemNum).bIsActive = True
+                If boardList(activeBoardIndex).theData.itemMulti(itemNum) <> "" Then
+                    multilist(itemNum) = .itemMulti(itemNum)
+                Else
+                    multilist(itemNum) = itemMem(itemNum).itmPrgOnBoard
+                End If
+            Else
+                itemMem(itemNum).bIsActive = False
+                multilist(itemNum) = ""
+            End If
+
+        End With
+
     Next itemNum
-    
+
 End Sub
 
 '=========================================================================
@@ -484,16 +507,11 @@ End Sub
 '=========================================================================
 Public Sub gameSpeed(ByVal speed As Integer)
     Select Case speed
-        Case 0
-            walkDelay = 0.09
-        Case 1
-            walkDelay = 0.06
-        Case 2
-            walkDelay = 0.03
-        Case 3
-            walkDelay = 0.01
-        Case 4
-            walkDelay = 0.005
+        Case 0: walkDelay = 0.09
+        Case 1: walkDelay = 0.06
+        Case 2: walkDelay = 0.03
+        Case 3: walkDelay = 0.01
+        Case 4: walkDelay = 0.005
     End Select
 End Sub
 

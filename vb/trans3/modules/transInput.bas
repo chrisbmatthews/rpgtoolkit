@@ -139,11 +139,8 @@ Sub FlushKB()
     'Called by runFight, clearBufferRPG, ShowPromptDialog, ShowFileDialog, CursorMapRun, selectionBox, runProgram
     
     On Error Resume Next
-    Dim aa As String
-    
-    aa$ = "a"
-    Do While aa$ <> ""
-        aa$ = getKey()
+    Do Until getKey() = ""
+        Call processEvent
     Loop
 End Sub
 
@@ -603,7 +600,7 @@ Function isPressed(ByVal theKey As String) As Boolean
     
 End Function
 
-Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
+Sub keyDownEvent(ByVal keyCode As Integer, ByVal shift As Integer)
     On Error Resume Next
     '=============================
     'Called when a key down event is discovered in the MainForm.
@@ -613,7 +610,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     
     'Save old keycodes.
     keyWaitState = keyCode
-    keyShiftState = Shift
+    keyShiftState = shift
     
     'When a dialog window is called, either ShowFileDialog or ShowPromptDialog.
     'Control is returned when the dialog is closed.
@@ -642,9 +639,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         Case Else:
             strKey = Chr$(keyCode)
     End Select
-    
-    Debug.Print strKey
-    
+
     'Check custom plugins to see if they request an input.
     Dim plugName As String
     For Index = 0 To UBound(mainMem.plugins)
@@ -654,7 +649,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
             
             If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
                 'If an input is requested, return that input to the plugin.
-                Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
+                Call PLUGEventInform(plugName, keyCode, -1, -1, -1, shift, strKey, INPUT_KB)
             End If
         End If
     Next Index
@@ -664,7 +659,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
         
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
-            Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
+            Call PLUGEventInform(plugName, keyCode, -1, -1, -1, shift, strKey, INPUT_KB)
         End If
     End If
     
@@ -673,7 +668,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
         
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
-            Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
+            Call PLUGEventInform(plugName, keyCode, -1, -1, -1, shift, strKey, INPUT_KB)
         End If
     End If
 
@@ -681,13 +676,13 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     If (Not runningProgram) And (Not bInMenu) And (Not fightInProgress) Then
         'Scan for special keys.
         
-        If keyCode = 88 And Shift = 4 Then
+        If keyCode = 88 And shift = 4 Then
             'user pressed ALT-X: Force exit.
             gGameState = GS_QUIT
             Exit Sub
         End If
         
-        If keyCode = 68 And Shift = 4 Then
+        If keyCode = 68 And shift = 4 Then
             'User pressed ALT-D (toggle debugging).
             debugging = Not (debugging)
         End If
@@ -726,7 +721,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     
 End Sub
 
-Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Integer, ByVal button As Integer)
+Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal shift As Integer, ByVal button As Integer)
     '======================================================
     'Called when mouse down event detected on the MainForm.
     'Renamed variables: t >> index
@@ -751,7 +746,7 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Intege
             
             If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
                 'If an input is requested, return that input to the plugin.
-                Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
+                Call PLUGEventInform(plugName, -1, x, y, button, shift, "", INPUT_MOUSEDOWN)
             End If
         End If
     Next Index
@@ -761,7 +756,7 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Intege
         plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
-            Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
+            Call PLUGEventInform(plugName, -1, x, y, button, shift, "", INPUT_MOUSEDOWN)
         End If
     End If
     
@@ -770,7 +765,7 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Intege
         plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
-            Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
+            Call PLUGEventInform(plugName, -1, x, y, button, shift, "", INPUT_MOUSEDOWN)
         End If
     End If
     

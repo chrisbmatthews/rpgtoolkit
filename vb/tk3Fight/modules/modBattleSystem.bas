@@ -169,7 +169,7 @@ Private Function mainLoop() As Long
         Call CBFightTick
 
         'Don't let us lock up
-        DoEvents
+        Call CBDoEvents
 
     Loop
 

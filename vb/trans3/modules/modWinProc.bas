@@ -7,6 +7,7 @@ Attribute VB_Name = "transEvents"
 
 '=========================================================================
 ' Event handler
+' Status: A+
 '=========================================================================
 
 Option Explicit
@@ -62,6 +63,7 @@ Public Const WM_MOUSEMOVE = &H200
 Public Const WM_LBUTTONDOWN = &H201
 Public Const WM_ACTIVATE = &H6
 Public Const WA_INACTIVE = 0
+Public Const PM_REMOVE = &H1
 
 '=========================================================================
 ' Win32 APIs
@@ -169,8 +171,10 @@ Public Sub processEvent()
     'It will process a message from the queue *if there is one*
     'and then be done with.
 
+    If host.hwnd = 0 Then Exit Sub
+
     Dim message As msg
-    If PeekMessage(message, host.hwnd, 0, 0, &H1) Then
+    If PeekMessage(message, host.hwnd, 0, 0, PM_REMOVE) Then
         'There was a message, check if it's WinProc asking
         'to leave this loop...
         If message.message = WM_QUIT Then

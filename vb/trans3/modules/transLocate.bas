@@ -1,93 +1,84 @@
 Attribute VB_Name = "transLocate"
-'=====================================================
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
-'=====================================================
+'=========================================================================
 
-'Maps board and screen co-ordinates and for isometric and non-isometric boards.
+'=========================================================================
+' Manages board coordiantes
+' Status: B+
+'=========================================================================
+
 Option Explicit
 
-'==========================================================================================
-'Declaration Changed [KSNiloc]
+'=========================================================================
+' Integral variables
+'=========================================================================
+Private m_movementSize As Double    'movement size (in pixels)
 
-Private mVarMovementSize As Double
-
+'=========================================================================
+' Returns movement size (in pixels)
+'=========================================================================
 Public Property Get movementSize() As Double
-    movementSize = mVarMovementSize
+    movementSize = m_movementSize
     If movementSize = 0 Then
-        'movementSize = 8 / 32 'Default size is 8 pixels
         movementSize = 1
         walkDelay = 0.01
     End If
 End Property
 
-Public Property Let movementSize(newVal As Double)
-    mVarMovementSize = newVal
+'=========================================================================
+' Change movement size (in pixels)
+'=========================================================================
+Public Property Let movementSize(ByVal newVal As Double)
+    m_movementSize = newVal
 End Property
 
-'==========================================================================================
-
-Public Function usingPixelMovement() As Boolean
-    '================================================
-    'Returns if we are using pixel movement [KSNiloc]
-    '================================================
-
+'=========================================================================
+' Return if we are using pixel movement
+'=========================================================================
+Public Property Get usingPixelMovement() As Boolean
     If (Not movementSize = 1) And (Not boardIso()) Then
         usingPixelMovement = True
     End If
+End Property
 
-End Function
-
-Function boardIso() As Boolean
-    '=========================================
-    'Checks if the current board is isometric.
-    '=========================================
+'========================================================================='
+' Return if we're on an isometric board
+'=========================================================================
+Public Property Get boardIso() As Boolean
     On Error Resume Next
-    
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
         boardIso = True
-    Else
-        boardIso = False
     End If
-    
-End Function
+End Property
 
+'=========================================================================
+' Return if the board passed in is isometric
+'=========================================================================
 Public Function linkIso(ByVal linkBoard As String) As Boolean
-'===========================================
-'NEW FUNCTION: [Isometrics - Delano 3/04/04]
-'Checks if a linked (directional) board is isometric.
-'The filename (with path) of the linked board is passed.
-'Usage: linkIso(projectPath$ + brdPath$ + boardList(activeBoardIndex).theData.dirLink$(thelink))
-'Called by TestLink only, to give different co-ordinates for moving to iso boards.
-'===========================================
-
     On Error Resume Next
-
-    linkIso = False
-
-    Dim test As Boolean
- 
-    test = fileExists(linkBoard$)
-    If Not test Then Exit Function
-
+    If Not fileExists(linkBoard) Then
+        Exit Function
+    End If
     Dim TestBoard As TKBoard
-    Call openboard(linkBoard$, TestBoard)
+    Call openBoard(linkBoard$, TestBoard)
     lastRender.canvas = -1
-    If TestBoard.isIsometric = 1 Then linkIso = True
-
+    If TestBoard.isIsometric = 1 Then
+        linkIso = True
+    End If
 End Function
 
-Function getBottomCentreX(ByVal boardx As Double, ByVal boardy As Double, ByRef pending As PENDING_MOVEMENT) As Long
-    '=========================================
-    'REWRITTEN: [Isometrics - Delano 29/03/04]
-    'Receives 2 extra arguments: the accompanying boardy and pending, as an isometric fix. (Could be item or player)
-    'Gets pixel location on the screen of the centre of the tile at boardx, boardy, specifically for a player or item.
-    'Accounts for the screen offset.
-    '=========================================
-    
-    'Called by putSpriteAt only. This is why the arguments are a little strange - might be better to receive the ppos ByRef
-    
+'=========================================================================
+' Get the x coord at the bottom center of a board
+'=========================================================================
+Public Function getBottomCentreX( _
+                                    ByVal boardX As Double, _
+                                    ByVal boardY As Double, _
+                                    ByRef pending As PENDING_MOVEMENT _
+                                                                        ) As Long
+
     On Error Resume Next
     
     Dim x As Long
@@ -101,9 +92,9 @@ Function getBottomCentreX(ByVal boardx As Double, ByVal boardy As Double, ByRef 
             If pending.direction > 4 Then
                 'If moving diagonally.
                 'X doesn't always vary so has to depend on Y instead.
-                x = ((boardx - topX) * 64 - 64) + Abs(boardy - pending.yOrig) * 32
+                x = ((boardX - topX) * 64 - 64) + Abs(boardY - pending.yOrig) * 32
             Else
-                x = (boardx - topX) * 64 - 64
+                x = (boardX - topX) * 64 - 64
             End If
             
         Else
@@ -111,55 +102,44 @@ Function getBottomCentreX(ByVal boardx As Double, ByVal boardy As Double, ByRef 
             If pending.direction > 4 Then
                 'If moving diagonally.
                 'X doesn't always vary so has to depend on Y instead.
-                x = ((boardx - topX) * 64 - 32) - Abs(boardy - pending.yOrig) * 32
+                x = ((boardX - topX) * 64 - 32) - Abs(boardY - pending.yOrig) * 32
             Else
-                x = (boardx - topX) * 64 - 32
+                x = (boardX - topX) * 64 - 32
             End If
         End If
     
     Else
-        x = (boardx - topX) * 32 - 16
+        x = (boardX - topX) * 32 - 16
     End If
     
     getBottomCentreX = x
     
 End Function
 
-Function getBottomCentreY(ByVal boardy As Double) As Long
-    '=========================================
-    'REWRITTEN: [Isometrics - Delano 29/03/04]
-    'Gets pixel location on the screen of the vertical centre of the tile at boardy, specifically for a player or item.
-    'Accounts for the screen offset.
-    'Could consider adding an offset to move sprites further down the tile for isometrics.
-    '=========================================
-    
-    'Called by putSpriteAt only. Sprites are placed on this line.
-   
+'=========================================================================
+' Get the y coord at the bottom center of a board
+'=========================================================================
+Public Function getBottomCentreY(ByVal boardY As Double) As Long
     On Error Resume Next
-    
     Dim y As Long
-    
     If boardIso() Then
-        
-        'isoTopY = topY * 2 + 1
-        y = (boardy - (topY * 2 + 1)) * 16
+        y = (boardY - (topY * 2 + 1)) * 16
         y = y + 8 'Vertical offset to 3/4 down the tile
     Else
-        y = (boardy - topY) * 32
+        y = (boardY - topY) * 32
     End If
-    
     getBottomCentreY = y
-    
 End Function
 
-Sub incrementPosition(ByRef pos As PLAYER_POSITION, ByRef pend As PENDING_MOVEMENT, ByVal moveFraction As Double)
-    '=========================================
-    'EDITED: [Isometrics - Delano 28/03/04]
-    'Increment the players tile position on the board based on the pending movement.
-    'These are positions on the board NOT the screen.
-    'This updates the position for each sprite frame; increments are made in fractions of a tile.
-    '=========================================
-    
+'=========================================================================
+' Increment a player's position on the board
+'=========================================================================
+Public Sub incrementPosition( _
+                                ByRef pos As PLAYER_POSITION, _
+                                ByRef pend As PENDING_MOVEMENT, _
+                                ByVal moveFraction As Double _
+                                                               )
+
     'Called by the pushPlayer and pushItem Subs.
     'Called each frame of a movement cycle (currently 4 times).
     
@@ -255,14 +235,11 @@ Sub incrementPosition(ByRef pos As PLAYER_POSITION, ByRef pend As PENDING_MOVEME
     End If
 End Sub
 
-Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
-    '===========================================
-    'EDITED: [Isometrics - Delano 28/03/04]
-    'Pass in a pending movement with the direction specified and the tile origin specified.
-    'Fills in target tile co-ordinates (taking isometrics into account).
-    'These are positions on the board NOT the screen.
-    '===========================================
-    
+'=========================================================================
+' Fill in tile target coordinates from pending movement
+'=========================================================================
+Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
+
     'Called by scanKeys when movement is initiated, and the RPG commands:
     'PlayerStepRPG, ItemStepRPG, PushItemRPG, PushRPG, WanderRPG.
     'Called once in a movement cycle.
@@ -396,5 +373,4 @@ Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
     End If
 
 End Sub
-
 

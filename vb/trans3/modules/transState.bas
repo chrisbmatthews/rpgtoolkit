@@ -1,69 +1,54 @@
 Attribute VB_Name = "transState"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'stuff for saving and loading the game
-'also contains a lot of the variables used to define the 'state' fof the game
+'=========================================================================
+' Game saving/loading routines
+' Status: C+
+'=========================================================================
+
 Option Explicit
 
-Public playerListAr(4) As String   '"Handles" of 5 (0-4) characters on team.
-Public playerFile(4) As String   'Filenames of 5 chars
-Public otherPlayers(25) As String    'filenames of 25 other players that used to be equipped (0-25)
-Public otherPlayersHandle(25) As String 'handles of 25 other players that used to be equipped (0-25)
+'=========================================================================
+' Integral variables
+'=========================================================================
+Public playerListAr(4) As String          '"Handles" of 5 (0-4) characters on team.
+Public playerFile(4) As String            'Filenames of 5 chars
+Public otherPlayers(25) As String         'filenames of 25 other players that used to be equipped (0-25)
+Public otherPlayersHandle(25) As String   'handles of 25 other players that used to be equipped (0-25)
+Public inv As TKInventory                 'global inventory
+Public playerEquip(16, 4) As String       'What is equipped on each player (filename)
+Public equipList(16, 4) As String         'What is equipped on each player (handle)
+Public equipHPadd(4) As Long              'amount of HP added because of equipment.
+Public equipSMadd(4) As Long              'amt of smp added by equipment.
+Public equipDPadd(4) As Long              'amt of dp added by equipment.
+Public equipFPadd(4) As Long              'amt of fp added by equipment.
+Public menuColor As Long                  'main menu color
+Public GPCount As Long                    'Gp carried by player
+Public MWinBkg As Long                    'Message window background color (rgb): -1 if a graphic
+Public MWinPic As String                  'picture in message window
+Public MWinSize As Long                   'size of mwin,. in percentage of screen
+Public debugYN As Long                    'debug window available? 0- No, 1-Yes
+Public fontColor As Long                  'color of font (rgb)
+Public fontName As String                 'filename of font
+Public fontSize As Long                   'font size (pixels)
+Public boldYN As Long                     'bold on/off 0-off, 1-on
+Public underlineYN As Long                'uline on/off 0-off, 1-on
+Public italicsYN As Long                  'ital on/off 0-off 1-on
+Public gameTime As Long                   'length of game, in seconds
+Public stepsTaken As Long                 'number of steps taken
+Public walkDelay As Double                'delay to insert between walking moves.  Also used for general pausing in loops (like #Zoom)
+Public menuGraphic As String              'graphic of main menu
+Public fightMenuGraphic As String         'graphic of fight menu
+Public newPlyrName As String              'what newplyr has done
 
-Public inv As TKInventory 'global inventory
-
-Public playerEquip(16, 4) As String  'What is equipped on each player (filename)
-Public equipList(16, 4) As String  'What is equipped on each player (handle)
-Public equipHPadd(4) As Long       'amount of HP added because of equipment.
-Public equipSMadd(4) As Long      'amt of smp added by equipment.
-Public equipDPadd(4) As Long     'amt of dp added by equipment.
-Public equipFPadd(4) As Long     'amt of fp added by equipment.
-
-Public menuColor As Long        'main menu color
-
-'NOT IN THIS FILE, BUT PART OF THE GAME STATE!
-'Public ppos(4) As PLAYER_POSITION 'player positions of 5 players
-'Public selectedPlayer As Long   'number of player graphic
-
-Public GPCount As Long              'Gp carried by player
-
-Public MWinBkg As Long             'Message window background color (rgb): -1 if a graphic
-Public MWinPic As String             'picture in message window
-Public MWinSize As Long         'size of mwin,. in percentage of screen
-
-Public debugYN As Long              'debug window available? 0- No, 1-Yes
-
-Public fontColor As Long            'color of font (rgb)
-Public fontName As String            'filename of font
-Public fontSize As Long     'font size (pixels)
-Public boldYN As Long       'bold on/off 0-off, 1-on
-Public underlineYN As Long  'uline on/off 0-off, 1-on
-Public italicsYN As Long    'ital on/off 0-off 1-on
-
-Public gameTime As Long         'length of game, in seconds
-Public stepsTaken As Long       'number of steps taken
-
-'NOT IN THIS FILE, BUT PART OF THE GAME STATE!
-'Global loadedMainFile$
-'Public currentBoard As String    'current board
-'Global nextLevel(4) As Integer
-'Global levelProgression(4) As Integer
-
-Public walkDelay As Double  'delay to insert between walking moves.  Also used for general pausing in loops (like #Zoom)
-
-Public menuGraphic As String     'graphic of main menu
-Public fightMenuGraphic As String     'graphic of fight menu
-
-'NOT IN THIS FILE, BUT PART OF THE GAME STATE!
-'Private threads() As RPGCODE_THREAD     'threads
-
-Public newPlyrName As String 'what newplyr has done
-
-Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal restoreLev As Boolean)
-    'opens a character and restores him
-    '(ie does not re-intitialize his variables)
+'=========================================================================
+' Restore a character
+'=========================================================================
+Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal restoreLev As Boolean)
     On Error GoTo errorhandler
     If number < 0 Or number > 4 Then Exit Sub
     Call openchar(file$, playerMem(number))
@@ -77,7 +62,7 @@ Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal restoreLe
     ReDim aProgram.program(10)
     aProgram.boardNum = -1
     If number = selectedPlayer And newPlyrName$ <> "" Then
-        Call NewPlyr("#newplyr(" + chr$(34) + newPlyrName$ + chr$(34) + ")", aProgram)
+        Call NewPlyr("#newplyr(" + Chr$(34) + newPlyrName$ + Chr$(34) + ")", aProgram)
     End If
     
     'now calculate level up stuff:
@@ -86,8 +71,8 @@ Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal restoreLe
     Dim l As String
     Dim aa As Long
     If restoreLev Then
-        aa = GetIndependentVariable(playerMem(number).leVar$, l$, hislev)
-        aa = GetIndependentVariable(playerMem(number).experienceVar$, l$, hisexp)
+        aa = getIndependentVariable(playerMem(number).leVar$, l$, hislev)
+        aa = getIndependentVariable(playerMem(number).experienceVar$, l$, hisexp)
         If hislev = playerMem(number).initLevel Then
             playerMem(number).nextLevel = playerMem(number).levelType
             playerMem(number).levelProgression = playerMem(number).levelType
@@ -124,21 +109,17 @@ errorhandler:
     Resume Next
 End Sub
 
-
-Sub LoadState(ByVal file As String)
+'=========================================================================
+' Load game state from a file
+'=========================================================================
+Public Sub LoadState(ByVal file As String)
     On Error Resume Next
-    'Loads current state.
     If file$ = "" Then Exit Sub
     Dim num As Long
     num = FreeFile
-    Call ClearRedirects
+    Call clearRedirects
     newPlyrName$ = ""
     
-    '=====================================================================================
-    'Modified by KSNiloc
-    'Now reads version 2 save files
-    '=====================================================================================
-
     Dim nCount As Long
     Dim t As Long, z As Long
     Dim fn As String
@@ -155,7 +136,7 @@ Sub LoadState(ByVal file As String)
             Dim minorVer As Variant
             Input #num, majorVer
             Input #num, minorVer
-            Call ClearVars(globalHeap)
+            Call clearVars(globalHeap)
             If minorVer = 0 Then
                 'old style...
                 'Now, all the numerical variables:
@@ -316,39 +297,39 @@ Sub LoadState(ByVal file As String)
         End If
         Call BinReadInt(num)    'majorver 3
         Call BinReadInt(num)    'minorver 0
-        Call ClearVars(globalHeap)
+        Call clearVars(globalHeap)
         
         'get num vars...
         nCount = BinReadLong(num)
         
-        Dim varName As String
+        Dim varname As String
         Dim varValue As Double
         Dim varString As String
         
         For t = 1 To nCount
-            varName = BinReadString(num)
+            varname = BinReadString(num)
             varValue = BinReadDouble(num)
-            If varName <> "" Then
-                Call SetNumVar(varName, varValue, globalHeap)
+            If varname <> "" Then
+                Call SetNumVar(varname, varValue, globalHeap)
             End If
         Next t
         
         nCount = BinReadLong(num)
         For t = 1 To nCount
-            varName = BinReadString(num)
+            varname = BinReadString(num)
             varString = BinReadString(num)
-            If varName <> "" Then
-                Call SetLitVar(varName, varString, globalHeap)
+            If varname <> "" Then
+                Call SetLitVar(varname, varString, globalHeap)
             End If
         Next t
         
         'get redirects...
         nCount = BinReadLong(num)
         For t = 1 To nCount
-            varName = BinReadString(num)
+            varname = BinReadString(num)
             varString = BinReadString(num)
-            If varName <> "" Then
-                Call SetRedirect(varName, varString)
+            If varname <> "" Then
+                Call SetRedirect(varname, varString)
             End If
         Next t
         
@@ -473,10 +454,10 @@ Sub LoadState(ByVal file As String)
                 
                 Dim ttt As Long
                 For ttt = 1 To nCount
-                    varName = BinReadString(num)
+                    varname = BinReadString(num)
                     varValue = BinReadDouble(num)
-                    If varName <> "" And f <> "" Then
-                        Call SetNumVar(varName, varValue, threads(t).thread.heapStack(tt))
+                    If varname <> "" And f <> "" Then
+                        Call SetNumVar(varname, varValue, threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
                 
@@ -484,10 +465,10 @@ Sub LoadState(ByVal file As String)
                 nCount = BinReadLong(num)
                 
                 For ttt = 1 To nCount
-                    varName = BinReadString(num)
+                    varname = BinReadString(num)
                     varString = BinReadString(num)
-                    If varName <> "" And f <> "" Then
-                        Call SetLitVar(varName, varString, threads(t).thread.heapStack(tt))
+                    If varname <> "" And f <> "" Then
+                        Call SetLitVar(varname, varString, threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
             Next tt
@@ -500,10 +481,11 @@ Sub LoadState(ByVal file As String)
     addTime = gameTime
 End Sub
 
-
-Sub SaveState(ByVal file As String)
+'=========================================================================
+' Save game state to a file
+'=========================================================================
+Public Sub SaveState(ByVal file As String)
     On Error Resume Next
-    'Saves current state.
     Dim num As Long
     num = FreeFile
     Open file$ For Binary As #num
@@ -539,8 +521,8 @@ Sub SaveState(ByVal file As String)
         Call BinWriteLong(num, nCount)
         
         For t = 1 To nCount
-            Call BinWriteString(num, GetRedirectName(t - 1))
-            Call BinWriteString(num, GetRedirect(GetRedirectName(t - 1)))
+            Call BinWriteString(num, getRedirectName(t - 1))
+            Call BinWriteString(num, getRedirect(getRedirectName(t - 1)))
         Next t
         
         'Player/team info:

@@ -1,18 +1,26 @@
 Attribute VB_Name = "transRender"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'All rendering functions
+'=========================================================================
+' Trans3 rendering engine
+' Status: B+
+'=========================================================================
+
 Option Explicit
 
-'screen dimensions  calculate upon the first resizing of the screen (these are in twips!)...
+'=========================================================================
+' Declarations
+'=========================================================================
+
 Public screenWidth As Integer   'width, in twips
 Public screenHeight As Integer  'height, in twips
 Public resX As Long
 Public resY As Long             'x and y resolutions
 
-'added by KSNiloc
 Public globalCanvasHeight As Long
 Public globalCanvasWidth As Long
 
@@ -44,14 +52,12 @@ Public cnvMsgBox As Long            'canvas id of message box (for rpgcode) :)
 Private gbShowMsgBox As Boolean     'show the message box?
 Public cnvRPGCodeBuffers(10) As Long    'canvas buffers for rpgcode (32x32) scan and mem commands
 Public cnvRPGCodeAccess As Long     'rpgcode access canvas (version 2 buffer for #savescreen)
-
-'Added by KSNiloc...
 Public cnvRPGCode() As Long
 
 Public gTranspColor As Long 'transparent color used for bltting
 Public gTranspColorAlt As Long  'color to use if you need to draw int he transparent color
 
-Private inDXMode As Boolean
+Private Const inDXMode As Boolean = True
 Private inFullScreenMode As Boolean
 
 Private Type BoardRender
@@ -67,18 +73,18 @@ Private Type BoardRender
     shadeB As Long
     isometric As Long
 End Type
-Public lastRender As BoardRender
 
+Public lastRender As BoardRender
 
 Private Type PlayerRender
     canvas As Long
     stance As String
     frame As Long
 End Type
+
 Public lastPlayerRender(4) As PlayerRender 'stats for last player render
 Public lastItemRender() As PlayerRender
 Public lastRenderedBackground As String   'last background image rendered
-
 Public lastTimestamp As Long 'last time that the animated tile stuff was run (should be run every 5 ms)
 
 'canvas popup types...
@@ -86,26 +92,24 @@ Public Const POPUP_NOFX = 0         'just put the thing on the screen
 Public Const POPUP_VERTICAL = 1     'vertical scroll from centre
 Public Const POPUP_HORIZONTAL = 2   'horiz scroll from centre
 
-Public addonR As Long           'red to add
-Public addonG As Long           'green to add
-Public addonB As Long           'blue to add
+Public addOnR As Long           'red to add
+Public addOnG As Long           'green to add
+Public addOnB As Long           'blue to add
 
-' MODIFIED BY KSNiloc...
-'Public Const MAXITEM = 10 'MAXIMUM NUMBER OF ITEMS IS SET HERE.
-Public Property Get MAXITEM()
-    MAXITEM = UBound(boardList(activeBoardIndex).theData.itmActivate)
+'=========================================================================
+' Returns number of items loaded
+'=========================================================================
+Public Property Get maxItem()
+    maxItem = UBound(boardList(activeBoardIndex).theData.itmActivate)
 End Property
 
-Sub checkScrollBounds()
-    'EDITED: [Isometrics - Delano - 29/03/04]
-    'Added isometric version.
-    
-    'Make sure the scrolling is wihtin the bounds of the board.
-    'Called by the scrollUp etc. Subs.
+'=========================================================================
+' Check if board can scroll
+'=========================================================================
+Public Sub checkScrollBounds()
     
     On Error Resume Next
     
-    'Addition:
     If boardIso() Then
 
         If topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.Bsizex Then
@@ -115,10 +119,7 @@ Sub checkScrollBounds()
         If (topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.Bsizey Then
             topY = (boardList(activeBoardIndex).theData.Bsizey - isoTilesY - 1) / 2
         End If
-    
-        If topX < 0 Then topX = 0
-    
-        If topY < 0 Then topY = 0
+
     Else
         'Original code
         If topX + tilesX > boardList(activeBoardIndex).theData.Bsizex Then
@@ -129,19 +130,24 @@ Sub checkScrollBounds()
             topY = boardList(activeBoardIndex).theData.Bsizey - tilesY
         End If
     
-        If topX < 0 Then topX = 0
-    
-        If topY < 0 Then topY = 0
     End If
+    
+    If topX < 0 Then topX = 0
+    If topY < 0 Then topY = 0
+    
 End Sub
 
+'=========================================================================
+' Set universal transparent color
+'=========================================================================
+Public Sub determineTransparentColor()
 
-Sub determineTransparentColor()
     On Error Resume Next
-    'determine the transparent color used for bltting
+
     gTranspColor = RGB(255, 255, 255)
-    Exit Sub
-    
+
+    #If notOldCode = 1 Then
+
     Dim r As Long, g As Long, b As Long
     Dim col As Long
     
@@ -154,8 +160,8 @@ Sub determineTransparentColor()
     cnv2 = CreateCanvas(3, 3)
     Call CanvasFill(cnv, 0)
     Call CanvasFill(cnv2, 0)
-    
-    Do While (Not (done))
+
+    Do Until done
         r = Int(Rnd(1) * 255)
         g = Int(Rnd(1) * 255)
         b = Int(Rnd(1) * 255)
@@ -226,13 +232,16 @@ Sub determineTransparentColor()
     
     Call DestroyCanvas(cnv)
     Call DestroyCanvas(cnv2)
+    
+    #End If
+    
 End Sub
 
-
-Function quickSortRnd(ByVal Left As Long, ByVal Right As Long) As Long
-    'randomly return one of two values for quicsort
+'=========================================================================
+' Randomly return one of two values
+'=========================================================================
+Private Function quickSortRnd(ByVal Left As Long, ByVal Right As Long) As Long
     On Error Resume Next
-    
     If (Rnd(1) * 2) = 1 Then
         quickSortRnd = Left
     Else
@@ -240,11 +249,13 @@ Function quickSortRnd(ByVal Left As Long, ByVal Right As Long) As Long
     End If
 End Function
 
-Sub quickSortSprites(ByRef toSort() As Long, ByRef indicies() As Long, ByVal Left As Long, ByVal Right As Long)
-    'quick sort the sprites
-    'toSort - actual values worth sorting
-    'indicies - the indicies of the corresponding sprites, which will be sorted along with the values
+'=========================================================================
+' Sort sprites in best drawing order
+'=========================================================================
+Private Sub quickSortSprites(ByRef toSort() As Long, ByRef indicies() As Long, ByVal Left As Long, ByVal Right As Long)
+
     On Error Resume Next
+
     Dim last As Long
     last = Left
 
@@ -273,8 +284,10 @@ Sub quickSortSprites(ByRef toSort() As Long, ByRef indicies() As Long, ByVal Lef
     Call quickSortSprites(toSort, indicies, last + 1, Right)
 End Sub
 
-Sub quickSortSwap(ByRef toSort() As Long, ByVal Left, ByVal Right)
-    'swap two values in an array
+'=========================================================================
+' Swap two values in an array
+'=========================================================================
+Private Sub quickSortSwap(ByRef toSort() As Long, ByVal Left As Long, ByVal Right As Long)
     On Error Resume Next
     Dim Temp As Long
     Temp = toSort(Left)
@@ -282,33 +295,34 @@ Sub quickSortSwap(ByRef toSort() As Long, ByVal Left, ByVal Right)
     toSort(Right) = Temp
 End Sub
 
+'=========================================================================
+' Redraw all layers at x, y *on the board*
+'=========================================================================
+Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer)
 
-Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer)
-    'redraw all the tiled layers at x, y
-    'x,y are board coordianteds, not view coords
-    
     On Error Resume Next
+
     Dim x As Long, y As Long
     x = xBoardCoord
     y = yBoardCoord
     
     Select Case boardList(activeBoardIndex).theData.ambienteffect
         Case 0
-            addonR = 0
-            addonG = 0
-            addonB = 0
+            addOnR = 0
+            addOnG = 0
+            addOnB = 0
         Case 1
-            addonR = 75
-            addonG = 75
-            addonB = 75
+            addOnR = 75
+            addOnG = 75
+            addOnB = 75
         Case 2
-            addonR = -75
-            addonG = -75
-            addonB = -75
+            addOnR = -75
+            addOnG = -75
+            addOnB = -75
         Case 3
-            addonR = 0
-            addonG = 0
-            addonB = 75
+            addOnR = 0
+            addOnG = 0
+            addOnB = 75
     End Select
     'internal engine drawing routines
     'first, get the shade color of the board...
@@ -325,9 +339,9 @@ Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer
         shadeB = shadeB + lightShade
     End If
     
-    addonR = addonR + shadeR
-    addonG = addonG + shadeG
-    addonB = addonB + shadeB
+    addOnR = addOnR + shadeR
+    addOnG = addOnG + shadeG
+    addOnB = addOnB + shadeB
     
     'now redraw the layers...
     Dim xx As Long, yy As Long
@@ -342,44 +356,44 @@ Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer
                           projectPath$ + tilePath$ + BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                           xx, _
                           yy, _
-                          boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addonR, _
-                          boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addonG, _
-                          boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addonB, False)
+                          boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addOnR, _
+                          boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addOnG, _
+                          boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addOnB, False)
             If cnvScrollCacheMask <> -1 Then
                 Call drawTileCNV(cnvScrollCacheMask, _
                               projectPath$ + tilePath$ + BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                               xx, _
                               yy, _
-                              boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addonR, _
-                              boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addonG, _
-                              boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addonB, True, False)
+                              boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addOnR, _
+                              boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addOnG, _
+                              boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addOnB, True, False)
             End If
         End If
     Next lll
 End Sub
 
-
-
-Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
-    'draws all programs on specified layer.
+'=========================================================================
+' Draw all programs on a layer
+'=========================================================================
+Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
     On Error Resume Next
     Select Case boardList(activeBoardIndex).theData.ambienteffect
         Case 0
-            addonR = 0
-            addonG = 0
-            addonB = 0
+            addOnR = 0
+            addOnG = 0
+            addOnB = 0
         Case 1
-            addonR = 75
-            addonG = 75
-            addonB = 75
+            addOnR = 75
+            addOnG = 75
+            addOnB = 75
         Case 2
-            addonR = -75
-            addonG = -75
-            addonB = -75
+            addOnR = -75
+            addOnG = -75
+            addOnB = -75
         Case 3
-            addonR = 0
-            addonG = 0
-            addonB = 75
+            addOnR = 0
+            addOnG = 0
+            addOnB = 75
     End Select
     'internal engine drawing routines
     'first, get the shade color of the board...
@@ -396,9 +410,9 @@ Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
         shadeB = shadeB + lightShade
     End If
     
-    addonR = addonR + shadeR
-    addonG = addonG + shadeG
-    addonB = addonB + shadeB
+    addOnR = addOnR + shadeR
+    addOnG = addOnG + shadeG
+    addOnB = addOnB + shadeB
     
     'first things first- what prgs are on this layer?
     Dim prgnum As Long
@@ -437,9 +451,9 @@ Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
                                           projectPath$ + tilePath$ + boardList(activeBoardIndex).theData.progGraphic$(prgnum), _
                                           x - scTopX, _
                                           y - scTopY, _
-                                          boardList(activeBoardIndex).theData.ambientred(x, y, layer) + addonR, _
-                                          boardList(activeBoardIndex).theData.ambientgreen(x, y, layer) + addonG, _
-                                          boardList(activeBoardIndex).theData.ambientblue(x, y, layer) + addonB, False)
+                                          boardList(activeBoardIndex).theData.ambientred(x, y, layer) + addOnR, _
+                                          boardList(activeBoardIndex).theData.ambientgreen(x, y, layer) + addOnG, _
+                                          boardList(activeBoardIndex).theData.ambientblue(x, y, layer) + addOnB, False)
                         End If
                         
                         If cnvMask <> -1 Then
@@ -447,9 +461,9 @@ Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
                                           projectPath$ + tilePath$ + boardList(activeBoardIndex).theData.progGraphic$(prgnum), _
                                           x - scTopX, _
                                           y - scTopY, _
-                                          boardList(activeBoardIndex).theData.ambientred(x, y, layer) + addonR, _
-                                          boardList(activeBoardIndex).theData.ambientgreen(x, y, layer) + addonG, _
-                                          boardList(activeBoardIndex).theData.ambientblue(x, y, layer) + addonB, True, False)
+                                          boardList(activeBoardIndex).theData.ambientred(x, y, layer) + addOnR, _
+                                          boardList(activeBoardIndex).theData.ambientgreen(x, y, layer) + addOnG, _
+                                          boardList(activeBoardIndex).theData.ambientblue(x, y, layer) + addOnB, True, False)
                         End If
                     'End If
                 End If
@@ -458,19 +472,10 @@ Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask As Long)
     Next prgnum
 End Sub
 
-
-
-Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
-    'EDITED: [Isometrics - Delano - 23/04/04]
-    'Renamed variables: tW,tH >> pixelTilesX,pixelTilesY
-    '                   cW,cH >> imageWidth,imageHeight
-    '                   tpX,tpY >> pixelTopX,pixelTopY
-    'Background images subject to parallax.
-    
-    'Draw the background image to the screen, if one exists...
-    'If cnv = -1 then draw to scren, else draw to canvas...
-    
-    'Called by RenderNow only.
+'=========================================================================
+' Render the background of a board
+'=========================================================================
+Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
     
     On Error Resume Next
     
@@ -542,42 +547,38 @@ Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
             Call Canvas2CanvasBltPartial(cnvBackground, cnv, 0, 0, pixelTopX, pixelTopY, pixelTilesX, pixelTilesY)
         End If
     End If
+
 End Sub
 
+'=========================================================================
+' Render the board
+'=========================================================================
+Private Sub DXDrawBoard(Optional ByVal cnvTarget As Long = -1)
 
-Sub DXDrawBoard(Optional ByVal cnvTarget As Long = -1)
-    'EDITED: [Isometrics - Delano - 30/03/04]
-    'Horizontal scrolling only moved the board half the required distance for iso.
-    
-    'If cnvTaret= -1 then render the board to screen, else render to canvas.
-    
-    'Called by RenderNow only.
-    
     On Error Resume Next
-    
-    
+
     'Now blt the contents of the scrollcache over to the screen...
-        
+
     Dim x1 As Long
     Dim y1 As Long
-    
+
     x1 = (topX - scTopX) * 32
     y1 = (topY - scTopY) * 32
-    
+
     'Isometric scrolling fix: forces board to scroll twice the distance.
     If boardIso() Then x1 = (topX - scTopX) * 64
-    
+
     If cnvTarget = -1 Then 'Render to screen (to the scrollcache).
-    
+
         If usingDX() Then
             Call DXDrawCanvasTransparentPartial(cnvScrollCache, 0, 0, x1, y1, tilesX * 32, tilesY * 32, gTranspColor)
         Else
             Call DXDrawCanvasPartial(cnvScrollCacheMask, 0, 0, x1, y1, tilesX * 32, tilesY * 32, SRCAND)
             Call DXDrawCanvasPartial(cnvScrollCache, 0, 0, x1, y1, tilesX * 32, tilesY * 32, SRCPAINT)
         End If
-    
+
     Else 'Render to canvas
-        
+
         If usingDX() Then
             Call Canvas2CanvasBltTransparentPartial(cnvScrollCache, _
                                                     cnvTarget, _
@@ -590,10 +591,13 @@ Sub DXDrawBoard(Optional ByVal cnvTarget As Long = -1)
 
 End Sub
 
-Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVal stepSize As Long, ByVal popupType As Long)
-    'pop up at canvas at x, y
-    'popup type is one of the POPUP_ consts
+'=========================================================================
+' Render a canvas in a certain way (called only by CBPopupCanvas)
+'=========================================================================
+Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVal stepSize As Long, ByVal popupType As Long)
+
     On Error Resume Next
+
     Dim W As Long
     Dim h As Long
     Dim c As Long
@@ -637,17 +641,16 @@ Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVal stepS
     End If
 End Sub
 
-Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolean
-    'call this function every 5ms
-    'will draw new tile frames to cnv and cnvMask
+'=========================================================================
+' Render animated tiles (requires 5ms clock sync)
+'=========================================================================
+Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolean
+
     On Error Resume Next
     
     Dim toRet As Boolean
-    toRet = False
-    
     Dim hdc As Long
     Dim hdcMask As Long
-    
     Dim t As Long
     Dim l As String
     Dim a As Long
@@ -668,21 +671,21 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
                 toRet = True
                 Select Case boardList(activeBoardIndex).theData.ambienteffect
                     Case 0
-                        addonR = 0
-                        addonG = 0
-                        addonB = 0
+                        addOnR = 0
+                        addOnG = 0
+                        addOnB = 0
                     Case 1
-                        addonR = 75
-                        addonG = 75
-                        addonB = 75
+                        addOnR = 75
+                        addOnG = 75
+                        addOnB = 75
                     Case 2
-                        addonR = -75
-                        addonG = -75
-                        addonB = -75
+                        addOnR = -75
+                        addOnG = -75
+                        addOnB = -75
                     Case 3
-                        addonR = 0
-                        addonG = 0
-                        addonB = 75
+                        addOnR = 0
+                        addOnG = 0
+                        addOnB = 75
                 End Select
                 'internal engine drawing routines
                 'first, get the shade color of the board...
@@ -698,9 +701,9 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
                     shadeB = shadeB + lightShade
                 End If
                 
-                addonR = addonR + shadeR
-                addonG = addonG + shadeG
-                addonB = addonB + shadeB
+                addOnR = addOnR + shadeR
+                addOnG = addOnG + shadeG
+                addOnB = addOnB + shadeB
                 
                 'now redraw the layers...
                 x = boardList(activeBoardIndex).theData.animatedTile(t).x
@@ -718,9 +721,9 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
                                               projectPath$ + tilePath$ + BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                                               xx, _
                                               yy, _
-                                              boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addonR, _
-                                              boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addonG, _
-                                              boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addonB, False)
+                                              boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addOnR, _
+                                              boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addOnG, _
+                                              boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addOnB, False)
                             End If
                             
                             If cnvMask <> -1 Then
@@ -728,9 +731,9 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
                                               projectPath$ + tilePath$ + BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                                               xx, _
                                               yy, _
-                                              boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addonR, _
-                                              boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addonG, _
-                                              boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addonB, True, False)
+                                              boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addOnR, _
+                                              boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addOnG, _
+                                              boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addOnB, True, False)
                             End If
                         Else
                             If cnv <> -1 Then
@@ -739,17 +742,17 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
                                                                 cnv, _
                                                                 xx, _
                                                                 yy, _
-                                                                boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addonR, _
-                                                                boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addonG, _
-                                                                boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addonB, False)
+                                                                boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addOnR, _
+                                                                boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addOnG, _
+                                                                boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addOnB, False)
                                 Else
                                     Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
                                                                 cnv, _
                                                                 xx, _
                                                                 yy, _
-                                                                boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addonR, _
-                                                                boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addonG, _
-                                                                boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addonB, True, True, False)
+                                                                boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addOnR, _
+                                                                boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addOnG, _
+                                                                boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addOnB, True, True, False)
                                 End If
                             End If
                             If cnvMask <> -1 Then
@@ -757,9 +760,9 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
                                                             cnvMask, _
                                                             xx, _
                                                             yy, _
-                                                            boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addonR, _
-                                                            boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addonG, _
-                                                            boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addonB, True, True, True)
+                                                            boardList(activeBoardIndex).theData.ambientred(x, y, lll) + addOnR, _
+                                                            boardList(activeBoardIndex).theData.ambientgreen(x, y, lll) + addOnG, _
+                                                            boardList(activeBoardIndex).theData.ambientblue(x, y, lll) + addOnB, True, True, True)
                             End If
                         End If
                     End If
@@ -771,10 +774,11 @@ Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolea
     renderAnimatedTiles = toRet
 End Function
 
+'=========================================================================
+' Determine if the board's background needs to be rendered
+'=========================================================================
+Private Function renderBackground() As Boolean
 
-Function renderBackground() As Boolean
-    'render the board background image
-    'return true if it was re-rendered...
     On Error Resume Next
     
     If lastRenderedBackground <> boardList(activeBoardIndex).theData.brdBack Then
@@ -787,40 +791,29 @@ Function renderBackground() As Boolean
     Else
         renderBackground = False
     End If
+
 End Function
 
-Sub renderCanvas(ByVal cnv As Long)
-    'render any canvas to the screen (fullscreen)
+'=========================================================================
+' Render a canvas (full-screen)
+'=========================================================================
+Public Sub renderCanvas(ByVal cnv As Long)
     On Error Resume Next
-    
-    Dim cv As Long
     Call DXClearScreen(0)
-        
     Call DXDrawCanvas(cnv, 0, 0)
-    
     Call DXRefresh
-    
 End Sub
 
-Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long, ByVal tY As Long)
-    '=======================================
-    'EDITED: [Isometrics - Delano - 3/05/04]
-    'The vertical scroll cache only contained a screen's worth for iso boards, should be doubled.
-    'Fixed vertical redraw bug for tall boards.
-    '=======================================
-    
-    
-    'Render the scrollcache to canvas cnv, and the mask onto canvas cnvMask
-    'Set cnvMask to -1 if you don't want the mask drawn
-    'tx and ty are the topx and y value to use
-    
-    'Called by renderBoard only, when a new scrollcache of that board is needed.
-    
+'=========================================================================
+' Render the board's scroll cache
+'=========================================================================
+Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long, ByVal tY As Long)
+   
     On Error Resume Next
     
-    Dim addonR As Long
-    Dim addonG As Long
-    Dim addonB As Long
+    Dim addOnR As Long
+    Dim addOnG As Long
+    Dim addOnB As Long
     Dim shadeR As Double, shadeG As Double, shadeB As Double
     Dim a As Long
     Dim l As String
@@ -831,21 +824,21 @@ Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long
     'Ambient effects:
     Select Case boardList(activeBoardIndex).theData.ambienteffect
          Case 0
-             addonR = 0
-             addonG = 0
-             addonB = 0
+             addOnR = 0
+             addOnG = 0
+             addOnB = 0
          Case 1
-             addonR = 75
-             addonG = 75
-             addonB = 75
+             addOnR = 75
+             addOnG = 75
+             addOnB = 75
          Case 2
-             addonR = -75
-             addonG = -75
-             addonB = -75
+             addOnR = -75
+             addOnG = -75
+             addOnB = -75
          Case 3
-             addonR = 0
-             addonG = 0
-             addonB = 75
+             addOnR = 0
+             addOnG = 0
+             addOnB = 75
     End Select
 
     'first, get the shade color of the board...
@@ -853,9 +846,9 @@ Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long
     a = getIndependentVariable("AmbientGreen!", l$, shadeG)
     a = getIndependentVariable("AmbientBlue!", l$, shadeB)
     
-    shadeR = shadeR + addonR
-    shadeG = shadeG + addonG
-    shadeB = shadeB + addonB
+    shadeR = shadeR + addOnR
+    shadeG = shadeG + addOnG
+    shadeB = shadeB + addOnB
        
     'now check day and night info...
     If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
@@ -967,25 +960,23 @@ Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long
     End If
 End Sub
 
-
-Function PlayerRenderEqual(ByRef rend1 As PlayerRender, ByRef rend2 As PlayerRender) As Boolean
+'=========================================================================
+' Determine if two PlayerRender structures are equal
+' (operator overloading needed!!)
+'=========================================================================
+Private Function PlayerRenderEqual(ByRef rend1 As PlayerRender, ByRef rend2 As PlayerRender) As Boolean
     On Error Resume Next
-    'determine if rend1 == rend2
-    Dim toRet As Boolean
-    
-    toRet = False
-    
     If rend1.canvas = rend2.canvas And _
         rend1.stance = rend2.stance And _
         rend1.frame = rend2.frame Then
-        toRet = True
+        PlayerRenderEqual = True
     End If
-    
-    PlayerRenderEqual = toRet
 End Function
 
-
-Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardx As Double, ByVal boardy As Double, ByVal boardL As Long, _
+'=========================================================================
+' Draw a sprite
+'=========================================================================
+Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardx As Double, ByVal boardy As Double, ByVal boardL As Long, _
                 ByRef pending As PENDING_MOVEMENT, Optional ByVal cnvTarget As Long = -1, Optional ByVal bAccountForUnderTiles As Boolean = True)
     
     '==========================================
@@ -1013,9 +1004,7 @@ Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardx As Double, ByVal boardy A
     'Can also set the opacity of sprites in this function.
     
     'Called by DXDrawSprites only. New arguments added in these calls.
-    
-    ' ! MODIFIED BY KSNiloc...
-    
+
     On Error Resume Next
   
     'Using local varibles as the values may change. Or could pass the co-ords as ByVal arguments instead.
@@ -1186,21 +1175,19 @@ Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardx As Double, ByVal boardy A
         Else
             If cnvTarget = -1 Then 'Draw to screen
                 Call DXDrawCanvasTransparent(cnvFrameID, cornerX, cornerY, gTranspColor)
-                
             Else 'Draw to canvas
                 Call Canvas2CanvasBltTransparent(cnvFrameID, cnvTarget, cornerX, cornerY, gTranspColor)
-                
             End If
         End If
     End If
         
 End Sub
 
+'=========================================================================
+' Render a plyer (remove string stances!!!!)
+'=========================================================================
+Private Function renderPlayer(ByVal cnv As Long, ByRef thePlayer As TKPlayer, ByVal stance As String, ByVal frame As Long, ByVal idx As Long) As Boolean
 
-Function renderPlayer(ByVal cnv As Long, ByRef thePlayer As TKPlayer, ByVal stance As String, ByVal frame As Long, ByVal idx As Long) As Boolean
-    'renders the current player frame into canvas cnv
-    'with background color gTranspColor for transparent bltting
-    
     'thePlayer is the player
     'stance is the player animation to use
     'frame is the frame of the stance to use
@@ -1238,26 +1225,26 @@ Function renderPlayer(ByVal cnv As Long, ByRef thePlayer As TKPlayer, ByVal stan
     End If
     
     lastPlayerRender(idx) = currentRender
-    
    
     Dim stanceAnm As String
     stanceAnm = playerGetStanceAnm(stance, thePlayer)
     
     Call renderSpriteFrame(cnv, stanceAnm, frame)
     renderPlayer = toRet
+
 End Function
 
-Public Function renderItem(ByVal cnvFrameID As Long, ByRef theItem As TKItem, ByRef itemPosition As PLAYER_POSITION, ByVal idx As Long) As Boolean
+'=========================================================================
+' Render an item
+'=========================================================================
+Private Function renderItem(ByVal cnvFrameID As Long, ByRef theItem As TKItem, ByRef itemPosition As PLAYER_POSITION, ByVal idx As Long) As Boolean
 
     'EDITED: [Isometrics - Delano - 11/04/04]
     'Added code to check if the item is in the viewable area for an isometric board.
     'Renamed variables: ipos >> itemPosition
     '                   cnv >> cnvFrameID
     'Removed "toRet" variable - uses renderItem instead.
-    
-    'Renders the current Item frame into canvas cnv
-    'with background color gTranspColor for transparent bltting
-    
+
     'theItem is the current item
     'stance is the item animation to use
     'frame is the frame of the stance to use
@@ -1326,117 +1313,87 @@ Public Function renderItem(ByVal cnvFrameID As Long, ByRef theItem As TKItem, By
 
 End Function
 
-
-
-
-Sub createCanvases(ByVal Width As Long, ByVal height As Long)
+'=========================================================================
+' Create global canvases
+'=========================================================================
+Private Sub createCanvases(ByVal Width As Long, ByVal height As Long)
     On Error Resume Next
-    'create all global canvases
-    'width and height define the screen extents
-    
-    'scroll cache is 2x size of screen
     cnvScrollCache = CreateCanvas(Width * 2, height * 2)
     scTilesX = Width * 2 / 32
     scTilesY = height * 2 / 32
-    
-    If Not (usingDX()) Then
+    If Not usingDX() Then
         cnvScrollCacheMask = CreateCanvas(Width * 2, height * 2)
     Else
         cnvScrollCacheMask = -1
     End If
-    scTopX = -1: scTopY = -1
-
+    scTopX = -1
+    scTopY = -1
     Dim t As Long
     For t = 0 To UBound(cnvPlayer)
         cnvPlayer(t) = CreateCanvas(32, 32)
     Next t
-    
     For t = 0 To UBound(cnvSprites)
         cnvSprites(t) = CreateCanvas(32, 32)
     Next t
-
     cnvBackground = CreateCanvas(Width, height)
-    
     cnvRPGCodeScreen = CreateCanvas(Width, height)
-       
-    'allpurpose canvas
     cnvAllPurpose = CreateCanvas(Width, height)
     allPurposeCanvas = cnvAllPurpose
-
-    'create message box...
     cnvMsgBox = CreateCanvas(600, 100)
-    
-    'rpgcode scan and mem buffers...
     For t = 0 To UBound(cnvRPGCodeBuffers)
         cnvRPGCodeBuffers(t) = CreateCanvas(32, 32)
     Next t
-    
     cnvRPGCodeAccess = CreateCanvas(Width, height)
-    
-    'Added by KSNiloc...
     globalCanvasHeight = height
     globalCanvasWidth = Width
 End Sub
 
-
-Sub destroyCanvases()
-    'destroy global canvases
+'=========================================================================
+' Destroy global canvases
+'=========================================================================
+Private Sub destroyCanvases()
     On Error Resume Next
-
     Call DestroyCanvas(cnvScrollCache)
-    
-    If Not (usingDX()) Then
+    If Not usingDX() Then
         Call DestroyCanvas(cnvScrollCacheMask)
     End If
-
     Call DestroyCanvas(cnvBackground)
-
     Dim t As Long
     For t = 0 To UBound(cnvPlayer)
         Call DestroyCanvas(cnvPlayer(t))
     Next t
-    
     Call DestroyCanvas(cnvRPGCodeScreen)
-    
     Call DestroyCanvas(cnvMsgBox)
-
     For t = 0 To UBound(cnvSprites)
         Call DestroyCanvas(cnvSprites(t))
     Next t
-
     Call DestroyCanvas(cnvAllPurpose)
-
-    'rpgcode scan and mem buffers...
     For t = 0 To UBound(cnvRPGCodeBuffers)
         Call DestroyCanvas(cnvRPGCodeBuffers(t))
     Next t
-
     Call DestroyCanvas(cnvRPGCodeAccess)
-    
     For t = 0 To UBound(cnvRPGCode)
         Call DestroyCanvas(cnvRPGCode(t))
     Next t
 End Sub
 
-Sub destroyGraphics()
-    'kill graphics system
+'========================================================================='
+' Kill and unload the graphics system
+'=========================================================================
+Public Sub destroyGraphics()
     On Error Resume Next
-    
     Call destroyCanvases
     Call CloseCanvasEngine
     Call GFXKill
     Call DXKillGfxMode
-    
-    Unload host
 End Sub
 
-Function BoardRenderEqual(ByRef rend1 As BoardRender, ByRef rend2 As BoardRender) As Boolean
-    'determine if two board rendering syructs are equal
+'=========================================================================
+' Determine if two board renders are equal (unused!)
+'=========================================================================
+#If unUsed = 1 Then
+Private Function BoardRenderEqual(ByRef rend1 As BoardRender, ByRef rend2 As BoardRender) As Boolean
     On Error Resume Next
-    Dim toRet As Boolean
-    
-    toRet = False
-    
     If rend1.file = rend2.file And _
         rend1.canvas = rend2.canvas And _
         rend1.canvasMask = rend2.canvasMask And _
@@ -1448,19 +1405,16 @@ Function BoardRenderEqual(ByRef rend1 As BoardRender, ByRef rend2 As BoardRender
         rend1.shadeG = rend2.shadeG And _
         rend1.shadeB = rend2.shadeB And _
         rend1.isometric = rend2.isometric Then
-        toRet = True
+        BoardRenderEqual = True
     End If
-    
-    BoardRenderEqual = toRet
 End Function
+#End If
 
-Function renderBoard() As Boolean
-    '=======================================
-    'EDITED: [Isometrics - Delano - 3/05/04]
-    'Fixed disappearing columns. Scroll cache wasn't being redrawn early enough.
-    '=======================================
-    
-    
+'=========================================================================
+' Determine if the board needs to be rendered
+'=========================================================================
+Private Function renderBoard() As Boolean
+
     'Render the board to canvas cnv, and the mask onto canvas cnvMask
     'Set cnvMask to -1 if you don't want the mask drawn
     'Does not re-render if it doesn't have to.
@@ -1473,9 +1427,9 @@ Function renderBoard() As Boolean
     Dim toRet As Boolean
     toRet = True
     
-    Dim addonR As Long
-    Dim addonG As Long
-    Dim addonB As Long
+    Dim addOnR As Long
+    Dim addOnG As Long
+    Dim addOnB As Long
     Dim shadeR As Double, shadeG As Double, shadeB As Double
     Dim a As Long
     Dim l As String
@@ -1486,48 +1440,41 @@ Function renderBoard() As Boolean
     'Ambient effects:
     Select Case boardList(activeBoardIndex).theData.ambienteffect
          Case 0
-             addonR = 0
-             addonG = 0
-             addonB = 0
+             addOnR = 0
+             addOnG = 0
+             addOnB = 0
          Case 1
-             addonR = 75
-             addonG = 75
-             addonB = 75
+             addOnR = 75
+             addOnG = 75
+             addOnB = 75
          Case 2
-             addonR = -75
-             addonG = -75
-             addonB = -75
+             addOnR = -75
+             addOnG = -75
+             addOnB = -75
          Case 3
-             addonR = 0
-             addonG = 0
-             addonB = 75
+             addOnR = 0
+             addOnG = 0
+             addOnB = 75
     End Select
 
     'first, get the shade color of the board...
-    a = getIndependentVariable("AmbientRed!", l$, shadeR)
-    a = getIndependentVariable("AmbientGreen!", l$, shadeG)
-    a = getIndependentVariable("AmbientBlue!", l$, shadeB)
+    Call getIndependentVariable("AmbientRed!", l$, shadeR)
+    Call getIndependentVariable("AmbientGreen!", l$, shadeG)
+    Call getIndependentVariable("AmbientBlue!", l$, shadeB)
     
-    shadeR = shadeR + addonR
-    shadeG = shadeG + addonG
-    shadeB = shadeB + addonB
+    shadeR = shadeR + addOnR
+    shadeG = shadeG + addOnG
+    shadeB = shadeB + addOnB
        
     'now check day and night info...
     If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
         Dim lightShade As Long
-        
         lightShade = DetermineLightLevel()
         shadeR = shadeR + lightShade
         shadeG = shadeG + lightShade
         shadeB = shadeB + lightShade
     End If
     
-    Dim fn As String
-    
-    fn$ = currentBoard$
-    fn$ = RemovePath(fn$)
-    fn$ = brdPath$ + fn$
-          
     'check if scroll cache already contains the area we want...
 
     'Needs correcting for isometric boards! scroll cache holds two screens' worth
@@ -1569,191 +1516,161 @@ Function renderBoard() As Boolean
         Call renderScrollCache(cnvScrollCache, cnvScrollCacheMask, scTopX, scTopY)
         Call drawPrograms(1, cnvScrollCache, cnvScrollCacheMask)
     
-        'MsgBox "scroll cache redrawn.scTopX=" & scTopX & "scTopY=" & scTopY & "topX=" & topX & "topY=" & topY
-        
     End If
     
     renderBoard = toRet
     
 End Function
 
-Sub renderNow(Optional ByVal cnvTarget As Long = -1)
-    'render the scene now!
-    'if cnvTarget <> -1, then render to that canvas.
-    'otherwise, render to the screen
-    
+'=========================================================================
+' Render the scene now!
+'=========================================================================
+Public Sub renderNow(Optional ByVal cnvTarget As Long = -1)
+
     On Error Resume Next
-    
-    Dim cv As Long
-       
-    'setup offscreen canvases...
-    Dim newboard As Boolean
+
+    Dim newBoard As Boolean
     Dim newSprites As Boolean
     Dim newTileAnm As Boolean
     Dim newItem As Boolean
     Dim newBackground As Boolean
     Dim t As Long
-        
+
+    'Check if we need to render the background
     newBackground = renderBackground()
-    
-    newboard = renderBoard()
-    
-    Dim ns As Boolean
+
+    'Check if we need to render the board
+    newBoard = renderBoard()
+
+    'Check if we need to render the player sprites
     For t = 0 To UBound(cnvPlayer)
         If showPlayer(t) Then
-            ns = renderPlayer(cnvPlayer(t), playerMem(t), ppos(t).stance, ppos(t).frame, t)
-            If ns Then
+            If renderPlayer(cnvPlayer(t), playerMem(t), ppos(t).stance, ppos(t).frame, t) Then
                 newSprites = True
             End If
         End If
     Next t
-      
-    ' !MODIFIED BY KSNiloc...
-    Dim ni As Boolean
-    For t = 0 To MAXITEM
+
+    'Check if we need to render the item sprites
+    For t = 0 To maxItem
         If itemMem(t).bIsActive Then
-            ni = renderItem(cnvSprites(t), itemMem(t), itmPos(t), t)
-            If ni Then
-                newSprites = True
+            If renderItem(cnvSprites(t), itemMem(t), itmPos(t), t) Then
+                newItem = True
             End If
         End If
     Next t
-    
-    'check if it's time to check animated tiles
-    
-    'If lastTimestamp + 5 < Timer Then
-    'make sure we're not scrolling right now...
-    'If topX = Int(topX) And topY = Int(topY) Then
-        lastTimestamp = Timer
-        newTileAnm = renderAnimatedTiles(cnvScrollCache, cnvScrollCacheMask)
-    'End If
-    
-    'merge to screen...
-    If newboard Or newSprites Or newTileAnm Or newItem Then
+
+    'Check if we need to render animated tiles
+    lastTimestamp = Timer()
+    newTileAnm = renderAnimatedTiles(cnvScrollCache, cnvScrollCacheMask)
+
+    'If *anything* is new, render it all
+    If newBoard Or newSprites Or newTileAnm Or newItem Then
+
         If cnvTarget = -1 Then
             Call DXClearScreen(boardList(activeBoardIndex).theData.brdColor)
-            
         Else
             Call CanvasFill(cnvTarget, boardList(activeBoardIndex).theData.brdColor)
         End If
-        
-        'lay down background, if one exists...
+
+        'Render background
         Call DXDrawBackground(cnvTarget)
-        
-        'Lay down board...
+
+        'Render board
         Call DXDrawBoard(cnvTarget)
 
-        'lay down sprites...
+        'Render sprites
         Call DXDrawSprites(cnvTarget)
-        
+
+        'Refresh the screen if we're rendering to it
         If cnvTarget = -1 Then
             Call DXRefresh
         End If
 
-        'handle multitasking animations
+        'Render multitasking animations (needs fixed framerate !!!)
         Call handleMultitaskingAnimations(cnvTarget)
-        
+
     End If
+
 End Sub
 
+'=========================================================================
+' Save as renderNow, but used while running RPGCode
+'=========================================================================
 Public Sub renderRPGCodeScreen()
-    'render the rpgcode canvas to the screen
-    'if bShowMsgBox is true, show the message box
 
     On Error Resume Next
 
-    Dim cv As Long
+    'Render the rpgcode canvas
     Call DXClearScreen(0)
-    
     Call DXDrawCanvas(cnvRPGCodeScreen, 0, 0)
-    
-        
+
+    'Render the message box if it's being shown
     If gbShowMsgBox Then
-        'show the message box!!!
-        Dim wd As Long
-        wd = GetCanvasWidth(cnvMsgBox)
-        'Call PopupCanvas(cnvMsgBox, 0, 0)
-        'Call DXDrawCanvas(cnvMsgBox, (tilesX * 32 - wd) / 2, 0)
-        Call DXDrawCanvasTranslucent(cnvMsgBox, (tilesX * 32 - wd) / 2, 0, 0.75, fontColor, -1)
+        Call DXDrawCanvasTranslucent(cnvMsgBox, (tilesX * 32 - GetCanvasWidth(cnvMsgBox)) / 2, 0, 0.75, fontColor, -1)
     End If
 
+    'Refresh the screen
     Call DXRefresh
-    Call processEvent '[KSNiloc]
+
+    'Don't starve the system
+    Call processEvent
+
 End Sub
 
-
-Sub renderSpriteFrame(ByVal cnv As Long, ByVal stanceAnm As String, ByVal frame As Long)
-    'render a sprite frame at canvas cnv
-    'stanceAnm is the animation filename
-    'frame is the frame
-    
-    'checks through the sprite cache for previous renderings
-    'of this frame
-    
-    'if not found, it is rendered here and copied to the sprite cache.
-    
+'=========================================================================
+' Render a sprite
+'=========================================================================
+Private Sub renderSpriteFrame(ByVal cnv As Long, ByVal stanceAnm As String, ByVal frame As Long)
     Call renderAnimationFrame(cnv, stanceAnm, frame, 0, 0)
 End Sub
 
-Sub DXDrawSprites(ByVal cnvTarget As Long)
-    'EDITED: [Isometrics - Delano - 6/04/04]
-    'Altered the parameters for putSpriteAt to include the pending movements of the player/items.
-    
+'=========================================================================
+' Render all sprites
+'=========================================================================
+Private Sub DXDrawSprites(ByVal cnvTarget As Long)
+
     'Render sprites (players and items)
     'Called by RenderNow only.
     'Calls putSpriteAt.
     
     On Error Resume Next
-    
-    Dim ns As Boolean, ni As Boolean
-    
-    'build some arrays for quick sorting the order we will display the sprites in...
 
-    ' ! MODIFIED BY KSNiloc...
-    ReDim indicies(UBound(cnvPlayer) + MAXITEM) As Long
-    ReDim locationValues(UBound(cnvPlayer) + MAXITEM) As Long
-    Dim t As Long
+    'build some arrays for quick sorting the order we will display the sprites in...
+    ReDim indicies(UBound(cnvPlayer) + maxItem) As Long
+    ReDim locationValues(UBound(cnvPlayer) + maxItem) As Long
+    Dim t As Long, ns As Boolean, ni As Boolean
     Dim theValue As Long
     Dim curIdx As Long
-    
-    curIdx = 0
-    
+   
     'set up location values for players
     For t = 0 To UBound(cnvPlayer)
         If showPlayer(t) Then
             'determine a location value...
             theValue = (ppos(t).y * boardList(activeBoardIndex).theData.Bsizey) + ppos(t).x
-            
             'playes will have a negative index so we can differentiate them
             indicies(curIdx) = -1 * (t + 1)
             locationValues(curIdx) = theValue
-
             curIdx = curIdx + 1
         End If
     Next t
 
     'set up location values for items...
-    
-    ' ! MODIFIED BY KSNiloc...
-    For t = 0 To MAXITEM
+    For t = 0 To maxItem
         If itemMem(t).bIsActive Then
-        
             'determine a location value...
             theValue = (itmPos(t).y * boardList(activeBoardIndex).theData.Bsizey) + itmPos(t).x
-            
             'items will have a positive index so we can differentiate them
             indicies(curIdx) = t
             locationValues(curIdx) = theValue
-            
             curIdx = curIdx + 1
         End If
     Next t
-    
+
     'ok, now sort these to determine which order we should draw them in!
     Call quickSortSprites(locationValues, indicies, 0, curIdx - 1)
-       
+
     Dim curNum As Long
-    'now draw them...
     For t = 0 To curIdx - 1
         If (indicies(t) < 0) Then
             'this is a player
@@ -1779,26 +1696,28 @@ Sub DXDrawSprites(ByVal cnvTarget As Long)
 
 End Sub
 
-Sub scrollLeft(ByVal movementFraction As Double)
-    'scroll the rendered board left (by movementFraction tiles)
+'=========================================================================
+' Scroll the board left
+'=========================================================================
+Public Sub scrollLeft(ByVal movementFraction As Double)
     On Error Resume Next
-    
     topX = topX + movementFraction
-    
     Call checkScrollBounds
-
 End Sub
 
-Sub scrollDown(ByVal movementFraction As Double)
-    'scroll the rendered board down (by movementFraction tiles)
+'=========================================================================
+' Scroll the board down
+'=========================================================================
+Public Sub scrollDown(ByVal movementFraction As Double)
     On Error Resume Next
-    
     topY = topY - movementFraction
-    
     Call checkScrollBounds
 End Sub
 
-Sub scrollDownLeft(ByVal movementFraction As Double, ByVal scrollEast As Boolean, ByVal scrollNorth As Boolean)
+'=========================================================================
+' Scroll the board down and left
+'=========================================================================
+Public Sub scrollDownLeft(ByVal movementFraction As Double, ByVal scrollEast As Boolean, ByVal scrollNorth As Boolean)
     'REWRITTEN: [Isometrics - Delano - 30/03/04]
     'ADDED: Receives two more arguments from pushPlayerNorthEast.
     'Scrolling directions are now independent from each other.
@@ -1823,7 +1742,10 @@ Sub scrollDownLeft(ByVal movementFraction As Double, ByVal scrollEast As Boolean
 
 End Sub
 
-Sub scrollDownRight(ByVal movementFraction As Double, ByVal scrollWest As Boolean, ByVal scrollNorth As Boolean)
+'=========================================================================
+' Scroll the board down and right
+'=========================================================================
+Public Sub scrollDownRight(ByVal movementFraction As Double, ByVal scrollWest As Boolean, ByVal scrollNorth As Boolean)
     'REWRITTEN: [Isometrics - Delano - 31/03/04]
     'ADDED: Receives two more arguments from pushPlayerNorthWest.
     'Scrolling directions are now independent from each other.
@@ -1848,7 +1770,10 @@ Sub scrollDownRight(ByVal movementFraction As Double, ByVal scrollWest As Boolea
 
 End Sub
 
-Sub scrollUpLeft(ByVal movementFraction As Double, ByVal scrollEast As Boolean, ByVal scrollsouth As Boolean)
+'=========================================================================
+' Scroll the board up and left
+'=========================================================================
+Public Sub scrollUpLeft(ByVal movementFraction As Double, ByVal scrollEast As Boolean, ByVal scrollsouth As Boolean)
     'REWRITTEN: [Isometrics - Delano - 31/03/04]
     'ADDED: Receives two more arguments from pushPlayerSouthEast.
     'Scrolling directions are now independent from each other.
@@ -1873,7 +1798,10 @@ Sub scrollUpLeft(ByVal movementFraction As Double, ByVal scrollEast As Boolean, 
         
 End Sub
 
-Sub scrollUpRight(ByVal movementFraction As Double, ByVal scrollWest As Boolean, ByVal scrollsouth As Boolean)
+'=========================================================================
+' Scroll the board up and right
+'=========================================================================
+Public Sub scrollUpRight(ByVal movementFraction As Double, ByVal scrollWest As Boolean, ByVal scrollsouth As Boolean)
     'REWRITTEN: [Isometrics - Delano - 31/03/04]
     'ADDED: Receives two more arguments from pushPlayerSouthWest.
     'Scrolling directions are now independent from each other.
@@ -1898,66 +1826,67 @@ Sub scrollUpRight(ByVal movementFraction As Double, ByVal scrollWest As Boolean,
      
 End Sub
 
-Sub scrollUp(ByVal movementFraction As Double)
-    'scroll the rendered board down (by movementFraction tiles)
+'=========================================================================
+' Scroll the board up
+'=========================================================================
+Public Sub scrollUp(ByVal movementFraction As Double)
     On Error Resume Next
-    
     topY = topY + movementFraction
-
     Call checkScrollBounds
 End Sub
 
-Sub scrollRight(ByVal movementFraction As Double)
-    'scroll the rendered board right (by movementFraction tiles)
+'=========================================================================
+' Scroll the board right
+'=========================================================================
+Public Sub scrollRight(ByVal movementFraction As Double)
     On Error Resume Next
     topX = topX - movementFraction
-
     Call checkScrollBounds
 End Sub
 
-Sub showMsgBox()
-    'show the message box on the next rpgcode render
+'=========================================================================
+' Show the message box
+'=========================================================================
+Public Sub showMsgBox()
     gbShowMsgBox = True
 End Sub
 
-Sub hideMsgBox()
-    'show the message box on the next rpgcode render
+'=========================================================================
+' Hide the message box
+'=========================================================================
+Public Sub hideMsgBox()
     gbShowMsgBox = False
 End Sub
 
-Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testingPRG As Boolean)
+'=========================================================================
+' Init the DirectX window
+'=========================================================================
+Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testingPRG As Boolean)
     'EDITED: [Isometrics - Delano 29/03/04]
     'Added the assignment of isoTilesX,Y - dimensions of screen in iso-tiles.
     'Can take decimal value: x.5 or x.0
-    
-    'Init DX or GDI screen
-    
+   
     'Called by InitGraphics only.
     
     On Error Resume Next
-    
-    Dim useDX As Long
-    Dim a As Long
-    resX = Width: resY = height
-    
+
+    'Use DirectX
+    Const useDX = 1
+
+    'Update resolution
+    resX = Width
+    resY = height
+
+    'Number of tiles screen can hold
     tilesX = Int(Width / 32)
     tilesY = Int(height / 32)
-    
+
     'Dimensions of screen in isometric tiles.
     isoTilesX = tilesX / 2 '= 10.0 (640res) = 12.5 (800res)
     isoTilesY = tilesY * 2 '= 30 (640res) = 36 (800res)
-   
-    If mainMem.mainScreenType = 2 Then
-        useDX = 0
-    Else
-        useDX = 1
-    End If
-    useDX = 1
-    
-    If useDX = 1 Then
-        inDXMode = True
-    End If
-    
+
+    'Get fullscreen setting from main file (unless we're testing
+    'a PRG, then it's always windowed)
     Dim fullScreen As Long
     If Not testingPRG Then
         fullScreen = mainMem.extendToFullScreen
@@ -1965,7 +1894,7 @@ Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testing
         fullScreen = 0
         endform.Tag = 1
     End If
-    
+
     If fullScreen = 0 Then
         inFullScreenMode = False
         host.style = 1
@@ -1974,6 +1903,7 @@ Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testing
         host.style = 0
     End If
 
+    'Set the dimensions the host window will be created with
     With host
         .Width = Width * screen.TwipsPerPixelX
         .height = height * screen.TwipsPerPixelY
@@ -1985,32 +1915,29 @@ Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testing
         End If
     End With
 
+    'Get screen depth from the main file
     Dim depth As Long
     Select Case mainMem.colordepth
-        Case COLOR16:
-            depth = 16
-        Case COLOR24:
-            depth = 24
-        Case COLOR32:
-            depth = 32
+        Case COLOR16: depth = 16
+        Case COLOR24: depth = 24
+        Case COLOR32: depth = 32
     End Select
-    
-    Call host.Show
-    
-    Dim done As Boolean
-    Do Until done
+
+    'Create the DirectX host window
+    Call host.Create
+
+    Do While True
+
         'enter Graphics mode...
-        a = DXInitGfxMode(host.hwnd, Width, height, useDX, depth, fullScreen)
-        If a = 0 Then
+        If DXInitGfxMode(host.hwnd, Width, height, useDX, depth, fullScreen) = 0 Then
             'tried to init gfx, but failed.
             'try a different color depth...
-            If depth = 16 And fullScreen = 0 Then
+            If (depth = 16) And (fullScreen = 0) Then
                 'tried everything...
                 Call Unload(host)
-                Call MsgBox("Error initializing graphics mode.  Make sure you have DirectX 8 or higher installed.")
+                Call MsgBox("Error initializing graphics mode. Make sure you have DirectX 8 or higher installed.")
                 End
-            End If
-            If depth = 32 Then
+            ElseIf depth = 32 Then
                 depth = 24
             ElseIf depth = 24 Then
                 depth = 16
@@ -2019,62 +1946,79 @@ Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testing
                 inFullScreenMode = False
             End If
         Else
-            done = True
+            Exit Do
         End If
+
     Loop
-    
-    Call DXClearScreen(0)
-    
+
     'find transparent color...
     Call determineTransparentColor
     
     'Now set up offscreen canvases
     Call createCanvases(Width, height)
+
+    'Clear the screen (remove backbuffer garbage)
+    Call DXClearScreen(0)
+    Call DXRefresh
+    
+    'Show the DirectX host window
+    Call host.Show
+
 End Sub
 
-Sub initGraphics(Optional ByVal testingPRG As Boolean) ' [KSNiloc]
-    'initialise the playing window based upon the data in the main file
+'=========================================================================
+' Init the graphics engine
+'=========================================================================
+Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
+
     On Error Resume Next
-    Dim a As Long
     
+    'Init the engine
     Call InitTkGfx
-    
-    'call tracestring("in Form_Load... abouit to init canvas system")
     Call InitCanvasEngine
-    'call tracestring("done canvas system")
-    
-    'Call InitLayerSystem
-    
-    'call tracestring("about to test joystick")
+
+    'Test for joystick
     useJoystick = JoyTest()
-    'call tracestring("done joystick")
-    
+
+    'Get screen width and height (in twips)
     screenWidth = screen.height * (1 / 0.75)
     screenHeight = screen.height
-   
+
+    'Get resolution x/y
     resX = (screenWidth) / screen.TwipsPerPixelX
     resY = screenHeight / screen.TwipsPerPixelY
-    
+
+    'Get res from main file
     If mainMem.mainResolution = 0 Then
-        Call showScreen(640, 480, testingPRG)
-        screenWidth = 640 * screen.TwipsPerPixelX
-        screenHeight = 480 * screen.TwipsPerPixelY
+        screenWidth = 640
+        screenHeight = 480
     ElseIf mainMem.mainResolution = 1 Then
-        Call showScreen(800, 600, testingPRG)
-        screenWidth = 800 * screen.TwipsPerPixelX
-        screenHeight = 600 * screen.TwipsPerPixelY
+        screenWidth = 800
+        screenHeight = 600
     ElseIf mainMem.mainResolution = 2 Then
-        Call showScreen(1024, 768, testingPRG)
-        screenWidth = 1024 * screen.TwipsPerPixelX
-        screenHeight = 768 * screen.TwipsPerPixelY
+        screenWidth = 1024
+        screenHeight = 768
     End If
-    
+
+    'Show the screen
+    Call showScreen(screenWidth, screenHeight, testingPRG)
+
+    'Update screen width and height
+    screenWidth = screenWidth * screen.TwipsPerPixelX
+    screenHeight = screenHeight * screen.TwipsPerPixelY
+
 End Sub
 
-Function usingDX() As Boolean
+'=========================================================================
+' Using DirectX?
+'=========================================================================
+Public Property Get usingDX() As Boolean
     usingDX = inDXMode
-End Function
+End Property
 
-Function usingFullScreen() As Boolean
+'=========================================================================
+' In full-screen mode?
+'=========================================================================
+Public Property Get usingFullScreen() As Boolean
     usingFullScreen = inFullScreenMode
-End Function
+End Property

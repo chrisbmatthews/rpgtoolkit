@@ -7,6 +7,13 @@ Attribute VB_Name = "transFight"
 
 '=========================================================================
 ' Interface with fight plugin
+' Status: A-
+'=========================================================================
+
+'=========================================================================
+' Understanding how this all works is quite tricky. Simply, we call into
+' the fight plugin which then calls back to us and we call into it again.
+' After it runs the whole fight, it returns how the fight went.
 '=========================================================================
 
 Option Explicit
@@ -304,7 +311,7 @@ Public Sub fightTick()
 
     Dim t As Long
     Dim u As Long
-    Dim s As Long
+    Dim S As Long
     Dim status As TKStatusEffect
     
     'first increment ticks...
@@ -322,20 +329,20 @@ Public Sub fightTick()
                     If Not (parties(t).fighterList(u).isPlayer) Then
                         'this is an enemy.
                         'check for enemy status effects...
-                        For s = 0 To UBound(parties(t).fighterList(u).enemy.status)
-                            If parties(t).fighterList(u).enemy.status(s).roundsLeft > 0 And _
-                                parties(t).fighterList(u).enemy.status(s).statusFile <> "" Then
-                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).enemy.status(s).statusFile, status)
+                        For S = 0 To UBound(parties(t).fighterList(u).enemy.status)
+                            If parties(t).fighterList(u).enemy.status(S).roundsLeft > 0 And _
+                                parties(t).fighterList(u).enemy.status(S).statusFile <> "" Then
+                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).enemy.status(S).statusFile, status)
                                 
                                 'now apply the effects of the status...
-                                Call invokeStatus(t, u, status, parties(t).fighterList(u).enemy.status(s).statusFile)
+                                Call invokeStatus(t, u, status, parties(t).fighterList(u).enemy.status(S).statusFile)
                                 
-                                parties(t).fighterList(u).enemy.status(s).roundsLeft = parties(t).fighterList(u).enemy.status(s).roundsLeft - 1
-                                If parties(t).fighterList(u).enemy.status(s).roundsLeft = 0 Then
-                                    parties(t).fighterList(u).enemy.status(s).statusFile = ""
+                                parties(t).fighterList(u).enemy.status(S).roundsLeft = parties(t).fighterList(u).enemy.status(S).roundsLeft - 1
+                                If parties(t).fighterList(u).enemy.status(S).roundsLeft = 0 Then
+                                    parties(t).fighterList(u).enemy.status(S).statusFile = ""
                                 End If
                             End If
-                        Next s
+                        Next S
                         
                         'the enemy now makes a move...
                         Call fightInformCharge(t, u)
@@ -346,20 +353,20 @@ Public Sub fightTick()
                         'this is a player.
                         
                         'check for player status effects...
-                        For s = 0 To UBound(parties(t).fighterList(u).player.status)
-                            If parties(t).fighterList(u).player.status(s).roundsLeft > 0 And _
-                                parties(t).fighterList(u).player.status(s).statusFile <> "" Then
-                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).player.status(s).statusFile, status)
+                        For S = 0 To UBound(parties(t).fighterList(u).player.status)
+                            If parties(t).fighterList(u).player.status(S).roundsLeft > 0 And _
+                                parties(t).fighterList(u).player.status(S).statusFile <> "" Then
+                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).player.status(S).statusFile, status)
                                 
                                 'now apply the effects of the status...
-                                Call invokeStatus(t, u, status, parties(t).fighterList(u).player.status(s).statusFile)
+                                Call invokeStatus(t, u, status, parties(t).fighterList(u).player.status(S).statusFile)
                                 
-                                parties(t).fighterList(u).player.status(s).roundsLeft = parties(t).fighterList(u).player.status(s).roundsLeft - 1
-                                If parties(t).fighterList(u).player.status(s).roundsLeft = 0 Then
-                                    parties(t).fighterList(u).player.status(s).statusFile = ""
+                                parties(t).fighterList(u).player.status(S).roundsLeft = parties(t).fighterList(u).player.status(S).roundsLeft - 1
+                                If parties(t).fighterList(u).player.status(S).roundsLeft = 0 Then
+                                    parties(t).fighterList(u).player.status(S).statusFile = ""
                                 End If
                             End If
-                        Next s
+                        Next S
                         
                         If Not (parties(t).fighterList(u).freezeCharge) Then
                             'now lock the player from charging again...
@@ -391,7 +398,7 @@ Public Sub loadEnemies(ByRef eneList() As String, ByVal num As Long)
     On Error Resume Next
     Dim t As Long
     For t = 0 To num - 1
-        Call openEnemy(projectPath$ + enePath$ + eneList(t), enemyMem(t))
+        Call openEnemy(projectPath & enePath & eneList(t), enemyMem(t))
     Next t
 End Sub
 
@@ -466,7 +473,11 @@ End Sub
 '=========================================================================
 ' Begin a fight against the enemies passed in on the background passed in
 '=========================================================================
-Public Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As String)
+Public Sub runFight( _
+                       ByRef eneList() As String, _
+                       ByVal num As Long, _
+                       ByVal bkg As String _
+                                             )
 
     On Error Resume Next
        
@@ -517,67 +528,66 @@ Public Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As S
     Next t
     Call CreatePlayerParty(parties(1), pParty, inv, 0)
     
-    'play fight music...
+    'play fight music
     Dim back As TKBackground
-    Call openBackground(projectPath$ + bkgPath$ + bkg, back)
-    Dim oldsong As String
-    oldsong = musicPlaying
+    Call openBackground(projectPath & bkgPath & bkg, back)
+    Dim oldSong As String
+    oldSong = musicPlaying
     boardList(activeBoardIndex).theData.boardMusic = back.bkgMusic
     Call checkMusic(True)
            
     If mainMem.fightPlugin <> "" Then
-        Dim aa As Long
+    
+        Dim isFightPlugin As Long
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
-        
+
+        'Check if the plugin is a fight plugin
+        plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         If isVBPlugin(plugName) Then
-            aa = VBPlugin(plugName).plugType(PT_FIGHT)
+            isFightPlugin = VBPlugin(plugName).plugType(PT_FIGHT)
         Else
-            aa = plugType(plugName, PT_FIGHT)
+            isFightPlugin = plugType(plugName, PT_FIGHT)
         End If
-        
-        If aa = 1 Then
-            Dim a As Long
-            
+
+        'Respond to the outcome of the fight
+        If isFightPlugin = 1 Then
+
+            'Tell fight plugin to run the fight
+            Dim fightOutcome As Long
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).fight(num, -1, bkg, canrun)
+                fightOutcome = VBPlugin(plugName).fight(num, -1, bkg, canrun)
             Else
-                a = PLUGFight(plugName, num, -1, bkg, canrun)
+                fightOutcome = PLUGFight(plugName, num, -1, bkg, canrun)
             End If
             
-            Select Case a
-                Case FIGHT_RUN_AUTO:
-                    'run the run away program...
-                    Call runProgram(projectPath$ + prgPath$ + strRunProgram)
-                Case FIGHT_RUN_MANUAL:
-                    'no need to run anything...
-                Case FIGHT_WON_AUTO:
+            Select Case fightOutcome
+
+                Case FIGHT_RUN_AUTO     'Ran away
+                    Call runProgram(projectPath & prgPath & strRunProgram)
+
+                Case FIGHT_WON_AUTO     'Players won
                     Call rewardPlayers(num, strRewardProgram)
-                    'give players rewards...
-                Case FIGHT_WON_MANUAL:
-                    'no need to do anything...
-                Case FIGHT_LOST:
-                    'do a game over...
+
+                Case FIGHT_LOST         'Players lost
                     Call gameOver
+
             End Select
         End If
     End If
-    boardList(activeBoardIndex).theData.boardMusic = oldsong
+
+    'Play old music
+    boardList(activeBoardIndex).theData.boardMusic = oldSong
     Call checkMusic(True)
 
+    'Flag the fight has ended
     fightInProgress = False
-    
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+
 End Sub
 
 '=========================================================================
 ' Randomly return an enemy of the skill passed in
 '=========================================================================
-Function getEnemy(ByVal skill As Long) As String
+Private Function getEnemy(ByVal skill As Long) As String
 
     On Error Resume Next
     

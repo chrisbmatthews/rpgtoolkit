@@ -1298,10 +1298,10 @@ Public Sub CosRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRe
     
         Case 1
             retval.dataType = DT_NUM
-            retval.num = Cos(radians(paras(0).num))
+            retval.num = Round(Cos(radians(paras(0).num)), 7)
         
         Case 2
-            Call SetVariable(paras(1).dat, Cos(radians(paras(0).num)), theProgram)
+            Call SetVariable(paras(1).dat, Round(Cos(radians(paras(0).num)), 7), theProgram)
         
         Case Else
             Call debugger("Cos() requires one or two data elements-- " & Text)
@@ -1347,7 +1347,7 @@ Public Sub CreateItemRPG( _
     End If
 
     'See if the arrays are large enough
-    Do While MAXITEM < theOne
+    Do While maxItem < theOne
         'Enlarge the arrays
         dimensionItemArrays
     Loop
@@ -3454,7 +3454,7 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         
         'Retrieve the code from the program...
-        openProgram filen, tempPRG
+        tempPRG = openProgram(filen)
         
         With theProgram
         
@@ -3683,7 +3683,7 @@ Sub ItemLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'numeral
         theOne = x
     End If
-    theOne = inBounds(theOne, 0, MAXITEM)
+    theOne = inBounds(theOne, 0, maxItem)
     Call SetVariable(useIt2$, str$(boardList(activeBoardIndex).theData.itmX(theOne)), theProgram)
     Call SetVariable(useIt3$, str$(boardList(activeBoardIndex).theData.itmY(theOne)), theProgram)
     Call SetVariable(useIt4$, str$(boardList(activeBoardIndex).theData.itmLayer(theOne)), theProgram)
@@ -3819,21 +3819,21 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Else
         Select Case boardList(activeBoardIndex).theData.ambienteffect
             Case 0
-                addonR = 0
-                addonG = 0
-                addonB = 0
+                addOnR = 0
+                addOnG = 0
+                addOnB = 0
             Case 1
-                addonR = 75
-                addonG = 75
-                addonB = 75
+                addOnR = 75
+                addOnG = 75
+                addOnB = 75
             Case 2
-                addonR = -75
-                addonG = -75
-                addonB = -75
+                addOnR = -75
+                addOnG = -75
+                addOnB = -75
             Case 3
-                addonR = 0
-                addonG = 0
-                addonB = 75
+                addOnR = 0
+                addOnG = 0
+                addOnB = 75
         End Select
         'internal engine drawing routines
         'first, get the shade color of the board...
@@ -3849,9 +3849,9 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
             shadeB = shadeB + lightShade
         End If
         
-        addonR = addonR + shadeR
-        addonG = addonG + shadeG
-        addonB = addonB + shadeB
+        addOnR = addOnR + shadeR
+        addOnG = addOnG + shadeG
+        addOnB = addOnB + shadeB
         
         'now redraw the layers...
         Dim file As String
@@ -3871,24 +3871,24 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
                                   projectPath$ + tilePath$ + BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
                                   xx, _
                                   yy, _
-                                  boardList(activeBoardIndex).theData.ambientred(num1, num2, lll) + addonR, _
-                                  boardList(activeBoardIndex).theData.ambientgreen(num1, num2, lll) + addonG, _
-                                  boardList(activeBoardIndex).theData.ambientblue(num1, num2, lll) + addonB, False)
+                                  boardList(activeBoardIndex).theData.ambientred(num1, num2, lll) + addOnR, _
+                                  boardList(activeBoardIndex).theData.ambientgreen(num1, num2, lll) + addOnG, _
+                                  boardList(activeBoardIndex).theData.ambientblue(num1, num2, lll) + addOnB, False)
                     Call drawTileCNV(cnvScrollCacheMask, _
                                   projectPath$ + tilePath$ + BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
                                   xx, _
                                   yy, _
-                                  boardList(activeBoardIndex).theData.ambientred(num1, num2, lll) + addonR, _
-                                  boardList(activeBoardIndex).theData.ambientgreen(num1, num2, lll) + addonG, _
-                                  boardList(activeBoardIndex).theData.ambientblue(num1, num2, lll) + addonB, True)
+                                  boardList(activeBoardIndex).theData.ambientred(num1, num2, lll) + addOnR, _
+                                  boardList(activeBoardIndex).theData.ambientgreen(num1, num2, lll) + addOnG, _
+                                  boardList(activeBoardIndex).theData.ambientblue(num1, num2, lll) + addOnB, True)
                 Else
                     Call drawTileCNV(cnvScrollCache, _
                                   projectPath$ + tilePath$ + BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
                                   xx, _
                                   yy, _
-                                  boardList(activeBoardIndex).theData.ambientred(num1, num2, lll) + addonR, _
-                                  boardList(activeBoardIndex).theData.ambientgreen(num1, num2, lll) + addonG, _
-                                  boardList(activeBoardIndex).theData.ambientblue(num1, num2, lll) + addonB, False)
+                                  boardList(activeBoardIndex).theData.ambientred(num1, num2, lll) + addOnR, _
+                                  boardList(activeBoardIndex).theData.ambientgreen(num1, num2, lll) + addOnG, _
+                                  boardList(activeBoardIndex).theData.ambientblue(num1, num2, lll) + addOnB, False)
                 End If
             End If
         Next lll
@@ -5335,21 +5335,21 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Else
         Select Case boardList(activeBoardIndex).theData.ambienteffect
             Case 0
-                addonR = 0
-                addonG = 0
-                addonB = 0
+                addOnR = 0
+                addOnG = 0
+                addOnB = 0
             Case 1
-                addonR = 75
-                addonG = 75
-                addonB = 75
+                addOnR = 75
+                addOnG = 75
+                addOnB = 75
             Case 2
-                addonR = -75
-                addonG = -75
-                addonB = -75
+                addOnR = -75
+                addOnG = -75
+                addOnB = -75
             Case 3
-                addonR = 0
-                addonG = 0
-                addonB = 75
+                addOnR = 0
+                addOnG = 0
+                addOnB = 75
         End Select
         'internal engine drawing routines
         'first, get the shade color of the board...
@@ -5365,14 +5365,14 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
             shadeB = shadeB + lightShade
         End If
         
-        addonR = addonR + shadeR
-        addonG = addonG + shadeG
-        addonB = addonB + shadeB
+        addOnR = addOnR + shadeR
+        addOnG = addOnG + shadeG
+        addOnB = addOnB + shadeB
         
         Dim file As String, hdc As Long
         file$ = addExt(lit1$, ".gph")
         file$ = projectPath$ & tilePath$ & file$
-        Call drawTileCNV(cnvRPGCodeScreen, file$, num1, num2, addonR, addonG, addonB, False)
+        Call drawTileCNV(cnvRPGCodeScreen, file$, num1, num2, addOnR, addOnG, addOnB, False)
         'Call renderRPGCodeScreen
         
         ' ! MODIFIED BY KSNiloc...
@@ -5954,7 +5954,7 @@ Public Sub RPGCodeRPG(ByVal Text As String, _
     Open App.path & "\tempPRG" For Output As #ff
         Print #ff, line
     Close #ff
-    openProgram App.path & "\tempPRG", tempPRG
+    tempPRG = openProgram(App.path & "\tempPRG")
     Kill App.path & "\tempPRG"
     
     'Enlarge the program...
@@ -6920,14 +6920,14 @@ Public Sub SinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRe
                 Exit Sub
             End If
             retval.dataType = DT_NUM
-            retval.num = Sin(radians(paras(0).num))
+            retval.num = Round(Sin(radians(paras(0).num)), 7)
         
         Case 2
             If Not paras(0).dataType = DT_NUM Then
                 debugger "Sin() requires a numerical data element-- " & Text
                 Exit Sub
             End If
-            SetVariable paras(1).dat, Sin(radians(paras(0).num)), theProgram
+            SetVariable paras(1).dat, Round(Sin(radians(paras(0).num)), 7), theProgram
         
         Case Else
             debugger "Sin() requires one or two data elements-- " & Text
