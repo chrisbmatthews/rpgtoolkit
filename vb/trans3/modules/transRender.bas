@@ -1783,7 +1783,7 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
         .Left = (Screen.width - .width) / 2
         If Not inFullScreenMode Then
             .width = .width + (6) * Screen.TwipsPerPixelX
-            .height = .height + (24 + 8) * Screen.TwipsPerPixelY
+            .height = .height + (24) * Screen.TwipsPerPixelY
         End If
     End With
 
