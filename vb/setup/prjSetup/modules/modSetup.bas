@@ -1,6 +1,6 @@
 Attribute VB_Name = "modSetup"
 '=========================================================================
-' All contents copyright 2004, Colin James Fitzpatrick
+' All contents copyright 2004, 2005, Colin James Fitzpatrick
 ' All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '=========================================================================
@@ -27,7 +27,6 @@ Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (By
 Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function InitCommonControlsEx Lib "comctl32.dll" (ByRef iccex As tagInitCommonControlsEx) As Boolean
 Private Declare Function lOpen Lib "kernel32" Alias "_lopen" (ByVal strFileName As String, ByVal lngFlags As Long) As Long
 Private Declare Function lClose Lib "kernel32" Alias "_lclose" (ByVal hFile As Long) As Long
 
@@ -36,29 +35,8 @@ Private Declare Function lClose Lib "kernel32" Alias "_lclose" (ByVal hFile As L
 '=========================================================================
 Private Const REG_SZ = 1                        ' Registry string
 Private Const HKEY_LOCAL_MACHINE = &H80000002   ' Local machine registry section
-Private Const ICC_USEREX_CLASSES = &H200        ' Use EX classes
 Private Const OF_SHARE_EXCLUSIVE = &H10         ' Exclusive access
-Public Const RPGTOOLKIT_VERSION = "3.05"        ' Version of the toolkit
-
-'=======================================================================
-' Common controls structure
-'=======================================================================
-Private Type tagInitCommonControlsEx
-   lngSize As Long                              ' Size of this struct
-   lngIcc As Long                               ' Flags
-End Type
-
-'=======================================================================
-' Initiate the common controls
-'=======================================================================
-Public Function initCommonControls() As Boolean
-    On Error Resume Next
-    Dim iccex As tagInitCommonControlsEx
-    iccex.lngSize = LenB(iccex)
-    iccex.lngIcc = ICC_USEREX_CLASSES
-    Call InitCommonControlsEx(iccex)
-    initCommonControls = (Err.Number = 0)
-End Function
+Public Const RPGTOOLKIT_VERSION = "3.06"        ' Version of the toolkit
 
 '=========================================================================
 ' Main entry point
@@ -108,7 +86,7 @@ Private Function isFileOpen(ByRef strFileName As String) As Boolean
 
     End If
 
-    ' Return whether we trigged a sharing violation
+    ' Return whether we triggered a sharing violation
     isFileOpen = ((hFile = -1) And (lngError = 32))
 
 End Function
@@ -303,7 +281,7 @@ Private Sub extractDir( _
 
             ' File is open!
             Dim res As VbMsgBoxResult
-            res = MsgBox("The file " & strDestFileName & " is in use, and, therefore, cannot be written to. To resolve this error and continue the installation, please close the file, any programs that might be using the file, or, better yet, close all other programs." & vbCrLf & vbCrLf & "How would you like to proceed?", vbAbortRetryIgnore Or vbExclamation Or vbDefaultButton2, "Cannot Write")
+            res = MsgBox("The file " & strDestFileName & " is in use, and, therefore, cannot be written to. To resolve this error, and continue the installation, please close the file, any programs that might be using the file, or, better yet, close all other programs." & vbCrLf & vbCrLf & "How would you like to proceed?", vbAbortRetryIgnore Or vbExclamation Or vbDefaultButton2, "Cannot Write")
             If (res = vbAbort) Then
                 If (MsgBox("Are you sure? If you decide to install the Toolkit at a latter date, you will need to restart this installation.", vbCritical Or vbYesNo Or vbDefaultButton2, "Exiting Installation") = vbYes) Then
                     End

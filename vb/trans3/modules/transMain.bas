@@ -56,6 +56,9 @@ Public Sub Main()
 
     On Error Resume Next
 
+    ' Apply XP visual styles, if available
+    Call initCommonControls
+
     ' Init some misc stuff
     Call initDefaults
 
