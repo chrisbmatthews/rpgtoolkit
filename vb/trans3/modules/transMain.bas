@@ -55,7 +55,7 @@ Public Sub Main()
     mainFile = getMainFilename()
 
     'If we got one
-    If mainFile <> "" Then
+    If (mainFile <> "") Then
 
         'Open the main file
         Call openMain(mainFile, mainMem)
@@ -108,11 +108,11 @@ Private Function getMainFilename() As String
     If (Command <> "") Then
 
         Dim args() As String
-        args() = Split(Command, " ", , vbTextCompare)
+        args() = Split(Command, " ")
 
-        If UBound(args) = 0 Then
+        If (UBound(args) = 0) Then
 
-            If LCase(GetExt(Command)) = "tpk" Then
+            If (LCase(GetExt(Command)) = "tpk") Then
 
                 Call setupPakSystem(TempDir & Command)
                 Call Kill(PakFileMounted)
@@ -134,7 +134,7 @@ Private Function getMainFilename() As String
 
             End If
 
-        ElseIf UBound(args) = 1 Then
+        ElseIf (UBound(args) = 1) Then
 
             'run program
             mainFile = gamPath & args(0)
@@ -142,14 +142,14 @@ Private Function getMainFilename() As String
             Call openSystems(True)
             Call DXClearScreen(0)
             Call DXRefresh
-            Call runProgram(projectPath & prgPath & args(1))
+            Call runProgram(projectPath & prgPath & args(1), , , True)
             Call closeSystems
 
         End If
 
     Else
 
-        If fileExists(gamPath & "main.gam") Then
+        If (fileExists(gamPath & "main.gam")) Then
 
             'main.gam exists.
             getMainFilename = gamPath & "main.gam"
@@ -176,7 +176,7 @@ Private Function getMainFilename() As String
             Dim whichType As String
             whichType = GetExt(loadedMainFile)
 
-            If UCase(whichType) = "TPK" Then
+            If (UCase(whichType) = "TPK") Then
                 Call setupPakSystem(loadedMainFile)
                 getMainFilename = "main.gam"
                 projectPath = ""
@@ -200,7 +200,7 @@ Private Sub correctPaths()
     On Error Resume Next
 
     'If we're running from a single file, the project is in this directory
-    If (runningAsEXE) Or (pakFileRunning) Then
+    If ((runningAsEXE) Or (pakFileRunning)) Then
         projectPath = ""
         currentDir = TempDir() & "TKCache\"
     End If
@@ -450,6 +450,8 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     On Error Resume Next
 
     'Setup the cursor
+    host.cursorHotSpotX = mainMem.hotSpotX
+    host.cursorHotSpotY = mainMem.hotSpotY
     host.mousePointer = mainMem.mouseCursor
 
     'Nulify top x/y vars

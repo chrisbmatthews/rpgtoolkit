@@ -109,7 +109,7 @@ End Sub
 Public Function isMediaPlaying(ByVal file As String) As Boolean
 
     On Error Resume Next
-   
+
     'Get extension
     Dim ext As String
     ext = UCase(GetExt(file))
