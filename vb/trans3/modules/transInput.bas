@@ -148,7 +148,7 @@ End Sub
 ' Get the last key pressed
 '=========================================================================
 Public Property Get lastKeyPressed() As Integer
-    lastKeyPressed = m_keyQueue.top()
+    lastKeyPressed = m_keyQueue.Top()
 End Property
 
 '=========================================================================
@@ -286,9 +286,10 @@ Public Function WaitForKey() As String
     On Error Resume Next
 
     ' Clear the last pressed key.
+    Call FlushKB
     bWaitingForInput = True
 
-    'Check the joystick.
+    ' Check the joystick.
     Dim jButton(4) As Boolean
     Dim theDir As Long
 
