@@ -208,13 +208,20 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             destList$(pList) = GetElement(dataUse$, pList)
         Next pList
 
-        ReDim quotes(1) As Long
+        ReDim quotes(0) As Long
         Dim commaNum As Long
+        commaNum = -1
         For pList = 1 To Len(Text)
-            If (Mid(Text, 1, 1) = Chr(34)) Then
+            If ((Mid(Text, pList, 1) = ",") Or (Mid(Text, pList, 1) = "(")) Then
                 commaNum = commaNum + 1
                 ReDim Preserve quotes(commaNum)
-                quotes(commaNum) = pList
+                Dim adv As Long
+                For adv = pList + 1 To Len(Text)
+                    If (Mid(Text, adv, 1) <> " ") Then
+                        quotes(commaNum) = adv
+                        Exit For
+                    End If
+                Next adv
             End If
         Next pList
 
@@ -224,22 +231,23 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Dim lit As String, num As Double
         Dim dataG As Long, dUse As String
         'Now to correspond the two lists
-               
+
         For pList = 1 To number
             'get the value from the previous stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
             dataG = getValue(parameterList$(pList), lit$, num, theProgram)
             'restore stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
-            
+    
             'Call traceString("Running line - " & Text & " - at param - " & parameterList$(pList) & " - num: " & num & " - lit: " & lit)
             'Call traceString("Type is " & dataG)
-                       
+    
             If (dataG = 0) Then
                 dUse$ = CStr(num)
                 'Call traceString("Came up num, went with " & dUse)
             Else
                 'Call traceString("Came up lit")
+                'Call traceString(Mid(Text, quotes(pList - 1), 1))
                 If ((Mid(Text, quotes(pList - 1), 1) <> Chr(34))) _
                  And (Right(lit, 1) <> "!") And (Right(lit, 1) <> "$") Then
                     'Call traceString("Assuming object")
