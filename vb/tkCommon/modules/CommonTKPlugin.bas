@@ -152,7 +152,7 @@ Public Sub registerServer(ByRef strServer As String, ByVal hwnd As Long, Optiona
 #If (USE_REGSVR32) Then
 
     ' Just call regsvr32
-    Call execute("regsvr32 /s " & IIf(bRegister, vbNullString, "/u ") & strServer)
+    Call execute("regsvr32 /s " & IIf(bRegister, vbNullString, "/u ") & """" & strServer & """")
 
 #Else
 
