@@ -26,6 +26,9 @@ Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As L
 
 Public gGameState As GAME_LOGIC_STATE   'current state of logic
 
+'3.0.5 - testing.
+Public gAvgTime As Double               'Average loop time in GS_MOVEMENT state.
+
 Public Enum GAME_LOGIC_STATE            'state of gameLogic() procedure
     GS_IDLE = 0                         '  just re-renders the screen
     GS_QUIT = 1                         '  shutdown sequence
@@ -34,7 +37,7 @@ Public Enum GAME_LOGIC_STATE            'state of gameLogic() procedure
     GS_PAUSE = 4                        '  pause game (do nothing)
 End Enum
 
-Public movementCounter As Long          'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
+'Public movementCounter As Long          'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
 Public saveFileLoaded As Boolean        'was the game loaded from start menu?
 Public runningAsEXE As Boolean          'are we running as an exe file?
 Public gShuttingDown As Boolean         'Has the shutdown process been initiated?
@@ -88,7 +91,7 @@ Public Sub closeSystems()
     Call killMedia
     Call DeletePakTemp
     Call host.Destroy
-    Call Unload(debugwin)
+    Call Unload(debugWin)
     Call closeActiveX
     Call showEndForm
 End Sub
@@ -255,10 +258,13 @@ End Sub
 Public Sub gameLogic()
 
     On Local Error Resume Next
-
+    
     'This procedure contains all of the engine's logic. It is constantly
     'called until gGameState == GS_QUIT, the user closes the window, or
     'a few other things.
+    
+    Static renderTime As Double, renderCount As Long, renderPile As Double
+    renderTime = Timer()
 
     'Start the sync clock
     Call clockStart
@@ -272,11 +278,23 @@ Public Sub gameLogic()
 
         Case GS_IDLE            'IDLE STATE
                                 '----------
-            Call renderNow          'render the scene
             Call checkMusic         'keep the music looping
-            Call multiTaskNow       'run rpgcode multitasking
             Call scanKeys           'scan for important keys
             Call updateGameTime     'update time game has been running for
+            
+            'Check the player's queue to see if movement is about to start.
+            If LenB(pendingPlayerMovement(selectedPlayer).queue) <> 0 Then
+                'There is a queue.
+                gGameState = GS_MOVEMENT
+            End If
+            
+            If gGameState <> GS_MOVEMENT Then
+                'Check we're not about to start moving again.
+                Call multiTaskNow       'run rpgcode multitasking
+                Call moveItems
+            End If
+            
+            Call renderNow          'render the scene
 
         Case GS_PAUSE           'PAUSE STATE
                                 '-----------
@@ -284,46 +302,27 @@ Public Sub gameLogic()
 
         Case GS_MOVEMENT        'MOVEMENT STATE
                                 '--------------
-
-            Call moveItems          'move items
-            Call movePlayers        'move players
-
-            'this should be called framesPerMove times
-            movementCounter = movementCounter + 1
-
-            'Re-render the scene
-            Call renderNow(-1, True)
-
-            'Make sure this is run four times
-            If movementCounter < FRAMESPERMOVE Then
+                                
+            'Make sure this runs for the duration of the player's move.
+            'Run this before movePlayers since .loopFrame will be reset by it.
+            If pPos(selectedPlayer).loopFrame + 1 < FRAMESPERMOVE * (playerMem(selectedPlayer).loopSpeed + loopOffset) Then
+                'We're still moving
                 gGameState = GS_MOVEMENT
             Else
                 'We're done movement
                 gGameState = GS_DONEMOVE
-                movementCounter = 0
             End If
+            
+            Call multiTaskNow       'run rpgcode multitasking
+            Call movePlayers        'move players
+            Call moveItems          'move items
 
+            'Re-render the scene
+            Call renderNow(-1, True)
+            
         Case GS_DONEMOVE        'DONE MOVEMENT STATE
                                 '-------------------
 
-            'clear pending item movements...
-            Dim cnt As Long
-            For cnt = 0 To UBound(pendingItemMovement)
-                With pendingItemMovement(cnt)
-                    .direction = MV_IDLE
-                    .xOrig = itmPos(cnt).X
-                    .yOrig = itmPos(cnt).Y
-                End With
-            Next cnt
-
-            'The pending movements have to be cleared *before* any programs are run,
-            'whereas the movement direction can only be cleared afterwards.
-            For cnt = 0 To UBound(pendingPlayerMovement)
-                With pendingPlayerMovement(cnt)
-                    .xOrig = pPos(cnt).X
-                    .yOrig = pPos(cnt).Y
-                End With
-            Next cnt
 
             With pendingPlayerMovement(selectedPlayer)
 
@@ -336,8 +335,8 @@ Public Sub gameLogic()
                     tempPos = pPos(selectedPlayer)
 
                     tempPos.l = .lTarg
-                    tempPos.X = .xTarg
-                    tempPos.Y = .yTarg
+                    tempPos.x = .xTarg
+                    tempPos.y = .yTarg
 
                     'Test for a program
                     Call programTest(tempPos)
@@ -357,12 +356,13 @@ Public Sub gameLogic()
             End With
 
             'clear player movements
-            For cnt = 0 To UBound(pendingPlayerMovement)
-                pendingPlayerMovement(cnt).direction = MV_IDLE
-            Next cnt
+            Dim i As Long
+            For i = 0 To UBound(pendingPlayerMovement)
+                pendingPlayerMovement(i).direction = MV_IDLE
+            Next i
 
             'Convert *STUPID* string positions to numerical
-            Select Case UCase(pPos(selectedPlayer).stance)
+            Select Case UCase$(pPos(selectedPlayer).stance)
                 Case "WALK_S": facing = South
                 Case "WALK_W": facing = West
                 Case "WALK_N": facing = North
@@ -378,6 +378,14 @@ Public Sub gameLogic()
             Call endProgram
 
     End Select
+    
+    'Time a render.
+    If gGameState = GS_MOVEMENT Then
+        renderTime = Timer() - renderTime
+        renderPile = renderPile + renderTime
+        renderCount = renderCount + 1
+        gAvgTime = renderPile / renderCount
+    End If
 
     'Sync the clock
     Call clockSync
@@ -522,18 +530,24 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)
         Call openItems
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
+        
+        'Set to use player 0 as walking graphics
+        selectedPlayer = 0
 
         'Setup player position
-        With pPos(0)
-            .X = boardList(activeBoardIndex).theData.playerX
-            .Y = boardList(activeBoardIndex).theData.playerY
+        With pPos(selectedPlayer)
+            .x = boardList(activeBoardIndex).theData.playerX
+            .y = boardList(activeBoardIndex).theData.playerY
             .l = boardList(activeBoardIndex).theData.playerLayer
             .stance = "WALK_S"
             .frame = 0
+            pendingPlayerMovement(selectedPlayer).xOrig = .x
+            pendingPlayerMovement(selectedPlayer).yOrig = .y
+            pendingPlayerMovement(selectedPlayer).lOrig = .l
+            .loopFrame = -1
+            playerMem(selectedPlayer).loopSpeed = 1
         End With
 
-        'Set to use player 0 as walking graphics
-        selectedPlayer = 0
 
         'Hide all players except the walking graphic one
         Dim pNum As Long
