@@ -71,7 +71,7 @@ INT APIENTRY createHostWindow(
 		NULL,
 		className,
 		NULL
-			};
+	};
 
     // Register the class so windows knows of its existence
     RegisterClassEx(&wnd);
@@ -87,7 +87,7 @@ INT APIENTRY createHostWindow(
 		NULL, NULL,
 		HINSTANCE(instance),
 		NULL
-			);
+	);
 
 	// Return its HWND
 	return INT(hostHwnd);
@@ -305,12 +305,12 @@ LRESULT CALLBACK eventProcessor(
 		{
             if (wParam != WA_INACTIVE)
 			{
-                //Window is being *activated*
+                // Window is being *activated*
                 setGameState(prevGameState);
             }
 			else
 			{
-                //Window is being *deactivated*
+                // Window is being *deactivated*
                 prevGameState = getGameState();
                 setGameState(GS_PAUSE);
             }
@@ -359,7 +359,7 @@ VOID APIENTRY showEndForm(
 		NULL,
 		"ENDFORM",
 		NULL
-			};
+	};
 
     // Register the class so windows knows of its existence
     RegisterClassEx(&wnd);
@@ -375,7 +375,7 @@ VOID APIENTRY showEndForm(
 		NULL, NULL,
 		HINSTANCE(hInstance),
 		NULL
-			);
+	);
 
 	// Draw the window
 	UpdateWindow(endFormHwnd);
@@ -392,7 +392,7 @@ VOID APIENTRY showEndForm(
 		HMENU(100),
 		HINSTANCE(hInstance),
 		NULL
-			);
+	);
 
 	// Create the 'More Info' button
 	CONST HWND moreInfoHwnd = CreateWindowEx(
@@ -406,7 +406,7 @@ VOID APIENTRY showEndForm(
 		HMENU(101),
 		HINSTANCE(hInstance),
 		NULL
-			);
+	);
 
 	// Set focus to the 'OK' button
 	SetFocus(okHwnd);
