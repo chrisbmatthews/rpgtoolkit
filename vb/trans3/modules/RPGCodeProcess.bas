@@ -182,7 +182,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     ' Get the location in the PAK file
     file = PakLocate(file)
 
-    If (Not fileExists(file)) Then
+    If Not (fileExists(file)) Then
         ' File doesn't exist-- bail!
         Exit Function
     End If
@@ -192,11 +192,13 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     Dim theLine As String           ' Line read from file
     Dim c(2) As String              ' Delimiter array
     Dim lines() As String           ' Array of lines
-    Dim uD() As String              ' Delimters used
+    Dim ud() As String              ' Delimters used
     Dim a As Long                   ' Loop control variables
     Dim buildLine As String         ' Whole line we're building
     Dim buildTemp As String         ' To add to the whole line
     Dim done As Boolean             ' Done?
+    Dim toInclude() As String       ' Files to include
+    Dim includeIdx As Long          ' Include index
 
     ' Init the PRG
     Call InitRPGCodeProcess(openProgram)
@@ -212,6 +214,10 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     ' Allow multiple commands on one line:
     ' MWin("TEST") # System.Pause()
     c(2) = "#"
+
+    ' Dimension the inclusion array
+    includeIdx = -1
+    ReDim toInclude(0)
 
     ' Open the file
     Open file For Input Access Read As num
@@ -235,7 +241,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
                 done = False
                 Do Until done
-                    If Not EOF(num) Then
+                    If Not (EOF(num)) Then
                         buildTemp = replace(Trim$(stripComments(fread(num))), vbTab, vbNullString)
                         Select Case RightB$(buildTemp, 2)
                             Case "_"
@@ -253,14 +259,34 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
             End If
 
+            ' Check for inclusions
+            If (LCase(LeftB$(theLine, 16)) = "#include") Then
+
+                ' Make sure it's not the include command
+                If (InStrB(1, theLine, "(") = 0) Then
+
+                    ' Increase the index
+                    includeIdx = includeIdx + 1
+                    ReDim Preserve toInclude(includeIdx)
+
+                    ' Add the file to the list
+                    toInclude(includeIdx) = replace(Trim$(Mid$(theLine, 9)), """", vbNullString)
+
+                    ' Remove this line
+                    theLine = vbNullString
+
+                End If
+
+            End If
+
             ' Remove prefixed #
             If (LeftB$(theLine, 2) = "#") Then theLine = Mid$(theLine, 2)
 
             ' Read line if not comment
-            If (Not LeftB$(theLine, 2) = "*") And (Not LeftB$(theLine, 2) = "//") Then
+            If ((LeftB$(theLine, 2) <> "*") And (LeftB$(theLine, 2) <> "//")) Then
 
                 ' Split that sucker like it has NEVER been split before!
-                lines() = multiSplit(theLine, c, uD, True)
+                lines() = multiSplit(theLine, c, ud, True)
 
                 ' Now we're going to have some fun with the .program() array so
                 ' make sure it'll enlarge itself...
@@ -270,8 +296,8 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 For a = 0 To (UBound(lines) + 1)
 
                     If (a = UBound(lines) + 1) Then
-                        If (LenB(uD(UBound(lines))) <> 0) Then
-                            openProgram.program(p + a) = uD(UBound(lines))
+                        If (LenB(ud(UBound(lines))) <> 0) Then
+                            openProgram.program(p + a) = ud(UBound(lines))
                         End If
 
                     ElseIf (a = 0) Then
@@ -279,19 +305,19 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
                     Else
 
-                        Select Case uD(a - 1)
+                        Select Case ud(a - 1)
 
                             Case "{", "}"
-                                openProgram.program(p + a) = uD(a - 1)
+                                openProgram.program(p + a) = ud(a - 1)
                                 openProgram.program(p + a + 1) = lines(a)
                                 p = p + 1
 
                             Case "#"
                                 If Left$(lines(a), 1) = " " Then
-                                    openProgram.program(p + a) = uD(a - 1) & lines(a)
+                                    openProgram.program(p + a) = ud(a - 1) & lines(a)
                                 Else
                                     openProgram.program(p + a - 1) = _
-                                        openProgram.program(p + a - 1) & uD(a - 1) & lines(a)
+                                        openProgram.program(p + a - 1) & ud(a - 1) & lines(a)
                                 End If
 
                             Case Else
@@ -366,6 +392,20 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
         End If
     Next a
 
+    ' Include all attached files
+    For a = 0 To includeIdx
+
+        ' Get the filename
+        Dim theFile As String
+        theFile = projectPath & prgPath & toInclude(a)
+
+        If (fileExists(theFile)) Then
+            ' It exists - include!
+            Call includeProgram(openProgram, theFile)
+        End If
+
+    Next a
+
     ' Splice up the classes
     Call spliceUpClasses(openProgram)
 
@@ -435,8 +475,8 @@ Public Function stripComments(ByVal Text As String) As String
     For a = 1 To Len(Text)
         char = Mid$(Text, a, 2)
         If (Left$(char, 1) = ("""")) Then
-            ignore = (Not ignore)
-        ElseIf (char = "//") And (Not ignore) Then
+            ignore = Not (ignore)
+        ElseIf (char = "//") And (Not (ignore)) Then
             stripComments = Mid$(Text, 1, a - 1)
             Exit Function
         End If

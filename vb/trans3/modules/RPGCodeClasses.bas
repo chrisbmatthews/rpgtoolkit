@@ -324,7 +324,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                                     theScope = theClass.scopePrivate
                                 End If
                                 ' Loop over each method
-                                If (Not theClass.isInterface) Then
+                                If Not (theClass.isInterface) Then
                                     For idx = 0 To UBound(theScope.methods)
                                         If (scopeIdx = 0) Then
                                             Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic, toInherit, , , True)
@@ -369,46 +369,59 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             End If
 
         ElseIf (cmd = "CLASS" Or cmd = "STRUCT" Or cmd = "INTERFACE") Then
-            ' Found a class
-            depth = 0
-            ignoreCheck = 0
-            methodHere = False
-            inClass = True
-            opening = True
-            classIdx = classIdx + 1
-            ReDim Preserve prg.classes.classes(classIdx)
-            ReDim prg.classes.classes(classIdx).scopePrivate.methods(0)
-            ReDim prg.classes.classes(classIdx).scopePrivate.strVars(0)
-            ReDim prg.classes.classes(classIdx).scopePrivate.isDynamicArray(0)
-            ReDim prg.classes.classes(classIdx).scopePublic.methods(0)
-            ReDim prg.classes.classes(classIdx).scopePublic.strVars(0)
-            ReDim prg.classes.classes(classIdx).scopePublic.isDynamicArray(0)
-            prg.classes.classes(classIdx).isInterface = (cmd = "INTERFACE")
 
-            ' Split up the line
+            ' Found a class
+
+            Dim oldParts() As String, strName As String
+            oldParts = parts
             chars(0) = ":"
             chars(1) = ","
             parts = multiSplit(UCase$(prg.program(lineIdx)), chars, delimiters, False)
-            prg.classes.classes(classIdx).strName = GetMethodName(Trim$(parts(0)))
+            strName = GetMethodName(Trim$(parts(0)))
 
-            If (cmd = "STRUCT") Then
-                ' It's a structure, default to public visibility
-                scope = "public"
-                inStruct = True
-            ElseIf (cmd = "INTERFACE") Then
-                ' Default to public in interfaces
-                scope = "public"
-                inStruct = False
+            If (canInstanceClass(strName, prg)) Then
+
+                ' Restore old parts
+                parts = oldParts
+
             Else
-                ' Default to private in classes
-                scope = "private"
-                inStruct = False
+
+                depth = 0
+                ignoreCheck = 0
+                methodHere = False
+                inClass = True
+                opening = True
+                classIdx = classIdx + 1
+                ReDim Preserve prg.classes.classes(classIdx)
+                ReDim prg.classes.classes(classIdx).scopePrivate.methods(0)
+                ReDim prg.classes.classes(classIdx).scopePrivate.strVars(0)
+                ReDim prg.classes.classes(classIdx).scopePrivate.isDynamicArray(0)
+                ReDim prg.classes.classes(classIdx).scopePublic.methods(0)
+                ReDim prg.classes.classes(classIdx).scopePublic.strVars(0)
+                ReDim prg.classes.classes(classIdx).scopePublic.isDynamicArray(0)
+                prg.classes.classes(classIdx).isInterface = (cmd = "INTERFACE")
+                prg.classes.classes(classIdx).strName = strName
+
+                If (cmd = "STRUCT") Then
+                    ' It's a structure, default to public visibility
+                    scope = "public"
+                    inStruct = True
+                ElseIf (cmd = "INTERFACE") Then
+                    ' Default to public in interfaces
+                    scope = "public"
+                    inStruct = False
+                Else
+                    ' Default to private in classes
+                    scope = "private"
+                    inStruct = False
+                End If
+
             End If
 
         ElseIf (inClass And (LenB(scope) <> 0) And (LenB(prg.program(lineIdx)) <> 0) And (Right$(prg.program(lineIdx), 1) <> ":") And (depth = 1)) Then
             If (InStrB(1, prg.program(lineIdx), "(")) Then
                 ' Found a method
-                If (Not inStruct) Then
+                If Not (inStruct) Then
                     ' Check if the method is right here
                     Dim methodCheckIdx As Long
                     methodCheckIdx = lineIdx
@@ -628,7 +641,7 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
         Exit Sub
     End If
 
-    If (Not internalClass) Then
+    If Not (internalClass) Then
 
         ' Get the method's name
         origName = GetMethodName(removeClassName(Text))
