@@ -4396,8 +4396,11 @@ Public Sub MWinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     End If
     Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
-    paras(0).dat = replace(paras(0).dat, Chr(34), "")
-    Call AddToMsgBox(MWinPrepare(paras(0).dat, theProgram), theProgram)
+    If paras(0).dataType = DT_LIT Then
+        Call AddToMsgBox(MWinPrepare(paras(0).lit, theProgram), theProgram)
+    Else
+        Call AddToMsgBox(MWinPrepare(paras(0).num, theProgram), theProgram)
+    End If
 End Sub
 
 Sub MWinSizeRPG(Text$, ByRef theProgram As RPGCodeProgram)
