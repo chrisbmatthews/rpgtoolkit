@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "actkrt3_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W2 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "actkrt3_EXPORTS" /FR /YX /FD /c
+# ADD CPP /nologo /MT /W1 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "actkrt3_EXPORTS" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -281,10 +281,6 @@ SOURCE=.\tkCanvas\CCanvasPool.h
 
 SOURCE=.\tkCanvas\GDICanvas.h
 # End Source File
-# Begin Source File
-
-SOURCE=.\tkCanvas\tkCanvas.h
-# End Source File
 # End Group
 # Begin Group "tkCanvas - source"
 
@@ -297,32 +293,9 @@ SOURCE=.\tkCanvas\CCanvasPool.cpp
 
 SOURCE=.\tkCanvas\GDICanvas.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=.\tkCanvas\tkCanvas.cpp
-# End Source File
 # End Group
 # End Group
 # Begin Group "tkDirectX"
-
-# PROP Default_Filter ""
-# Begin Group "tkDirectX - source"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\tkDirectX\tkDirectX.cpp
-# End Source File
-# End Group
-# Begin Group "tkDirectX - headers"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\tkDirectX\tkDirectX.h
-# End Source File
-# End Group
-# Begin Group "DirectX"
 
 # PROP Default_Filter ""
 # Begin Group "DirectX - source"
@@ -340,7 +313,6 @@ SOURCE=.\GUISystem\platform\platform.cpp
 
 SOURCE=.\GUISystem\platform\platform.h
 # End Source File
-# End Group
 # End Group
 # End Group
 # Begin Group "md5"
