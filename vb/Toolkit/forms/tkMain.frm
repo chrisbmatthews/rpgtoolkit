@@ -576,8 +576,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10AA6
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -831,8 +831,8 @@ Begin VB.MDIForm tkMainForm
                Picture         =   "tkMain.frx":10AC2
                Style           =   1  'Graphical
                TabIndex        =   182
-               ToolTipText     =   "Toggle Multi Select"
-               Top             =   2070
+               ToolTipText     =   "Multi Select"
+               Top             =   1560
                Width           =   375
             End
             Begin VB.CheckBox boardAutotileDraw 
@@ -842,7 +842,7 @@ Begin VB.MDIForm tkMainForm
                Style           =   1  'Graphical
                TabIndex        =   181
                ToolTipText     =   "Toggle Auto Tiler"
-               Top             =   1680
+               Top             =   2040
                Width           =   375
             End
             Begin VB.CommandButton Command8 
@@ -987,7 +987,7 @@ Begin VB.MDIForm tkMainForm
                Style           =   1  'Graphical
                TabIndex        =   46
                ToolTipText     =   "Isometric View"
-               Top             =   1680
+               Top             =   2040
                Width           =   375
             End
             Begin VB.CheckBox boardFillTool 
@@ -2547,7 +2547,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   10980
-            TextSave        =   "14:57"
+            TextSave        =   "15:22"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3579,7 +3579,7 @@ Private Sub ReadCommandLine_Timer()
         Dim Edit As New rpgcodeedit
         With Edit
             .tag = "1"
-            .mnunewproject.Visible = False
+            .mnuNewProject.Visible = False
             .mnuNew.Visible = False
             .mnuNewPRG.Visible = True
             .mnuOpenProject.Visible = False
