@@ -200,13 +200,14 @@ Attribute VB_Exposed = False
 '========================================================================
 '!NEW! Declared variables
 Option Explicit
-Dim X, Y, rr, gg, bb As Integer
+Dim x As Integer, y As Integer
+Dim rr As Integer, gg As Integer, bb As Integer
 
 '========================================================================
 ' RedScroll_Change
 '========================================================================
 Private Sub RedScroll_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'Change the text of the textbox
     RedVal.Text = str$(RedScroll.value)
     'Change the color of the picturebox
@@ -217,7 +218,7 @@ Private Sub RedScroll_Change()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -226,7 +227,7 @@ End Sub
 ' RedVal_Change (The textbox behind the red scroll)
 '========================================================================
 Private Sub RedVal_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'Change the textbox values when needed
     If val(RedVal.Text) > 255 Then RedVal.Text = 255
     If val(RedVal.Text) < -255 Then RedVal.Text = -255
@@ -235,7 +236,7 @@ Private Sub RedVal_Change()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -245,7 +246,7 @@ End Sub
 '========================================================================
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 Private Sub GreenScroll_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'Change the text of the textbox
     GreenVal.Text = str$(GreenScroll.value)
     'Change the color of the picturebox
@@ -256,7 +257,7 @@ Private Sub GreenScroll_Change()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -265,7 +266,7 @@ End Sub
 ' GreenVal_Change (The textbox behind the green scroll)
 '========================================================================
 Private Sub GreenVal_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'Change the textbox values when needed
     If val(GreenVal.Text) > 255 Then GreenVal.Text = 255
     If val(GreenVal.Text) < -255 Then GreenVal.Text = -255
@@ -279,7 +280,7 @@ Private Sub GreenVal_Change()
     Exit Sub
     
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -288,7 +289,7 @@ End Sub
 ' BlueScroll_Change
 '========================================================================
 Private Sub BlueScroll_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'Change the text of the textbox
     BlueVal.Text = str$(BlueScroll.value)
     'Change the color of the picturebox
@@ -300,7 +301,7 @@ Private Sub BlueScroll_Change()
     Exit Sub
     
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -309,7 +310,7 @@ End Sub
 ' BlueVal_Change (The textbox behind the blue scroll)
 '========================================================================
 Private Sub BlueVal_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'Change the textbox values when needed
     If val(BlueVal.Text) > 255 Then BlueVal.Text = 255
     If val(BlueVal.Text) < -255 Then BlueVal.Text = 255
@@ -318,7 +319,7 @@ Private Sub BlueVal_Change()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -329,16 +330,15 @@ End Sub
 Private Sub chkPreview_Click()
     'If they uncheck it, we should turn the tile back to how it was at the start
     If chkPreview.value = 0 Then
-        Dim xrange As Long
-        xrange = 32
-        For X = 1 To xrange
-            For Y = 1 To 32
-                If tilemem(X, Y) <> -1 Then
-                    tilemem(X, Y) = tilepreview(X, Y)
+        For x = 1 To xRange
+            For y = 1 To 32
+                If tilemem(x, y) <> -1 Then
+                    tilemem(x, y) = tilepreview(x, y)
                 End If
-            Next Y
-        Next X
-    activeTile.tileRedraw
+            Next y
+        Next x
+        'Redraw tile
+        activeTile.tileRedraw
     'If they check it, preview the tile!
     Else
         Call Preview
@@ -349,7 +349,7 @@ End Sub
 ' !Edited! First was the "Shade Tile" button, it's the OK button now
 '========================================================================
 Private Sub cmdOK_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     'Since I wrote the preview sub, why not use it here too?
     Call Preview
@@ -357,10 +357,11 @@ Private Sub cmdOK_Click()
     '!NEW! The user wants to save the changes
     SaveChanges = True
     
-    Unload RGBDefine
+    Unload Me
+    
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -378,7 +379,7 @@ End Sub
 ' Form_Activate
 '========================================================================
 Private Sub Form_Activate()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     RedScroll.max = 255
@@ -393,15 +394,13 @@ Private Sub Form_Activate()
     Call vbPicFillRect(rgbcol, 0, 0, 100, 100, RGB(0, 0, 0))
     
     '!NEW! Used to store the current tile for when the "preview" function is used
-    Dim xrange As Long
-    xrange = 32
-    For X = 1 To xrange
-        For Y = 1 To 32
-            If tilemem(X, Y) <> -1 Then
-                tilepreview(X, Y) = tilemem(X, Y)
+    For x = 1 To xRange
+        For y = 1 To 32
+            If tilemem(x, y) <> -1 Then
+                tilepreview(x, y) = tilemem(x, y)
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     
      '!NEW! Set the variable to False at the start
     SaveChanges = False
@@ -409,7 +408,7 @@ Private Sub Form_Activate()
     Exit Sub
     
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -421,16 +420,16 @@ Private Sub Form_Unload(Cancel As Integer)
     'If the user has pressed the X in the form, he doesn't wants to add the changes
 
     If Not SaveChanges Then
-    'Use new undo
-    Call activeTile.SetUndo
-    For X = 1 To xrange
-        For Y = 1 To 32
-            If tilemem(X, Y) <> -1 Then
-                tilemem(X, Y) = tilepreview(X, Y)
-            End If
-        Next Y
-    Next X
-    activeTile.tileRedraw
+        'Use new undo
+        Call activeTile.SetUndo
+        For x = 1 To xRange
+            For y = 1 To 32
+                If tilemem(x, y) <> -1 Then
+                    tilemem(x, y) = tilepreview(x, y)
+                End If
+            Next y
+        Next x
+        activeTile.tileRedraw
     End If
 End Sub
 '========================================================================
@@ -438,21 +437,21 @@ End Sub
 '========================================================================
 Private Sub Preview()
     'First we need to to set the tile back to how it was at the start
-    For X = 1 To xrange
-        For Y = 1 To 32
-            If tilemem(X, Y) <> -1 Then
-                tilemem(X, Y) = tilepreview(X, Y)
+    For x = 1 To xRange
+        For y = 1 To 32
+            If tilemem(x, y) <> -1 Then
+                tilemem(x, y) = tilepreview(x, y)
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     
     'Ok, let's preview it now!
-    For X = 1 To xrange
-        For Y = 1 To 32
-            If tilemem(X, Y) <> -1 Then
-                rr = red(tilemem(X, Y))
-                gg = green(tilemem(X, Y))
-                bb = blue(tilemem(X, Y))
+    For x = 1 To xRange
+        For y = 1 To 32
+            If tilemem(x, y) <> -1 Then
+                rr = red(tilemem(x, y))
+                gg = green(tilemem(x, y))
+                bb = blue(tilemem(x, y))
                 rr = rr + RedScroll.value
                 gg = gg + GreenScroll.value
                 bb = bb + BlueScroll.value
@@ -462,10 +461,10 @@ Private Sub Preview()
                 If gg < 0 Then gg = 0
                 If bb > 255 Then bb = 255
                 If bb < 0 Then bb = 0
-                tilemem(X, Y) = RGB(rr, gg, bb)
+                tilemem(x, y) = RGB(rr, gg, bb)
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     'Redraw
     activeTile.tileRedraw
 End Sub
