@@ -1096,7 +1096,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         ' Make sure we have enough room in the instances array
         If (UBound(g_objects) < hClass) Then
             ' Enlarge the array
-            ReDim Preserve g_objects(hClass)
+            ReDim Preserve g_objects(hClass + 250)
         End If
         ' Write in the data
         g_objects(hClass).strInstancedFrom = UCase$(theClass)
