@@ -602,7 +602,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 ' Get the value of the token
                 Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram)
                 ' If this isn't the first token
-                If (tokenIdx <> 2) Then
+                If ((tokenIdx <> 2) And (tokenIdx <= (number - 2))) Then
                     ' Find a token
                     Dim toFind As Long
                     toFind = 0
@@ -624,7 +624,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                         Dim tdc As String, prevToken As String
                         prevToken = valueList(tokenIdx + toFind)
                         tdc = Right$(prevToken, 1)
-                        If ((tdc <> "$") And (tdc <> "!")) Then
+                        If (tdc <> "$") Then
                             ' Append a "!"
                             prevToken = prevToken & "!"
                             ' Get its value
