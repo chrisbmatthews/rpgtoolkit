@@ -5,11 +5,11 @@ Begin VB.Form frmHelpViewer
    ClientLeft      =   3060
    ClientTop       =   3345
    ClientWidth     =   6540
+   Icon            =   "frmHelpViewer.frx":0000
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    ScaleHeight     =   5130
    ScaleWidth      =   6540
-   ShowInTaskbar   =   0   'False
    WindowState     =   2  'Maximized
    Begin SHDocVwCtl.WebBrowser brwWebBrowser 
       Height          =   3735
