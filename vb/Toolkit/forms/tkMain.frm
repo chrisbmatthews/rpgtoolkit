@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
@@ -777,8 +777,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   59
             Top             =   0
             Width           =   1815
-            _extentx        =   3201
-            _extenty        =   8070
+            _ExtentX        =   3201
+            _ExtentY        =   8070
          End
       End
       Begin Toolkit.TKTopBar_Tools NewBarTop 
@@ -787,10 +787,10 @@ Begin VB.MDIForm tkMainForm
          TabIndex        =   57
          Top             =   0
          Width           =   1815
-         _extentx        =   3201
-         _extenty        =   370
-         Object.width           =   1815
-         caption         =   "New"
+         _ExtentX        =   3201
+         _ExtentY        =   370
+         Object.Width           =   1815
+         Caption         =   "New"
       End
    End
    Begin VB.PictureBox leftBarContainer 
@@ -1415,10 +1415,10 @@ Begin VB.MDIForm tkMainForm
          TabIndex        =   55
          Top             =   0
          Width           =   975
-         _extentx        =   1720
-         _extenty        =   370
-         Object.width           =   975
-         caption         =   "Tools"
+         _ExtentX        =   1720
+         _ExtentY        =   370
+         Object.Width           =   975
+         Caption         =   "Tools"
       End
    End
    Begin VB.Timer theBardTimer 
@@ -2445,8 +2445,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   82
             Top             =   120
             Width           =   375
-            _extentx        =   661
-            _extenty        =   661
+            _ExtentX        =   661
+            _ExtentY        =   661
          End
          Begin VB.PictureBox currentTilesetForm 
             Appearance      =   0  'Flat
@@ -2547,7 +2547,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   10980
-            TextSave        =   "13:50"
+            TextSave        =   "14:25"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3248,10 +3248,6 @@ End Sub
 
 Private Sub arrowtype_Click()
     Call toggle_Click
-End Sub
-
-Private Sub boardAutotileDraw_Click()
-    Call activeBoard.boardAutotiler(boardAutotileDraw.value)
 End Sub
 
 Private Sub Command1_Click(): On Error Resume Next
@@ -4340,7 +4336,7 @@ End Sub
 '=========================================================================================
 ' BOARD EDITOR RELATED EVENTS
 '=========================================================================================
-' !NEW! BOARD TOOLBAR EVENTS
+' BOARD TOOLBAR EVENTS
 '=========================================================================================
 ' close toolbar
 Private Sub bTools_Close_Click(): On Error Resume Next
@@ -4397,6 +4393,12 @@ Private Sub boardEraser_Click(): On Error Resume Next
 End Sub
 Private Sub boardFillTool_Click(): On Error Resume Next
     Call activeBoard.boardFillTool
+End Sub
+Private Sub boardAutotileDraw_Click(): On Error Resume Next
+    Call activeBoard.boardAutotiler(boardAutotileDraw.value)
+End Sub
+Private Sub boardMultiSelect_Click(): On Error Resume Next
+    Call activeBoard.boardMultiSelect(boardMultiSelect.value)
 End Sub
 Private Sub boardGradient_Click(): On Error Resume Next
     Call activeBoard.boardGradient
