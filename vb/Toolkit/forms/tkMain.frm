@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
@@ -15,12 +15,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5325
+      Height          =   5535
       Left            =   8775
-      ScaleHeight     =   5325
+      ScaleHeight     =   5535
       ScaleWidth      =   2730
       TabIndex        =   176
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   2730
       Begin VB.Frame fileTree1 
@@ -332,13 +332,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   570
+      Height          =   360
       Left            =   0
       TabIndex        =   1
       Top             =   0
       Width           =   11880
       _ExtentX        =   20955
-      _ExtentY        =   1005
+      _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -526,12 +526,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5325
+      Height          =   5535
       Left            =   465
-      ScaleHeight     =   5325
+      ScaleHeight     =   5535
       ScaleWidth      =   3510
       TabIndex        =   60
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -754,12 +754,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5325
+      Height          =   5535
       Left            =   -1350
-      ScaleHeight     =   5325
+      ScaleHeight     =   5535
       ScaleWidth      =   1815
       TabIndex        =   56
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   1815
       Begin VB.PictureBox newBar 
@@ -799,12 +799,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   5325
+      Height          =   5535
       Left            =   0
-      ScaleHeight     =   5325
+      ScaleHeight     =   5535
       ScaleWidth      =   975
       TabIndex        =   11
-      Top             =   570
+      Top             =   360
       Width           =   975
       Begin VB.PictureBox leftbar 
          BorderStyle     =   0  'None
@@ -2360,12 +2360,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5325
+      Height          =   5535
       Left            =   11505
-      ScaleHeight     =   5325
+      ScaleHeight     =   5535
       ScaleWidth      =   375
       TabIndex        =   3
-      Top             =   570
+      Top             =   360
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2423,12 +2423,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5325
+      Height          =   5535
       Left            =   3975
-      ScaleHeight     =   5325
+      ScaleHeight     =   5535
       ScaleWidth      =   4800
       TabIndex        =   2
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2440,6 +2440,15 @@ Begin VB.MDIForm tkMainForm
          TabIndex        =   78
          Top             =   240
          Width           =   4815
+         Begin VB.CheckBox chkCurTilesetDrawGrid 
+            Height          =   375
+            Left            =   3960
+            Picture         =   "tkMain.frx":326C7
+            Style           =   1  'Graphical
+            TabIndex        =   183
+            Top             =   120
+            Width           =   375
+         End
          Begin Toolkit.ctlOpenButton changedSelectedTileset 
             Height          =   375
             Left            =   4345
@@ -2501,7 +2510,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          Height          =   220
          Left            =   4560
-         Picture         =   "tkMain.frx":326C7
+         Picture         =   "tkMain.frx":33391
          Style           =   1  'Graphical
          TabIndex        =   8
          Top             =   0
@@ -2542,13 +2551,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "23/11/2004"
+            TextSave        =   "15/12/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "18:21"
+            TextSave        =   "17:42"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2990,44 +2999,75 @@ Private Sub cmdRefreshTree_Click()
     Call fillTree("", projectPath)
 End Sub
 
-Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On Error Resume Next
+'============================================================================
+' Current tileset browser draw grid check button.
+'============================================================================
+Private Sub chkCurTilesetDrawGrid_Click(): On Error Resume Next
+    'Redraw the tileset (with or without grid).
+    Call fillTilesetBar
+End Sub
+
+Private Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On Error Resume Next
 '===================================================================
 'Draws the opened tileset in the flyout tileset viewer.
 'Called by fillTilesetBar, tilesetScroller_Change
 '===================================================================
-'Edited by Delano for 3.0.4 new isometric tilesets.
-'Removed unneeded variables.
-
-    Dim iMetric As Integer
-    Dim tilesWide As Long, tilesHigh As Long
+    Dim isoFormat As Long, tilesWide As Long, tilesHigh As Long
+    Dim x As Long, y As Long
     
-    If configfile.lastTileset$ = "" Then Exit Sub
+    If configfile.lastTileset = vbNullString Then Exit Sub
     If tstnum = 0 Then tstnum = 1
     
-    Call vbPicAutoRedraw(currentTilesetForm, autoRefresh)
-    
-    'Added: Check the tileset type. Required for GFXdrawTstWindow!!
-    If UCase$(GetExt(configfile.lastTileset$)) = "ISO" Then iMetric = 2
-    
-    
-    Call GFXInitScreen(640, 480)
+    If UCase$(GetExt(configfile.lastTileset)) = "ISO" Then isoFormat = 2
     
     'Calculate the number of tiles that will be in view.
-    
-    If iMetric = 0 Then
+    If isoFormat = 0 Then
         tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)
     Else
         tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
     End If
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
     
-    'This export requires iMetric = 2 for .iso tiles!!
+    'This export requires isoFormat = 2 for .iso tiles!!
     'tstnum is the tile to start drawing at.
-    Call GFXdrawTstWindow(projectPath$ + tilePath$ + configfile.lastTileset$, vbPicHDC(currentTilesetForm), tstnum, tilesWide, tilesHigh, iMetric)
+    Call GFXInitScreen(640, 480)
+    Call GFXdrawTstWindow(projectPath & tilePath & configfile.lastTileset, _
+                          currentTilesetForm.hdc, _
+                          tstnum, _
+                          tilesWide, _
+                          tilesHigh, _
+                          isoFormat)
     
+    'Now, draw the grid.
+    If chkCurTilesetDrawGrid.value Then
+    
+        'Draw vertical lines.
+        If isoFormat = 0 Then
+            'Not isometric
+            For x = 0 To tilesWide * 32 Step 32
+                Call vbPicLine(currentTilesetForm, x, 0, x, tilesHigh * 32, QBColor(1))
+            Next x
+            'Draw horizontal lines.
+            For y = 0 To (tilesHigh + 1) * 32 Step 32
+                Call vbPicLine(currentTilesetForm, 0, y, tilesWide * 32, y, QBColor(1))
+            Next y
+        Else
+            For x = 0 To tilesWide * 64 Step 64
+                Call vbPicLine(currentTilesetForm, x, 0, x, tilesHigh * 32, QBColor(1))
+            Next x
+            'Draw horizontal lines.
+            For y = 0 To (tilesHigh + 1) * 32 Step 32
+                Call vbPicLine(currentTilesetForm, 0, y, tilesWide * 64, y, QBColor(1))
+            Next y
+        End If
+
+        
+    End If 'Draw grid.
+        
     If autoRefresh Then
         Call vbPicRefresh(currentTilesetForm)
     End If
+    
 End Sub
 
 Private Sub fillTilesetBar(): On Error Resume Next
@@ -3296,7 +3336,7 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
     Exit Sub
 End Sub
 
-Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '===========================================================
 'MouseDown event on the flyout tileset viewer.
 '===========================================================
@@ -3320,14 +3360,14 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X 
     If iMetric = 0 Then
         'Not isometric.
         tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tileX = Int(X / 32)                                                        'x-tile clicked.
+        tileX = Int(x / 32)                                                        'x-tile clicked.
     Else
         tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(X / 64)
+        tileX = Int(x / 64)
     End If
     
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
-    tileY = Int(Y / 32)
+    tileY = Int(y / 32)
     
     'Alterations for the scroller. Now scrolls row by row.
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
@@ -3530,7 +3570,7 @@ Private Sub mnuTips_Click()
     configfile.tipsOnOff = booleanToLong(mnuTips.Checked)
 End Sub
 
-Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim uD As TK_UNDOCK_DATA
     uD.E = True: uD.W = True
     Call unDock(newBar, "New", uD)
@@ -3538,7 +3578,7 @@ Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, X As Single
     popButton(1).Enabled = False
 End Sub
 
-Private Sub openWindow_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub openWindow_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     If (Button = vbRightButton) Then
         frmIndex = Index + formsScrollIndex
         Call PopupMenu(mnuRightClick)
@@ -3937,8 +3977,8 @@ Public Sub openmnu_Click(): On Error Resume Next
     Call tkMainForm.openFile(filename$(1))
 End Sub
 
-Private Sub palettebox_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeTile.palettebox_MouseDown(Button, Shift, X, Y)
+Private Sub palettebox_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeTile.palettebox_MouseDown(Button, Shift, x, y)
 End Sub
 
 Private Sub Picture1_Click(): On Error Resume Next
@@ -4039,7 +4079,7 @@ Private Sub rightbar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub rightbar_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rightbar_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     'ignoreFocus = False
     'rightbar.SetFocus
     'If rightbar.width = 2730 Then
@@ -4289,8 +4329,8 @@ Private Sub tileTool_Click(Index As Integer): On Error Resume Next
     Call activeTile.ToolSet(Index)
 End Sub
 
-Private Sub tiletypes_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeBoard.ChangeTileType(Button, Shift, X, Y)
+Private Sub tiletypes_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeBoard.ChangeTileType(Button, Shift, x, y)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -4305,7 +4345,7 @@ Public Sub toggle_Click(): On Error Resume Next
     Call activeBoard.toggleTileType
 End Sub
 
-Private Sub ToolsTopBar_mouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub ToolsTopBar_mouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -4325,7 +4365,7 @@ Private Sub TreeView1_DblClick(): On Error Resume Next
     ignoreFocus = False
 End Sub
 
-Private Sub TreeView1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TreeView1_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     ignoreFocus = True
 End Sub
 
@@ -4352,15 +4392,15 @@ Public Sub ShowPic(ByRef file As String): On Error Resume Next
     h = Me.height / Screen.TwipsPerPixelY
     
     If cnvBkgImage = 0 Then
-        cnvBkgImage = CreateCanvas(W, h)
-        Call CanvasFill(cnvBkgImage, 0)
+        cnvBkgImage = createCanvas(W, h)
+        Call canvasFill(cnvBkgImage, 0)
     End If
     
     If fileExists(file) Then
-        Call CanvasLoadSizedPicture(cnvBkgImage, file)
+        Call canvasLoadSizedPicture(cnvBkgImage, file)
     End If
     
-    Call CanvasBlt(cnvBkgImage, 0, 0, GetDC(hwnd))
+    Call canvasBlt(cnvBkgImage, 0, 0, GetDC(hwnd))
        
 End Sub
 
