@@ -57,8 +57,8 @@ INT APIENTRY createHostWindow(
 	// This function will create the DirectX host window and return
 	// a handle to it (hwnd)
 
-    // Create a windows class
-    CONST WNDCLASSEX wnd = {
+	// Create a windows class
+	CONST WNDCLASSEX wnd = {
 		sizeof(WNDCLASSEX),
 		CS_OWNDC,
 		eventProcessor,
@@ -73,8 +73,8 @@ INT APIENTRY createHostWindow(
 		NULL
 	};
 
-    // Register the class so windows knows of its existence
-    RegisterClassEx(&wnd);
+	// Register the class so windows knows of its existence
+	RegisterClassEx(&wnd);
 
 	// Create the window
 	hostHwnd = CreateWindowEx(
@@ -102,11 +102,11 @@ VOID APIENTRY mainEventLoop(
 		)
 {
 
-    // This is the main event loop of the whole trans3 engine.
-    // It will process events in the DirectX host window and
-    // send them to WndProc() (in transEvents). It also
-    // continually calls gameLogic() (in transMain). The only
-    // to break out of this loop is to call PostQuitMessage().
+	// This is the main event loop of the whole trans3 engine.
+	// It will process events in the DirectX host window and
+	// send them to WndProc() (in transEvents). It also
+	// continually calls gameLogic() (in transMain). The only
+	// to break out of this loop is to call PostQuitMessage().
 
 	// Create a pointer to the gameLogic procedure
 	typedef INT (__stdcall *FUNCTION_POINTER) (VOID);
@@ -116,7 +116,7 @@ VOID APIENTRY mainEventLoop(
 	CONST DWORD dblOneFrame = DWORD(1000.0 / FPS_CAP);
 
 	// Define a structure to hold the messages we recieve
-    MSG message;
+	MSG message;
 
 	while (TRUE)
 	{
@@ -127,20 +127,20 @@ VOID APIENTRY mainEventLoop(
 		if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
 		{
 			// There was a message, check if it's eventProcessor() asking
-            // to leave this loop
-            if (message.message == WM_QUIT)
+			// to leave this loop
+			if (message.message == WM_QUIT)
 			{
 				// It was; quit
 				break;
 			}
-            else
+			else
 			{
-                // Change ascii keys and the like to virtual keys
+				// Change ascii keys and the like to virtual keys
 				TranslateMessage(&message);
 				// Send the message to the event processor
 				DispatchMessage(&message);
-            }
-        }
+			}
+		}
 
 		// Run a frame of game logic
 		if (gameLogic() != GS_PAUSE)
@@ -162,7 +162,7 @@ VOID APIENTRY mainEventLoop(
 			}
 		}
 
-    }
+	}
 
 	// Deallocate resources used by this library
 	closeSystems();
@@ -204,28 +204,28 @@ VOID APIENTRY processEvent(
 		)
 {
 
-    // This procedure is pretty much a replacement for DoEvents.
-    // It will process a message from the queue *if there is one*
-    // and then be done with.
+	// This procedure is pretty much a replacement for DoEvents.
+	// It will process a message from the queue *if there is one*
+	// and then be done with.
 
-    MSG message;
-    if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
+	MSG message;
+	if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
 	{
-        // There was a message, check if it's eventProcessor() asking
-        // to leave this loop
-        if (message.message == WM_QUIT)
+		// There was a message, check if it's eventProcessor() asking
+		// to leave this loop
+		if (message.message == WM_QUIT)
 		{
 			// It was; quit
 			closeSystems();
 		}
-        else
+		else
 		{
 			// Change ascii keys and the like to virtual keys
 			TranslateMessage(&message);
 			// Send the message to the event processor
 			DispatchMessage(&message);
-        }
-    }
+		}
+	}
 
 }
 
@@ -300,23 +300,23 @@ LRESULT CALLBACK eventProcessor(
 		case WM_LBUTTONDOWN:
 		{
 			// Handle the event
-			mouseDownEvent(LOWORD(lParam), HIWORD(lParam),0, 1);
+			mouseDownEvent(LOWORD(lParam), HIWORD(lParam), 0, 1);
 		} break;
 
 		// Window activated/deactivated
-        case WM_ACTIVATE:
+		case WM_ACTIVATE:
 		{
-            if (wParam != WA_INACTIVE)
+			if (wParam != WA_INACTIVE)
 			{
-                // Window is being *activated*
-                setGameState(prevGameState);
-            }
+				// Window is being *activated*
+				setGameState(prevGameState);
+			}
 			else
 			{
-                // Window is being *deactivated*
-                prevGameState = getGameState();
-                setGameState(GS_PAUSE);
-            }
+				// Window is being *deactivated*
+				prevGameState = getGameState();
+				setGameState(GS_PAUSE);
+			}
 		} break;
 
 		// Event we don't handle
@@ -348,8 +348,8 @@ VOID APIENTRY showEndForm(
 	// Store the HDC
 	endFormBackgroundHDC = endFormBackHdc;
 
-    // Create a windows class
-    CONST WNDCLASSEX wnd = {
+	// Create a windows class
+	CONST WNDCLASSEX wnd = {
 		sizeof(WNDCLASSEX),
 		CS_DBLCLKS | CS_OWNDC | CS_VREDRAW | CS_HREDRAW,
 		endFormWndProc,
@@ -364,10 +364,10 @@ VOID APIENTRY showEndForm(
 		NULL
 	};
 
-    // Register the class so windows knows of its existence
-    RegisterClassEx(&wnd);
+	// Register the class so windows knows of its existence
+	RegisterClassEx(&wnd);
 
-    // Create a window
+	// Create a window
 	CONST HWND endFormHwnd = CreateWindowEx(
 		NULL,
 		"ENDFORM",
@@ -458,61 +458,61 @@ LRESULT CALLBACK endFormWndProc(
 {
 
 	// Switch on the message we're to handle
-    switch (msg)
+	switch (msg)
 	{
 
-        case WM_PAINT:
+		case WM_PAINT:
 		{
-            // Window needs to be repainted
-            PAINTSTRUCT ps; HDC hdc;
-            BeginPaint(hwnd, &ps);
-            hdc = GetDC(hwnd);
-            BitBlt(hdc, 1, 1, 372, 126, HDC(endFormBackgroundHDC), 0, 0, SRCPAINT);
-            ReleaseDC(hwnd, hdc);
-            EndPaint(hwnd, &ps);
+			// Window needs to be repainted
+			PAINTSTRUCT ps; HDC hdc;
+			BeginPaint(hwnd, &ps);
+			hdc = GetDC(hwnd);
+			BitBlt(hdc, 1, 1, 372, 126, HDC(endFormBackgroundHDC), 0, 0, SRCPAINT);
+			ReleaseDC(hwnd, hdc);
+			EndPaint(hwnd, &ps);
 		} break;
 
-        case WM_DESTROY:
+		case WM_DESTROY:
 		{
-            // Window was closed-- bail!
-            m_exitDo = TRUE;
+			// Window was closed-- bail!
+			m_exitDo = TRUE;
 		} break;
 
-        case WM_COMMAND:
+		case WM_COMMAND:
 		{
-            switch (LOWORD(wParam))
+			switch (LOWORD(wParam))
 			{
 
-                case 100:
+				case 100:
 				{
-                    // OK button pressed
-                    DestroyWindow(hwnd);
-                    m_exitDo = TRUE;
+					// OK button pressed
+					DestroyWindow(hwnd);
+					m_exitDo = TRUE;
 				} break;
 
-                case 101:
+				case 101:
 				{
-                    // More info button pressed
-                    system("start http://www.toolkitzone.com");
-                    DestroyWindow(hwnd);
-                    m_exitDo = TRUE;
+					// More info button pressed
+					system("start http://www.toolkitzone.com");
+					DestroyWindow(hwnd);
+					m_exitDo = TRUE;
 				} break;
 
-            }
+			}
 		} break;
 
-        case WM_ACTIVATE:
+		case WM_ACTIVATE:
 		{
-            m_isActive = (wParam != WA_INACTIVE);
+			m_isActive = (wParam != WA_INACTIVE);
 		} break;
 
-        default:
+		default:
 		{
-            // Let windows deal with the rest
-            return DefWindowProc(hwnd, msg, wParam, lParam);
+			// Let windows deal with the rest
+			return DefWindowProc(hwnd, msg, wParam, lParam);
 		} break;
 
-    }
+	}
 
 	// Return success
 	return TRUE;
@@ -527,9 +527,9 @@ VOID APIENTRY killHostWindow(
 	CONST INT hInstance
 		)
 {
-    CloseWindow(hostHwnd);
-    DestroyWindow(hostHwnd);
-    UnregisterClass(windowClass, HINSTANCE(hInstance));
+	CloseWindow(hostHwnd);
+	DestroyWindow(hostHwnd);
+	UnregisterClass(windowClass, HINSTANCE(hInstance));
 }
 
 //-------------------------------------------------------------------
