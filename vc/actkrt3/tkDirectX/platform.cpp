@@ -259,7 +259,6 @@ inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, 
 
 		//create rectangles for the window and for the surface
 		SetRect(&dxInfo.windowedMode.surfaceRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
-		SetRect(&dxInfo.windowedMode.destRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
 
 		//setup the effects to blt with
 		memset(&dxInfo.windowedMode.bltFx, 0, sizeof(DDBLTFX));
@@ -493,6 +492,7 @@ inline bool Refresh()
 
 			//now offset the top/left of the window rect by the distance from the
 			//title bar / border
+			SetRect(&dxInfo.windowedMode.destRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
 			OffsetRect(&gDXInfo.windowedMode.destRect, ptPrimeBlt.x, ptPrimeBlt.y);
 
 			//Blt onto the window
