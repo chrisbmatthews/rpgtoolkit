@@ -1,10 +1,10 @@
-//All contents copyright 2003, Christopher Matthews
+//All contents copyright 2003, Christopher Matthews or contributors
 //All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 //Read LICENSE.txt for licensing info
 
-
 #include "tkCanvas.h"
 
+int canvasHostHwnd = 0;
 
 //init canvas system
 int APIENTRY CNVInit()
@@ -26,7 +26,50 @@ int APIENTRY CNVShutdown()
 	return 0;
 }
 
+//Create a DC to base canvases upon and return its handle
+int APIENTRY CNVCreateCanvasHost(int hInstance)
+{
+    //Create a windows class and fill it in
+    WNDCLASSEX wnd;
+	wnd.cbClsExtra = NULL; //Not applicable
+	wnd.cbSize = sizeof(wnd); //callback size == length of the structure
+	wnd.cbWndExtra = NULL; //Not applicable
+	wnd.hbrBackground = NULL; //Not applicable
+	wnd.hCursor = NULL; //Not applicable
+	wnd.hIcon = NULL; //Not applicable
+	wnd.hIconSm = NULL; //Not applicable
+	wnd.hInstance = (HINSTANCE)hInstance; //instance of owning application
+	wnd.lpfnWndProc = DefWindowProc; //Let windows manage this window
+	wnd.lpszClassName = "canvasHost"; //name of this class
+	wnd.lpszMenuName = NULL; //Not applicable
+	wnd.style = CS_OWNDC; //ask for a DC
 
+    //Register the class so windows knows of its existence
+    RegisterClassEx(&wnd);
+
+	//Create the window
+	canvasHostHwnd = (int)CreateWindowEx(
+                                          NULL,
+                                          "canvasHost",
+                                          NULL,NULL,
+                                          NULL,NULL,
+										  NULL,NULL,
+                                          NULL,NULL,
+                                          (HINSTANCE)hInstance,
+                                          NULL
+                                               );
+	//Return its hdc
+	return (int)GetDC((HWND)canvasHostHwnd);
+
+}
+
+//Kill the canvas host
+void APIENTRY CNVKillCanvasHost(int hInstance, int hCanvasHostDC)
+{
+	ReleaseDC((HWND)canvasHostHwnd,(HDC)hCanvasHostDC);
+	DestroyWindow((HWND)canvasHostHwnd);
+	UnregisterClass("canvasHost",(HINSTANCE)hInstance);
+}
 
 //Create a canvas
 //width and height are width and height to make it
@@ -50,7 +93,6 @@ CNV_HANDLE APIENTRY CNVCreate(long hdcCompatable, int nWidth, int nHeight, int n
 	return (CNV_HANDLE)cnv;
 }
 
-
 //destroy a canvas
 int APIENTRY CNVDestroy(CNV_HANDLE cnv)
 {
@@ -59,7 +101,6 @@ int APIENTRY CNVDestroy(CNV_HANDLE cnv)
 	delete p;
 	return 1;
 }
-
 
 long APIENTRY CNVOpenHDC(CNV_HANDLE cnv)
 {
@@ -87,7 +128,6 @@ int APIENTRY CNVUnlock(CNV_HANDLE cnv)
 	p->Unlock();
 	return 1;
 }
-
 
 int APIENTRY CNVGetWidth(CNV_HANDLE cnv)
 {
@@ -170,7 +210,6 @@ long APIENTRY CNVGetRGBColor(CNV_HANDLE cnv, long crColor)
 	return p->GetRGBColor(crColor);
 }
 
-
 //resize existing canvas...
 int APIENTRY CNVResize(CNV_HANDLE cnv, long hdcCompatible, int nWidth, int nHeight)
 {
@@ -178,7 +217,6 @@ int APIENTRY CNVResize(CNV_HANDLE cnv, long hdcCompatible, int nWidth, int nHeig
 	p->Resize((HDC)hdcCompatible, nWidth, nHeight);
 	return 1;
 }
-
 
 //shifting functions...
 int APIENTRY CNVShiftLeft(CNV_HANDLE cnv, long nPixels)
@@ -216,7 +254,6 @@ int APIENTRY CNVBltPartCanvas(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x,
 	int nToRet = src->BltPart(targ, x, y, xSrc, ySrc, nWidth, nHeight, lRasterOp);
 	return nToRet;
 }
-
 
 int APIENTRY CNVBltTransparentPartCanvas(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, int xSrc, int ySrc, int nWidth, int nHeight, long crTransparentColor)
 {

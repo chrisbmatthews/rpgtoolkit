@@ -175,3 +175,7 @@ EXPORTS
 	createHostWindow	@225
 	initEventProcessor	@226
 	processEvent		@227
+
+	;canvasHost
+	CNVCreateCanvasHost	@228
+	CNVKillCanvasHost	@229

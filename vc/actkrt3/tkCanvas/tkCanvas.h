@@ -18,6 +18,10 @@
 
 std::list<CGDICanvas*> g_canvasList;
 
+int APIENTRY CNVCreateCanvasHost(int hInstance);
+
+void APIENTRY CNVKillCanvasHost(int hInstance, int hCanvasHostDC);
+
 int APIENTRY CNVInit();
 
 int APIENTRY CNVShutdown();
