@@ -195,6 +195,7 @@ Attribute VB_Exposed = False
 Option Explicit
 Public dataIndex As Long    'index into the vector of ste maintained in commonenemy
 
+Private m_bIgnore As Boolean
 
 Public Sub changeSelectedTile(ByVal file As String)
     On Error Resume Next
@@ -402,29 +403,23 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Public Sub tilebmpDrawLock()
-    On Error Resume Next
-    If ignore = 1 Then Exit Sub
-    
-    tileBmpList(activeTileBmpIndex).drawState = 0
-    ignore = 1
-    tkMainForm.tilebmpDrawLock.value = 1
-    tkMainForm.tilebmpEraser.value = 0
-    ignore = 0
+Private Sub changeDrawState(ByVal lngNewState As Long)
+    tileBmpList(activeTileBmpIndex).drawState = lngNewState
+    m_bIgnore = True
+    tkMainForm.tilebmpEraser.value = lngNewState
+    tkMainForm.tilebmpDrawLock.value = IIf(lngNewState, 0, 1)
+    m_bIgnore = False
 End Sub
 
+Public Sub tilebmpDrawLock()
+    If (m_bIgnore) Then Exit Sub
+    Call changeDrawState(0)
+End Sub
 
 Public Sub tilebmpEraser()
-    On Error Resume Next
-    If ignore = 1 Then Exit Sub
-    
-    tileBmpList(activeTileBmpIndex).drawState = 1
-    ignore = 1
-    tkMainForm.tilebmpDrawLock.value = 0
-    tkMainForm.tilebmpEraser.value = 1
-    ignore = 0
+    If (m_bIgnore) Then Exit Sub
+    Call changeDrawState(1)
 End Sub
-
 
 Public Sub tilebmpGrid(ByVal val As Long)
     On Error Resume Next
@@ -531,6 +526,33 @@ Public Sub tileBmpSizeOK()
     
     Call TileBitmapResize(tileBmpList(activeTileBmpIndex).theData, sx, sy)
     Call infofill
+End Sub
+
+Private Sub arena_KeyPress(ByRef ascii As Integer)
+
+    If (UCase$(chr$(ascii)) = "L") Then
+
+        If (LenB(configfile.lastTileset)) Then
+
+            tstFile = configfile.lastTileset
+
+            Dim strExt As String
+            strExt = UCase$(commonRoutines.extention(tstFile))
+            If (strExt = "TST") Then
+
+                Call tilesetForm.Show(vbModal)
+                Call changeSelectedTile(setFilename)
+
+            End If
+
+        Else
+
+            Call tilebmpSelectTile
+
+        End If
+
+    End If
+
 End Sub
 
 Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
