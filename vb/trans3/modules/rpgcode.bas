@@ -8544,7 +8544,7 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
         .money = GPCount        'money to spend
         Call .Show              'show the shop
         GPCount = .money        'update money
-        inv = .playerItems      'update player inventory
+        Set inv = .playerItems  'update player inventory
     End With
 
     'Destroy the objects
