@@ -49,6 +49,7 @@ BOOL APIENTRY DXKillGfxMode(
 
 	// Kill DirectDraw
 	delete g_pDirectDraw;
+	g_pDirectDraw = NULL;
 
 	// All's good
 	return TRUE;
