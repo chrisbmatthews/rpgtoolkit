@@ -239,6 +239,11 @@ Private Function equEvaluate(ByVal Text As String) As Double
                 toSolve = idx
             End If
         Next idx
+        Dim isNeg As Boolean
+        isNeg = (tokens(toSolve) < 0)
+        If (isNeg) Then
+            tokens(toSolve) = -tokens(toSolve)
+        End If
         ' Now we know which token to solve, so let's make it happen
         Select Case operators(toSolve)
             Case PLUS_SIGN: tokens(toSolve) = tokens(toSolve) + tokens(toSolve + 1)
@@ -253,6 +258,9 @@ Private Function equEvaluate(ByVal Text As String) As Double
             Case BXOR_SIGN: tokens(toSolve) = tokens(toSolve) Xor tokens(toSolve + 1)
             Case MOD_SIGN: tokens(toSolve) = tokens(toSolve) Mod tokens(toSolve + 1)
         End Select
+        If (isNeg) Then
+            tokens(toSolve) = -tokens(toSolve)
+        End If
         ' Knock the arrays back a notch
         For idx = toSolve To UBound(tokens)
             tokens(idx + 1) = tokens(idx + 2)
@@ -683,8 +691,10 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                     ' Check for negative numbers
                     If Not (bIsVar(tokenIdx)) Then
                         If (conjunctions(tokenIdx - 1) = "-") Then
+                            If (tokenIdx <> 2) Then
+                                conjunctions(tokenIdx - 1) = "+"
+                            End If
                             numberUse(tokenIdx) = -numberUse(tokenIdx)
-                            nulled(tokenIdx - 1) = True
                         End If
                     End If
                     ' If this isn't the first token
