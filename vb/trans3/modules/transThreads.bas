@@ -50,8 +50,8 @@ End Type
 
 Private Type threadAnimation                       'Thread animation structure
     anm As TKAnimation                             '  Loaded animations
-    X As Long                                      '  X position of these animations
-    Y As Long                                      '  Y position of these animations
+    x As Long                                      '  X position of these animations
+    y As Long                                      '  Y position of these animations
     frame As Long                                  '  Current frame of these animations
     persistent As Boolean                          '  Animation run from a persistent thread?
 End Type
@@ -447,7 +447,7 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
 
             Case TYPE_WHILE             'WHILE LOOP
                                         '----------
-                If Evaluate(.condition, .prg) = 1 Then
+                If evaluate(.condition, .prg) = 1 Then
                     .prg.programPos = .start
                     .end = False
                 Else
@@ -456,7 +456,7 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
 
             Case TYPE_UNTIL             'UNTIL LOOP
                                         '----------
-                If Evaluate(.condition, .prg) = 0 Then
+                If evaluate(.condition, .prg) = 0 Then
                     .prg.programPos = .start
                     .end = False
                 Else
@@ -470,7 +470,7 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
                 oPP = .prg.programPos
                 .prg.programPos = DoSingleCommand(.increment, .prg, rV)
                 .prg.programPos = oPP
-                If Evaluate(.condition, .prg) = 1 Then
+                If evaluate(.condition, .prg) = 1 Then
                     .prg.programPos = .start
                     .end = False
                 Else
@@ -598,7 +598,7 @@ End Sub
 '=========================================================================
 ' Init an animation for multitasking
 '=========================================================================
-Public Function startMultitaskAnimation(ByVal X As Long, ByVal Y As Long, ByRef prg As RPGCodeProgram) As Double
+Public Function startMultitaskAnimation(ByVal x As Long, ByVal y As Long, ByRef prg As RPGCodeProgram) As Double
 
     'Make sure our array is dimensioned
     On Error GoTo dimensionArray
@@ -609,8 +609,8 @@ Public Function startMultitaskAnimation(ByVal X As Long, ByVal Y As Long, ByRef 
     Dim a As Long
     For a = 1 To ub
         If threadAnimations(a).anm.animFile = animationMem.animFile Then
-            If threadAnimations(a).X = X Then
-                If threadAnimations(a).Y = Y Then
+            If threadAnimations(a).x = x Then
+                If threadAnimations(a).y = y Then
                     'Already loaded!
                     Exit Function
                 End If
@@ -625,8 +625,8 @@ Public Function startMultitaskAnimation(ByVal X As Long, ByVal Y As Long, ByRef 
     With threadAnimations(ub + 1)
         .persistent = Threads(prg.threadID).bPersistent
         .anm = animationMem
-        .X = X
-        .Y = Y
+        .x = x
+        .y = y
     End With
 
     'Flag we're animating
@@ -656,8 +656,8 @@ Public Sub ceaseMultitaskAnimation(ByVal pos As Long)
         For a = pos To UBound(threadAnimations) - 1
             threadAnimations(a).anm = threadAnimations(a + 1).anm
             threadAnimations(a).frame = threadAnimations(a + 1).frame
-            threadAnimations(a).X = threadAnimations(a + 1).X
-            threadAnimations(a).Y = threadAnimations(a + 1).Y
+            threadAnimations(a).x = threadAnimations(a + 1).x
+            threadAnimations(a).y = threadAnimations(a + 1).y
         Next a
     End If
 
@@ -727,15 +727,15 @@ Public Sub renderMultiAnimations( _
         Dim frame As Long           'frame to render
         Dim num As Long             'slot in arrays
         Dim anim As TKAnimation     'the animation
-        Dim X As Long               'x screen coord
-        Dim Y As Long               'y screen coord
+        Dim x As Long               'x screen coord
+        Dim y As Long               'y screen coord
 
         'First see what we are to do
         num = multitaskCurrentlyAnimating
         frame = threadAnimations(num).frame
         anim = threadAnimations(num).anm
-        X = threadAnimations(num).X
-        Y = threadAnimations(num).Y
+        x = threadAnimations(num).x
+        y = threadAnimations(num).y
 
         'Draw the frame onto a canvas
         Dim cnv As Long
@@ -746,10 +746,10 @@ Public Sub renderMultiAnimations( _
         'Render the frame
         If cnvTarget <> -1 Then
             'To a canvas
-            Call Canvas2CanvasBltTransparent(cnv, cnvTarget, X, Y, TRANSP_COLOR)
+            Call Canvas2CanvasBltTransparent(cnv, cnvTarget, x, y, TRANSP_COLOR)
         Else
             'To the screen
-            Call DXDrawCanvasTransparent(cnv, X, Y, TRANSP_COLOR)
+            Call DXDrawCanvasTransparent(cnv, x, y, TRANSP_COLOR)
         End If
 
         'Destroy that canvas

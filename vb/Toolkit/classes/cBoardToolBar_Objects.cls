@@ -195,7 +195,7 @@ Private Sub Populate_Layers(Optional ByVal parent As ePrefix)
 
     ' set start and end values for loop
     start = 1
-    fend = boardList(mBoard).theData.Bsizel
+    fend = boardList(mBoard).theData.bSizeL
 
     ' see if specific operation is defined
     If IsMissing(parent) = False And mDisplay <> 1 Then

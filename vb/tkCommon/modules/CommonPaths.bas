@@ -213,4 +213,3 @@ On Local Error Resume Next
     fileExists = (GetAttr(file) And vbDirectory) = 0
     
 End Function
-

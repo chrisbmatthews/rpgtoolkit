@@ -29,7 +29,7 @@ Public Function PAKTestSystem() As Boolean
     Exit Function
     
 pakErr:
-    Call MsgBox("The file tkzip.dll could not be initialised.  You likely need to download the MFC runtimes.  You can get then at http://rpgtoolkit.com")
+    Call MsgBox("The file tkzip.dll could not be initialised.  You likely need to download the MFC runtimes.  You can get them at http://rpgtoolkit.com")
 
 End Function
 

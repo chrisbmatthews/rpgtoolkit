@@ -1280,7 +1280,7 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
     ' For each dimension
     For a = 0 To UBound(arrayElements)
 
-        ' Add in the content...
+        ' Add in the content
         Select Case arrayElements(a).dataType
             Case DT_NUM: build = build & "[" & CStr(arrayElements(a).num) & "]"
             Case DT_LIT: build = build & "[" & Chr(34) & arrayElements(a).lit & Chr(34) & "]"

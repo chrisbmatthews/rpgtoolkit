@@ -53,6 +53,7 @@ Public Type RPGCODE_CLASS
     strName As String                       ' Name of this class
     scopePrivate As RPGCODE_CLASS_SCOPE     ' Private scope
     scopePublic As RPGCODE_CLASS_SCOPE      ' Public scope
+    isInterface As Boolean                  ' Is an interface?
 End Type
 
 '=========================================================================
@@ -191,6 +192,9 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     Dim inStruct As Boolean     ' In a structure?
     Dim methodHere As Boolean   ' Method declared on this line?
 
+    ' Some vars for splitting up the line
+    Dim parts() As String, delimiters() As String, chars(1) As String
+
     ' Make classIdx void
     classIdx = -1
 
@@ -214,13 +218,95 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             depth = depth - 1
             ' Check if we're completely out
             If (depth = 0) Then
-                ' Out of the class
+                If (UBound(parts) >= 1) Then
+                    ' Inheritance here
+                    Dim inheritIdx As Long
+                    For inheritIdx = 1 To UBound(parts)
+                        If (inheritIdx <> 1) Then
+                            If (delimiters(inheritIdx - 1) = ":") Then
+                                ' Syntax error
+                                Call debugger("Syntax error: " & prg.program(lineIdx))
+                            End If
+                        End If
+                        Dim toInherit As String
+                        toInherit = Trim(parts(inheritIdx))
+                        If (Not canInstanceClass(toInherit, prg)) Then
+                            Call debugger("Base class " & toInherit & " not found-- " & prg.program(lineIdx))
+                        Else
+                            ' Make toInherit caps
+                            toInherit = UCase(toInherit)
+                            ' Loop over every class it could be
+                            Dim idx As Long, theClass As RPGCODE_CLASS
+                            For idx = 0 To UBound(prg.classes.classes)
+                                If (prg.classes.classes(idx).strName = toInherit) Then
+                                    ' Found it!
+                                    theClass = prg.classes.classes(idx)
+                                    ' Make sure it's an interface if this class is an interface
+                                    If ((Not theClass.isInterface) And (prg.classes.classes(classIdx).isInterface)) Then
+                                        ' Not an interface
+                                        Call debugger("Interfaces can only inherit other interfaces! -- " & prg.program(lineIdx))
+                                        Exit Sub
+                                    End If
+                                    ' Break
+                                    Exit For
+                                End If
+                            Next idx
+                            ' For each scope
+                            Dim scopeIdx As Long
+                            For scopeIdx = 0 To 1
+                                ' Get this scope
+                                Dim theScope As RPGCODE_CLASS_SCOPE
+                                If (scopeIdx = 0) Then
+                                    theScope = theClass.scopePublic
+                                Else
+                                    theScope = theClass.scopePrivate
+                                End If
+                                ' Loop over each method
+                                If (Not theClass.isInterface) Then
+                                    For idx = 0 To UBound(theScope.methods)
+                                        If (scopeIdx = 0) Then
+                                            Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic, toInherit)
+                                        Else
+                                            Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePrivate, toInherit)
+                                        End If
+                                    Next idx
+                                Else
+                                    ' Inheriting class should implement an interface's methods
+                                    For idx = 0 To UBound(theScope.methods)
+                                        If (scopeIdx = 0) Then
+                                            Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic)
+                                        Else
+                                            Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePrivate)
+                                        End If
+                                    Next idx
+                                End If
+                                ' Loop over each var
+                                For idx = 0 To UBound(theScope.strVars)
+                                    If (InStr(1, prg.program(lineIdx), "[")) Then
+                                        ' It's an array
+                                        If (scopeIdx = 1) Then
+                                            Call addArrayToScope(theScope.strVars(idx), prg.classes.classes(classIdx).scopePrivate)
+                                        Else
+                                            Call addArrayToScope(theScope.strVars(idx), prg.classes.classes(classIdx).scopePublic)
+                                        End If
+                                    Else
+                                        If (scopeIdx = 1) Then
+                                            Call addVarToScope(theScope.strVars(idx), prg.classes.classes(classIdx).scopePrivate)
+                                        Else
+                                            Call addVarToScope(theScope.strVars(idx), prg.classes.classes(classIdx).scopePublic)
+                                        End If
+                                    End If
+                                Next idx
+                            Next scopeIdx
+                        End If
+                    Next inheritIdx
+                End If
                 inClass = False
                 inStruct = False
                 scope = ""
             End If
 
-        ElseIf ((cmd = "CLASS" Or cmd = "STRUCT") And (Not inClass)) Then
+        ElseIf ((cmd = "CLASS" Or cmd = "STRUCT" Or cmd = "INTERFACE") And (Not inClass)) Then
             ' Found a class
             inClass = True
             opening = True
@@ -230,83 +316,24 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             ReDim prg.classes.classes(classIdx).scopePrivate.strVars(0)
             ReDim prg.classes.classes(classIdx).scopePublic.methods(0)
             ReDim prg.classes.classes(classIdx).scopePublic.strVars(0)
+            If (cmd = "INTERFACE") Then
+                ' It's an interface
+                prg.classes.classes(classIdx).isInterface = True
+            End If
             ' Split up the line
-            Dim parts() As String, delimiters() As String, chars(1) As String
             chars(0) = ":"
             chars(1) = ","
             parts() = multiSplit(UCase(prg.program(lineIdx)), chars, delimiters, False)
             prg.classes.classes(classIdx).strName = GetMethodName(Trim(parts(0)))
-            If (UBound(parts) >= 1) Then
-                ' Inheritance here
-                Dim inheritIdx As Long
-                For inheritIdx = 1 To UBound(parts)
-                    If (inheritIdx <> 1) Then
-                        If (delimiters(inheritIdx - 1) = ":") Then
-                            ' Syntax error
-                            Call debugger("Syntax error: " & prg.program(lineIdx))
-                        End If
-                    End If
-                    Dim toInherit As String
-                    toInherit = Trim(parts(inheritIdx))
-                    If (Not canInstanceClass(toInherit, prg)) Then
-                        Call debugger("Base class " & toInherit & " not found-- " & prg.program(lineIdx))
-                    Else
-                        ' Make toInherit caps
-                        toInherit = UCase(toInherit)
-                        ' Loop over every class it could be
-                        Dim idx As Long, theClass As RPGCODE_CLASS
-                        For idx = 0 To UBound(prg.classes.classes)
-                            If (prg.classes.classes(idx).strName = toInherit) Then
-                                ' Found it!
-                                theClass = prg.classes.classes(idx)
-                                ' Break
-                                idx = UBound(prg.classes.classes) + 1
-                            End If
-                        Next idx
-                        ' For each scope
-                        Dim scopeIdx As Long
-                        For scopeIdx = 0 To 1
-                            ' Get this scope
-                            Dim theScope As RPGCODE_CLASS_SCOPE
-                            If (scopeIdx = 0) Then
-                                theScope = theClass.scopePublic
-                            Else
-                                theScope = theClass.scopePrivate
-                            End If
-                            ' Loop over each method
-                            For idx = 0 To UBound(theScope.methods)
-                                If (scopeIdx = 0) Then
-                                    Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic, toInherit)
-                                Else
-                                    Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePrivate, toInherit)
-                                End If
-                            Next idx
-                            ' Loop over each var
-                            For idx = 0 To UBound(theScope.strVars)
-                                If (InStr(1, prg.program(lineIdx), "[")) Then
-                                    ' It's an array
-                                    If (scopeIdx = 1) Then
-                                        Call addArrayToScope(theScope.strVars(idx), prg.classes.classes(classIdx).scopePrivate)
-                                    Else
-                                        Call addArrayToScope(theScope.strVars(idx), prg.classes.classes(classIdx).scopePublic)
-                                    End If
-                                Else
-                                    If (scopeIdx = 1) Then
-                                        Call addVarToScope(theScope.strVars(idx), prg.classes.classes(classIdx).scopePrivate)
-                                    Else
-                                        Call addVarToScope(theScope.strVars(idx), prg.classes.classes(classIdx).scopePublic)
-                                    End If
-                                End If
-                            Next idx
-                        Next scopeIdx
-                    End If
-                Next inheritIdx
-            End If
 
             If (cmd = "STRUCT") Then
                 ' It's a structure, default to public visibility
                 scope = "public"
                 inStruct = True
+            ElseIf (cmd = "INTERFACE") Then
+                ' Default to public in interfaces
+                scope = "public"
+                inStruct = False
             Else
                 ' Default to private in classes
                 scope = "private"
@@ -337,9 +364,9 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                         End If
                     Loop
                     If (scope = "private") Then
-                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePrivate)
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePrivate, , (prg.classes.classes(classIdx).isInterface))
                     Else
-                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePublic)
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePublic, , (prg.classes.classes(classIdx).isInterface))
                     End If
                     If (methodHere) Then
                         ' Set in the new line
@@ -513,7 +540,7 @@ End Sub
 '=========================================================================
 ' Add a method to a scope
 '=========================================================================
-Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = "")
+Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = "", Optional ByVal needNotExist As Boolean)
 
     On Error Resume Next
 
@@ -522,8 +549,6 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
     Dim origName As String      ' Name of method in orig case
     Dim idx As Long             ' Loop variable
     Dim pos As Long             ' Pos we're using
-    Dim isVirtual As Boolean    ' Is the method virtual?
-    Dim isPure As Boolean       ' Pure specifier?
 
     If (Text = "") Then
         ' No text, no method, no wasted time
@@ -542,8 +567,11 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
     theLine = getMethodLine(methodName, prg)
 
     ' Check if we errored out
-    If (theLine = -1) Then
+    If ((theLine = -1) And (Not needNotExist)) Then
         Call debugger("Could not find method " & origName & " -- " & Text)
+        Exit Sub
+    ElseIf ((theLine <> -1) And (needNotExist)) Then
+        Call debugger("Interfaces should not implement methods -- will be implemented by the inheriting class -- " & Text)
         Exit Sub
     End If
 

@@ -14,8 +14,12 @@ Option Explicit
 '=========================================================================
 ' Integral variables
 '=========================================================================
-Public errorBranch As String         ' label to branch to on error
-Public errorKeep As RPGCodeProgram   ' program kept as a backup for error handling
+
+' Label to branch to on error
+Public errorBranch As String
+
+' Program kept as a backup for error handling
+Public errorKeep As RPGCodeProgram
 
 '=========================================================================
 ' Get the line a method begins on
@@ -339,18 +343,18 @@ End Function
 '=========================================================================
 ' Strip comments off a line
 '=========================================================================
-Public Function stripComments(ByVal Text As String) As String
+Public Function stripComments(ByVal text As String) As String
     Dim a As Long, char As String, ignore As Boolean
-    For a = 1 To Len(Text)
-        char = Mid(Text, a, 2)
+    For a = 1 To Len(text)
+        char = Mid(text, a, 2)
         If (Left(char, 1) = Chr(34)) Then
             ignore = (Not ignore)
         ElseIf (char = "//") And (Not ignore) Then
-            stripComments = Mid(Text, 1, a - 1)
+            stripComments = Mid(text, 1, a - 1)
             Exit Function
         End If
     Next a
-    stripComments = Text
+    stripComments = text
 End Function
 
 '=========================================================================

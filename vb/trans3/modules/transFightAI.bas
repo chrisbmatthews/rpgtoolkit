@@ -21,7 +21,7 @@ Option Explicit
 Public Function chooseHit(Optional ByVal enemyNum As Long) As Long
     On Error Resume Next
     Dim hit As Long
-    Do While True
+    Do
         hit = Int(Rnd(1) * 5)
         If playerListAr(hit) <> "" Then
             If getPlayerHP(playerMem(hit)) > 0 Then

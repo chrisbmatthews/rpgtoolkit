@@ -630,7 +630,7 @@ loadtileerr:
         Dim num As Long
         num = FreeFile
         Open file For Output As num
-            Print #num, activeRPGCode.codeForm.Text
+            Print #num, activeRPGCode.codeform.Text
         Close num
     End Sub
 
