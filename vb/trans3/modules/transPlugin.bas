@@ -148,6 +148,11 @@ Option Explicit
 '=========================================================================
 
 '=========================================================================
+' Declarations
+'=========================================================================
+Private Declare Function SetFocus Lib "user32" (ByVal hwnd As Long) As Long
+
+'=========================================================================
 ' Globals
 '=========================================================================
 Public plugtest As Long
@@ -408,7 +413,7 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
                 If (com) Then
                     canHandle = (cobj.Query(LCase$(mName)) = 1)
                 Else
-                    canHandle = (PLUGQuery(plugName, LCase$(mName$)) = 1)
+                    canHandle = (PLUGQuery(plugName, LCase$(mName)) = 1)
                 End If
 
                 If (canHandle) Then
@@ -417,13 +422,16 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
                     If (com) Then
                         exec = (cobj.Execute(Text, retval.dataType, retval.lit, retval.num, retval.usingReturnData) = 1)
                     Else
-                        exec = (PLUGExecute(plugName, Text$) = 1)
+                        exec = (PLUGExecute(plugName, Text) = 1)
                     End If
 
-                    If (Not exec) Then
+                    If Not (exec) Then
                         ' Plugin errored out
-                        Call debugger("Error: Plugin could not execute command!-- " & Text$)
+                        Call debugger("Error: Plugin could not execute command!-- " & Text)
                     End If
+
+                    ' Some plugins--truiken's flash plugin--steal the focus from us
+                    Call SetFocus(host.hwnd)
 
                     ' All's good
                     QueryPlugins = True
