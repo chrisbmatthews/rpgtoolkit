@@ -1799,7 +1799,7 @@ Public Sub incrementFrame(ByRef frame As Long)
     Static movedThisFrame As Double     'How far have we moved this frame?
 
     Dim fraction As Double
-    fraction = (1 / FRAMESPERMOVE) * movementSize
+    fraction = (1 / FRAMESPERMOVE) / movementSize
 
     If (frame = -2) Then
         If (movedThisFrame >= fraction) Then

@@ -294,7 +294,7 @@ Public Sub gameLogic()
             movementCounter = movementCounter + 1
 
             'Re-render the scene
-            Call renderNow
+            Call renderNow(-1, True)
 
             'Make sure this is run four times
             If movementCounter < FRAMESPERMOVE Then
