@@ -46,7 +46,7 @@ CONST INT GS_QUIT = 3;				// Shutdown sequence
 // Run the main event loop
 VOID APIENTRY mainEventLoop(
 	CONST INT gameLogicAddress
-		);
+);
 
 // Create the host window
 INT APIENTRY createHostWindow(
@@ -59,7 +59,7 @@ INT APIENTRY createHostWindow(
 	CONST INT instance,
 	CONST LPSTR className,
 	CONST INT hCursor
-		);
+);
 
 // Create the event callbacks
 VOID APIENTRY createEventCallbacks(
@@ -72,12 +72,12 @@ VOID APIENTRY createEventCallbacks(
 	CONST INT isShuttingDown,
 	CONST INT getGameState,
 	CONST INT setGameState
-		);
+);
 
 // Process an event from the queue
 VOID APIENTRY processEvent(
 	VOID
-		);
+);
 
 // Show the end form
 VOID APIENTRY showEndForm(
@@ -86,23 +86,23 @@ VOID APIENTRY showEndForm(
 	CONST INT y,
 	CONST INT hIcon,
 	CONST INT hInstance
-		);
+);
 
 // Kill the host window
 VOID APIENTRY killHostWindow(
 	CONST LPSTR windowClass,
 	CONST INT hInstance
-		);
+);
 
 // Change the host window's caption
 VOID APIENTRY changeHostWindowCaption(
 	CONST LPSTR newCaption
-		);
+);
 
 // End the program
 VOID APIENTRY endProgram(
 	VOID
-		);
+);
 
 // Handle an event
 LRESULT CALLBACK eventProcessor(
@@ -110,7 +110,7 @@ LRESULT CALLBACK eventProcessor(
 	UINT msg,
 	WPARAM wParam,
 	LPARAM lParam
-		);
+);
 
 // Handle the end form
 LRESULT CALLBACK endFormWndProc(
@@ -118,13 +118,13 @@ LRESULT CALLBACK endFormWndProc(
 	UINT msg,
 	WPARAM wParam,
 	LPARAM lParam
-		);
+);
 
 // Initiate the render counter
 VOID APIENTRY initCounter(
 	double *CONST ptrRenderTime,
 	INT *CONST ptrRenderCount
-		);
+);
 
 //-------------------------------------------------------------------
 // End of the header file
