@@ -15,7 +15,7 @@ Public Sub openMainFile(ByVal file As String)
     Call openMain(file, mainMem)
     Call ChangeLanguage(resourcePath & m_LangFile)
     If mainMem.mainDisableProtectReg = 1 Then
-        nocodeYN = False
+        noCodeYN = False
     End If
     
     'set gfx mode...
@@ -86,7 +86,7 @@ Public Function multiSplit(ByVal txt As String, ByRef chars() As String, ByRef _
     End If
    Next b
   End If
-  
+
  Next a 'Onto the next character
  
  'Make sure the last array element isn't empty...

@@ -103,3 +103,8 @@ Public openFullFile() As String
 Public Property Get currentVersion() As String
     currentVersion = App.major & "." & App.minor & "." & App.Revision
 End Property
+
+'Dummy sub
+Public Sub SetParent(ByVal hwnd As Long, ByVal parent As Long)
+    'Do nothing
+End Sub

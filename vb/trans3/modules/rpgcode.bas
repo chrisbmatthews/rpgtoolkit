@@ -594,13 +594,13 @@ Sub GiveExpRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 Call giveExperience(theOne, playerMem(num2))
                 Exit Sub
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 'Call removeEnemyHP(theone, -1 * num2)
                 Exit Sub
             End If
@@ -706,7 +706,7 @@ Sub PlayerStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     If UCase$(lit1$) = "SOURCE" Then
         If sourceType = 0 Then
-            theOne = source
+            theOne = Source
         End If
     End If
     If theOne = -1 Then Exit Sub 'Player handle not found
@@ -816,7 +816,7 @@ Sub ItemStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
             If targetType = 1 Then inum = target
         End If
         If UCase$(lit1$) = "SOURCE" Then
-            If sourceType = 1 Then inum = source
+            If sourceType = 1 Then inum = Source
         End If
     End If
 
@@ -1082,14 +1082,14 @@ Sub applyStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
                 'player was targeted
-                theOne = source
+                theOne = Source
                 Call PlayerAddStatus(lit2, playerMem(theOne))
                 Call PlayerAddStatus(lit2, parties(PLAYER_PARTY).fighterList(theOne).player)
                 Exit Sub
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 Call EnemyAddStatus(lit2, enemyMem(theOne))
                 Call EnemyAddStatus(lit2, parties(ENEMY_PARTY).fighterList(theOne).enemy)
                 Exit Sub
@@ -2199,7 +2199,7 @@ Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
                 'player was targeted
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).defenseVar$, lit$, curhp, theProgram)
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(curhp), theProgram)
@@ -2210,7 +2210,7 @@ Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(enemyMem(theOne).eneDP), theProgram)
                 End If
@@ -2312,7 +2312,7 @@ Sub getFPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
                 'player was targeted
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).fightVar$, lit$, curhp, theProgram)
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(curhp), theProgram)
@@ -2323,7 +2323,7 @@ Sub getFPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(enemyMem(theOne).eneFP), theProgram)
                 End If
@@ -2427,7 +2427,7 @@ Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
                 'player was targeted
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).healthVar$, lit$, curhp, theProgram)
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(curhp), theProgram)
@@ -2438,7 +2438,7 @@ Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(enemyMem(theOne).eneHP), theProgram)
                 End If
@@ -2512,7 +2512,7 @@ Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).leVar$, lit$, curhp, theProgram)
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(curhp), theProgram)
@@ -2523,7 +2523,7 @@ Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
             End If
             If sourceType = 2 Then
                 'enemy was targeted (level 0)
-                theOne = source
+                theOne = Source
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(0), theProgram)
                 End If
@@ -2597,7 +2597,7 @@ Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).maxHealthVar$, lit$, curhp, theProgram)
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(curhp), theProgram)
@@ -2608,7 +2608,7 @@ Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(enemyMem(theOne).eneMaxHP), theProgram)
                 End If
@@ -2684,7 +2684,7 @@ Sub GetMaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).smMaxVar$, lit$, curhp, theProgram)
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(curhp), theProgram)
@@ -2695,7 +2695,7 @@ Sub GetMaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(enemyMem(theOne).eneMaxSMP), theProgram)
                 End If
@@ -2920,7 +2920,7 @@ Sub GetSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).smVar$, lit$, curhp, theProgram)
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(curhp), theProgram)
@@ -2931,7 +2931,7 @@ Sub GetSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 If number = 2 Then
                     Call SetVariable(useIt2$, str$(enemyMem(theOne).eneSMP), theProgram)
                 End If
@@ -3031,7 +3031,7 @@ Sub GiveHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).healthVar$, lit$, curhp, theProgram)
                 curhp = curhp + num2
         
@@ -3044,7 +3044,7 @@ Sub GiveHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 Call addEnemyHP(num2, enemyMem(theOne))
                 Call doAttack(-1, -1, ENEMY_PARTY, theOne, -1 * num2, False)
                 Exit Sub
@@ -3141,7 +3141,7 @@ Sub GiveSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).smVar$, lit$, curhp, theProgram)
                 curhp = curhp + num2
         
@@ -3155,7 +3155,7 @@ Sub GiveSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 Call addEnemySMP(num2, enemyMem(theOne))
                 Call doAttack(-1, -1, ENEMY_PARTY, theOne, -1 * num2, True)
                 Exit Sub
@@ -3272,14 +3272,14 @@ Sub HPRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).maxHealthVar$, lit$, tooBig, theProgram)
                 If num2 > tooBig Then num2 = tooBig
                 Call SetVariable(playerMem(theOne).healthVar$, str$(num2), theProgram)
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 enemyMem(theOne).eneHP = num2
                 If enemyMem(theOne).eneHP > enemyMem(theOne).eneMaxHP Then enemyMem(theOne).eneHP = enemyMem(theOne).eneMaxHP
                 Exit Sub
@@ -4076,7 +4076,7 @@ Sub MaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 Call SetVariable(playerMem(theOne).maxHealthVar$, str$(num2), theProgram)
                 Exit Sub
             End If
@@ -4127,7 +4127,7 @@ Sub MaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 Call SetVariable(playerMem(theOne).smMaxVar$, str$(num2), theProgram)
                 Exit Sub
             End If
@@ -4411,7 +4411,7 @@ Sub Mp3PauseRPG(Text$, ByRef theProgram As RPGCodeProgram)
         ext$ = GetExt(lit$)
         dataUse$ = projectPath$ & mediaPath$ & lit$
         dataUse$ = PakLocate(dataUse$)
-        Call PlaySoundFX(dataUse$)
+        Call playSoundFX(dataUse$)
         Do While (TKAudiereIsPlaying(fgDevice) = 1)
             DoEvents
         Loop
@@ -4762,17 +4762,7 @@ Sub PlayAviSmallRPG(Text$, ByRef theProgram As RPGCodeProgram)
         lit$ = addext(lit$, ".avi")
         lit$ = projectPath$ + mediaPath$ + lit$
         lit$ = PakLocate(lit$)
-        'old$ = boardlist(activeboardindex).thedata.boardMusic$
-        'boardlist(activeboardindex).thedata.boardMusic = ""
-        'ob = bWaitingForInput
-        'bWaitingForInput = False
-        'Call checkMusic
-        'Call checkMusic
-        Dim aa As String
-        aa$ = mciSendString("play " + lit$, 0&, 0, 0&)
-        'boardMusic$ = old$
-        'Call checkMusic
-        'bWaitingForInput = ob
+        Call playVideo(lit, True)
     End If
 
     Exit Sub
@@ -5008,7 +4998,7 @@ Sub PushItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
             If targetType = 1 Then itemNum = target
             
         ElseIf UCase$(lit1$) = "SOURCE" Then
-            If sourceType = 1 Then itemNum = source
+            If sourceType = 1 Then itemNum = Source
             
         Else
             'Not something we want.
@@ -5157,7 +5147,7 @@ Sub PushRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
     End If
     If UCase$(handleName$) = "SOURCE" Then
-        If sourceType = 0 Then handleNum = source
+        If sourceType = 0 Then handleNum = Source
 
     End If
     
@@ -5364,7 +5354,7 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     If UCase$(handeName$) = "SOURCE" Then
         If sourceType = 0 Then
-            theOne = source
+            theOne = Source
         End If
     End If
     
@@ -5619,7 +5609,7 @@ Sub RemoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
             End If
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
@@ -5688,14 +5678,14 @@ Sub removeStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
                 'player was targeted
-                theOne = source
+                theOne = Source
                 Call PlayerRemoveStatus(lit2, playerMem(theOne))
                 Call PlayerRemoveStatus(lit2, parties(PLAYER_PARTY).fighterList(theOne).player)
                 Exit Sub
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 Call EnemyRemoveStatus(lit2, enemyMem(theOne))
                 Call EnemyRemoveStatus(lit2, parties(PLAYER_PARTY).fighterList(theOne).enemy)
                 Exit Sub
@@ -7148,7 +7138,7 @@ Sub SmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
                 aa = GetVariable(playerMem(theOne).smMaxVar$, lit$, tooBig, theProgram)
                 If num2 > tooBig Then num2 = tooBig
                 Call SetVariable(playerMem(theOne).smVar$, str$(num2), theProgram)
@@ -7156,7 +7146,7 @@ Sub SmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
             If sourceType = 2 Then
                 'enemy was targeted.
-                theOne = source
+                theOne = Source
                 enemyMem(theOne).eneSMP = num2
                 If enemyMem(theOne).eneSMP > enemyMem(theOne).eneMaxSMP Then enemyMem(theOne).eneSMP = enemyMem(theOne).eneMaxSMP
                 Exit Sub
@@ -7205,15 +7195,15 @@ Sub SourceHandleRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     var1$ = GetElement(dataUse$, 1)
     If sourceType = 0 Then
         'player
-        tar$ = playerListAr$(source)
+        tar$ = playerListAr$(Source)
     End If
     If sourceType = 1 Then
         'item
-        tar$ = "ITEM" + str$(source)
+        tar$ = "ITEM" + str$(Source)
     End If
     If sourceType = 2 Then
         'enemy
-        tar$ = "ENEMY" + str$(source)
+        tar$ = "ENEMY" + str$(Source)
     End If
     If number = 1 Then
         Call SetVariable(var1$, tar$, theProgram)
@@ -7244,19 +7234,19 @@ Sub SourceLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
     var2$ = GetElement(dataUse$, 2)
     If sourceType = 0 Then
         'player
-        tarX$ = str$(ppos(source).X)
-        tarY$ = str$(ppos(source).Y)
+        tarX$ = str$(ppos(Source).X)
+        tarY$ = str$(ppos(Source).Y)
     End If
     If sourceType = 1 Then
         'item
         'MsgBox Str$(itmx(target)) + Str$(itmy(target))
-        tarX$ = str$(boardList(activeBoardIndex).theData.itmX(source))
-        tarY$ = str$(boardList(activeBoardIndex).theData.itmY(source))
+        tarX$ = str$(boardList(activeBoardIndex).theData.itmX(Source))
+        tarY$ = str$(boardList(activeBoardIndex).theData.itmY(Source))
     End If
     If sourceType = 2 Then
         'enemy
-        tarX$ = str$(enemyMem(source).X)
-        tarY$ = str$(enemyMem(source).Y)
+        tarX$ = str$(enemyMem(Source).X)
+        tarY$ = str$(enemyMem(Source).Y)
     End If
     'MsgBox tarx$ + "," + tary$ + "   " + Str$(curx(0)) + Str$(cury(0))
     Call SetVariable(var1$, tarX$, theProgram)
@@ -7333,7 +7323,7 @@ Sub StanceRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
             End If
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
@@ -8523,7 +8513,7 @@ Sub WanderRPG(Text$, ByRef theProgram As RPGCodeProgram)
             If targetType = 1 Then itemNum = target
             
         ElseIf UCase$(lit1$) = "SOURCE" Then
-            If sourceType = 1 Then itemNum = source
+            If sourceType = 1 Then itemNum = Source
             
         Else
             'Not something we want.
@@ -8627,7 +8617,7 @@ Sub WavRPG(Text$, ByRef theProgram As RPGCodeProgram)
         ext$ = GetExt(lit$)
         dataUse$ = projectPath$ & mediaPath$ & lit$
         dataUse$ = PakLocate(dataUse$)
-        Call PlaySoundFX(dataUse$)
+        Call playSoundFX(dataUse$)
     End If
 
     Exit Sub
@@ -9592,7 +9582,7 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
             End If
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
@@ -9667,7 +9657,7 @@ Sub ErasePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If UCase$(lit1$) = "SOURCE" Then
             If sourceType = 0 Then
-                theOne = source
+                theOne = Source
             End If
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found

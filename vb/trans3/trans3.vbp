@@ -43,7 +43,6 @@ Module=CommonStatusEffect; ..\tkCommon\modules\CommonStatusEffect.bas
 Module=CommonImage; ..\tkCommon\modules\CommonImage.bas
 Form=..\tkCommon\forms\image_host.frm
 Module=CommonDialogs; ..\tkCommon\modules\CommonDialogs.bas
-Module=CommonMedia; ..\tkCommon\modules\CommonMedia.bas
 Module=CommonVB6Compat; ..\tkCommon\modules\CommonVB6Compat.bas
 Module=CommonTileAnim; ..\tkCommon\modules\CommonTileAnim.bas
 Module=CommonTrace; ..\tkCommon\modules\CommonTrace.bas
