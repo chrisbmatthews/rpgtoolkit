@@ -966,15 +966,15 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
 
     If (isMultiTasking() And theProgram.looping) And (multiRunStatus = 0) Then Exit Function
 
-    'Parse this line like it has never been parsed before... [KSNiloc]
-    rpgcodeCommand = spliceForObjects(rpgcodeCommand, theProgram)
-    rpgcodeCommand = ParseRPGCodeCommand(rpgcodeCommand, theProgram)
-
     Dim cLine As String 'current line
     cLine = rpgcodeCommand
-    
+
+    'Parse this line like it has never been parsed before... [KSNiloc]
+    cLine = spliceForObjects(cLine, theProgram)
+    cLine = ParseRPGCodeCommand(cLine, theProgram)
+
     retval.dataType = DT_VOID
-      
+
     Dim splice As String, cType As String, testText As String
 
     splice$ = cLine$
