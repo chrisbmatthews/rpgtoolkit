@@ -25,7 +25,7 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
     On Error Resume Next
 
     'Quit if we're already showing the menu
-    If bInMenu Or isFightInProgress() Then Exit Sub
+    If ((bInMenu) Or (fightInProgress)) Then Exit Sub
    
     If mainMem.menuPlugin <> "" Then
     
@@ -50,6 +50,8 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
             End If
             bInMenu = False
         End If
+        
+        Call renderNow(-1, True)
 
     End If
 
