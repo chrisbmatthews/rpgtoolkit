@@ -584,6 +584,8 @@ Public Function runBlock(ByVal runCommands As Long, ByRef prg As RPGCodeProgram,
             Case Else
 
                 If (runCommands) Then
+                    ' Garbage collect
+                    Call garbageCollect
                     Call DoSingleCommand(prg.program(prg.programPos), prg, retval, True)
                 Else
                     prg.programPos = increment(prg)
@@ -778,15 +780,14 @@ Public Sub runProgram( _
 
     '// Passing string(s) ByRef for preformance related reasons
 
-    If Trim$(Right$(file, 1)) = "\" Then Exit Sub
-
     runningProgram = True
 
     Call hideMsgBox
     Call setConstants
     Call clearButtons
+    Call garbageCollect
 
-    If setSourceAndTarget Then
+    If (setSourceAndTarget) Then
         target = selectedPlayer
         targetType = TYPE_PLAYER
         Source = selectedPlayer
@@ -826,6 +827,10 @@ Public Sub runProgram( _
                    And (runningProgram))
 
             prgPos = theProgram.programPos
+
+            ' Garbage collect
+            Call garbageCollect
+
             theProgram.programPos = DoCommand(theProgram, retval)
 
             If errorsA = 1 Then
@@ -842,6 +847,8 @@ Public Sub runProgram( _
     Call hideMsgBox
 
     errorKeep = theProgram
+
+    Call garbageCollect
 
     If (theProgram.programPos = -1) Then
         Call renderNow(-1, True)

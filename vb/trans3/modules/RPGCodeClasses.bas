@@ -109,6 +109,74 @@ End Enum
 ' Members
 '=========================================================================
 Private m_objectOffset As Long              ' Address of object array
+Private m_freeableObjects() As Long         ' Objects that can safely be freed
+
+'=========================================================================
+' Clear the freeable objects array
+'=========================================================================
+Public Sub resizeFreeableObjects(ByVal lngNewSize As Long)
+
+    ' Redimension the array
+    ReDim m_freeableObjects(lngNewSize)
+
+End Sub
+
+'=========================================================================
+' Mark an object for collection
+'=========================================================================
+Public Sub markForCollection(ByVal hObject As Long)
+
+    ' Need more room
+    Dim j As Long, ub As Long
+    ub = UBound(m_freeableObjects)
+    j = ub + 1
+    ReDim Preserve m_freeableObjects(j)
+
+    ' Write in the data
+    m_freeableObjects(j) = hObject
+
+End Sub
+
+'=========================================================================
+' Collect garbage
+'=========================================================================
+Public Sub garbageCollect()
+
+    ' Loop over every freeable object
+    Dim i As Long
+    For i = 0 To UBound(m_freeableObjects)
+
+        ' If there's an object here
+        If (m_freeableObjects(i)) Then
+
+            ' Free this object
+            Dim lngFree As Long
+            lngFree = m_freeableObjects(i)
+            m_freeableObjects(i) = 0
+            Call freeObject(lngFree)
+
+        End If
+
+    Next i
+
+    ' Clear all freeable objects
+    ReDim m_freeableObjects(0)
+
+End Sub
+
+'=========================================================================
+' Count freeable objects
+'=========================================================================
+Public Function countFreeableObjects() As Long
+    countFreeableObjects = UBound(m_freeableObjects)
+End Function
+
+'=========================================================================
+' Get a freeable object by index
+'=========================================================================
+Public Function getFreeableObjectHandle(ByVal Index As Long) As Long
+    getFreeableObjectHandle = m_freeableObjects(Index)
+End Function
 
 '=========================================================================
 ' Check a method override name
@@ -923,6 +991,7 @@ End Function
 Public Sub initRPGCodeClasses()
     ReDim g_objHandleUsed(250)
     ReDim g_objects(250)
+    ReDim m_freeableObjects(0)
     m_objectOffset = VarPtr(g_objects(0))
     Call newHandle
 End Sub
@@ -1328,7 +1397,10 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
 
     End If
 
-    ' Return a pointer to the class
+    ' Mark this object for collection
+    Call markForCollection(hClass)
+
+    ' Return a pointer to the object
     createRPGCodeObject = hClass
 
 End Function
@@ -1356,6 +1428,46 @@ Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef x(
     Next x(depth)
 
 End Sub
+
+'=========================================================================
+' Free an object
+'=========================================================================
+Public Function freeObject(ByVal hObject As Long)
+
+    ' Make sure it's a real object
+    If Not (isObject(hObject)) Then
+
+        ' Bail
+        Exit Function
+
+    End If
+
+    ' Call the deconstructor(s)
+    Dim i As Long, cls As RPGCODE_CLASS, retval As RPGCODE_RETURN
+    cls = getClass(hObject, errorKeep)
+    For i = 0 To UBound(cls.strDerived)
+        If (LenB(cls.strDerived(i))) Then
+            Call callObjectMethod(hObject, "~" & cls.strDerived(i), errorKeep, retval, "~" & cls.strDerived(i))
+        End If
+    Next i
+    Call callObjectMethod(hObject, "~" & cls.strName, errorKeep, retval, "~" & cls.strName)
+
+    ' Calculate position in global object array
+    hObject = (hObject - m_objectOffset) / 8
+
+    ' Kill the object's members
+    Call clearObject(g_objects(hObject), errorKeep)
+
+    ' Kill the object
+    Call killHandle(hObject)
+
+    ' Clear the object's hClass
+    g_objects(hObject).hClass = 0
+
+    ' Clear what the object was instanced from
+    g_objects(hObject).strInstancedFrom = vbNullString
+
+End Function
 
 '=========================================================================
 ' Copy an object to a destination or new memory
@@ -1678,29 +1790,8 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             ' Check if we're to release
             If (cmdName = "RELEASE") Then
 
-                ' Call the deconstructor(s)
-                Dim i As Long, cls As RPGCODE_CLASS
-                cls = getClass(hClass, prg)
-                For i = 0 To UBound(cls.strDerived)
-                    If (LenB(cls.strDerived(i))) Then
-                        Call callObjectMethod(hClass, "~" & cls.strDerived(i), prg, retval, "~" & cls.strDerived(i))
-                    End If
-                Next i
-                Dim gObjectIndex As Long
-                gObjectIndex = (hClass - m_objectOffset) / 8
-                Call callObjectMethod(hClass, "~" & g_objects(gObjectIndex).strInstancedFrom, prg, retval, "~" & g_objects(gObjectIndex).strInstancedFrom)
-
-                ' Kill the object's members
-                Call clearObject(g_objects(hClass), prg)
-
-                ' Kill the object
-                Call killHandle(gObjectIndex)
-
-                ' Clear the object's hClass
-                g_objects(gObjectIndex).hClass = 0
-
-                ' Clear what the object was instanced from
-                g_objects(gObjectIndex).strInstancedFrom = vbNullString
+                ' Free the object
+                Call freeObject(hClass)
 
             ElseIf (cmdName = "GETTYPE") Then
 

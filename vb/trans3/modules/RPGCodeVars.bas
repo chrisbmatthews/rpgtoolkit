@@ -827,7 +827,13 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                     ' Get the conjuction here
                     conjunctions(tokenIdx) = MathFunction(Text, tokenIdx)
                     ' Get the value of the token
-                    Call getValue(replace(replace(valueList(tokenIdx), ")", vbNullString), "(", vbNullString), lit, numberUse(tokenIdx), theProgram, , bIsVar(tokenIdx))
+                    Dim strToken As String
+                    strToken = replace(replace(valueList(tokenIdx), ")", vbNullString), "(", vbNullString)
+                    lit = vbNullString
+                    Call getValue(strToken, lit, numberUse(tokenIdx), theProgram, , bIsVar(tokenIdx))
+                    If (LenB(lit)) Then
+                        Call getValue(strToken, lit, numberUse(tokenIdx), theProgram, , bIsVar(tokenIdx), , True)
+                    End If
                     ' Add the inverse for subtraction
                     If (conjunctions(tokenIdx - 1) = "-") Then
                         conjunctions(tokenIdx - 1) = "+"
@@ -1048,7 +1054,7 @@ End Sub
 '=========================================================================
 ' Gets the value of the text passed
 '=========================================================================
-Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True, Optional ByRef bWasVar As Boolean, Optional ByVal bForceNum As Boolean) As RPGC_DT
+Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True, Optional ByRef bWasVar As Boolean, Optional ByVal bForceNum As Boolean, Optional ByVal bTakeNumPath As Boolean) As RPGC_DT
 
     On Error Resume Next
 
@@ -1067,6 +1073,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
         ' Get type of the equation
         Dim isEquation As Boolean
         equType = dataType(Text, theProgram, True, isEquation)
+        If (bTakeNumPath) Then equType = DT_NUM
 
         ' Make sure it's an equation
         If (isEquation) Then
@@ -1095,7 +1102,11 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
     Else
 
         ' Get the data type
-        equType = dataType(Text, theProgram, False)
+        If Not (bTakeNumPath) Then
+            equType = dataType(Text, theProgram, False)
+        Else
+            equType = DT_NUM
+        End If
 
     End If
 
@@ -1105,7 +1116,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
         Case DT_NUM         'NUMERICAL VARIABLE
                             '------------------
 
-            If (getVariable(Text, litA, numA, theProgram) = DT_NUM) Then
+            If (getVariable(Text, litA, numA, theProgram, bTakeNumPath) = DT_NUM) Then
                 ' Found one!
                 num = numA
             End If
@@ -1485,7 +1496,7 @@ End Sub
 '=========================================================================
 ' Get the value of a variable
 '=========================================================================
-Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
+Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram, Optional ByVal bTakeNumPath As Boolean) As RPGC_DT
 
     On Error Resume Next
 
@@ -1558,19 +1569,21 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
                             getVariable = DT_NUM
                             num = rV.num
                             Exit Function
-                        ElseIf (isMethodMember("operator$", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
-                            ' Call it
-                            Call callObjectMethod(hClass, "operator$()", theProgram, rV, "operator$")
-                            ' Return and leave
-                            If (rV.dataType = DT_REFERENCE) Then
-                                ' Recurse
-                                getVariable = getVariable(rV.ref, lit, num, theProgram)
+                        ElseIf Not (bTakeNumPath) Then
+                            If (isMethodMember("operator$", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                                ' Call it
+                                Call callObjectMethod(hClass, "operator$()", theProgram, rV, "operator$")
+                                ' Return and leave
+                                If (rV.dataType = DT_REFERENCE) Then
+                                    ' Recurse
+                                    getVariable = getVariable(rV.ref, lit, num, theProgram)
+                                    Exit Function
+                                End If
+                                getVariable = DT_LIT
+                                lit = rV.lit
                                 Exit Function
-                            End If
-                            getVariable = DT_LIT
-                            lit = rV.lit
-                            Exit Function
-                        End If ' isMethodMember
+                            End If ' isMethodMember
+                        End If ' Not (bTakeNumPath)
                     End If ' isObject
                 End If ' (numA <> 0)
             End If ' Not numVarExists

@@ -44,7 +44,7 @@ Public menuGraphic As String              'graphic of main menu
 Public fightMenuGraphic As String         'graphic of fight menu
 Public newPlyrName As String              'what newplyr has done
 
-Public Const MISC_DELAY = 0.05             'For general pausing in loops (like #Zoom)
+Public Const MISC_DELAY = 0.05            'For general pausing in loops (like #Zoom)
 
 '=========================================================================
 ' Restore a character
@@ -147,6 +147,7 @@ Public Sub LoadState(ByVal file As String)
             Input #num, majorVer
             Input #num, minorVer
             Call clearVars(globalHeap)
+            Call garbageCollect
             If minorVer = 0 Then
                 'old style...
                 'Now, all the numerical variables:
@@ -308,6 +309,7 @@ Public Sub LoadState(ByVal file As String)
         Call BinReadInt(num)    'majorver 3
         minorVer = BinReadInt(num)   'minorver 0
         Call clearVars(globalHeap)
+        Call garbageCollect
         
         'get num vars...
         nCount = BinReadLong(num)
@@ -502,9 +504,24 @@ Public Sub LoadState(ByVal file As String)
 
         ' Read loop offset
         If (minorVer >= 2) Then
-
             loopOffset = BinReadLong(num)
+        End If
 
+        If (minorVer >= 3) Then
+
+            Dim lngFreeableObjectsSize As Long
+            lngFreeableObjectsSize = BinReadLong(num)
+            Call resizeFreeableObjects(lngFreeableObjectsSize)
+            For t = 0 To lngFreeableObjectsSize
+                Dim lngData As Long
+                lngData = BinReadLong(num)
+                If (lngData) Then
+                    Call markForCollection(lngData)
+                End If
+            Next t
+
+        Else
+            Call resizeFreeableObjects(0)
         End If
 
         showPlayer(selectedPlayer) = True
@@ -524,7 +541,7 @@ Public Sub SaveState(ByVal file As String)
     Open file$ For Binary As #num
         Call BinWriteString(num, "RPGTLKIT SAVE")
         Call BinWriteInt(num, 3)    'majorver
-        Call BinWriteInt(num, 2)    'minorver
+        Call BinWriteInt(num, 3)    'minorver
                    
         'print num vars...
         Dim nCount As Long
@@ -683,6 +700,12 @@ Public Sub SaveState(ByVal file As String)
             Else
                 Call BinWriteByte(num, 0)
             End If
+        Next t
+        Dim lngFreeableObjects As Long
+        lngFreeableObjects = countFreeableObjects()
+        Call BinWriteLong(num, lngFreeableObjects)
+        For t = 0 To lngFreeableObjects
+            Call BinWriteLong(num, getFreeableObjectHandle(t))
         Next t
 
         ' Write loop offset
