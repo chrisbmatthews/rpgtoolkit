@@ -111,16 +111,11 @@ Public Sub Render()
         m_tilesX = scTilesX
         m_tilesY = scTilesY
 
-        'Get filename of board to render
-        m_file = brdPath & RemovePath(currentBoard)
+        ' Fill with transparent color
+        Call canvasFill(canvas, TRANSP_COLOR)
 
-        'Fill canvases with the transparent color
-        'If canvasMask <> -1 Then
-        '    Call CanvasFill(canvas, TRANSP_COLOR_ALT)
-        '    Call CanvasFill(canvasMask, TRANSP_COLOR)
-        'Else
-            Call CanvasFill(canvas, TRANSP_COLOR)
-        'End If
+        'Get filename of board to render
+        ' m_file = brdPath & RemovePath(currentBoard)
 
         ' If board is isometric, render twice as much
         If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
@@ -129,7 +124,8 @@ Public Sub Render()
         End If
 
         'Change directory
-        If pakFileRunning Then
+
+        If (pakFileRunning) Then
             Call ChangeDir(PakTempPath)
         Else
             Call ChangeDir(projectPath)
@@ -152,7 +148,6 @@ Public Sub Render()
                                 m_shadeB, _
                                 m_isometric _
                                               )
-
     End With
 
     'Return to old directory

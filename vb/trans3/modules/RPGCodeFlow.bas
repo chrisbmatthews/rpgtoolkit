@@ -790,7 +790,7 @@ Public Sub runProgram( _
         theProgram.programPos = 0
         Do While _
                    ((theProgram.programPos >= 0) _
-                   And (theProgram.programPos <= theProgram.length) _
+                   And (theProgram.programPos <= theProgram.Length) _
                    And (runningProgram))
 
             prgPos = theProgram.programPos
@@ -809,11 +809,12 @@ Public Sub runProgram( _
 
     Call hideMsgBox
 
+    errorKeep = theProgram
+
     If (theProgram.programPos = -1) Then
         Call renderNow(-1, True)
     End If
 
-    Call hideMsgBox
     Call FlushKB
     Call ClearRPGCodeProcess(theProgram)
     runningProgram = False

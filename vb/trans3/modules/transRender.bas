@@ -1410,7 +1410,7 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
     Dim newBackground As Boolean    ' update background?
     Dim newMultiAnim As Boolean     ' update multitasking animations?
     Dim t As Long                   ' for loop control variable
-    
+
     ' Check if we need to render the background
     newBackground = renderBackground()
 

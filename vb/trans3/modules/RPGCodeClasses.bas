@@ -71,7 +71,7 @@ Public Type RPGCodeProgram
     methods() As RPGCodeMethod              ' Methods in this program
     programPos As Long                      ' Current position in program
     included(50) As String                  ' Included files
-    length As Long                          ' Length of program
+    Length As Long                          ' Length of program
     heapStack() As Long                     ' Stack of local heaps
     currentHeapFrame As Long                ' Current heap frame
     boardNum As Long                        ' The corresponding board index of the program (default to 0)
@@ -1215,7 +1215,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Dim var As Boolean              ' Variable?
     Dim outside As Boolean          ' Calling from outside class?
     Dim cmdName As String           ' Command's name
-    Dim length As Long              ' Length of the text
+    Dim Length As Long              ' Length of the text
     Dim a As Long                   ' Loop var
 
     ' Get location of first ->
@@ -1228,10 +1228,10 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     End If
 
     ' Get the length of the text
-    length = Len(Text)
+    Length = Len(Text)
 
     ' Loop over each charater, forwards
-    For a = (begin + 2) To length
+    For a = (begin + 2) To Length
         ' Get a character
         char = Mid$(Text, a, 1)
         Select Case char
@@ -1262,7 +1262,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                     End If
                     ' Check for variable
                     depth = depth - 1
-                    If (depth = 0) Then
+                    If (depth = -1) Then
                         lngEnd = a - 1
                         var = True
                         Exit For
@@ -1285,7 +1285,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Next a
 
     ' Record the method's command line
-    If (lngEnd = 0) Then lngEnd = length
+    If (lngEnd = 0) Then lngEnd = Length
     cLine = ParseRPGCodeCommand(Trim$(Mid$(Text, begin + 2, lngEnd - begin - 1)), prg)
     If Not (var) Then
         cmdName = UCase$(GetCommandName(cLine))
@@ -1459,7 +1459,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
     End If
 
-    If Not ((lngEnd = length) And (start = 1)) Then
+    If Not ((lngEnd = Length) And (start = 1)) Then
         ' Recurse, passing in the running text
         spliceForObjects = spliceForObjects( _
                                                Mid$(Text, 1, start - 1) & _
