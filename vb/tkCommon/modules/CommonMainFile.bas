@@ -57,7 +57,7 @@ Type TKMain
     cursorCancelSound As String       'sound played when cursor cancels
     'added for beta
     useJoystick As Byte               'allow joystick input? 0- no 1- yes
-    colorDepth As Byte                'color depth
+    colordepth As Byte                'color depth
 End Type
 
 
@@ -272,19 +272,19 @@ Function openMain(ByVal file As String, ByRef theMain As TKMain) As Integer
             theMain.cursorCancelSound = BinReadString(num)
         
             theMain.useJoystick = BinReadByte(num)
-            theMain.colorDepth = BinReadByte(num)
+            theMain.colordepth = BinReadByte(num)
         End If
     Close #num
     
     If minorVer <= 2 Then
         'old version 2 mainfile
         'move plugins into the project folder...
-        MkDir Mid$(projectPath$ + pluginPath$, 1, Len(projectPath$ + pluginPath$) - 1)
+        MkDir Mid$(projectPath$ + plugPath$, 1, Len(projectPath$ + plugPath$) - 1)
         Dim pdir As String
         Dim pfile As String
-        pfile = Dir$(pluginPath$ + "*.*")
+        pfile = Dir$(plugPath$ + "*.*")
         Do While pfile <> ""
-            Call FileCopy(pluginPath$ + pfile, projectPath$ + pluginPath$ + pfile)
+            Call FileCopy(plugPath$ + pfile, projectPath$ + plugPath$ + pfile)
             pfile = Dir$
         Loop
     End If
@@ -368,12 +368,12 @@ ver2oldmain:
     If minorVer <= 2 Then
         'old version 2 mainfile
         'move plugins into the project folder...
-        MkDir Mid$(projectPath$ + pluginPath$, 1, Len(projectPath$ + pluginPath$) - 1)
+        MkDir Mid$(projectPath$ + plugPath$, 1, Len(projectPath$ + plugPath$) - 1)
         Dim pdir2 As String
         Dim pfile2 As String
-        pfile2 = Dir$(pluginPath$ + "*.*")
+        pfile2 = Dir$(plugPath$ + "*.*")
         Do While pfile2 <> ""
-            Call FileCopy(pluginPath$ + pfile2, projectPath$ + pluginPath$ + pfile2)
+            Call FileCopy(plugPath$ + pfile2, projectPath$ + plugPath$ + pfile2)
             pfile2 = Dir$
         Loop
     End If
@@ -484,7 +484,7 @@ Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         Call BinWriteString(num, theMain.cursorCancelSound)
     
         Call BinWriteByte(num, theMain.useJoystick)
-        Call BinWriteByte(num, theMain.colorDepth)
+        Call BinWriteByte(num, theMain.colordepth)
     Close #num
 End Sub
 

@@ -214,12 +214,12 @@ End Sub
 
 Sub vbPicCls(ByRef pic As PictureBox)
     'cls
-    Call pic.cls
+    Call pic.Cls
 End Sub
 
 Sub vbFrmCls(ByRef pic As Form)
     'cls
-    Call pic.cls
+    Call pic.Cls
 End Sub
 
 Sub vbPicCircle(ByRef pic As PictureBox, ByVal X As Long, ByVal Y As Long, ByVal radius As Long, ByVal crColor As Long, Optional ByVal startangle As Double = -1, Optional ByVal endangle As Double = -1, Optional ByVal aspect As Double = -1)

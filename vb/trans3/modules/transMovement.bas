@@ -94,7 +94,7 @@ Public Property Get animationDelay() As Double
     If animationDelay = 0 Then animationDelay = 1
 End Property
 
-Public Property Let animationDelay(newVal As Double)
+Public Property Let animationDelay(ByVal newVal As Double)
     mVarAnimationDelay = newVal
 End Property
 '===============================================

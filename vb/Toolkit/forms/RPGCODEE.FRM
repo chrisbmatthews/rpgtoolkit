@@ -114,7 +114,6 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
-      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -1317,54 +1316,42 @@ Private Sub rprg_Click()
 'Called when Run Program is selected from the menu, F5 is pressed or the green arrow is clicked.
 'Creates the program "sys_test.prg" with the test preferences converted to rpg commands,
 'and passes this to trans3.exe as an arguement.
-    
-    On Error GoTo ErrorHandler
+
+    On Error Resume Next
     
     Dim TestPRG As String ' We no longer need to assign this to = "", as it goes out of scope on sub end
     
     If rpgcodeList(activeRPGCodeIndex).Ifont$ <> "" Then
-        TestPRG = TestPRG + "#font(" + rpgcodeList(activeRPGCodeIndex).Ifont$ + ")" + chr$(13) + chr$(10)
+        TestPRG = TestPRG + "Font(" + rpgcodeList(activeRPGCodeIndex).Ifont$ + ")" + chr$(13) + chr$(10)
     End If
     'If rpgcodeList(activeRPGCodeIndex).IfontSize < 8 Then rpgcodeList(activeRPGCodeIndex).IfontSize = 8
     '    TestPRG = TestPRG + "#fontsize(" + str$(rpgcodeList(activeRPGCodeIndex).IfontSize) + ")" + chr$(13) + chr$(10)
     If rpgcodeList(activeRPGCodeIndex).Imwin$ <> "" Then
-        TestPRG = TestPRG + "#Wingraphic(" + rpgcodeList(activeRPGCodeIndex).Imwin$ + ")" + chr$(13) + chr$(10)
+        TestPRG = TestPRG + "WinGraphic(" + rpgcodeList(activeRPGCodeIndex).Imwin$ + ")" + chr$(13) + chr$(10)
     End If
     For t = 0 To 4
         If rpgcodeList(activeRPGCodeIndex).Ichar$(t) <> "" Then
-            TestPRG = TestPRG + "#addplayer(" + rpgcodeList(activeRPGCodeIndex).Ichar$(t) + ")" + chr$(13) + chr$(10)
+            TestPRG = TestPRG + "AddPlayer(" + rpgcodeList(activeRPGCodeIndex).Ichar$(t) + ")" + chr$(13) + chr$(10)
         End If
     Next t
     If rpgcodeList(activeRPGCodeIndex).Iboard$ <> "" Then
-        TestPRG = TestPRG + "#send(" + rpgcodeList(activeRPGCodeIndex).Iboard$ + ",9,5)" + chr$(13) + chr$(10)
+        TestPRG = TestPRG + "Send(" + rpgcodeList(activeRPGCodeIndex).Iboard$ + ",9,5)" + chr$(13) + chr$(10)
     End If
     
     ' Complete TestPRG String
-    TestPRG = TestPRG + codeForm.Text
-    
+    TestPRG = TestPRG & codeForm.Text
+
     ' ! MODIFIED BY KSNiloc...
     Dim num As Long
     num = FreeFile()
-    Open App.path & "\" & projectPath & prgPath & "sys_test.prg" For Output As #num
+    Open projectPath & prgPath & "sys_test.prg" For Output As num
         Print #num, TestPRG
-    Close #num
-    
-    ' Improved Call, now all Program Saves use a single Sub
-    'Call saveprogramtst(projectPath$ + prgpath$ + "sys_test.prg", TestPRG)
+    Close num
     
     ' Exexcute Trans3 with the program
     
     'Run trans3 through the Shell. Fix: Added second argument, to give trans3 the focus.
-    Shell "trans3 " + loadedMainFile + " sys_test.prg", vbNormalFocus
-    
-    'ChDir (currentdir$)
-
-    Exit Sub
-    
-'Begin error handling code:
-ErrorHandler:
-Call HandleError
-Resume Next
+    Call Shell("trans3 " & loadedMainFile & " sys_test.prg", vbNormalFocus)
 
 End Sub
 

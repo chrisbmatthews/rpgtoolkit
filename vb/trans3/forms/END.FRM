@@ -25,6 +25,7 @@ Begin VB.Form endform
    ScaleWidth      =   5490
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1908"
+   Visible         =   0   'False
    Begin VB.CommandButton Command2 
       Appearance      =   0  'Flat
       Caption         =   "More Info"
@@ -111,34 +112,25 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-    Unload Me
+    Call Unload(Me)
     DoEvents
     End
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
-    moreinfo.Show 1
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    Call moreinfo.Show(vbModal)
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
+Private Sub Form_Activate()
+    If Tag = 1 Then
+        End
+    Else
+        Call LocalizeForm(Me)
+        Visible = True
+        DoEvents
+    End If
+End Sub
+
+Private Sub Form_Unload(ByRef Cancel As Integer)
     End
 End Sub
-
-Private Sub Timer1_Timer()
-    On Error GoTo errorhandler
-    End
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
-End Sub
-

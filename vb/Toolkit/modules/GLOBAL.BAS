@@ -1,4 +1,4 @@
-Attribute VB_Name = "Globals"
+Attribute VB_Name = "modGlobals"
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
@@ -52,9 +52,9 @@ Public Const statusPath = "StatusE\"           'status effect
 Public Const helpPath = "Help\"                'help file path
 Public Const hashPath = "Hash\"                'hash file path
 Public Const miscPath = "Misc\"                'misc file path
-Public Const pluginPath = "Plugin\"            'plugin file path
 Public Const resourcePath = "Resources\"       'resource file path
-Public Const plugPath = "Plugin\"
+Public Const plugPath = "Plugin\"              'plugin path
+Public Const isToolkit As Boolean = True       'is this the editor?
 
 'Top most form
 Public activeForm As Form   'the top most window

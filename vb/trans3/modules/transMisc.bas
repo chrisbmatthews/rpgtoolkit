@@ -16,6 +16,36 @@ Public Const TYPE_PLAYER = 0
 Public Const TYPE_ITEM = 1
 Public Const TYPE_ENEMY = 2
 
+Public Sub hostFormResize()
+
+    On Error Resume Next
+
+    If gGameState <> GS_PAUSE Then
+        'minimizing...
+        gPrevGameState = gGameState
+        gGameState = GS_PAUSE
+    Else
+        'restoring...
+        gGameState = gPrevGameState
+    End If
+
+End Sub
+
+Public Sub hostFormUnload(ByRef Cancel As Integer)
+
+    On Error Resume Next
+
+    gGameState = GS_QUIT
+
+    If (Not (gShuttingDown)) Then
+        Call closeSystems
+        host.Visible = False
+        Call endform.Show(vbModal)
+        End
+    End If
+
+End Sub
+
 Function determineSpecialMoves(ByVal handle As String, ByRef fileList() As String) As Long
     'determines which special moves this player can do.
     'this fills up the array passed in with the filenames of the moves you can do.
@@ -252,17 +282,17 @@ Sub openItems()
 
     For itemNum = 0 To MAXITEM '? If the item has a position?
         itmPos(itemNum).frame = 0
-        itmPos(itemNum).x = boardList(activeBoardIndex).theData.itmX(itemNum)
-        itmPos(itemNum).y = boardList(activeBoardIndex).theData.itmY(itemNum)
+        itmPos(itemNum).X = boardList(activeBoardIndex).theData.itmX(itemNum)
+        itmPos(itemNum).Y = boardList(activeBoardIndex).theData.itmY(itemNum)
         itmPos(itemNum).l = boardList(activeBoardIndex).theData.itmLayer(itemNum)
         itmPos(itemNum).stance = "REST"
         lastItemRender(itemNum).canvas = -1
         
         'Isometric addition: jumping fix for moving to new boards
-        pendingItemMovement(itemNum).xOrig = itmPos(itemNum).x
-        pendingItemMovement(itemNum).xTarg = itmPos(itemNum).x
-        pendingItemMovement(itemNum).yOrig = itmPos(itemNum).y
-        pendingItemMovement(itemNum).yTarg = itmPos(itemNum).y
+        pendingItemMovement(itemNum).xOrig = itmPos(itemNum).X
+        pendingItemMovement(itemNum).xTarg = itmPos(itemNum).X
+        pendingItemMovement(itemNum).yOrig = itmPos(itemNum).Y
+        pendingItemMovement(itemNum).yTarg = itmPos(itemNum).Y
 
         If boardList(activeBoardIndex).theData.itmActivate(itemNum) = 1 Then
             runIt = 0

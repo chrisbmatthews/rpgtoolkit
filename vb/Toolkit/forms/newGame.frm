@@ -144,7 +144,7 @@ Sub copyDefaults(thepath$)
     Call CopyDir(basicdir$ + bmpPath$, thepath$ + bmpPath$)
     Call CopyDir(basicdir$ + statusPath$, thepath$ + statusPath$)
     Call CopyDir(basicdir$ + miscPath$, thepath$ + miscPath$)
-    Call CopyDir(basicdir$ + pluginPath$, thepath$ + pluginPath$)
+    Call CopyDir(basicdir$ + plugPath$, thepath$ + plugPath$)
 End Sub
 
 
@@ -185,11 +185,11 @@ Private Sub Command1_Click()
         mainMem.gameTitle$ = gamett.Text             'title of game
         mainoption.Caption = "RPG Toolkit Development System, Version 2.2 (" + gamett.Text + ")"
         tt$ = gamett.Text
-        tt$ = replace(tt$, "\", "")
-        tt$ = replace(tt$, "/", "")
-        tt$ = replace(tt$, ":", "")
-        tt$ = replace(tt$, " ", "")
-        tt$ = replace(tt$, ".", "")
+        tt$ = Replace(tt$, "\", "")
+        tt$ = Replace(tt$, "/", "")
+        tt$ = Replace(tt$, ":", "")
+        tt$ = Replace(tt$, " ", "")
+        tt$ = Replace(tt$, ".", "")
         tt$ = tt$ + ".gam"
         mainMem.mainScreenType = 1
         Call saveMain(gamPath$ + tt$, mainMem)
@@ -242,11 +242,11 @@ End Sub
 Private Sub gamett_Change()
     On Error GoTo ErrorHandler
     tt$ = gamett.Text
-    tt$ = replace(tt$, "\", "")
-    tt$ = replace(tt$, "/", "")
-    tt$ = replace(tt$, ":", "")
-    tt$ = replace(tt$, " ", "")
-    tt$ = replace(tt$, ".", "")
+    tt$ = Replace(tt$, "\", "")
+    tt$ = Replace(tt$, "/", "")
+    tt$ = Replace(tt$, ":", "")
+    tt$ = Replace(tt$, " ", "")
+    tt$ = Replace(tt$, ".", "")
     folder.Text = gamePath$ + tt$ + "\"
 
     Exit Sub

@@ -377,9 +377,7 @@ End Sub
 
 Sub openSystems(Optional ByVal testingPRG As Boolean)
     On Error Resume Next
-    
-    ' ! MODIFIED BY KSNiloc...
-    
+
     Call initGraphics(testingPRG)
     Call DXClearScreen(0)
     Call DXRefresh
@@ -390,9 +388,33 @@ Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call startFightPlugin
     Call AnimationInit
     Call InitMedia
+    Call initActiveX
     
     Call setupmain(testingPRG)
     Call DXRefresh
+
+    host.Visible = True
+    DoEvents
+    
+End Sub
+
+Private Sub initActiveX()
+
+    '==================================
+    'Registers plugin\ folder
+    '==================================
+    
+    On Error Resume Next
+    
+    Dim aFile As String
+    aFile = Dir(projectPath & plugPath & "*.*")
+    
+    Do Until aFile = ""
+        Dim fullPath As String
+        fullPath = App.path & "\" & projectPath & plugPath & aFile
+        Call ExecCmd("regsvr32 /s " & chr(34) & fullPath & chr(34))
+        aFile = Dir()
+    Loop
 
 End Sub
 

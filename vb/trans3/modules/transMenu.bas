@@ -23,13 +23,13 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
         Dim aa As Long
        
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.menuPlugin)
+        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
        
         ' ! MODIFIED BY KSNiloc...
         If isVBPlugin(plugName) Then
-            aa = VBPlugin(plugName).PLUGType(PT_MENU)
+            aa = VBPlugin(plugName).plugType(PT_MENU)
         Else
-            aa = PLUGType(plugName, PT_MENU)
+            aa = plugType(plugName, PT_MENU)
         End If
        
         If aa = 1 Then
@@ -38,7 +38,7 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
            
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).Menu(requestedMenu)
+                a = VBPlugin(plugName).menu(requestedMenu)
             Else
                 a = PLUGMenu(plugName, requestedMenu)
             End If
@@ -54,7 +54,7 @@ Public Sub startMenuPlugin()
     On Error Resume Next
     If mainMem.menuPlugin <> "" Then
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.menuPlugin)
+        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
         ' ! MODIFIED BY KSNiloc...
         If isVBPlugin(plugName) Then
             VBPlugin(plugName).Initialize
@@ -70,7 +70,7 @@ Public Sub stopMenuPlugin()
     On Error Resume Next
     If mainMem.menuPlugin <> "" Then
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.menuPlugin)
+        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.menuPlugin)
         ' ! MODIFIED BY KSNiloc...
         If isVBPlugin(plugName) Then
             VBPlugin(plugName).Terminate

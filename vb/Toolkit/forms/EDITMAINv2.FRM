@@ -79,8 +79,8 @@ Begin VB.Form editmainfile
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "actionframe"
-      Tab(2).Control(1)=   "prgframe"
+      Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(1)=   "actionframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -95,9 +95,9 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Frame3"
+      Tab(5).Control(0)=   "Label24"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Label24"
+      Tab(5).Control(2)=   "Frame3"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
@@ -1873,18 +1873,18 @@ End Sub
 
 Private Sub color16bit_Click()
     On Error Resume Next
-    mainMem.colorDepth = COLOR16
+    mainMem.colordepth = COLOR16
 End Sub
 
 Private Sub color24bit_Click()
     On Error Resume Next
-    mainMem.colorDepth = COLOR24
+    mainMem.colordepth = COLOR24
 End Sub
 
 
 Private Sub color32bit_Click()
     On Error Resume Next
-    mainMem.colorDepth = COLOR32
+    mainMem.colordepth = COLOR32
 End Sub
 
 
@@ -1923,7 +1923,7 @@ Private Sub Command10_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + pluginPath$
+    dlg.strDefaultFolder = projectPath$ + plugPath$
     
     dlg.strTitle = "Select Plugin"
     dlg.strDefaultExt = "dll"
@@ -1938,7 +1938,7 @@ Private Sub Command10_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + pluginPath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + plugPath$ + antiPath$
     fgtPlugin.Text = antiPath$
     mainMem.fightPlugin = antiPath$
 End Sub
@@ -2107,7 +2107,7 @@ Private Sub Command5_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + pluginPath$
+    dlg.strDefaultFolder = projectPath$ + plugPath$
     
     dlg.strTitle = "Select Plugin"
     dlg.strDefaultExt = "dll"
@@ -2136,7 +2136,7 @@ Private Sub Command6_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + pluginPath$
+    dlg.strDefaultFolder = projectPath$ + plugPath$
     
     dlg.strTitle = "Select Plugin"
     dlg.strDefaultExt = "dll"
@@ -2151,7 +2151,7 @@ Private Sub Command6_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + pluginPath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + plugPath$ + antiPath$
     mnuplugin.Text = antiPath$
     mainMem.menuPlugin = antiPath$
 End Sub
@@ -2492,7 +2492,7 @@ Private Sub infofill()
 
     enableJoystick.value = mainMem.useJoystick
 
-    Select Case mainMem.colorDepth
+    Select Case mainMem.colordepth
         Case COLOR16:
             color16bit.value = True
                     

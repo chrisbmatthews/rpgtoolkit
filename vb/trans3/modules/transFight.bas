@@ -157,7 +157,7 @@ Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex A
             code = INFORM_SOURCE_ATTACK
             
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
             
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
@@ -182,7 +182,7 @@ Sub fightInformRemoveStat(ByVal targetPartyIndex As Long, ByVal targetFighterInd
             Dim code As Long
             
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
             
             If toSMP Then
                 code = INFORM_REMOVE_HP
@@ -222,7 +222,7 @@ Sub fightInformItemUse(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex 
             Dim code As Long
             code = INFORM_SOURCE_ITEM
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
 
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
@@ -247,7 +247,7 @@ Sub fightInformSpecialMove(ByVal sourcePartyIndex As Long, ByVal sourceFighterIn
             Dim code As Long
             code = INFORM_SOURCE_SMP
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
             
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
@@ -274,7 +274,7 @@ Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
             Dim code As Long
             code = INFORM_SOURCE_PARTY_DEFEATED
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
             
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
@@ -301,7 +301,7 @@ Sub fightInformCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
             Dim code As Long
             code = INFORM_SOURCE_CHARGED
             Dim plugName As String
-            plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
+            plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
             
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
@@ -542,13 +542,13 @@ Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As String)
     If mainMem.fightPlugin <> "" Then
         Dim aa As Long
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
+        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
         
         ' ! MODIFIED BY KSNiloc...
         If isVBPlugin(plugName) Then
-            aa = VBPlugin(plugName).PLUGType(PT_FIGHT)
+            aa = VBPlugin(plugName).plugType(PT_FIGHT)
         Else
-            aa = PLUGType(plugName, PT_FIGHT)
+            aa = plugType(plugName, PT_FIGHT)
         End If
         
         If aa = 1 Then
@@ -651,7 +651,7 @@ Sub startFightPlugin()
     On Error Resume Next
     If mainMem.fightPlugin <> "" Then
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
+        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
         
         ' ! MODIFIED BY KSNiloc...
         
@@ -669,7 +669,7 @@ Sub stopFightPlugin()
     On Error Resume Next
     If mainMem.fightPlugin <> "" Then
         Dim plugName As String
-        plugName = PakLocate(projectPath$ + pluginPath$ + mainMem.fightPlugin)
+        plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
         
         ' ! MODIFIED BY KSNiloc...
         If isVBPlugin(plugName) Then

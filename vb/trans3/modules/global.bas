@@ -1,4 +1,4 @@
-Attribute VB_Name = "Global"
+Attribute VB_Name = "modGlobals"
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
@@ -24,7 +24,8 @@ Public currentDir As String                    'Current directory
 Public filename(1 To 5) As String              'Filename array
 Public savPath As String                       'saved games
 Public projectPath As String                   'project path
-Public nocodeYN As Boolean                     'did it have nocode?
+Public noCodeYN As Boolean                     'did it have nocode?
+Public host As Form                            'host form object
 
 'Misc Constants
 Public Const compression = 1                   'use compression where avaliable
@@ -48,8 +49,9 @@ Public Const statusPath = "StatusE\"           'status effect
 Public Const helpPath = "Help\"                'help file path
 Public Const hashPath = "Hash\"                'hash file path
 Public Const miscPath = "Misc\"                'misc file path
-Public Const pluginPath = "Plugin\"            'plugin file path
+Public Const plugPath = "Plugin\"              'plugin file path
 Public Const resourcePath = "Resources\"       'resource file path
+Public Const isToolkit As Boolean = False      'is this the editor?
 
 'Tile Editor
 Public buftile(32, 32) As Long                 'Tile buffer

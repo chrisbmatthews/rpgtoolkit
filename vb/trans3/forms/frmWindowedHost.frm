@@ -1,11 +1,12 @@
 VERSION 5.00
-Begin VB.Form frmFullScreenHost 
-   BorderStyle     =   0  'None
+Begin VB.Form frmWindowedHost 
+   BorderStyle     =   4  'Fixed ToolWindow
+   Caption         =   "Windowed Host"
    ClientHeight    =   2085
-   ClientLeft      =   0
-   ClientTop       =   0
+   ClientLeft      =   45
+   ClientTop       =   285
    ClientWidth     =   2850
-   Icon            =   "host.frx":0000
+   Icon            =   "frmWindowedHost.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -15,7 +16,7 @@ Begin VB.Form frmFullScreenHost
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
 End
-Attribute VB_Name = "frmFullScreenHost"
+Attribute VB_Name = "frmWindowedHost"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -58,3 +59,4 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     Call hostFormUnload(Cancel)
 End Sub
+

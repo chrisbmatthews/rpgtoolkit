@@ -53,9 +53,9 @@ Sub CreatePakFile(file As String)
     'determine iof we're adding to end of a file...
     Dim v As Long, count As Long, l As Long, p As Long, a As String
 
-    If FileExists(file) Then Kill file
+    If fileExists(file) Then Kill file
 
-    If FileExists(file) Then
+    If fileExists(file) Then
         'create tpk file (really just a zip file...)
         v = ZIPCreate(file, 1)
     Else
@@ -67,7 +67,7 @@ Sub CreatePakFile(file As String)
 
     count = 0
     'first add the mainForm file...
-    l = ZIPAdd(gampath$ + mainfile$, "main.gam")
+    l = ZIPAdd(gamPath$ + mainfile$, "main.gam")
     count = count + 1
     p = Int(count / numFiles * 100)
     Call statusbar.setStatus(p, "Adding main.gam")
@@ -79,9 +79,9 @@ Sub CreatePakFile(file As String)
     'ChDir ocd
 
     'tile dir...
-    a$ = Dir$(projectPath$ + tilepath$ + "*.*")
+    a$ = Dir$(projectPath$ + tilePath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + tilepath$ + a$, tilepath$ + a$)
+        l = ZIPAdd(projectPath$ + tilePath$ + a$, tilePath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -89,9 +89,9 @@ Sub CreatePakFile(file As String)
     Loop
     
     'board dir...
-    a$ = Dir$(projectPath$ + brdpath$ + "*.*")
+    a$ = Dir$(projectPath$ + brdPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + brdpath$ + a$, brdpath$ + a$)
+        l = ZIPAdd(projectPath$ + brdPath$ + a$, brdPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -99,9 +99,9 @@ Sub CreatePakFile(file As String)
     Loop
    
     'char dir...
-    a$ = Dir$(projectPath$ + tempath$ + "*.*")
+    a$ = Dir$(projectPath$ + temPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + tempath$ + a$, tempath$ + a$)
+        l = ZIPAdd(projectPath$ + temPath$ + a$, temPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -109,9 +109,9 @@ Sub CreatePakFile(file As String)
     Loop
    
     'spc dir...
-    a$ = Dir$(projectPath$ + spcpath$ + "*.*")
+    a$ = Dir$(projectPath$ + spcPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + spcpath$ + a$, spcpath$ + a$)
+        l = ZIPAdd(projectPath$ + spcPath$ + a$, spcPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -119,9 +119,9 @@ Sub CreatePakFile(file As String)
     Loop
 
     'bkg dir...
-    a$ = Dir$(projectPath$ + bkgpath$ + "*.*")
+    a$ = Dir$(projectPath$ + bkgPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + bkgpath$ + a$, bkgpath$ + a$)
+        l = ZIPAdd(projectPath$ + bkgPath$ + a$, bkgPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -129,9 +129,9 @@ Sub CreatePakFile(file As String)
     Loop
     
     'media dir...
-    a$ = Dir$(projectPath$ + mediapath$ + "*.*")
+    a$ = Dir$(projectPath$ + mediaPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + mediapath$ + a$, mediapath$ + a$)
+        l = ZIPAdd(projectPath$ + mediaPath$ + a$, mediaPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -139,9 +139,9 @@ Sub CreatePakFile(file As String)
     Loop
     
     'prg dir...
-    a$ = Dir$(projectPath$ + prgpath$ + "*.*")
+    a$ = Dir$(projectPath$ + prgPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + prgpath$ + a$, prgpath$ + a$)
+        l = ZIPAdd(projectPath$ + prgPath$ + a$, prgPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -149,9 +149,9 @@ Sub CreatePakFile(file As String)
     Loop
     
     'font dir...
-    a$ = Dir$(projectPath$ + fontpath$ + "*.*")
+    a$ = Dir$(projectPath$ + fontPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + fontpath$ + a$, fontpath$ + a$)
+        l = ZIPAdd(projectPath$ + fontPath$ + a$, fontPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -159,9 +159,9 @@ Sub CreatePakFile(file As String)
     Loop
     
     'item dir...
-    a$ = Dir$(projectPath$ + itmpath$ + "*.*")
+    a$ = Dir$(projectPath$ + itmPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + itmpath$ + a$, itmpath$ + a$)
+        l = ZIPAdd(projectPath$ + itmPath$ + a$, itmPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -169,9 +169,9 @@ Sub CreatePakFile(file As String)
     Loop
 
     'ene dir...
-    a$ = Dir$(projectPath$ + enepath$ + "*.*")
+    a$ = Dir$(projectPath$ + enePath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + enepath$ + a$, enepath$ + a$)
+        l = ZIPAdd(projectPath$ + enePath$ + a$, enePath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -179,9 +179,9 @@ Sub CreatePakFile(file As String)
     Loop
 
     'bmp dir...
-    a$ = Dir$(projectPath$ + bmppath$ + "*.*")
+    a$ = Dir$(projectPath$ + bmpPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + bmppath$ + a$, bmppath$ + a$)
+        l = ZIPAdd(projectPath$ + bmpPath$ + a$, bmpPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -189,9 +189,9 @@ Sub CreatePakFile(file As String)
     Loop
 
     'status dir...
-    a$ = Dir$(projectPath$ + statuspath$ + "*.*")
+    a$ = Dir$(projectPath$ + statusPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + statuspath$ + a$, statuspath$ + a$)
+        l = ZIPAdd(projectPath$ + statusPath$ + a$, statusPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -209,9 +209,9 @@ Sub CreatePakFile(file As String)
     Loop
      
     'plugin dir...
-    a$ = Dir$(projectPath$ + pluginPath$ + "*.*")
+    a$ = Dir$(projectPath$ + plugPath$ + "*.*")
     Do While a$ <> ""
-        l = ZIPAdd(projectPath$ + pluginPath$ + a$, pluginPath$ + a$)
+        l = ZIPAdd(projectPath$ + plugPath$ + a$, plugPath$ + a$)
         count = count + 1
         p = Int(count / numFiles * 100)
         Call statusbar.setStatus(p, "Adding " + a$)
@@ -237,90 +237,90 @@ pakerr:
 End Function
 
 Function CountProjectFiles() As Integer
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'returns the total number of files in the project
     Dim count As Long, a As String
     count = 1 'the mainForm file counts as 1
     
     'count stuff in tiles dir...
-    a$ = Dir$(projectPath$ + tilepath$ + "*.*")
+    a$ = Dir$(projectPath$ + tilePath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
     
     'count stuff in board dir...
-    a$ = Dir$(projectPath$ + brdpath$ + "*.*")
+    a$ = Dir$(projectPath$ + brdPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
     
     'count stuff in character dir...
-    a$ = Dir$(projectPath$ + tempath$ + "*.*")
+    a$ = Dir$(projectPath$ + temPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
 
     'count stuff in spc dir...
-    a$ = Dir$(projectPath$ + spcpath$ + "*.*")
+    a$ = Dir$(projectPath$ + spcPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
 
     'count stuff in bkg dir...
-    a$ = Dir$(projectPath$ + bkgpath$ + "*.*")
+    a$ = Dir$(projectPath$ + bkgPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
 
     'count stuff in media dir...
-    a$ = Dir$(projectPath$ + mediapath$ + "*.*")
+    a$ = Dir$(projectPath$ + mediaPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
 
     'count stuff in prg dir...
-    a$ = Dir$(projectPath$ + prgpath$ + "*.*")
+    a$ = Dir$(projectPath$ + prgPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
 
     'count stuff in font dir...
-    a$ = Dir$(projectPath$ + fontpath$ + "*.*")
+    a$ = Dir$(projectPath$ + fontPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
 
     'count stuff in item dir...
-    a$ = Dir$(projectPath$ + itmpath$ + "*.*")
+    a$ = Dir$(projectPath$ + itmPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
 
     'count stuff in enemy dir...
-    a$ = Dir$(projectPath$ + enepath$ + "*.*")
+    a$ = Dir$(projectPath$ + enePath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
 
     'count stuff in bmp dir...
-    a$ = Dir$(projectPath$ + bmppath$ + "*.*")
+    a$ = Dir$(projectPath$ + bmpPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
     Loop
     
     'count stuff in ststuas dir...
-    a$ = Dir$(projectPath$ + statuspath$ + "*.*")
+    a$ = Dir$(projectPath$ + statusPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
@@ -334,7 +334,7 @@ Function CountProjectFiles() As Integer
     Loop
 
     'count stuff in plugindir...
-    a$ = Dir$(projectPath$ + pluginPath$ + "*.*")
+    a$ = Dir$(projectPath$ + plugPath$ + "*.*")
     Do While a$ <> ""
         count = count + 1
         a$ = Dir$
@@ -344,7 +344,7 @@ Function CountProjectFiles() As Integer
 
     Exit Function
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 
@@ -363,20 +363,20 @@ Sub CreatePakTemp()
     MkDir (PakTempPath$)
     'now create the game subfolders...
 
-    MkDir PakTempPath$ + tilepath$
-    MkDir PakTempPath$ + brdpath$
-    MkDir PakTempPath$ + tempath$
-    MkDir PakTempPath$ + spcpath$
-    MkDir PakTempPath$ + bkgpath$
-    MkDir PakTempPath$ + mediapath$
-    MkDir PakTempPath$ + prgpath$
-    MkDir PakTempPath$ + fontpath$
-    MkDir PakTempPath$ + itmpath$
-    MkDir PakTempPath$ + enepath$
-    MkDir PakTempPath$ + statuspath$
-    MkDir PakTempPath$ + bmppath$
+    MkDir PakTempPath$ + tilePath$
+    MkDir PakTempPath$ + brdPath$
+    MkDir PakTempPath$ + temPath$
+    MkDir PakTempPath$ + spcPath$
+    MkDir PakTempPath$ + bkgPath$
+    MkDir PakTempPath$ + mediaPath$
+    MkDir PakTempPath$ + prgPath$
+    MkDir PakTempPath$ + fontPath$
+    MkDir PakTempPath$ + itmPath$
+    MkDir PakTempPath$ + enePath$
+    MkDir PakTempPath$ + statusPath$
+    MkDir PakTempPath$ + bmpPath$
     MkDir PakTempPath$ + miscPath$
-    MkDir PakTempPath$ + pluginPath$
+    MkDir PakTempPath$ + plugPath$
 
 End Sub
 
@@ -396,20 +396,20 @@ Sub DeletePakTemp()
     'MkDir (PakTempPath$)
     'now create the game subfolders...
 
-    Call deletePath(PakTempPath$ + tilepath$)
-    Call deletePath(PakTempPath$ + brdpath$)
-    Call deletePath(PakTempPath$ + tempath$)
-    Call deletePath(PakTempPath$ + spcpath$)
-    Call deletePath(PakTempPath$ + bkgpath$)
-    Call deletePath(PakTempPath$ + mediapath$)
-    Call deletePath(PakTempPath$ + prgpath$)
-    Call deletePath(PakTempPath$ + fontpath$)
-    Call deletePath(PakTempPath$ + itmpath$)
-    Call deletePath(PakTempPath$ + enepath$)
-    Call deletePath(PakTempPath$ + statuspath$)
-    Call deletePath(PakTempPath$ + bmppath$)
+    Call deletePath(PakTempPath$ + tilePath$)
+    Call deletePath(PakTempPath$ + brdPath$)
+    Call deletePath(PakTempPath$ + temPath$)
+    Call deletePath(PakTempPath$ + spcPath$)
+    Call deletePath(PakTempPath$ + bkgPath$)
+    Call deletePath(PakTempPath$ + mediaPath$)
+    Call deletePath(PakTempPath$ + prgPath$)
+    Call deletePath(PakTempPath$ + fontPath$)
+    Call deletePath(PakTempPath$ + itmPath$)
+    Call deletePath(PakTempPath$ + enePath$)
+    Call deletePath(PakTempPath$ + statusPath$)
+    Call deletePath(PakTempPath$ + bmpPath$)
     Call deletePath(PakTempPath$ + miscPath$)
-    Call deletePath(PakTempPath$ + pluginPath$)
+    Call deletePath(PakTempPath$ + plugPath$)
 
     Call deletePath(PakTempPath$)
     PakTempPath$ = ""
@@ -446,7 +446,7 @@ Function IsAPakFile(file As String) As Boolean
 End Function
 
 Function PakLocate(file As String) As String
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     If Not (PakFileRunning) Then
         'hup!  we're not even mounted onto a pakfile!
@@ -460,7 +460,7 @@ Function PakLocate(file As String) As String
     'else, obtain it from the pakfile, put it in the cache and
     'return its location
     
-    If FileExists(PakTempPath + file) Then
+    If fileExists(PakTempPath + file) Then
         PakLocate = PakTempPath + file
     Else
         'a = PAKFileExist(file, PakFileMounted)
@@ -476,13 +476,13 @@ Function PakLocate(file As String) As String
     
     Exit Function
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
 
 Sub setupPakSystem(pakfile As String)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim aa As Long
     aa = PAKTestSystem()
@@ -514,7 +514,7 @@ Sub setupPakSystem(pakfile As String)
     'c'est tout!
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 
@@ -522,7 +522,7 @@ End Sub
 
 
 Sub shutdownPakSystem()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'unmount pakfile...
     Dim aa As Long
     aa = ZIPClose()
@@ -531,7 +531,7 @@ Sub shutdownPakSystem()
     Call DeletePakTemp
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

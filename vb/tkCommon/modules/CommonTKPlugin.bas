@@ -190,7 +190,7 @@ Public Function isVBPlugin(ByVal plugName As String) As Boolean
 
     'Do we have something?
     If Not obj Is Nothing Then
-        setupVBPlugin plugName
+        Call setupVBPlugin(plugName)
         isVBPlugin = True
     End If
 
@@ -204,12 +204,14 @@ Private Function getObjectFromFile(ByVal filename As String) As String
 
     On Error Resume Next
 
-    'First (try to) register the file
-    ExecCmd "regsvr32 /s " & filename
+    If isToolkit Then
+        'First (try to) register the file
+        Call ExecCmd("regsvr32 /s " & filename)
+    End If
 
     'Remove the path from the file
     filename = RemovePath(filename)
-   
+
     'Remove the extension
     getObjectFromFile = Left(filename, Len(filename) - 4)
 

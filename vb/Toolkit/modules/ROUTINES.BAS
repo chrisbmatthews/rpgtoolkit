@@ -116,7 +116,7 @@ Public Sub makeFolders(ByVal theProjectPath As String)
     MkDir Mid(theProjectPath & bmpPath, 1, Len(theProjectPath & bmpPath) - 1)
     MkDir Mid(theProjectPath & statusPath, 1, Len(theProjectPath & statusPath) - 1)
     MkDir Mid(theProjectPath & miscPath, 1, Len(theProjectPath & miscPath) - 1)
-    MkDir Mid(theProjectPath & pluginPath, 1, Len(theProjectPath & pluginPath) - 1)
+    MkDir Mid(theProjectPath & plugPath, 1, Len(theProjectPath & plugPath) - 1)
 End Sub
 
 Public Function resolve(ByVal theDirectory As String) As String
