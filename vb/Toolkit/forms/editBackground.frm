@@ -6,7 +6,6 @@ Begin VB.Form editBackground
    ClientLeft      =   2520
    ClientTop       =   1530
    ClientWidth     =   6435
-   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
