@@ -358,7 +358,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
         ' Check if we got a sign
         If (signs(idx - 1) = vbNullChar) Then
 
-            If (idx = 1) Then
+            If ((idx = 1) And (didEvaluate)) Then
 
                 ' Flag we did not evaluate
                 didEvaluate = False
@@ -727,8 +727,8 @@ Public Function CountData(ByRef Text As String) As Long
 
     ' Split at the delimiters
     Dim S() As String
-    Dim ud() As String
-    S() = multiSplit(Text, c, ud, True)
+    Dim uD() As String
+    S() = multiSplit(Text, c, uD, True)
 
     ' Number of data elements will be one higher than the upper bound
     CountData = UBound(S) + 1
