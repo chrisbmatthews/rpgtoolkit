@@ -8038,23 +8038,16 @@ Sub BitmapRPG(Text$, ByRef theProgram As RPGCodeProgram)
         lit1$ = projectPath$ & bmpPath$ & lit1$
         
         Dim cnvDest As Long
-        ' cnvDest = cnvRPGCodeScreen
+        cnvDest = cnvRPGCodeScreen
         
-        If (number = 2) Then
-            cnvDest = CLng(num2)
+        If number = 2 Then
+            cnvDest = num2
         End If
+        Call CanvasLoadSizedPicture(cnvDest, lit1$)
         
-        If (cnvDest <> 0) Then
-            Call CanvasLoadSizedPicture(cnvDest, lit1$)
-        Else
-            Call DrawSizedImage(lit1, 0, 0, globalCanvasWidth, globalCanvasHeight, DXLockScreen())
-            Call DXUnlockScreen
+        If number = 1 Then
             Call renderRPGCodeScreen
         End If
-        
-        ' If number = 1 Then
-        '     Call renderRPGCodeScreen
-        ' End If
     End If
 
 
@@ -11833,7 +11826,7 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     End If
     host.cursorHotSpotX = paras(1).num
     host.cursorHotSpotY = paras(2).num
-    mainMem.transpColor = RGB(paras(3).num, paras(4).num, paras(5).num)
+    mainMem.transpcolor = RGB(paras(3).num, paras(4).num, paras(5).num)
     Dim ext As String, theFile As String
     ext = UCase$(commonRoutines.extention(paras(0).lit))
     If (ext = "TST" Or ext = "GPH") Then
@@ -11979,20 +11972,20 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     End If
 
     ' Declare variables for the coming blt
-    Dim x As Long, y As Long, width As Long, transpColor As Long
+    Dim x As Long, y As Long, width As Long, transpcolor As Long
     Dim height As Long, cnvSource As Long
 
     ' In all cases, record x, y, r, g, b and the canvas
     cnvSource = CLng(paras(0).num)
     x = CLng(paras(1).num)
     y = CLng(paras(2).num)
-    transpColor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
+    transpcolor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
 
     ' If we only have six params, just finish this now
     If (UBound(paras) = 5) Then
 
         ' Draw the canvas
-        Call Canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpColor)
+        Call Canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpcolor)
 
         ' Bail
         Exit Sub
@@ -12022,12 +12015,12 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     If (UBound(paras) = 7) Then
 
         ' Blt to the screen
-        Call Canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpColor)
+        Call Canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpcolor)
 
     Else
 
         ' Blt to another canvas
-        Call Canvas2CanvasBltTransparent(cnv, CLng(paras(8).num), x, y, transpColor)
+        Call Canvas2CanvasBltTransparent(cnv, CLng(paras(8).num), x, y, transpcolor)
 
     End If
 
