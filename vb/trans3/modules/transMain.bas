@@ -93,6 +93,7 @@ End Property
 Public Sub closeSystems()
     On Error Resume Next
     gShuttingDown = True
+    Call deinitInput
     Call saveSettings
     Call ClearAllThreads
     Call stopMedia
@@ -356,6 +357,7 @@ End Sub
 '=======================================================================
 Private Sub openSystems()
     On Error Resume Next
+    Call initInput
     Call initEventProcessor
     Call initSprites
     Call initGraphics(m_testingPRG) ' Creates host window

@@ -92,6 +92,7 @@ Public Type RPGCodeProgram
     classes As RPGCODE_CLASS_MAIN_DATA      ' Class stuff
     strict As Boolean                       ' Is the program strict?
     strCommands() As String                 ' Commands found on lines
+    bRunBlock() As Boolean                  ' Did this block run?
 End Type
 
 '=========================================================================

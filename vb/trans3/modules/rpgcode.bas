@@ -1223,7 +1223,7 @@ Sub checkButtonRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     theOne = -1
     For t = 0 To 50
         a = within(x, g_buttons(t).Left, g_buttons(t).Right)
-        b = within(y, g_buttons(t).Top, g_buttons(t).Bottom)
+        b = within(y, g_buttons(t).top, g_buttons(t).Bottom)
         If a = 1 And b = 1 Then
             theOne = t
             Exit For
@@ -1264,7 +1264,7 @@ Private Sub createButton(ByVal pos As Long, ByVal x1 As Long, ByVal y1 As Long, 
 
     ' Set in the button
     g_buttons(pos).Left = x1
-    g_buttons(pos).Top = y1
+    g_buttons(pos).top = y1
     g_buttons(pos).Right = x2
     g_buttons(pos).Bottom = y2
 
@@ -2783,12 +2783,7 @@ Public Sub GetRPG( _
                 'We're using the return data. That means that it's
                 'specifying the number of milliSeconds to call processevent for.
                 
-                If Not paras(0).dataType = DT_NUM Then
-                    debugger "Get()'s millisecond specification must be numerical-- " & Text
-                    Exit Sub
-                End If
-
-                retval.lit = getKey(paras(0).num)
+                retval.lit = getKey()
                 
             Else
                 
@@ -2801,13 +2796,8 @@ Public Sub GetRPG( _
 
         Case 2
             'It's Get(dest$,milliSeconds!)...
-            
-            If Not paras(1).dataType = DT_NUM Then
-                debugger "Get()'s millisecond specification must be numerical-- " & Text
-                Exit Sub
-            End If
-            
-            SetVariable paras(0).dat, getKey(paras(1).num), theProgram
+                       
+            SetVariable paras(0).dat, getKey(), theProgram
     
     End Select
     
@@ -5035,9 +5025,9 @@ Sub RandomRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     End If
     useIt1$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
-    Dim ceiling As Double, Top As Long, aa As Long
-    Top = getValue(useIt1$, lit$, ceiling, theProgram)
-    If Top = 1 Then
+    Dim ceiling As Double, top As Long, aa As Long
+    top = getValue(useIt1$, lit$, ceiling, theProgram)
+    If top = 1 Then
         Call debugger("Error: Random data type must be numerical!-- " + Text$)
     Else
 

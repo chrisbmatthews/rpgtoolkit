@@ -525,6 +525,9 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     ' Splice up the classes
     Call spliceUpClasses(openProgram)
 
+    ' Redim the block array
+    ReDim openProgram.bRunBlock(UBound(openProgram.program))
+
     Exit Function
 
 enlargeProgram:

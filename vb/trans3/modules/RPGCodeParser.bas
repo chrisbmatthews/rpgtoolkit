@@ -1262,7 +1262,11 @@ Public Function ParseRPGCodeCommand( _
                                             Else
 
                                                 ' Wait / Get command: don't add quotes
-                                                v = " " & rV.lit
+                                                If (isNumber(rV.lit)) Then
+                                                    v = " " & rV.lit
+                                                Else
+                                                    v = " """ & rV.lit & """"
+                                                End If
 
                                             End If
 

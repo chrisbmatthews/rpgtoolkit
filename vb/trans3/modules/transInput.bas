@@ -12,7 +12,7 @@ Attribute VB_Name = "transInput"
 Option Explicit
 
 '=========================================================================
-' Check status of a key
+' Declarations
 '=========================================================================
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 
@@ -111,28 +111,44 @@ Private Const VK_ZOOM = &HFB
 '=========================================================================
 ' Member variables
 '=========================================================================
-Private mouseX As Integer            'x pos of mouse
-Private mouseY As Integer            'y pos of mouse
-Private bWaitingForInput As Boolean  'waiting for input?
-Private keyWaitState As Long         'Key pressed on last event.
-Private keyShiftState As Long        'Key pressed shift value on last event.
-Private keyAsciiState As Long        'Key pressed on last event (ascii).
-Private ignoreKeyDown As Boolean     'Ignore key down events?
+Private mouseX As Integer               ' x pos of mouse
+Private mouseY As Integer               ' y pos of mouse
+Private bWaitingForInput As Boolean     ' waiting for input?
+Private keyShiftState As Long           ' Key pressed shift value on last event.
+Private keyAsciiState As Long           ' Key pressed on last event (ascii).
+Private ignoreKeyDown As Boolean        ' Ignore key down events?
+Private m_keyQueue As CQueue            ' Keyboard queue
 
 '=========================================================================
 ' Public variables
 '=========================================================================
-Public useArrowKeys As Boolean       'Use arrow keys?
-Public useNumberPad As Boolean       'Use number pad?
-Public useJoystick As Boolean        'Use joystick?
-Public mouseMoveX As Integer         'x pos of mouse (dynamic)
-Public mouseMoveY As Integer         'y pos of mouse (dynamic)
+Public useArrowKeys As Boolean          ' Use arrow keys?
+Public useNumberPad As Boolean          ' Use number pad?
+Public useJoystick As Boolean           ' Use joystick?
+Public mouseMoveX As Integer            ' x pos of mouse (dynamic)
+Public mouseMoveY As Integer            ' y pos of mouse (dynamic)
+
+'=========================================================================
+' Initialize the input subsystem
+'=========================================================================
+Public Sub initInput()
+    ' Create our queue
+    Set m_keyQueue = New CQueue
+End Sub
+
+'=========================================================================
+' Deinitialize the input subsysten
+'=========================================================================
+Public Sub deinitInput()
+    ' Destroy our queue
+    Set m_keyQueue = Nothing
+End Sub
 
 '=========================================================================
 ' Get the last key pressed
 '=========================================================================
-Public Property Get lastKeyPressed() As String
-    lastKeyPressed = keyWaitState
+Public Property Get lastKeyPressed() As Integer
+    lastKeyPressed = m_keyQueue.top()
 End Property
 
 '=========================================================================
@@ -161,77 +177,58 @@ End Sub
 ' Wait until no key is being pressed
 '=========================================================================
 Public Sub FlushKB()
-    On Error Resume Next
-    Do Until (LenB(getKey()) = 0)
-        Call processEvent
-    Loop
-End Sub
-
-'=========================================================================
-' "Delay" for the number of milliseconds passed in
-'=========================================================================
-Public Sub DoEventsFor(ByVal milliSeconds As Long)
-
-    Dim startTime As Double
-
-    startTime = Timer()
-    Do Until (Timer() - startTime >= milliSeconds / 1000)
-        ' Don't lock up
-        Call processEvent
-    Loop
-
+    Call m_keyQueue.clear
 End Sub
 
 '=========================================================================
 ' Check if a key is being pressed
 '=========================================================================
-Public Function getKey(Optional ByVal milliSeconds As Long = 35) As String
+Public Function getKey() As String
 
     On Error Resume Next
 
-    'Clear the last pressed key.
-    keyWaitState = -1
-
-    If (milliSeconds = 0) Then milliSeconds = 35
-
-    Call DoEventsFor(milliSeconds)
-
-    'Check the joystick.
+    ' Check the joystick.
     Dim jButton(4) As Boolean
     Dim theDir As Long
-    
-    'Get a movement direction and see any buttons that were pressed.
+
+    ' Get a movement direction and see any buttons that were pressed.
     theDir = joyDirection(jButton)
-    
+
     If jButton(0) Then
-        'If the primary button was pressed.
+        ' If the primary button was pressed.
         
         getKey = "BUTTON"
         jButton(0) = False
         Exit Function
         
     End If
-    
-    If keyWaitState = -1 Then
+
+    Dim keyWaitState As Long
+    keyWaitState = m_keyQueue.dequeue()
+
+    If (keyWaitState = 0) Then
         'If a button has still not been pressed, return nothing.
         getKey = vbNullString
         Exit Function
     End If
-    
+
     Dim returnVal As String
-    'Get a string of the key number.
-    returnVal$ = Chr$(keyWaitState)
-    
-    'Check the key for common keys.
-    If keyWaitState = 13 Then returnVal$ = "ENTER"
-    If keyWaitState = 38 Then returnVal$ = "UP"
-    If keyWaitState = 40 Then returnVal$ = "DOWN"
-    If keyWaitState = 37 Then returnVal$ = "RIGHT"
-    If keyWaitState = 39 Then returnVal$ = "LEFT"
-    
-    If keyShiftState = 1 Then returnVal$ = UCase$(returnVal$) 'If shift was pressed, return an upper-case letter.
-    'Might want to add numberpad here too.
-    
+    If (keyWaitState = 13) Then
+        returnVal = "ENTER"
+    ElseIf (keyWaitState = 38) Then
+        returnVal = "UP"
+    ElseIf (keyWaitState = 40) Then
+        returnVal = "DOWN"
+    ElseIf (keyWaitState = 37) Then
+        returnVal = "RIGHT"
+    ElseIf (keyWaitState = 39) Then
+        returnVal = "LEFT"
+    Else
+        returnVal = Chr$(keyWaitState)
+    End If
+
+    If (keyShiftState And vbShiftMask) Then returnVal$ = UCase$(returnVal$) 'If shift was pressed, return an upper-case letter.
+
     getKey = returnVal
 
 End Function
@@ -248,7 +245,7 @@ Public Function getAsciiKey() As String
     
     Dim repeat As Integer
     
-    'Call call processevent 10 times(!). Give enough time for an input.
+    ' Call processEvent 10 times(!). Give enough time for an input.
     For repeat = 0 To 10
         Call processEvent
     Next repeat
@@ -288,17 +285,18 @@ Public Function WaitForKey() As String
 
     On Error Resume Next
 
-    'Clear the last pressed key.
-    keyWaitState = 0
+    ' Clear the last pressed key.
     bWaitingForInput = True
 
     'Check the joystick.
     Dim jButton(4) As Boolean
     Dim theDir As Long
 
-    Do While (keyWaitState = 0) And (Not jButton(0))
+    Dim keyWaitState As Long
+    Do While (keyWaitState = 0) And (Not (jButton(0)))
         Call processEvent
-        'Get a movement direction and see any buttons that were pressed.
+        keyWaitState = m_keyQueue.dequeue()
+        ' Get a movement direction and see any buttons that were pressed.
         theDir = joyDirection(jButton)
     Loop
 
@@ -328,16 +326,23 @@ Public Function WaitForKey() As String
     End If
     
     Dim returnVal As String
-    'Get a string of the key number.
-    returnVal = Chr$(keyWaitState)
     
     'Check the key for common keys.
-    If keyWaitState = 13 Then returnVal$ = "ENTER"
-    If keyWaitState = 38 Then returnVal$ = "UP"
-    If keyWaitState = 40 Then returnVal$ = "DOWN"
-    If keyWaitState = 37 Then returnVal$ = "LEFT"
-    If keyWaitState = 39 Then returnVal$ = "RIGHT"
-    If keyShiftState = 1 Then returnVal$ = UCase$(returnVal)
+    If keyWaitState = 13 Then
+        returnVal$ = "ENTER"
+    ElseIf keyWaitState = 38 Then
+        returnVal$ = "UP"
+    ElseIf keyWaitState = 40 Then
+        returnVal$ = "DOWN"
+    ElseIf keyWaitState = 37 Then
+        returnVal$ = "LEFT"
+    ElseIf keyWaitState = 39 Then
+        returnVal$ = "RIGHT"
+    ElseIf keyShiftState = 1 Then
+        returnVal$ = UCase$(returnVal)
+    Else
+        returnVal = Chr$(keyWaitState)
+    End If
     'Might want to add numberpad here too.
     
     WaitForKey = returnVal
@@ -393,7 +398,7 @@ Public Sub getMouseNoWait(ByRef x As Long, ByRef y As Long)
     On Error Resume Next
     
     bWaitingForInput = True
-    Call DoEventsFor(15)
+    Call Sleep(15)
     bWaitingForInput = False
 
     x = Round(mouseX)
@@ -543,8 +548,8 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
 
     On Error Resume Next
 
-    ' Save old keycodes.
-    keyWaitState = keyCode
+    ' Queue the key code
+    Call m_keyQueue.queue(CLng(keyCode))
     keyShiftState = Shift
 
     ' When a dialog window is called, either ShowFileDialog or ShowPromptDialog
@@ -750,8 +755,9 @@ Public Sub scanKeys(): On Error Resume Next
 
     ElseIf isPressed("BUTTON1") Then
         'Let joystick button 1 act as the activation key.
-        keyWaitState = mainMem.Key
+        Call m_keyQueue.queue(mainMem.Key)
         Call programTest(pPos(selectedPlayer))
+        Call m_keyQueue.dequeue
         Exit Sub
 
     ElseIf isPressed("BUTTON2") Then
