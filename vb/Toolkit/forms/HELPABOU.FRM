@@ -257,6 +257,7 @@ Private Sub Form_Load()
 
     theText = theText & "This program uses the Audiere sound library, released under the LGPL." & vbCrLf
     theText = theText & "Used under license.  http://audiere.sourceforge.net" & vbCrLf & vbCrLf
+    theText = theText & "This product includes software developed by vbAccelerator (http://vbaccelerator.com/)." & vbCrLf & vbCrLf
 
     Text1.Text = theText
 

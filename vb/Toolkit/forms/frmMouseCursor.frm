@@ -8,6 +8,7 @@ Begin VB.Form frmMouseCursor
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4815
+   ControlBox      =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MDIChild        =   -1  'True
@@ -47,10 +48,10 @@ Begin VB.Form frmMouseCursor
          TabIndex        =   11
          Top             =   1560
          Width           =   2415
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "Set Cursor Hot Spot"
+         _extentx        =   661
+         _extenty        =   661
+         Object.width           =   360
+         caption         =   "Set Cursor Hot Spot"
       End
       Begin VB.PictureBox cmdBrowse 
          Appearance      =   0  'Flat
@@ -95,10 +96,10 @@ Begin VB.Form frmMouseCursor
          TabIndex        =   7
          Top             =   2160
          Width           =   2535
-         _ExtentX        =   661
-         _ExtentY        =   661
-         Object.Width           =   360
-         Caption         =   "Set Transparent Color"
+         _extentx        =   661
+         _extenty        =   661
+         Object.width           =   360
+         caption         =   "Set Transparent Color"
       End
       Begin VB.Label Label2 
          Alignment       =   2  'Center
@@ -164,10 +165,10 @@ Begin VB.Form frmMouseCursor
       TabIndex        =   1
       Top             =   3840
       Width           =   855
-      _ExtentX        =   661
-      _ExtentY        =   661
-      Object.Width           =   360
-      Caption         =   "OK"
+      _extentx        =   661
+      _extenty        =   661
+      Object.width           =   360
+      caption         =   "OK"
    End
    Begin Toolkit.TKTopBar TopBar 
       Height          =   480
@@ -175,10 +176,10 @@ Begin VB.Form frmMouseCursor
       TabIndex        =   0
       Top             =   0
       Width           =   3375
-      _ExtentX        =   5953
-      _ExtentY        =   847
-      Object.Width           =   3375
-      Caption         =   "Mouse Cursor Settings"
+      _extentx        =   5953
+      _extenty        =   847
+      Object.width           =   3375
+      caption         =   "Mouse Cursor Settings"
    End
    Begin VB.Line Line2 
       X1              =   3720
@@ -289,7 +290,7 @@ Private Sub cmdBrowse_Click()
             Dim oldTst As String
             oldTst = tstFile
             tstFile = antiPath
-            Call tilesetform.Show(vbModal)
+            Call tilesetForm.Show(vbModal)
             If (setFilename = "") Then Exit Sub
             theTile = setFilename
             oldTst = tstFile
@@ -348,6 +349,13 @@ Private Sub Form_Load()
 End Sub
 
 '=========================================================================
+' Unload form
+'=========================================================================
+Private Sub Form_Unload(Cancel As Integer)
+    Call tkMainForm.refreshTabs
+End Sub
+
+'=========================================================================
 ' Option buttons
 '=========================================================================
 Private Sub optCustom_Click()
@@ -370,14 +378,14 @@ End Sub
 '=========================================================================
 ' Click on preview picture
 '=========================================================================
-Private Sub picPreview_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picPreview_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     On Error Resume Next
     If (setTranspColor) Then
         Call fillInfo(True)
-        mainMem.transpcolor = GetPixel(picPreview.hdc, X, Y)
+        mainMem.transpcolor = GetPixel(picPreview.hdc, x, y)
     ElseIf (setHotSpot) Then
-        mainMem.hotSpotX = X / 2
-        mainMem.hotSpotY = Y / 2
+        mainMem.hotSpotX = x / 2
+        mainMem.hotSpotY = y / 2
     End If
     Call fillInfo
     setTranspColor = False

@@ -6,6 +6,7 @@ Begin VB.Form editsm
    ClientLeft      =   1860
    ClientTop       =   1860
    ClientWidth     =   7470
+   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -19,10 +20,12 @@ Begin VB.Form editsm
    Icon            =   "EDITSM.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   4545
    ScaleWidth      =   7470
    Tag             =   "8"
+   WindowState     =   2  'Maximized
    Begin VB.Frame mainFrame 
       Height          =   4215
       Left            =   120
@@ -819,6 +822,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     Call hideAllTools
+    Call tkMainForm.refreshTabs
 End Sub
 
 Private Sub fpbox_Change()

@@ -6,6 +6,7 @@ Begin VB.Form editenemy
    ClientLeft      =   1035
    ClientTop       =   1695
    ClientWidth     =   8580
+   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -19,10 +20,12 @@ Begin VB.Form editenemy
    Icon            =   "EDITENEM.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5280
    ScaleWidth      =   8580
    Tag             =   "5"
+   WindowState     =   2  'Maximized
    Begin VB.Frame mainFrame 
       Height          =   4935
       Left            =   120
@@ -1027,6 +1030,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     Call hideAllTools
+    Call tkMainForm.refreshTabs
 End Sub
 
 Private Sub mnuCLose_Click()

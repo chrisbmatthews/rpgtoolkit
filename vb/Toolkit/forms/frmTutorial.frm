@@ -8,9 +8,11 @@ Begin VB.Form frmTutorial
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4215
+   ControlBox      =   0   'False
    Icon            =   "frmTutorial.frx":0000
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    ScaleHeight     =   4935
    ScaleWidth      =   4215
    ShowInTaskbar   =   0   'False
@@ -221,6 +223,10 @@ End Sub
 Public Property Get formType()
     formType = FT_TUTORIAL
 End Property
+
+Private Sub Form_Unload(Cancel As Integer)
+    Call tkMainForm.refreshTabs
+End Sub
 
 '========================================================================
 ' Special thanks

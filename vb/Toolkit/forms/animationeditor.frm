@@ -5,13 +5,16 @@ Begin VB.Form animationeditor
    ClientLeft      =   165
    ClientTop       =   450
    ClientWidth     =   6735
+   ControlBox      =   0   'False
    Icon            =   "animationeditor.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    ScaleHeight     =   5925
    ScaleWidth      =   6735
    Tag             =   "1"
+   WindowState     =   2  'Maximized
    Begin VB.PictureBox arena 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -277,12 +280,12 @@ End Sub
 '========================================================================
 ' Set the size of the animation
 '========================================================================
-Public Sub setAnimSize(ByVal Index As Integer): On Error Resume Next
+Public Sub setAnimSize(ByVal index As Integer): On Error Resume Next
 
     'Needs to be updated
     animationList(activeAnimationIndex).animNeedUpdate = True
     
-    If Index <> 4 Then
+    If index <> 4 Then
         
         'It is not a custom animation, un-enable the 2 textboxes
         tkMainForm.txtAnimXSize.Enabled = False
@@ -293,7 +296,7 @@ Public Sub setAnimSize(ByVal Index As Integer): On Error Resume Next
     With animationList(activeAnimationIndex).theData
         
         'Now, see which one is clicked and set the width & height
-        Select Case Index
+        Select Case index
             Case 0
                 
                 'Small
@@ -671,7 +674,8 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     
     'Hide the tools
     Call hideAllTools
-       
+    Call tkMainForm.refreshTabs
+    
 End Sub
 
 '========================================================================
@@ -680,12 +684,12 @@ End Sub
 Private Sub Form_Resize(): On Error Resume Next
 
     'Set a minimum width & height relative to the arena width and height
-    If Me.height <= arena.height + 1000 Then Me.height = arena.height + 1000
-    If Me.width <= arena.width + 600 Then Me.width = arena.width + 600
+    If Me.Height <= arena.Height + 1000 Then Me.Height = arena.Height + 1000
+    If Me.Width <= arena.Width + 600 Then Me.Width = arena.Width + 600
         
     'The position
-    arena.Left = ((Me.width - arena.width) / 2) - 55
-    arena.Top = (Me.height - arena.height) / 2 - 250
+    arena.Left = ((Me.Width - arena.Width) / 2) - 55
+    arena.Top = (Me.Height - arena.Height) / 2 - 250
     
 End Sub
 
@@ -695,12 +699,12 @@ End Sub
 Private Sub sizeForm(): On Error Resume Next
     
     'Resize the arena
-    arena.width = Screen.TwipsPerPixelX * animationList(activeAnimationIndex).theData.animSizeX
-    arena.height = Screen.TwipsPerPixelY * animationList(activeAnimationIndex).theData.animSizeY
+    arena.Width = Screen.TwipsPerPixelX * animationList(activeAnimationIndex).theData.animSizeX
+    arena.Height = Screen.TwipsPerPixelY * animationList(activeAnimationIndex).theData.animSizeY
     
     'Resize the form
-    Me.width = arena.width + 500
-    Me.height = arena.height + 500
+    Me.Width = arena.Width + 500
+    Me.Height = arena.Height + 500
     
     'Redraw the frame
     Call DrawFrame(animationList(activeAnimationIndex).theData.animCurrentFrame)
@@ -745,7 +749,7 @@ End Sub
 '========================================================================
 ' When you click in the animation picturebox
 '========================================================================
-Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     
     With animationList(activeAnimationIndex).theData
@@ -761,7 +765,7 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y 
             
             'Get the color of the pixel
             Dim colour As Long
-            colour = vbFrmPoint(arena, X, Y)
+            colour = vbFrmPoint(arena, x, y)
             
             'Set the transparent color
             .animTransp(.animCurrentFrame) = colour

@@ -182,9 +182,10 @@ Private Sub Form_Unload(Cancel As Integer)
     configfile.tipNum = configfile.tipNum + 1
     Call configfile.saveConfig("toolkit.cfg")
     Call Unload(Me)
+    Call tkMainForm.refreshTabs
 End Sub
 
 Private Sub size_Timer()
-    If width <> 6645 Then width = 6645
-    If height <> 3540 Then height = 3540
+    If Width <> 6645 Then Width = 6645
+    If Height <> 3540 Then Height = 3540
 End Sub

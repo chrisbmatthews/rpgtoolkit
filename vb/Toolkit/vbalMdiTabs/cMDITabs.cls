@@ -58,7 +58,7 @@ End Type
 Private Declare Function GetVersion Lib "kernel32" () As Long
 
 Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWnd1 As Long, ByVal hWnd2 As Long, ByVal lpsz1 As String, lpsz2 As Any) As Long
-Private Declare Function EnumChildWindows Lib "user32" (ByVal hWndParent As Long, ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
+Private Declare Function EnumChildWindows Lib "user32" (ByVal hwndParent As Long, ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 
 Private Declare Function SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Enum ESetWindowPosFlags
@@ -256,8 +256,8 @@ Private m_eTabAlign As EMDITabAlign
 Private m_bAllowScroll As Boolean
 Private m_lTabHeight As Long
 Private m_lButtonSize As Long
-Private m_font As iFont
-Private m_fontSelected As iFont
+Private m_font As Ifont
+Private m_fontSelected As Ifont
 Private m_bShowTabs As Boolean
 Private m_lOffsetX As Long
 
@@ -286,22 +286,22 @@ Implements ISubclass
 Friend Sub addChildWindow(ByVal hwnd As Long)
    m_hWndTempChild.Add hwnd, "H" & hwnd
 End Sub
-Public Property Get SelectedFont() As iFont
+Public Property Get SelectedFont() As Ifont
 Attribute SelectedFont.VB_Description = "Gets/sets the font used to draw the caption of a selected window tab."
-Dim iFnt As iFont
-Dim iFntC As iFont
+Dim iFnt As Ifont
+Dim iFntC As Ifont
    Set iFnt = m_fontSelected
    iFnt.Clone iFntC
    Set SelectedFont = iFntC
 End Property
-Public Property Let SelectedFont(iFnt As iFont)
+Public Property Let SelectedFont(iFnt As Ifont)
    pSetSelectedFont iFnt
 End Property
-Public Property Set SelectedFont(iFnt As iFont)
+Public Property Set SelectedFont(iFnt As Ifont)
    pSetSelectedFont iFnt
 End Property
-Private Sub pSetSelectedFont(iFnt As iFont)
-Dim iFntC As iFont
+Private Sub pSetSelectedFont(iFnt As Ifont)
+Dim iFntC As Ifont
    iFnt.Clone iFntC
    Set m_fontSelected = iFntC
 End Sub
@@ -381,22 +381,22 @@ Dim tR As RECT
    End If
 End Function
 
-Public Property Get Font() As iFont
-Attribute Font.VB_Description = "Gets/sets the font used to draw the tab captions."
-Dim iFnt As iFont
-Dim iFntC As iFont
+Public Property Get font() As Ifont
+Attribute font.VB_Description = "Gets/sets the font used to draw the tab captions."
+Dim iFnt As Ifont
+Dim iFntC As Ifont
    Set iFnt = m_font
    iFnt.Clone iFntC
-   Set Font = iFntC
+   Set font = iFntC
 End Property
-Public Property Let Font(iFnt As iFont)
+Public Property Let font(iFnt As Ifont)
    pSetFont iFnt
 End Property
-Public Property Set Font(iFnt As iFont)
+Public Property Set font(iFnt As Ifont)
    pSetFont iFnt
 End Property
-Private Sub pSetFont(iFnt As iFont)
-Dim iFntC As iFont
+Private Sub pSetFont(iFnt As Ifont)
+Dim iFntC As Ifont
    iFnt.Clone iFntC
    Set m_font = iFntC
 End Sub
@@ -481,15 +481,15 @@ Private Sub Class_Initialize()
    m_lTabHeight = 24
    m_lButtonSize = 16
    m_bShowTabs = True
-   Dim s As New StdFont
-   s.name = "Tahoma"
-   s.size = 8.25
-   Set Font = s
-   Set s = New StdFont
-   s.name = "Tahoma"
-   s.size = 8.25
-   s.Bold = True
-   Set SelectedFont = s
+   Dim S As New StdFont
+   S.name = "Tahoma"
+   S.size = 8.25
+   Set font = S
+   Set S = New StdFont
+   S.name = "Tahoma"
+   S.size = 8.25
+   S.Bold = True
+   Set SelectedFont = S
    Set m_hWndChild = New Collection
    m_bAllowScroll = True
    
@@ -524,10 +524,10 @@ Private Sub determineWindows()
    
 End Sub
 
-Private Function KeyExists(ByVal c As Collection, ByVal key As String) As Boolean
+Private Function KeyExists(ByVal c As Collection, ByVal Key As String) As Boolean
    On Error Resume Next
    Dim oItem As Variant
-   oItem = c(key)
+   oItem = c(Key)
    If (Err.number = 0) Then
       KeyExists = True
    End If
@@ -700,24 +700,24 @@ Private Sub drawTabs(ByVal lhWnd As Long, ByVal wParam As Long)
          Dim lLen As Long
          Dim sBuf As String
          ReDim sTitle(1 To m_hWndChild.count) As String
-         Dim iC As Long
+         Dim ic As Long
          Dim iSelIndex As Long
          Dim tCalcR As RECT
                   
          For Each hWndChild In m_hWndChild
-            iC = iC + 1
-            If (iC = 1) Then
-               m_tTabR(iC).Left = tTabR.Left + 2
+            ic = ic + 1
+            If (ic = 1) Then
+               m_tTabR(ic).Left = tTabR.Left + 2
             Else
-               m_tTabR(iC).Left = m_tTabR(iC - 1).Right
+               m_tTabR(ic).Left = m_tTabR(ic - 1).Right
             End If
-            m_tTabR(iC).Right = m_tTabR(iC).Left + 8 ' min tab size
+            m_tTabR(ic).Right = m_tTabR(ic).Left + 8 ' min tab size
             If (m_eTabAlign = TabAlignBottom) Then
-               m_tTabR(iC).Top = tTabR.Top
-               m_tTabR(iC).Bottom = tTabR.Bottom - 2
+               m_tTabR(ic).Top = tTabR.Top
+               m_tTabR(ic).Bottom = tTabR.Bottom - 2
             Else
-               m_tTabR(iC).Top = tTabR.Top + 2
-               m_tTabR(iC).Bottom = tTabR.Bottom
+               m_tTabR(ic).Top = tTabR.Top + 2
+               m_tTabR(ic).Bottom = tTabR.Bottom
             End If
             If m_bIsNt Then
                lLen = GetWindowTextLengthW(hWndChild)
@@ -732,25 +732,25 @@ Private Sub drawTabs(ByVal lhWnd As Long, ByVal wParam As Long)
                   GetWindowText hWndChild, sBuf, lLen + 1
                End If
                lLen = InStr(sBuf, vbNullChar)
-               sTitle(iC) = ""
+               sTitle(ic) = ""
                If lLen > 1 Then
                   If m_bIsNt Then
-                     sTitle(iC) = sBuf
+                     sTitle(ic) = sBuf
                   Else
-                     sTitle(iC) = Left$(sBuf, lLen - 1)
+                     sTitle(ic) = Left$(sBuf, lLen - 1)
                   End If
                   If (hWndChild = hWndSelected) Then
-                     iSelIndex = iC
+                     iSelIndex = ic
                      SelectObject lHDC, hFontOld
                      hFontOld = SelectObject(lHDC, m_fontSelected.hFont)
                   End If
                   'Debug.Print sTitle(iC)
                   If (m_bIsNt) Then
-                     DrawTextW lHDC, StrPtr(sTitle(iC)), -1, tCalcR, DT_CALCRECT Or DT_LEFT Or DT_SINGLELINE
+                     DrawTextW lHDC, StrPtr(sTitle(ic)), -1, tCalcR, DT_CALCRECT Or DT_LEFT Or DT_SINGLELINE
                   Else
-                     DrawText lHDC, sTitle(iC), -1, tCalcR, DT_CALCRECT Or DT_LEFT Or DT_SINGLELINE
+                     DrawText lHDC, sTitle(ic), -1, tCalcR, DT_CALCRECT Or DT_LEFT Or DT_SINGLELINE
                   End If
-                  m_tTabR(iC).Right = m_tTabR(iC).Left + 16 + tCalcR.Right - tCalcR.Left
+                  m_tTabR(ic).Right = m_tTabR(ic).Left + 16 + tCalcR.Right - tCalcR.Left
                   If (hWndChild = hWndSelected) Then
                      SelectObject lHDC, hFontOld
                      hFontOld = SelectObject(lHDC, m_font.hFont)
@@ -768,10 +768,10 @@ Private Sub drawTabs(ByVal lhWnd As Long, ByVal wParam As Long)
                Dim lActualSize As Long
                lActualSize = (tTabR.Right - tTabR.Left - 4 - m_lButtonSize) \ m_hWndChild.count
                m_tTabR(1).Right = m_tTabR(1).Left + lActualSize
-               For iC = 2 To m_hWndChild.count
-                  m_tTabR(iC).Left = m_tTabR(iC - 1).Right
-                  m_tTabR(iC).Right = m_tTabR(iC).Left + lActualSize
-               Next iC
+               For ic = 2 To m_hWndChild.count
+                  m_tTabR(ic).Left = m_tTabR(ic - 1).Right
+                  m_tTabR(ic).Right = m_tTabR(ic).Left + lActualSize
+               Next ic
             End If
          End If
          
@@ -825,9 +825,9 @@ Private Sub drawTabs(ByVal lhWnd As Long, ByVal wParam As Long)
          End If
          
          bTabOffscreen = True
-         For iC = 1 To m_hWndChild.count
+         For ic = 1 To m_hWndChild.count
             
-            LSet tActualR = m_tTabR(iC)
+            LSet tActualR = m_tTabR(ic)
             OffsetRect tActualR, -m_lOffsetX, 0
             
             If (tActualR.Right > lMaxRight) Then
@@ -846,7 +846,7 @@ Private Sub drawTabs(ByVal lhWnd As Long, ByVal wParam As Long)
                Exit For
             End If
          
-            If (iC = iSelIndex) Then
+            If (ic = iSelIndex) Then
                If (tActualR.Right < 0) Or (tActualR.Left > lMaxRight) Then
                   bTabOffscreen = True
                Else
@@ -932,7 +932,7 @@ Private Sub drawTabs(ByVal lhWnd As Long, ByVal wParam As Long)
                hPen = CreatePen(PS_SOLID, 1, GetSysColor(vb3DShadow And &H1F&))
                hPenOld = SelectObject(lHDC, hPen)
                
-            ElseIf Not ((iC + 1) = iSelIndex) Then
+            ElseIf Not ((ic + 1) = iSelIndex) Then
             
                If Not bClippedRight Then
                   MoveToEx lHDC, tActualR.Right - 1, tActualR.Top + 3, tJunk
@@ -944,22 +944,22 @@ Private Sub drawTabs(ByVal lhWnd As Long, ByVal wParam As Long)
             LSet tTextR = tActualR
             tTextR.Left = tTextR.Left + 8
             tTextR.Right = tTextR.Right - 8
-            If (iC = iSelIndex) Then
+            If (ic = iSelIndex) Then
                SetTextColor lHDC, GetSysColor(vbWindowText And &H1F&)
             Else
                SetTextColor lHDC, GetSysColor(vb3DDKShadow And &H1F&)
             End If
             If m_bIsNt Then
-               DrawTextW lHDC, StrPtr(sTitle(iC)), -1, tTextR, wFormat
+               DrawTextW lHDC, StrPtr(sTitle(ic)), -1, tTextR, wFormat
             Else
-               DrawText lHDC, sTitle(iC), -1, tTextR, wFormat
+               DrawText lHDC, sTitle(ic), -1, tTextR, wFormat
             End If
-            If (iC = iSelIndex) Then
+            If (ic = iSelIndex) Then
                SelectObject lHDC, hFontOld
                hFontOld = SelectObject(lHDC, m_font.hFont)
             End If
             
-         Next iC
+         Next ic
          
          ' Clear up
          SelectObject lHDC, hPenOld
@@ -1143,11 +1143,11 @@ Dim tJunk As POINTAPI
    Else
       sFont.size = 10
    End If
-   Dim iFont As iFont
-   Set iFont = sFont
+   Dim Ifont As Ifont
+   Set Ifont = sFont
    Dim hFontOld As Long
    
-   hFontOld = SelectObject(lHDC, iFont.hFont)
+   hFontOld = SelectObject(lHDC, Ifont.hFont)
    If (bEnabled) Then
       SetTextColor lHDC, GetSysColor(vb3DDKShadow And &H1F&)
    Else

@@ -6,6 +6,7 @@ Begin VB.Form mainfight
    ClientLeft      =   1800
    ClientTop       =   2820
    ClientWidth     =   8865
+   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -24,6 +25,7 @@ Begin VB.Form mainfight
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5850
    ScaleWidth      =   8865
+   WindowState     =   2  'Maximized
    Begin VB.CommandButton Command5 
       Appearance      =   0  'Flat
       Caption         =   "OK"
@@ -451,6 +453,10 @@ Private Sub Form_Load()
 ErrorHandler:
     Call HandleError
     Resume Next
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    Call tkMainForm.refreshTabs
 End Sub
 
 Private Sub fprg_Change()

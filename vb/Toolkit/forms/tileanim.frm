@@ -6,13 +6,16 @@ Begin VB.Form tileanim
    ClientLeft      =   45
    ClientTop       =   615
    ClientWidth     =   4815
+   ControlBox      =   0   'False
    Icon            =   "tileanim.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    ScaleHeight     =   2520
    ScaleWidth      =   4815
    Tag             =   "13"
+   WindowState     =   2  'Maximized
    Begin VB.Frame mainFrame 
       Height          =   2175
       Left            =   120
@@ -413,8 +416,8 @@ Private Sub animateTileFrames()
         Call drawTileFrame(t)
         DoEvents
         Dim ll As Long
-        ll = Timer()
-        Do While Timer - ll < pauseLen
+        ll = timer()
+        Do While timer - ll < pauseLen
             DoEvents
         Loop
     Next t
@@ -567,12 +570,12 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
                 tstnum = 0
                 tstFile = antiPath
                 configfile.lastTileset = tstFile
-                Call tilesetform.Show(vbModal)
+                Call tilesetForm.Show(vbModal)
                 Call changeSelectedTile(setFilename)
             End If
         Else
             tstFile = configfile.lastTileset
-            Call tilesetform.Show(vbModal)
+            Call tilesetForm.Show(vbModal)
             If setFilename = "" Then Exit Sub
             Call TileAnmInsert(setFilename, tileAnmList(activeTileAnmIndex).theData, tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
             Call drawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
@@ -589,6 +592,10 @@ Private Sub Form_Load()
     Call TileAnmClear(tileAnmList(dataIndex).theData)
     animTimer.Enabled = False
     Call infofill
+End Sub
+
+Private Sub Form_Terminate()
+    Call tkMainForm.refreshTabs
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -667,7 +674,7 @@ Private Sub tform_Click()
         tstnum = 0
         tstFile = antiPath
         configfile.lastTileset = tstFile
-        tilesetform.Show vbModal
+        tilesetForm.Show vbModal
         If setFilename = "" Then Exit Sub
         Call TileAnmInsert(setFilename, tileAnmList(activeTileAnmIndex).theData, tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
     Else

@@ -117,8 +117,8 @@ Private Sub drawTstGrid(): On Error Resume Next
     
     If drawGridCheck.value = 0 Then Exit Sub
     
-    tilesHigh = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
-    tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
+    tilesHigh = Int((tiles.Height / Screen.TwipsPerPixelY) / 32)
+    tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
     
     'Draw vertical lines.
     If iso.value = 0 Then
@@ -155,11 +155,11 @@ Private Sub redraw(): On Error Resume Next
     
     'Calculate the number of visible tiles.
     If iso.value = 0 Then
-        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
+        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
     Else
-        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 64)
+        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 64)
     End If
-    tilesHigh = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
+    tilesHigh = Int((tiles.Height / Screen.TwipsPerPixelY) / 32)
     
     isoFormat = iso.value
     If UCase$(GetExt(tstFile)) = "ISO" And Not (iso.Enabled) Then isoFormat = 2
@@ -219,11 +219,11 @@ Private Sub Form_Load(): On Error Resume Next
         
         'Set the scroller depending on the tileset type.
         If setType = ISOTYPE Then
-            tilesWide = (tiles.width / Screen.TwipsPerPixelY) / 64
+            tilesWide = (tiles.Width / Screen.TwipsPerPixelY) / 64
         Else
-            tilesWide = (tiles.width / Screen.TwipsPerPixelY) / 32
+            tilesWide = (tiles.Width / Screen.TwipsPerPixelY) / 32
         End If
-        tilesHigh = (tiles.height / Screen.TwipsPerPixelY) / 32
+        tilesHigh = (tiles.Height / Screen.TwipsPerPixelY) / 32
         
         'This will return the number of wholly occupied rows + 1.
         tilesetBrowserScroll.max = (Int(tileset.tilesInSet / tilesWide)) - tilesHigh + 1
@@ -256,8 +256,8 @@ Private Sub Form_Resize(): On Error Resume Next
     Dim tilesWide As Integer, tilesHigh As Integer
     
     'New form width in pixels
-    pixelWidth = Me.width / Screen.TwipsPerPixelX
-    pixelHeight = Me.height / Screen.TwipsPerPixelY
+    pixelWidth = Me.Width / Screen.TwipsPerPixelX
+    pixelHeight = Me.Height / Screen.TwipsPerPixelY
     
     'Size the tile picture box can be. Take off border allowances (32px x, 64px y).
     If iso.value = 1 Then
@@ -268,24 +268,24 @@ Private Sub Form_Resize(): On Error Resume Next
     tilesHigh = Int(pixelHeight / 32) - 2
     
     'If the height of the components is greater than the form, reduce the number of tile rows.
-    If (tilesHigh * 32 * Screen.TwipsPerPixelY + tiles.Top + toolFrame.height + 250 > Me.height) Then
+    If (tilesHigh * 32 * Screen.TwipsPerPixelY + tiles.Top + toolFrame.Height + 250 > Me.Height) Then
         tilesHigh = tilesHigh - 1
     End If
 
     'Set the size of the tiles picture box.
     If iso.value = 1 Then
-        tiles.width = tilesWide * 64 * Screen.TwipsPerPixelX
+        tiles.Width = tilesWide * 64 * Screen.TwipsPerPixelX
     Else
-        tiles.width = tilesWide * 32 * Screen.TwipsPerPixelX
+        tiles.Width = tilesWide * 32 * Screen.TwipsPerPixelX
     End If
-    tiles.height = tilesHigh * 32 * Screen.TwipsPerPixelY
+    tiles.Height = tilesHigh * 32 * Screen.TwipsPerPixelY
     
     'Align the scroller to the tile window.
-    tilesetBrowserScroll.Left = tiles.Left + tiles.width
-    tilesetBrowserScroll.height = tiles.height
+    tilesetBrowserScroll.Left = tiles.Left + tiles.Width
+    tilesetBrowserScroll.Height = tiles.Height
     
     'Align the tools frame (under the tile box).
-    toolFrame.Top = tiles.Top + tiles.height
+    toolFrame.Top = tiles.Top + tiles.Height
 
     tilesetBrowserScroll.max = (Int(tileset.tilesInSet / tilesWide)) - tilesHigh + 1
     
@@ -334,11 +334,11 @@ Private Sub tiles_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
     
     'Calculate the number of tiles that will fit on the form.
     If iso.value = 0 Then
-        tX = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
+        tX = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
     Else
-        tX = Int((tiles.width / Screen.TwipsPerPixelX) / 64)
+        tX = Int((tiles.Width / Screen.TwipsPerPixelX) / 64)
     End If
-    tY = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
+    tY = Int((tiles.Height / Screen.TwipsPerPixelY) / 32)
     
     'Determine the tile that has been clicked on by considering the
     'size of the form, the position of the scroller, and the type of
@@ -385,11 +385,11 @@ Private Sub tilesetBrowserScroll_Change(): On Error Resume Next
     
     If iso.value = 0 Then
         'Not isometric.
-        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
+        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
     Else
-        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 64)
+        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 64)
     End If
-    tilesHigh = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
+    tilesHigh = Int((tiles.Height / Screen.TwipsPerPixelY) / 32)
     
     tstnum = (tilesetBrowserScroll.value * tilesWide) + 1      '.value is now the row.
 

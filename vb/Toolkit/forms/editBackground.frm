@@ -6,6 +6,7 @@ Begin VB.Form editBackground
    ClientLeft      =   2520
    ClientTop       =   1530
    ClientWidth     =   6435
+   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -19,10 +20,12 @@ Begin VB.Form editBackground
    Icon            =   "editBackground.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   4890
    ScaleWidth      =   6435
    Tag             =   "4"
+   WindowState     =   2  'Maximized
    Begin VB.Frame Frame3 
       Caption         =   "Image"
       BeginProperty Font 
@@ -889,6 +892,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     Call hideAllTools
+    Call tkMainForm.refreshTabs
 End Sub
 
 '=========================================================================

@@ -6,12 +6,14 @@ Begin VB.Form editstatus
    ClientLeft      =   45
    ClientTop       =   615
    ClientWidth     =   5715
+   ControlBox      =   0   'False
    Icon            =   "editstatus.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
    ScaleHeight     =   5550
    ScaleWidth      =   5715
    Tag             =   "9"
+   WindowState     =   2  'Maximized
    Begin VB.Frame mainFrame 
       Height          =   5295
       Left            =   120
@@ -591,6 +593,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     Call hideAllTools
+    Call tkMainForm.refreshTabs
 End Sub
 
 Private Sub removehpamountbox_Change()

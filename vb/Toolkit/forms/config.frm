@@ -6,6 +6,7 @@ Begin VB.Form config
    ClientLeft      =   45
    ClientTop       =   330
    ClientWidth     =   6540
+   ControlBox      =   0   'False
    Icon            =   "config.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
@@ -14,6 +15,7 @@ Begin VB.Form config
    ScaleHeight     =   5355
    ScaleWidth      =   6540
    Tag             =   "1823"
+   WindowState     =   2  'Maximized
    Begin VB.Frame Frame2 
       Caption         =   "QuickLaunch"
       Height          =   1575
@@ -161,7 +163,7 @@ Private Sub ShowPic()
         End If
     End If
     If f$ <> "" Then
-        Call DrawSizedImage(f$, 0, 0, wallpaperthumb.Width / Screen.TwipsPerPixelX, wallpaperthumb.height / Screen.TwipsPerPixelY, vbPicHDC(wallpaperthumb))
+        Call DrawSizedImage(f$, 0, 0, wallpaperthumb.Width / Screen.TwipsPerPixelX, wallpaperthumb.Height / Screen.TwipsPerPixelY, vbPicHDC(wallpaperthumb))
         Call vbPicRefresh(wallpaperthumb)
     End If
 End Sub

@@ -315,7 +315,7 @@ Private Sub Command2_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmppath$
+    dlg.strDefaultFolder = projectPath$ + bmpPath$
     
     dlg.strTitle = "Open Graphic"
     dlg.strDefaultExt = "bmp"
@@ -330,7 +330,7 @@ Private Sub Command2_Click()
     ChDir (currentDir$)
     If filenamea$ = "" Then Exit Sub
     fName$ = filenamea$
-    FileCopy filenamea$, projectPath$ + bmppath$ + antiPath$
+    FileCopy filenamea$, projectPath$ + bmpPath$ + antiPath$
     rpgcodeList(activeRPGCodeIndex).Imwin$ = antiPath$
     Text2.Text = rpgcodeList(activeRPGCodeIndex).Imwin$
 End Sub
@@ -339,7 +339,7 @@ Private Sub Command14_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + fontpath$
+    dlg.strDefaultFolder = projectPath$ + fontPath$
     
     dlg.strTitle = "Open Font"
     dlg.strDefaultExt = "fnt"
@@ -354,7 +354,7 @@ Private Sub Command14_Click()
     ChDir (currentDir$)
     If filenamea$ = "" Then Exit Sub
     fName$ = filenamea$
-    FileCopy filenamea$, projectPath$ + fontpath$ + antiPath$
+    FileCopy filenamea$, projectPath$ + fontPath$ + antiPath$
     rpgcodeList(activeRPGCodeIndex).Ifont$ = antiPath$
     Text1.Text = rpgcodeList(activeRPGCodeIndex).Ifont$
 End Sub
@@ -365,7 +365,7 @@ Private Sub Command3_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tempath$
+    dlg.strDefaultFolder = projectPath$ + temPath$
     
     dlg.strTitle = "Open Character"
     dlg.strDefaultExt = "tem"
@@ -380,7 +380,7 @@ Private Sub Command3_Click()
     ChDir (currentDir$)
     If filenamea$ = "" Then Exit Sub
     fName$ = filenamea$
-    FileCopy filenamea$, projectPath$ + tempath$ + antiPath$
+    FileCopy filenamea$, projectPath$ + temPath$ + antiPath$
     rpgcodeList(activeRPGCodeIndex).Ichar$(Combo1.ListIndex) = antiPath$
     Text3.Text = antiPath$
 
@@ -396,7 +396,7 @@ Private Sub Command4_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + brdpath$
+    dlg.strDefaultFolder = projectPath$ + brdPath$
     
     dlg.strTitle = "Open Board"
     dlg.strDefaultExt = "brd"
@@ -411,7 +411,7 @@ Private Sub Command4_Click()
     ChDir (currentDir$)
     If filenamea$ = "" Then Exit Sub
     fName$ = filenamea$
-    FileCopy filenamea$, projectPath$ + brdpath$ + antiPath$
+    FileCopy filenamea$, projectPath$ + brdPath$ + antiPath$
     rpgcodeList(activeRPGCodeIndex).Iboard$ = antiPath$
     Text4.Text = rpgcodeList(activeRPGCodeIndex).Iboard$
 End Sub

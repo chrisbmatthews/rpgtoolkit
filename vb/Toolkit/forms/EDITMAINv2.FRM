@@ -8,6 +8,7 @@ Begin VB.Form editmainfile
    ClientLeft      =   90
    ClientTop       =   480
    ClientWidth     =   7515
+   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -21,10 +22,12 @@ Begin VB.Form editmainfile
    Icon            =   "EDITMAINv2.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   6030
    ScaleWidth      =   7515
    Tag             =   "7"
+   WindowState     =   2  'Maximized
    Begin VB.TextBox gametitlebox 
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -2089,8 +2092,8 @@ End Sub
 '=========================================================================
 ' Change screen style
 '=========================================================================
-Private Sub chkScreenStyle_Click(ByRef Index As Integer)
-    mainMem.extendToFullScreen = Index
+Private Sub chkScreenStyle_Click(ByRef index As Integer)
+    mainMem.extendToFullScreen = index
 End Sub
 
 '=========================================================================
@@ -2513,12 +2516,12 @@ End Sub
 Private Sub Form_Load(): On Error Resume Next
 
     Call LocalizeForm(Me)
-    Me.height = 6270
-    Me.width = 7600
+    Me.Height = 6270
+    Me.Width = 7600
     filename(2) = vbNullString
     sliGameSpeed.max = MAX_GAMESPEED                'Gamespeed range.
     sliGameSpeed.min = -MAX_GAMESPEED
-    Call infoFill
+    Call infofill
 End Sub
 
 '=========================================================================
@@ -2526,8 +2529,8 @@ End Sub
 '=========================================================================
 Private Sub Form_Resize(): On Error Resume Next
     'Centre the tabs.
-    tabMain.Top = (Me.height - tabMain.height) / 2 - 200
-    tabMain.Left = (Me.width - tabMain.width) / 2
+    tabMain.Top = (Me.Height - tabMain.Height) / 2 - 200
+    tabMain.Left = (Me.Width - tabMain.Width) / 2
 End Sub
 
 '=========================================================================
@@ -2536,6 +2539,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     Call releaseComPlugins
     Call hideAllTools
+    Call tkMainForm.refreshTabs
 End Sub
 
 '=========================================================================
@@ -2560,7 +2564,7 @@ End Sub
 '=========================================================================
 ' Fill in the form with info
 '=========================================================================
-Private Sub infoFill()
+Private Sub infofill()
     On Error Resume Next
     optEnableFighting.value = True
     If mainMem.startupPrg$ <> "" Then
@@ -2786,7 +2790,7 @@ End Sub
 '=========================================================================
 ' Close menu
 '=========================================================================
-Private Sub mnuClose_Click()
+Private Sub mnuCLose_Click()
     Call Unload(Me)
 End Sub
 
@@ -2815,7 +2819,7 @@ Private Sub newmainmnu_Click()
     If user = 6 Then
         mainFile$ = ""
         Call newmain
-        Call infoFill
+        Call infofill
     End If
 End Sub
 

@@ -1,11 +1,12 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.Form grab 
    Caption         =   "Grab Tile"
    ClientHeight    =   6960
    ClientLeft      =   405
    ClientTop       =   435
    ClientWidth     =   9105
+   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -19,10 +20,12 @@ Begin VB.Form grab
    Icon            =   "GRAB.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   6960
    ScaleWidth      =   9105
    Tag             =   "11"
+   WindowState     =   2  'Maximized
    Begin VB.HScrollBar scrHorizontal 
       Height          =   255
       Left            =   120
@@ -528,7 +531,7 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte): On Err
                         
                         'Take the pixel from the canvas.
                         'tilemem(x, y) = vbFrmPoint(grabForm, xPixel + x - 1, yPixel + y - 1)
-                        tileMem(x, y) = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + x - 1, scrVertical.value * 32 + yPixel + y - 1)
+                        tileMem(x, y) = canvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + x - 1, scrVertical.value * 32 + yPixel + y - 1)
                         
                     'End If
                     
@@ -618,8 +621,8 @@ Private Sub BatchIsometric(ByVal filename As String): On Error Resume Next
         selection.Bottom = openImage.pxHeight
         
         'Increase the size of the form
-        grabForm.width = openImage.twipWidth
-        grabForm.height = openImage.twipHeight
+        grabForm.Width = openImage.twipWidth
+        grabForm.Height = openImage.twipHeight
         Call Form_Resize
         
         grabStatus.Panels(2).Text = "Selection: Whole image: "
@@ -694,7 +697,7 @@ Private Sub BatchIsometric(ByVal filename As String): On Error Resume Next
                         yPixel + y - 1 <= edges.Bottom And yPixel + y - 1 >= edges.Top Then
                         'Take the pixel from the canvas.
                         'tilemem(x, y) = vbFrmPoint(grabForm, xPixel + x - 1, yPixel + y - 1)
-                        tileMem(x, y) = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + x - 1, scrVertical.value * 32 + yPixel + y - 1)
+                        tileMem(x, y) = canvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + xPixel + x - 1, scrVertical.value * 32 + yPixel + y - 1)
 
 'Call traceString("tilemem(" & x & ", " & y & ") = vbFrmPoint(grabForm," & (xPixel + x - 1) & ", " & (yPixel + y - 1) & ") xPixel=" & xPixel & " yPixel=" & yPixel)
                         
@@ -782,10 +785,10 @@ Private Sub chkIso_Click(): On Error Resume Next
     
     If chkIso.value = 1 Then
         cmdBatch32.Caption = "Batch Isometric"
-        picGrabbed.width = 66 * Screen.TwipsPerPixelX       'Tile preview window.
+        picGrabbed.Width = 66 * Screen.TwipsPerPixelX       'Tile preview window.
     Else
         cmdBatch32.Caption = "Batch Grab 32x32"
-        picGrabbed.width = 33 * Screen.TwipsPerPixelX
+        picGrabbed.Width = 33 * Screen.TwipsPerPixelX
     End If
     
 End Sub
@@ -921,23 +924,23 @@ Private Sub cmdOpen_Click(): On Error Resume Next
     'Added: Get some information about the image.
     With openImage
         'Destroy the old image, if there is one.
-        If .pointer <> 0 Then DestroyCanvas (.pointer)
+        If .pointer <> 0 Then destroyCanvas (.pointer)
         .loaded = 0
         
         .filename = filename(1)
     
         'Create a canvas to hold the image
-        .pointer = CreateCanvas(1, 1)
-        Call CanvasLoadFullPicture(.pointer, .filename, -1, -1)
+        .pointer = createCanvas(1, 1)
+        Call canvasLoadFullPicture(.pointer, .filename, -1, -1)
         
-        .pxWidth = GetCanvasWidth(.pointer)
-        .pxHeight = GetCanvasHeight(.pointer)
+        .pxWidth = getCanvasWidth(.pointer)
+        .pxHeight = getCanvasHeight(.pointer)
               
         .twipWidth = openImage.pxWidth * Screen.TwipsPerPixelX
         .twipHeight = openImage.pxHeight * Screen.TwipsPerPixelY
         
         If .pxWidth = 0 And .pxHeight = 0 Then
-            Call DestroyCanvas(.pointer)
+            Call destroyCanvas(.pointer)
             .pointer = 0
             Call MsgBox("Unable to open image.", vbExclamation)
             Exit Sub
@@ -1125,8 +1128,8 @@ Private Sub Form_Load(): On Error Resume Next
     picGridColor.BackColor = gridColor
     picSelectColor.BackColor = selectionColor
     
-    grab.Left = (Screen.width - grab.width) / 2
-    grab.Top = (Screen.height - grab.height) / 2
+    grab.Left = (Screen.Width - grab.Width) / 2
+    grab.Top = (Screen.Height - grab.Height) / 2
     
     openImage.loaded = 0              'Set the background image to unloaded.
     Call Form_Resize
@@ -1139,8 +1142,8 @@ Private Sub Form_Load(): On Error Resume Next
     openTileEditorDocs(activeTile.indice).grabx1 = -1: openTileEditorDocs(activeTile.indice).grabx2 = -1
     openTileEditorDocs(activeTile.indice).graby1 = -1: openTileEditorDocs(activeTile.indice).graby2 = -1
     
-    grabStatus.Panels(1).width = grabStatus.width / 2
-    grabStatus.Panels(2).width = grabStatus.width / 2
+    grabStatus.Panels(1).Width = grabStatus.Width / 2
+    grabStatus.Panels(2).Width = grabStatus.Width / 2
     
     'Welcome message.
     
@@ -1178,22 +1181,22 @@ Private Sub Form_Resize(): On Error Resume Next
     grab.AutoRedraw = False
     
     'Set the minimum window size.
-    If grab.width < 9000 Then grab.width = 9000
-    If grab.height < 6400 Then grab.height = 6400
+    If grab.Width < 9000 Then grab.Width = 9000
+    If grab.Height < 6400 Then grab.Height = 6400
     
     'Size the grabForm picture box.
     'The vertical edges of the grabber are 120 twips. The horizontal edges total 510 twips.
     grabForm.Top = 120         'Aligned to top-left corner always.
     grabForm.Left = 120
-    grabForm.width = grab.width - (3 * 120)
-    grabForm.height = grab.height - grabFrame.height - 510 - 120
+    grabForm.Width = grab.Width - (3 * 120)
+    grabForm.Height = grab.Height - grabFrame.Height - 510 - 120
     
-    maxWidth = grabForm.width - scrVertical.width
-    maxHeight = grabForm.height - scrHorizontal.height
+    maxWidth = grabForm.Width - scrVertical.Width
+    maxHeight = grabForm.Height - scrHorizontal.Height
     
     'Centre the toolFrame, align to the bottom:
-    grabFrame.Top = grabForm.height + grabForm.Top
-    grabFrame.Left = (grab.width - grabFrame.width) / 2
+    grabFrame.Top = grabForm.Height + grabForm.Top
+    grabFrame.Left = (grab.Width - grabFrame.Width) / 2
     
     scrVertical.Visible = False
     scrHorizontal.Visible = False
@@ -1202,7 +1205,7 @@ Private Sub Form_Resize(): On Error Resume Next
         'If an image has been loaded and successfully unloaded (will equal 1).
         
         If openImage.twipWidth <= maxWidth Then
-            grabForm.width = openImage.twipWidth
+            grabForm.Width = openImage.twipWidth
         Else
             'Image is wider than grabform.
             'Enable the horziontal scroll.
@@ -1213,8 +1216,8 @@ Private Sub Form_Resize(): On Error Resume Next
         End If
         
         If openImage.twipHeight <= maxHeight Then
-            grabForm.height = openImage.twipHeight
-            grabForm.Top = (grab.height - grabForm.height - grabFrame.height) / 2
+            grabForm.Height = openImage.twipHeight
+            grabForm.Top = (grab.Height - grabForm.Height - grabFrame.Height) / 2
         Else
             'Image is taller than grabform.
             'Enable the vertical scroll.
@@ -1230,25 +1233,25 @@ Private Sub Form_Resize(): On Error Resume Next
             'grabForm.height = (Int(grabForm.height / (Screen.TwipsPerPixelY * 32))) * 32 * Screen.TwipsPerPixelY
         End If
         
-        grabForm.height = (Int(grabForm.height / (Screen.TwipsPerPixelY * 32))) * 32 * Screen.TwipsPerPixelY
-        grabForm.width = (Int(grabForm.width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
+        grabForm.Height = (Int(grabForm.Height / (Screen.TwipsPerPixelY * 32))) * 32 * Screen.TwipsPerPixelY
+        grabForm.Width = (Int(grabForm.Width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
         
-        grabForm.Left = (grab.width - grabForm.width - scrVertical.width) / 2
+        grabForm.Left = (grab.Width - grabForm.Width - scrVertical.Width) / 2
     End If
               
     'Align the scroll bars:
     scrVertical.Top = grabForm.Top
-    scrVertical.Left = grabForm.width + grabForm.Left
-    scrVertical.height = grabForm.height
-    scrHorizontal.Top = grabForm.height + grabForm.Top
+    scrVertical.Left = grabForm.Width + grabForm.Left
+    scrVertical.Height = grabForm.Height
+    scrHorizontal.Top = grabForm.Height + grabForm.Top
     scrHorizontal.Left = grabForm.Left
-    scrHorizontal.width = grabForm.width
+    scrHorizontal.Width = grabForm.Width
     
     'This will scroll in tile units (32x32).
-    scrHorizontal.max = (openImage.twipWidth - grabForm.width) / (Screen.TwipsPerPixelX * 32)
-    scrVertical.max = (openImage.twipHeight - grabForm.height) / (Screen.TwipsPerPixelY * 32)
-    scrHorizontal.LargeChange = grabForm.width / (Screen.TwipsPerPixelX * 32) - 1
-    scrVertical.LargeChange = grabForm.height / (Screen.TwipsPerPixelY * 32) - 1
+    scrHorizontal.max = (openImage.twipWidth - grabForm.Width) / (Screen.TwipsPerPixelX * 32)
+    scrVertical.max = (openImage.twipHeight - grabForm.Height) / (Screen.TwipsPerPixelY * 32)
+    scrHorizontal.LargeChange = grabForm.Width / (Screen.TwipsPerPixelX * 32) - 1
+    scrVertical.LargeChange = grabForm.Height / (Screen.TwipsPerPixelY * 32) - 1
     'scrHorizontal.value = 0
     'scrVertical.value = 0
     
@@ -1262,7 +1265,8 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     '=========================================
     'Delete the image canvas!
     '=========================================
-    If openImage.pointer <> 0 Then DestroyCanvas (openImage.pointer)
+    If openImage.pointer <> 0 Then destroyCanvas (openImage.pointer)
+    Call tkMainForm.refreshTabs
 End Sub
 
 Private Sub grabform_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
@@ -1561,7 +1565,7 @@ Private Sub grabRedraw(): On Error Resume Next
     
     'Call vbPicAutoRedraw(grabForm, True)
     
-    Call CanvasBlt(openImage.pointer, openImage.pxOffsetX, openImage.pxOffsetY, vbPicHDC(grabForm))
+    Call canvasBlt(openImage.pointer, openImage.pxOffsetX, openImage.pxOffsetY, vbPicHDC(grabForm))
     Call drawGrid
     
     'Now redraw the selection box, if there is one.
@@ -1634,8 +1638,8 @@ Private Sub drawGrid(): On Error Resume Next
         ' if isometric
         If chkIso.value = 1 Then
         
-            tilesX = Int((grabForm.width / Screen.TwipsPerPixelX) / 64)
-            tilesY = Int((grabForm.height / Screen.TwipsPerPixelY) / 16)
+            tilesX = Int((grabForm.Width / Screen.TwipsPerPixelX) / 64)
+            tilesY = Int((grabForm.Height / Screen.TwipsPerPixelY) / 16)
             
             'Draw lines: bottom left to top right.
             x = 0
@@ -1656,8 +1660,8 @@ Private Sub drawGrid(): On Error Resume Next
         ' if 2d
         Else
         
-            tilesX = Int((grab.width / Screen.TwipsPerPixelX) / 32)
-            tilesY = Int((grab.height / Screen.TwipsPerPixelY) / 32)
+            tilesX = Int((grab.Width / Screen.TwipsPerPixelX) / 32)
+            tilesY = Int((grab.Height / Screen.TwipsPerPixelY) / 32)
         
             ' draw 2D grid lines
             'Vertical.
@@ -1696,7 +1700,7 @@ Private Sub drawTile(): On Error Resume Next
                 
                 'Get the colour value at the pixel.
                 'pixel = vbFrmPoint(grab.grabForm, openTileEditorDocs(activeTile.indice).grabx1 + x, openTileEditorDocs(activeTile.indice).graby1 + y)
-                pixel = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + openTileEditorDocs(activeTile.indice).grabx1 + x, scrVertical.value * 32 + openTileEditorDocs(activeTile.indice).graby1 + y)
+                pixel = canvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + openTileEditorDocs(activeTile.indice).grabx1 + x, scrVertical.value * 32 + openTileEditorDocs(activeTile.indice).graby1 + y)
                 
                 'Set the transparent colour as -1.
                 If pixel = openTileEditorDocs(activeTile.indice).transpcolor Then pixel = -1
@@ -1719,7 +1723,7 @@ Private Sub drawTile(): On Error Resume Next
                 
                 'Get the colour value at the pixel.
                 'pixel = vbFrmPoint(grab.grabForm, openTileEditorDocs(activeTile.indice).grabx1 + x, openTileEditorDocs(activeTile.indice).graby1 + y)
-                pixel = CanvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + openTileEditorDocs(activeTile.indice).grabx1 + x, scrVertical.value * 32 + openTileEditorDocs(activeTile.indice).graby1 + y)
+                pixel = canvasGetPixel(openImage.pointer, scrHorizontal.value * 32 + openTileEditorDocs(activeTile.indice).grabx1 + x, scrVertical.value * 32 + openTileEditorDocs(activeTile.indice).graby1 + y)
                 
                 'Set the transparent colour as -1.
                 If pixel = openTileEditorDocs(activeTile.indice).transpcolor Then pixel = -1

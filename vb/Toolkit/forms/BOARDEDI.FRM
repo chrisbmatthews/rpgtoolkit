@@ -6,6 +6,7 @@ Begin VB.Form boardedit
    ClientLeft      =   -465
    ClientTop       =   750
    ClientWidth     =   8880
+   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "Courier New"
       Size            =   6
@@ -19,10 +20,12 @@ Begin VB.Form boardedit
    Icon            =   "BOARDEDI.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5715
    ScaleWidth      =   8880
    Tag             =   "2"
+   WindowState     =   2  'Maximized
    Begin VB.HScrollBar HScroll1 
       Height          =   255
       Left            =   120
@@ -856,7 +859,7 @@ Public Sub drawLayers(Optional ByVal buttonClick As Boolean = False): On Error R
     ' fill picture box with board color
     Call vbPicFillRect(boardform, 0, 0, 2000, 2000, boardList(activeBoardIndex).theData.brdColor)
     
-    Dim temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
+    Dim Temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
     
     ' drawbackground
     DrawBackground
@@ -1579,7 +1582,7 @@ Public Sub boardSelectTile(): On Error Resume Next
 'Edited by Delano for 3.0.4 new isometric tilesets.
 'Added .iso to available tiles.
     
-    Dim x As Long, y As Long, antipath As String, whichType As String
+    Dim x As Long, y As Long, antiPath As String, whichType As String
     
     bCurrentTileIsTransparent = False
     
@@ -1613,7 +1616,7 @@ Public Sub boardSelectTile(): On Error Resume Next
     
         ' get filename selected
         filename$(1) = dlg.strSelectedFile
-        antipath$ = dlg.strSelectedFileNoPath
+        antiPath$ = dlg.strSelectedFileNoPath
         
     Else
     
@@ -1636,9 +1639,9 @@ Public Sub boardSelectTile(): On Error Resume Next
         tstnum = 0
         
         ' copy file into direcotry
-        FileCopy filename$(1), projectPath$ + tilePath$ + antipath$
+        FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
         
-        tstFile$ = antipath$
+        tstFile$ = antiPath$
         configfile.lastTileset$ = tstFile$
         
         ' open tileset form
@@ -1704,10 +1707,10 @@ Public Sub boardSelectTile(): On Error Resume Next
         If UCase$(whichType$) = "TAN" Then
         
             ' copy file to directory
-            FileCopy filename$(1), projectPath$ + tilePath$ + antipath$
+            FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
             
             ' update current tile to selected tile
-            boardList(activeBoardIndex).selectedTile$ = antipath$
+            boardList(activeBoardIndex).selectedTile$ = antiPath$
             
             ' open animated tile
             Call openTileAnm(filename$(1), selectedAnm)
@@ -1756,10 +1759,10 @@ Public Sub boardSelectTile(): On Error Resume Next
         Else ' is a single tile
         
             ' copy to directory
-            FileCopy filename$(1), projectPath$ + tilePath$ + antipath$
+            FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
             
             ' update current tile as selected tile
-            boardList(activeBoardIndex).selectedTile$ = antipath$
+            boardList(activeBoardIndex).selectedTile$ = antiPath$
             
             ' open tileset
             Call openWinTile(filename$(1))
@@ -1898,11 +1901,11 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     filename(1) = file
 
     ' get filename
-    Dim antipath As String
-    antipath = absNoPath(file)
+    Dim antiPath As String
+    antiPath = absNoPath(file)
     
     ' copy board to directory
-    Call FileCopy(filename(1), projectPath & brdPath & antipath)
+    Call FileCopy(filename(1), projectPath & brdPath & antiPath)
     
     ' open board
     Call openBoard(filename(1), boardList(activeBoardIndex).theData)
@@ -1911,10 +1914,10 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     Call boardRedraw
     
     ' set board path value
-    boardList(activeBoardIndex).boardName = antipath
+    boardList(activeBoardIndex).boardName = antiPath
     
     ' update form caption
-    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & antipath & ")"
+    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & antiPath & ")"
     
     ' set picture box auto redraw as true
     Call vbPicAutoRedraw(boardform, True)
@@ -1937,8 +1940,8 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
     
     
     ' check minimum boundries (and set if needed)
-    W = activeBoard.width
-    h = activeBoard.height
+    W = activeBoard.Width
+    h = activeBoard.Height
     
     'minBoardSizeX,Y assigned in BoardIso.
     If tilesX(W) < minBoardSizeX Then W = TwipsX(minBoardSizeX)
@@ -1968,51 +1971,51 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
     ' update picture
     boardform.Left = 0
     boardform.Top = 0
-    boardform.width = TwipsX(boardList(activeBoardIndex).tilesX)
-    boardform.height = TwipsY(boardList(activeBoardIndex).tilesY)
+    boardform.Width = TwipsX(boardList(activeBoardIndex).tilesX)
+    boardform.Height = TwipsY(boardList(activeBoardIndex).tilesY)
     
     'Added: Check we haven't exceeded the maximum size. Reduce the tiles until it's small enough.
-    If boardform.width + VScroll1.width > activeBoard.width Then
-        boardList(activeBoardIndex).tilesX = tilesX(activeBoard.width - VScroll1.width)
-        boardform.width = TwipsX(boardList(activeBoardIndex).tilesX)
+    If boardform.Width + VScroll1.Width > activeBoard.Width Then
+        boardList(activeBoardIndex).tilesX = tilesX(activeBoard.Width - VScroll1.Width)
+        boardform.Width = TwipsX(boardList(activeBoardIndex).tilesX)
     End If
-    If boardform.height + HScroll1.height > activeBoard.height Then
-        boardList(activeBoardIndex).tilesY = tilesY(activeBoard.height - HScroll1.height)
-        boardform.height = TwipsY(boardList(activeBoardIndex).tilesY)
+    If boardform.Height + HScroll1.Height > activeBoard.Height Then
+        boardList(activeBoardIndex).tilesY = tilesY(activeBoard.Height - HScroll1.Height)
+        boardform.Height = TwipsY(boardList(activeBoardIndex).tilesY)
     End If
     
     ' calculate scroll bar lengths
     ignore = 1
     If boardList(activeBoardIndex).tilesY = boardList(activeBoardIndex).theData.bSizeY Then
         VScroll1.Visible = False
-        Me.width = boardform.width + 115
+        Me.Width = boardform.Width + 115
     Else
         VScroll1.Visible = True
         VScroll1.Top = 0
-        VScroll1.Left = boardform.width
-    VScroll1.height = boardform.height
+        VScroll1.Left = boardform.Width
+    VScroll1.Height = boardform.Height
         VScroll1.value = boardList(activeBoardIndex).topY
     VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - boardList(activeBoardIndex).tilesY + 1
         VScroll1.LargeChange = boardList(activeBoardIndex).tilesY - 1           'Added.
-        Me.width = boardform.width + VScroll1.width + 115
+        Me.Width = boardform.Width + VScroll1.Width + 115
     End If
     If boardList(activeBoardIndex).tilesX = boardList(activeBoardIndex).theData.bSizeX Then
         HScroll1.Visible = False
-        Me.height = boardform.height + HScroll1.height + 206
+        Me.Height = boardform.Height + HScroll1.Height + 206
     Else
         HScroll1.Visible = True
         HScroll1.Left = 0
-        HScroll1.Top = boardform.height
-        HScroll1.width = boardform.width
+        HScroll1.Top = boardform.Height
+        HScroll1.Width = boardform.Width
         HScroll1.value = boardList(activeBoardIndex).topX
     HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - boardList(activeBoardIndex).tilesX + 1
         HScroll1.LargeChange = boardList(activeBoardIndex).tilesX - 1           'Added.
-        Me.height = boardform.height + (HScroll1.height * 2) + 206
+        Me.Height = boardform.Height + (HScroll1.Height * 2) + 206
     End If
     ignore = 0
     
-    colstrip.height = boardform.height
-    rowstrip.width = boardform.width
+    colstrip.Height = boardform.Height
+    rowstrip.Width = boardform.Width
     
     isomask.Top = boardform.Top
     isomask.Left = boardform.Left
@@ -2607,10 +2610,10 @@ End Sub
 '========================================================================
 ' Update tile type, via popup menu
 '========================================================================
-Private Sub mnuPop_Type_L_Click(Index As Integer)
+Private Sub mnuPop_Type_L_Click(index As Integer)
 
     ' update tile type
-    boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = Index
+    boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = index
                 
     ' update tiletype for that tile only
     viewtiletypes boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY
@@ -2620,10 +2623,10 @@ End Sub
 '========================================================================
 ' Update tile type, via popup menu
 '========================================================================
-Private Sub mnuPop_Type_T_Click(Index As Integer)
+Private Sub mnuPop_Type_T_Click(index As Integer)
 
     ' update tile type
-    boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = Index
+    boardList(activeBoardIndex).theData.tiletype(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer) = index
                 
     ' update tiletype for that tile only
     viewtiletypes boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY
@@ -2959,6 +2962,8 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     If boardList(activeBoardIndex).theData.brdBackCNV <> 0 Then
         Call destroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
     End If
+    
+    Call tkMainForm.refreshTabs
     
 End Sub
 

@@ -7,6 +7,7 @@ Begin VB.Form characteredit
    ClientLeft      =   150
    ClientTop       =   435
    ClientWidth     =   7995
+   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -20,10 +21,12 @@ Begin VB.Form characteredit
    Icon            =   "CHARACTE.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5295
    ScaleWidth      =   7995
    Tag             =   "3"
+   WindowState     =   2  'Maximized
    Begin VB.Frame mainFrame 
       Height          =   4935
       Left            =   120
@@ -1339,7 +1342,7 @@ Public Sub saveFile(): On Error Resume Next
     If playerList(activePlayerIndex).charFile = vbNullString Then
         'Untitled; prompt Save As.
         Me.Show
-        Call mnuSaveAs_Click
+        Call mnusaveas_Click
         Exit Sub
     End If
     
@@ -1374,7 +1377,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         chkDefault(i).value = 0
     Next i
     
-    Call infoFill
+    Call infofill
     
     playerList(activePlayerIndex).charNeedUpdate = False
     
@@ -1383,16 +1386,16 @@ End Sub
 '==============================================================================
 ' "Default" check box array: set variables to default form.
 '==============================================================================
-Private Sub chkDefault_Click(Index As Integer): On Error Resume Next
+Private Sub chkDefault_Click(index As Integer): On Error Resume Next
 
     'If unchecked, exit.
-    If chkDefault(Index).value = 0 Then Exit Sub
+    If chkDefault(index).value = 0 Then Exit Sub
 
     Dim varname As String
 
     'Select the variable ending for the specific index.
     With playerList(activePlayerIndex).theData
-        Select Case Index
+        Select Case index
         
             Case 0: varname = "[name]$"
             Case 1: varname = "[experience]!"
@@ -1410,7 +1413,7 @@ Private Sub chkDefault_Click(Index As Integer): On Error Resume Next
     'Change the associated text box to the default name.
     ' e.g. Frap[name]$
     'This will trigger txt*_change and alter the member variables also.
-    txtVariables(Index).Text = addUnderscore(playerList(activePlayerIndex).theData.charname) & varname
+    txtVariables(index).Text = addUnderscore(playerList(activePlayerIndex).theData.charname) & varname
 
 End Sub
 
@@ -1420,7 +1423,7 @@ End Sub
 Private Sub mnusave_Click(): On Error Resume Next
 
     If playerList(activePlayerIndex).charFile = vbNullString Then
-        Call mnuSaveAs_Click
+        Call mnusaveas_Click
         Exit Sub
     End If
     
@@ -1433,7 +1436,7 @@ End Sub
 '==============================================================================
 'File -> Save Character As
 '==============================================================================
-Private Sub mnuSaveAs_Click(): On Error Resume Next
+Private Sub mnusaveas_Click(): On Error Resume Next
 
     Dim dlg As FileDialogInfo
     ChDir (currentDir)
@@ -1467,7 +1470,7 @@ End Sub
 '==============================================================================
 'File -> Close
 '==============================================================================
-Private Sub mnuClose_Click(): On Error Resume Next
+Private Sub mnuCLose_Click(): On Error Resume Next
 
     Unload editcharsm
     Unload charequip
@@ -1576,14 +1579,14 @@ Private Sub Form_Load(): On Error Resume Next
     
     Call PlayerClear(playerList(dataIndex).theData)
        
-    Call infoFill
+    Call infofill
 
 End Sub
 
 Private Sub Form_Resize(): On Error Resume Next
 
-    mainFrame.Left = (Me.width - mainFrame.width) / 2
-    mainFrame.Top = (Me.height - mainFrame.height - 500) / 2
+    mainFrame.Left = (Me.Width - mainFrame.Width) / 2
+    mainFrame.Top = (Me.Height - mainFrame.Height - 500) / 2
 
 End Sub
 
@@ -1612,13 +1615,14 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     End If
     
     Call hideAllTools
+    Call tkMainForm.refreshTabs
     
 End Sub
 
 '==============================================================================
 'Fill the form entries with the player data.
 '==============================================================================
-Private Sub infoFill(): On Error Resume Next
+Private Sub infofill(): On Error Resume Next
 
     With playerList(activePlayerIndex).theData
     
@@ -1654,10 +1658,10 @@ End Sub
 '==============================================================================
 'Array of initial stat text boxes.
 '==============================================================================
-Private Sub txtStats_Change(Index As Integer): On Error Resume Next
+Private Sub txtStats_Change(index As Integer): On Error Resume Next
 
     With playerList(activePlayerIndex).theData
-        Select Case Index
+        Select Case index
         
             Case 0
                     playerList(activePlayerIndex).theData.charname = txtStats(0).Text
@@ -1687,10 +1691,10 @@ End Sub
 '==============================================================================
 'Array of variable text boxes.
 '==============================================================================
-Private Sub txtVariables_Change(Index As Integer): On Error Resume Next
+Private Sub txtVariables_Change(index As Integer): On Error Resume Next
 
     With playerList(activePlayerIndex).theData
-        Select Case Index
+        Select Case index
         
             Case 0: .nameVar = txtVariables(0).Text
             Case 1: .experienceVar = txtVariables(1).Text
@@ -1717,7 +1721,7 @@ Private Sub tabCharacter_Click(): On Error Resume Next
     frStats.Visible = False
     frVariables.Visible = False
 
-    Select Case tabCharacter.SelectedItem.Index
+    Select Case tabCharacter.SelectedItem.index
         Case 1:
             frStats.Visible = True
         Case 2:

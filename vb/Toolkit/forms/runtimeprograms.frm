@@ -191,6 +191,10 @@ ErrorHandler:
 End Sub
 
 
+Private Sub Form_Unload(Cancel As Integer)
+    Call tkMainForm.refreshTabs
+End Sub
+
 Private Sub keynum_Click()
     On Error GoTo ErrorHandler
     li = keynum.ListIndex

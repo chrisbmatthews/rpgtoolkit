@@ -5,12 +5,15 @@ Begin VB.Form editTileBitmap
    ClientLeft      =   60
    ClientTop       =   630
    ClientWidth     =   6585
+   ControlBox      =   0   'False
    Icon            =   "editTileBitmap.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    ScaleHeight     =   4515
    ScaleWidth      =   6585
    Tag             =   "10"
+   WindowState     =   2  'Maximized
    Begin VB.PictureBox arena 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -315,16 +318,16 @@ End Sub
 Sub infofill()
     On Error Resume Next
     
-    Dim xx As Long, yy As Long, X As Long, Y As Long
+    Dim xx As Long, yy As Long, x As Long, y As Long
     
     xx = tileBmpList(activeTileBmpIndex).theData.sizex
     yy = tileBmpList(activeTileBmpIndex).theData.sizey
     
-    arena.width = xx * 32 * Screen.TwipsPerPixelX
-    arena.height = yy * 32 * Screen.TwipsPerPixelY
+    arena.Width = xx * 32 * Screen.TwipsPerPixelX
+    arena.Height = yy * 32 * Screen.TwipsPerPixelY
       
-    Me.width = arena.width + 1200
-    Me.height = arena.height + 1200
+    Me.Width = arena.Width + 1200
+    Me.Height = arena.Height + 1200
     arena.Left = 500
     arena.Top = 400
    
@@ -335,12 +338,12 @@ Sub infofill()
     Call vbPicRefresh(arena)
     
     If tileBmpList(activeTileBmpIndex).grid = 1 Then
-        For X = 0 To xx * 32 Step 32
-            Call vbPicLine(arena, X, 0, X, yy * 32, vbQBColor(1))
-        Next X
-        For Y = 0 To yy * 32 Step 32
-            Call vbPicLine(arena, 0, Y, xx * 32, Y, vbQBColor(1))
-        Next Y
+        For x = 0 To xx * 32 Step 32
+            Call vbPicLine(arena, x, 0, x, yy * 32, vbQBColor(1))
+        Next x
+        For y = 0 To yy * 32 Step 32
+            Call vbPicLine(arena, 0, y, xx * 32, y, vbQBColor(1))
+        Next y
     End If
     
     'fill in other info
@@ -446,17 +449,17 @@ Public Sub tilebmpSelectTile()
     ignore = 1
     openTileEditorDocs(activeTile.indice).oldDetail = detail
     
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     Dim antiPath As String
     Dim tstnum As Long
     Dim whichType As String
     Dim dx As Long, dy As Long, colorDraw As Long
     
-    For X = 1 To 32
-        For Y = 1 To 32
-            bufTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            bufTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + tilePath$
@@ -481,7 +484,7 @@ Public Sub tilebmpSelectTile()
         FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
         tstFile$ = antiPath$
         configfile.lastTileset$ = tstFile$
-        tilesetform.Show vbModal ', me
+        tilesetForm.Show vbModal ', me
         
         'MsgBox setFilename$
         Call changeSelectedTile(setFilename)
@@ -503,11 +506,11 @@ Public Sub tilebmpSelectTile()
         tkMainForm.tilebmpCurrentTile.Caption = tileBmpList(activeTileBmpIndex).selectedTile$
     End If
     
-    For X = 1 To 32
-        For Y = 1 To 32
-            tileMem(X, Y) = bufTile(X, Y)
-        Next Y
-    Next X
+    For x = 1 To 32
+        For y = 1 To 32
+            tileMem(x, y) = bufTile(x, y)
+        Next y
+    Next x
 End Sub
 
 
@@ -536,16 +539,16 @@ Public Sub tileBmpSizeOK()
     Call infofill
 End Sub
 
-Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     
     Dim xx As Long, yy As Long, x2 As Long, y2 As Long
     
-    xx = Int(X / 32) + tileBmpList(activeTileBmpIndex).topX
-    yy = Int(Y / 32) + tileBmpList(activeTileBmpIndex).topY
+    xx = Int(x / 32) + tileBmpList(activeTileBmpIndex).topX
+    yy = Int(y / 32) + tileBmpList(activeTileBmpIndex).topY
     
-    x2 = Int(X / 32)
-    y2 = Int(Y / 32)
+    x2 = Int(x / 32)
+    y2 = Int(y / 32)
     
     tileBmpList(activeTileBmpIndex).needUpdate = True
     Select Case tileBmpList(activeTileBmpIndex).drawState
@@ -579,15 +582,15 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y 
     End Select
 End Sub
 
-Private Sub arena_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub arena_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     Dim xx As Long, yy As Long
     
-    xx = Int(X / 32) + tileBmpList(activeTileBmpIndex).topX
-    yy = Int(Y / 32) + tileBmpList(activeTileBmpIndex).topY
+    xx = Int(x / 32) + tileBmpList(activeTileBmpIndex).topX
+    yy = Int(y / 32) + tileBmpList(activeTileBmpIndex).topY
     tkMainForm.tileBmpCoords.Caption = str$(xx + 1) + "," + str$(yy + 1)
     If Button <> 0 Then
-        Call arena_MouseDown(Button, Shift, X, Y)
+        Call arena_MouseDown(Button, Shift, x, y)
     End If
 End Sub
 
@@ -632,6 +635,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     Call hideAllTools
+    Call tkMainForm.refreshTabs
 End Sub
 
 Private Sub mnuCLose_Click()

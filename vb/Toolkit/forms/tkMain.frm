@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
@@ -15,11 +15,11 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8055
-      Left            =   12135
-      ScaleHeight     =   8055
+      Height          =   5910
+      Left            =   8775
+      ScaleHeight     =   5910
       ScaleWidth      =   2730
-      TabIndex        =   176
+      TabIndex        =   163
       Top             =   360
       Visible         =   0   'False
       Width           =   2730
@@ -27,13 +27,13 @@ Begin VB.MDIForm tkMainForm
          BorderStyle     =   0  'None
          Height          =   5175
          Left            =   120
-         TabIndex        =   179
+         TabIndex        =   166
          Top             =   240
          Width           =   2775
          Begin MSComctlLib.TreeView TreeView1 
             Height          =   5055
             Left            =   0
-            TabIndex        =   180
+            TabIndex        =   167
             TabStop         =   0   'False
             Top             =   0
             Width           =   2535
@@ -58,7 +58,7 @@ Begin VB.MDIForm tkMainForm
          Caption         =   ">"
          Height          =   220
          Left            =   1560
-         TabIndex        =   178
+         TabIndex        =   165
          TabStop         =   0   'False
          Top             =   0
          Visible         =   0   'False
@@ -83,7 +83,7 @@ Begin VB.MDIForm tkMainForm
          Left            =   2400
          Picture         =   "tkMain.frx":0CCA
          Style           =   1  'Graphical
-         TabIndex        =   177
+         TabIndex        =   164
          Top             =   0
          Width           =   220
       End
@@ -102,150 +102,9 @@ Begin VB.MDIForm tkMainForm
          ForeColor       =   &H8000000F&
          Height          =   225
          Left            =   120
-         TabIndex        =   175
+         TabIndex        =   162
          Top             =   0
          Width           =   2535
-      End
-   End
-   Begin VB.PictureBox Picture2 
-      Align           =   2  'Align Bottom
-      BorderStyle     =   0  'None
-      Height          =   375
-      Left            =   0
-      ScaleHeight     =   375
-      ScaleWidth      =   15240
-      TabIndex        =   162
-      Top             =   10080
-      Width           =   15240
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   0
-         Left            =   0
-         Style           =   1  'Graphical
-         TabIndex        =   174
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   1
-         Left            =   1164
-         Style           =   1  'Graphical
-         TabIndex        =   173
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   2
-         Left            =   2328
-         Style           =   1  'Graphical
-         TabIndex        =   172
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   3
-         Left            =   3492
-         Style           =   1  'Graphical
-         TabIndex        =   171
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   4
-         Left            =   4656
-         Style           =   1  'Graphical
-         TabIndex        =   170
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   5
-         Left            =   5820
-         Style           =   1  'Graphical
-         TabIndex        =   169
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   6
-         Left            =   6984
-         Style           =   1  'Graphical
-         TabIndex        =   168
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   7
-         Left            =   8148
-         Style           =   1  'Graphical
-         TabIndex        =   167
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   8
-         Left            =   9312
-         Style           =   1  'Graphical
-         TabIndex        =   166
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.OptionButton openWindow 
-         Caption         =   "Option6"
-         Height          =   315
-         Index           =   9
-         Left            =   10467
-         Style           =   1  'Graphical
-         TabIndex        =   165
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   1164
-      End
-      Begin VB.CommandButton openWindowsScrollLeft 
-         Height          =   255
-         Left            =   11640
-         Picture         =   "tkMain.frx":0E14
-         Style           =   1  'Graphical
-         TabIndex        =   164
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   135
-      End
-      Begin VB.CommandButton openWindowsScrollRight 
-         Height          =   255
-         Left            =   11760
-         Picture         =   "tkMain.frx":111E
-         Style           =   1  'Graphical
-         TabIndex        =   163
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   135
       End
    End
    Begin MSComctlLib.ImageList ImageList1 
@@ -261,71 +120,71 @@ Begin VB.MDIForm tkMainForm
       BeginProperty Images {2C247F25-8591-11D1-B16A-00C0F0283628} 
          NumListImages   =   17
          BeginProperty ListImage1 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":1428
+            Picture         =   "tkMain.frx":0E14
             Key             =   ""
          EndProperty
          BeginProperty ListImage2 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":17C2
+            Picture         =   "tkMain.frx":11AE
             Key             =   ""
          EndProperty
          BeginProperty ListImage3 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":1B5C
+            Picture         =   "tkMain.frx":1548
             Key             =   ""
          EndProperty
          BeginProperty ListImage4 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":1E76
+            Picture         =   "tkMain.frx":1862
             Key             =   ""
          EndProperty
          BeginProperty ListImage5 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":2B50
+            Picture         =   "tkMain.frx":253C
             Key             =   ""
          EndProperty
          BeginProperty ListImage6 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":382A
+            Picture         =   "tkMain.frx":3216
             Key             =   ""
          EndProperty
          BeginProperty ListImage7 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":4504
+            Picture         =   "tkMain.frx":3EF0
             Key             =   ""
          EndProperty
          BeginProperty ListImage8 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":51DE
+            Picture         =   "tkMain.frx":4BCA
             Key             =   ""
          EndProperty
          BeginProperty ListImage9 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":5EB8
+            Picture         =   "tkMain.frx":58A4
             Key             =   ""
          EndProperty
          BeginProperty ListImage10 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":6B92
+            Picture         =   "tkMain.frx":657E
             Key             =   ""
          EndProperty
          BeginProperty ListImage11 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":786C
+            Picture         =   "tkMain.frx":7258
             Key             =   ""
          EndProperty
          BeginProperty ListImage12 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":8546
+            Picture         =   "tkMain.frx":7F32
             Key             =   ""
          EndProperty
          BeginProperty ListImage13 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":9220
+            Picture         =   "tkMain.frx":8C0C
             Key             =   ""
          EndProperty
          BeginProperty ListImage14 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":9EFA
+            Picture         =   "tkMain.frx":98E6
             Key             =   ""
          EndProperty
          BeginProperty ListImage15 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":ABD4
+            Picture         =   "tkMain.frx":A5C0
             Key             =   ""
          EndProperty
          BeginProperty ListImage16 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":B8AE
+            Picture         =   "tkMain.frx":B29A
             Key             =   ""
          EndProperty
          BeginProperty ListImage17 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-            Picture         =   "tkMain.frx":C588
+            Picture         =   "tkMain.frx":BF74
             Key             =   ""
          EndProperty
       EndProperty
@@ -336,8 +195,8 @@ Begin VB.MDIForm tkMainForm
       Left            =   0
       TabIndex        =   1
       Top             =   0
-      Width           =   15240
-      _ExtentX        =   26882
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
@@ -475,47 +334,47 @@ Begin VB.MDIForm tkMainForm
          BeginProperty Images {2C247F25-8591-11D1-B16A-00C0F0283628} 
             NumListImages   =   11
             BeginProperty ListImage1 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":D262
+               Picture         =   "tkMain.frx":CC4E
                Key             =   "New..."
             EndProperty
             BeginProperty ListImage2 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":D7FC
+               Picture         =   "tkMain.frx":D1E8
                Key             =   ""
             EndProperty
             BeginProperty ListImage3 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":DD96
+               Picture         =   "tkMain.frx":D782
                Key             =   "Open"
             EndProperty
             BeginProperty ListImage4 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":E130
+               Picture         =   "tkMain.frx":DB1C
                Key             =   "Save"
             EndProperty
             BeginProperty ListImage5 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":E6CA
+               Picture         =   "tkMain.frx":E0B6
                Key             =   "Save All"
             EndProperty
             BeginProperty ListImage6 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":EA64
+               Picture         =   "tkMain.frx":E450
                Key             =   ""
             EndProperty
             BeginProperty ListImage7 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":EDFE
+               Picture         =   "tkMain.frx":E7EA
                Key             =   ""
             EndProperty
             BeginProperty ListImage8 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":F198
+               Picture         =   "tkMain.frx":EB84
                Key             =   ""
             EndProperty
             BeginProperty ListImage9 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":F532
+               Picture         =   "tkMain.frx":EF1E
                Key             =   "Test Game"
             EndProperty
             BeginProperty ListImage10 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":F8CC
+               Picture         =   "tkMain.frx":F2B8
                Key             =   ""
             EndProperty
             BeginProperty ListImage11 {2C247F27-8591-11D1-B16A-00C0F0283628} 
-               Picture         =   "tkMain.frx":FC66
+               Picture         =   "tkMain.frx":F652
                Key             =   ""
             EndProperty
          EndProperty
@@ -526,9 +385,9 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   8055
-      Left            =   3825
-      ScaleHeight     =   8055
+      Height          =   5910
+      Left            =   465
+      ScaleHeight     =   5910
       ScaleWidth      =   3510
       TabIndex        =   60
       Top             =   360
@@ -546,7 +405,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          Height          =   220
          Left            =   3240
-         Picture         =   "tkMain.frx":10940
+         Picture         =   "tkMain.frx":1032C
          Style           =   1  'Graphical
          TabIndex        =   61
          Top             =   0
@@ -566,7 +425,7 @@ Begin VB.MDIForm tkMainForm
          TabsPerRow      =   2
          TabHeight       =   520
          TabCaption(0)   =   "Objects"
-         TabPicture(0)   =   "tkMain.frx":10A8A
+         TabPicture(0)   =   "tkMain.frx":10476
          Tab(0).ControlEnabled=   -1  'True
          Tab(0).Control(0)=   "bTools_Objects_Tree"
          Tab(0).Control(0).Enabled=   0   'False
@@ -574,7 +433,7 @@ Begin VB.MDIForm tkMainForm
          Tab(0).Control(1).Enabled=   0   'False
          Tab(0).ControlCount=   2
          TabCaption(1)   =   "Display"
-         TabPicture(1)   =   "tkMain.frx":10AA6
+         TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
          Tab(1).Control(0)=   "Frame5"
          Tab(1).Control(1)=   "Frame4"
@@ -754,9 +613,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8055
-      Left            =   2010
-      ScaleHeight     =   8055
+      Height          =   5910
+      Left            =   -1350
+      ScaleHeight     =   5910
       ScaleWidth      =   1815
       TabIndex        =   56
       Top             =   360
@@ -799,9 +658,9 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   8055
+      Height          =   5910
       Left            =   0
-      ScaleHeight     =   8055
+      ScaleHeight     =   5910
       ScaleWidth      =   975
       TabIndex        =   11
       Top             =   360
@@ -828,9 +687,9 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardMultiSelect 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":10AC2
+               Picture         =   "tkMain.frx":104AE
                Style           =   1  'Graphical
-               TabIndex        =   182
+               TabIndex        =   169
                ToolTipText     =   "Multi Select"
                Top             =   1560
                Visible         =   0   'False
@@ -839,9 +698,9 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardAutotileDraw 
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":1178C
+               Picture         =   "tkMain.frx":11178
                Style           =   1  'Graphical
-               TabIndex        =   181
+               TabIndex        =   168
                ToolTipText     =   "Toggle Auto Tiler"
                Top             =   2040
                Width           =   375
@@ -858,7 +717,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   1560
-               Picture         =   "tkMain.frx":11A96
+               Picture         =   "tkMain.frx":11482
                Style           =   1  'Graphical
                TabIndex        =   54
                TabStop         =   0   'False
@@ -870,7 +729,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardDrawLock 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":12760
+               Picture         =   "tkMain.frx":1214C
                Style           =   1  'Graphical
                TabIndex        =   53
                TabStop         =   0   'False
@@ -883,7 +742,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardGrid 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1302A
+               Picture         =   "tkMain.frx":12A16
                Style           =   1  'Graphical
                TabIndex        =   52
                TabStop         =   0   'False
@@ -905,7 +764,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":13CF4
+               Picture         =   "tkMain.frx":136E0
                Style           =   1  'Graphical
                TabIndex        =   51
                TabStop         =   0   'False
@@ -927,7 +786,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":145BE
+               Picture         =   "tkMain.frx":13FAA
                Style           =   1  'Graphical
                TabIndex        =   50
                TabStop         =   0   'False
@@ -948,7 +807,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":148C8
+               Picture         =   "tkMain.frx":142B4
                Style           =   1  'Graphical
                TabIndex        =   49
                TabStop         =   0   'False
@@ -960,7 +819,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardTypeLock 
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":15592
+               Picture         =   "tkMain.frx":14F7E
                Style           =   1  'Graphical
                TabIndex        =   48
                TabStop         =   0   'False
@@ -972,7 +831,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardEraser 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":15E5C
+               Picture         =   "tkMain.frx":15848
                Style           =   1  'Graphical
                TabIndex        =   47
                TabStop         =   0   'False
@@ -984,7 +843,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardIso 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":16726
+               Picture         =   "tkMain.frx":16112
                Style           =   1  'Graphical
                TabIndex        =   46
                ToolTipText     =   "Isometric View"
@@ -994,7 +853,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox boardFillTool 
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":173F0
+               Picture         =   "tkMain.frx":16DDC
                Style           =   1  'Graphical
                TabIndex        =   45
                TabStop         =   0   'False
@@ -1016,7 +875,7 @@ Begin VB.MDIForm tkMainForm
                Appearance      =   0  'Flat
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":17CBA
+               Picture         =   "tkMain.frx":176A6
                Style           =   1  'Graphical
                TabIndex        =   43
                TabStop         =   0   'False
@@ -1028,7 +887,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   8
                Left            =   120
-               Picture         =   "tkMain.frx":18984
+               Picture         =   "tkMain.frx":18370
                Style           =   1  'Graphical
                TabIndex        =   42
                TabStop         =   0   'False
@@ -1041,7 +900,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   7
                Left            =   480
-               Picture         =   "tkMain.frx":1924E
+               Picture         =   "tkMain.frx":18C3A
                Style           =   1  'Graphical
                TabIndex        =   41
                TabStop         =   0   'False
@@ -1054,7 +913,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   6
                Left            =   120
-               Picture         =   "tkMain.frx":19B18
+               Picture         =   "tkMain.frx":19504
                Style           =   1  'Graphical
                TabIndex        =   40
                TabStop         =   0   'False
@@ -1067,7 +926,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   5
                Left            =   480
-               Picture         =   "tkMain.frx":1A3E2
+               Picture         =   "tkMain.frx":19DCE
                Style           =   1  'Graphical
                TabIndex        =   39
                TabStop         =   0   'False
@@ -1080,7 +939,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   4
                Left            =   120
-               Picture         =   "tkMain.frx":1ACAC
+               Picture         =   "tkMain.frx":1A698
                Style           =   1  'Graphical
                TabIndex        =   38
                TabStop         =   0   'False
@@ -1093,7 +952,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   3
                Left            =   480
-               Picture         =   "tkMain.frx":1AFB6
+               Picture         =   "tkMain.frx":1A9A2
                Style           =   1  'Graphical
                TabIndex        =   37
                TabStop         =   0   'False
@@ -1106,7 +965,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   2
                Left            =   120
-               Picture         =   "tkMain.frx":1B880
+               Picture         =   "tkMain.frx":1B26C
                Style           =   1  'Graphical
                TabIndex        =   36
                TabStop         =   0   'False
@@ -1119,7 +978,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   1
                Left            =   480
-               Picture         =   "tkMain.frx":1C14A
+               Picture         =   "tkMain.frx":1BB36
                Style           =   1  'Graphical
                TabIndex        =   35
                TabStop         =   0   'False
@@ -1132,7 +991,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   0
                Left            =   120
-               Picture         =   "tkMain.frx":1C454
+               Picture         =   "tkMain.frx":1BE40
                Style           =   1  'Graphical
                TabIndex        =   34
                TabStop         =   0   'False
@@ -1145,7 +1004,7 @@ Begin VB.MDIForm tkMainForm
                Appearance      =   0  'Flat
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":1C75E
+               Picture         =   "tkMain.frx":1C14A
                Style           =   1  'Graphical
                TabIndex        =   33
                TabStop         =   0   'False
@@ -1157,7 +1016,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tileGrid 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1D028
+               Picture         =   "tkMain.frx":1CA14
                Style           =   1  'Graphical
                TabIndex        =   32
                TabStop         =   0   'False
@@ -1179,7 +1038,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   1560
-               Picture         =   "tkMain.frx":1DCF2
+               Picture         =   "tkMain.frx":1D6DE
                Style           =   1  'Graphical
                TabIndex        =   31
                TabStop         =   0   'False
@@ -1191,7 +1050,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tileIsoCheck 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1E9BC
+               Picture         =   "tkMain.frx":1E3A8
                Style           =   1  'Graphical
                TabIndex        =   83
                Top             =   360
@@ -1209,7 +1068,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tilebmpEraser 
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":1F686
+               Picture         =   "tkMain.frx":1F072
                Style           =   1  'Graphical
                TabIndex        =   29
                TabStop         =   0   'False
@@ -1231,7 +1090,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1FF50
+               Picture         =   "tkMain.frx":1F93C
                Style           =   1  'Graphical
                TabIndex        =   28
                TabStop         =   0   'False
@@ -1253,7 +1112,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":2025A
+               Picture         =   "tkMain.frx":1FC46
                Style           =   1  'Graphical
                TabIndex        =   27
                TabStop         =   0   'False
@@ -1274,7 +1133,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   1560
-               Picture         =   "tkMain.frx":20B24
+               Picture         =   "tkMain.frx":20510
                Style           =   1  'Graphical
                TabIndex        =   26
                TabStop         =   0   'False
@@ -1286,7 +1145,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tilebmpDrawLock 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":217EE
+               Picture         =   "tkMain.frx":211DA
                Style           =   1  'Graphical
                TabIndex        =   25
                TabStop         =   0   'False
@@ -1299,7 +1158,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tilebmpGrid 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":220B8
+               Picture         =   "tkMain.frx":21AA4
                Style           =   1  'Graphical
                TabIndex        =   24
                TabStop         =   0   'False
@@ -1338,7 +1197,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton cmdAnimPlay 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":22D82
+               Picture         =   "tkMain.frx":2276E
                Style           =   1  'Graphical
                TabIndex        =   20
                Top             =   360
@@ -1347,7 +1206,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton cmdAnimForward 
                Height          =   375
                Left            =   360
-               Picture         =   "tkMain.frx":23A4C
+               Picture         =   "tkMain.frx":23438
                Style           =   1  'Graphical
                TabIndex        =   19
                Top             =   0
@@ -1356,7 +1215,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton cmdAnimBack 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":24716
+               Picture         =   "tkMain.frx":24102
                Style           =   1  'Graphical
                TabIndex        =   18
                Top             =   0
@@ -1374,7 +1233,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton prgEventEdit 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":253E0
+               Picture         =   "tkMain.frx":24DCC
                Style           =   1  'Graphical
                TabIndex        =   16
                TabStop         =   0   'False
@@ -1386,7 +1245,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton prgDebug 
                Height          =   375
                Left            =   360
-               Picture         =   "tkMain.frx":260AA
+               Picture         =   "tkMain.frx":25A96
                Style           =   1  'Graphical
                TabIndex        =   15
                TabStop         =   0   'False
@@ -1399,7 +1258,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton prgRun 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":26974
+               Picture         =   "tkMain.frx":26360
                Style           =   1  'Graphical
                TabIndex        =   14
                TabStop         =   0   'False
@@ -1423,7 +1282,7 @@ Begin VB.MDIForm tkMainForm
       End
    End
    Begin VB.Timer theBardTimer 
-      Interval        =   1
+      Interval        =   200
       Left            =   1200
       Top             =   1680
    End
@@ -1433,11 +1292,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   10
-      Top             =   8415
+      Top             =   6270
       Visible         =   0   'False
-      Width           =   15240
+      Width           =   11880
       Begin VB.Frame frmBoardExtras 
          BorderStyle     =   0  'None
          Caption         =   "Frame8"
@@ -1529,7 +1388,7 @@ Begin VB.MDIForm tkMainForm
                ForeColor       =   &H80000008&
                Height          =   270
                Left            =   120
-               Picture         =   "tkMain.frx":2723E
+               Picture         =   "tkMain.frx":26C2A
                ScaleHeight     =   16
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   236
@@ -2074,7 +1933,7 @@ Begin VB.MDIForm tkMainForm
                ForeColor       =   &H80000008&
                Height          =   495
                Left            =   120
-               Picture         =   "tkMain.frx":2747D
+               Picture         =   "tkMain.frx":26E69
                ScaleHeight     =   465
                ScaleWidth      =   5865
                TabIndex        =   132
@@ -2361,9 +2220,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8055
-      Left            =   14865
-      ScaleHeight     =   8055
+      Height          =   5910
+      Left            =   11505
+      ScaleHeight     =   5910
       ScaleWidth      =   375
       TabIndex        =   3
       Top             =   360
@@ -2372,7 +2231,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   3
          Left            =   0
-         Picture         =   "tkMain.frx":30D5F
+         Picture         =   "tkMain.frx":3074B
          Style           =   1  'Graphical
          TabIndex        =   9
          ToolTipText     =   "board data"
@@ -2384,7 +2243,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   2
          Left            =   0
-         Picture         =   "tkMain.frx":310E9
+         Picture         =   "tkMain.frx":30AD5
          Style           =   1  'Graphical
          TabIndex        =   7
          Top             =   720
@@ -2394,7 +2253,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   1
          Left            =   0
-         Picture         =   "tkMain.frx":31DB3
+         Picture         =   "tkMain.frx":3179F
          Style           =   1  'Graphical
          TabIndex        =   5
          Top             =   360
@@ -2404,17 +2263,12 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   0
          Left            =   3
-         Picture         =   "tkMain.frx":3233D
+         Picture         =   "tkMain.frx":31D29
          Style           =   1  'Graphical
          TabIndex        =   4
          Top             =   0
          Width           =   375
       End
-   End
-   Begin VB.Timer openFileList 
-      Interval        =   1000
-      Left            =   1200
-      Top             =   1200
    End
    Begin VB.Timer wallpaperTimer 
       Interval        =   250
@@ -2424,9 +2278,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8055
-      Left            =   7335
-      ScaleHeight     =   8055
+      Height          =   5910
+      Left            =   3975
+      ScaleHeight     =   5910
       ScaleWidth      =   4800
       TabIndex        =   2
       Top             =   360
@@ -2444,9 +2298,9 @@ Begin VB.MDIForm tkMainForm
          Begin VB.CheckBox chkCurTilesetDrawGrid 
             Height          =   375
             Left            =   3960
-            Picture         =   "tkMain.frx":326C7
+            Picture         =   "tkMain.frx":320B3
             Style           =   1  'Graphical
-            TabIndex        =   183
+            TabIndex        =   170
             Top             =   120
             Width           =   375
          End
@@ -2511,7 +2365,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          Height          =   220
          Left            =   4560
-         Picture         =   "tkMain.frx":33391
+         Picture         =   "tkMain.frx":32D7D
          Style           =   1  'Graphical
          TabIndex        =   8
          Top             =   0
@@ -2543,22 +2397,22 @@ Begin VB.MDIForm tkMainForm
       Height          =   255
       Left            =   0
       TabIndex        =   0
-      Top             =   10455
-      Width           =   15240
-      _ExtentX        =   26882
+      Top             =   7935
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "12/15/2004"
+            TextSave        =   "12/18/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   10954
-            TextSave        =   "5:02 PM"
+            Object.Width           =   5027
+            TextSave        =   "11:08 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2571,6 +2425,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
+            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -2769,38 +2624,36 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'============================================================================
+' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
+'============================================================================
+
+'============================================================================
+' Main MDI form
+'============================================================================
 
 Option Explicit
 
-'=========================================================================================
-' !NEW! BOARD TOOL BAR CLASS AND BOARD COUNT (VAMPZ)
+'============================================================================
+' Globals
+'============================================================================
 Public boardToolbar As New cBoardToolbar
 Public boardCount As Integer
-'=========================================================================================
-
-Public toolTop As Integer   'top of tools
-
-Private frmIndex As Long
-
+Public toolTop As Integer
 Public lastIconForm As Form
-
-Private cnvBkgImage As Long 'background image
-
-Private theForms(200) As Form   'list of open forms for the nav bar at the bottom of the screen
-Private formsScrollIndex As Long    'scroll index of forms
-Private countOfForms As Long    'count of forms in the scroll list at the bottom
-
-Private ignoreFlag As Boolean   'general ignore flag
-
-' KSNiloc...
 Public doNotShowTools As Boolean
+Public ignoreFocus As Boolean
 
 '============================================================================
-'Bard declarations by KSNiloc
+' Members
 '============================================================================
+Private cnvBkgImage As Long
+Private ignoreFlag As Boolean
+Private frmIndex As Long
+Private WithEvents m_tabs As cMDITabs
+Attribute m_tabs.VB_VarHelpID = -1
 
 Private Enum TK_BARD_STATE
     notOpen = 0
@@ -2814,91 +2667,17 @@ End Type
 
 Private theBard As TK_BARD_INFO
 
-Private Declare Function _
-    CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
-    
-'============================================================================
-'End bard declarations by KSNiloc
-'============================================================================
-
-Public ignoreFocus As Boolean 'set to ignore tree focus loss
+Private Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
 
 '============================================================================
-' Refreshes the open file list
+' Force a refresh of the tab bar
 '============================================================================
-Sub refreshOpenFileList(): On Error GoTo frmerror
-    Dim anError As Boolean
-    Dim c As Long
-    Dim frm As Form
-       
-    Dim cnt As Long
-    
-    'first make boxes invisible...
-    For cnt = 0 To 9
-        openWindow(cnt).Visible = False
-    Next cnt
-    
-    Dim filename As String
-    For cnt = 2 To Forms.count - 1
-        Set frm = Forms(cnt)
-        'If frm.formType() = FT_TILE Then
-            filename = insideBrackets(frm.Caption)
-            If filename <> "" And frm.formType() >= FT_BOARD Then
-                If Not (anError) Then
-                    Set theForms(c) = frm
-                    c = c + 1
-                Else
-                    anError = False
-                End If
-            End If
-        'End If
-    Next cnt
-    
-    countOfForms = c - 1
-    
-    
-    Dim c2 As Long
-    
-    Dim ceiling As Long
-    If formsScrollIndex + 10 > countOfForms Then
-        ceiling = countOfForms
-    Else
-        ceiling = formsScrollIndex + 10
-    End If
-    
-    If countOfForms = 0 Then
-        'Exit Sub
-    End If
-
-    c = 0
-    For c2 = formsScrollIndex To ceiling
-        Set frm = theForms(c2)
-        filename = insideBrackets(frm.Caption)
-        openWindow(c).Caption = filename
-        openWindow(c).Visible = True
-        If frm Is activeForm Then
-            openWindow(c).value = True
-        Else
-            openWindow(c).value = False
-        End If
-        c = c + 1
-    Next c2
-    
-    If countOfForms >= 10 Then
-        openWindowsScrollLeft.Visible = True
-        openWindowsScrollRight.Visible = True
-    Else
-        openWindowsScrollLeft.Visible = False
-        openWindowsScrollRight.Visible = False
-    End If
-
-frmerror:
-    anError = True
-    Resume Next
+Public Sub refreshTabs()
+    Call m_tabs.ForceRefresh
 End Sub
 
 '============================================================================
-' Fills the tree with the projects' file
+' Fill the tree with the project's file
 '============================================================================
 Public Sub fillTree(ByVal parentNode As String, ByVal folder As String): On Error Resume Next
 
@@ -3014,7 +2793,7 @@ Private Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On 
 'Called by fillTilesetBar, tilesetScroller_Change
 '===================================================================
     Dim isoFormat As Long, tilesWide As Long, tilesHigh As Long
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     
     If configfile.lastTileset = vbNullString Then Exit Sub
     If tstnum = 0 Then tstnum = 1
@@ -3023,11 +2802,11 @@ Private Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On 
     
     'Calculate the number of tiles that will be in view.
     If isoFormat = 0 Then
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)
+        tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)
     Else
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
+        tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
     End If
-    tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
+    tilesHigh = Int((currentTilesetForm.Height / Screen.TwipsPerPixelY) / 32)
     
     'This export requires isoFormat = 2 for .iso tiles!!
     'tstnum is the tile to start drawing at.
@@ -3045,21 +2824,21 @@ Private Sub redrawTilesetBar(Optional ByVal autoRefresh As Boolean = False): On 
         'Draw vertical lines.
         If isoFormat = 0 Then
             'Not isometric
-            For X = 0 To tilesWide * 32 Step 32
-                Call vbPicLine(currentTilesetForm, X, 0, X, tilesHigh * 32, QBColor(1))
-            Next X
+            For x = 0 To tilesWide * 32 Step 32
+                Call vbPicLine(currentTilesetForm, x, 0, x, tilesHigh * 32, QBColor(1))
+            Next x
             'Draw horizontal lines.
-            For Y = 0 To (tilesHigh + 1) * 32 Step 32
-                Call vbPicLine(currentTilesetForm, 0, Y, tilesWide * 32, Y, QBColor(1))
-            Next Y
+            For y = 0 To (tilesHigh + 1) * 32 Step 32
+                Call vbPicLine(currentTilesetForm, 0, y, tilesWide * 32, y, QBColor(1))
+            Next y
         Else
-            For X = 0 To tilesWide * 64 Step 64
-                Call vbPicLine(currentTilesetForm, X, 0, X, tilesHigh * 32, QBColor(1))
-            Next X
+            For x = 0 To tilesWide * 64 Step 64
+                Call vbPicLine(currentTilesetForm, x, 0, x, tilesHigh * 32, QBColor(1))
+            Next x
             'Draw horizontal lines.
-            For Y = 0 To (tilesHigh + 1) * 32 Step 32
-                Call vbPicLine(currentTilesetForm, 0, Y, tilesWide * 64, Y, QBColor(1))
-            Next Y
+            For y = 0 To (tilesHigh + 1) * 32 Step 32
+                Call vbPicLine(currentTilesetForm, 0, y, tilesWide * 64, y, QBColor(1))
+            Next y
         End If
 
         
@@ -3084,11 +2863,11 @@ Private Sub fillTilesetBar(): On Error Resume Next
     Dim tilesHigh As Integer, tilesWide As Integer, setType As Integer
     
     'resize the picture box...
-    currentTilesetForm.height = tilesetBar.height - (900)
-    If currentTilesetForm.height Mod (32 * Screen.TwipsPerPixelY) <> 0 Then
-        currentTilesetForm.height = currentTilesetForm.height - (currentTilesetForm.height Mod (32 * Screen.TwipsPerPixelY))
+    currentTilesetForm.Height = tilesetBar.Height - (900)
+    If currentTilesetForm.Height Mod (32 * Screen.TwipsPerPixelY) <> 0 Then
+        currentTilesetForm.Height = currentTilesetForm.Height - (currentTilesetForm.Height Mod (32 * Screen.TwipsPerPixelY))
     End If
-    tilesetScroller.height = currentTilesetForm.height
+    tilesetScroller.Height = currentTilesetForm.Height
     
     'Clear the picture box. Added for non-flickering scrolling.
     Call vbPicAutoRedraw(currentTilesetForm, False)
@@ -3104,11 +2883,11 @@ Private Sub fillTilesetBar(): On Error Resume Next
     
             'Set the scroller depending on the tileset type.
             If setType = ISOTYPE Then
-                tilesWide = (currentTilesetForm.width / Screen.TwipsPerPixelY) / 64
+                tilesWide = (currentTilesetForm.Width / Screen.TwipsPerPixelY) / 64
             Else
-                tilesWide = (currentTilesetForm.width / Screen.TwipsPerPixelY) / 32
+                tilesWide = (currentTilesetForm.Width / Screen.TwipsPerPixelY) / 32
             End If
-            tilesHigh = (currentTilesetForm.height / Screen.TwipsPerPixelY) / 32
+            tilesHigh = (currentTilesetForm.Height / Screen.TwipsPerPixelY) / 32
             
             'This will return the number of rows. Negative signs make use of
             'Int's handling of negative numbers to always round *down*.
@@ -3248,6 +3027,7 @@ Public Sub openFile(ByVal fName As String)
     End Select
     
     If Not frm Is Nothing Then
+        Call m_tabs.ForceRefresh
         Call frm.SetFocus
     End If
 
@@ -3337,7 +3117,7 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
     Exit Sub
 End Sub
 
-Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '===========================================================
 'MouseDown event on the flyout tileset viewer.
 '===========================================================
@@ -3360,15 +3140,15 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X 
     
     If iMetric = 0 Then
         'Not isometric.
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tileX = Int(X / 32)                                                        'x-tile clicked.
+        tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)   'width of window.
+        tileX = Int(x / 32)                                                        'x-tile clicked.
     Else
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(X / 64)
+        tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
+        tileX = Int(x / 64)
     End If
     
-    tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
-    tileY = Int(Y / 32)
+    tilesHigh = Int((currentTilesetForm.Height / Screen.TwipsPerPixelY) / 32)
+    tileY = Int(y / 32)
     
     'Alterations for the scroller. Now scrolls row by row.
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
@@ -3427,15 +3207,15 @@ Private Sub Label1_Click()
 
 End Sub
 
-Private Sub Label15_DblClick(Index As Integer)
+Private Sub Label15_DblClick(index As Integer)
 
     On Error Resume Next
 
-    If Not Index = 0 Then Exit Sub
+    If Not index = 0 Then Exit Sub
 
     'Undock this sucker... [KSNiloc]
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.W = True
+    uD.e = True: uD.W = True
 
     unDock tilesetContainer, "Current Tileset", uD
     tilesetBar.Visible = False
@@ -3449,11 +3229,30 @@ Private Sub Label2_DblClick()
 
     'Undock this sucker... [KSNiloc]
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.W = True
+    uD.e = True: uD.W = True
 
     unDock TreeView1, "Project List", uD
     rightbar.Visible = False
     popButton(0).Enabled = False
+
+End Sub
+
+'============================================================================
+' Close a window
+'============================================================================
+Private Sub m_tabs_CloseWindow(ByVal hwnd As Long)
+
+    ' Find the window
+    Dim frm As Form
+    For Each frm In Forms
+        If (frm.hwnd = hwnd) Then
+
+            ' Close this window
+            Call Unload(frm)
+            Exit For
+
+        End If
+    Next frm
 
 End Sub
 
@@ -3537,24 +3336,8 @@ Public Sub MDIForm_Resize(): On Error Resume Next
     'ProjectListSize_Timer
 
     'TreeView1.height = Me.height - 4985
-    fileTree1.height = Me.height - 2000
+    fileTree1.Height = Me.Height - 2000
     
-End Sub
-
-Private Sub mnuCloseWindow_Click()
-    Call Unload(theForms(frmIndex))
-End Sub
-
-Private Sub mnuMax_Click()
-    theForms(frmIndex).WindowState = 2
-End Sub
-
-Private Sub mnuMin_Click()
-    theForms(frmIndex).WindowState = 1
-End Sub
-
-Private Sub mnuRes_Click()
-    theForms(frmIndex).WindowState = 0
 End Sub
 
 Private Sub mnuShowSplashScreen_Click()
@@ -3571,19 +3354,12 @@ Private Sub mnuTips_Click()
     configfile.tipsOnOff = booleanToLong(mnuTips.Checked)
 End Sub
 
-Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.W = True
+    uD.e = True: uD.W = True
     Call unDock(newBar, "New", uD)
     newBarContainerContainer.Visible = False
     popButton(1).Enabled = False
-End Sub
-
-Private Sub openWindow_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If (Button = vbRightButton) Then
-        frmIndex = Index + formsScrollIndex
-        Call PopupMenu(mnuRightClick)
-    End If
 End Sub
 
 Private Sub ProjectListSize_Timer()
@@ -3635,6 +3411,8 @@ Private Sub ReadCommandLine_Timer()
             .mnuBuild.Visible = False
             .mnuWindow.Visible = False
             Call .Show
+            Call m_tabs.ForceRefresh
+            Call .SetFocus
             Dim fCaption As String
             Dim filename As String
             fCaption = Command
@@ -3644,6 +3422,7 @@ Private Sub ReadCommandLine_Timer()
                 filename = fCaption
             End If
             .Caption = LoadStringLoc(803, "RPGCode Program Editor") & "  (" & filename & ")"
+            Call m_tabs.ForceRefresh
             .mnuNotepadMode.Checked = False
             .mnuNotepadMode.Visible = False
             .mnuNotepadMode_Click
@@ -3666,7 +3445,7 @@ End Sub
 
 Private Sub mainToolbar_ButtonMenuClick(ByVal ButtonMenu As MSComctlLib.ButtonMenu): On Error Resume Next
     Dim frm As Form
-    Select Case ButtonMenu.Index
+    Select Case ButtonMenu.index
         Case 1:
             Set frm = New tileedit
         Case 2:
@@ -3692,8 +3471,9 @@ Private Sub mainToolbar_ButtonMenuClick(ByVal ButtonMenu As MSComctlLib.ButtonMe
         Case 12:
             Set frm = New editTileBitmap
     End Select
-    frm.Show
-
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub makeexemnu_Click(): On Error GoTo ErrorHandler
@@ -3713,15 +3493,19 @@ End Sub
 Private Sub MDIForm_Activate()
     Set ToolsTopBar.theForm = leftBarContainer
     Set NewBarTop.theForm = newBarContainerContainer
-    tilesetContainer.height = Me.height - 50
+    tilesetContainer.Height = Me.Height - 50
     Call MDIForm_Resize
     Call configForm
-    Call refreshOpenFileList
+    ' Call refreshOpenFileList
 End Sub
 
 Private Sub MDIForm_Load(): On Error Resume Next
 '=====================================================
 'Call added for isometrics, 3.0.4
+
+    Set m_tabs = New cMDITabs
+    Call m_tabs.Attach(Me.hwnd)
+    Call m_tabs.ForceRefresh
 
     lblAnimNewTBM.MousePointer = 99
     lblAnimNewTBM.MouseIcon = Images.MouseLink()
@@ -3796,7 +3580,7 @@ Public Sub configForm()
 End Sub
 
 Private Sub MDIForm_Unload(ByRef Cancel As Integer): On Error GoTo ErrorHandler
-    'Close the Bard if it's running... [KSNiloc]
+    Set m_tabs = Nothing
     Call exitTheBard
     Call saveConfigAndEnd("toolkit.cfg")
     End
@@ -3812,7 +3596,9 @@ Public Sub mnuNewFightBackground_Click()
     On Error Resume Next
     Dim frm As Form
     Set frm = New editBackground
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 '===========================================================================
@@ -3866,13 +3652,17 @@ End Sub
 Public Sub newanimationmnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New animationeditor
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub newanimtilemnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New tileanim
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 'Private Sub newBar_LostFocus(): On Error Resume Next
@@ -3884,25 +3674,33 @@ End Sub
 Public Sub newboardmnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New boardedit
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub newenemymnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New editenemy
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub newitemmnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New EditItem
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub newplayermnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New characteredit
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub newprojectmnu_Click(): On Error GoTo ErrorHandler
@@ -3919,35 +3717,41 @@ End Sub
 Public Sub newrpgcodemnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New rpgcodeedit
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub newspecialmovemnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New editsm
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub newstatuseffectmnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New editstatus
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub newtilebitmapmnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New editTileBitmap
-    frm.Show
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub newtilemnu_Click(): On Error Resume Next
     Dim frm As Form
     Set frm = New tileedit
-    frm.Show
-End Sub
-
-Private Sub openFileList_Timer(): On Error Resume Next
-    Call refreshOpenFileList
+    Call frm.Show
+    Call m_tabs.ForceRefresh
+    Call frm.SetFocus
 End Sub
 
 Public Sub openmnu_Click(): On Error Resume Next
@@ -3978,8 +3782,8 @@ Public Sub openmnu_Click(): On Error Resume Next
     Call tkMainForm.openFile(filename$(1))
 End Sub
 
-Private Sub palettebox_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeTile.palettebox_MouseDown(Button, Shift, X, Y)
+Private Sub palettebox_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeTile.palettebox_MouseDown(Button, Shift, x, y)
 End Sub
 
 Private Sub Picture1_Click(): On Error Resume Next
@@ -3988,12 +3792,12 @@ End Sub
 
 '=========================================================================================
 ' ADDED FOURTH BUTTON FOR BOARD TOOLBAR
-Private Sub popButton_Click(Index As Integer): On Error Resume Next
+Private Sub popButton_Click(index As Integer): On Error Resume Next
     
-    Select Case Index
+    Select Case index
         Case 0
             'File tree.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(1).value = 0
                 popButton(2).value = 0
                 popButton(3).value = 0
@@ -4006,7 +3810,7 @@ Private Sub popButton_Click(Index As Integer): On Error Resume Next
             
         Case 1
             'Open editors.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(0).value = 0
                 popButton(2).value = 0
                 popButton(3).value = 0
@@ -4021,7 +3825,7 @@ Private Sub popButton_Click(Index As Integer): On Error Resume Next
             
         Case 2
             'Tileset browser.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(0).value = 0
                 popButton(1).value = 0
                 popButton(3).value = 0
@@ -4035,7 +3839,7 @@ Private Sub popButton_Click(Index As Integer): On Error Resume Next
             
         Case 3
             'Board editor toolbar.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(0).value = 0
                 popButton(1).value = 0
                 popButton(2).value = 0
@@ -4080,7 +3884,7 @@ Private Sub rightbar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub rightbar_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rightbar_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     'ignoreFocus = False
     'rightbar.SetFocus
     'If rightbar.width = 2730 Then
@@ -4210,9 +4014,7 @@ Public Sub showtoolsmnu_Click(): On Error Resume Next
         leftBarContainer.Visible = True
     End If
 End Sub
-Private Sub openWindow_Click(Index As Integer): On Error Resume Next
-    Call theForms(Index + formsScrollIndex).ZOrder
-End Sub
+
 Public Sub testgamemnu_Click()
     On Error Resume Next
     Dim Command As String
@@ -4225,6 +4027,10 @@ Public Sub testgamemnu_Click()
         'Run trans3 through the Shell. Fix: Added second argument, to give trans3 the focus.
         Call Shell(Command$, vbNormalFocus)
     End If
+End Sub
+
+Private Sub theBardTimer_Timer()
+    Call m_tabs.ForceRefresh
 End Sub
 
 Private Sub tileBmpAmbientSlider_Change(): On Error Resume Next
@@ -4312,11 +4118,11 @@ Private Sub tilesetScroller_Change(): On Error Resume Next
         Call GFXInitScreen(640, 480)
         
         If iMetric = 0 Then
-            tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)
+            tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 32)
         Else
-            tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
+            tilesWide = Int((currentTilesetForm.Width / Screen.TwipsPerPixelX) / 64)
         End If
-        tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
+        tilesHigh = Int((currentTilesetForm.Height / Screen.TwipsPerPixelY) / 32)
                 
         'Scrollbar alteration: tstnum is the first tile to draw (tile in top lefthand corner).
         tstnum = (tilesetScroller.value * tilesWide) + 1      '.value is now the row.
@@ -4326,12 +4132,12 @@ Private Sub tilesetScroller_Change(): On Error Resume Next
     End If
 End Sub
 
-Private Sub tileTool_Click(Index As Integer): On Error Resume Next
-    Call activeTile.ToolSet(Index)
+Private Sub tileTool_Click(index As Integer): On Error Resume Next
+    Call activeTile.ToolSet(index)
 End Sub
 
-Private Sub tiletypes_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeBoard.ChangeTileType(Button, Shift, X, Y)
+Private Sub tiletypes_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeBoard.ChangeTileType(Button, Shift, x, y)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -4346,12 +4152,12 @@ Public Sub toggle_Click(): On Error Resume Next
     Call activeBoard.toggleTileType
 End Sub
 
-Private Sub ToolsTopBar_mouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub ToolsTopBar_mouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
  ' ! ADDED BY KSNiloc...
 
  Dim uD As TK_UNDOCK_DATA
- uD.E = True: uD.W = True
+ uD.e = True: uD.W = True
  
  unDock leftbar, "Tools", uD
  leftBarContainer.Visible = False
@@ -4366,7 +4172,7 @@ Private Sub TreeView1_DblClick(): On Error Resume Next
     ignoreFocus = False
 End Sub
 
-Private Sub TreeView1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TreeView1_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     ignoreFocus = True
 End Sub
 
@@ -4389,8 +4195,8 @@ Public Sub ShowPic(ByRef file As String): On Error Resume Next
     
     Dim W As Long, h As Long
     
-    W = Me.width / Screen.TwipsPerPixelX
-    h = Me.height / Screen.TwipsPerPixelY
+    W = Me.Width / Screen.TwipsPerPixelX
+    h = Me.Height / Screen.TwipsPerPixelY
     
     If cnvBkgImage = 0 Then
         cnvBkgImage = createCanvas(W, h)
@@ -4416,12 +4222,12 @@ Private Sub bTools_Close_Click(): On Error Resume Next
     pTools.Visible = False
 End Sub
 ' set display option
-Private Sub bTools_Display_Option_Click(Index As Integer): On Error Resume Next
-    boardToolbar.Display.Update(Index) = bTools_Display_Option(Index).value
+Private Sub bTools_Display_Option_Click(index As Integer): On Error Resume Next
+    boardToolbar.Display.Update(index) = bTools_Display_Option(index).value
 End Sub
 ' select display format
-Private Sub bTools_Objects_Display_Click(Index As Integer): On Error Resume Next
-    boardToolbar.Objects.Display = Index
+Private Sub bTools_Objects_Display_Click(index As Integer): On Error Resume Next
+    boardToolbar.Objects.Display = index
 End Sub
 ' select object
 Private Sub bTools_Objects_Tree_Click(): On Error Resume Next
@@ -4434,7 +4240,7 @@ Private Sub bTools_Title_DblClick()
 
     'Undock this sucker... [KSNiloc]
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.W = True
+    uD.e = True: uD.W = True
  
     Dim oldTree As TreeView
     Dim of1 As String
@@ -4591,8 +4397,8 @@ End Sub
 ' ANIMATION EDITOR RELATED EVENTS
 '=========================================================================================
 'Set the size of the animation
-Private Sub optAnimSize_Click(Index As Integer): On Error Resume Next
-    Call activeAnimation.setAnimSize(Index)
+Private Sub optAnimSize_Click(index As Integer): On Error Resume Next
+    Call activeAnimation.setAnimSize(index)
 End Sub
 'Set the X-Size (Custom anim only)
 Private Sub txtAnimXSize_Change(): On Error Resume Next
