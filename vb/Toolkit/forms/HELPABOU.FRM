@@ -4,7 +4,7 @@ Begin VB.Form helpAbout
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
    Caption         =   "About RPG Toolkit"
-   ClientHeight    =   5670
+   ClientHeight    =   5655
    ClientLeft      =   2550
    ClientTop       =   2400
    ClientWidth     =   7335
@@ -23,7 +23,7 @@ Begin VB.Form helpAbout
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   5670
+   ScaleHeight     =   5655
    ScaleWidth      =   7335
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
@@ -34,10 +34,10 @@ Begin VB.Form helpAbout
       TabIndex        =   10
       Top             =   0
       Width           =   6975
-      _extentx        =   12303
-      _extenty        =   847
-      Object.width           =   6975
-      caption         =   "About the RPGToolkit Development System, Version 3"
+      _ExtentX        =   12303
+      _ExtentY        =   847
+      Object.Width           =   6975
+      Caption         =   "About the RPGToolkit Development System, Version 3"
    End
    Begin VB.TextBox Text1 
       Appearance      =   0  'Flat
@@ -134,7 +134,7 @@ Begin VB.Form helpAbout
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00000000&
-      Height          =   615
+      Height          =   375
       Left            =   4440
       TabIndex        =   5
       Tag             =   "1120"
@@ -169,9 +169,9 @@ Begin VB.Form helpAbout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "-Unregistered Version-"
+      Caption         =   "- Open Source -"
       ForeColor       =   &H000000FF&
-      Height          =   375
+      Height          =   255
       Left            =   4440
       TabIndex        =   3
       Tag             =   "1124"
@@ -261,7 +261,6 @@ Private Sub Form_Load()
 
     Set TopBar.theForm = Me
 
-    Label5.Caption = "Community Edition [Open Source]"
     Label4.Caption = ""
     lname.Caption = ""
     lname.Visible = True
