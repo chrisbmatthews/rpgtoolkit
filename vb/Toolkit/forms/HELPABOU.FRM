@@ -70,11 +70,11 @@ Begin VB.Form helpAbout
       BackColor       =   &H80000005&
       Caption         =   $"HELPABOU.frx":0CCA
       ForeColor       =   &H80000008&
-      Height          =   735
-      Left            =   480
+      Height          =   615
+      Left            =   240
       TabIndex        =   7
       Top             =   2640
-      Width           =   6255
+      Width           =   6855
    End
    Begin VB.Label Label6 
       Appearance      =   0  'Flat
@@ -227,7 +227,7 @@ Private Sub Form_Load()
     Set TopBar.theForm = Me
 
     Dim theText As String
-    theText = theText & "Open source contributions by: Colin James Fitzpatrick (KSNiloc), Phil Carty (Xavier), John@aljo, Jonathan Hughes (Delano), Chris Hutchinson (Euix), Geoff, Sander Knape (Woozy), Samuel Bedwell (Occasionally_Correct)" & vbCrLf & vbCrLf
+    theText = theText & "Open source contributions by: Colin James Fitzpatrick (KSNiloc), Peter J. Fenner (Asimir), Phil Carty (Xavier), John@aljo, Jonathan Hughes (Delano), Chris Hutchinson (Euix), Geoff, Sander Knape (Woozy), Samuel Bedwell (Occasionally_Correct)" & vbCrLf & vbCrLf
     theText = theText & "Spanish translations provided by Ignacio Chitinsky and Jaime Peña.  French translation provided by Alexandre Thomas.  German translation provided by Martin Holtz.  Italian translation provided by Andrea Piras." & vbCrLf & vbCrLf
     theText = theText & "RPGToolkit Fo' Sho' Music Pak v2.18 composed by Chris and Craig Reeves, Copyright 2000.  Used with permission.  http://www.vipcouncil.com" & vbCrLf & vbCrLf
     theText = theText & "Menu System graphic and layout based on designs provided by |3lue.  Used with permission." & vbCrLf & vbCrLf
@@ -267,8 +267,8 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub Text1_KeyDown(KeyCode As Integer, Shift As Integer)
-    KeyCode = 0: Shift = 0
+Private Sub Text1_KeyDown(keyCode As Integer, Shift As Integer)
+    keyCode = 0: Shift = 0
 End Sub
 
 Private Sub Text1_KeyPress(KeyAscii As Integer)
