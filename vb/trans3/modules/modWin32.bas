@@ -153,7 +153,7 @@ End Function
 '=========================================================================
 ' Show the end form
 '=========================================================================
-Public Sub showEndForm(ByVal endProgram As Boolean)
+Public Sub showEndForm(Optional ByVal endProgram As Boolean = True)
 
     '=========================================================================
     ' YOU MAY NOT REMOVE THIS NOTICE !!!!!!

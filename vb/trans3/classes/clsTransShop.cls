@@ -99,6 +99,12 @@ Public Sub Show()
     m_oldView = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
     Call CanvasGetScreen(m_oldView)
 
+    'Make sure we have color!
+    If shopColors(0) = -1 Then
+        shopColors(0) = RGB(0, 0, 150)
+        shopColors(1) = RGB(0, 102, 255)
+    End If
+
     'Open the main menu
     Call mainMenuScanKeys
 
@@ -123,7 +129,7 @@ Private Sub createCommonDisplay(ByVal theCanvas As Long)
         Call Canvas2CanvasBlt(m_oldView, cnv, 0, 0)
         Call CanvasDrawText(cnv, "Shop", fontName, 30, 1.4, 1.3, RGB(255, 255, 255), True, False, True, False, False)
         Call CanvasFill(cnv2, 0)
-        Call CanvasFillBox(cnv2, 0, 0, globalCanvasWidth - 10, globalCanvasHeight - 10, RGB(0, 0, 150))
+        Call CanvasFillBox(cnv2, 0, 0, globalCanvasWidth - 10, globalCanvasHeight - 10, shopColors(0))
         Call Canvas2CanvasBltTranslucent(cnv2, cnv, 10, 50)
         Call DestroyCanvas(cnv2)
         m_commonDisplay = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
@@ -224,7 +230,7 @@ Private Sub createShopMenuDisplay( _
     cnv2 = CreateCanvas(172, 399)
     Call Canvas2CanvasBlt(baseCanvas, cnv, 0, 0)
     Call CanvasFill(cnv2, 0)
-    Call CanvasFillBox(cnv2, 0, 0, 172, 399, RGB(0, 150, 0))
+    Call CanvasFillBox(cnv2, 0, 0, 172, 399, shopColors(1))
     Call Canvas2CanvasBltTranslucent(cnv2, cnv, 200, 60)
     Call createItemDisplay(cnv2, theType)
     Call Canvas2CanvasBltTranslucent(cnv2, cnv, 410, 60)

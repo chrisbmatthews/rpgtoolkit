@@ -16,7 +16,7 @@ Option Explicit
 ' Declarations
 '=========================================================================
 
-Public Const RENDER_FPS = 30    'Super-duper important constant; frames per
+Public Const RENDER_FPS = 60    'Super-duper important constant; frames per
                                 'second to render
 
 Public screenWidth As Integer   'width, in twips
@@ -990,13 +990,13 @@ End Function
 '=========================================================================
 ' Create global canvases
 '=========================================================================
-Private Sub createCanvases(ByVal Width As Long, ByVal height As Long)
+Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     On Error Resume Next
-    cnvScrollCache = CreateCanvas(Width * 2, height * 2)
-    scTilesX = Width * 2 / 32
+    cnvScrollCache = CreateCanvas(width * 2, height * 2)
+    scTilesX = width * 2 / 32
     scTilesY = height * 2 / 32
     If Not usingDX() Then
-        cnvScrollCacheMask = CreateCanvas(Width * 2, height * 2)
+        cnvScrollCacheMask = CreateCanvas(width * 2, height * 2)
     Else
         cnvScrollCacheMask = -1
     End If
@@ -1006,19 +1006,19 @@ Private Sub createCanvases(ByVal Width As Long, ByVal height As Long)
     For t = 0 To UBound(cnvPlayer)
         cnvPlayer(t) = CreateCanvas(32, 32)
     Next t
-    cnvBackground = CreateCanvas(Width, height)
-    cnvRPGCodeScreen = CreateCanvas(Width, height)
-    cnvAllPurpose = CreateCanvas(Width, height)
+    cnvBackground = CreateCanvas(width, height)
+    cnvRPGCodeScreen = CreateCanvas(width, height)
+    cnvAllPurpose = CreateCanvas(width, height)
     allPurposeCanvas = cnvAllPurpose
     cnvMsgBox = CreateCanvas(600, 100)
     For t = 0 To UBound(cnvRPGCodeBuffers)
         cnvRPGCodeBuffers(t) = CreateCanvas(32, 32)
     Next t
-    cnvRPGCodeAccess = CreateCanvas(Width, height)
-    cnvRenderNow = CreateCanvas(Width, height)
+    cnvRPGCodeAccess = CreateCanvas(width, height)
+    cnvRenderNow = CreateCanvas(width, height)
     Call CanvasFill(cnvRenderNow, 0)
     globalCanvasHeight = height
-    globalCanvasWidth = Width
+    globalCanvasWidth = width
 End Sub
 
 '=========================================================================
@@ -1477,7 +1477,7 @@ End Sub
 '=========================================================================
 ' Init the DirectX window
 '=========================================================================
-Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testingPRG As Boolean)
+Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal testingPRG As Boolean)
     
     On Error Resume Next
 
@@ -1485,11 +1485,11 @@ Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal
     Const useDX = 1
 
     'Update resolution
-    resX = Width
+    resX = width
     resY = height
 
     'Number of tiles screen can hold
-    tilesX = Int(Width / 32)
+    tilesX = Int(width / 32)
     tilesY = Int(height / 32)
 
     'Dimensions of screen in isometric tiles.
@@ -1517,12 +1517,12 @@ Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal
 
     'Set the dimensions the host window will be created with
     With host
-        .Width = Width * Screen.TwipsPerPixelX
+        .width = width * Screen.TwipsPerPixelX
         .height = height * Screen.TwipsPerPixelY
         .Top = (Screen.height - .height) / 2
-        .Left = (Screen.Width - .Width) / 2
+        .Left = (Screen.width - .width) / 2
         If Not inFullScreenMode Then
-            .Width = .Width + 6 * Screen.TwipsPerPixelX
+            .width = .width + 6 * Screen.TwipsPerPixelX
             .height = .height + 24 * Screen.TwipsPerPixelY
         End If
     End With
@@ -1541,7 +1541,7 @@ Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal
     Do
 
         'enter Graphics mode...
-        If DXInitGfxMode(host.hwnd, Width, height, useDX, depth, fullScreen) = 0 Then
+        If DXInitGfxMode(host.hwnd, width, height, useDX, depth, fullScreen) = 0 Then
             'tried to init gfx, but failed.
             'try a different color depth...
             If (depth = 16) And (fullScreen = 0) Then
@@ -1564,7 +1564,7 @@ Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal
     Loop
 
     'Now set up offscreen canvases
-    Call createCanvases(Width, height)
+    Call createCanvases(width, height)
 
     'Clear the screen (remove backbuffer garbage)
     Call DXClearScreen(0)

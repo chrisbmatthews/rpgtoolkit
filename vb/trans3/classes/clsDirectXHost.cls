@@ -47,6 +47,11 @@ Private m_createX As Long           'x position window should start at
 Private m_createY As Long           'y position window should start at
 
 '=========================================================================
+' Member declarations
+'=========================================================================
+Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal caption As String, ByVal instance As Long, ByVal wndProc As Long, ByVal className As String) As Long
+
+'=========================================================================
 ' Member enumerations
 '=========================================================================
 Public Enum STYLE_ENUM
@@ -80,7 +85,7 @@ End Property
 '=========================================================================
 ' Window's caption
 '=========================================================================
-Public Property Let Caption(ByVal newValue As String)
+Public Property Let caption(ByVal newValue As String)
     If Not m_created Then
         m_createCaption = newValue
     Else
@@ -112,10 +117,10 @@ End Property
 '=========================================================================
 ' Window's width
 '=========================================================================
-Public Property Get Width() As Long
-    Width = m_createWidth
+Public Property Get width() As Long
+    width = m_createWidth
 End Property
-Public Property Let Width(ByVal newVal As Long)
+Public Property Let width(ByVal newVal As Long)
      m_createWidth = newVal
 End Property
 
@@ -170,85 +175,20 @@ Public Sub Create()
 
     On Error Resume Next
 
-    'Create a windows class and fill it in
-    Dim wnd As WNDCLASSEX
-    With wnd
-        .cbSize = Len(wnd) 'callback size == length of the structure
-        .style = CS_DBLCLKS Or CS_OWNDC Or CS_VREDRAW Or CS_HREDRAW 'style of window
-        .lpfnwndproc = getAddress(AddressOf WndProc) 'Address of WinProc
-        .hInstance = App.hInstance 'instance of owning application
-        If fileExists("icon.ico") Then
-            .hIcon = LoadPicture(0, "icon.ico").handle
-            .hIconSm = LoadPicture(0, "icon.ico").handle
-        End If
-        .hbrBackground = GetStockObject(BLACK_BRUSH) 'black background
-        .lpszClassName = WINDOWS_CLASS 'name of this class
-        If mainMem.mouseCursor = 1 Then
-            .hCursor = LoadCursor(0, IDC_ARROW) 'generic cursor
-        Else
-            .hCursor = LoadCursor(0, IDC_NO) 'no cursor
-        End If
-    End With
-
-    'Register the class so windows knows of its existence
-    Call RegisterClassEx(wnd)
-
-    'Make sure we have a caption
-    If m_createCaption = "" Then
-        m_createCaption = "RPGToolkit3 Translator"
-    End If
-
-    'Create window ex shows the window we just made
-    Dim cs As CREATESTRUCT
-    hwnd = vbCreateWindow( _
-                               0, _
-                               WINDOWS_CLASS, _
-                               m_createCaption, _
-                               m_createStyle, _
+    hwnd = createHostWindow( _
                                m_createX / Screen.TwipsPerPixelX, _
                                m_createY / Screen.TwipsPerPixelY, _
                                m_createWidth / Screen.TwipsPerPixelX, _
                                m_createHeight / Screen.TwipsPerPixelY, _
-                               0, 0, App.hInstance, _
-                               cs _
-                                    )
+                               m_createStyle, _
+                               m_createCaption, _
+                               App.hInstance, _
+                               AddressOf wndProc, _
+                               WINDOWS_CLASS _
+                                               )
 
     'Flag the window has been created
     m_created = True
-
-End Sub
-
-'=========================================================================
-' Main loop
-'=========================================================================
-Public Sub mainEventLoop()
-
-    'This is the main event loop of the whole trans3 engine.
-    'It will process events in the DirectX host window and
-    'send them to WndProc() (in transEvents). It also
-    'continually calls gameLogic() (in transMain). The only
-    'to break out of this loop is to call PostQuitMessage().
-
-    Dim message As msg
-    Do
-        If PeekMessage(message, host.hwnd, 0, 0, PM_REMOVE) Then
-            'There was a message, check if it's WinProc asking
-            'to leave this loop...
-            If message.message = WM_QUIT Then
-                'It was-- quit
-                Exit Do
-            Else
-                'It wasn't, send the message to WinProc
-                Call TranslateMessage(message)
-                Call DispatchMessage(message)
-            End If
-        End If
-        Call gameLogic
-    Loop
-
-    'Clean up
-    Call closeSystems
-    Call showEndForm(True)
 
 End Sub
 

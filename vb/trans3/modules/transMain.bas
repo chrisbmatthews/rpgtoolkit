@@ -21,6 +21,9 @@ Private Declare Sub initClock Lib "actkrt3.dll" (ByVal fps As Long)
 Private Declare Sub clockStart Lib "actkrt3.dll" ()
 Private Declare Sub clockSync Lib "actkrt3.dll" ()
 
+'Main loop procedure
+Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As Long)
+
 Public gGameState As GAME_LOGIC_STATE   'current state of logic
 
 Public Enum GAME_LOGIC_STATE            'state of gameLogic() procedure
@@ -62,7 +65,13 @@ Public Sub Main()
         Call openSystems
 
         'Run game
-        Call host.mainEventLoop
+        Call mainEventLoop(AddressOf gameLogic)
+
+        'Clean up
+        Call closeSystems
+
+        'Show the end form
+        Call showEndForm
 
     End If
 
@@ -238,9 +247,9 @@ Public Sub gameLogic()
 
     On Error Resume Next
 
-    'This is main game logic prodeure, we want this procedure to run
-    'consistently at the same speed. We are going to acomplish this
-    'with a clock sync.
+    'This procedure contains all of the engine's logic. It is constantly
+    'called until gGameState == GS_QUIT, the user closes the window, or
+    'a few other things.
 
     'Start the sync clock
     Call clockStart
@@ -437,12 +446,18 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     On Error Resume Next
 
+    'Nulify top x/y vars
     topX = 0
     topY = 0
+
+    'Set default shop colors
+    shopColors(0) = -1
 
     'If we're running as an exe, don't show the debug window!
     If Not runningAsEXE Then
         debugYN = 1
+    Else
+        debugYN = 0
     End If
 
     fontName = "Arial"              'Default true type font
@@ -469,7 +484,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     'Change the DirectX host's caption to the game's title (for windowed mode)
     If mainMem.gameTitle <> "" Then
-        host.Caption = mainMem.gameTitle
+        host.caption = mainMem.gameTitle
     End If
 
     If mainMem.initChar <> "" Then

@@ -71,7 +71,7 @@ Public Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hdc As
 '=========================================================================
 ' Event handler
 '=========================================================================
-Public Function WndProc( _
+Public Function wndProc( _
                            ByVal hwnd As Long, _
                            ByVal msg As Long, _
                            ByVal wParam As Long, _
@@ -128,7 +128,7 @@ Public Function WndProc( _
 
         Case Else
             'Let windows deal with the rest
-            WndProc = DefWindowProc(hwnd, msg, wParam, lParam)
+            wndProc = DefWindowProc(hwnd, msg, wParam, lParam)
 
     End Select
 
@@ -157,8 +157,6 @@ Public Sub processEvent()
     'It will process a message from the queue *if there is one*
     'and then be done with.
 
-    If host.hwnd = 0 Then Exit Sub
-
     Dim message As msg
     If PeekMessage(message, host.hwnd, 0, 0, PM_REMOVE) Then
         'There was a message, check if it's WinProc asking
@@ -173,6 +171,5 @@ Public Sub processEvent()
             Call DispatchMessage(message)
         End If
     End If
-    DoEvents
 
 End Sub

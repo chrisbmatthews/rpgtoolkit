@@ -12100,6 +12100,7 @@ End Sub
 ' MultiRun() {} :: Run commands as a group in a thread
 '=========================================================================
 Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) As Long
+    On Error Resume Next
     If GetBrackets(Text) <> "" Then
         Call debugger("MultiRun() requires no data elements-- " & Text)
     Else
@@ -12108,3 +12109,24 @@ Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) A
         disregardLooping = False
     End If
 End Function
+
+'=========================================================================
+' ShopColors(pos!,r!,g!,b!) :: Set the colors used in the shop
+'=========================================================================
+Public Sub shopColorsRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+    On Error Resume Next
+    If CountData(Text) <> 4 Then
+        Call debugger("ShopColors() requires four data elements-- " & Text)
+        Exit Sub
+    End If
+    Dim paras() As parameters
+    paras() = GetParameters(Text, prg)
+    Dim idx As Long
+    For idx = 0 To UBound(paras)
+        If paras(0).dataType <> DT_NUM Then
+            Call debugger("ShopColors() requires numerical data elements--" & Text)
+            Exit Sub
+        End If
+    Next idx
+    shopColors(paras(0).num) = RGB(paras(1).num, paras(2).num, paras(3).num)
+End Sub
