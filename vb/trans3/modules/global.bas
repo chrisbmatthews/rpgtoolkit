@@ -13,8 +13,6 @@ Global CurrentVersion$      'Version "2.0"
 Global Major                'Major version
 'FIXIT: Declare 'Minor' with an early-bound data type                                      FixIT90210ae-R1672-R1B8ZE
 Global Minor                'Minor version
-'FIXIT: Declare 'oldvalue' with an early-bound data type                                   FixIT90210ae-R1672-R1B8ZE
-Global oldvalue             'oldvalue for RGB
 'FIXIT: Declare 'compression' with an early-bound data type                                FixIT90210ae-R1672-R1B8ZE
 Global compression          'compression used?
 Global filename$(30)        'Filename array
