@@ -94,6 +94,7 @@ Private Function evaluate(ByVal Text As String) As Double
     Dim operatorIdx As Long         'Current operator
     Dim toSolve As Long             'Idx to solve
     Dim solveVal As Long            'Value of that idx
+    Dim isValid As Boolean          'Is a valid number?
 
     ReDim tokens(0) As Double       'Tokens in the string
     ReDim operators(0) As Long      'Operators in the string
@@ -112,13 +113,28 @@ Private Function evaluate(ByVal Text As String) As Double
         'Grab a character
         char = Mid(Text, idx, 1)
 
+        'Set valid flag to false
+        isValid = False
+
         'If we haven't started a number yet, and it's a ".",
         'change it to a "0."
         If ((num = "") And (char = ".")) Then char = "0."
 
-        'Check if adding this character to the current
-        'number would produce a valid number
-        If (isNumber(num & char)) Then
+        'If char is -, and we don't have a number, then check the
+        'next char, to see if it will form a number
+        If ((num = "") And (char = "-")) Then
+            'See if adding it to the next character will make
+            'a valid number
+            isValid = (isNumber(char & Mid(Text, idx + 1, 1)))
+        Else
+            'Else, check if adding this character to the current
+            'number would produce a valid number
+            isValid = (isNumber(num & char))
+        End If
+
+        'If either of those two tests passed, then add it to the
+        'string for the current number
+        If (isValid) Then
             'It would, so add it on
             num = num & char
             If (char = "-") Then
