@@ -773,6 +773,9 @@ End Sub
 ' Save the file
 '=========================================================================
 Public Sub saveFile()
+
+#If (False) Then
+
     On Error Resume Next
     filename(2) = itemList(activeItemIndex).itemFile
     itemList(activeItemIndex).itemNeedUpdate = False
@@ -782,6 +785,14 @@ Public Sub saveFile()
         Exit Sub
     End If
     Call saveItem(projectPath & itmPath & filename(2), itemList(activeItemIndex).theData)
+
+#Else
+
+    Call Show
+    Call savemnu_Click
+
+#End If
+
 End Sub
 
 '=========================================================================
@@ -1060,10 +1071,11 @@ Private Sub saveasmnu_Click()
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    Call saveItem(filename$(1), itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemFile$ = antiPath$
-    activeItem.Caption = LoadStringLoc(805, "Item Editor") + " (" + antiPath$ + ")"
-    itemList(activeItemIndex).itemNeedUpdate = False
+    Call savemnu_Click
+    ' Call saveItem(filename$(1), itemList(activeItemIndex).theData)
+    activeItem.Caption = LoadStringLoc(805, "Item Editor") & " (" & antiPath & ")"
+    ' itemList(activeItemIndex).itemNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
@@ -1074,7 +1086,14 @@ Private Sub savemnu_Click()
     On Error Resume Next
     filename(2) = itemList(activeItemIndex).itemFile
     If filename(2) = "" Then saveasmnu_Click: Exit Sub
-    Call saveItem(projectPath & itmPath & filename(2), itemList(activeItemIndex).theData)
+    Dim strFile As String
+    strFile = projectPath & itmPath & filename(2)
+    If (GetAttr(strFile) And vbReadOnly) Then
+        Call MsgBox("This file is read-only; please choose a different file.")
+        Call saveasmnu_Click
+        Exit Sub
+    End If
+    Call saveItem(strFile, itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemNeedUpdate = False
 End Sub
 

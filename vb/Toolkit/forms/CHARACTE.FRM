@@ -1334,6 +1334,8 @@ End Function
 '==============================================================================
 Public Sub saveFile(): On Error Resume Next
     
+#If (False) Then
+    
     If playerList(activePlayerIndex).charFile = vbNullString Then
         'Untitled; prompt Save As.
         Me.Show
@@ -1346,6 +1348,13 @@ Public Sub saveFile(): On Error Resume Next
     
     'Player file is up to date.
     playerList(activePlayerIndex).charNeedUpdate = False
+
+#Else
+
+    Call Show
+    Call mnusave_Click
+
+#End If
 
 End Sub
 
@@ -1417,13 +1426,24 @@ End Sub
 '==============================================================================
 Private Sub mnusave_Click(): On Error Resume Next
 
-    If playerList(activePlayerIndex).charFile = vbNullString Then
+    If (LenB(playerList(activePlayerIndex).charFile) = 0) Then
         Call mnusaveas_Click
         Exit Sub
     End If
-    
-    Call saveChar(projectPath & temPath & playerList(activePlayerIndex).charFile, playerList(activePlayerIndex).theData)
-    
+
+    Dim strFile As String
+    strFile = projectPath & temPath & playerList(activePlayerIndex).charFile
+
+    If (GetAttr(strFile) And vbReadOnly) Then
+
+        Call MsgBox("This file is read-only; please choose a different file.")
+        Call mnusaveas_Click
+        Exit Sub
+
+    End If
+
+    Call saveChar(strFile, playerList(activePlayerIndex).theData)
+
     playerList(activePlayerIndex).charNeedUpdate = False
 
 End Sub
@@ -1443,20 +1463,22 @@ Private Sub mnusaveas_Click(): On Error Resume Next
     
     'Prompt for overwrite.
     If Not (SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub
-    If dlg.strSelectedFile = vbNullString Then Exit Sub
-    
-    ChDir (currentDir)
-    
-    'Write the file.
-    Call saveChar(dlg.strSelectedFile, playerList(activePlayerIndex).theData)
-    
+    If (LenB(dlg.strSelectedFile) = 0) Then Exit Sub
+
+    Call ChDir(currentDir)
+
     playerList(activePlayerIndex).charFile = dlg.strSelectedFileNoPath
-    
+
+    'Write the file.
+    ' Call saveChar(dlg.strSelectedFile, playerList(activePlayerIndex).theData)
+
+    Call mnusave_Click
+
     activePlayer.Caption = LoadStringLoc(804, "Character Editor") & " (" & dlg.strSelectedFileNoPath & ")"
-    
+
     'File is up to date.
-    playerList(activePlayerIndex).charNeedUpdate = False
-    
+    ' playerList(activePlayerIndex).charNeedUpdate = False
+
     'Add file to the tree.
     Call tkMainForm.fillTree("", projectPath)
 

@@ -640,6 +640,9 @@ End Property
 ' Save the file
 '=========================================================================
 Public Sub saveFile()
+
+#If (False) Then
+
     On Error Resume Next
     Dim file As String
     file = bkgList(activeBkgIndex).filename
@@ -650,6 +653,14 @@ Public Sub saveFile()
         Exit Sub
     End If
     Call saveBackground(projectPath$ + enePath$ + filename$(2), bkgList(activeBkgIndex).theData)
+
+#Else
+
+    Call Show
+    Call mnusave_Click
+
+#End If
+
 End Sub
 
 '=========================================================================
@@ -949,8 +960,14 @@ Private Sub mnusave_Click()
     On Error Resume Next
     Dim file As String
     file = bkgList(activeBkgIndex).filename
-    If file = "" Then Call mnusaveas_Click: Exit Sub
-    Call saveBackground(projectPath & bkgPath & file, bkgList(activeBkgIndex).theData)
+    If (LenB(file) = 0) Then Call mnusaveas_Click: Exit Sub
+    file = projectPath & bkgPath & file
+    If (GetAttr(file) And vbReadOnly) Then
+        Call MsgBox("This file is read-only; please choose a different file.")
+        Call mnusaveas_Click
+        Exit Sub
+    End If
+    Call saveBackground(file, bkgList(activeBkgIndex).theData)
     bkgList(activeBkgIndex).needUpdate = False
 End Sub
 
@@ -977,9 +994,10 @@ Private Sub mnusaveas_Click()
     If filename$(1) = "" Then Exit Sub
 
     bkgList(activeBkgIndex).filename = antiPath$
-    Call saveBackground(filename$(1), bkgList(activeBkgIndex).theData)
+    ' Call saveBackground(filename$(1), bkgList(activeBkgIndex).theData)
+    Call mnusave_Click
     activeBackground.Caption = LoadStringLoc(1435, "Edit Background") + " (" + antiPath$ + ")"
-    bkgList(activeBkgIndex).needUpdate = False
+    ' bkgList(activeBkgIndex).needUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 

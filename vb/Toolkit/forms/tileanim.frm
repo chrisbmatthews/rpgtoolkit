@@ -364,6 +364,7 @@ Public Sub saveAsFile()
 End Sub
 
 Public Sub saveFile()
+#If (False) Then
     On Error Resume Next
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
     If tileAnmList(activeTileAnmIndex).animTileFile = "" Then
@@ -373,6 +374,10 @@ Public Sub saveFile()
         Call saveTileAnm(projectPath & tilePath & tileAnmList(activeTileAnmIndex).animTileFile, tileAnmList(activeTileAnmIndex).theData)
         Me.Caption = LoadStringLoc(1814, "Create Animated Tile") & " (" & tileAnmList(activeTileAnmIndex).animTileFile & ")"
     End If
+#Else
+    Call Show
+    Call savemnu_Click
+#End If
 End Sub
 
 Public Sub checkSave()
@@ -634,11 +639,11 @@ Private Sub saveasmnu_Click()
         End If
     End With
     ChDir (currentDir)
-    tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
+    ' tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
     If filename(1) = "" Then Exit Sub
-
-    Call saveTileAnm(filename(1), tileAnmList(activeTileAnmIndex).theData)
     animationList(activeAnimationIndex).animFile = antiPath
+    Call savemnu_Click
+    ' Call saveTileAnm(filename(1), tileAnmList(activeTileAnmIndex).theData)
     Me.Caption = LoadStringLoc(1814, "Create Animated Tile") + " (" + antiPath$ + ")"
     Call tkMainForm.fillTree("", projectPath)
 End Sub
@@ -646,7 +651,14 @@ End Sub
 Private Sub savemnu_Click()
     On Error Resume Next
     If tileAnmList(activeTileAnmIndex).animTileFile$ = "" Then saveasmnu_Click: Exit Sub
-    Call saveTileAnm(projectPath$ + tilePath$ + tileAnmList(activeTileAnmIndex).animTileFile, tileAnmList(activeTileAnmIndex).theData)
+    Dim strFile As String
+    strFile = projectPath & tilePath & tileAnmList(activeTileAnmIndex).animTileFile
+    If (GetAttr(strFile) And vbReadOnly) Then
+        Call MsgBox("This file is read-only; please choose a different file.")
+        Call saveasmnu_Click
+        Exit Sub
+    End If
+    Call saveTileAnm(strFile, tileAnmList(activeTileAnmIndex).theData)
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
 End Sub
 

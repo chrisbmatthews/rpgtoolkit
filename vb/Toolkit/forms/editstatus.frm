@@ -451,6 +451,9 @@ ErrorHandler:
 End Sub
 
 Public Sub saveFile()
+
+#If (False) Then
+
     'saves the file.
     On Error GoTo ErrorHandler
     'If statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True Then
@@ -472,6 +475,14 @@ Public Sub saveFile()
 ErrorHandler:
     Call HandleError
     Resume Next
+
+#Else
+
+    Call Show
+    Call savemnu_Click
+
+#End If
+
 End Sub
 
 Public Sub openFile(filename$)
@@ -699,12 +710,12 @@ Private Sub saveasmnu_Click()
         Exit Sub
     End If
     ChDir (currentDir$)
-    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
+    ' statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     
     If filename$(1) = "" Then Exit Sub
-
-    Call saveStatus(filename$(1), statusEffectList(activeStatusEffectIndex).theData)
     statusEffectList(activeStatusEffectIndex).statusFile$ = antiPath$
+    Call savemnu_Click
+    ' Call saveStatus(filename$(1), statusEffectList(activeStatusEffectIndex).theData)
     activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + antiPath$ + ")"
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
@@ -717,7 +728,14 @@ Private Sub savemnu_Click()
         saveasmnu_Click
         Exit Sub
     End If
-    Call saveStatus(projectPath$ + statusPath$ + statusEffectList(activeStatusEffectIndex).statusFile$, statusEffectList(activeStatusEffectIndex).theData)
+    Dim strFile As String
+    strFile = projectPath & statusPath & statusEffectList(activeStatusEffectIndex).statusFile
+    If (GetAttr(strFile) And vbReadOnly) Then
+        Call MsgBox("This file is read-only; please choose a different file.")
+        Call saveasmnu_Click
+        Exit Sub
+    End If
+    Call saveStatus(strFile, statusEffectList(activeStatusEffectIndex).theData)
     activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
 
     Exit Sub

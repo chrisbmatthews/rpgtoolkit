@@ -249,7 +249,14 @@ Public Sub saveFile()
             mnusaveas_Click
             Exit Sub
         End If
-        Call SaveTileBitmap(projectPath$ + bmpPath$ + tileBmpList(activeTileBmpIndex).filename, tileBmpList(activeTileBmpIndex).theData)
+        Dim strFile As String
+        strFile = projectPath & bmpPath & tileBmpList(activeTileBmpIndex).filename
+        If (GetAttr(strFile) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call saveAsFile
+            Exit Sub
+        End If
+        Call SaveTileBitmap(strFile, tileBmpList(activeTileBmpIndex).theData)
         Me.Caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + tileBmpList(activeTileBmpIndex).filename + ")"
     'End If
 
@@ -308,10 +315,10 @@ Sub infofill()
     xx = tileBmpList(activeTileBmpIndex).theData.sizex
     yy = tileBmpList(activeTileBmpIndex).theData.sizey
     
-    arena.Width = xx * 32 * Screen.TwipsPerPixelX
+    arena.width = xx * 32 * Screen.TwipsPerPixelX
     arena.Height = yy * 32 * Screen.TwipsPerPixelY
       
-    Me.Width = arena.Width + 1200
+    Me.width = arena.width + 1200
     Me.Height = arena.Height + 1200
     arena.Left = 500
     arena.Top = 400
@@ -652,10 +659,11 @@ Private Sub mnusaveas_Click()
         Exit Sub
     End If
     ChDir (currentDir$)
-    tileBmpList(activeTileBmpIndex).needUpdate = False
+    ' tileBmpList(activeTileBmpIndex).needUpdate = False
     
-    Call SaveTileBitmap(filename$(1), tileBmpList(activeTileBmpIndex).theData)
     tileBmpList(activeTileBmpIndex).filename = antiPath$
+    Call saveFile
+    ' Call SaveTileBitmap(filename$(1), tileBmpList(activeTileBmpIndex).theData)
     Me.Caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + antiPath$ + ")"
     Call tkMainForm.fillTree("", projectPath$)
 End Sub

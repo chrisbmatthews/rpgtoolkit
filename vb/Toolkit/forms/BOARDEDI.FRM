@@ -2107,6 +2107,8 @@ End Sub
 '========================================================================
 Public Sub saveFile(): On Error Resume Next
 
+#If (False) Then
+
     ' get filename
     filename$(2) = boardList(activeBoardIndex).boardName$
         
@@ -2125,6 +2127,13 @@ Public Sub saveFile(): On Error Resume Next
     
     ' update form caption
     activeBoard.Caption = LoadStringLoc(802, "Board Editor") + " (" + filename$(2) + ")"
+
+#Else
+
+    Call Show
+    Call savebrdmnu_Click
+
+#End If
 
 End Sub
 
@@ -3327,39 +3336,41 @@ End Sub
 Private Sub savebrdasmnu_click(): On Error Resume Next
 
     ChDir (currentDir)
-    
+
     ' initialise file dialog.
     Dim dlg As FileDialogInfo
-    
+
     dlg.strDefaultFolder = projectPath & brdPath
     dlg.strTitle = "Save Board As"
     dlg.strDefaultExt = "brd"
     dlg.strFileTypes = "RPG Toolkit Board (*.brd)|*.brd|All files(*.*)|*.*"
-    
+
     ' get filename selected, set prompt to ask for overwrite.
     If Not (SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub
-    
+
     ' change directory back.
     ChDir (currentDir)
-    
+
     ' if no filename entered, exit.
     If dlg.strSelectedFile = "" Then Exit Sub
-    
-    ' save board.
-    Call saveBoard(dlg.strSelectedFile, boardList(activeBoardIndex).theData)
-    
+
     ' set filename.
     boardList(activeBoardIndex).boardName = dlg.strSelectedFileNoPath
-    
+
+    Call savebrdmnu_Click
+
+    ' save board.
+    ' Call saveBoard(dlg.strSelectedFile, boardList(activeBoardIndex).theData)
+
     ' update form caption.
-    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & dlg.strSelectedFileNoPath & ")"
-    
+    ' activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & dlg.strSelectedFileNoPath & ")"
+
     ' set board state to "unaltered".
-    boardList(activeBoardIndex).boardNeedUpdate = False
-    
+    ' boardList(activeBoardIndex).boardNeedUpdate = False
+
     ' add to project tree.
     Call tkMainForm.fillTree("", projectPath)
-    
+
 End Sub
 
 '========================================================================
@@ -3369,16 +3380,25 @@ Private Sub savebrdmnu_Click(): On Error Resume Next
 
     ' get filename
     filename$(2) = boardList(activeBoardIndex).boardName$
-    
+
+    If (GetAttr(filename(2)) And vbReadOnly) Then
+
+        Call MsgBox("This file is read-only; please choose a different file.")
+        Call savebrdasmnu_click
+
+        Exit Sub
+
+    End If
+
     ' set changes to false
     boardList(activeBoardIndex).boardNeedUpdate = False
-    
+
     ' if no filename exists, call save as routine
     If filename$(2) = "" Then savebrdasmnu_click: Exit Sub
-    
+
     ' save board
     Call saveBoard(projectPath$ + brdPath$ + filename$(2), boardList(activeBoardIndex).theData)
-    
+
     ' update form caption
     activeBoard.Caption = LoadStringLoc(802, "Board Editor") + " (" + filename$(2) + ")"
 

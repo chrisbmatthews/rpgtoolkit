@@ -637,6 +637,9 @@ End Sub
 
 
 Public Sub saveFile()
+
+#If (False) Then
+
     'saves the file.
     On Error GoTo ErrorHandler
     'If specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True Then
@@ -655,6 +658,14 @@ Public Sub saveFile()
 ErrorHandler:
     Call HandleError
     Resume Next
+
+#Else
+
+    Call Show
+    Call savemnu_Click
+
+#End If
+
 End Sub
 Public Sub openFile(ByVal file$)
     On Error Resume Next
@@ -937,10 +948,11 @@ Private Sub saveasmnu_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    Call saveSpecialMove(filename$(1), specialMoveList(activeSpecialMoveIndex).theData)
     specialMoveList(activeSpecialMoveIndex).smFile$ = antiPath$
+    Call savemnu_Click
+    ' Call saveSpecialMove(filename$(1), specialMoveList(activeSpecialMoveIndex).theData)
     activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") + " (" + antiPath$ + ")"
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
+    ' specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
@@ -948,7 +960,14 @@ Private Sub savemnu_Click()
     On Error GoTo ErrorHandler
     filename$(2) = specialMoveList(activeSpecialMoveIndex).smFile$
     If filename$(2) = "" Then saveasmnu_Click: Exit Sub
-    Call saveSpecialMove(projectPath$ + spcPath$ + filename$(2), specialMoveList(activeSpecialMoveIndex).theData)
+    Dim strFile As String
+    strFile = projectPath & spcPath & filename(2)
+    If (GetAttr(strFile) And vbReadOnly) Then
+        Call MsgBox("This file is read-only; please choose a different file.")
+        Call saveasmnu_Click
+        Exit Sub
+    End If
+    Call saveSpecialMove(strFile, specialMoveList(activeSpecialMoveIndex).theData)
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
 
     Exit Sub

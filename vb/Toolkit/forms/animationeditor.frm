@@ -456,7 +456,7 @@ Public Sub animPlay(): On Error Resume Next
     oldF = animationList(activeAnimationIndex).theData.animCurrentFrame
     
     'Clear the arena
-    Call arena.cls
+    Call arena.Cls
     
     'Animate the frames
     Call AnimateAt(animationList(activeAnimationIndex).theData, 0, 0, animationList(activeAnimationIndex).theData.animSizeX, animationList(activeAnimationIndex).theData.animSizeY, arena)
@@ -531,7 +531,7 @@ Public Sub animForward(): On Error Resume Next
         .animCurrentFrame = .animCurrentFrame + 1
         
         'Draw it
-        arena.cls
+        arena.Cls
         Call DrawFrame(.animCurrentFrame)
     
     End With
@@ -550,7 +550,7 @@ Public Sub animBack(): On Error Resume Next
         .animCurrentFrame = .animCurrentFrame - 1
         
         'Draw it
-        arena.cls
+        arena.Cls
         Call DrawFrame(.animCurrentFrame)
     
     End With
@@ -565,7 +565,7 @@ End Sub
 Private Sub DrawFrame(ByVal framenum As Long): On Error Resume Next
 
     'Clear the pic box
-    Call arena.cls
+    Call arena.Cls
     
     'Draw the frame
     Call AnimDrawFrame(animationList(activeAnimationIndex).theData, framenum, 0, 0, arena.hdc)
@@ -670,10 +670,10 @@ Private Sub Form_Resize(): On Error Resume Next
 
     'Set a minimum width & height relative to the arena width and height
     If Me.Height <= arena.Height + 1000 Then Me.Height = arena.Height + 1000
-    If Me.Width <= arena.Width + 600 Then Me.Width = arena.Width + 600
+    If Me.width <= arena.width + 600 Then Me.width = arena.width + 600
         
     'The position
-    arena.Left = ((Me.Width - arena.Width) / 2) - 55
+    arena.Left = ((Me.width - arena.width) / 2) - 55
     arena.Top = (Me.Height - arena.Height) / 2 - 250
     
 End Sub
@@ -684,11 +684,11 @@ End Sub
 Private Sub sizeForm(): On Error Resume Next
     
     'Resize the arena
-    arena.Width = Screen.TwipsPerPixelX * animationList(activeAnimationIndex).theData.animSizeX
+    arena.width = Screen.TwipsPerPixelX * animationList(activeAnimationIndex).theData.animSizeX
     arena.Height = Screen.TwipsPerPixelY * animationList(activeAnimationIndex).theData.animSizeY
     
     'Resize the form
-    Me.Width = arena.Width + 500
+    Me.width = arena.width + 500
     Me.Height = arena.Height + 500
     
     'Redraw the frame
@@ -910,6 +910,8 @@ End Sub
 '========================================================================
 Public Sub saveFile(): On Error Resume Next
     
+#If (False) Then
+    
     If animationList(activeAnimationIndex).animFile = "" Then
         
         'Filename is empty - ask where to save
@@ -928,26 +930,47 @@ Public Sub saveFile(): On Error Resume Next
     'Update caption
     activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") + " (" + animationList(activeAnimationIndex).animFile$ + ")"
 
+#Else
+
+    Call Show
+    Call saveanimmnu_Click
+
+#End If
+
 End Sub
 
 '========================================================================
 ' Save animation
 '========================================================================
 Private Sub saveanimmnu_Click(): On Error Resume Next
-    
-    'If the animation hasn't been saved yet, call the "Save As" sub
+
+    ' If the animation hasn't been saved yet, call the "Save As" sub
     If animationList(activeAnimationIndex).animFile$ = "" Then
         
         Call saveasanimmnu_Click
         
     Else
-        
-        'If the animation is already saved, save it again
-        Call saveAnimation(projectPath$ + miscPath$ + animationList(activeAnimationIndex).animFile, animationList(activeAnimationIndex).theData)
-        
-        'No need to update anymore
-        animationList(activeAnimationIndex).animNeedUpdate = False
-        
+
+        Dim strFile As String
+        strFile = projectPath & miscPath & animationList(activeAnimationIndex).animFile
+
+        ' Make sure it's writable
+        If (GetAttr(strFile) And vbReadOnly) Then
+
+            ' Read-only
+            Call MsgBox("This file is read-only; please choose a different file.")
+            Call saveasanimmnu_Click
+
+        Else
+
+            ' If the animation is already saved, save it again
+            Call saveAnimation(strFile, animationList(activeAnimationIndex).theData)
+
+            ' No need to update anymore
+            animationList(activeAnimationIndex).animNeedUpdate = False
+
+        End If
+
     End If
 
 End Sub
@@ -971,19 +994,21 @@ Private Sub saveasanimmnu_Click(): On Error Resume Next
     
     ChDir (currentDir)
     
-    'No need to update anymore
-    animationList(activeAnimationIndex).animNeedUpdate = False
-     
-    'Save the animation
-    Call saveAnimation(dlg.strSelectedFile, animationList(activeAnimationIndex).theData)
+    Call saveanimmnu_Click
     
-    'Set the animation name
+    ' No need to update anymore
+    ' animationList(activeAnimationIndex).animNeedUpdate = False
+     
+    ' Save the animation
+    ' Call saveAnimation(dlg.strSelectedFile, animationList(activeAnimationIndex).theData)
+    
+    ' Set the animation name
     animationList(activeAnimationIndex).animFile = dlg.strSelectedFileNoPath
     
-    'Update the caption
+    ' Update the caption
     activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") & " (" & dlg.strSelectedFileNoPath & ")"
     
-    'Update the tree
+    ' Update the tree
     Call tkMainForm.fillTree("", projectPath)
     
 End Sub

@@ -1721,8 +1721,8 @@ End Sub
 '========================================================================
 ' Saves the file
 '========================================================================
-Public Sub saveFile(): On Error GoTo ErrorHandler
-    
+Public Sub saveFile()
+#If (False) Then
     filename(2) = openTileEditorDocs(indice).tileName
     openTileEditorDocs(indice).tileNeedUpdate = False
     If filename(2) = "" Then
@@ -1738,6 +1738,10 @@ Public Sub saveFile(): On Error GoTo ErrorHandler
 ErrorHandler:
     Call HandleError
     Resume Next
+#Else
+    Call Show
+    Call savenoquestions_Click
+#End If
 End Sub
 
 '========================================================================
@@ -2013,17 +2017,26 @@ End Sub
 'Save Tile
 Private Sub savenoquestions_Click()
     On Error GoTo ErrorHandler
-    
+
     'If this in an new (untitled) tile.
     If openTileEditorDocs(indice).tileName = "" Then
         savetile2_Click                 'The "Save Tile As..." sub.
         Exit Sub
     End If
-    
+
+    Dim strFile As String
+    strFile = projectPath & tilePath & openTileEditorDocs(indice).tileName
+
+    If (GetAttr(strFile) And vbReadOnly) Then
+        Call MsgBox("This file is read-only; please choose a different file.")
+        Call savetile2_Click
+        Exit Sub
+    End If
+
     'Else, the tile was opened, so update the file.
-    Call saveTile(projectPath$ + tilePath$ + openTileEditorDocs(indice).tileName)
+    Call saveTile(strFile)
     openTileEditorDocs(indice).tileNeedUpdate = False
-    
+
     Exit Sub
 'Begin error handling code:
 ErrorHandler:
@@ -2035,38 +2048,49 @@ End Sub
 'File -> Save Tile As...
 '=======================================================================================
 Private Sub savetile2_Click(): On Error Resume Next
-    ChDir (currentDir$)
-    
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tilePath$
-    dlg.strTitle = "Save Tile As"
-    
-    'New support for isometric tilesets, .iso.
-    
-    If openTileEditorDocs(indice).isometric Then
-        'If the global control boolean is set in the tile editor.
-    
-        dlg.strDefaultExt = "iso"
-        'An isometric single tile has not been defined.
-        dlg.strFileTypes = "Supported Types|*.iso|RPG Toolkit Isometric TileSet (*.iso)|All files(*.*)|*.*"
-    Else
-        dlg.strDefaultExt = "tst"
-        dlg.strFileTypes = "Supported Types|*.tst;*.gph|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Tile (*.gph)|*.gph|All files(*.*)|*.*"
-    End If
-    
-    If SaveFileDialog(dlg, Me.hwnd) Then
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub            'User pressed cancel.
-    End If
-    
-    ChDir (currentDir$)
-    openTileEditorDocs(indice).tileNeedUpdate = False
-    
-    If filename$(1) = "" Then Exit Sub
-    
+
+    Do
+
+        ChDir (currentDir$)
+
+        Dim dlg As FileDialogInfo
+        dlg.strDefaultFolder = projectPath$ + tilePath$
+        dlg.strTitle = "Save Tile As"
+
+        'New support for isometric tilesets, .iso.
+
+        If openTileEditorDocs(indice).isometric Then
+            'If the global control boolean is set in the tile editor.
+
+            dlg.strDefaultExt = "iso"
+            'An isometric single tile has not been defined.
+            dlg.strFileTypes = "Supported Types|*.iso|RPG Toolkit Isometric TileSet (*.iso)|All files(*.*)|*.*"
+        Else
+            dlg.strDefaultExt = "tst"
+            dlg.strFileTypes = "Supported Types|*.tst;*.gph|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Tile (*.gph)|*.gph|All files(*.*)|*.*"
+        End If
+
+        If SaveFileDialog(dlg, Me.hwnd) Then
+            filename$(1) = dlg.strSelectedFile
+            Dim antiPath As String
+            antiPath$ = dlg.strSelectedFileNoPath
+        Else
+            Exit Sub            'User pressed cancel.
+        End If
+
+        ChDir (currentDir$)
+        openTileEditorDocs(indice).tileNeedUpdate = False
+
+        If filename$(1) = "" Then Exit Sub
+
+        If (GetAttr(filename(1)) And vbReadOnly) Then
+            Call MsgBox("This file is read-only; please choose a different file.")
+        Else
+            Exit Do
+        End If
+
+    Loop
+
     'Shall we see if it's an archive?
     'whichType$ = extention(filename$(1))
     

@@ -727,6 +727,9 @@ ErrorHandler:
 End Sub
 
 Public Sub saveFile()
+
+#If (False) Then
+
     'saves the file.
     On Error GoTo ErrorHandler
     'If enemylist(activeEnemyIndex).eneNeedUpdate = True Then
@@ -745,6 +748,14 @@ Public Sub saveFile()
 ErrorHandler:
     Call HandleError
     Resume Next
+
+#Else
+
+    Call Show
+    Call mnusave_Click
+
+#End If
+
 End Sub
 
 Public Sub openFile(ByVal file$)
@@ -1070,7 +1081,14 @@ Private Sub mnusave_Click()
     On Error GoTo ErrorHandler
     filename$(2) = enemylist(activeEnemyIndex).eneFile$
     If filename$(2) = "" Then Call mnusaveas_Click: Exit Sub
-    Call saveEnemy(projectPath$ + enePath$ + filename$(2), enemylist(activeEnemyIndex).theData)
+    Dim strFile As String
+    strFile = projectPath & enePath & filename(2)
+    If (GetAttr(strFile) And vbReadOnly) Then
+        Call MsgBox("This file is read-only; please choose a different file.")
+        Call mnusaveas_Click
+        Exit Sub
+    End If
+    Call saveEnemy(strFile, enemylist(activeEnemyIndex).theData)
     enemylist(activeEnemyIndex).eneNeedUpdate = False
 
     Exit Sub
@@ -1103,9 +1121,10 @@ Private Sub mnusaveas_Click()
     If filename$(1) = "" Then Exit Sub
 
     enemylist(activeEnemyIndex).eneFile$ = antiPath$
-    Call saveEnemy(filename$(1), enemylist(activeEnemyIndex).theData)
+    Call mnusave_Click
+    ' Call saveEnemy(filename$(1), enemylist(activeEnemyIndex).theData)
     activeEnemy.Caption = LoadStringLoc(806, "Edit Enemy") + " (" + antiPath$ + ")"
-    enemylist(activeEnemyIndex).eneNeedUpdate = False
+    ' enemylist(activeEnemyIndex).eneNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
