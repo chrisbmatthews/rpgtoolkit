@@ -124,7 +124,15 @@ SOURCE=.\StdAfx.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\tkgfx\CBoard.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\tkgfx\CTile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\tkgfx\CTileAnim.cpp
 # End Source File
 # Begin Source File
 
@@ -148,7 +156,15 @@ SOURCE=.\tkgfx\callbacks.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\tkgfx\CBoard.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\tkgfx\CTile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\tkgfx\CTileAnim.h
 # End Source File
 # Begin Source File
 
