@@ -22,10 +22,10 @@ Bug Fixes
 + #Bold/#Italics/#Underline fixed. 
 + The message window could not always be successfully hidden with mwincls().
 + The RPGCode debugger was buggy.
-+ MIDIs and WAVs didn’t work in Windows9x.
++ MIDIs adidn’t work in Windows9x.
 + Literal variables could not contain the NULL character.
 + Modular music (*.it and company) would not play anywhere. 
-+ Plugins could not be sent variables enables the multiplayer plugin to work). 
++ Plugins could not be sent variables (enables the multiplayer plugin to work). 
 + Maths that mixed variables with constants did not work. 
 + Players/items without graphics displayed as black boxes / random bitmaps. 
 + Memory leak in board background image drawing.
@@ -34,6 +34,7 @@ Bug Fixes
 + Nestled if/else statements messed up. 
 + true/false could be killed. 
 + '<' and '>' didn't work in equations.
++ mwin "word wrapped", though very poored
 
 New Features 
 -------------
