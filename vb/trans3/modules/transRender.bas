@@ -1334,9 +1334,6 @@ Private Sub createCanvases(ByVal Width As Long, ByVal height As Long)
     For t = 0 To UBound(cnvPlayer)
         cnvPlayer(t) = CreateCanvas(32, 32)
     Next t
-    For t = 0 To UBound(cnvSprites)
-        cnvSprites(t) = CreateCanvas(32, 32)
-    Next t
     cnvBackground = CreateCanvas(Width, height)
     cnvRPGCodeScreen = CreateCanvas(Width, height)
     cnvAllPurpose = CreateCanvas(Width, height)
@@ -1975,14 +1972,14 @@ Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal
 
     'find transparent color...
     Call determineTransparentColor
-    
+
     'Now set up offscreen canvases
     Call createCanvases(Width, height)
 
     'Clear the screen (remove backbuffer garbage)
     Call DXClearScreen(0)
     Call DXRefresh
-    
+
     'Show the DirectX host window
     Call host.Show
 

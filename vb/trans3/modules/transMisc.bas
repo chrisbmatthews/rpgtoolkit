@@ -197,26 +197,28 @@ Public Sub openItems()
 
     On Error Resume Next
 
-    Dim runIt As Boolean        'run item activation program?
-    Dim itemNum As Long         'item loop control variables
-    Dim lit As String           'literal variable
-    Dim num As Double           'numerical variables
-    Dim checkIt As RPGC_DT      'data type of conditional variable
-    Dim valueTestNum As Double  'numerical test value
-    Dim valueTestLit As String  'literal test value
+    Dim runIt As Boolean                'run item activation program?
+    Dim itemNum As Long                 'item loop control variables
+    Dim lit As String                   'literal variable
+    Dim num As Double                   'numerical variables
+    Dim checkIt As RPGC_DT              'data type of conditional variable
+    Dim valueTestNum As Double          'numerical test value
+    Dim valueTestLit As String          'literal test value
 
-    'Redimension related arrays
-    ReDim pendingItemMovement(maxItem)
-    ReDim lastItemRender(maxItem)
-    ReDim itmPos(maxItem)
-    ReDim itemMem(maxItem)
-    ReDim cnvSprites(maxItem)
+    ReDim pendingItemMovement(maxItem)  'pending item movements
+    ReDim lastItemRender(maxItem)       'last item renders
+    ReDim itmPos(maxItem)               'position of items
+    ReDim itemMem(maxItem)              'item data
+    ReDim cnvSprites(maxItem)           'item sprites
 
-    'Create item canvases
-    Dim a As Long
-    For a = 0 To maxItem
-        cnvSprites(a) = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
-    Next a
+    'Destroy old item canvases
+    For itemNum = 0 To maxItem
+        Call DestroyCanvas(cnvSprites(itemNum))
+    Next itemNum
+    'Create new item canvases
+    For itemNum = 0 To maxItem
+        cnvSprites(itemNum) = CreateCanvas(globalCanvasWidth, globalCanvasHeight)
+    Next itemNum
 
     'Loop over each item
     For itemNum = 0 To maxItem
@@ -266,13 +268,13 @@ Public Sub openItems()
                 itemMem(itemNum) = openItem(projectPath & itmPath & .itmName(itemNum))
                 itemMem(itemNum).bIsActive = True
                 If boardList(activeBoardIndex).theData.itemMulti(itemNum) <> "" Then
-                    multilist(itemNum) = .itemMulti(itemNum)
+                    multiList(itemNum) = .itemMulti(itemNum)
                 Else
-                    multilist(itemNum) = itemMem(itemNum).itmPrgOnBoard
+                    multiList(itemNum) = itemMem(itemNum).itmPrgOnBoard
                 End If
             Else
                 itemMem(itemNum).bIsActive = False
-                multilist(itemNum) = ""
+                multiList(itemNum) = ""
             End If
 
         End With
