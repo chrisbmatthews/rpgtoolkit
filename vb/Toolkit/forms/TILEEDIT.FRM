@@ -2025,7 +2025,7 @@ Private Sub savenoquestions_Click()
     End If
 
     Dim strFile As String
-    strFile = projectPath & tilePath & openTileEditorDocs(indice).tileName
+    strFile = projectPath & tilePath & tilesetFilename(openTileEditorDocs(indice).tileName)
 
     If (GetAttr(strFile) And vbReadOnly) Then
         Call MsgBox("This file is read-only; please choose a different file.")
@@ -2034,7 +2034,7 @@ Private Sub savenoquestions_Click()
     End If
 
     'Else, the tile was opened, so update the file.
-    Call saveTile(strFile)
+    Call saveTile(strFile & getTileNum(openTileEditorDocs(indice).tileName))
     openTileEditorDocs(indice).tileNeedUpdate = False
 
     Exit Sub
@@ -2083,8 +2083,12 @@ Private Sub savetile2_Click(): On Error Resume Next
 
         If filename$(1) = "" Then Exit Sub
 
-        If (GetAttr(filename(1)) And vbReadOnly) Then
-            Call MsgBox("This file is read-only; please choose a different file.")
+        If (fileExists(filename(1))) Then
+            If (GetAttr(filename(1)) And vbReadOnly) Then
+                Call MsgBox("This file is read-only; please choose a different file.")
+            Else
+                Exit Do
+            End If
         Else
             Exit Do
         End If

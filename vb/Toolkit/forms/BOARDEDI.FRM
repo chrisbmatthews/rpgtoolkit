@@ -931,7 +931,7 @@ Public Sub drawLayers(Optional ByVal buttonClick As Boolean = False): On Error R
     ' fill picture box with board color
     Call vbPicFillRect(boardform, 0, 0, 2000, 2000, boardList(activeBoardIndex).theData.brdColor)
     
-    Dim temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
+    Dim Temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
     
     ' drawbackground
     DrawBackground
@@ -3477,6 +3477,9 @@ Private Sub savebrdmnu_Click(): On Error Resume Next
     ' get filename
     filename$(2) = boardList(activeBoardIndex).boardName$
 
+    ' if no filename exists, call save as routine
+    If filename$(2) = "" Then savebrdasmnu_click: Exit Sub
+
     If (GetAttr(filename(2)) And vbReadOnly) Then
 
         Call MsgBox("This file is read-only; please choose a different file.")
@@ -3488,9 +3491,6 @@ Private Sub savebrdmnu_Click(): On Error Resume Next
 
     ' set changes to false
     boardList(activeBoardIndex).boardNeedUpdate = False
-
-    ' if no filename exists, call save as routine
-    If filename$(2) = "" Then savebrdasmnu_click: Exit Sub
 
     ' save board
     Call saveBoard(projectPath$ + brdPath$ + filename$(2), boardList(activeBoardIndex).theData)
