@@ -273,6 +273,8 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
 
     '// Passing string(s) ByRef for preformance related reasons
 
+    On Error Resume Next
+
     ' Declare a variable to work on
     Dim str As String
     str = Trim$(Text)
