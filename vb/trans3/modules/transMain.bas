@@ -22,8 +22,11 @@ Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As L
 ' Current state of logic
 Public gGameState As GAME_LOGIC_STATE
 
-' Average loop time in GS_MOVEMENT state
-Public gAvgTime As Double
+Private gRenderCount As Long             'Count of GS_MOVEMENT state loops.
+Private gRenderTime As Double            'Cumulative GS_MOVEMENT state loop time.
+                                         ' gAvgTime = gRenderTime / gRenderCount
+'Private irc As Long        'Temps
+'Private irt As Double
 
 ' State of gameLogic() procedure
 Public Enum GAME_LOGIC_STATE
@@ -56,6 +59,13 @@ Public gShuttingDown As Boolean
 
 ' DirectX host window
 Public host As CDirectXHost
+
+'=======================================================================
+' Average time for one loop in the GS_MOVEMENT gamestate.
+'=======================================================================
+Public Property Get gAvgTime() As Double
+    gAvgTime = gRenderTime / gRenderCount
+End Property
 
 '=======================================================================
 ' Main entry point
@@ -278,8 +288,10 @@ Public Sub gameLogic()
     ' called until gGameState == GS_QUIT, the user closes the window, or
     ' a few other things.
 
-    Static renderTime As Double, renderCount As Long, renderPile As Double
-    renderTime = Timer()
+    Dim renderOccured As Boolean ', IDLErenderOccured As Boolean
+    Static loopTime As Double ', irl As Double
+    loopTime = Timer()
+    'irl = loopTime
 
     Static checkFight As Long   ' Used to track number of times fighting
                                 ' *would* have been checked for if not
@@ -313,7 +325,8 @@ Public Sub gameLogic()
             End If
 
             ' Render the scene
-            Call renderNow
+            renderOccured = renderNow
+            'IDLErenderOccured = rendernow
 
         Case GS_PAUSE           'PAUSE STATE
                                 '-----------
@@ -326,7 +339,7 @@ Public Sub gameLogic()
 
             ' Make sure this runs for the duration of the player's move.
             ' Run this before movePlayers since .loopFrame will be reset by it.
-            If (pPos(selectedPlayer).loopFrame + 1 < FRAMESPERMOVE * (playerMem(selectedPlayer).loopSpeed + loopOffset)) Then
+            If (pPos(selectedPlayer).loopFrame + 1 < framesPerMove * (playerMem(selectedPlayer).loopSpeed + loopOffset)) Then
                 ' We're still moving
                 gGameState = GS_MOVEMENT
             Else
@@ -334,17 +347,12 @@ Public Sub gameLogic()
                 gGameState = GS_DONEMOVE
             End If
 
-            ' Run rpgcode multitasking
             Call multiTaskNow
-
-            ' Move players
             Call movePlayers
-
-            ' Move items
             Call moveItems
 
             ' Re-render the scene
-            Call renderNow(-1, True)
+            renderOccured = renderNow(-1, True)
 
         Case GS_DONEMOVE        'DONE MOVEMENT STATE
                                 '-------------------
@@ -405,12 +413,28 @@ Public Sub gameLogic()
     End Select
 
     ' Time a render
-    If (gGameState = GS_MOVEMENT) Then
-        renderTime = Timer() - renderTime
-        renderPile = renderPile + renderTime
-        renderCount = renderCount + 1
-        gAvgTime = renderPile / renderCount
+    If renderOccured Then
+        loopTime = Timer() - loopTime
+        If loopTime < 1 / 4 Then
+            'No machine should render slower than this, so > 1/4 would be anomalous, and
+            'would unbalance the average (at least early on).
+            gRenderTime = gRenderTime + loopTime
+            gRenderCount = gRenderCount + 1
+        End If
     End If
+    
+    'The loop time in the idle state.
+    'If IDLErenderOccured Then
+    '    irl = Timer() - irl
+    '    If irl < 1 / 4 Then
+    '        irt = irt + irl
+    '        irc = irc + 1
+    '    End If
+    'End If
+   
+    ' Stick the fps in the title, for test purposes.
+    host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps (GS_M)]" '_
+                 ' & " [" & CStr(Round(irc / irt, 1)) & " fps (GS_I)]"
 
 End Sub
 
@@ -542,6 +566,19 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     ' Set initial game speed
     Call gameSpeed(mainMem.gameSpeed)
+    
+    ' Set some initial loop-time values based on average pc specs.
+    ' Could do a few blank renders at this point to test the speed.
+    'gRenderTime = 0.4
+    'gRenderCount = 10    'Don't set this too high or the system will take longer to settle.
+
+    Dim i As Long
+    gRenderTime = Timer()
+    For i = 0 To 20
+        Call DXRefresh
+    Next i
+    gRenderTime = Timer() - gRenderTime
+    gRenderCount = 15     'Account for extra routine time in the movement loop.
 
     ' Register all fonts
     Call LoadFontsFromFolder(projectPath & fontPath)
