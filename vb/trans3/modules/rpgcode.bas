@@ -7263,7 +7263,7 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
             ' Use the screen
             hdc = DXLockScreen()
         End If
-    
+
         textX = num1
         textY = num2 + 1
         'replace <> w/vars

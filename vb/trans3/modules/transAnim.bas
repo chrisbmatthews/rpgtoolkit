@@ -81,6 +81,7 @@ Private Sub AnimateAtCanvas( _
     'Restore screen
     Call Canvas2CanvasBlt(oldScreen, cnv, 0, 0)
     If (cnv = cnvRPGCodeScreen) Then
+        Call DXDrawCanvas(cnvRPGCodeScreen, 0, 0)
         Call renderRPGCodeScreen
     Else
         Call renderCanvas(cnv)
