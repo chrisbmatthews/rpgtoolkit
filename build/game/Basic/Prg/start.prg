@@ -53,13 +53,13 @@ until (done!)
 	// Switch on the outcome
 	switch (res!)
 	{
-		case(0)
+		case (0)
 		{
 			// New game
 			history()
 			done! = true
 		}
-		case(1)
+		case (1)
 		{
 			// Load game
 			dest$ = dirSav()
@@ -69,7 +69,7 @@ until (done!)
 				done! = true
 			}
 		}
-		case(2)
+		case (2)
 		{
 			// End game
 			windows()
