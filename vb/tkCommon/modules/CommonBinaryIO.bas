@@ -24,15 +24,22 @@ End Function
 '=========================================================================
 Public Function BinReadString(ByVal fileNum As Integer) As String
     On Error Resume Next
+    Dim theString As String
     Dim part As String * 1
-    Do
+    theString = ""
+    Dim bDone As Boolean
+    bDone = False
+    Do Until bDone
         Get fileNum, , part
         If Asc(part) = 0 Then
-            Exit Do
+            'the end of the string
+            'is found!
+            bDone = True
         Else
-            BinReadString = BinReadString & part
+            theString = theString & part
         End If
     Loop
+    BinReadString = theString
 End Function
 
 '=========================================================================
@@ -111,10 +118,11 @@ End Sub
 Public Function BinWriteString(ByVal fileNum As Integer, ByVal theString As String) As Long
     On Error Resume Next
     Dim part As String * 1
-    Dim Length As Long, chrIdx As Long
-    For chrIdx = 1 To Len(theString)
-        part = Mid(theString, chrIdx, 1)
+    Dim Length As Long, t As Long
+    Length = Len(theString)
+    For t = 1 To Length
+        part = Mid(theString, t, 1)
         Put fileNum, , part
-    Next chrIdx
-    Put fileNum, , Chr(0)
+    Next t
+    Put fileNum, , Chr$(0)
 End Function
