@@ -25,6 +25,7 @@ Begin VB.Form editmainfile
    ScaleHeight     =   6030
    ScaleWidth      =   7515
    Tag             =   "7"
+   WindowState     =   2  'Maximized
    Begin VB.TextBox gametitlebox 
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -75,14 +76,14 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "startframe"
-      Tab(1).Control(1)=   "fraSettings"
+      Tab(1).Control(0)=   "fraSettings"
+      Tab(1).Control(1)=   "startframe"
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "prgframe"
-      Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(0)=   "actionframe"
+      Tab(2).Control(1)=   "prgframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -118,11 +119,28 @@ Begin VB.Form editmainfile
             Italic          =   -1  'True
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   1695
+         Height          =   2535
          Left            =   -74760
          TabIndex        =   81
          Top             =   2520
          Width           =   6615
+         Begin VB.CheckBox chkUsePixelPush 
+            Caption         =   "#Push in pixel increments (changable with #PixelMovement)."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   1800
+            TabIndex        =   99
+            Top             =   1800
+            Width           =   4695
+         End
          Begin VB.CommandButton cmdMouseCursor 
             Caption         =   "Mouse Cursor"
             BeginProperty Font 
@@ -135,9 +153,9 @@ Begin VB.Form editmainfile
                Strikethrough   =   0   'False
             EndProperty
             Height          =   375
-            Left            =   240
+            Left            =   120
             TabIndex        =   87
-            Top             =   1150
+            Top             =   2040
             Width           =   1455
          End
          Begin VB.OptionButton optTileBased 
@@ -152,9 +170,9 @@ Begin VB.Form editmainfile
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
-            Left            =   3000
+            Left            =   3240
             TabIndex        =   86
-            Top             =   720
+            Top             =   1440
             Width           =   1815
          End
          Begin VB.OptionButton optPixelBased 
@@ -169,23 +187,41 @@ Begin VB.Form editmainfile
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
-            Left            =   1680
+            Left            =   1800
             TabIndex        =   85
-            Top             =   720
+            Top             =   1440
             Width           =   1215
          End
          Begin MSComctlLib.Slider sliGameSpeed 
-            Height          =   255
-            Left            =   3000
+            Height          =   495
+            Left            =   2400
             TabIndex        =   83
-            Top             =   360
-            Width           =   3375
-            _ExtentX        =   5953
-            _ExtentY        =   450
+            TabStop         =   0   'False
+            Top             =   240
+            Width           =   3975
+            _ExtentX        =   7011
+            _ExtentY        =   873
             _Version        =   393216
-            Max             =   3
-            SelStart        =   1
-            Value           =   1
+            LargeChange     =   2
+            Min             =   -4
+            Max             =   4
+         End
+         Begin VB.Label lblGamesSpeedNote 
+            Caption         =   $"EDITMAINv2.frx":0D8E
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   495
+            Left            =   120
+            TabIndex        =   98
+            Top             =   840
+            Width           =   6255
          End
          Begin VB.Label Label23 
             Caption         =   "Movement style:"
@@ -199,13 +235,13 @@ Begin VB.Form editmainfile
                Strikethrough   =   0   'False
             EndProperty
             Height          =   255
-            Left            =   240
+            Left            =   120
             TabIndex        =   84
-            Top             =   720
-            Width           =   1335
+            Top             =   1440
+            Width           =   1215
          End
          Begin VB.Label Label15 
-            Caption         =   "Speed at which the game should run:"
+            Caption         =   "Additional speed adjustment: (#GameSpeed initial value)."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -215,11 +251,11 @@ Begin VB.Form editmainfile
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Height          =   255
-            Left            =   240
+            Height          =   495
+            Left            =   120
             TabIndex        =   82
             Top             =   360
-            Width           =   2655
+            Width           =   2895
          End
       End
       Begin VB.Frame fightframe 
@@ -239,7 +275,7 @@ Begin VB.Form editmainfile
          Tag             =   "1186"
          Top             =   600
          Width           =   6615
-         Begin VB.CommandButton Command1 
+         Begin VB.CommandButton cmdEditFighting 
             Appearance      =   0  'Flat
             Caption         =   "Edit..."
             BeginProperty Font 
@@ -258,7 +294,7 @@ Begin VB.Form editmainfile
             Top             =   600
             Width           =   1095
          End
-         Begin VB.OptionButton Option4 
+         Begin VB.OptionButton optDisableFighting 
             Caption         =   "No"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -276,7 +312,7 @@ Begin VB.Form editmainfile
             Top             =   600
             Width           =   735
          End
-         Begin VB.OptionButton Option3 
+         Begin VB.OptionButton optEnableFighting 
             Caption         =   "Yes"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -327,7 +363,7 @@ Begin VB.Form editmainfile
             ForeColor       =   &H00FF0000&
             Height          =   255
             Left            =   2520
-            MouseIcon       =   "EDITMAINv2.frx":0D8E
+            MouseIcon       =   "EDITMAINv2.frx":0E46
             MousePointer    =   99  'Custom
             TabIndex        =   78
             Tag             =   "1188"
@@ -369,7 +405,7 @@ Begin VB.Form editmainfile
             Top             =   480
             Width           =   4815
          End
-         Begin VB.CommandButton Command4 
+         Begin VB.CommandButton cmdRemovePlugin 
             Appearance      =   0  'Flat
             Caption         =   "Remove"
             BeginProperty Font 
@@ -387,7 +423,7 @@ Begin VB.Form editmainfile
             Top             =   2160
             Width           =   1095
          End
-         Begin VB.CommandButton Command5 
+         Begin VB.CommandButton cmdAddPlugin 
             Appearance      =   0  'Flat
             Caption         =   "Add"
             BeginProperty Font 
@@ -405,7 +441,7 @@ Begin VB.Form editmainfile
             Top             =   1680
             Width           =   1095
          End
-         Begin VB.CommandButton Command6 
+         Begin VB.CommandButton cmdSelectMenuSystem 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -457,7 +493,7 @@ Begin VB.Form editmainfile
             Top             =   3360
             Width           =   2655
          End
-         Begin VB.CommandButton Command10 
+         Begin VB.CommandButton cmdSelectBattleSystem 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -561,7 +597,7 @@ Begin VB.Form editmainfile
             Top             =   360
             Width           =   3135
          End
-         Begin VB.CommandButton Command14 
+         Begin VB.CommandButton cmdInitialBoard 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -579,7 +615,7 @@ Begin VB.Form editmainfile
             Top             =   360
             Width           =   1095
          End
-         Begin VB.CommandButton Command15 
+         Begin VB.CommandButton cmdInitialChar 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -647,7 +683,7 @@ Begin VB.Form editmainfile
             ForeColor       =   &H00FF0000&
             Height          =   495
             Left            =   240
-            MouseIcon       =   "EDITMAINv2.frx":1098
+            MouseIcon       =   "EDITMAINv2.frx":1150
             MousePointer    =   99  'Custom
             TabIndex        =   61
             Tag             =   "1158"
@@ -669,7 +705,7 @@ Begin VB.Form editmainfile
             ForeColor       =   &H00FF0000&
             Height          =   495
             Left            =   3000
-            MouseIcon       =   "EDITMAINv2.frx":13A2
+            MouseIcon       =   "EDITMAINv2.frx":145A
             MousePointer    =   99  'Custom
             TabIndex        =   60
             Tag             =   "1157"
@@ -746,7 +782,7 @@ Begin VB.Form editmainfile
             Top             =   360
             Width           =   615
          End
-         Begin VB.CommandButton Command3 
+         Begin VB.CommandButton cmdExtendedRunTimes 
             Caption         =   "More"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -836,7 +872,7 @@ Begin VB.Form editmainfile
          Tag             =   "1144"
          Top             =   600
          Width           =   6615
-         Begin VB.CommandButton Command2 
+         Begin VB.CommandButton cmdSkin 
             Caption         =   "Skin"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -855,7 +891,7 @@ Begin VB.Form editmainfile
             Visible         =   0   'False
             Width           =   1095
          End
-         Begin VB.TextBox Text1 
+         Begin VB.TextBox txtGameOver 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -906,7 +942,7 @@ Begin VB.Form editmainfile
             Top             =   600
             Width           =   2655
          End
-         Begin VB.CommandButton Command16 
+         Begin VB.CommandButton cmdRunTimePrg 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -924,7 +960,7 @@ Begin VB.Form editmainfile
             Top             =   240
             Width           =   1095
          End
-         Begin VB.CommandButton Command17 
+         Begin VB.CommandButton cmdStartUpPrg 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -942,7 +978,7 @@ Begin VB.Form editmainfile
             Top             =   600
             Width           =   1095
          End
-         Begin VB.CommandButton Command18 
+         Begin VB.CommandButton cmdGameOverPrg 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -1028,7 +1064,7 @@ Begin VB.Form editmainfile
             ForeColor       =   &H00FF0000&
             Height          =   255
             Left            =   2280
-            MouseIcon       =   "EDITMAINv2.frx":16AC
+            MouseIcon       =   "EDITMAINv2.frx":1764
             MousePointer    =   99  'Custom
             TabIndex        =   43
             Tag             =   "1150"
@@ -1639,7 +1675,7 @@ Begin VB.Form editmainfile
             Top             =   840
             Width           =   2655
          End
-         Begin VB.CommandButton Command7 
+         Begin VB.CommandButton cmdCursorMoveSound 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -1657,7 +1693,7 @@ Begin VB.Form editmainfile
             Top             =   480
             Width           =   1095
          End
-         Begin VB.CommandButton Command8 
+         Begin VB.CommandButton cmdCursorSelectSound 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -1675,7 +1711,7 @@ Begin VB.Form editmainfile
             Top             =   840
             Width           =   1095
          End
-         Begin VB.CommandButton Command9 
+         Begin VB.CommandButton cmdCursorCancelSound 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -1759,7 +1795,7 @@ Begin VB.Form editmainfile
          ForeColor       =   &H00FF0000&
          Height          =   255
          Left            =   -74760
-         MouseIcon       =   "EDITMAINv2.frx":19B6
+         MouseIcon       =   "EDITMAINv2.frx":1A6E
          MousePointer    =   99  'Custom
          TabIndex        =   34
          Tag             =   "1158"
@@ -2043,6 +2079,19 @@ Private Sub chkScreenStyle_Click(ByRef Index As Integer)
 End Sub
 
 '=========================================================================
+' #Push() in pixel increments.
+'=========================================================================
+Private Sub chkUsePixelPush_Click()
+    If optPixelBased.value = True Then
+        If chkUsePixelPush.value = 1 Then
+            mainMem.pixelMovement = PIXEL_MOVEMENT_PIXEL_PUSH
+        Else
+            mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH
+        End If
+    End If
+End Sub
+
+'=========================================================================
 ' Mouse cursor button
 '=========================================================================
 Private Sub cmdMouseCursor_Click()
@@ -2068,8 +2117,7 @@ End Sub
 '=========================================================================
 ' Open the main fight editor
 '=========================================================================
-Private Sub Command1_Click()
-    On Error Resume Next
+Private Sub cmdEditFighting_Click(): On Error Resume Next
     mainNeedUpdate = True
     Call mainfight.Show
 End Sub
@@ -2077,10 +2125,8 @@ End Sub
 '=========================================================================
 ' Select battle system
 '=========================================================================
-Private Sub Command10_Click()
-
-    On Error Resume Next
-
+Private Sub cmdSelectBattleSystem_Click(): On Error Resume Next
+    
     Call ChDir(currentDir)
     Dim dlg As FileDialogInfo
     With dlg
@@ -2109,8 +2155,7 @@ End Sub
 '=========================================================================
 ' Select initial board
 '=========================================================================
-Private Sub Command14_Click()
-    On Error Resume Next
+Private Sub cmdInitialBoard_Click(): On Error Resume Next
     Call ChDir(currentDir)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ & brdPath$
@@ -2135,8 +2180,7 @@ End Sub
 '=========================================================================
 ' Select initial character
 '=========================================================================
-Private Sub Command15_Click()
-    On Error Resume Next
+Private Sub cmdInitialChar_Click(): On Error Resume Next
     Call ChDir(currentDir)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ & temPath$
@@ -2161,8 +2205,7 @@ End Sub
 '=========================================================================
 ' Select runtime program
 '=========================================================================
-Private Sub Command16_Click()
-    On Error Resume Next
+Private Sub cmdRunTimePrg_Click(): On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ & prgPath$
@@ -2187,8 +2230,7 @@ End Sub
 '=========================================================================
 ' Select startup program
 '=========================================================================
-Private Sub Command17_Click()
-    On Error Resume Next
+Private Sub cmdStartUpPrg_Click(): On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ & prgPath$
@@ -2213,8 +2255,7 @@ End Sub
 '=========================================================================
 ' Select game over program
 '=========================================================================
-Private Sub Command18_Click()
-    On Error Resume Next
+Private Sub cmdGameOverPrg_Click(): On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ & prgPath$
@@ -2232,23 +2273,22 @@ Private Sub Command18_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ & prgPath$ & antiPath$
-    Text1.Text = antiPath$
+    txtGameOver.Text = antiPath$
     mainMem.gameOverPrg$ = antiPath$
 End Sub
 
 '=========================================================================
 ' Extended run-time programs
 '=========================================================================
-Private Sub Command3_Click()
-    On Error Resume Next
+Private Sub cmdExtendedRunTimes_Click(): On Error Resume Next
     Call runtimeprograms.Show
 End Sub
 
 '=========================================================================
 ' Remove plugin
 '=========================================================================
-Private Sub Command4_Click()
-    On Error Resume Next
+Private Sub cmdRemovePlugin_Click(): On Error Resume Next
+
     If plugList.ListIndex = -1 Then plugList.ListIndex = 0
     Call MainRemovePlugin(mainMem, MainGetNthPlugin(mainMem, plugList.ListIndex))
     Dim idx As Long
@@ -2256,13 +2296,13 @@ Private Sub Command4_Click()
     If idx = -1 Then idx = 0
     Call pluginInfoFill
     plugList.ListIndex = idx
+    
 End Sub
 
 '=========================================================================
 ' Add plugin
 '=========================================================================
-Private Sub Command5_Click()
-    On Error Resume Next
+Private Sub cmdAddPlugin_Click(): On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ & plugPath$
@@ -2286,8 +2326,7 @@ End Sub
 '=========================================================================
 ' Select menu system
 '=========================================================================
-Private Sub Command6_Click()
-    On Error Resume Next
+Private Sub cmdSelectMenuSystem_Click(): On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ & plugPath$
@@ -2312,8 +2351,7 @@ End Sub
 '=========================================================================
 ' Select cursor move sound
 '=========================================================================
-Private Sub Command7_Click()
-    On Error Resume Next
+Private Sub cmdCursorMoveSound_Click(): On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + mediaPath$
@@ -2338,8 +2376,7 @@ End Sub
 '=========================================================================
 ' Select cursor select sound
 '=========================================================================
-Private Sub Command8_Click()
-    On Error Resume Next
+Private Sub cmdCursorSelectSound_Click(): On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ & mediaPath$
@@ -2364,8 +2401,7 @@ End Sub
 '=========================================================================
 ' Select cursor cancel sound
 '=========================================================================
-Private Sub Command9_Click()
-    On Error Resume Next
+Private Sub cmdCursorCancelSound_Click(): On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ & mediaPath$
@@ -2451,7 +2487,7 @@ End Sub
 '=========================================================================
 ' Update activeForm
 '=========================================================================
-Private Sub Form_Activate()
+Private Sub Form_Activate(): On Error Resume Next
     Set activeForm = Me
     Call hideAllTools
 End Sub
@@ -2459,13 +2495,14 @@ End Sub
 '=========================================================================
 ' Load form
 '=========================================================================
-Private Sub Form_Load()
-    On Error Resume Next
+Private Sub Form_Load(): On Error Resume Next
+
     Call LocalizeForm(Me)
     Me.height = 6270
     Me.width = 7600
     filename(2) = vbNullString
-    sliGameSpeed.max = MAX_GAMESPEED
+    sliGameSpeed.max = MAX_GAMESPEED                'Gamespeed range.
+    sliGameSpeed.min = -MAX_GAMESPEED
     Call infofill
 End Sub
 
@@ -2481,7 +2518,7 @@ End Sub
 '=========================================================================
 ' Unload form
 '=========================================================================
-Private Sub Form_Unload(Cancel As Integer)
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     Call releaseComPlugins
     Call hideAllTools
 End Sub
@@ -2510,7 +2547,7 @@ End Sub
 '=========================================================================
 Private Sub infofill()
     On Error Resume Next
-    Option3.value = True
+    optDisableFighting.value = True
     If mainMem.startupPrg$ <> "" Then
         startupbox.Text = mainMem.startupPrg$          'start up program
     Else
@@ -2522,9 +2559,9 @@ Private Sub infofill()
         runtimebox.Text = LoadStringLoc(1010, "None")
     End If
     If mainMem.gameOverPrg$ <> "" Then
-        Text1.Text = mainMem.gameOverPrg$             'run time program
+        txtGameOver.Text = mainMem.gameOverPrg$             'run time program
     Else
-        Text1.Text = LoadStringLoc(1010, "None")
+        txtGameOver.Text = LoadStringLoc(1010, "None")
     End If
     mnuplugin.Text = mainMem.menuPlugin
     fgtPlugin.Text = mainMem.fightPlugin
@@ -2557,7 +2594,7 @@ Private Sub infofill()
         initcharbox.Text = LoadStringLoc(1010, "None")
     End If
 
-    Option4.value = mainMem.fightgameYN             'fighting in game? 0-yes, 1-no
+    optEnableFighting.value = mainMem.fightgameYN             'fighting in game? 0-yes, 1-no
    
     gametitlebox.Text = mainMem.gameTitle$
     gametitlebox2.Text = mainMem.gameTitle$
@@ -2611,13 +2648,23 @@ Private Sub infofill()
             color32bit.value = True
     End Select
    
-    If mainMem.pixelMovement = 1 Then
-        optPixelBased.value = True
-    Else
-        optTileBased.value = True
-    End If
+    Select Case mainMem.pixelMovement
+        Case PIXEL_MOVEMENT_PIXEL_PUSH
+            optPixelBased.value = True
+            chkUsePixelPush.value = 1
+            chkUsePixelPush.Enabled = True
+        Case PIXEL_MOVEMENT_TILE_PUSH
+            optPixelBased.value = True
+            chkUsePixelPush.value = 0
+            chkUsePixelPush.Enabled = True
+        Case Else
+            'TILE_MOVEMENT or error.
+            optTileBased.value = True
+            chkUsePixelPush.value = 0
+            chkUsePixelPush.Enabled = False
+    End Select
     
-    sliGameSpeed.value = mainMem.gameSpeed
+    sliGameSpeed.value = getGameSpeed(mainMem.gameSpeed)
 
 End Sub
 
@@ -2794,28 +2841,31 @@ End Sub
 '=========================================================================
 ' Disable fighting
 '=========================================================================
-Private Sub Option3_Click()
-    On Error Resume Next
+Private Sub optDisableFighting_Click(): On Error Resume Next
     mainNeedUpdate = True
     mainMem.fightgameYN = 0
-    Command1.Enabled = True
+    cmdEditFighting.Enabled = True
 End Sub
 
 '=========================================================================
 ' Enable fighting
 '=========================================================================
-Private Sub Option4_Click()
-    On Error Resume Next
+Private Sub optEnableFighting_Click(): On Error Resume Next
     mainNeedUpdate = True
     mainMem.fightgameYN = 1
-    Command1.Enabled = False
+    cmdEditFighting.Enabled = False
 End Sub
 
 '=========================================================================
 ' Change to pixel movement
 '=========================================================================
 Private Sub optPixelBased_Click()
-    mainMem.pixelMovement = 1
+    If chkUsePixelPush.value = 0 Then
+        mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH
+    Else
+        mainMem.pixelMovement = PIXEL_MOVEMENT_PIXEL_PUSH
+    End If
+    chkUsePixelPush.Enabled = True
 End Sub
 
 '=========================================================================
@@ -2829,7 +2879,9 @@ End Sub
 ' Change to tile movement
 '=========================================================================
 Private Sub optTileBased_Click()
-    mainMem.pixelMovement = 0
+    mainMem.pixelMovement = TILE_MOVEMENT
+    chkUsePixelPush.Enabled = False
+    chkUsePixelPush.value = 0
 End Sub
 
 '=========================================================================
@@ -2881,7 +2933,18 @@ End Sub
 ' Change initial game speed
 '=========================================================================
 Private Sub sliGameSpeed_Change()
-    mainMem.gameSpeed = sliGameSpeed.value
+
+    Call setGameSpeed(mainMem.gameSpeed, sliGameSpeed.value)
+End Sub
+
+Private Sub sliGameSpeed_Scroll()
+    If sliGameSpeed.value > 0 Then
+        sliGameSpeed.Text = "Increase (" & CStr(sliGameSpeed.value) & ")"
+    ElseIf sliGameSpeed.value < 0 Then
+        sliGameSpeed.Text = "Decrease (" & CStr(sliGameSpeed.value) & ")"
+    Else
+        sliGameSpeed.Text = "Unaltered (0)"
+    End If
 End Sub
 
 '=========================================================================
@@ -2892,6 +2955,7 @@ Private Sub smallWindowed_Click()
     mainNeedUpdate = True
     mainMem.mainScreenType = 2
 End Sub
+
 
 '=========================================================================
 ' Change startup program
@@ -2912,9 +2976,9 @@ End Sub
 '=========================================================================
 ' Change game over program
 '=========================================================================
-Private Sub Text1_Change()
+Private Sub txtGameOver_Change()
     On Error Resume Next
-    mainMem.gameOverPrg$ = Text1.Text
+    mainMem.gameOverPrg$ = txtGameOver.Text
 End Sub
 
 '=========================================================================
