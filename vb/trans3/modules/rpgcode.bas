@@ -9791,8 +9791,8 @@ Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
 
  ' ! ADDED BY KSNiloc...
  If LCase$(GetCommandName(Text)) = "openfileinput" Then
-    If Not fileExists(App.path & "\" & fullfolder & file) Then
-        debugger "Error: " & App.path & "\" & fullfolder & file & " does not exist!"
+    If Not fileExists(fullfolder & file) Then
+        debugger "Error: " & fullfolder & file & " does not exist!"
         Exit Function
     End If
  End If
