@@ -120,6 +120,7 @@ Private Const CC_SOLIDCOLOR = &H80
 Private Const CC_STYLED = 32             '  Can do styled lines
 Private Const CC_WIDE = 16               '  Can do wide lines
 Private Const CC_WIDESTYLED = 64         '  Can do wide styled lines
+Private Const OFN_OVERWRITEPROMPT = &H2
 
 '=========================================================================
 ' Convert a pointer to a null-terminated string to a VB string
@@ -129,7 +130,7 @@ Private Function APIString2VBString(ByVal str As String) As String
     Dim part As String, stringPos As Integer
     For stringPos = 0 To Len(str)
         part = Mid(str, stringPos, 1)
-        If part = Chr(0) Then
+        If part = chr(0) Then
             Exit For
         Else
             APIString2VBString = APIString2VBString & part
@@ -199,11 +200,11 @@ Private Function DialogFilterToAPIFilter(ByVal filter As String) As String
     Dim toRet As String, t As Integer, part As String
     For t = 0 To Len(filter)
         part = Mid(filter, t, 1)
-        If part = "|" Then part = Chr(0)
+        If part = "|" Then part = chr(0)
         toRet = toRet & part
     Next t
-    toRet = toRet & Chr(0)
-    toRet = toRet & Chr(0)
+    toRet = toRet & chr(0)
+    toRet = toRet & chr(0)
     DialogFilterToAPIFilter = toRet
 End Function
 
@@ -271,6 +272,7 @@ Public Function SaveFileDialog(ByRef dlgInfo As FileDialogInfo, Optional ByVal h
           .lpstrFileTitle = .lpstrFile '
           .nMaxFileTitle = MAX_BUFFER
           .lpstrDefExt = dlgInfo.strDefaultExt
+          .flags = OFN_OVERWRITEPROMPT
     End With
     
     retval = GetSaveFileName(opfS)
