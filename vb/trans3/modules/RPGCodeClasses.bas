@@ -995,8 +995,13 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
     'Get its handle
     If (object <> "THIS") Then
-        If (Right(object, 1) <> "!" And Right(object, 1) <> "$") Then object = object & "!"
-        Call getValue(object, object, hClassDbl, prg)
+        If (getValue(object, object, hClassDbl, prg) = DT_LIT) Then
+            If (Right(object, 1) <> "!" And Right(object, 1) <> "$") Then
+                'Must be a var
+                object = object & "!"
+                Call getVariable(object, object, hClassDbl, prg)
+            End If
+        End If
         hClass = CLng(hClassDbl)
         'Check if we're calling from outside
         outside = (topNestle(prg) <> hClass)
