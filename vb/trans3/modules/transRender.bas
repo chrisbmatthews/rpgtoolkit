@@ -96,6 +96,11 @@ Public addOnR As Long           'red to add
 Public addOnG As Long           'green to add
 Public addOnB As Long           'blue to add
 
+Public cnvRenderNow As Long     'Allows drawing onto renderNow canvas at last step.
+                                'This *finally* makes HP bars and the like possible.
+
+Public renderRenderNowCanvas As Boolean     'Should we render cnvRenderNow?
+
 '=========================================================================
 ' Returns number of items loaded
 '=========================================================================
@@ -960,7 +965,6 @@ End Sub
 
 '=========================================================================
 ' Determine if two PlayerRender structures are equal
-' (operator overloading needed!!)
 '=========================================================================
 Private Function PlayerRenderEqual(ByRef rend1 As PlayerRender, ByRef rend2 As PlayerRender) As Boolean
     On Error Resume Next
@@ -974,7 +978,7 @@ End Function
 '=========================================================================
 ' Draw a sprite
 '=========================================================================
-Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardx As Double, ByVal boardy As Double, ByVal boardL As Long, _
+Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal boardY As Double, ByVal boardL As Long, _
                 ByRef pending As PENDING_MOVEMENT, Optional ByVal cnvTarget As Long = -1, Optional ByVal bAccountForUnderTiles As Boolean = True)
     
     '==========================================
@@ -1013,10 +1017,10 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardx As Double, ByVal 
     xTarg = pending.xTarg
     yTarg = pending.yTarg
     
-    If xOrig > boardList(activeBoardIndex).theData.Bsizex Or xOrig < 0 Then xOrig = Round(boardx)
-    If yOrig > boardList(activeBoardIndex).theData.Bsizey Or yOrig < 0 Then yOrig = Round(boardy)
-    If xTarg > boardList(activeBoardIndex).theData.Bsizex Or xTarg < 0 Then xTarg = Round(boardx)
-    If yTarg > boardList(activeBoardIndex).theData.Bsizey Or yTarg < 0 Then yTarg = Round(boardy)
+    If xOrig > boardList(activeBoardIndex).theData.Bsizex Or xOrig < 0 Then xOrig = Round(boardX)
+    If yOrig > boardList(activeBoardIndex).theData.Bsizey Or yOrig < 0 Then yOrig = Round(boardY)
+    If xTarg > boardList(activeBoardIndex).theData.Bsizex Or xTarg < 0 Then xTarg = Round(boardX)
+    If yTarg > boardList(activeBoardIndex).theData.Bsizey Or yTarg < 0 Then yTarg = Round(boardY)
     
     Dim targetTile As Double, originTile As Double
     
@@ -1026,8 +1030,8 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardx As Double, ByVal 
     Dim centreX As Long, centreY As Long
     
     'Determine the centrepoint of the tile in pixels.
-    centreX = getBottomCentreX(boardx, boardy, pending) 'Note: new arguments!
-    centreY = getBottomCentreY(boardy)
+    centreX = getBottomCentreX(boardX, boardY, pending) 'Note: new arguments!
+    centreY = getBottomCentreY(boardY)
        
     Dim spriteWidth As Long, spriteHeight As Long, cornerX As Long, cornerY As Long
     
@@ -1102,9 +1106,9 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardx As Double, ByVal 
         
         'NEW statement: note "Round" instead of "Int":
         
-        If bAccountForUnderTiles And (checkAbove(boardx, boardy, boardL) = 1 _
-            Or (targetTile = UNDER And Round(boardx) = xTarg And Round(boardy) = yTarg) _
-            Or (originTile = UNDER And Round(boardx) = xOrig And Round(boardy) = yOrig) _
+        If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
+            Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
+            Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
             Or (targetTile = UNDER And originTile = UNDER)) Then
             
             'If bAccountForUnderTiles AND [tiles on layers above
@@ -1149,9 +1153,9 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardx As Double, ByVal 
         
         'NEW: should be identical to above statement.
         
-        If bAccountForUnderTiles And (checkAbove(boardx, boardy, boardL) = 1 _
-            Or (targetTile = UNDER And Round(boardx) = xTarg And Round(boardy) = yTarg) _
-            Or (originTile = UNDER And Round(boardx) = xOrig And Round(boardy) = yOrig) _
+        If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
+            Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
+            Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
             Or (targetTile = UNDER And originTile = UNDER)) Then
             
             'If bAccountForUnderTiles AND [tiles on layers above
@@ -1342,6 +1346,8 @@ Private Sub createCanvases(ByVal Width As Long, ByVal height As Long)
         cnvRPGCodeBuffers(t) = CreateCanvas(32, 32)
     Next t
     cnvRPGCodeAccess = CreateCanvas(Width, height)
+    cnvRenderNow = CreateCanvas(Width, height)
+    Call CanvasFill(cnvRenderNow, 0)
     globalCanvasHeight = height
     globalCanvasWidth = Width
 End Sub
@@ -1373,6 +1379,7 @@ Private Sub destroyCanvases()
     For t = 0 To UBound(cnvRPGCode)
         Call DestroyCanvas(cnvRPGCode(t))
     Next t
+    Call DestroyCanvas(cnvRenderNow)
 End Sub
 
 '========================================================================='
@@ -1530,7 +1537,8 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1)
     Dim newSprites As Boolean       'update sprites?
     Dim newTileAnm As Boolean       'update tile animations?
     Dim newItem As Boolean          'update items?
-    Dim newBackground As Boolean    'update background
+    Dim newBackground As Boolean    'update background?
+    Dim newMultiAnim As Boolean     'update multitasking animations?
     Dim t As Long                   'for loop control variable
 
     'Check if we need to render the background
@@ -1538,6 +1546,9 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1)
 
     'Check if we need to render the board
     newBoard = renderBoard()
+
+    'Check if we need to render multitasking animations
+    newMultiAnim = multiAnimRender()
 
     'Check if we need to render the player sprites
     For t = 0 To UBound(cnvPlayer)
@@ -1562,11 +1573,14 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1)
     newTileAnm = renderAnimatedTiles(cnvScrollCache, cnvScrollCacheMask)
 
     'If *anything* is new, render it all
-    If newBoard Or newSprites Or newTileAnm Or newItem Then
+    If newBoard Or newSprites Or newTileAnm Or newItem Or newMultiAnim Or renderRenderNowCanvas Then
 
+        'Fill the target with the board's color
         If cnvTarget = -1 Then
+            'To the screen
             Call DXClearScreen(boardList(activeBoardIndex).theData.brdColor)
         Else
+            'To a canvas
             Call CanvasFill(cnvTarget, boardList(activeBoardIndex).theData.brdColor)
         End If
 
@@ -1579,13 +1593,24 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1)
         'Render sprites
         Call DXDrawSprites(cnvTarget)
 
+        'Render multitasking animations
+        Call DXDrawAnimations(cnvTarget)
+
+        'Render the rpgcode renderNow canvas
+        If renderRenderNowCanvas Then
+            If cnvTarget = -1 Then
+                'To the screen
+                Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, 0)
+            Else
+                'To a canvas
+                Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, 0)
+            End If
+        End If
+
         'Refresh the screen if we're rendering to it
         If cnvTarget = -1 Then
             Call DXRefresh
         End If
-
-        'Render multitasking animations (needs fixed framerate !!!)
-        Call handleMultitaskingAnimations(cnvTarget)
 
     End If
 
@@ -2004,6 +2029,13 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     screenWidth = screenWidth * Screen.TwipsPerPixelX
     screenHeight = screenHeight * Screen.TwipsPerPixelY
 
+End Sub
+
+'=========================================================================
+' Render animations to the target passed in
+'=========================================================================
+Private Sub DXDrawAnimations(Optional ByVal cnvTarget As Long = -1)
+    Call renderMultiAnimations(cnvTarget)
 End Sub
 
 '=========================================================================

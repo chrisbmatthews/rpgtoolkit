@@ -239,7 +239,7 @@ Public Function isEquation( _
     lineText = Trim(lineText)
     If lineText = "" Then Exit Function
  
-    If left(lineText, 1) = "-" Then
+    If Left(lineText, 1) = "-" Then
         'Probably a negative number...
         Exit Function
     End If
@@ -443,15 +443,15 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
         Case DT_COMMAND:
             'if it's a command, run the command
             'and return the value it produces...
-            Dim retval As RPGCODE_RETURN
+            Dim retVal As RPGCODE_RETURN
             Dim oldPos As Long
             oldPos = theProgram.programPos
-            Call DoSingleCommand(Text$, theProgram, retval)
+            Call DoSingleCommand(Text$, theProgram, retVal)
             theProgram.programPos = oldPos
-            If retval.dataType = DT_LIT Then
-                getValue = getValue(retval.lit, lit$, num, theProgram)
+            If retVal.dataType = DT_LIT Then
+                getValue = getValue(retVal.lit, lit$, num, theProgram)
             Else
-                getValue = getValue(str$(retval.num), lit$, num, theProgram)
+                getValue = getValue(str$(retVal.num), lit$, num, theProgram)
             End If
             
         Case DT_EQUATION
@@ -770,7 +770,7 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
             Dim RPGCode As String
             Dim passData As RPGCODE_RETURN
             prop = ParseAfter(a$, ".")
-            propCall = left(prop, Len(prop) - 1)
+            propCall = Left(prop, Len(prop) - 1)
             Select Case vtype
                 Case DT_NUM
                     RPGCode = fromClass & "." & propCall & "_Set(" & CStr(valUse) & ")"
@@ -793,21 +793,34 @@ End Sub
 '=========================================================================
 ' Get the value of a variable
 '=========================================================================
-Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As Long
+Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
 
     On Error GoTo errorhandler
 
     Dim a As String, arrayElem As String, postFix As String, prefix As String, tpe As Long, v As String
     Dim typeVar As Long
-    
-    a = varname
-    a = removeChar(a, " ")
-    a = parseArray(a, theProgram)
+
+    Select Case Trim(LCase(varname))
+
+        Case "gametime!"
+            Call updateGameTime
+            num = gameTime
+            getVariable = DT_NUM
+            Exit Function
+            
+        Case "cnvrendernow!"
+            num = cnvRenderNow
+            getVariable = DT_NUM
+            Exit Function
+
+    End Select
+
+    a = parseArray(removeChar(varname, " "), theProgram)
 
     Dim rV As RPGCODE_RETURN
     typeVar = variType(a$, globalHeap)
     If typeVar = -1 Then getVariable = -1
-    
+
     If bRPGCStarted Then
         'using the c++ dll
         If typeVar = 0 Then
@@ -841,7 +854,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
             Dim RPGCode As String
             Dim passData As RPGCODE_RETURN
             prop = ParseAfter(a$, ".")
-            propCall = left(prop, Len(prop) - 1)
+            propCall = Left(prop, Len(prop) - 1)
             RPGCode = "#" & fromClass & "." & propCall & "_Get()"
             DoIndependentCommand RPGCode, passData
             With passData

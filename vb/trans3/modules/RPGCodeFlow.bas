@@ -31,6 +31,7 @@ Public wentToNewBoard As Boolean        'did we go to a new board in the program
 Public methodReturn As RPGCODE_RETURN   'return value for method calls
 Public errorKeep As RPGCodeProgram      'program kept as a backup for error handling
 Public preErrorPos As Long              'position before an error occured
+Public disregardLooping As Boolean      'disregard being in a loop
 
 Public Enum RPGC_DT                     'rpgcode data type enum
     DT_VOID = -1                        '  can't tell
@@ -302,13 +303,16 @@ Public Sub multiTaskNow()
     'Flag we're multitasking
     gbMultiTasking = True
 
+    'Open item programs
     Call openMulti
+    
+    'Run all threads
     Call ExecuteAllThreads
 
+    'Run all item programs
     Dim t As Long
     For t = 0 To UBound(multilist)
         If multilist(t) <> "" Then
-            'OK, run this multitask program.
             target = t
             targetType = TYPE_ITEM
             Source = t
@@ -319,7 +323,10 @@ Public Sub multiTaskNow()
         End If
     Next t
 
-    If (gGameState <> GS_PAUSE) And (GS_LOOPING) Then Call handleThreadLooping
+    'Run thread loops
+    If (gGameState <> GS_PAUSE) And (GS_LOOPING) Then
+        Call handleThreadLooping
+    End If
 
     'Flag we're no longer multitasking
     gbMultiTasking = False
@@ -798,7 +805,7 @@ Public Sub runProgram( _
     DBWinLength = 0
     
     Call hideMsgBox
-    Call setconstants
+    Call setConstants
     Call clearButtons
 
     If setSourceAndTarget Then
@@ -942,8 +949,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
     End If
     errorKeep = theProgram
 
-    'Threading... [KSNiloc]
-    If isMultiTasking() And theProgram.looping Then Exit Function
+    If (isMultiTasking() And theProgram.looping) And (Not disregardLooping) Then Exit Function
 
     'Parse this line like it has never been parsed before... [KSNiloc]
     rpgcodeCommand = ParseRPGCodeCommand(rpgcodeCommand, theProgram)
@@ -1929,12 +1935,12 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
         
         'ver 2.13 sept/00
         Case "ANIMATION":
-            Call AnimationRPG(splice$, theProgram)   'run animation
+            Call AnimationRPG(splice, theProgram, retval)  'run animation
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "SIZEDANIMATION":
-            Call SizedAnimationRPG(splice$, theProgram)   'run sized animation
+            Call SizedAnimationRPG(splice$, theProgram, retval)  'run sized animation
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -2352,7 +2358,21 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
             Call replaceRPG(splice, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
-       
+            
+        Case "ENDANIMATION"
+            Call endAnimationRPG(splice, theProgram)
+            DoSingleCommand = increment(theProgram)
+            Exit Function
+            
+        Case "RENDERNOW"
+            Call renderNowRPG(splice, theProgram)
+            DoSingleCommand = increment(theProgram)
+            Exit Function
+            
+        Case "MULTIRUN"
+            DoSingleCommand = MultiRunRPG(splice, theProgram)
+            Exit Function
+
         Case Else
             'If we got this far, it's an unrecognised command and
             'is probably a method call

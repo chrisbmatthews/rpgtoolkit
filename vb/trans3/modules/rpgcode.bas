@@ -969,53 +969,71 @@ Sub aiRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub AnimationRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#Animation("file.anm", x!, y!)
+Public Sub AnimationRPG( _
+                           ByVal Text As String, _
+                           ByRef theProgram As RPGCodeProgram, _
+                           ByRef retval As RPGCODE_RETURN _
+                                                            )
+
+    'animationID! = Animation("file.anm", x!, y! [,persistent!])
     'run animation at x!, y!
-    On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    number = CountData(dataUse$)        'how many data elements are there?
-    If number <> 3 Then
-        Call debugger("Error: Animation must have 3 data elements!-- " + Text$)
+
+    On Error Resume Next
+
+    Dim elements As Long
+    elements = CountData(Text)
+
+    If (elements <> 3) And (elements <> 4) Then
+        Call debugger("Animation() must have three or four data elements-- " & Text)
         Exit Sub
     End If
-    useIt1$ = GetElement(dataUse$, 1)
-    useIt2$ = GetElement(dataUse$, 2)
-    useIt3$ = GetElement(dataUse$, 3)
-    Dim file As String, xx As Double, yy As Double, aa As Long, bb As Long, cc As Long
-    
-    aa = getValue(useIt1$, file$, num1, theProgram)
-    bb = getValue(useIt2$, lit$, xx, theProgram)
-    cc = getValue(useIt3$, lit$, yy, theProgram)
-    'If aa = 0 Or xx = 1 Or yy = 1 Then
-    '    Call debugger("Error: Animation data type must be lit, num, num!-- " + text$)
-    'Else
-        file$ = addExt(file$, ".anm")
-        Call openAnimation(projectPath$ + miscPath$ + file$, animationMem)
-        
-        ' MODIFIED BY KSNiloc...
-               
-        If Not isMultiTasking() Then
-        
-            Call renderCanvas(cnvRPGCodeScreen)
-            Call TransAnimateAt(xx, yy)
-            
-        Else
-        
-            'We're multi-tasking...
-            startMultitaskAnimation xx, yy, theProgram
-        
-        End If
-        
-    'End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    If (elements = 4) And (Not isMultiTasking()) Then
+        Call debugger("Animation() only accepts a fourth parameter in a thread-- " & Text)
+        Exit Sub
+    End If
+
+    If (retval.usingReturnData) And (Not isMultiTasking()) Then
+        Call debugger("Warning: Animation() only returns a value in a thread-- " & Text)
+    End If
+
+    Dim paras() As parameters
+    paras() = GetParameters(Text, theProgram)
+
+    If _
+         (paras(0).dataType <> DT_LIT) Or _
+         (paras(1).dataType <> DT_NUM) Or _
+         (paras(2).dataType <> DT_NUM) Or _
+         ((elements = 4) And (paras(3).dataType <> DT_NUM)) Then
+         Call debugger("Animation() only accepts lit, num, num [,num] -- " & Text)
+         Exit Sub
+    End If
+
+    Dim anim As TKAnimation
+    Call openAnimation(projectPath & miscPath & paras(0).lit, animationMem)
+
+    If isMultiTasking() Then
+
+        'Check if it should be persistent
+        If (elements = 4) And (paras(3).num = 1) Then
+            animationMem.loop = True
+        Else
+            animationMem.loop = False   'Note: NOT redundant; animationMem is
+                                        '      never cleared so we must make sure
+                                        '      this is false
+        End If
+
+        'Initiate the animation
+        retval.dataType = DT_NUM
+        retval.num = startMultitaskAnimation(paras(1).num, paras(2).num, theProgram)
+
+    Else
+
+        'Just play the animation
+        Call TransAnimateAt(paras(1).num, paras(2).num)
+
+    End If
+
 End Sub
 
 Sub applyStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -6376,7 +6394,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     
     facing = 1              'Facing south
     wentToNewBoard = True
-    Call setconstants
+    Call setConstants
 
     Exit Sub
     
@@ -6466,7 +6484,7 @@ Sub setbuttonRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
 End Sub
 
-Sub setconstants()
+Sub setConstants()
 'Sets all RPGCode variable constants.
     On Error GoTo errorhandler
     Dim t As Long
@@ -6509,6 +6527,8 @@ Sub setconstants()
         Call setIndependentVariable("BoardSkill!", str$(boardList(activeBoardIndex).theData.boardskill))
         Call setIndependentVariable("BoardBackground$", boardList(activeBoardIndex).theData.boardBackground$)
     End If
+    
+    Call setIndependentVariable("cnvRenderNow!", cnvRenderNow)
 
     Exit Sub
 'Begin error handling code:
@@ -6936,58 +6956,77 @@ Public Sub SinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRe
 
 End Sub
 
-Sub SizedAnimationRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#SizedAnimation(file$, x!, y!, xsize!, ysize!)
-    'run animation at x!, y!, with a particular size.
-    On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    number = CountData(dataUse$)        'how many data elements are there?
-    If number <> 5 Then
-        Call debugger("Error: SizedAnimation must have 5 data elements!-- " + Text$)
+Public Sub SizedAnimationRPG( _
+                                ByVal Text As String, _
+                                ByRef theProgram As RPGCodeProgram, _
+                                ByRef retval As RPGCODE_RETURN _
+                                                                 )
+
+    'animationID! = SizedAnimation("file.anm", x!, y!, width!, height! [,persistent!])
+    'run animation at x!, y!
+
+    On Error Resume Next
+
+    Dim elements As Long
+    elements = CountData(Text)
+
+    If (elements <> 5) And (elements <> 6) Then
+        Call debugger("SizedAnimation() must have five or six data elements-- " & Text)
         Exit Sub
     End If
-    Dim useIt4 As String, useIt5 As String, xx As Double, yy As Double, xs As Double, ys As Double
-    Dim aa As Long, bb As Long, cc As Long, dd As Long, ee As Long, file As String
-    useIt1$ = GetElement(dataUse$, 1)
-    useIt2$ = GetElement(dataUse$, 2)
-    useIt3$ = GetElement(dataUse$, 3)
-    useIt4$ = GetElement(dataUse$, 4)
-    useIt5$ = GetElement(dataUse$, 5)
-    aa = getValue(useIt1$, file$, num1, theProgram)
-    bb = getValue(useIt2$, lit$, xx, theProgram)
-    cc = getValue(useIt3$, lit$, yy, theProgram)
-    dd = getValue(useIt4$, lit$, xs, theProgram)
-    ee = getValue(useIt5$, lit$, ys, theProgram)
-    If aa = 0 Or xx = 1 Or yy = 1 Or xs = 1 Or ys = 1 Then
-        Call debugger("Error: SizedAnimation data type must be lit, num, num, num, num!-- " + Text$)
-    Else
-        file$ = addExt(file$, ".anm")
-        Call openAnimation(projectPath$ + miscPath$ + file$, animationMem)
-        animationMem.animSizeX = Abs(xs)
-        animationMem.animSizeY = Abs(ys)
-        
-        ' ! MODIFIED BY KSNiloc...
-        
-        If Not isMultiTasking() Then
-        
-            Call TransAnimateAt(xx, yy)
-            
-        Else
-        
-            'We're multitasking...
-            startMultitaskAnimation xx, yy, theProgram
-        
-        End If
-        
+
+    If (elements = 6) And (Not isMultiTasking()) Then
+        Call debugger("SizedAnimation() only accepts a sixth parameter in a thread-- " & Text)
+        Exit Sub
     End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    If (retval.usingReturnData) And (Not isMultiTasking()) Then
+        Call debugger("Warning: SizedAnimation() only returns a value in a thread-- " & Text)
+    End If
+
+    Dim paras() As parameters
+    paras() = GetParameters(Text, theProgram)
+
+    If _
+         (paras(0).dataType <> DT_LIT) Or _
+         (paras(1).dataType <> DT_NUM) Or _
+         (paras(2).dataType <> DT_NUM) Or _
+         (paras(3).dataType <> DT_NUM) Or _
+         (paras(4).dataType <> DT_NUM) Or _
+         ((elements = 6) And (paras(5).dataType <> DT_NUM)) Then
+         Call debugger("SizedAnimation() only accepts lit, num, num, num, num [,num] -- " & Text)
+         Exit Sub
+    End If
+
+    Dim anim As TKAnimation
+    Call openAnimation(projectPath & miscPath & paras(0).lit, animationMem)
+
+    'Set width and height
+    animationMem.animSizeX = paras(3).num
+    animationMem.animSizeY = paras(4).num
+
+    If isMultiTasking() Then
+
+        'Check if it should be persistent
+        If (elements = 6) And (paras(5).num = 1) Then
+            animationMem.loop = True
+        Else
+            animationMem.loop = False   'Note: NOT redundant; animationMem is
+                                        '      never cleared so we must make sure
+                                        '      this is false
+        End If
+
+        'Initiate the animation
+        retval.dataType = DT_NUM
+        retval.num = startMultitaskAnimation(paras(1).num, paras(2).num, theProgram)
+
+    Else
+
+        'Just play the animation
+        Call TransAnimateAt(paras(1).num, paras(2).num)
+
+    End If
+
 End Sub
 
 Function SkipMethodRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
@@ -9296,22 +9335,20 @@ Sub DrawLineRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     Dim useIt4 As String, x1 As Double, y1 As Double, x2 As Double, y2 As Double, xx1 As Long, yy1 As Long, xx2 As Long, yy2 As Long
     Dim useIt5 As String
-    useIt1$ = GetElement(dataUse$, 1)
-    useIt2$ = GetElement(dataUse$, 2)
-    useIt3$ = GetElement(dataUse$, 3)
-    useIt4$ = GetElement(dataUse$, 4)
-    useIt5 = GetElement(dataUse$, 5)
+
+    Dim paras() As parameters
+    paras() = GetParameters(Text, theProgram)
+    x1 = paras(0).num
+    y1 = paras(1).num
+    x2 = paras(2).num
+    y2 = paras(3).num
     
     Dim cnv As Double
-    xx1 = getValue(useIt1$, lit$, x1, theProgram)
-    yy1 = getValue(useIt2$, lit$, y1, theProgram)
-    xx2 = getValue(useIt3$, lit$, x2, theProgram)
-    yy2 = getValue(useIt4$, lit$, y2, theProgram)
-
-    ' KSNiloc says: ... ... ... ... ...
-    a = getValue(useIt5, lit, cnv, theProgram)
-    'a = GetValue(useIt4$, lit$, cnv, theProgram)
-    
+    If number = 5 Then
+        cnv = paras(4).num
+        Debug.Print cnv, paras(4).dat, paras(4).lit, paras(4).num
+    End If
+   
     'If xx1 = DT_LIT Or yy1 = DT_LIT Or xx2 = DT_LIT Or yy2 = DT_LIT Or a = DT_LIT Then
     '    Call debugger("Error: DrawLine data type must be numerical!-- " + text$)
     'Else
@@ -11815,7 +11852,7 @@ Public Sub setConstantsRPG( _
         Exit Sub
     End If
 
-    setconstants
+    setConstants
 
 End Sub
 
@@ -12124,7 +12161,7 @@ Public Sub replaceRPG( _
 End Sub
 
 Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
-    '#PixelMovement(ON/OFF)
+    'PixelMovement(ON/OFF)
 
     If CountData(Text) <> 1 Then
         debugger "PixelMovement() requires one data element-- " & Text
@@ -12154,3 +12191,68 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
 
 End Sub
 
+'=========================================================================
+' End an animation :: EndAnimation(animationID!)
+'=========================================================================
+Public Sub endAnimationRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+
+    On Error Resume Next
+
+    If CountData(Text) <> 1 Then
+        Call debugger("EndAnimation() requires one data element-- " & Text)
+        Exit Sub
+    End If
+
+    If Not isMultiTasking() Then
+        Call debugger("EndAnimation() is only valid in a thread-- " & Text)
+        Exit Sub
+    End If
+
+    Dim paras() As parameters
+    paras() = GetParameters(Text, prg)
+
+    If paras(0).dataType <> DT_NUM Then
+        Call debugger("EndAnimation() requires a numerical data element-- " & Text)
+        Exit Sub
+    End If
+
+    Call ceaseMultitaskAnimation(paras(0).num)
+
+End Sub
+
+'=========================================================================
+' RenderNow(ON/OFF) :: Force cnvRenderNow to be rendered
+'=========================================================================
+Public Sub renderNowRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+    On Error Resume Next
+    If CountData(Text) <> 1 Then
+        Call debugger("RenderNow() requires one data element-- " & Text)
+        Exit Sub
+    End If
+    Dim paras() As parameters
+    paras() = GetParameters(Text, prg)
+    If paras(0).dataType <> DT_LIT Then
+        Call debugger("RenderNow() requires a literal data element-- " & Text)
+        Exit Sub
+    End If
+    If UCase(paras(0).lit) = "ON" Then
+        renderRenderNowCanvas = True
+    ElseIf UCase(paras(0).lit) = "OFF" Then
+        renderRenderNowCanvas = False
+    Else
+        Call debugger("RenderNow()'s data element must be ON or OFF-- " & Text)
+    End If
+End Sub
+
+'=========================================================================
+' MultiRun() {} :: Run commands as a group in a thread
+'=========================================================================
+Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) As Long
+    If GetBrackets(Text) <> "" Then
+        Call debugger("MultiRun() requires no data elements-- " & Text)
+    Else
+        disregardLooping = True
+        MultiRunRPG = runBlock("", 1, prg)
+        disregardLooping = False
+    End If
+End Function
