@@ -1,4 +1,14 @@
 Attribute VB_Name = "modMain"
+'=========================================================================
+' All contents copyright 2005, Colin James Fitzpatrick
+' All rights reserved. YOU MAY NOT REMOVE THIS NOTICE
+' Read LICENSE.txt for licensing info
+'=========================================================================
+
+'=========================================================================
+' Uninstaller
+'=========================================================================
+
 Option Explicit
 
 '=========================================================================
@@ -10,6 +20,9 @@ Private Declare Function RegDeleteKey Lib "advapi32.dll" Alias "RegDeleteKeyA" (
 ' Main entry point
 '=========================================================================
 Public Sub Main()
+
+    ' Apply XP visual styles, if available
+    Call initCommonControls
 
     If (MsgBox("This will uninstall the RPGToolkit, version 3; your game projects will not be removed. Proceed?", vbCritical Or vbOKCancel Or vbDefaultButton2, "Uninstaller") = vbOK) Then
 
