@@ -486,7 +486,6 @@ Public Sub isoChange( _
                 Exit Sub
             End If
         End If
-        
 
         'Clear the tilemem data.
         For X = 0 To 64
@@ -1052,7 +1051,7 @@ Private Sub Form_Activate(): On Error GoTo ErrorHandler
     
     Dim X As Integer, Y As Integer
     
-    If Not (ignoreDeactivate) Then
+    If (Not (ignoreDeactivate)) Then
         'Refresh data
         For X = 0 To 64
             For Y = 0 To 32
@@ -1667,11 +1666,11 @@ End Sub
 ' Opens the file
 '========================================================================
 Public Sub openFile(ByVal file As String): On Error Resume Next
-    
-    Call Show
+       
+    Call activeTile.Show
     Call ChDir(currentDir)
     
-    Call checkSave      'Check if a tile is already open and needs saving.
+    If tag <> 1 Then Call checkSave      'Check if a tile is already open and needs saving.
     publicTile.tileneedupdate = False
     
     Dim antiPath As String
@@ -1700,16 +1699,15 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
 
         ignoreDeactivate = True
 
+        Call Hide
         Call tilesetform.Show(vbModal)             'Show the tileset browser.
+        Call Show
 
         'setFilename created in tilesetform. Contains the tilenumber.
         If setFilename = "" Then Exit Sub
 
         Call openFromTileSet(projectPath & tilePath & tilesetFilename(setFilename), getTileNum(setFilename))
 
-        
-        Call openFromTileSet(projectPath$ + tilePath$ + tilesetFilename(setFilename$), getTileNum(setFilename$))
-        
         If detail = 2 Or detail = 4 Or detail = 6 Then
             'only 32x32 tiles allowed
             Call increaseDetail

@@ -908,8 +908,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2464,13 +2464,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "12/08/2004"
+            TextSave        =   "13/08/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "4:58 PM"
+            TextSave        =   "3:48 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2483,6 +2483,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
+            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -2841,60 +2842,88 @@ Public Sub openFile(ByVal fName As String)
     ex = UCase(extention(fName))
     
     Dim frm As Form
+    
     Select Case ex
+
         Case "GPH", "TST", "ISO"
             Set frm = New tileedit
-            frm.Show
-            activeTile.ignoreDeactivate = True
+            Call frm.Show
+            frm.tag = 1
+            Set activeTile = frm
             Call activeTile.openFile(fName)
+
         Case "BRD"
             Set frm = New boardedit
-            frm.Show
+            Call frm.Show
+            Set activeBoard = frm
             Call activeBoard.openFile(fName)
+
         Case "TBM"
             Set frm = New editTileBitmap
-            frm.Show
+            Call frm.Show
+            Set activeTileBmp = frm
             Call activeTileBmp.openFile(fName)
+
         Case "PRG"
             Set frm = New rpgcodeedit
-            frm.Show
+            Call frm.Show
+            Set activeRPGCode = frm
             Call activeRPGCode.openFile(fName)
+            
         Case "SPC"
             Set frm = New editsm
-            frm.Show
+            Call frm.Show
+            Set activeSpecialMove = frm
             Call activeSpecialMove.openFile(fName)
+            
         Case "TEM"
             Set frm = New characteredit
-            frm.Show
+            Call frm.Show
+            Set activePlayer = frm
             Call activePlayer.openFile(fName)
+            
         Case "ITM"
             Set frm = New EditItem
-            frm.Show
+            Call frm.Show
+            Set activeItem = frm
             Call activeItem.openFile(fName)
+            
         Case "FNT"
             'Call fontedit.openFile(fName$)
+            
         Case "ENE"
             Set frm = New editenemy
-            frm.Show
+            Call frm.Show
+            Set activeEnemy = frm
             Call activeEnemy.openFile(fName)
+            
         Case "BKG"
             Set frm = New editBackground
-            frm.Show
+            Call frm.Show
+            Set activeBackground = frm
             Call activeBackground.openFile(fName)
+            
         Case "STE"
             Set frm = New editstatus
-            frm.Show
+            Call frm.Show
+            Set activeStatusEffect = frm
             Call activeStatusEffect.openFile(fName)
+            
         Case "ANM"
             Set frm = New animationeditor
-            frm.Show
+            Call frm.Show
+            Set activeAnimation = frm
             Call activeAnimation.openFile(fName)
+            
         Case "TAN"
             Set frm = New tileanim
-            frm.Show
+            Call frm.Show
+            Set activeTileAnm = frm
             Call activeTileAnm.openFile(fName)
+            
         Case "RFM"
             Call tkvisual.openFile(fName)
+            
         Case Else
             Dim theAppTemp As String
             theAppTemp = determineDefaultApp(fName)
@@ -2910,7 +2939,12 @@ Public Sub openFile(ByVal fName As String)
             Dim commandLine As String
             commandLine = theApp & " " & """" & resolve(CurDir) & fName & """"
             Call Shell(commandLine, vbNormalFocus)
+
     End Select
+    
+    If Not frm Is Nothing Then
+        Call frm.SetFocus
+    End If
 
 End Sub
 
@@ -4236,8 +4270,8 @@ Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, X As Sing
 End Sub
 
 Private Sub TreeView1_DblClick(): On Error Resume Next
-    If fileExists(projectPath$ + TreeView1.SelectedItem.FullPath) Then
-        Call tkMainForm.openFile(projectPath$ + TreeView1.SelectedItem.FullPath)
+    If fileExists(projectPath$ + TreeView1.SelectedItem.fullPath) Then
+        Call tkMainForm.openFile(projectPath$ + TreeView1.SelectedItem.fullPath)
     End If
     Call rightbar.SetFocus
     ignoreFocus = False
@@ -4486,7 +4520,7 @@ Private Sub cmdShadeTile_Click()
 End Sub
 '(NEW for 3.0.4)
 Private Sub tileIsoCheck_Click()
-    Call activeTile.isoChange(tileIsoCheck.value)
+    Call activeTile.isoChange(integerToBoolean(tileIsoCheck.value))
 End Sub
 '=========================================================================================
 ' END TILE EDITOR RELATED EVENTS

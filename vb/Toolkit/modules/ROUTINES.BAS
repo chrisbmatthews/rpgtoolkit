@@ -959,5 +959,4 @@ Public Function integerToBoolean(ByVal inte As Integer) As Boolean
     'Return a boolean for 1/0
     '=======================================================
     If inte = 1 Then integerToBoolean = True
-    If inte = 0 Then integerToBoolean = False
 End Function
