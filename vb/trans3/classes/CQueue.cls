@@ -50,6 +50,7 @@ End Sub
 Public Sub clear()
     ' Just redim again
     ReDim m_queue(64)
+    m_len = 0
 End Sub
 
 '=========================================================================
