@@ -1,131 +1,109 @@
 VERSION 5.00
 Begin VB.Form frmLayerTile 
-   BorderStyle     =   1  'Fixed Single
-   Caption         =   "Layer Tile"
-   ClientHeight    =   1455
-   ClientLeft      =   2550
-   ClientTop       =   2865
-   ClientWidth     =   3855
-   BeginProperty Font 
-      Name            =   "MS Sans Serif"
-      Size            =   8.25
-      Charset         =   0
-      Weight          =   700
-      Underline       =   0   'False
-      Italic          =   0   'False
-      Strikethrough   =   0   'False
-   EndProperty
-   ForeColor       =   &H80000008&
-   Icon            =   "LAYERTIL.frx":0000
-   LinkTopic       =   "Form2"
+   BackColor       =   &H80000005&
+   BorderStyle     =   0  'None
+   Caption         =   "Form1"
+   ClientHeight    =   2415
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   3735
+   LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   1455
-   ScaleWidth      =   3855
-   StartUpPosition =   1  'CenterOwner
-   Tag             =   "1591"
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "OK"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   375
+   ScaleHeight     =   2415
+   ScaleWidth      =   3735
+   ShowInTaskbar   =   0   'False
+   StartUpPosition =   3  'Windows Default
+   Begin Toolkit.TKButton butCanel 
+      Height          =   495
       Left            =   2520
-      TabIndex        =   5
-      Top             =   120
-      Width           =   1215
+      TabIndex        =   7
+      Top             =   960
+      Width           =   1095
+      _extentx        =   661
+      _extenty        =   873
+      Object.width           =   360
+      caption         =   "Cancel"
    End
-   Begin VB.CheckBox chkPreview 
-      Caption         =   "Preview"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   255
-      Left            =   120
-      TabIndex        =   4
-      Top             =   720
-      Width           =   1215
-   End
-   Begin VB.CommandButton cmdCancel 
-      Caption         =   "Cancel"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   375
+   Begin Toolkit.TKButton butOK 
+      Height          =   495
       Left            =   2520
-      TabIndex        =   3
-      Top             =   600
-      Width           =   1215
+      TabIndex        =   6
+      Top             =   480
+      Width           =   855
+      _extentx        =   661
+      _extenty        =   873
+      Object.width           =   360
+      caption         =   "OK"
    End
-   Begin VB.CheckBox transp 
-      Caption         =   "Transparently Layer"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   255
-      Left            =   120
-      TabIndex        =   2
-      Tag             =   "1592"
-      Top             =   1080
-      Width           =   2055
-   End
-   Begin VB.PictureBox layerpic 
+   Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
-      Height          =   495
-      Left            =   1560
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   1
-      Top             =   120
-      Width           =   495
-   End
-   Begin VB.CommandButton cmdOpenTile 
-      Appearance      =   0  'Flat
-      Caption         =   "Open Tile"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   375
+      Height          =   1815
       Left            =   120
+      TabIndex        =   1
+      Top             =   360
+      Width           =   2295
+      Begin VB.CheckBox chkTrans 
+         BackColor       =   &H80000005&
+         Caption         =   "Transparently Layer"
+         Height          =   255
+         Left            =   120
+         TabIndex        =   5
+         Top             =   1440
+         Width           =   1695
+      End
+      Begin VB.CheckBox chkPreview 
+         BackColor       =   &H80000005&
+         Caption         =   "Preview"
+         Height          =   375
+         Left            =   120
+         TabIndex        =   4
+         Top             =   960
+         Width           =   1335
+      End
+      Begin VB.PictureBox picPreview 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   495
+         Left            =   1680
+         ScaleHeight     =   31
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   31
+         TabIndex        =   3
+         Top             =   240
+         Width           =   495
+      End
+      Begin Toolkit.TKButton butOpenTile 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   2
+         Top             =   240
+         Width           =   1335
+         _extentx        =   661
+         _extenty        =   661
+         Object.width           =   360
+         caption         =   "Open Tile"
+      End
+   End
+   Begin Toolkit.TKTopBar TopBar 
+      Height          =   480
+      Left            =   0
       TabIndex        =   0
-      Tag             =   "1593"
-      Top             =   120
-      Width           =   1215
+      Top             =   0
+      Width           =   2895
+      _extentx        =   5106
+      _extenty        =   847
+      Object.width           =   2895
+      caption         =   "Layer Tile"
+   End
+   Begin VB.Shape Shape1 
+      Height          =   2415
+      Left            =   0
+      Top             =   0
+      Width           =   3735
    End
 End
 Attribute VB_Name = "frmLayerTile"
@@ -138,118 +116,97 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '========================================================================
-'!NEW! Declared variables
 Option Explicit
 
-'KSNiloc says: No evil variants, please
-Private X As Integer, Y As Integer
-
 '========================================================================
-' !NEW! The preview checkbox
+' The Cancel button
 '========================================================================
-Private Sub chkPreview_Click()
-    'If they uncheck it, we should turn the tile back to how it was at the start
-    If chkPreview.value = 0 Then
-        For X = 1 To 32
-            For Y = 1 To 32
-                'If tilemem(x, y) <> -1 Then
-                    tileMem(X, Y) = tilePreview(X, Y)
-                'End If
-            Next Y
-        Next X
-    activeTile.tileRedraw
-    'If they check it, preview the tile!
-    Else
-        Call Preview
-    End If
-End Sub
-
-'========================================================================
-' !NEW! The cancel button
-'========================================================================
-'Since cancel was clicked, the user doesn't wants to edit the tile...
-'Because of this, we don't set the SaveChanges variable to true.
-Private Sub cmdCancel_Click()
-    Unload Me
-End Sub
-
-'========================================================================
-' The OK button, this was first the layerbutton button
-'========================================================================
-Private Sub cmdOK_Click()
-    On Error GoTo ErrorHandler
+Private Sub butCanel_click()
     
-    'Since I added the Preview sub, why not use it here too?
+    'Just unload, the tile will be changed back in Form_Unload
+    Unload Me
+    
+End Sub
+
+'========================================================================
+' The OK button
+'========================================================================
+Private Sub butOK_Click(): On Error Resume Next
+    
+    'Change the tile
     Call Preview
     
-    '!NEW! The user wants to save the changes
+    'Don't change the tile back during unload
     saveChanges = True
     
-    Call Unload(Me)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    'Unload
+    Unload Me
+    
 End Sub
 
 '========================================================================
-' The OpenTile button, this was first the openlayer button
+' The Open Tile button
 '========================================================================
-Private Sub cmdOpenTile_Click()
-    On Error GoTo ErrorHandler
+Private Sub butOpenTile_click(): On Error Resume Next
 
+    'Redim the buffer array
     ReDim buffer(32, 32)
     
+    'Store the current tileMem
+    Dim X As Integer, Y As Integer
     For X = 1 To 32
         For Y = 1 To 32
             bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
     
-    ChDir (currentDir$)
+    'Open a file dialog
     Dim dlg As FileDialogInfo
-    
-    '!NEW! Declared these variables, first there was a $ behind each of them, I
-    'removed those.
-    Dim antiPath, whichType, txtFile As String
-    
-    dlg.strDefaultFolder = projectPath$ + tilePath$
-    
+    dlg.strDefaultFolder = projectPath + tilePath
     dlg.strTitle = "Open Tile For Layering"
     dlg.strDefaultExt = "gph"
     dlg.strFileTypes = "Supported Types|*.gph;*.tst|RPG Toolkit Tile (*.gph)|*.gph|Tileset (*.tst)|*.tst|All files(*.*)|*.*"
+    ChDir (currentDir)
     
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename(1) = dlg.strSelectedFile
-        antiPath = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-
-    If filename(1) = "" Then Exit Sub
-    whichType = extention(filename(1))
-    If UCase$(whichType) = "TST" Then      'Yipes! we've selected an archive!
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub 'Pressed cancel
+    
+    'If we got here, see if we got a correct file
+    Dim noPath As String
+    filename(1) = dlg.strSelectedFile
+    noPath = dlg.strSelectedFileNoPath
+    
+    If UCase(extention(filename(1))) = "TST" Then
+        
+        'Selected an archive, open it
         tstnum = 0
-        ChDir (currentDir$)
-        tstFile = antiPath
-        tilesetform.Show 1
-        'MsgBox setFilename$
-        If setFilename$ = "" Then Exit Sub
-        Call openWinTile(projectPath$ + tilePath$ + setFilename$)
+        tstFile = noPath
+        
+        'Open the tileset form
+        ChDir (currentDir)
+        tilesetform.Show vbModal
+        
+        If setFilename = "" Then Exit Sub
+        Call openWinTile(projectPath + tilePath + setFilename)
+    
     Else
+         
+        'No archive, just open it up!
         Call openWinTile(filename(1))
+        
     End If
-
-    Call vbPicFillRect(layerpic, 0, 0, 100, 100, vbQBColor(15))
+    
+    'Clear the preview picturebox
+    picPreview.cls
+    
+    'Paint the opened tile on the picturebox
     For X = 1 To 32
         For Y = 1 To 32
-            If tileMem(X, Y) <> -1 Then
-                Call vbPicPSet(layerpic, X - 1, Y - 1, tileMem(X, Y))
-            End If
+            Call vbPicPSet(picPreview, X - 1, Y - 1, tileMem(X, Y))
+            bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
+    
+    'Change tilemem back
     For X = 1 To 32
         For Y = 1 To 32
             buffer(X, Y) = tileMem(X, Y)
@@ -257,118 +214,156 @@ Private Sub cmdOpenTile_Click()
             bufTile(X, Y) = buffer(X, Y)
         Next Y
     Next X
-    ChDir (currentDir$)
     
-    '!NEW! If the preview checkbox is checked, preview the tile.
-    If chkPreview.value = 1 Then Call Preview
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    'Preview tile
+    If chkPreview.value Then Call Preview
+    
 End Sub
 
 '========================================================================
-' Form_Activate
+' The preview checkbox
 '========================================================================
-Private Sub Form_Activate()
-    On Error GoTo ErrorHandler
-    If openTileEditorDocs(activeTile.indice).transparentLayer = 1 Then transp.value = 1 Else transp.value = 0
+Private Sub chkPreview_Click()
     
-    '!NEW! Used to store the current tile for when the "preview" function is used
-    For X = 1 To 32
-        For Y = 1 To 32
-            'If tilemem(x, y) <> -1 Then
-                tilePreview(X, Y) = tileMem(X, Y)
-            'End If
-        Next Y
-    Next X
+    'If it's unchecked, change the tile back
+    If chkPreview.value = 0 Then
     
-    '!NEW! Set the variable to False at the start...
-    saveChanges = False
+        Dim X, Y As Integer
+        For X = 1 To 32
+            For Y = 1 To 32
+                tileMem(X, Y) = tilePreview(X, Y)
+            Next Y
+        Next X
     
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+        'Redraw
+        activeTile.tileRedraw
+        
+    Else
+    
+        'Else, preview the tile!
+        Call Preview
+        
+    End If
+End Sub
+
+'========================================================================
+' The transparent checkbox
+'========================================================================
+Private Sub chkTrans_Click()
+
+    'Update variable
+    With openTileEditorDocs(activeTile.indice)
+        If .transparentLayer = 0 Then
+            .transparentLayer = 1
+        Else
+            .transparentLayer = 0
+        End If
+    End With
+    
+    'Preview tile
+    If chkPreview.value Then Call Preview
+
 End Sub
 
 '========================================================================
 ' Form_Load
 '========================================================================
-Private Sub Form_Load()
+Private Sub Form_Load(): On Error Resume Next
+    
+    'Localize this form
     Call LocalizeForm(Me)
+    
+    'Store the current tile and clear buftile
+    Dim X As Integer, Y As Integer
+    For X = 1 To 32
+        For Y = 1 To 32
+            bufTile(X, Y) = -1
+            tilePreview(X, Y) = tileMem(X, Y)
+        Next Y
+    Next X
+    
+    'Set this to false at startup
+    saveChanges = False
+    
+    'Make sure the topbar knows which form it is on
+    Set TopBar.theForm = Me
+    
 End Sub
 
 '========================================================================
 ' Form_Unload
 '========================================================================
-Private Sub Form_Unload(Cancel As Integer)
-    'If the user has pressed the X in the form, he doesn't wants to add the changes
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
+
+    'See if the user has clicked "OK" or not
     If Not saveChanges Then
+        
+        'Use new Undo
+        Call activeTile.setUndo
+        
+        'Change the tile
+        Dim X As Integer, Y As Integer
+        For X = 1 To 32
+            For Y = 1 To 32
+                If tileMem(X, Y) <> -1 Then
+                    tileMem(X, Y) = tilePreview(X, Y)
+                End If
+            Next Y
+        Next X
+        
+    End If
     
-    'Use new undo
-    Call activeTile.setUndo
-    For X = 1 To 32
-        For Y = 1 To 32
-            If tileMem(X, Y) <> -1 Then
-                tileMem(X, Y) = tilePreview(X, Y)
-            End If
-        Next Y
-    Next X
     'Redraw
     activeTile.tileRedraw
-
-    End If
+    
 End Sub
 
 '========================================================================
-' transp_Click()
+' The Open Tile button
 '========================================================================
-Private Sub transp_Click()
-    On Error GoTo ErrorHandler
-    If openTileEditorDocs(activeTile.indice).transparentLayer = 0 Then openTileEditorDocs(activeTile.indice).transparentLayer = 1 Else openTileEditorDocs(activeTile.indice).transparentLayer = 0
+Private Sub picPreview_Click(): On Error Resume Next
+
+    'Open tile
+    Call butOpenTile_click
     
-    '!NEW! Preview the tile, if preview is checked
-    If chkPreview.value = 1 Then Call Preview
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
+
 '========================================================================
-' !NEW! Previews the tile
+' Previews the tile
 '========================================================================
-Private Sub Preview()
-    '!NEW! Declared variables
-    Dim rrbuf, ggbuf, bbbuf, rrtile, ggtile, bbtile As String
-    
+Private Sub Preview(): On Error Resume Next
+
     'First we need to to set the tile back to how it was at the start
+    Dim X, Y As Integer
     For X = 1 To 32
         For Y = 1 To 32
-            If tileMem(X, Y) <> -1 Then
-                tileMem(X, Y) = tilePreview(X, Y)
-            End If
+            tileMem(X, Y) = tilePreview(X, Y)
         Next Y
     Next X
-    
+
     For X = 1 To 32
         For Y = 1 To 32
+        
             If openTileEditorDocs(activeTile.indice).transparentLayer = 0 Then
-                
-                Dim mee As Boolean
-                If mee = False Then MsgBox "here": mee = True
-
+            
+                'Not a transparent layer, just copy it
                 If bufTile(X, Y) = -1 Then bufTile(X, Y) = tileMem(X, Y)
                 tileMem(X, Y) = bufTile(X, Y)
+                
             Else
+            
+                'Transparent layer, add effect
                 If bufTile(X, Y) = -1 Then
+                
+                    'Transparent pixel
                     bufTile(X, Y) = tileMem(X, Y)
                 Else
+                
+                    'Not transparent
+                    
+                    'Needed variables
+                    Dim rrbuf As String, ggbuf As String, bbbuf As String
+                    Dim rrtile As String, ggtile As String, bbtile As String
                     rrbuf = red(bufTile(X, Y))
                     ggbuf = green(bufTile(X, Y))
                     bbbuf = blue(bufTile(X, Y))
@@ -379,12 +374,14 @@ Private Sub Preview()
                     ggtile = ggtile + ggbuf: If ggtile > 255 Then ggtile = 255
                     bbtile = bbtile + bbbuf: If bbtile > 255 Then bbtile = 255
                     tileMem(X, Y) = RGB(rrtile, ggtile, bbtile)
+                    
                 End If
+                
             End If
+            
         Next Y
     Next X
     
     'Redraw
     activeTile.tileRedraw
 End Sub
-
