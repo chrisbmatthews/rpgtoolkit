@@ -568,7 +568,7 @@ Public Function runBlock( _
     Dim done As Boolean
     Dim depth As Long
     
-    moveToStartOfBlock prg
+    Call moveToStartOfBlock(prg)
     
     Do Until done
                
@@ -583,12 +583,7 @@ Public Function runBlock( _
                 prg.programPos = increment(prg)
                 
             Case "end"
-                If Not endCausesStop Then
-                    res = 0
-                    prg.programPos = increment(prg)
-                Else
-                    DoSingleCommand "Stop()", prg, retval
-                End If
+                runningProgram = False
                 
             Case Else
            
@@ -926,7 +921,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
 
-    ElseIf left(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
+    ElseIf Left(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
         onError "#OnError(" & Right(checkIt, Len(checkIt) - InStr(1, _
             LCase(rpgcodeCommand), "goto", vbTextCompare) - 1) & ")", theProgram
         DoSingleCommand = increment(theProgram)
@@ -969,7 +964,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
         testText = getRedirect(testText)
     End If
 
-    If left(testText, 1) = "." Then testText = UCase(GetWithPrefix() & testText)
+    If Left(testText, 1) = "." Then testText = UCase(GetWithPrefix() & testText)
 
     If testText <> "MWIN" Then
         'if the command is not a MWin command, then
