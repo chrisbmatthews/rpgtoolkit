@@ -447,6 +447,7 @@ ver2oldEnemy:
             anm.animSizeY = eneSizeY * 32
             anm.animPause = 0.167
             anm.animFrame(0) = RemovePath(tbmName$)
+            anm.animTransp(0) = RGB(255, 255, 255)
             Call saveAnimation(anmName$, anm)
             .gfx(ENE_REST) = RemovePath(anmName$)
             ReDim .eneSpecialMove(100)

@@ -10799,64 +10799,6 @@ Public Sub cursorMapHand( _
 
 End Sub
 
-Public Sub mousePointer( _
-                           ByVal Text As String, _
-                           ByRef prg As RPGCodeProgram _
-                                                         )
-
-    Call debugger("MousePointer() is not functional-- " & Text)
-
-    '=========================================================================
-    'Changes mouse pointer [KSNiloc]
-    '=========================================================================
-    'MousePointer("file.cur")
-    'MousePointer(0-15)
-    'MousePointer(Default)
-    'MousePointer(None)
-   
-    On Error Resume Next
-
-    Dim countDat As Long
-    countDat = CountData(Text)
-    If (LenB(GetBrackets(Text)) = 0) Then countDat = 0
-
-    Select Case countDat
-    
-        Case 0
-            host.mousePointer = 0
-        
-        Case 1
-            Dim paras() As parameters
-            paras() = getParameters(Text, prg)
-
-            If paras(0).dataType = DT_NUM Then
-                host.mousePointer = paras(0).num
-                Exit Sub
-            End If
-            
-            'If Not paras(0).dataType = DT_LIT Then
-            '    debugger "MousePointer()'s data element must be literal-- " _
-            '        & text
-            '    Exit Sub
-            'End If
-
-            If LCase$(paras(0).lit) = "default" Then
-                host.mousePointer = "TK DEFAULT"
-                Exit Sub
-            ElseIf LCase$(paras(0).lit) = "none" Then
-                host.mousePointer = vbNullString
-                Exit Sub
-            End If
-
-            host.mousePointer = projectPath & bmpPath & paras(0).lit
-
-        Case Else
-            debugger "MousePointer() can have either zero or one data elements--" & Text
-
-    End Select
-
-End Sub
-
 Public Sub debuggerRPG( _
                           ByVal Text As String, _
                           ByRef prg As RPGCodeProgram _
@@ -11628,7 +11570,7 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     End If
     host.cursorHotSpotX = paras(1).num
     host.cursorHotSpotY = paras(2).num
-    mainMem.transpColor = RGB(paras(3).num, paras(4).num, paras(5).num)
+    mainMem.transpcolor = RGB(paras(3).num, paras(4).num, paras(5).num)
     Dim ext As String, theFile As String
     ext = UCase$(commonRoutines.extention(paras(0).lit))
     If (ext = "TST" Or ext = "GPH") Then
@@ -11774,20 +11716,21 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     End If
 
     ' Declare variables for the coming blt
-    Dim x As Long, y As Long, width As Long, transpColor As Long
+    Dim x As Long, y As Long, width As Long, transpcolor As Long
     Dim height As Long, cnvSource As Long
 
     ' In all cases, record x, y, r, g, b and the canvas
     cnvSource = CLng(paras(0).num)
     x = CLng(paras(1).num)
     y = CLng(paras(2).num)
-    transpColor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
+    transpcolor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
 
     ' If we only have six params, just finish this now
     If (UBound(paras) = 5) Then
 
         ' Draw the canvas
-        Call canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpColor)
+        Call canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpcolor)
+        Call renderRPGCodeScreen
 
         ' Bail
         Exit Sub
@@ -11800,18 +11743,35 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
 
     End If
 
+    ' Create an intermidiate canvas
+    Dim cnv As Long
+    cnv = createCanvas(width, height)
+
+    ' Get its DC
+    Dim hCnvDC As Long
+    hCnvDC = canvasOpenHDC(cnv)
+
+    ' Stretch the canvas
+    Call canvasStretchBlt(cnvSource, width, height, 0, 0, hCnvDC)
+
+    ' Close its DC
+    Call canvasCloseHDC(cnv, hCnvDC)
+
     If (UBound(paras) = 7) Then
 
         ' Blt to the screen
-        Call canvas2CanvasBltTransparentPartial(cnvSource, cnvRPGCodeScreen, x, y, 0, 0, width, height, transpColor)
+        Call canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpcolor)
         Call renderRPGCodeScreen
 
     Else
 
         ' Blt to another canvas
-        Call canvas2CanvasBltTransparentPartial(cnvSource, CLng(paras(8).num), x, y, 0, 0, width, height, transpColor)
+        Call canvas2CanvasBltTransparent(cnv, CLng(paras(8).num), x, y, transpcolor)
 
     End If
+
+    ' Destroy said canvas
+    Call destroyCanvas(cnv)
 
 End Sub
 

@@ -2274,37 +2274,32 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             asciiToChr splice, theProgram, retval
             DoSingleCommand = increment(theProgram)
             Exit Function
-            
+
         Case "TRIM"
             trimRPG splice, theProgram, retval
             DoSingleCommand = increment(theProgram)
             Exit Function
-        
+
         Case "RIGHT", "LEFT"
             rightLeft splice, theProgram, retval
             DoSingleCommand = increment(theProgram)
             Exit Function
-            
+
         Case "CURSORMAPHAND"
             cursorMapHand splice, theProgram
             DoSingleCommand = increment(theProgram)
             Exit Function
-            
-        Case "MOUSEPOINTER"
-            mousePointer splice, theProgram
-            DoSingleCommand = increment(theProgram)
-            Exit Function
-            
+
         Case "DEBUGGER"
             debuggerRPG splice, theProgram
             DoSingleCommand = increment(theProgram)
             Exit Function
-            
+
         Case "ONERROR"
             onError splice, theProgram
             DoSingleCommand = increment(theProgram)
             Exit Function
-            
+
         Case "RESUMENEXT"
             Call resumeNextRPG(splice, theProgram)
             DoSingleCommand = theProgram.programPos
