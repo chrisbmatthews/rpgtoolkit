@@ -3211,7 +3211,7 @@ Public Function IfThen(ByVal Text As String, ByRef prg As RPGCodeProgram) As Lon
                 ' Switch on the command here
                 Select Case prg.strCommands(i)
 
-                    Case "IF", "ELSEIF"
+                    Case "IF"
 
                         ' Confirm this if has no else
                         If (lngDepth = 0) Then
@@ -3222,12 +3222,8 @@ Public Function IfThen(ByVal Text As String, ByRef prg As RPGCodeProgram) As Lon
 
                         Else
 
-                            If (prg.strCommands(i) = "IF") Then
-
-                                ' One else accounted for
-                                lngDepth = lngDepth - 1
-
-                            End If
+                            ' One else accounted for
+                            lngDepth = lngDepth - 1
 
                         End If
 
