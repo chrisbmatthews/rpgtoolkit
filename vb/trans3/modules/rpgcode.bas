@@ -16,10 +16,12 @@ Option Explicit
 '=========================================================================
 Public inWith() As String
 
-Sub CompilerPopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
-    '#dest$ = #com_pop_piler()
-    'pop a var off the compiler stack (undocumented command-- only used by internal compiler)
-    
+'=========================================================================
+' RPGCode Commands
+'=========================================================================
+
+Public Sub CompilerPopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+
     On Error Resume Next
     
     Dim use As String, dataUse As String, number As Long
@@ -1408,9 +1410,10 @@ Sub DestroyPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
 End Sub
 
 Sub DrawCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
+
     '#DrawCircle(x!, y!, radius! [,startangle!, endangle!, [cnvId!]])
     'draw a circle or arc.
-    On Error GoTo errorhandler
+
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -1446,33 +1449,18 @@ Sub DrawCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
     sa = getValue(useIt4$, lit$, st, theProgram)
     ea = getValue(useIt5$, lit$, en, theProgram)
     a = getValue(useIt6$, lit$, cnv, theProgram)
+   
+    Dim startangle As Double, endangle As Double
+    startangle = st * 3.14159 / 180     'conv to radians
+    endangle = en * 3.14159 / 180     'conv to radians
+    If number <> 6 Then
+        Call CanvasDrawEllipse(cnvRPGCodeScreen, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
+        Call renderRPGCodeScreen
+        Call DXRefresh
+    Else
+        Call CanvasDrawEllipse(cnv, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
+    End If
 
-    'Commenting by KSNiloc...
-    
-    'If xx1 = DT_LIT Or yy1 = DT_LIT Or rr = DT_LIT Or sa = DT_LIT Or ea = DT_LIT Or a = DT_LIT Then
-    '    Call debugger("Error: DrawCircle data types must be numerical!-- " + text$)
-    
-        Dim startangle As Double, endangle As Double
-        startangle = st * 3.14159 / 180     'conv to radians
-        endangle = en * 3.14159 / 180     'conv to radians
-        'TBD: start and end angles
-        If number <> 6 Then
-            Call CanvasDrawEllipse(cnvRPGCodeScreen, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
-            Call renderRPGCodeScreen
-            'DXDrawCanvasPartial cnvRPGCodeScreen, _
-                                x1, y1, x1, y1, _
-                                x1 + radius * 2, y1 + radius * 2
-            DXRefresh
-        Else
-            Call CanvasDrawEllipse(cnv, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
-        End If
-    'End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
 Sub DrawEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
