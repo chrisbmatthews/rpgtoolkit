@@ -1160,7 +1160,7 @@ Public Sub toggleTileType(): On Error Resume Next
     Dim levelnum As Long, aPoint As Long, colorCode As Long, xx As Long, yy As Long
     
     ' !UPDATED! update caption with appropiate tile type caption
-    tkMainForm.bFrame(1).Caption = "Tile Type - " & tiletype(boardList(activeBoardIndex).currentTileType).name
+    tkMainForm.bFrame(1).Caption = "Tile Type - " & tiletype(boardList(activeBoardIndex).currentTileType).name & "                         "
     colorCode = tiletype(boardList(activeBoardIndex).currentTileType).color
     
     ' draw tile type image in pixture box
@@ -2834,7 +2834,7 @@ Private Sub Form_Load(): On Error Resume Next
 '=====================================================
 'Alterations for isometric sizing, for 3.0.4 by Delano
 
-    Call LocalizeForm(Me)
+    ' Call LocalizeForm(Me)
     
     Set activeBoard = Me
     
