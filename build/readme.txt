@@ -7,7 +7,7 @@ Welcome to the release of the RPGToolkit 3.05! This readme file addresses miscel
 3.05 Readme - Important!
 ------------------------
 
-There have some imporant changes to the toolkit in this version that will require users to reset some values in certain game files if you are upgrading. These changes won't prevent you running any games, but not making them may produce results that appear to be bugs.
+There have some important changes to the toolkit in this version that will require users to reset some values in certain game files if you are upgrading. These changes won't prevent you running any games, but not making them may produce results that appear to be bugs.
 
 1. gameSpeed()
 --------------
