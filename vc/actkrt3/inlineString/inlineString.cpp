@@ -63,7 +63,7 @@ inlineString::inlineString(std::string cFrom, int length)
 ///////////////////////////////////////////////////////////////////////////
 // Get character(s) from the inlineString
 ///////////////////////////////////////////////////////////////////////////
-inlineString& inlineString::getChars(int start, int length)
+char* inlineString::getChars(int start, int length)
 {
 
 	//check for potential error
@@ -78,12 +78,13 @@ inlineString& inlineString::getChars(int start, int length)
 		else
 		{
 			//not fixable (starting past end of string)
-			static inlineString toRet(1);
+			char* toRet = new(char[2]);
+			toRet = "";
 			return toRet;
 		}
 	}
 
-	static inlineString toRet(length);		//string to return
+	char* toRet = new(char[length + 1]);	//string to return
 	int pos = 0;							//position in string
 	int chrIdx = 0;							//character index
 
@@ -105,9 +106,9 @@ inlineString& inlineString::getChars(int start, int length)
 ///////////////////////////////////////////////////////////////////////////
 // Outside interface to getChars()
 ///////////////////////////////////////////////////////////////////////////
-inlineString& inlineString::mid(int start, int length) {return getChars(start, length);}
-inlineString& inlineString::left(int length) {return getChars(1, length);}
-inlineString& inlineString::right(int length) {return mid(len() - length, length);}
+char* inlineString::mid(int start, int length) {return getChars(start, length);}
+char* inlineString::left(int length) {return getChars(1, length);}
+char* inlineString::right(int length) {return mid(len() - length, length);}
 
 ///////////////////////////////////////////////////////////////////////////
 // Copy string to new memory (ideal to use as return value)
@@ -193,6 +194,7 @@ inlineString& inlineString::operator + (char toAdd)
 inlineString::operator = (char* text)
 {
 	strcpy(m_contents, text);
+	delete(text);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -200,7 +202,9 @@ inlineString::operator = (char* text)
 ///////////////////////////////////////////////////////////////////////////
 inlineString::operator = (char text)
 {
-	strcpy(m_contents, (char*)text);
+	char* createFrom = (char*)text;
+	strcpy(m_contents, createFrom);
+	delete(createFrom);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -316,7 +320,9 @@ inlineString& inlineString::operator + (std::string toAdd)
 inlineString::operator = (std::string cFrom)
 {
 	//cast the STL string to char* and copy that memory to this string
-	strcpy(m_contents, cFrom.c_str());
+	char* createFrom = (char*)cFrom.c_str();
+	strcpy(m_contents, createFrom);
+	delete(createFrom);
 }
 
 ///////////////////////////////////////////////////////////////////////////
