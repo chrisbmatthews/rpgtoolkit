@@ -83,7 +83,7 @@ Public Sub createTimerRPG(ByRef strText As String, ByRef prg As RPGCodeProgram, 
     retval.dataType = DT_NUM
     Dim hTimer As Long
     hTimer = SetTimer(0&, 0&, CLng(paras(0).num), AddressOf createTimerCallback)
-    retval.num = CLng(hTimer)
+    retval.num = CDbl(hTimer)
     ' Find a position in the timers array
     Dim i As Long, pos As Long, ub As Long
     pos = -1
@@ -126,6 +126,7 @@ Public Sub killTimerRPG(ByRef strText As String, ByRef prg As RPGCodeProgram)
     End If
     Dim hTimer As Long
     hTimer = CLng(paras(0).num)
+    If (hTimer = 0) Then Exit Sub
     ' Find this timer
     Dim i As Long
     For i = 0 To UBound(m_timers)
