@@ -299,9 +299,11 @@ Begin VB.Form boardedit
       End
       Begin VB.Menu sub44 
          Caption         =   "-"
+         Visible         =   0   'False
       End
       Begin VB.Menu installupgrademnu 
          Caption         =   "Install Upgrade"
+         Visible         =   0   'False
       End
    End
    Begin VB.Menu buildmnu 
@@ -352,6 +354,7 @@ Begin VB.Form boardedit
       End
       Begin VB.Menu registrationinfomnu 
          Caption         =   "Registration Info"
+         Visible         =   0   'False
       End
       Begin VB.Menu aboutmnu 
          Caption         =   "About"

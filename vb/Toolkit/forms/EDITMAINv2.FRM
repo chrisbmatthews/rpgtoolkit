@@ -2002,9 +2002,11 @@ Begin VB.Form editmainfile
       End
       Begin VB.Menu sub3 
          Caption         =   "-"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuInstallUpgrade 
          Caption         =   "Install Upgrade"
+         Visible         =   0   'False
       End
    End
    Begin VB.Menu mnuBuild 
@@ -2055,6 +2057,7 @@ Begin VB.Form editmainfile
       End
       Begin VB.Menu mnuregistrationinfo 
          Caption         =   "Registration Info"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuAbout 
          Caption         =   "About"
@@ -2067,7 +2070,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
+'All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '=========================================================================
