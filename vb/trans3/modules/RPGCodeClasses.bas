@@ -230,7 +230,7 @@ End Function
 '=========================================================================
 ' Determine if one class is a type of another
 '=========================================================================
-Public Function classIsKindOf(ByRef theClass As RPGCODE_CLASS, ByVal strClass As String, ByRef prg As RPGCodeProgram) As Boolean
+Public Function classIsKindOf(ByRef theClass As RPGCODE_CLASS, ByVal strClass As String, ByRef prg As RPGCodeProgram, ByRef lngPrecison As Long) As Boolean
 
     ' Capitalize strClass
     strClass = UCase$(strClass)
@@ -248,11 +248,13 @@ Public Function classIsKindOf(ByRef theClass As RPGCODE_CLASS, ByVal strClass As
     Dim i As Long
     For i = 0 To UBound(theClass.strDerived)
 
+        lngPrecison = lngPrecison - 1
+
         ' If there's a base here
         If (LenB(theClass.strDerived(i))) Then
 
             ' Recurse
-            If (classIsKindOf(classFromName(theClass.strDerived(i), prg), strClass, prg)) Then
+            If (classIsKindOf(classFromName(theClass.strDerived(i), prg), strClass, prg, lngPrecison)) Then
 
                 ' Success!
                 classIsKindOf = True
@@ -261,6 +263,8 @@ Public Function classIsKindOf(ByRef theClass As RPGCODE_CLASS, ByVal strClass As
             End If
 
         End If
+
+        lngPrecison = lngPrecison + 1
 
     Next i
 
@@ -866,6 +870,9 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
                 ' Found a spot
                 pos = idx
             End If
+        ElseIf (methodsAreEqual(scope.methods(idx), theMethod, prg)) Then
+            ' Illegal redefinition
+            Exit Sub
         End If
     Next idx
 
@@ -1024,6 +1031,9 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
         If (tdc = "!" Or tdc = "$") Then
             ' Add the array's sign on
             anArray = anArray & tdc
+        Else
+            ' Add a numerical type char on
+            anArray = anArray & "!"
         End If
     End If
 

@@ -174,9 +174,10 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     mName = UCase$(Trim$(mName))
 
+    Dim cls As RPGCODE_CLASS, lngResolutionPos As Long
+
     If (hObject) Then
 
-        Dim lngResolutionPos As Long
         lngResolutionPos = InStr(1, mName, "::")
 
         If (lngResolutionPos) Then
@@ -184,7 +185,8 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             ' Check for overriden name
             Dim strPrefix As String
             theMethod.name = removeClassName(mName)
-            strPrefix = checkOverrideName(getClass(hObject, theProgram), theMethod, theProgram)
+            cls = getClass(hObject, theProgram)
+            strPrefix = checkOverrideName(cls, theMethod, theProgram)
 
             If (LenB(strPrefix)) Then
 
@@ -197,9 +199,30 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     End If
 
-    Dim foundIt As Long
+    Dim foundIt As Long, t As Long
     theMethod.name = mName
     foundIt = getMethodLine(theMethod, theProgram, i)
+
+    If (foundIt = -1) Then
+
+        If (lngResolutionPos) Then
+
+            ' Try all base classes
+            For t = 0 To UBound(cls.strDerived)
+                If (LenB(cls.strDerived(t))) Then
+
+                    theMethod.name = cls.strDerived(t) & Mid$(mName, lngResolutionPos)
+                    foundIt = getMethodLine(theMethod, theProgram, i)
+
+                    ' TBD: Precision check here
+                    If (foundIt <> -1) Then Exit For
+
+                End If
+            Next t
+
+        End If
+
+    End If
 
     If (foundIt = -1) Then
 
@@ -257,7 +280,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         End If
     Next se
 
-    Dim topList As Long, t As Long
+    Dim topList As Long
     ' Put the variables in global pointer list
     topList = theOne
     For t = 1 To number

@@ -24,17 +24,18 @@ Public errorKeep As RPGCodeProgram
 '=========================================================================
 ' Determine if two 'RPGCodeMethod' structs are equal
 '=========================================================================
-Public Function methodsAreEqual(ByRef left As RPGCodeMethod, ByRef right As RPGCodeMethod, ByRef prg As RPGCodeProgram) As Boolean
-    If (left.name = right.name) Then
-        If (left.lngParams = right.lngParams) Then
-            If (left.lngParams) Then
+Public Function methodsAreEqual(ByRef Left As RPGCodeMethod, ByRef Right As RPGCodeMethod, ByRef prg As RPGCodeProgram, Optional ByRef pLngPrecison As Long) As Boolean
+    pLngPrecison = 0
+    If (Left.name = Right.name) Then
+        If (Left.lngParams = Right.lngParams) Then
+            If (Left.lngParams) Then
                 Dim i As Long
-                For i = 0 To left.lngParams - 1
-                    If (left.dtParams(i) <> right.dtParams(i)) Then
+                For i = 0 To Left.lngParams - 1
+                    If (Left.dtParams(i) <> Right.dtParams(i)) Then
                         Exit Function
                     End If
-                    If (left.dtParams(i) = DT_OTHER) Then
-                        If Not (classIsKindOf(classFromName(left.classTypes(i), prg), right.classTypes(i), prg)) Then
+                    If (Left.dtParams(i) = DT_OTHER) Then
+                        If Not (classIsKindOf(classFromName(Left.classTypes(i), prg), Right.classTypes(i), prg, pLngPrecison)) Then
                             Exit Function
                         End If
                     End If
@@ -48,27 +49,65 @@ End Function
 '=========================================================================
 ' Get the line a method begins on
 '=========================================================================
-Public Function getMethodLine(ByRef theMethod As RPGCodeMethod, ByRef prg As RPGCodeProgram, Optional ByRef lngMethodIdx As Long) As Long
+Public Function getMethodLine(ByRef theMethod As RPGCodeMethod, ByRef prg As RPGCodeProgram, Optional ByRef lngMethodIdx As Long, Optional ByRef pLngPrecision As Long) As Long
 
     On Error Resume Next
 
-    Dim i As Long, ub As Long
+    Dim i As Long, ub As Long, j As Long
     ub = UBound(prg.methods)
+
+    ' Create an array to hold precison
+    Dim lngPrecison() As Long, lngPosistions() As Long
+    ReDim lngPrecison(ub)
+    ReDim lngPosistions(ub)
+    pLngPrecision = 0
 
     ' Cycle through all methods in the program
     For i = 0 To ub
-        If (methodsAreEqual(theMethod, prg.methods(i), prg)) Then
-            ' Found it!
-            lngMethodIdx = i
-            getMethodLine = prg.methods(i).line
-            Exit Function
-        ElseIf (i = ub) Then
-            ' Method not in program
-            getMethodLine = -1
-            lngMethodIdx = -1
-            Exit Function
+        If (methodsAreEqual(theMethod, prg.methods(i), prg, lngPrecison(j))) Then
+            ' Move on to next position
+            lngPosistions(j) = i
+            j = j + 1
+        Else
+            ' Not a match
+            lngPrecison(j) = 1
         End If
     Next i
+
+    ' There will always be an extra position
+    j = j - 1
+
+    If (j = -1) Then
+
+        ' Found no matches
+        getMethodLine = -1
+        lngMethodIdx = -1
+        Exit Function
+
+    End If
+
+    ' Find the most precise match
+    Dim lngMostPreciseIdx As Long, lngMostPrecise As Long
+    lngMostPreciseIdx = -1
+    lngMostPrecise = 1
+
+    For i = 0 To j
+
+        ' Check if this match is more precise
+        If ((lngPrecison(i) > lngMostPrecise) Or (lngMostPrecise > 0)) Then
+
+            ' It is
+            lngMostPrecise = lngPrecison(i)
+            lngMostPreciseIdx = i
+
+        End If
+
+    Next i
+
+    ' Return what we've found
+    getMethodLine = prg.methods(lngPosistions(lngMostPreciseIdx)).line
+    lngMethodIdx = lngPosistions(lngMostPreciseIdx)
+    pLngPrecision = lngMostPrecise + pLngPrecision
 
 End Function
 
@@ -227,7 +266,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             ' Trim up that line...
             theLine = replaceOutsideQuotes(Trim$(theLine), vbTab, vbNullString)
 
-            If (right$(theLine, 1) = "_") Then
+            If (Right$(theLine, 1) = "_") Then
                 ' This line is actually only part of a line, let's get the
                 ' whole line...
 
@@ -323,7 +362,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                                 p = p + 1
 
                             Case "#"
-                                If left$(lines(a), 1) = " " Then
+                                If Left$(lines(a), 1) = " " Then
                                     openProgram.program(p + a) = uD(a - 1) & lines(a)
                                 Else
                                     openProgram.program(p + a - 1) = _
@@ -395,7 +434,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             Dim istr As Long
             istr = InStr(1, openProgram.program(a), ":")
             If (istr) Then
-                strClass = Trim$(replace(left$(openProgram.program(a), istr - 1), "class", vbNullString, , 1, vbTextCompare))
+                strClass = Trim$(replace(Left$(openProgram.program(a), istr - 1), "class", vbNullString, , 1, vbTextCompare))
             Else
                 strClass = GetMethodName(openProgram.program(a))
             End If
@@ -487,7 +526,7 @@ Public Function stripComments(ByVal Text As String) As String
     Dim a As Long, char As String, ignore As Boolean
     For a = 1 To Len(Text)
         char = Mid$(Text, a, 2)
-        If (left$(char, 1) = ("""")) Then
+        If (Left$(char, 1) = ("""")) Then
             ignore = Not (ignore)
         ElseIf (char = "//") And (Not (ignore)) Then
             stripComments = Mid$(Text, 1, a - 1)
