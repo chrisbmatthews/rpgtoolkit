@@ -544,7 +544,7 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
         If LenB(bgt) Then
             'If there is a tile here.
 
-            Call drawTileCNV(cnvScrollCache, _
+            Call drawTileCnv(cnvScrollCache, _
                           projectPath & tilePath & bgt, _
                           xx, _
                           yy, _
@@ -635,7 +635,7 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
                     y = boardList(activeBoardIndex).theData.progY(prgNum)
                     
                     If cnv <> -1 Then
-                        Call drawTileCNV(cnv, _
+                        Call drawTileCnv(cnv, _
                                         projectPath & tilePath & boardList(activeBoardIndex).theData.progGraphic$(prgNum), _
                                         x - scTopX, _
                                         y - scTopY, _
@@ -871,7 +871,7 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                         If UCase$(ext$) <> "TAN" Then
                             'not the animated part
                             If cnv <> -1 Then
-                                Call drawTileCNV(cnv, _
+                                Call drawTileCnv(cnv, _
                                               projectPath & tilePath & bgt, _
                                               xx, _
                                               yy, _
@@ -1956,9 +1956,6 @@ End Sub
 Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
 
     On Error Resume Next
-
-    ' Init the gfx engine
-    Call InitTkGfx
 
     ' Init the canvas engine
     Call initCanvasEngine
