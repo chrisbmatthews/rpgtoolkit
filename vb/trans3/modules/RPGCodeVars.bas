@@ -543,11 +543,14 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     End If
 
-    ' If ((dType = DT_NUM) Or (dType = DT_VOID)) Then
-    '     ' If we have a numerical variable then add to
-    '     ' the string to evaluate (prevents some errors)
-    '    Text = Text & " +0+0"
-    ' End If
+    Dim oldText As String
+    oldText = Text
+
+    If ((dType = DT_NUM) Or (dType = DT_VOID)) Then
+        ' If we have a numerical variable then add to
+        ' the string to evaluate (prevents some errors)
+       Text = Text & " +0+0"
+    End If
 
     ' Check what type of conjuction we have
     equal = MathFunction(Text, 1)
@@ -626,7 +629,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             ' Check if we can evaluate using logic
             Dim dRes As Double
             logicEval = True
-            dRes = CDbl(evaluate(MidB$(Text, InStrB(1, Text, equal) + 2), theProgram, logicEval))
+            dRes = CDbl(evaluate(MidB$(Text, InStrB(1, oldText, equal) + 2), theProgram, logicEval))
 
             If Not (logicEval) Then
 
@@ -650,7 +653,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                                 Exit Do
                             End If
                             toFind = toFind - 1
-                            If (Not nulled(tokenIdx + toFind)) Then
+                            If Not (nulled(tokenIdx + toFind)) Then
                                 ' This one will do
                                 Exit Do
                             End If
@@ -683,21 +686,6 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                                             End Select
                                             ' Fill in new data
                                             Call getValue(theVal, lit, numberUse(tokenIdx + toFind), theProgram)
-                                            ' Switch on the conjuction we used
-                                            Select Case conjunctions(tokenIdx + toFind)
-                                                Case "+", "-"
-                                                    ' Additive identity is 0
-                                                    numberUse(tokenIdx) = 0
-                                                Case "/", "*", "^", "%"
-                                                    ' Multiplicative identity is 1
-                                                    numberUse(tokenIdx) = 1
-                                                Case "`", "|"
-                                                    ' Binary [X]OR identity is 0
-                                                    numberUse(tokenIdx) = 0
-                                                Case "&"
-                                                    ' Binary AND identity is 255
-                                                    numberUse(tokenIdx) = 255
-                                            End Select
                                             ' Flag this spot holds an identity
                                             nulled(tokenIdx) = True
                                         End If
@@ -711,9 +699,11 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 ' Build the equation into a string
                 Dim build As String
                 For tokenIdx = 2 To number
-                    build = build & numberUse(tokenIdx)
-                    If (tokenIdx <> number) Then
-                        build = build & conjunctions(tokenIdx)
+                    If Not (nulled(tokenIdx)) Then
+                        build = build & numberUse(tokenIdx)
+                        If (tokenIdx <> number) Then
+                            build = build & conjunctions(tokenIdx)
+                        End If
                     End If
                 Next tokenIdx
 
