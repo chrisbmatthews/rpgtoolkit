@@ -308,6 +308,45 @@ public:
 		CONST LONG crTransparentColor
 	) CONST;
 
+	INT FAST_CALL BltStretch(
+		CONST HDC hdc,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST INT newWidth,
+		CONST INT newHeight,
+		CONST LONG lRasterOp
+	) CONST;
+
+	INT FAST_CALL BltStretch(
+		CONST CGDICanvas *cnv,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST INT newWidth,
+		CONST INT newHeight,
+		CONST LONG lRasterOp
+	) CONST;
+
+	INT FAST_CALL BltStretch(
+		CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST INT newWidth,
+		CONST INT newHeight,
+		CONST LONG lRasterOp
+	) CONST;
+
 	INT FAST_CALL ShiftLeft(
 		CONST INT nPixels
 	);

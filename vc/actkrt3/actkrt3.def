@@ -193,3 +193,5 @@ EXPORTS
 	DXDrawCanvasTranslucentPartial	@ 253
 
 	IMGCreateIcon	@ 254
+
+	CNVBltStretchCanvas @ 255

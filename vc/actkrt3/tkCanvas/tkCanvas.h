@@ -228,6 +228,21 @@ BOOL APIENTRY CNVBltTransparentPartCanvas(
 	CONST INT crTransparentColor
 );
 
+// Blt a canvas stretched
+INT APIENTRY CNVBltStretchCanvas(
+	CONST CNV_HANDLE cnvSource,
+	CONST CNV_HANDLE cnvTarget,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST INT newWidth,
+	CONST INT newHeight,
+	CONST LONG lRasterOp
+);
+
 //--------------------------------------------------------------------------
 // End of the header
 //--------------------------------------------------------------------------

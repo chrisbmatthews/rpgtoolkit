@@ -391,6 +391,114 @@ INT FAST_CALL CGDICanvas::BltPart(
 }
 
 //
+// Surface target
+//
+INT FAST_CALL CGDICanvas::BltStretch(
+	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST INT newWidth,
+	CONST INT newHeight,
+	CONST LONG lRasterOp
+		) CONST
+{
+
+	// If using DirectX
+	if (lpddsSurface && usingDX())
+	{
+
+		// Setup the rects
+		RECT destRect = {x, y, x + newWidth, y + newHeight};
+		RECT rect = {xSrc, ySrc, xSrc + width, ySrc + height};
+
+		// Execute the blt
+		DDBLTFX bltFx;
+		DD_INIT_STRUCT(bltFx);
+		bltFx.dwROP = lRasterOp;
+		return SUCCEEDED(lpddsSurface->Blt(&destRect, GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx));
+
+	}
+	else if (lpddsSurface)
+	{
+		// Use GDI
+		HDC hdc = NULL;
+		lpddsSurface->GetDC(&hdc);
+		CONST INT nToRet = BltStretch(hdc, x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp);
+		lpddsSurface->ReleaseDC(hdc);
+		return nToRet;
+	}
+
+	// Else, we've failed
+	return FALSE;
+
+}
+
+//
+// HDC target
+//
+INT FAST_CALL CGDICanvas::BltStretch(
+	CONST HDC hdc,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST INT newWidth,
+	CONST INT newHeight,
+	CONST LONG lRasterOp
+		) CONST
+{
+
+	CONST HDC srcHdc = OpenDC();
+	CONST INT toRet = StretchBlt(hdc, x, y, newWidth, newHeight, srcHdc, xSrc, ySrc, width, height, lRasterOp);
+	CloseDC(hdc);
+	return toRet;
+
+}
+
+//
+// Canvas target
+//
+INT FAST_CALL CGDICanvas::BltStretch(
+	CONST CGDICanvas *cnv,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST INT newWidth,
+	CONST INT newHeight,
+	CONST LONG lRasterOp
+		) CONST
+{
+
+	if (cnv->usingDX())
+	{
+
+		// Use DirectX
+		return BltStretch(cnv->GetDXSurface(), x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp);
+
+	}
+	else
+	{
+
+		// Use GDI
+		CONST HDC hdc = cnv->OpenDC();
+		CONST INT toRet = BltStretch(hdc, x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp);
+		cnv->CloseDC(hdc);
+		return toRet;
+
+	}
+
+}
+
+//
 // Complete blt to an HDC
 //
 INT FAST_CALL CGDICanvas::Blt(

@@ -45,6 +45,7 @@ Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle 
 Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
 Private Declare Function CNVCreateCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long) As Long
 Private Declare Function CNVBltCanvasTranslucentPart Lib "actkrt3.dll" (ByVal cnvSource As Long, ByVal cnvTarget As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
+Private Declare Function CNVBltStretchCanvas Lib "actkrt3.dll" (ByVal cnvSource As Long, ByVal cnvTarget As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal lRasterOp As Long) As Long
 Private Declare Sub CNVKillCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long, ByVal hCanvasHostDC As Long)
 
 '=========================================================================
@@ -52,7 +53,7 @@ Private Declare Sub CNVKillCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long
 '=========================================================================
 Private m_canvasHost As Long    ' This variable contains a handle to a device
                                 ' context (created in initCanvasEngine) which
-                                ' all other canvas' DCs are based upon
+                                ' all other canvases' DCs are based upon
 
 '=========================================================================
 ' Draw a background onto a canvas
@@ -111,7 +112,7 @@ Public Sub canvasDrawHand(ByVal canvasID As Long, ByVal pointx As Long, ByVal po
         Dim cnv As Long, hdc As Long
         cnv = createCanvas(32, 32)
         hdc = canvasOpenHDC(cnv)
-        Call BitBlt(hdc, 0, 0, 32, 32, handHDC, 0, 0, SRCCOPY)
+        Call BitBlt(hdc, 0, 0, 32, 32, handHdc, 0, 0, SRCCOPY)
         Call canvasCloseHDC(cnv, hdc)
         Call canvas2CanvasBltTransparent(cnv, canvasID, pointx - 32, pointy - 10, RGB(255, 0, 0))
         Call destroyCanvas(cnv)
@@ -334,19 +335,25 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
         cnvInt = createCanvas(newWidth, newHeight)
         Call canvasFill(cnvInt, crTranspColor)
 
-        hdcInt = canvasOpenHDC(cnvInt)
+        Call CNVBltStretchCanvas( _
+            cnvMask, cnvInt, _
+            0, 0, 0, 0, _
+            w, h, newWidth, newHeight, _
+            vbSrcCopy _
+        )
 
-        ' Stretch the mask onto the intermediate canvas
-        hdcMask = canvasOpenHDC(cnvMask)
-        Call StretchBlt(hdcInt, _
-                           0, 0, _
-                           newWidth, _
-                           newHeight, _
-                           hdcMask, _
-                           0, 0, _
-                           w, h, _
-                           SRCAND)
-        Call canvasCloseHDC(cnvMask, hdcMask)
+#If (False) Then
+
+        Call CNVBltStretchCanvas( _
+            cnvSource, cnvInt, _
+            0, 0, 0, 0, _
+            w, h, newWidth, newHeight, _
+            vbSrcPaint _
+        )
+
+#Else
+
+        hdcInt = canvasOpenHDC(cnvInt)
 
         ' Stretch the image onto the intermediate canvas
         hdcSource = canvasOpenHDC(cnvSource)
@@ -357,10 +364,12 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
                            hdcSource, _
                            0, 0, _
                            w, h, _
-                           SRCPAINT)
+                           vbSrcPaint)
         Call canvasCloseHDC(cnvSource, hdcSource)
  
         Call canvasCloseHDC(cnvInt, hdcInt)
+
+#End If
 
         ' Blt the intermediate canvas to the target canvas
         Call canvas2CanvasBltTransparent(cnvInt, cnvTarget, destX, destY, crTranspColor)
