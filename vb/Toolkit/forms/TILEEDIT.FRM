@@ -346,7 +346,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '========================================================================
-' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 ' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '========================================================================
@@ -565,17 +565,17 @@ End Sub
 '========================================================================
 Private Sub isoUpdate(): On Error Resume Next
     With openTileEditorDocs(indice)
-        mnuRotate.Enabled = Not .isometric
+        'mnuRotate.Enabled = Not .isometric                 'Enabled 3.0.6
         cutcornermnu.Enabled = Not .isometric
         mnuSkew.Enabled = Not .isometric
         convert.Enabled = Not .isometric
-        layer.Enabled = Not .isometric
+        'layer.Enabled = Not .isometric                     'Enabled 3.0.6
         lsrc.Enabled = Not .isometric
         tkMainForm.cmdImport.Enabled = Not .isometric
-        tkMainForm.Command15.Enabled = Not .isometric
-        tkMainForm.Command16.Enabled = Not .isometric
-        tkMainForm.Command18.Enabled = Not .isometric
-        tkMainForm.Command19.Enabled = Not .isometric
+        'tkMainForm.Command15.Enabled = Not .isometric      'Enabled 3.0.6
+        'tkMainForm.Command16.Enabled = Not .isometric      'Enabled 3.0.6
+        'tkMainForm.Command18.Enabled = Not .isometric      'Enabled 3.0.6
+        'tkMainForm.Command19.Enabled = Not .isometric      'Enabled 3.0.6
     End With
 End Sub
 
@@ -628,108 +628,157 @@ End Sub
 '========================================================================
 ' Scroll
 '========================================================================
-Public Sub Scroll(ByVal how As SCROLL_TYPE): On Error Resume Next
-    'Undo
+Public Sub Scroll(ByVal direction As SCROLL_TYPE): On Error Resume Next
+    
+    Dim x As Long, y As Long
+    
     Call setUndo
     
-    Dim xx As Integer, yy As Integer
-    
-    Select Case how
-        Case North
-            For xx = 1 To 32
-                For yy = 1 To 32 - 1
-                    bufTile(xx, yy) = tileMem(xx, yy + 1)
-                Next yy
-            Next xx
+    If openTileEditorDocs(indice).isometric Then
+        'Diagonal scrolling.
+        Select Case direction
+            Case North 'NorthWest for isometrics.
+                'First shift the data.
+                For x = 1 To 64 - 2: For y = 1 To 32 - 1
+                    bufTile(x, y) = tileMem(x + 2, y + 1)
+                Next y: Next x
+                'Now Copy the top left corner to the bottom right, missing the cut corner.
+                For x = 1 To 32 + 1: For y = 1 To 16 + 1
+                    If tileMem(x, y) <> -1 Then bufTile(x + 32 - 2, y + 16 - 1) = tileMem(x, y)
+                Next y: Next x
+                
+            Case South 'SouthEast for isometrics.
+                For x = 2 To 64: For y = 1 To 32
+                    bufTile(x, y) = tileMem(x - 2, y - 1)
+                Next y: Next x
+                'Bottom right > top left.
+                For x = 32 To 64: For y = 16 - 1 To 32
+                    If tileMem(x, y) <> -1 Then bufTile(x - 32 + 2, y - 16 + 1) = tileMem(x, y)
+                Next y: Next x
+                
+            Case East 'NorthEast for isometrics.
+                For x = 2 To 64: For y = 1 To 32 - 1
+                    bufTile(x, y) = tileMem(x - 2, y + 1)
+                Next y: Next x
+                'Top right > bottom left.
+                For x = 32 To 64: For y = 1 To 16 + 1
+                    If tileMem(x, y) <> -1 Then bufTile(x - 32 + 2, y + 16 - 1) = tileMem(x, y)
+                Next y: Next x
+                
+            Case West 'SouthWest for isometrics.
+                For x = 1 To 64 - 2: For y = 1 To 32
+                    bufTile(x, y) = tileMem(x + 2, y - 1)
+                Next y: Next x
+                'Bottom left > top right.
+                For x = 1 To 32 + 1: For y = 16 - 1 To 32
+                    If tileMem(x, y) <> -1 Then bufTile(x + 32 - 2, y - 16 + 1) = tileMem(x, y)
+                Next y: Next x
+                
+        End Select
         
-            For xx = 1 To 32
-                bufTile(xx, 32) = tileMem(xx, 1)
-            Next xx
-        Case East
-            For xx = 1 To 32
-                For yy = 1 To 32
-                    bufTile(xx, yy) = tileMem(xx - 1, yy)
-                Next yy
-            Next xx
-            
-            For yy = 1 To 32
-                bufTile(1, yy) = tileMem(32, yy)
-            Next yy
-        Case South
-            For xx = 1 To 32
-                For yy = 1 To 32
-                    bufTile(xx, yy) = tileMem(xx, yy - 1)
-                Next yy
-            Next xx
-        
-            For xx = 1 To 32
-                bufTile(xx, 1) = tileMem(xx, 32)
-            Next xx
-        Case West
-            For xx = 1 To 32 - 1
-                For yy = 1 To 32
-                    bufTile(xx, yy) = tileMem(xx + 1, yy)
-                Next yy
-            Next xx
-            
-            For yy = 1 To 32
-                bufTile(32, yy) = tileMem(1, yy)
-            Next yy
-    End Select
+    Else
+        '32x32 tile.
+        Select Case direction
+            Case North
+                For x = 1 To 32: For y = 1 To 32 - 1
+                        bufTile(x, y) = tileMem(x, y + 1)
+                Next y: Next x
+                For x = 1 To 32
+                    bufTile(x, 32) = tileMem(x, 1)
+                Next x
+                
+            Case East
+                For x = 1 To 32: For y = 1 To 32
+                        bufTile(x, y) = tileMem(x - 1, y)
+                Next y: Next x
+                For y = 1 To 32
+                    bufTile(1, y) = tileMem(32, y)
+                Next y
+                
+            Case South
+                For x = 1 To 32: For y = 1 To 32
+                        bufTile(x, y) = tileMem(x, y - 1)
+                Next y: Next x
+                For x = 1 To 32
+                    bufTile(x, 1) = tileMem(x, 32)
+                Next x
+                
+            Case West
+                For x = 1 To 32 - 1: For y = 1 To 32
+                        bufTile(x, y) = tileMem(x + 1, y)
+                Next y: Next x
+                For y = 1 To 32
+                    bufTile(32, y) = tileMem(1, y)
+                Next y
+                
+        End Select
     
-    'Change the tile
-    For xx = 1 To 32
-        For yy = 1 To 32
-            tileMem(xx, yy) = bufTile(xx, yy)
-        Next yy
-    Next xx
+    End If 'isIsometric
+    
+    'Copy back to tileMem.
+    For x = 1 To xRange: For y = 1 To 32
+            tileMem(x, y) = bufTile(x, y)
+    Next y: Next x
     
     'Redraw
     Call tileRedraw
+    
 End Sub
 
 '========================================================================
 ' Rotates the tile
 '========================================================================
-Private Sub Rotate(ByVal how As ROTATE_TYPE)
+Private Sub Rotate(ByVal direction As ROTATE_TYPE): On Error Resume Next
    'Undo
     Call setUndo
 
-    Dim x As Integer, y As Integer, xx As Integer, yy As Integer
+    Dim x As Long, y As Long, xx As Long, yy As Long, isoOffset As Long
    
     'Buff it
-    For x = 1 To 32
+    For x = 1 To xRange
         For y = 1 To 32
             bufTile(x, y) = tileMem(x, y)
         Next y
     Next x
    
-    'Reset variables
+    'Set variables
     yy = 1: xx = 1
+    If openTileEditorDocs(indice).isometric Then isoOffset = 16
 
-    'Start changing the tiles
-    Select Case how
+    'Rotate the tile. Lots of number-crunching. Rotation around centre of tile.
+    'For isometrics, rotate about (32,16) and blank left and right (17 > x > 48).
+    Select Case direction
         Case Left
-            For x = 1 To 32
+            yy = 1 - isoOffset
+            For x = 1 To xRange
                 For y = 32 To 1 Step -1
-                    tileMem(x, y) = bufTile(xx, yy)
+                    If (x < 17 Or x > 48) And openTileEditorDocs(indice).isometric Then
+                        tileMem(x, y) = -1
+                    Else
+                        tileMem(x, y) = bufTile(xx, yy)
+                    End If
                     xx = xx + 1
                 Next y
-                xx = 1
+                xx = isoOffset + 1
                 yy = yy + 1
             Next x
         Case Right
-            For x = 32 To 1 Step -1
+            yy = 1 - isoOffset
+            For x = xRange To 1 Step -1
                 For y = 1 To 32
-                    tileMem(x, y) = bufTile(xx, yy)
+                    If (x < 17 Or x > 48) And openTileEditorDocs(indice).isometric Then
+                        tileMem(x, y) = -1
+                    Else
+                        tileMem(x, y) = bufTile(xx, yy)
+                    End If
                     xx = xx + 1
                 Next y
-                xx = 1
+                xx = isoOffset + 1
                 yy = yy + 1
             Next x
         Case OneHundredEighty
             For y = 32 To 1 Step -1
-                For x = 32 To 1 Step -1
+                For x = xRange To 1 Step -1
                     tileMem(x, y) = bufTile(xx, yy)
                     xx = xx + 1
                 Next x
@@ -744,23 +793,23 @@ End Sub
 '========================================================================
 ' Flips the tile
 '========================================================================
-Private Sub Flip(ByVal how As FLIP_TYPE)
+Private Sub Flip(ByVal direction As FLIP_TYPE)
     'Undo
     Call setUndo
    
-    Dim x As Integer, y As Integer
+    Dim x As Long, y As Long
    
-    For x = 1 To 32
+    For x = 1 To xRange
         For y = 1 To 32
-            If how = Horizontal Then
-                bufTile(x, y) = tileMem(32 - x + 1, y)
+            If direction = Horizontal Then
+                bufTile(x, y) = tileMem(xRange - x + 1, y)
             Else 'Vertical
                 bufTile(x, y) = tileMem(x, 32 - y + 1)
             End If
         Next y
     Next x
    
-    For x = 1 To 32
+    For x = 1 To xRange
         For y = 1 To 32
             tileMem(x, y) = bufTile(x, y)
         Next y
