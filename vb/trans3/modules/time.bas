@@ -1,9 +1,15 @@
 Attribute VB_Name = "time"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'functions for day and night
+'=========================================================================
+' Procedures for controlling day and night
+'=========================================================================
+
+'=========================================================================
 'night begins to set at 4pm
 'night sets at 8pm
 'at that point, it is really nighttime
@@ -11,16 +17,24 @@ Attribute VB_Name = "time"
 'day arrives at 8am
 'from 8pm-4am it is as dark as it can be
 'from 8am-4am is is as light as it can be
+'=========================================================================
 
 Option Explicit
 
-Public addTime As Long          'time to add onto mainForm timer (for continued games)
-Public initTime As Long         'time at start of game
+'=========================================================================
+' Integral variables
+'=========================================================================
 
-Function DetermineLightLevel() As Integer
-    'returns a value between -255 and 0 to indicate how light/dark it is
-    'based upon the time of day.
+Public addTime As Long      'time to add onto mainForm timer (for continued games)
+Public initTime As Long     'time at start of game
+
+'=========================================================================
+' Return the light level
+'=========================================================================
+Public Function DetermineLightLevel() As Integer
+
     On Error GoTo errorhandler
+
     Dim theTime As Long
     
     Dim tod As Long
@@ -65,8 +79,11 @@ errorhandler:
     Resume Next
 End Function
 
-Function IsNight() As Boolean
-    'determines if it is after 8pm and before 8am
+'=========================================================================
+' Returns whether it is night
+'=========================================================================
+Public Function IsNight() As Boolean
+
     Dim theTime As Long
     
     theTime = TimeOfDay()
@@ -84,18 +101,17 @@ Function IsNight() As Boolean
     IsNight = False
 End Function
 
-Function TimeOfDay() As Long
-    'return the 'time of day' in seconds.
-    'this time is based upon:
-    '1- the actual time, if the mainForm file indicates that day and night are linked to the real world
-    '2- the time based upon an x-minute long day, where x is the length of a day indicated in the mainForm file
+'=========================================================================
+' Returns the time of day in seconds
+'=========================================================================
+Public Function TimeOfDay() As Long
 
     Dim secondsInADay As Long
     Dim dayTime As Long
     
     If mainMem.mainDayNightType = 0 Then
         'linked to the real world
-        TimeOfDay = Timer
+        TimeOfDay = Timer()
     Else
         'based upon an n-minute day
         If mainMem.mainDayLength > 0 Then
@@ -104,16 +120,16 @@ Function TimeOfDay() As Long
             dayTime = (dayTime / secondsInADay) * 86400
             TimeOfDay = dayTime
         Else
-            TimeOfDay = Timer
+            TimeOfDay = Timer()
         End If
     End If
 End Function
 
-
-Sub updateGameTime()
+'=========================================================================
+' Update length of game
+'=========================================================================
+Public Sub updateGameTime()
     On Error Resume Next
     'update count of game length
     gameTime = (Timer - initTime) + addTime
 End Sub
-
-

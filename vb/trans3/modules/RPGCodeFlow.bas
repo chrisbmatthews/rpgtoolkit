@@ -42,7 +42,7 @@ Public Enum RPGC_DT                     'rpgcode data type enum
 End Enum
 
 Public Type RPGCODE_RETURN              'rpgcode return structure
-    dataType As Long                    '  data type 0-num, 1-string (out)
+    dataType As RPGC_DT                 '  data type (out)
     num As Double                       '  data as numerical (out)
     lit As String                       '  data as string (out)
     usingReturnData As Boolean          '  is the return data being used? (in)
@@ -104,7 +104,7 @@ End Function
 Public Function increment(ByRef theProgram As RPGCodeProgram) As Long
     On Error Resume Next
     theProgram.programPos = theProgram.programPos + 1
-    If theProgram.programPos > theProgram.Length Then
+    If theProgram.programPos > UBound(theProgram.program) + 1 Then
         theProgram.programPos = -1
     End If
     increment = theProgram.programPos
@@ -168,7 +168,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         canDoIt = QueryPlugins(mName$, Text$, retval)
         If canDoIt = False Then
             'InClass.MethodWasFound = False
-            If InClass.PopupMethodNotFound = True Then
+            If InClass.PopupMethodNotFound Then
                 Call debugger("Error: Method not found!-- " + Text$)
             End If
         Else
@@ -502,7 +502,6 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
         End If '(.BoardYN = 1)
     Next t
 
-
     If usingPixelMovement() Then
         'If we're using pixel movement then restore the old item positions
         For t = 0 To MAXITEM
@@ -784,7 +783,7 @@ Public Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1
         source = selectedPlayer
         sourceType = 0
     End If
-    
+
     Dim theProgram As RPGCodeProgram
     Call openProgram(file, theProgram)
     lineNum = 1
@@ -807,9 +806,9 @@ Public Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1
     If Not mainRetVal.num = 1 Then
         theProgram.programPos = 0
         Do While _
-                   (theProgram.programPos >= 0) _
+                   ((theProgram.programPos >= 0) _
                    And (theProgram.programPos <= theProgram.Length) _
-                   And (runningProgram)
+                   And (runningProgram))
 
             prgPos = theProgram.programPos
             theProgram.programPos = DoCommand(theProgram, retval)
@@ -2348,6 +2347,6 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+      Call HandleError
     Resume Next
 End Function

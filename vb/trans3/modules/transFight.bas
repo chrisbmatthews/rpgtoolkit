@@ -6,7 +6,7 @@ Attribute VB_Name = "transFight"
 '=========================================================================
 
 '=========================================================================
-' Interface with the fight plugin
+' Interface with fight plugin
 '=========================================================================
 
 Option Explicit
@@ -17,7 +17,7 @@ Option Explicit
 Public fightInProgress As Boolean   'fight going yn
 Public numEne As Long               'number of enemies loaded
 Public enemies(3) As String         'filenames of enemies loaded
-Public canRun As Long               'can players run from fight?
+Public canrun As Long               'can players run from fight?
 
 '=========================================================================
 ' Read-only pointer to fightInProgress
@@ -132,16 +132,7 @@ Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
         Else
         
             'No AI program, use internal AI
-            Select Case ene.eneAI
-                Case 0
-                    Call AIZero(partyIdx, fightIdx)
-                Case 1
-                    Call AIOne(partyIdx, fightIdx)
-                Case 2
-                    Call AITwo(partyIdx, fightIdx)
-                Case 3
-                    Call AIThree(partyIdx, fightIdx)
-            End Select
+            Call preformFightAI(ene.eneAI, partyIdx, fightIdx)
         
         End If
         
@@ -263,25 +254,22 @@ End Sub
 Public Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
 
     On Error Resume Next
-    
+
     If fightInProgress Then
         'yup-- send it
         If mainMem.fightPlugin <> "" Then
-            Dim a As Long
             Dim code As Long
             code = INFORM_SOURCE_PARTY_DEFEATED
             Dim plugName As String
             plugName = PakLocate(projectPath$ + plugPath$ + mainMem.fightPlugin)
-            
-            ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).fightInform(sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
+                Call VBPlugin(plugName).fightInform(sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
             Else
-                a = PLUGFightInform(plugName, sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
+                Call PLUGFightInform(plugName, sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
             End If
-            
         End If
     End If
+
 End Sub
 
 '=========================================================================
@@ -316,7 +304,7 @@ Public Sub fightTick()
 
     Dim t As Long
     Dim u As Long
-    Dim S As Long
+    Dim s As Long
     Dim status As TKStatusEffect
     
     'first increment ticks...
@@ -334,20 +322,20 @@ Public Sub fightTick()
                     If Not (parties(t).fighterList(u).isPlayer) Then
                         'this is an enemy.
                         'check for enemy status effects...
-                        For S = 0 To UBound(parties(t).fighterList(u).enemy.status)
-                            If parties(t).fighterList(u).enemy.status(S).roundsLeft > 0 And _
-                                parties(t).fighterList(u).enemy.status(S).statusFile <> "" Then
-                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).enemy.status(S).statusFile, status)
+                        For s = 0 To UBound(parties(t).fighterList(u).enemy.status)
+                            If parties(t).fighterList(u).enemy.status(s).roundsLeft > 0 And _
+                                parties(t).fighterList(u).enemy.status(s).statusFile <> "" Then
+                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).enemy.status(s).statusFile, status)
                                 
                                 'now apply the effects of the status...
-                                Call invokeStatus(t, u, status, parties(t).fighterList(u).enemy.status(S).statusFile)
+                                Call invokeStatus(t, u, status, parties(t).fighterList(u).enemy.status(s).statusFile)
                                 
-                                parties(t).fighterList(u).enemy.status(S).roundsLeft = parties(t).fighterList(u).enemy.status(S).roundsLeft - 1
-                                If parties(t).fighterList(u).enemy.status(S).roundsLeft = 0 Then
-                                    parties(t).fighterList(u).enemy.status(S).statusFile = ""
+                                parties(t).fighterList(u).enemy.status(s).roundsLeft = parties(t).fighterList(u).enemy.status(s).roundsLeft - 1
+                                If parties(t).fighterList(u).enemy.status(s).roundsLeft = 0 Then
+                                    parties(t).fighterList(u).enemy.status(s).statusFile = ""
                                 End If
                             End If
-                        Next S
+                        Next s
                         
                         'the enemy now makes a move...
                         Call fightInformCharge(t, u)
@@ -358,20 +346,20 @@ Public Sub fightTick()
                         'this is a player.
                         
                         'check for player status effects...
-                        For S = 0 To UBound(parties(t).fighterList(u).player.status)
-                            If parties(t).fighterList(u).player.status(S).roundsLeft > 0 And _
-                                parties(t).fighterList(u).player.status(S).statusFile <> "" Then
-                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).player.status(S).statusFile, status)
+                        For s = 0 To UBound(parties(t).fighterList(u).player.status)
+                            If parties(t).fighterList(u).player.status(s).roundsLeft > 0 And _
+                                parties(t).fighterList(u).player.status(s).statusFile <> "" Then
+                                Call openStatus(projectPath$ + statusPath$ + parties(t).fighterList(u).player.status(s).statusFile, status)
                                 
                                 'now apply the effects of the status...
-                                Call invokeStatus(t, u, status, parties(t).fighterList(u).player.status(S).statusFile)
+                                Call invokeStatus(t, u, status, parties(t).fighterList(u).player.status(s).statusFile)
                                 
-                                parties(t).fighterList(u).player.status(S).roundsLeft = parties(t).fighterList(u).player.status(S).roundsLeft - 1
-                                If parties(t).fighterList(u).player.status(S).roundsLeft = 0 Then
-                                    parties(t).fighterList(u).player.status(S).statusFile = ""
+                                parties(t).fighterList(u).player.status(s).roundsLeft = parties(t).fighterList(u).player.status(s).roundsLeft - 1
+                                If parties(t).fighterList(u).player.status(s).roundsLeft = 0 Then
+                                    parties(t).fighterList(u).player.status(s).statusFile = ""
                                 End If
                             End If
-                        Next S
+                        Next s
                         
                         If Not (parties(t).fighterList(u).freezeCharge) Then
                             'now lock the player from charging again...
@@ -492,7 +480,7 @@ Public Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As S
     'load enemies
     Call loadEnemies(eneList, num)
     
-    canRun = 1
+    canrun = 1
     Dim t As Long, cnt As Long
     'create enemy party...
     Dim strRunProgram As String
@@ -504,7 +492,7 @@ Public Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As S
             strRunProgram = enemyMem(t).eneRunPrg
         End If
         If enemyMem(t).eneRun = 0 Then
-            canRun = 0
+            canrun = 0
         End If
         If enemyMem(t).eneWinPrg <> "" Then
             strRewardProgram = enemyMem(t).eneWinPrg
@@ -552,9 +540,9 @@ Public Sub runFight(ByRef eneList() As String, ByVal num As Long, ByVal bkg As S
             Dim a As Long
             
             If isVBPlugin(plugName) Then
-                a = VBPlugin(plugName).fight(num, -1, bkg, canRun)
+                a = VBPlugin(plugName).fight(num, -1, bkg, canrun)
             Else
-                a = PLUGFight(plugName, num, -1, bkg, canRun)
+                a = PLUGFight(plugName, num, -1, bkg, canrun)
             End If
             
             Select Case a

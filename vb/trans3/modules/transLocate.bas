@@ -33,7 +33,9 @@ Public Function usingPixelMovement() As Boolean
     'Returns if we are using pixel movement [KSNiloc]
     '================================================
 
-    If Not movementSize = 1 Then usingPixelMovement = True
+    If (Not movementSize = 1) And (Not boardIso()) Then
+        usingPixelMovement = True
+    End If
 
 End Function
 

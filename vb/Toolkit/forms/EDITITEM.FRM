@@ -717,258 +717,144 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'=========================================================================
+' Item editor
+'=========================================================================
 
-Public dataIndex As Long    'index into the vector of items maintained in commonenemy
+Option Explicit
 
+'=========================================================================
+' Integral variables
+'=========================================================================
 
-Public Function formType() As Long
-    'identify type of form
+Public dataIndex As Long    'indice in item editor vector
+
+'=========================================================================
+' Property identifying this form
+'=========================================================================
+Public Property Get formType() As Long
     On Error Resume Next
     formType = FT_ITEM
-End Function
+End Property
 
-
+'=========================================================================
+' Save file as
+'=========================================================================
 Public Sub saveAsFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
-    If itemList(activeItemIndex).itemNeedUpdate = True Then
-        Me.Show
-        saveasmnu_Click
-    End If
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
-
-
-Public Sub checkSave()
-    'check if the file has changed an it needs to be saved...
-    On Error GoTo ErrorHandler
-    If itemList(activeItemIndex).itemNeedUpdate = True Then
-        aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo)
-        If aa = 6 Then
-            'yes-- save
-            Call saveFile
-        End If
-    End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
-Public Sub saveFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
-    'If itemList(activeItemIndex).itemNeedUpdate = True Then
-        filename$(2) = itemList(activeItemIndex).itemFile$
-        itemList(activeItemIndex).itemNeedUpdate = False
-        If filename$(2) = "" Then
-            Me.Show
-            Call saveasmnu_Click
-            Exit Sub
-        End If
-        Call saveitem(projectPath$ + itmPath$ + filename$(2), itemList(activeItemIndex).theData)
-    'End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-Public Sub openFile(file$)
     On Error Resume Next
-    'Call checkSave
-    activeItem.Show
+    If itemList(activeItemIndex).itemNeedUpdate = True Then
+        Call Me.Show
+        Call saveasmnu_Click
+    End If
+End Sub
+
+'=========================================================================
+' Save the file
+'=========================================================================
+Public Sub saveFile()
+    On Error Resume Next
+    filename(2) = itemList(activeItemIndex).itemFile
+    itemList(activeItemIndex).itemNeedUpdate = False
+    If filename$(2) = "" Then
+        Call Me.Show
+        Call saveasmnu_Click
+        Exit Sub
+    End If
+    Call saveitem(projectPath & itmPath & filename(2), itemList(activeItemIndex).theData)
+End Sub
+
+'=========================================================================
+' Open a file
+'=========================================================================
+Public Sub openFile(ByVal file As String)
+    On Error Resume Next
+    Call activeItem.Show
     filename$(1) = file$
     antiPath$ = absNoPath(file$)
     FileCopy filename$(1), projectPath$ + itmPath$ + antiPath$
     itemList(activeItemIndex).theData = openItem(filename$(1))
     itemList(activeItemIndex).itemFile$ = antiPath$
     activeItem.Caption = LoadStringLoc(805, "Item Editor") + "  (" + antiPath$ + ")"
-    Call infofill
+    Call infoFill
     itemList(activeItemIndex).itemNeedUpdate = False
 End Sub
 
+'=========================================================================
+' Buttons, option buttons, check boxes, text boxes and the like
+'=========================================================================
 Private Sub board_Click()
-    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     If board.value = 1 Then Command3.Enabled = True Else Command3.Enabled = False
     itemList(activeItemIndex).theData.BoardYN = board.value
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub charname_Change()
-    On Error GoTo ErrorHandler
+    Dim a As Long
     itemList(activeItemIndex).itemNeedUpdate = True
     a = chars.ListIndex + 1
     If a = 0 Then a = 1
     itemList(activeItemIndex).theData.itmChars$(a) = charname.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub chars_Click()
-    On Error GoTo ErrorHandler
+    Dim a As Long
     a = chars.ListIndex + 1
     charname.Text = itemList(activeItemIndex).theData.itmChars$(a)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub Check1_Click()
-    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.keyItem = Check1.value
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itmequip.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub Command2_Click()
-    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itmmenu.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub Command3_Click()
-    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itmboard.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub Command4_Click()
-    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itmfight.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub Command5_Click()
-    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
-    'If itmSizeType = 0 Then
-    '    itmgfx.Show
-    'Else
-    '    itmgfx2.Show vbModal ', me
-    'End If
     itemGraphics.Show vbModal
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub equipable_Click()
-    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     If equipable.value = 1 Then Command1.Enabled = True Else Command1.Enabled = False
     itemList(activeItemIndex).theData.EquipYN = equipable.value
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub fight_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     itemList(activeItemIndex).itemNeedUpdate = True
     If fight.value = 1 Then Command4.Enabled = True Else Command4.Enabled = False
     itemList(activeItemIndex).theData.FightYN = fight.value
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Form activate
+'=========================================================================
 Private Sub Form_Activate()
     On Error GoTo ErrorHandler
-    filename$(2) = ""
+    filename(2) = ""
     
     Set activeItem = Me
     Set activeForm = Me
     activeItemIndex = dataIndex
     
-    'extras
-    tkMainForm.animationExtras.Visible = False
-    tkMainForm.bottomFrame.Visible = False
-    tkMainForm.tileExtras.Visible = False
-    tkMainForm.tileBmpExtras.Visible = False
+    Call hideAllTools
     
-    'tools
-    tkMainForm.tilebmpTools.Visible = False
-    tkMainForm.animationTools.Visible = False
-    tkMainForm.rpgcodeTools.Visible = False
-    tkMainForm.tileTools.Visible = False
-    tkMainForm.tileTools.Top = tkMainForm.toolTop
-    tkMainForm.boardTools.Visible = False
-    
-    Call infofill
+    Call infoFill
 
     Exit Sub
 'Begin error handling code:
@@ -977,6 +863,9 @@ ErrorHandler:
     Resume Next
 End Sub
 
+'=========================================================================
+' Form load
+'=========================================================================
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
@@ -986,8 +875,8 @@ Private Sub Form_Load()
     activeItemIndex = dataIndex
     Call ItemClear(itemList(dataIndex).theData)
     
-    filename$(2) = ""
-    Call infofill
+    filename(2) = ""
+    Call infoFill
 
     Exit Sub
 'Begin error handling code:
@@ -996,7 +885,10 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub infofill()
+'=========================================================================
+' Fill in form
+'=========================================================================
+Private Sub infoFill()
     On Error GoTo ErrorHandler
     itemnamebox.Text = itemList(activeItemIndex).theData.itemName
     equipable.value = itemList(activeItemIndex).theData.EquipYN
@@ -1013,8 +905,9 @@ Private Sub infofill()
     Text1.Text = str$(itemList(activeItemIndex).theData.buyPrice)
     Text2.Text = str$(itemList(activeItemIndex).theData.sellPrice)
 
-    chars.Clear
+    Call chars.Clear
     chars.Text = "Character 1"
+    Dim t As Long
     For t = 1 To 50
         chars.AddItem "Character" + str$(t)
     Next t
@@ -1036,118 +929,97 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
+'=========================================================================
+' Form unload
+'=========================================================================
+Private Sub Form_Unload(ByRef Cancel As Integer)
     On Error Resume Next
     Call hideAllTools
 End Sub
 
+'=========================================================================
+' Change item name
+'=========================================================================
 Private Sub itemnamebox_Change()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.itemName$ = itemnamebox.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Toggle menu usage
+'=========================================================================
 Private Sub menu_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     itemList(activeItemIndex).itemNeedUpdate = True
     If menu.value = 1 Then Command2.Enabled = True Else Command2.Enabled = False
     itemList(activeItemIndex).theData.MenuYN = menu.value
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub mnuCLose_Click()
-    On Error GoTo ErrorHandler
-    Unload itmequip
-    Unload itmmenu
-    Unload itmfight
-    Unload itmboard
-    'Unload itmgfx
-    Unload activeItem
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+'=========================================================================
+' Close dialog
+'=========================================================================
+Private Sub mnuClose_Click()
+    On Error Resume Next
+    Call Unload(itmequip)
+    Call Unload(itmmenu)
+    Call Unload(itmfight)
+    Call Unload(itmboard)
+    Call Unload(activeItem)
 End Sub
 
+'=========================================================================
+' Clear item
+'=========================================================================
 Private Sub newitem()
-    On Error GoTo ErrorHandler
-
     Call ItemClear(itemList(activeItemIndex).theData)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Change option boxes
+'=========================================================================
 Private Sub Option1_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.usedBy = 0
     chars.Visible = False
     charname.Visible = False
     Label3.Visible = False
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub Option2_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.usedBy = 1
     chars.Visible = True
     charname.Visible = True
     Label3.Visible = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Save as menu
+'=========================================================================
 Private Sub saveasmnu_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + itmPath$
-    
     dlg.strTitle = "Save Item As"
     dlg.strDefaultExt = "itm"
     dlg.strFileTypes = "RPG Toolkit Item (*.itm)|*.itm|All files(*.*)|*.*"
-    'dlg2
     If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
     End If
     ChDir (currentDir$)
-    
     If filename$(1) = "" Then Exit Sub
     If fileExists(filename(1)) Then
+        Dim bb As VbMsgBoxResult
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
         If bb = 7 Then Exit Sub
     End If
-    
     Call saveitem(filename$(1), itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemFile$ = antiPath$
     activeItem.Caption = LoadStringLoc(805, "Item Editor") + " (" + antiPath$ + ")"
@@ -1155,255 +1027,178 @@ Private Sub saveasmnu_Click()
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
+'=========================================================================
+' Save menu
+'=========================================================================
 Private Sub savemnu_Click()
-    On Error GoTo ErrorHandler
-    filename$(2) = itemList(activeItemIndex).itemFile$
-    If filename$(2) = "" Then saveasmnu_Click: Exit Sub
-    Call saveitem(projectPath$ + itmPath$ + filename$(2), itemList(activeItemIndex).theData)
+    On Error Resume Next
+    filename(2) = itemList(activeItemIndex).itemFile
+    If filename(2) = "" Then saveasmnu_Click: Exit Sub
+    Call saveitem(projectPath & itmPath & filename(2), itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemNeedUpdate = False
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Change text fields
+'=========================================================================
 Private Sub Text1_Change()
-    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.buyPrice = val(Text1.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub Text2_Change()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.sellPrice = val(Text2.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub Text3_Change()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     itemList(activeItemIndex).theData.ITMDescription = Text3.Text
-    'MsgBox ITMDescription$
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub toc_Click()
-    On Error GoTo ErrorHandler
-    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
+'=========================================================================
+' Common menus
+'=========================================================================
 Private Sub mnutilehorizontally_Click()
     On Error Resume Next
     Call tkMainForm.tilehorizonatllymnu_Click
 End Sub
-
 Private Sub mnutilevertically_Click()
     On Error Resume Next
     Call tkMainForm.tileverticallymnu_Click
 End Sub
-
-
 Private Sub mnuTutorial_Click()
     On Error Resume Next
     Call tkMainForm.tutorialmnu_Click
 End Sub
-
 Private Sub mnuusersguide_Click()
     On Error Resume Next
     Call tkMainForm.usersguidemnu_Click
 End Sub
-
 Private Sub mnuAbout_Click()
     On Error Resume Next
     Call tkMainForm.aboutmnu_Click
 End Sub
-
 Private Sub mnuArrangeIcons_Click()
     On Error Resume Next
     Call tkMainForm.arrangeiconsmnu_Click
 End Sub
-
 Private Sub mnuCascade_Click()
     On Error Resume Next
     Call tkMainForm.cascademnu_Click
 End Sub
-
 Private Sub mnucreatepakfile_Click()
     On Error Resume Next
     Call tkMainForm.createpakfilemnu_Click
 End Sub
-
 Private Sub mnucreatesetup_Click()
     On Error Resume Next
     Call tkMainForm.createsetupmnu_Click
 End Sub
-
 Private Sub mnuexit_Click()
     On Error Resume Next
     Call tkMainForm.exitmnu_Click
 End Sub
-
 Private Sub mnuHistorytxt_Click()
     On Error Resume Next
     Call tkMainForm.historytxtmnu_Click
 End Sub
-
 Private Sub mnuinstallupgrade_Click()
     On Error Resume Next
     Call tkMainForm.installupgrademnu_Click
 End Sub
-
 Private Sub mnumakeexe_Click()
     On Error Resume Next
     Call tkMainForm.makeexemnu_Click
 End Sub
-
 Private Sub mnunewanimatedtile_Click()
     On Error Resume Next
     Call tkMainForm.newanimtilemnu_Click
 End Sub
-
 Private Sub mnunewanimation_Click()
     On Error Resume Next
     Call tkMainForm.newanimationmnu_Click
 End Sub
-
 Private Sub mnunewboard_Click()
     On Error Resume Next
     Call tkMainForm.newboardmnu_Click
 End Sub
-
 Private Sub mnunewenemy_Click()
     On Error Resume Next
     Call tkMainForm.newenemymnu_Click
 End Sub
-
 Private Sub mnunewitem_Click()
     On Error Resume Next
     Call tkMainForm.newitemmnu_Click
 End Sub
-
 Private Sub mnunewplayer_Click()
     On Error Resume Next
     Call tkMainForm.newplayermnu_Click
 End Sub
-
-
 Private Sub mnunewproject_Click()
     On Error Resume Next
     Call tkMainForm.newprojectmnu_Click
 End Sub
-
 Private Sub mnunewrpgcodeprogram_Click()
     On Error Resume Next
     Call tkMainForm.newrpgcodemnu_Click
 End Sub
-
 Private Sub mnunewspecialmove_Click()
     On Error Resume Next
     Call tkMainForm.newspecialmovemnu_Click
 End Sub
-
-
 Private Sub mnunewstatuseffect_Click()
     On Error Resume Next
     Call tkMainForm.newstatuseffectmnu_Click
 End Sub
-
-
 Private Sub mnunewtile_Click()
     On Error Resume Next
     Call tkMainForm.newtilemnu_Click
 End Sub
-
-
 Private Sub mnunewtilebitmap_Click()
     On Error Resume Next
     Call tkMainForm.newtilebitmapmnu_Click
 End Sub
-
 Private Sub mnuopen_Click()
     On Error Resume Next
     Call tkMainForm.openmnu_Click
 End Sub
-
-
 Private Sub mnuRegistrationInfo_Click()
     On Error Resume Next
     Call tkMainForm.registrationinfomnu_Click
 End Sub
-
 Private Sub mnuRPGCodePrimer_Click()
     On Error Resume Next
     Call tkMainForm.rpgcodeprimermnu_Click
 End Sub
-
 Private Sub mnurpgcodereference_Click()
     On Error Resume Next
     Call tkMainForm.rpgcodereferencemnu_Click
 End Sub
-
-
 Private Sub mnusaveall_Click()
     On Error Resume Next
     Call tkMainForm.saveallmnu_Click
 End Sub
-
-
 Private Sub mnuselectlanguage_Click()
     On Error Resume Next
     Call tkMainForm.selectlanguagemnu_Click
 End Sub
-
 Private Sub mnushowprojectlist_Click()
     On Error Resume Next
     Call tkMainForm.showprojectlistmnu_Click
 End Sub
-
 Private Sub mnushowtools_Click()
     On Error Resume Next
     Call tkMainForm.showtoolsmnu_Click
 End Sub
-
 Private Sub mnutestgame_Click()
     On Error Resume Next
     tkMainForm.testgamemnu_Click
 End Sub
-
-
 Private Sub mnuOpenProject_Click()
     On Error Resume Next
     Call tkMainForm.mnuOpenProject_Click
 End Sub
-
 Private Sub mnuNewFightBackground_Click()
     On Error Resume Next
     Call tkMainForm.mnuNewFightBackground_Click
 End Sub
-

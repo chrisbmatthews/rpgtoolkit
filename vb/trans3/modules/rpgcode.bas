@@ -936,12 +936,11 @@ errorhandler:
     Resume Next
 End Sub
 
-
 Sub aiRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '#AI(level!)
     'causes enemy to use internal ai
     'of specified level
-    On Error GoTo errorhandler
+    On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -951,41 +950,23 @@ Sub aiRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
-    If a = 1 Then
+    If a = RPGC_DT.DT_LIT Then
         Call debugger("Error: AI data type must be numerical!-- " + Text$)
     Else
-        If targetType = 0 Then
+        If targetType = TYPE_PLAYER Then
             'players targeted.
             Dim theOne As Long, tohit As Long
             num = inBounds(num, 0, 3)
             theOne = target
             tohit = chooseHit(theOne)
-            If num = 0 Then
-                Call AIZero(theOne, tohit)
-            End If
-            If num = 1 Then
-                Call AIOne(theOne, tohit)
-            End If
-            If num = 2 Then
-                Call AITwo(theOne, tohit)
-            End If
-            If num = 3 Then
-                Call AIThree(theOne, tohit)
-            End If
-        End If
-        If targetType = 2 Then
+            Call preformFightAI(num, theOne, tohit)
+        ElseIf targetType = TYPE_ENEMY Then
             'enemies targeted.
             'cannot be done.
             Call debugger("Error: AI can only be used by enemy AI programs!-- " + Text$)
-            Exit Sub
         End If
     End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Sub AnimationRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -1208,20 +1189,8 @@ Sub GameSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: GameSpeed data type must be numerical!-- " + Text$)
     Else
         'Parameter is numerical.
-        speed = inBounds(speed, 0, 3)
-        Select Case speed
-            Case 0:
-                walkDelay = 0.09
-            Case 1:
-                walkDelay = 0.06
-            Case 2:
-                walkDelay = 0.03
-            Case 3:
-                'Was 0, but this caused problems since it will be different for each machine!
-                walkDelay = 0.01
-            Case Else:
-                walkDelay = 0.06
-        End Select
+        speed = inBounds(speed, 0, MAX_GAMESPEED)
+        Call gameSpeed(speed)
     End If
 
     Exit Sub
@@ -1311,19 +1280,19 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CosRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CosRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error Resume Next
     
     'Re-written by KSNiloc
     
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
     Select Case CountData(Text)
     
         Case 1
-            If Not paras(0).dataType = dtNum Then
+            If Not paras(0).dataType = DT_NUM Then
                 debugger "Cos() requires a numerical data element-- " & Text
                 Exit Sub
             End If
@@ -1331,7 +1300,7 @@ Sub CosRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RE
             retval.num = Cos(paras(0).num)
         
         Case 2
-            If Not paras(0).dataType = dtNum Then
+            If Not paras(0).dataType = DT_NUM Then
                 debugger "Cos() requires a numerical data element-- " & Text
                 Exit Sub
             End If
@@ -1367,7 +1336,7 @@ Public Sub CreateItemRPG( _
     'Declarations
     Dim theOne As Long
     Dim lit As String
-    Dim paras() As Parameters
+    Dim paras() As parameters
 
     'Get the parameters
     paras() = GetParameters(Text, theProgram)
@@ -1375,7 +1344,7 @@ Public Sub CreateItemRPG( _
     theOne = paras(1).num
 
     'Make sure they're the right type
-    If paras(0).dataType <> dtLit And paras(1).dataType <> dtNum Then
+    If paras(0).dataType <> DT_LIT And paras(1).dataType <> DT_NUM Then
         debugger "CreateItem()'s parameters are lit,num-- " & Text
         Exit Sub
     End If
@@ -2823,7 +2792,7 @@ Public Sub GetRPG( _
     End If
 
     'Get out parameters...
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
 
     retval.dataType = DT_LIT
@@ -2843,7 +2812,7 @@ Public Sub GetRPG( _
                 'We're using the return data. That means that it's
                 'specifying the number of milliSeconds to doEvents for.
                 
-                If Not paras(0).dataType = dtNum Then
+                If Not paras(0).dataType = DT_NUM Then
                     debugger "Get()'s millisecond specification must be numerical-- " & Text
                     Exit Sub
                 End If
@@ -2862,7 +2831,7 @@ Public Sub GetRPG( _
         Case 2
             'It's Get(dest$,milliSeconds!)...
             
-            If Not paras(1).dataType = dtNum Then
+            If Not paras(1).dataType = DT_NUM Then
                 debugger "Get()'s millisecond specification must be numerical-- " & Text
                 Exit Sub
             End If
@@ -3568,10 +3537,10 @@ Public Sub internalMenuRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
 
-    If Not paras(0).dataType = dtNum Then
+    If Not paras(0).dataType = DT_NUM Then
         debugger "InternalMenu() must have a numerical data element-- " & Text
         Exit Sub
     End If
@@ -4295,7 +4264,7 @@ Sub mouseClickRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim var1 As String, var2 As String
     'var1$ = GetElement(dataUse$, 1)
     'var2$ = GetElement(dataUse$, 2)
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     var1 = paras(0).dat
     var2 = paras(1).dat
@@ -5793,13 +5762,13 @@ Public Sub RestoreScreenArrayRPG(ByVal Text As String, _
     testArray = UBound(cnvRPGCode)
 
     'Get the parameters...
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
     'Are they numerical?
     Dim a As Long
     For a = 0 To UBound(paras)
-        If Not paras(a).dataType = dtNum Then
+        If Not paras(a).dataType = DT_NUM Then
             debugger "RestoreScreenArray() requires numerical data element" _
                 & "s-- " & Text
             Exit Sub
@@ -5997,10 +5966,10 @@ Public Sub RPGCodeRPG(ByVal Text As String, _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
-    If Not paras(0).dataType = dtLit Then
+    If Not paras(0).dataType = DT_LIT Then
         debugger "RPGCode() requires a literal data element-- " & Text
         Exit Sub
     End If
@@ -6116,17 +6085,6 @@ Sub RunRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: Run data type must be literal!-- " + Text$)
     Else
         lit$ = addExt(lit$, ".prg")
-
-        ' [ KSNiloc ]
-
-        'clear old prg:
-        'ReDim theProgram.program(100)
-        'Dim t As Long
-        'For t = 0 To UBound(theProgram.included)
-        '    theProgram.included(t) = ""
-        'Next t
-        'Call openProgram(projectPath$ + prgPath$ + lit$, theProgram)
-        'theProgram.programPos = 0
 
         theProgram.programPos = -1
         ReDim theProgram.program(0)
@@ -6247,10 +6205,10 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Canvas2CanvasBlt cnvRPGCodeScreen, cnvRPGCodeAccess, 0, 0
             
         Case 1
-            Dim paras() As Parameters
+            Dim paras() As parameters
             paras = GetParameters(Text, theProgram)
             
-            If paras(0).dataType = dtNum Then
+            If paras(0).dataType = DT_NUM Then
             
                 'Make sure the array is dimensioned...
                 On Error GoTo createArray
@@ -6998,13 +6956,13 @@ Public Sub SinRPG(Text As String, ByRef theProgram As RPGCodeProgram, ByRef retv
     
     'Re-written by KSNiloc
     
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
     Select Case CountData(Text)
     
         Case 1
-            If Not paras(0).dataType = dtNum Then
+            If Not paras(0).dataType = DT_NUM Then
                 debugger "Sin() requires a numerical data element-- " & Text
                 Exit Sub
             End If
@@ -7012,7 +6970,7 @@ Public Sub SinRPG(Text As String, ByRef theProgram As RPGCodeProgram, ByRef retv
             retval.num = Sin(paras(0).num)
         
         Case 2
-            If Not paras(0).dataType = dtNum Then
+            If Not paras(0).dataType = DT_NUM Then
                 debugger "Sin() requires a numerical data element-- " & Text
                 Exit Sub
             End If
@@ -7563,13 +7521,13 @@ Sub TanRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RE
     
     'Re-written by KSNiloc
     
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
     Select Case CountData(Text)
     
         Case 1
-            If Not paras(0).dataType = dtNum Then
+            If Not paras(0).dataType = DT_NUM Then
                 debugger "Tan() requires a numerical data element-- " & Text
                 Exit Sub
             End If
@@ -7577,7 +7535,7 @@ Sub TanRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RE
             retval.num = Tan(paras(0).num)
         
         Case 2
-            If Not paras(0).dataType = dtNum Then
+            If Not paras(0).dataType = DT_NUM Then
                 debugger "Tan() requires a numerical data element-- " & Text
                 Exit Sub
             End If
@@ -10803,10 +10761,10 @@ Public Sub FileInputRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
-    If paras(0).dataType <> dtLit Then
+    If paras(0).dataType <> DT_LIT Then
         debugger "FileInput() must have a literal data element-- " & Text
         Exit Sub
     End If
@@ -10853,10 +10811,10 @@ Public Sub FilePrintRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
-    If paras(0).dataType <> dtLit Or paras(1).dataType <> dtLit Then
+    If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_LIT Then
         debugger "FilePrint() must have literal data elements-- " & Text
         Exit Sub
     End If
@@ -10903,10 +10861,10 @@ Public Sub FileGetRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
-    If paras(0).dataType <> dtLit Then
+    If paras(0).dataType <> DT_LIT Then
         debugger "FileGet() must have a literal data element-- " & Text
         Exit Sub
     End If
@@ -10955,10 +10913,10 @@ Public Sub FilePutRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, theProgram)
     
-    If paras(0).dataType <> dtLit Or paras(1).dataType <> dtLit Then
+    If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_LIT Then
         debugger "FilePut() must have literal data elements-- " & Text
         Exit Sub
     End If
@@ -11266,7 +11224,7 @@ Public Function WithRPG(ByVal cLine As String, ByRef prg As RPGCodeProgram) As L
  
  On Error GoTo error
  
- Dim paras() As Parameters
+ Dim paras() As parameters
  paras() = GetParameters(cLine, prg)
 
  If Not CountData(cLine) = 1 Then
@@ -11274,7 +11232,7 @@ Public Function WithRPG(ByVal cLine As String, ByRef prg As RPGCodeProgram) As L
   Exit Function
  End If
  
- If Not paras(0).dataType = dtLit Then
+ If Not paras(0).dataType = DT_LIT Then
   debugger "With requires a literal data element-- " & cLine
   Exit Function
  End If
@@ -11328,7 +11286,7 @@ Public Function SwitchCase( _
     With RPGCodeSwitchCase
         
         'Get our parameters...
-        Dim paras() As Parameters
+        Dim paras() As parameters
         paras() = GetParameters(Text, prg)
 
         Select Case LCase(GetCommandName(Text, prg))
@@ -11339,8 +11297,8 @@ Public Function SwitchCase( _
                     On Error GoTo skipBlock: Err.Raise 0
                 End If
                 Select Case paras(0).dataType
-                    Case dtLit: .Add """" & paras(0).lit & """", CStr(.count + 1)
-                    Case dtNum: .Add CStr(paras(0).num), CStr(.count + 1)
+                    Case DT_LIT: .Add """" & paras(0).lit & """", CStr(.count + 1)
+                    Case DT_NUM: .Add CStr(paras(0).num), CStr(.count + 1)
                 End Select
 
                 If isMultiTasking() Then
@@ -11374,7 +11332,7 @@ Public Function SwitchCase( _
                     Dim a As Long
 
                     'Determine type of variable in Switch()...
-                    Dim equ As dtType
+                    Dim equ As RPGC_DT
                     vtype = dataType(.item(.count), equ)
                     Select Case vtype
                         Case 0, 3: vtype = DT_NUM
@@ -11397,8 +11355,8 @@ Public Function SwitchCase( _
                     Dim useMath As Boolean
                     For a = 0 To UBound(paras)
                         On Error Resume Next
-                        If paras(a).dataType = dtLit Then u = paras(a).lit
-                        If paras(a).dataType = dtNum Then u = CStr(paras(a).num)
+                        If paras(a).dataType = DT_LIT Then u = paras(a).lit
+                        If paras(a).dataType = DT_NUM Then u = CStr(paras(a).num)
 
                         'See if the they're trying to use their own comparison
                         'operator...
@@ -11493,10 +11451,10 @@ Public Sub spliceVariables( _
         Exit Sub
     End If
     
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
     
-    If Not paras(0).dataType = dtLit Then
+    If Not paras(0).dataType = DT_LIT Then
         debugger "SpliceVariables() requires a literal data element-- " & Text
         Exit Sub
     End If
@@ -11525,7 +11483,7 @@ Public Sub SplitRPG( _
     End If
     
     'Declarations...
-    Dim paras() As Parameters
+    Dim paras() As parameters
     Dim splitIt() As String
     Dim postFix As String
     Dim a As Long
@@ -11533,7 +11491,7 @@ Public Sub SplitRPG( _
     paras() = GetParameters(Text, prg)
     
     For a = 0 To UBound(paras)
-        If Not paras(a).dataType = dtLit Then
+        If Not paras(a).dataType = DT_LIT Then
             debugger "Split() requires literal data elements-- " & Text
             Exit Sub
         End If
@@ -11571,19 +11529,19 @@ Public Sub asciiToChr( _
         Exit Sub
     End If
     
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras = GetParameters(Text, prg)
     
     Select Case LCase(GetCommandName(Text, prg))
         Case "asc"
-            If Not paras(0).dataType = dtLit Then
+            If Not paras(0).dataType = DT_LIT Then
                 debugger "Asc() requires a literal data element-- " & Text
                 Exit Sub
             End If
             retval.dataType = DT_NUM
             retval.num = Asc(paras(0).lit)
         Case "chr"
-            If Not paras(0).dataType = dtNum Then
+            If Not paras(0).dataType = DT_NUM Then
                 debugger "Chr() requires a numerical data element-- " & Text
                 Exit Sub
             End If
@@ -11609,10 +11567,10 @@ Public Sub trimRPG( _
         Exit Sub
     End If
     
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
 
-    If Not paras(0).dataType = dtLit Then
+    If Not paras(0).dataType = DT_LIT Then
         debugger "Trim() requires a literal data element-- " & Text
         Exit Sub
     End If
@@ -11642,10 +11600,10 @@ Public Sub rightLeft( _
         Exit Sub
     End If
     
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras = GetParameters(Text, prg)
 
-    If Not ((paras(0).dataType = dtLit) And (paras(1).dataType = dtNum)) Then
+    If Not ((paras(0).dataType = DT_LIT) And (paras(1).dataType = DT_NUM)) Then
         debugger GetCommandName(Text, prg) & _
             " 's elements are literal, numerical-- " & Text
         Exit Sub
@@ -11685,16 +11643,16 @@ Public Sub cursorMapHand( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
     
-    If Not paras(0).dataType = dtLit Then
+    If Not paras(0).dataType = DT_LIT Then
         debugger "CursorMapHand()'s first data element must be literal-- " & Text
         Exit Sub
     End If
 
     If cd = 2 Then
-        If Not paras(1).dataType = dtNum Then
+        If Not paras(1).dataType = DT_NUM Then
             debugger "CursorMapHand()'s second data element must be numerical-- " & Text
             Exit Sub
         End If
@@ -11748,15 +11706,15 @@ Public Sub mousePointer( _
             host.mousePointer = 0
         
         Case 1
-            Dim paras() As Parameters
+            Dim paras() As parameters
             paras() = GetParameters(Text, prg)
 
-            If paras(0).dataType = dtNum Then
+            If paras(0).dataType = DT_NUM Then
                 host.mousePointer = paras(0).num
                 Exit Sub
             End If
             
-            'If Not paras(0).dataType = dtLit Then
+            'If Not paras(0).dataType = DT_LIT Then
             '    debugger "MousePointer()'s data element must be literal-- " _
             '        & text
             '    Exit Sub
@@ -11811,10 +11769,10 @@ Public Sub debuggerRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
     
-    If Not paras(0).dataType = dtLit Then
+    If Not paras(0).dataType = DT_LIT Then
         debugger "Debugger()'s data element must be literal-- " & Text
         Exit Sub
     End If
@@ -11843,7 +11801,7 @@ Public Sub onError( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras = GetParameters(Text, prg)
 
     If LCase(paras(0).dat) = "resume next" Or LCase(paras(0).dat) = "resumenext" Then
@@ -11851,7 +11809,7 @@ Public Sub onError( _
         Exit Sub
     End If
     
-    If Not paras(0).dataType = dtLit Then
+    If Not paras(0).dataType = DT_LIT Then
         debugger "OnError() requires a literal data element-- " & Text
         Exit Sub
     End If
@@ -11908,16 +11866,16 @@ Public Sub MBoxRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
 
     On Error GoTo error
-    If cd > 0 Then If Not paras(0).dataType = dtLit Then Err.Raise 0
-    If cd > 1 Then If Not paras(1).dataType = dtLit Then Err.Raise 0
-    If cd > 2 Then If Not paras(2).dataType = dtNum Then Err.Raise 0
-    If cd > 3 Then If Not paras(3).dataType = dtNum Then Err.Raise 0
-    If cd > 4 Then If Not paras(4).dataType = dtNum Then Err.Raise 0
-    If cd > 5 Then If Not paras(5).dataType = dtLit Then Err.Raise 0
+    If cd > 0 Then If Not paras(0).dataType = DT_LIT Then Err.Raise 0
+    If cd > 1 Then If Not paras(1).dataType = DT_LIT Then Err.Raise 0
+    If cd > 2 Then If Not paras(2).dataType = DT_NUM Then Err.Raise 0
+    If cd > 3 Then If Not paras(3).dataType = DT_NUM Then Err.Raise 0
+    If cd > 4 Then If Not paras(4).dataType = DT_NUM Then Err.Raise 0
+    If cd > 5 Then If Not paras(5).dataType = DT_LIT Then Err.Raise 0
     
     Dim fface As String
     If cd = 6 Then
@@ -11967,10 +11925,10 @@ Public Sub animationDelayRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
     
-    If Not paras(0).dataType = dtNum Then
+    If Not paras(0).dataType = DT_NUM Then
         debugger "AnimationDelay() requires a numerical data element-- " & Text
         Exit Sub
     End If
@@ -12022,10 +11980,10 @@ Public Sub logRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
 
-    If Not paras(0).dataType = dtNum Then
+    If Not paras(0).dataType = DT_NUM Then
         debugger "Log() must have a numerical data element-- " & Text
         Exit Sub
     End If
@@ -12053,10 +12011,10 @@ Public Sub onBoardRPG( _
         Exit Sub
     End If
 
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
 
-    If Not paras(0).dataType = dtNum Then
+    If Not paras(0).dataType = DT_NUM Then
         debugger "onBoard() must have a numerical data element-- " & Text
         Exit Sub
     End If
@@ -12127,10 +12085,10 @@ Public Sub LCaseRPG( _
         Exit Sub
     End If
    
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
    
-    If paras(0).dataType <> dtLit Then
+    If paras(0).dataType <> DT_LIT Then
         debugger "LCase() requires a literal data element-- " & Text
         Exit Sub
     End If
@@ -12166,10 +12124,10 @@ Public Sub UCaseRPG( _
         Exit Sub
     End If
    
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
    
-    If paras(0).dataType <> dtLit Then
+    If paras(0).dataType <> DT_LIT Then
         debugger "UCase() requires a literal data element-- " & Text
         Exit Sub
     End If
@@ -12212,7 +12170,7 @@ Public Sub appPathRPG( _
         retval.dataType = DT_LIT
         retval.lit = thePath
     ElseIf cd = 1 Then
-        Dim paras() As Parameters
+        Dim paras() As parameters
         paras() = GetParameters(Text, prg)
         SetVariable paras(0).dat, thePath, prg
     End If
@@ -12238,13 +12196,13 @@ Public Sub midRPG( _
         Exit Sub
     End If
    
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
    
     If _
-         paras(0).dataType <> dtLit _
-         Or paras(1).dataType <> dtNum _
-         Or paras(2).dataType <> dtNum _
+         paras(0).dataType <> DT_LIT _
+         Or paras(1).dataType <> DT_NUM _
+         Or paras(2).dataType <> DT_NUM _
                                          Then
                                          
         debugger "Mid()'s data elements are lit, num, num-- " & Text
@@ -12285,12 +12243,12 @@ Public Sub replaceRPG( _
         Exit Sub
     End If
    
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
 
     Dim a As Long
     For a = 0 To UBound(paras)
-        If Not paras(a).dataType = dtLit Then
+        If Not paras(a).dataType = DT_LIT Then
             debugger "Replace() requires literal data elements-- " & Text
             Exit Sub
         End If
@@ -12316,10 +12274,10 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Exit Sub
     End If
    
-    Dim paras() As Parameters
+    Dim paras() As parameters
     paras() = GetParameters(Text, prg)
    
-    If paras(0).dataType <> dtLit Then
+    If paras(0).dataType <> DT_LIT Then
         debugger "PixelMovement() requires a literal data element-- " & Text
         Exit Sub
     End If

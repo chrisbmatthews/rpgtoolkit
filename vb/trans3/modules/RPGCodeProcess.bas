@@ -1,118 +1,116 @@
 Attribute VB_Name = "RPGCodeProcess"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'define stuff for rpgcode processes
+'=========================================================================
+' Procedures for processing rpgcode
+'=========================================================================
 
 Option Explicit
 
-Public Type RPGCodeProgram
-    program() As String 'the program text
-    programPos As Long  'current position in program
-    included(50) As String  'included files
-    Length As Long  'length of program
-    autoCommand As Boolean  'is autocommand tunred on? (if so, # is not required in statements)
-    
-    heapStack() As Long 'stack of local heaps
-    currentHeapFrame As Long    'current heap frame
-    
-    boardNum As Long    'the corresponding board index of the program (default to 0)
-    threadID As Long    'the thread id (-1 if not a thread)
-    
-    compilerStack() As String   'stack used by 'compiled' programs
-    currentCompileStackIdx As Long  'current index of compilerStack
-    
-    looping As Boolean
-    autoLocal As Boolean
+'=========================================================================
+' Integral variables
+'=========================================================================
+
+Public Type RPGCodeProgram           'rpgcode program structure
+    program() As String              '  the program text
+    programPos As Long               '  current position in program
+    included(50) As String           '  included files
+    Length As Long                   '  length of program
+    autoCommand As Boolean           '  is autocommand tunred on? (if so, # is not required in statements)
+    heapStack() As Long              '  stack of local heaps
+    currentHeapFrame As Long         '  current heap frame
+    boardNum As Long                 '  the corresponding board index of the program (default to 0)
+    threadID As Long                 '  the thread id (-1 if not a thread)
+    compilerStack() As String        '  stack used by 'compiled' programs
+    currentCompileStackIdx As Long   '  current index of compilerStack
+    looping As Boolean               '  is a multitask program looping?
+    autoLocal As Boolean             '  force implicitly created variables to the local scope?
 End Type
 
-Public errorBranch As String
+Public errorBranch As String         'label to branch to on error
 
+'=========================================================================
+' Add a local heap to a program
+'=========================================================================
 Public Sub AddHeapToStack(ByRef thePrg As RPGCodeProgram)
-    'add a new local heap to the rpgcode stack
     On Error Resume Next
-    
     thePrg.currentHeapFrame = thePrg.currentHeapFrame + 1
     If (thePrg.currentHeapFrame + 1 > UBound(thePrg.heapStack)) Then
         'resize heap stack
         ReDim Preserve thePrg.heapStack(thePrg.currentHeapFrame * 2)
     End If
-    
     thePrg.heapStack(thePrg.currentHeapFrame) = RPGCCreateHeap()
 End Sub
 
+'=========================================================================
+' Add a value to a stack
+'=========================================================================
 Public Sub PushCompileStack(ByRef thePrg As RPGCodeProgram, ByVal value As String)
-    'add a new value to the compile stack
     On Error Resume Next
-    
     thePrg.currentCompileStackIdx = thePrg.currentCompileStackIdx + 1
     If (thePrg.currentCompileStackIdx + 1 > UBound(thePrg.compilerStack)) Then
         'resize stack
         ReDim Preserve thePrg.compilerStack(thePrg.currentCompileStackIdx * 2)
     End If
-    
     thePrg.compilerStack(thePrg.currentCompileStackIdx) = value
 End Sub
 
+'=========================================================================
+' Pop a value from a stack
+'=========================================================================
 Public Function PopCompileStack(ByRef thePrg As RPGCodeProgram) As String
-    'add a new value to the compile stack
     On Error Resume Next
-    
     If (thePrg.currentCompileStackIdx = -1) Then
         Exit Function
     End If
-    
     PopCompileStack = thePrg.compilerStack(thePrg.currentCompileStackIdx)
-    
     thePrg.currentCompileStackIdx = thePrg.currentCompileStackIdx - 1
 End Function
 
+'=========================================================================
+' Clear an rpgcode program structure
+'=========================================================================
 Public Sub InitRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
-    'initialize a process
     On Error Resume Next
-    
     Call ClearRPGCodeProcess(thePrg)
-    
-    'Enable AutoCommand()...
     thePrg.autoCommand = True
-    
     thePrg.programPos = 0
     thePrg.Length = 0
     thePrg.currentHeapFrame = -1
     errorBranch = ""
     preErrorPos = 0
-        
     ReDim thePrg.heapStack(1)
-    
     'create local heap...
     Call AddHeapToStack(thePrg)
-
     ReDim thePrg.compilerStack(1)
     thePrg.currentCompileStackIdx = -1
 End Sub
 
+'=========================================================================
+' Remove all heaps from a program
+'=========================================================================
 Public Sub ClearRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
-    'cleanup a process
     On Error GoTo skipheap
-    
     'clear the stack...
     Dim t As Long
     For t = 0 To UBound(thePrg.heapStack)
         Call RPGCDestroyHeap(thePrg.heapStack(t))
         thePrg.heapStack(t) = 0
     Next t
-
 skipheap:
     thePrg.currentHeapFrame = -1
     thePrg.currentCompileStackIdx = -1
 End Sub
 
+'=========================================================================
+' Open the program passed in into thePrg
+'=========================================================================
 Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
 
-    '======================================================================================
-    'RPGCode 'Compiler'
-    '======================================================================================
     'This sub-routine processes the file passed in and makes it readable. It places the
     'readable ('compiled') program in thePrg.
 
@@ -157,8 +155,7 @@ Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
                 Dim done As Boolean
                 Do Until done
                     If Not EOF(num) Then
-                        Line Input #num, buildTemp
-                        buildTemp = replace(Trim(buildTemp), vbTab, "")
+                        buildTemp = replace(Trim(fread(num)), vbTab, "")
                         Select Case Right(buildTemp, 1)
                             Case "_"
                                 buildTemp = _
@@ -261,17 +258,16 @@ enlargeProgram:
 
 End Sub
 
+'=========================================================================
+' Remove a heap from a stack
+'=========================================================================
 Public Function RemoveHeapFromStack(ByRef thePrg As RPGCodeProgram) As Boolean
-    'remove a heap frame from the heap stack
-    'returns false when no more left to remove
     On Error Resume Next
-    
     If thePrg.currentHeapFrame >= 0 Then
         Call RPGCDestroyHeap(thePrg.heapStack(thePrg.currentHeapFrame))
         thePrg.currentHeapFrame = thePrg.currentHeapFrame - 1
         RemoveHeapFromStack = True
         Exit Function
     End If
-    
     RemoveHeapFromStack = False
 End Function

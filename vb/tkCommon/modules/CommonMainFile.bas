@@ -10,6 +10,8 @@ Option Explicit
 Public mainfile As String                'filename
 Public mainNeedUpdate As Boolean
 
+Public Const MAX_GAMESPEED = 4
+
 ''''''''''''''''''''''project data'''''''''''''''''''''''''
 
 Public loadedMainFile As String
@@ -60,6 +62,9 @@ Public Type TKMain
     'added for beta
     useJoystick As Byte               'allow joystick input? 0- no 1- yes
     colordepth As Byte                'color depth
+    
+    gameSpeed As Byte                 'speed which game runs at
+    pixelMovement As Byte             'pixel movement (1 / 0)
 End Type
 
 
@@ -333,9 +338,15 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                 .cursorMoveSound = BinReadString(num)
                 .cursorSelectSound = BinReadString(num)
                 .cursorCancelSound = BinReadString(num)
-        
                 .useJoystick = BinReadByte(num)
                 .colordepth = BinReadByte(num)
+            End If
+
+            If minorVer >= 4 Then
+                .gameSpeed = BinReadByte(num)
+                .pixelMovement = BinReadByte(num)
+            Else
+                .gameSpeed = 2
             End If
 
         Close num
@@ -399,9 +410,7 @@ ver2oldMain:
             projectPath = fread(num)
             .skinButton = fread(num)      'skin's button graphic
             .skinWindow = fread(num)      'skin's window graphic
-            Dim targetPlatform As Long
-            targetPlatform = fread(num)    'target platform- 0=Win9x, 1=WinNT
-            targetPlatform = 0
+            Call fread(num)               'target platform- 0=Win9x, 1=WinNT
             For t = 0 To 50
                 .runTimeKeys(t) = fread(num) 'extended run time key
                 .runTimePrg(t) = fread(num) 'extended run time programs
@@ -490,12 +499,12 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     num = FreeFile
     If file$ = "" Then Exit Sub
     
-    Kill file$
+    Call Kill(file)
     
-    Open file$ For Binary As #num
+    Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT MAIN")    'Filetype
         Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 3)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
+        Call BinWriteInt(num, 4)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
         Call BinWriteInt(num, 1)    'registered
         Call BinWriteString(num, "NOCODE")            'No reg code
     
@@ -556,7 +565,12 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     
         Call BinWriteByte(num, theMain.useJoystick)
         Call BinWriteByte(num, theMain.colordepth)
-    Close #num
+        
+        Call BinWriteByte(num, theMain.gameSpeed)
+        Call BinWriteByte(num, theMain.pixelMovement)
+        
+    Close num
+
 End Sub
 
 Public Sub MainClear(ByRef theMain As TKMain)

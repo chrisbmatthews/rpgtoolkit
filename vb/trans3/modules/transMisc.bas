@@ -15,15 +15,15 @@ Option Explicit
 ' Integral variables
 '=========================================================================
 
-Public target As Long           'targeted player number
-Public targetType As Long       'targetted type
-Public source As Long           'source player number
-Public sourceType As Long       'source type
+Public target As Long             'targeted player number
+Public targetType As TARGET_TYPE  'targetted type
+Public source As Long             'source player number
+Public sourceType As TARGET_TYPE  'source type
 
-Public Enum TARGET_TYPE         'targetted type
-    TYPE_PLAYER = 0             '  player
-    TYPE_ITEM = 1               '  item
-    TYPE_ENEMY = 2              '  enemy
+Public Enum TARGET_TYPE           'targetted type
+    TYPE_PLAYER = 0               '  player
+    TYPE_ITEM = 1                 '  item
+    TYPE_ENEMY = 2                '  enemy
 End Enum
 
 '=========================================================================
@@ -83,7 +83,7 @@ Public Function determineSpecialMoves(ByVal handle As String, ByRef fileList() A
         If playerMem(cnum).smlist$(t) <> "" Then
             'Now check if the player can use it yet:
             'First check exp.
-            a = GetIndependentVariable(playerMem(cnum).experienceVar$, l$, expl)
+            a = getIndependentVariable(playerMem(cnum).experienceVar$, l$, expl)
             If expl >= playerMem(cnum).spcMinExp(t) Then
                 theMove = theMove + 1
                 ignore = 1
@@ -94,7 +94,7 @@ Public Function determineSpecialMoves(ByVal handle As String, ByRef fileList() A
             Dim lev As Double, txt As String, nn As Double
             If ignore <> 1 Then
                 'now check level
-                a = GetIndependentVariable(playerMem(cnum).leVar$, l$, lev)
+                a = getIndependentVariable(playerMem(cnum).leVar$, l$, lev)
                 If lev >= playerMem(cnum).spcMinLevel(t) Then
                     theMove = theMove + 1
                     ignore = 1
@@ -106,7 +106,7 @@ Public Function determineSpecialMoves(ByVal handle As String, ByRef fileList() A
             If ignore <> 1 Then
                 'now check conditioned var
                 If playerMem(cnum).spcVar$(t) <> "" Then
-                    a = GetIndependentVariable(playerMem(cnum).spcVar$(t), txt$, nn)
+                    a = getIndependentVariable(playerMem(cnum).spcVar$(t), txt$, nn)
                     If a = 0 Then
                         'numerical
                         If nn = val(playerMem(cnum).spcEquals$(t)) Then
@@ -131,7 +131,7 @@ Public Function determineSpecialMoves(ByVal handle As String, ByRef fileList() A
 End Function
 
 '=========================================================================
-' Returns is a number is within low and high
+' Returns if a number is within low and high
 '=========================================================================
 Public Function within(ByVal num As Double, ByVal low As Double, ByVal high As Double) As Long
     On Error Resume Next
@@ -265,13 +265,12 @@ Public Sub openItems()
         If boardList(activeBoardIndex).theData.itmActivate(itemNum) = 1 Then
             runIt = 0
             'conditional activation
-            checkIt = GetIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(itemNum), lit$, num)
+            checkIt = getIndependentVariable(boardList(activeBoardIndex).theData.itmVarActivate$(itemNum), lit$, num)
             If checkIt = 0 Then
                 'it's a numerical variable
                 valueTest = num
                 If valueTest = val(boardList(activeBoardIndex).theData.itmActivateInitNum$(itemNum)) Then runIt = 1
-            End If
-            If checkIt = 1 Then
+            ElseIf checkIt = 1 Then
                 'it's a literal variable
                 valueTes$ = lit$
                 If valueTes$ = boardList(activeBoardIndex).theData.itmActivateInitNum$(itemNum) Then runIt = 1
@@ -298,18 +297,18 @@ End Sub
 '=========================================================================
 ' Gets a spaced element ignoring quotes
 '=========================================================================
-Public Function GetSpacedElement(ByVal text As String, ByVal eleeNum As Long) As String
+Public Function GetSpacedElement(ByVal Text As String, ByVal eleeNum As Long) As String
 
     On Error Resume Next
 
     Dim Length As Long, element As Long, p As Long, part As String, ignore As Long
     Dim returnVal As String
     
-    Length = Len(text$)
+    Length = Len(Text$)
     element = 0
     For p = 1 To Length + 1
-        part$ = Mid$(text$, p, 1)
-        If part$ = chr$(34) Then
+        part$ = Mid$(Text$, p, 1)
+        If part$ = Chr$(34) Then
             'A quote
             If ignore = 0 Then
                 ignore = 1
@@ -438,12 +437,12 @@ Public Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     SMa = anItem.equipSM     'amt of smp added by equipment.
     DPa = anItem.equipDP     'amt of dp added by equipment.
     FPa = anItem.equipFP     'amt of fp added by equipment.
-    a = GetIndependentVariable(playerMem(playerNum).maxHealthVar$, lit$, maxHP)
-    a = GetIndependentVariable(playerMem(playerNum).smMaxVar$, lit$, maxSM)
-    a = GetIndependentVariable(playerMem(playerNum).healthVar$, lit$, hp)
-    a = GetIndependentVariable(playerMem(playerNum).smVar$, lit$, sm)
-    a = GetIndependentVariable(playerMem(playerNum).defenseVar$, lit$, dp)
-    a = GetIndependentVariable(playerMem(playerNum).fightVar$, lit$, fp)
+    a = getIndependentVariable(playerMem(playerNum).maxHealthVar$, lit$, maxHP)
+    a = getIndependentVariable(playerMem(playerNum).smMaxVar$, lit$, maxSM)
+    a = getIndependentVariable(playerMem(playerNum).healthVar$, lit$, hp)
+    a = getIndependentVariable(playerMem(playerNum).smVar$, lit$, sm)
+    a = getIndependentVariable(playerMem(playerNum).defenseVar$, lit$, dp)
+    a = getIndependentVariable(playerMem(playerNum).fightVar$, lit$, fp)
     
     maxHP = maxHP - HPa
     If hp > maxHP Then hp = maxHP
@@ -492,10 +491,10 @@ Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file 
     Dim dp As Double
     Dim fp As Double
 
-    Call GetIndependentVariable(playerMem(playerNum).defenseVar, lit, dp)
-    Call GetIndependentVariable(playerMem(playerNum).fightVar, lit, fp)
-    Call GetIndependentVariable(playerMem(playerNum).maxHealthVar, lit, maxHP)
-    Call GetIndependentVariable(playerMem(playerNum).smMaxVar, lit, maxSM)
+    Call getIndependentVariable(playerMem(playerNum).defenseVar, lit, dp)
+    Call getIndependentVariable(playerMem(playerNum).fightVar, lit, fp)
+    Call getIndependentVariable(playerMem(playerNum).maxHealthVar, lit, maxHP)
+    Call getIndependentVariable(playerMem(playerNum).smMaxVar, lit, maxSM)
 
     dp = dp + anItem.equipDP
     fp = fp + anItem.equipFP
@@ -514,4 +513,22 @@ Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file 
         Call runProgram(projectPath & prgPath & anItem.prgEquip)
     End If
 
+End Sub
+
+'=========================================================================
+' Set the game speed (0 - 4)
+'=========================================================================
+Public Sub gameSpeed(ByVal speed As Integer)
+    Select Case speed
+        Case 0
+            walkDelay = 0.09
+        Case 1
+            walkDelay = 0.06
+        Case 2
+            walkDelay = 0.03
+        Case 3
+            walkDelay = 0.01
+        Case 4
+            walkDelay = 0.005
+    End Select
 End Sub

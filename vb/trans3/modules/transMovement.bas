@@ -1949,8 +1949,8 @@ End Function
 
 Public Function roundCoords( _
                                ByRef passPos As PLAYER_POSITION, _
-                               Optional ByVal linkDirection As Long = 0 _
-                                                                          ) As PLAYER_POSITION
+                               Optional ByVal linkDirection As Long _
+                                                                      ) As PLAYER_POSITION
 
     '=============================================
     'Rounds player coordinates [KSNiloc/Delano]
@@ -1978,17 +1978,16 @@ Public Function roundCoords( _
     '
     '   Trigger programs run only once per tile by only running when first entering the tile.
     '   Decimal checks on the co-ords ensure this.
-    
+
     Dim pos As PLAYER_POSITION
     pos = passPos
     
     Dim dx As Double, dy As Double
-    dx = 0      'Set zeros in case we don't find anything.
-    dy = 0
 
     If boardIso() Then
     
     Else
+
         'Standard.
         Select Case linkDirection
         
@@ -2008,34 +2007,34 @@ Public Function roundCoords( _
         End Select
 
         Select Case linkDirection
-                
+
             'Now check North-South. Overwrite dx for diagonals if found.
             Case MV_NORTH, MV_NE, MV_NW
-            
+
                 If Int(pos.y) = pos.y Then
                     dx = Round(pos.x)
                 End If
-                
+
             Case MV_SOUTH, MV_SE, MV_SW
-            
+
                 If onlyDecimal(pos.y) = movementSize Then
                     dx = Round(pos.x)
                 End If
-                
+
             Case MV_EAST, MV_WEST
                 'None, but to prevent them in Case Else.
-                
+
             Case Else
-            
+
                 dx = Round(pos.x)
                 pos.y = Round(pos.y)
-                
+
         End Select
         
         'All cases, assign what we've calculated.
         pos.x = dx
         pos.y = -Int(-pos.y)
-    
+
     End If
 
     roundCoords = pos

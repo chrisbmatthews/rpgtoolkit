@@ -13,14 +13,13 @@ Option Explicit
 'types of message boxes...
 Public Const MBT_OK = 0
 Public Const MBT_YESNO = 1
-
 Public Const MBR_OK = 1
 Public Const MBR_YES = 6
 Public Const MBR_NO = 7
 
 Type CURSOR_MAP
-    X As Long   'x coord of target
-    Y As Long   'y coord of target
+    x As Long   'x coord of target
+    y As Long   'y coord of target
     'if any of the links are -1, then it is determined by the system.
     leftLink As Long    'where do you go when you hit left?
     rightLink As Long   'where do you go when you hit right?
@@ -109,18 +108,18 @@ Function ShowPromptDialog(ByVal title As String, ByVal text As String, Optional 
             End If
         End If
         If isPressed("BUTTON1") Then
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
             ShowPromptDialog = textBoxContents
             done = True
         End If
         If isPressed("ENTER") Then
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
             ShowPromptDialog = textBoxContents
             done = True
         End If
         If isPressed("ESC") Or isPressed("BUTTON2") Then
             'cancel
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorCancelSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorCancelSound)
             ShowPromptDialog = ""
             done = True
         End If
@@ -259,7 +258,6 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         Call CanvasFill(cnvTextBox, RGB(255, 255, 255))
         Call CanvasDrawText(cnvTextBox, textBoxContents + "|", "Arial", textSize, 1, 1, 0, False, False, False, False)
         
-        
         'list is filled...  finish constructing the dialog...
         Call CanvasFill(cnv, 0)
         Call Canvas2CanvasBlt(cnvList, cnv, 10, 50)
@@ -268,12 +266,12 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         Call DXDrawCanvas(cnvAllPurpose, 0, 0)
         Call DXDrawCanvas(cnv, offsetX, offsetY)
         
-        Dim X As Long
-        Dim Y As Long
-        X = offsetX + textSize * 0.2 + 10
-        Y = ((cursorNum + 1) * textSize - (textSize / 2)) + offsetY + 50
+        Dim x As Long
+        Dim y As Long
+        x = offsetX + textSize * 0.2 + 10
+        y = ((cursorNum + 1) * textSize - (textSize / 2)) + offsetY + 50
         
-        Call CBDrawHand(X, Y)
+        Call CBDrawHand(x, y)
         Call DXRefresh
         
         'first check the joystick...
@@ -297,7 +295,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
                 topFile = topFile - 1
                 If topFile < 0 Then topFile = 0
             End If
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             textBoxContents = Files(cursorNum + topFile)
             Call cursorDelay
         End If
@@ -314,29 +312,29 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
                     End If
                 End If
             End If
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             textBoxContents = Files(cursorNum + topFile)
             Call cursorDelay
         End If
         If isPressed("BUTTON1") Then
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
             ShowFileDialog = Files(cursorNum + topFile)
             done = True
         End If
         If isPressed("ENTER") Then
             If textBoxContents = "" Then
-                Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+                Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
                 ShowFileDialog = Files(cursorNum + topFile)
                 done = True
             Else
-                Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
-                ShowFileDialog = addext(textBoxContents, "." + GetExt(ext))
+                Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+                ShowFileDialog = addExt(textBoxContents, "." + GetExt(ext))
                 done = True
             End If
         End If
         If isPressed("ESC") Or isPressed("BUTTON2") Then
             'cancel
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorCancelSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorCancelSound)
             ShowFileDialog = ""
             done = True
         End If
@@ -350,17 +348,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
 End Function
 
 Sub cursorDelay()
-    '==========================
-    'Some people have problems with the speed of the
-    'cursor on the menus, however this delay is too great not
-    'to be noticed, so this probably isn't the problem.
-    '
-    'Note: This only applies to cursor maps made in RPGCode!
-    'The menu plugin calls its own delays (although selection boxes
-    'use this too).
-
     Call delay(0.1)
-    
 End Sub
 
 Sub CursorMapClear(ByRef ctable As CURSOR_MAP_TABLE)
@@ -419,12 +407,12 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
         Call DXDrawCanvas(cnv, 0, 0)
         
         'draw the cursor...
-        Dim X As Long
-        Dim Y As Long
-        X = ctable.list(cursorNum).X
-        Y = ctable.list(cursorNum).Y
+        Dim x As Long
+        Dim y As Long
+        x = ctable.list(cursorNum).x
+        y = ctable.list(cursorNum).y
         
-        Call CBDrawHand(X, Y)
+        Call CBDrawHand(x, y)
         
         Call DXRefresh
         
@@ -436,7 +424,7 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             End If
             If cursorNum < 0 Then cursorNum = ctable.Length - 1
             If cursorNum >= ctable.Length Then cursorNum = 0
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             Call cursorDelay
         End If
         If isPressed("LEFT") Or isPressed("NUMPAD4") Then
@@ -447,7 +435,7 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             End If
             If cursorNum < 0 Then cursorNum = ctable.Length - 1
             If cursorNum >= ctable.Length Then cursorNum = 0
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             Call cursorDelay
         End If
         If isPressed("DOWN") Or isPressed("NUMPAD2") Then
@@ -458,7 +446,7 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             End If
             If cursorNum < 0 Then cursorNum = ctable.Length - 1
             If cursorNum >= ctable.Length Then cursorNum = 0
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             Call cursorDelay
         End If
         If isPressed("RIGHT") Or isPressed("NUMPAD6") Then
@@ -469,15 +457,15 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
             End If
             If cursorNum >= ctable.Length Then cursorNum = 0
             If cursorNum < 0 Then cursorNum = ctable.Length - 1
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
             Call cursorDelay
         End If
         If isPressed("ENTER") Or isPressed("SPACE") Or isPressed("BUTTON1") Then
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
             done = True
         End If
         If isPressed("ESC") Or isPressed("BUTTON2") Then
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+            Call playSoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
             cursorNum = -1
             done = True
         End If
@@ -496,17 +484,17 @@ Function CursorMapRun(ByRef ctable As CURSOR_MAP_TABLE) As Long
     CursorMapRun = cursorNum
 End Function
 
-Function max3(ByVal X As Long, ByVal Y As Long, ByVal z As Long) As Long
+Function max3(ByVal x As Long, ByVal y As Long, ByVal z As Long) As Long
     'return the max of 3 vars
     On Error Resume Next
-    If z >= X And z >= Y Then
+    If z >= x And z >= y Then
         max3 = z
     End If
-    If Y >= X And Y >= z Then
-        max3 = Y
+    If y >= x And y >= z Then
+        max3 = y
     End If
-    If X >= z And X >= Y Then
-        max3 = X
+    If x >= z And x >= y Then
+        max3 = x
     End If
 End Function
 
@@ -552,11 +540,11 @@ Function SelectionBox(ByVal text As String, ByRef options() As String, Optional 
     Dim subStrings As Long
     Dim t As Long
     'seperate the string on the newline character
-    subStrings = countSubStrings(text, chr$(10))
+    subStrings = countSubStrings(text, Chr$(10))
     
     ReDim textlist(subStrings) As String
     For t = 0 To subStrings - 1
-        textlist(t) = getSubString(text, chr$(10), t)
+        textlist(t) = getSubString(text, Chr$(10), t)
     Next t
     
     Dim maxWidth As Long
@@ -608,45 +596,40 @@ Function SelectionBox(ByVal text As String, ByRef options() As String, Optional 
     Dim cursorNum As Long
     cursorNum = 0
     
-    Dim done As Boolean
-    
     Call cursorDelay
-    
-    Do While Not (done)
+
+    Dim done As Boolean
+    Do Until done
+
         Call DXDrawCanvas(cnvAllPurpose, 0, 0)
         Call DXDrawCanvas(cnv, offsetX, offsetY)
         
         'draw the cursor...
-        Dim X As Long
-        Dim Y As Long
-        X = offsetX + textSize * 0.2
-        Y = (cursorNum + 2 + oy) * textSize - (textSize / 2) + offsetY
+        Dim x As Long
+        Dim y As Long
+        x = offsetX + textSize * 0.2
+        y = (cursorNum + 2 + oy) * textSize - (textSize / 2) + offsetY
         
-        Call CBDrawHand(X, Y)
-        
+        Call CBDrawHand(x, y)
         Call DXRefresh
         
         If isPressed("UP") Then
             cursorNum = cursorNum - 1
             If cursorNum < 0 Then cursorNum = UBound(options) - 1
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorMoveSound)
             Call cursorDelay
-        End If
-        If isPressed("DOWN") Then
+        ElseIf isPressed("DOWN") Then
             cursorNum = cursorNum + 1
             If cursorNum >= UBound(options) Then cursorNum = 0
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorMoveSound)
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorMoveSound)
             Call cursorDelay
-        End If
-        If isPressed("ENTER") Or isPressed("SPACE") Or isPressed("BUTTON1") Then
-            Call PlaySoundFX(projectPath$ + mediaPath$ + mainMem.cursorSelectSound)
+        ElseIf isPressed("ENTER") Or isPressed("SPACE") Or isPressed("BUTTON1") Then
+            Call playSoundFX(projectPath & mediaPath & mainMem.cursorSelectSound)
             done = True
-            'Call cursorDelay
         End If
     Loop
     
     SelectionBox = cursorNum
-    
     
     'restore screen...
     Call DXDrawCanvas(cnvAllPurpose, 0, 0)

@@ -1,4 +1,5 @@
 VERSION 5.00
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.Form editmainfile 
    BorderStyle     =   1  'Fixed Single
@@ -19,6 +20,7 @@ Begin VB.Form editmainfile
    ForeColor       =   &H80000008&
    Icon            =   "EDITMAINv2.frx":0000
    LinkTopic       =   "Form2"
+   MaxButton       =   0   'False
    MDIChild        =   -1  'True
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   6030
@@ -35,16 +37,16 @@ Begin VB.Form editmainfile
          Strikethrough   =   0   'False
       EndProperty
       Height          =   285
-      Left            =   2760
-      TabIndex        =   1
-      Top             =   5400
+      Left            =   4080
+      TabIndex        =   84
+      Top             =   5280
       Visible         =   0   'False
       Width           =   3135
    End
    Begin TabDlg.SSTab tabMain 
       Height          =   5640
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   7215
       _ExtentX        =   12726
@@ -75,12 +77,17 @@ Begin VB.Form editmainfile
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "startframe"
-      Tab(1).ControlCount=   1
+      Tab(1).Control(0).Enabled=   0   'False
+      Tab(1).Control(1)=   "fraSettings"
+      Tab(1).Control(1).Enabled=   0   'False
+      Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
       Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(0).Enabled=   0   'False
       Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(1).Enabled=   0   'False
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -103,8 +110,105 @@ Begin VB.Form editmainfile
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
       Tab(6).ControlEnabled=   0   'False
       Tab(6).Control(0)=   "Frame1"
-      Tab(6).Control(0).Enabled=   0   'False
       Tab(6).ControlCount=   1
+      Begin VB.Frame fraSettings 
+         Caption         =   "Misc Settings:"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   1215
+         Left            =   -74760
+         TabIndex        =   85
+         Top             =   2520
+         Width           =   6615
+         Begin VB.OptionButton optTileBased 
+            Caption         =   "Tile Based"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   3000
+            TabIndex        =   90
+            Top             =   720
+            Width           =   1815
+         End
+         Begin VB.OptionButton optPixelBased 
+            Caption         =   "Pixel Based"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   1680
+            TabIndex        =   89
+            Top             =   720
+            Width           =   1215
+         End
+         Begin MSComctlLib.Slider sliGameSpeed 
+            Height          =   255
+            Left            =   3000
+            TabIndex        =   87
+            Top             =   360
+            Width           =   3375
+            _ExtentX        =   5953
+            _ExtentY        =   450
+            _Version        =   393216
+            Max             =   3
+            SelStart        =   1
+            Value           =   1
+         End
+         Begin VB.Label Label23 
+            Caption         =   "Movement style:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   240
+            TabIndex        =   88
+            Top             =   720
+            Width           =   1335
+         End
+         Begin VB.Label Label15 
+            Caption         =   "Speed at which the game should run:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   240
+            TabIndex        =   86
+            Top             =   360
+            Width           =   2655
+         End
+      End
       Begin VB.Frame fightframe 
          Caption         =   "Fighting:"
          BeginProperty Font 
@@ -118,7 +222,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1335
          Left            =   -74760
-         TabIndex        =   79
+         TabIndex        =   78
          Tag             =   "1186"
          Top             =   600
          Width           =   6615
@@ -136,7 +240,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   120
-            TabIndex        =   82
+            TabIndex        =   81
             Tag             =   "1187"
             Top             =   600
             Width           =   1095
@@ -154,7 +258,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1680
-            TabIndex        =   81
+            TabIndex        =   80
             Tag             =   "1099"
             Top             =   600
             Width           =   735
@@ -172,7 +276,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1680
-            TabIndex        =   80
+            TabIndex        =   79
             Tag             =   "1100"
             Top             =   360
             Value           =   -1  'True
@@ -191,7 +295,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   84
+            TabIndex        =   83
             Tag             =   "1189"
             Top             =   360
             Width           =   1575
@@ -212,7 +316,7 @@ Begin VB.Form editmainfile
             Left            =   2520
             MouseIcon       =   "EDITMAINv2.frx":0D8E
             MousePointer    =   99  'Custom
-            TabIndex        =   83
+            TabIndex        =   82
             Tag             =   "1188"
             Top             =   960
             Visible         =   0   'False
@@ -232,7 +336,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   3855
          Left            =   -74760
-         TabIndex        =   69
+         TabIndex        =   68
          Tag             =   "1167"
          Top             =   600
          Width           =   6615
@@ -248,7 +352,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   2010
             Left            =   240
-            TabIndex        =   76
+            TabIndex        =   75
             Top             =   480
             Width           =   4815
          End
@@ -266,7 +370,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   75
+            TabIndex        =   74
             Top             =   2160
             Width           =   1095
          End
@@ -284,7 +388,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   74
+            TabIndex        =   73
             Top             =   1680
             Width           =   1095
          End
@@ -301,7 +405,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   73
+            TabIndex        =   72
             Tag             =   "1021"
             Top             =   2880
             Width           =   1095
@@ -318,7 +422,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2400
-            TabIndex        =   72
+            TabIndex        =   71
             Text            =   "None"
             Top             =   2880
             Width           =   2655
@@ -335,7 +439,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2400
-            TabIndex        =   71
+            TabIndex        =   70
             Text            =   "None"
             Top             =   3360
             Width           =   2655
@@ -353,7 +457,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   70
+            TabIndex        =   69
             Tag             =   "1021"
             Top             =   3360
             Width           =   1095
@@ -371,7 +475,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   78
+            TabIndex        =   77
             Top             =   2880
             Width           =   2055
          End
@@ -388,7 +492,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   77
+            TabIndex        =   76
             Top             =   3360
             Width           =   2055
          End
@@ -406,7 +510,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1695
          Left            =   -74760
-         TabIndex        =   60
+         TabIndex        =   59
          Tag             =   "1156"
          Top             =   600
          Width           =   6615
@@ -422,7 +526,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2040
-            TabIndex        =   64
+            TabIndex        =   63
             Text            =   "None"
             Top             =   720
             Width           =   3135
@@ -439,7 +543,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2040
-            TabIndex        =   63
+            TabIndex        =   62
             Text            =   "None"
             Top             =   360
             Width           =   3135
@@ -457,7 +561,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5400
-            TabIndex        =   62
+            TabIndex        =   61
             Tag             =   "1021"
             Top             =   360
             Width           =   1095
@@ -475,7 +579,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5400
-            TabIndex        =   61
+            TabIndex        =   60
             Tag             =   "1021"
             Top             =   720
             Width           =   1095
@@ -493,7 +597,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   68
+            TabIndex        =   67
             Tag             =   "1160"
             Top             =   720
             Width           =   1695
@@ -511,7 +615,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   67
+            TabIndex        =   66
             Tag             =   "1159"
             Top             =   360
             Width           =   2055
@@ -532,7 +636,7 @@ Begin VB.Form editmainfile
             Left            =   240
             MouseIcon       =   "EDITMAINv2.frx":1098
             MousePointer    =   99  'Custom
-            TabIndex        =   66
+            TabIndex        =   65
             Tag             =   "1158"
             Top             =   1080
             Visible         =   0   'False
@@ -554,7 +658,7 @@ Begin VB.Form editmainfile
             Left            =   3000
             MouseIcon       =   "EDITMAINv2.frx":13A2
             MousePointer    =   99  'Custom
-            TabIndex        =   65
+            TabIndex        =   64
             Tag             =   "1157"
             Top             =   1080
             Visible         =   0   'False
@@ -574,7 +678,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1335
          Left            =   -74760
-         TabIndex        =   52
+         TabIndex        =   51
          Tag             =   "1151"
          Top             =   2880
          Width           =   6615
@@ -590,7 +694,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   3840
-            TabIndex        =   56
+            TabIndex        =   55
             Text            =   "None"
             Top             =   840
             Width           =   615
@@ -607,7 +711,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   3840
-            TabIndex        =   55
+            TabIndex        =   54
             Text            =   "None"
             Top             =   600
             Width           =   615
@@ -624,7 +728,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   3840
-            TabIndex        =   54
+            TabIndex        =   53
             Text            =   "None"
             Top             =   360
             Width           =   615
@@ -642,7 +746,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   53
+            TabIndex        =   52
             Tag             =   "1152"
             Top             =   360
             Width           =   1095
@@ -660,7 +764,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   59
+            TabIndex        =   58
             Tag             =   "1155"
             Top             =   840
             Width           =   3495
@@ -678,7 +782,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   58
+            TabIndex        =   57
             Tag             =   "1154"
             Top             =   600
             Width           =   3495
@@ -696,7 +800,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   57
+            TabIndex        =   56
             Tag             =   "1153"
             Top             =   360
             Width           =   3495
@@ -715,7 +819,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   2055
          Left            =   -74760
-         TabIndex        =   40
+         TabIndex        =   39
          Tag             =   "1144"
          Top             =   600
          Width           =   6615
@@ -732,7 +836,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   480
-            TabIndex        =   47
+            TabIndex        =   46
             Tag             =   "1145"
             Top             =   1200
             Visible         =   0   'False
@@ -750,7 +854,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   46
+            TabIndex        =   45
             Text            =   "None"
             Top             =   960
             Width           =   2655
@@ -767,7 +871,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   45
+            TabIndex        =   44
             Text            =   "None"
             Top             =   240
             Width           =   2655
@@ -784,7 +888,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   44
+            TabIndex        =   43
             Text            =   "None"
             Top             =   600
             Width           =   2655
@@ -802,7 +906,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   43
+            TabIndex        =   42
             Tag             =   "1021"
             Top             =   240
             Width           =   1095
@@ -820,7 +924,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   42
+            TabIndex        =   41
             Tag             =   "1021"
             Top             =   600
             Width           =   1095
@@ -838,7 +942,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   41
+            TabIndex        =   40
             Tag             =   "1021"
             Top             =   960
             Width           =   1095
@@ -856,7 +960,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   51
+            TabIndex        =   50
             Tag             =   "1149"
             Top             =   960
             Width           =   2295
@@ -874,7 +978,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   50
+            TabIndex        =   49
             Tag             =   "1148"
             Top             =   600
             Width           =   2295
@@ -892,7 +996,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   49
+            TabIndex        =   48
             Tag             =   "1146"
             Top             =   240
             Width           =   2175
@@ -913,7 +1017,7 @@ Begin VB.Form editmainfile
             Left            =   2280
             MouseIcon       =   "EDITMAINv2.frx":16AC
             MousePointer    =   99  'Custom
-            TabIndex        =   48
+            TabIndex        =   47
             Tag             =   "1150"
             Top             =   1680
             Visible         =   0   'False
@@ -933,7 +1037,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1575
          Left            =   -74760
-         TabIndex        =   34
+         TabIndex        =   33
          Tag             =   "1162"
          Top             =   1080
          Width           =   6255
@@ -950,7 +1054,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   120
-            TabIndex        =   37
+            TabIndex        =   36
             Tag             =   "1164"
             Top             =   360
             Value           =   -1  'True
@@ -969,7 +1073,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   36
+            TabIndex        =   35
             Tag             =   "1163"
             Top             =   720
             Width           =   4575
@@ -986,7 +1090,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   600
-            TabIndex        =   35
+            TabIndex        =   34
             Text            =   "10"
             Top             =   1080
             Width           =   735
@@ -1004,7 +1108,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1560
-            TabIndex        =   38
+            TabIndex        =   37
             Tag             =   "1165"
             Top             =   1080
             Width           =   1095
@@ -1023,7 +1127,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   255
          Left            =   -74760
-         TabIndex        =   33
+         TabIndex        =   32
          Tag             =   "1166"
          Top             =   600
          Width           =   4455
@@ -1041,7 +1145,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   2055
          Left            =   -74760
-         TabIndex        =   20
+         TabIndex        =   19
          Tag             =   "1136"
          Top             =   600
          Width           =   6615
@@ -1058,7 +1162,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   2760
-            TabIndex        =   32
+            TabIndex        =   31
             Tag             =   "1143"
             Top             =   240
             Visible         =   0   'False
@@ -1077,7 +1181,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   195
             Left            =   120
-            TabIndex        =   31
+            TabIndex        =   30
             Tag             =   "1142"
             Top             =   360
             Width           =   2775
@@ -1095,7 +1199,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   2760
-            TabIndex        =   30
+            TabIndex        =   29
             Top             =   480
             Visible         =   0   'False
             Width           =   2415
@@ -1113,7 +1217,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   1095
             Left            =   4320
-            TabIndex        =   26
+            TabIndex        =   25
             Top             =   720
             Width           =   2175
             Begin VB.OptionButton sixfourty 
@@ -1129,7 +1233,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   195
                Left            =   120
-               TabIndex        =   29
+               TabIndex        =   28
                Tag             =   "1140"
                Top             =   240
                Width           =   1335
@@ -1147,7 +1251,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   195
                Left            =   120
-               TabIndex        =   28
+               TabIndex        =   27
                Tag             =   "1139"
                Top             =   480
                Width           =   1335
@@ -1165,7 +1269,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   195
                Left            =   120
-               TabIndex        =   27
+               TabIndex        =   26
                Tag             =   "1138"
                Top             =   720
                Width           =   1335
@@ -1184,7 +1288,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   195
             Left            =   2760
-            TabIndex        =   25
+            TabIndex        =   24
             Top             =   720
             Visible         =   0   'False
             Width           =   2655
@@ -1202,7 +1306,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   1095
             Left            =   120
-            TabIndex        =   21
+            TabIndex        =   20
             Top             =   720
             Width           =   2175
             Begin VB.OptionButton color16bit 
@@ -1218,7 +1322,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   255
                Left            =   240
-               TabIndex        =   24
+               TabIndex        =   23
                Top             =   240
                Width           =   1575
             End
@@ -1235,7 +1339,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   255
                Left            =   240
-               TabIndex        =   23
+               TabIndex        =   22
                Top             =   480
                Width           =   1575
             End
@@ -1252,7 +1356,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   255
                Left            =   240
-               TabIndex        =   22
+               TabIndex        =   21
                Top             =   720
                Width           =   1575
             End
@@ -1271,7 +1375,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1695
          Left            =   240
-         TabIndex        =   13
+         TabIndex        =   12
          Tag             =   "1182"
          Top             =   600
          Width           =   6495
@@ -1287,7 +1391,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   1920
-            TabIndex        =   16
+            TabIndex        =   15
             Top             =   240
             Width           =   3255
          End
@@ -1304,7 +1408,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1920
-            TabIndex        =   15
+            TabIndex        =   14
             Tag             =   "1183"
             Top             =   1320
             Width           =   3735
@@ -1322,7 +1426,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1920
-            TabIndex        =   14
+            TabIndex        =   13
             Top             =   960
             Width           =   3735
          End
@@ -1338,7 +1442,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1920
-            TabIndex        =   19
+            TabIndex        =   18
             Top             =   600
             Width           =   2895
          End
@@ -1355,7 +1459,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   495
             Left            =   120
-            TabIndex        =   18
+            TabIndex        =   17
             Tag             =   "1185"
             Top             =   600
             Width           =   1215
@@ -1373,7 +1477,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   17
+            TabIndex        =   16
             Tag             =   "1184"
             Top             =   240
             Width           =   1575
@@ -1392,7 +1496,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1815
          Left            =   240
-         TabIndex        =   3
+         TabIndex        =   2
          Top             =   2520
          Width           =   6495
          Begin VB.TextBox cursormove 
@@ -1407,7 +1511,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   9
+            TabIndex        =   8
             Top             =   480
             Width           =   2655
          End
@@ -1423,7 +1527,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   8
+            TabIndex        =   7
             Top             =   1200
             Width           =   2655
          End
@@ -1439,7 +1543,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   7
+            TabIndex        =   6
             Top             =   840
             Width           =   2655
          End
@@ -1456,7 +1560,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   6
+            TabIndex        =   5
             Tag             =   "1021"
             Top             =   480
             Width           =   1095
@@ -1474,7 +1578,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   5
+            TabIndex        =   4
             Tag             =   "1021"
             Top             =   840
             Width           =   1095
@@ -1492,7 +1596,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   4
+            TabIndex        =   3
             Tag             =   "1021"
             Top             =   1200
             Width           =   1095
@@ -1510,7 +1614,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   12
+            TabIndex        =   11
             Top             =   480
             Width           =   2175
          End
@@ -1527,7 +1631,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   11
+            TabIndex        =   10
             Top             =   840
             Width           =   2175
          End
@@ -1544,7 +1648,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   10
+            TabIndex        =   9
             Top             =   1200
             Width           =   2175
          End
@@ -1565,7 +1669,7 @@ Begin VB.Form editmainfile
          Left            =   -74760
          MouseIcon       =   "EDITMAINv2.frx":19B6
          MousePointer    =   99  'Custom
-         TabIndex        =   39
+         TabIndex        =   38
          Tag             =   "1158"
          Top             =   2880
          Visible         =   0   'False
@@ -1769,216 +1873,173 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'=======================================================
-'Notes by KSNiloc for 3.04
-'
-' ---What needs to be done
-' + Standardize
-'
-'=======================================================
+'=========================================================================
+' Main file editor
+'=========================================================================
 
-Public Function formType() As Long
-    'identify type of form
+Option Explicit
+
+'=========================================================================
+' Read-only property returning type of form
+'=========================================================================
+Public Property Get formType() As Long
     On Error Resume Next
     formType = FT_MAINFILE
-End Function
+End Property
 
-Public Sub checkSave()
-    'check if the file has changed an it needs to be saved...
-    On Error GoTo ErrorHandler
-    If mainNeedUpdate = True Then
-        aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo)
-        If aa = 6 Then
-            'yes-- save
-            Call saveFile
-        End If
-    End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
-Sub plugininfofill()
-    'fills in plugin info
-    On Error GoTo ErrorHandler
+'=========================================================================
+' Fill in plugin tab
+'=========================================================================
+Private Sub pluginInfoFill()
+    On Error Resume Next
     Call plugList.Clear
+    Dim t As Integer
     For t = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(t) <> "" Then
-            descr$ = pluginDescription(projectPath$ + plugPath$ + mainMem.plugins(t))
-            Call plugList.AddItem(mainMem.plugins(t) + "    " + descr$)
+            Dim descrip As String
+            descrip = pluginDescription(projectPath & plugPath & mainMem.plugins(t))
+            Call plugList.AddItem(mainMem.plugins(t) & "    " & descrip)
         End If
     Next t
     Call PLUGShutdownSystem
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Save the file
+'=========================================================================
 Public Sub saveFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
-    'If mainNeedUpdate = True Then
-        filename$(2) = mainfile$
-        mainNeedUpdate = False
-        If filename$(2) = "" Then
-            editmainfile.Show
-            Call mnusaveas_Click
-            Exit Sub
-        End If
-        Call saveMain(gamPath$ + filename$(2), mainMem)
-    'End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    On Error Resume Next
+    filename(2) = mainfile
+    mainNeedUpdate = False
+    If filename(2) = "" Then
+        Call editmainfile.Show
+        Call mnusaveas_Click
+    Else
+        DoEvents
+        Call saveMain(gamPath & filename(2), mainMem)
+    End If
 End Sub
 
-
+'=========================================================================
+' Clear the data
+'=========================================================================
 Public Sub clearAll()
-'erases main file data
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Call MainClear(mainMem)
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
+'=========================================================================
+' Close menu
+'=========================================================================
 Private Sub closemnu_Click()
-    On Error GoTo ErrorHandler
-    Unload mainfight
-    Unload editmainfile
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    On Error Resume Next
+    Call Unload(mainfight)
+    Call Unload(editmainfile)
 End Sub
 
+'=========================================================================
+' Color depth option boxes
+'=========================================================================
 Private Sub color16bit_Click()
     On Error Resume Next
     mainMem.colordepth = COLOR16
 End Sub
-
 Private Sub color24bit_Click()
     On Error Resume Next
     mainMem.colordepth = COLOR24
 End Sub
-
-
 Private Sub color32bit_Click()
     On Error Resume Next
     mainMem.colordepth = COLOR32
 End Sub
 
-
+'=========================================================================
+' Open the main fight editor
+'=========================================================================
 Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
-    mainNeedUpdate = True
-    mainfight.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Command13_Click()
-    On Error GoTo ErrorHandler
-    pluginframe.Visible = False
-    rpgcodeframe.Visible = False
-    fgtframe.Visible = False
-    projectframe.Visible = False
-    startupframe.Visible = False
-    graphicsframe.Visible = False
-    daynightframe.Top = 600
-    daynightframe.Left = 2160
-    daynightframe.Visible = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Command10_Click()
     On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + plugPath$
-    
-    dlg.strTitle = "Select Plugin"
-    dlg.strDefaultExt = "dll"
-    dlg.strFileTypes = "RPG Toolkit Plugin (*.dll)|*.dll|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
     mainNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + plugPath$ + antiPath$
-    fgtPlugin.Text = antiPath$
-    mainMem.fightPlugin = antiPath$
+    Call mainfight.Show(vbModal)
 End Sub
 
+'=========================================================================
+' Select battle system
+'=========================================================================
+Private Sub Command10_Click()
+
+    On Error Resume Next
+
+    Call ChDir(currentDir)
+    Dim dlg As FileDialogInfo
+    With dlg
+        .strDefaultFolder = projectPath & plugPath
+        .strTitle = "Select Plugin"
+        .strDefaultExt = "dll"
+        .strFileTypes = "RPG Toolkit Plugin (*.dll)|*.dll|All files(*.*)|*.*"
+        If OpenFileDialog(dlg, Me.hwnd) Then
+            filename(1) = .strSelectedFile
+            Dim antiPath As String
+            antiPath = .strSelectedFileNoPath
+        Else
+            Exit Sub
+        End If
+    End With
+
+    mainNeedUpdate = True
+    Call ChDir(currentDir)
+    If filename(1) = "" Then Exit Sub
+    Call FileCopy(filename(1), projectPath & plugPath & antiPath)
+    fgtPlugin.Text = antiPath
+    mainMem.fightPlugin = antiPath
+
+End Sub
+
+'=========================================================================
+' Select initial board
+'=========================================================================
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentDir$)
+    Call ChDir(currentDir)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + brdPath$
-    
+    dlg.strDefaultFolder = projectPath$ & brdPath$
     dlg.strTitle = "Select Board"
     dlg.strDefaultExt = "brd"
     dlg.strFileTypes = "RPG Toolkit Board (*.brd)|*.brd|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentDir$)
+    Call ChDir(currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
+    Call FileCopy(filename$(1), projectPath$ & brdPath$ & antiPath$)
     initboardbox.Text = antiPath$
     mainMem.initBoard$ = antiPath$
 End Sub
 
+'=========================================================================
+' Select initial character
+'=========================================================================
 Private Sub Command15_Click()
     On Error Resume Next
-    ChDir (currentDir$)
+    Call ChDir(currentDir)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + temPath$
-    
+    dlg.strDefaultFolder = projectPath$ & temPath$
     dlg.strTitle = "Select Character"
     dlg.strDefaultExt = "tem"
     dlg.strFileTypes = "Supported Files|*.tem|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
@@ -1986,23 +2047,25 @@ Private Sub Command15_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + temPath$ + antiPath$
+    Call FileCopy(filename$(1), projectPath$ & temPath$ & antiPath$)
     initcharbox.Text = antiPath$
     mainMem.initChar$ = antiPath$
 End Sub
 
+'=========================================================================
+' Select runtime program
+'=========================================================================
 Private Sub Command16_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgPath$
-    
+    dlg.strDefaultFolder = projectPath$ & prgPath$
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
     dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
@@ -2010,23 +2073,25 @@ Private Sub Command16_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    Call FileCopy(filename$(1), projectPath$ & prgPath$ & antiPath$)
     runtimebox.Text = antiPath$
     mainMem.runTime$ = antiPath$
 End Sub
 
+'=========================================================================
+' Select startup program
+'=========================================================================
 Private Sub Command17_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgPath$
-    
+    dlg.strDefaultFolder = projectPath$ & prgPath$
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
     dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
@@ -2034,23 +2099,25 @@ Private Sub Command17_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    FileCopy filename$(1), projectPath$ & prgPath$ & antiPath$
     startupbox.Text = antiPath$
     mainMem.startupPrg$ = antiPath$
 End Sub
 
+'=========================================================================
+' Select game over program
+'=========================================================================
 Private Sub Command18_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgPath$
-    
+    dlg.strDefaultFolder = projectPath$ & prgPath$
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
     dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
@@ -2058,92 +2125,72 @@ Private Sub Command18_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    whichType$ = extention(filename$(1))
-    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
+    FileCopy filename$(1), projectPath$ & prgPath$ & antiPath$
     Text1.Text = antiPath$
     mainMem.gameOverPrg$ = antiPath$
 End Sub
 
-Private Sub Command2_Click()
-    On Error GoTo ErrorHandler
-    skinedit.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
+'=========================================================================
+' Extended run-time programs
+'=========================================================================
 Private Sub Command3_Click()
-    On Error GoTo ErrorHandler
-    runtimeprograms.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    On Error Resume Next
+    Call runtimeprograms.Show(vbModal)
 End Sub
 
+'=========================================================================
+' Remove plugin
+'=========================================================================
 Private Sub Command4_Click()
     On Error Resume Next
-    
     If plugList.ListIndex = -1 Then plugList.ListIndex = 0
-    
     Call MainRemovePlugin(mainMem, MainGetNthPlugin(mainMem, plugList.ListIndex))
-    
     Dim idx As Long
-    
     idx = plugList.ListIndex - 1
     If idx = -1 Then idx = 0
-    
-    Call plugininfofill
-    
+    Call pluginInfoFill
     plugList.ListIndex = idx
 End Sub
 
+'=========================================================================
+' Add plugin
+'=========================================================================
 Private Sub Command5_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + plugPath$
-    
+    dlg.strDefaultFolder = projectPath$ & plugPath$
     dlg.strTitle = "Select Plugin"
     dlg.strDefaultExt = "dll"
     dlg.strFileTypes = "RPG Toolkit Plugins (*.dll)|*.dll|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
     End If
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + plugPath$ + antiPath$
-       
+    FileCopy filename$(1), projectPath$ & plugPath$ & antiPath$
     Call MainAddPlugin(mainMem, antiPath$)
-    
-    descr$ = pluginDescription(projectPath$ + plugPath$ + antiPath$)
-    plugList.AddItem (antiPath$ + "    " + descr$)
-    Call PLUGShutdownSystem
-    
+    Call pluginInfoFill
 End Sub
 
-
+'=========================================================================
+' Select menu system
+'=========================================================================
 Private Sub Command6_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + plugPath$
-    
+    dlg.strDefaultFolder = projectPath$ & plugPath$
     dlg.strTitle = "Select Plugin"
     dlg.strDefaultExt = "dll"
     dlg.strFileTypes = "RPG Toolkit Plugin (*.dll)|*.dll|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
@@ -2151,24 +2198,25 @@ Private Sub Command6_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + plugPath$ + antiPath$
+    FileCopy filename$(1), projectPath$ & plugPath$ & antiPath$
     mnuplugin.Text = antiPath$
     mainMem.menuPlugin = antiPath$
 End Sub
 
-
+'=========================================================================
+' Select cursor move sound
+'=========================================================================
 Private Sub Command7_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + mediaPath$
-    
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
     dlg.strFileTypes = dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
@@ -2181,19 +2229,20 @@ Private Sub Command7_Click()
     mainMem.cursorMoveSound = antiPath$
 End Sub
 
-
+'=========================================================================
+' Select cursor select sound
+'=========================================================================
 Private Sub Command8_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + mediaPath$
-    
+    dlg.strDefaultFolder = projectPath$ & mediaPath$
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
     dlg.strFileTypes = dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
@@ -2201,23 +2250,25 @@ Private Sub Command8_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
+    FileCopy filename$(1), projectPath$ & mediaPath$ & antiPath$
     cursorselect.Text = antiPath$
     mainMem.cursorSelectSound = antiPath$
 End Sub
 
+'=========================================================================
+' Select cursor cancel sound
+'=========================================================================
 Private Sub Command9_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + mediaPath$
-    
+    dlg.strDefaultFolder = projectPath$ & mediaPath$
     dlg.strTitle = "Select Sound"
     dlg.strDefaultExt = "wav"
     dlg.strFileTypes = dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    
     If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
@@ -2225,157 +2276,129 @@ Private Sub Command9_Click()
     mainNeedUpdate = True
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
+    FileCopy filename$(1), projectPath$ & mediaPath$ & antiPath$
     cursorcancel.Text = antiPath$
     mainMem.cursorCancelSound = antiPath$
 End Sub
 
+'=========================================================================
+' Cursor sound effect changing events
+'=========================================================================
 Private Sub cursorcancel_Change()
     On Error Resume Next
     mainMem.cursorCancelSound = cursorcancel.Text
 End Sub
-
 Private Sub cursormove_Change()
     On Error Resume Next
     mainMem.cursorMoveSound = cursormove.Text
 End Sub
-
 Private Sub cursorselect_Change()
     On Error Resume Next
     mainMem.cursorSelectSound = cursorselect.Text
 End Sub
 
-
+'=========================================================================
+' Day/night settings
+'=========================================================================
 Private Sub daylengthbox_Change()
-    On Error GoTo ErrorHandler
-    
+    On Error Resume Next
     mainMem.mainDayLength = val(daylengthbox.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub daynightcheckbox_Click()
-    On Error GoTo ErrorHandler
-    
+    On Error Resume Next
     mainMem.mainUseDayNight = daynightcheckbox.value
     If mainMem.mainUseDayNight = 1 Then
         Frame3.Visible = True
     Else
         Frame3.Visible = False
     End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 Private Sub daynightreal_Click()
     mainMem.mainDayNightType = 0
     daylengthbox.Enabled = False
 End Sub
-
-
 Private Sub daynightvirtual_Click()
     mainMem.mainDayNightType = 1
     daylengthbox.Enabled = True
 End Sub
 
-
+'=========================================================================
+' Set resolution to 800 x 600
+'=========================================================================
 Private Sub eighthundred_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     mainMem.mainResolution = 1
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Enable / disable the joystick
+'=========================================================================
 Private Sub enableJoystick_Click()
     On Error Resume Next
     mainMem.useJoystick = enableJoystick.value
 End Sub
 
+'=========================================================================
+' Change the fight plugin
+'=========================================================================
 Private Sub fgtPlugin_Change()
     On Error Resume Next
     mainMem.fightPlugin = fgtPlugin.Text
 End Sub
 
+'=========================================================================
+' Update activeForm
+'=========================================================================
 Private Sub Form_Activate()
     Set activeForm = Me
 End Sub
 
+'=========================================================================
+' Load form
+'=========================================================================
 Private Sub Form_Load()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Call LocalizeForm(Me)
-    'Call LocalizeTabStrip(TabStrip1)
-    
     editmainfile.height = 6270
     editmainfile.Width = 7600
-    filename$(2) = ""
+    filename(2) = ""
     Call infofill
-    projectframe.Visible = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    sliGameSpeed.max = MAX_GAMESPEED
 End Sub
 
+'=========================================================================
+' Unload form
+'=========================================================================
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     Call hideAllTools
 End Sub
 
+'=========================================================================
+' Set the game to run in full-screen
+'=========================================================================
 Private Sub fullscreen_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     mainNeedUpdate = True
     mainMem.mainScreenType = 1
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Change game title
+'=========================================================================
 Private Sub gametitlebox_Change()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     mainNeedUpdate = True
     mainMem.gameTitle$ = gametitlebox.Text
     gametitlebox2.Text = mainMem.gameTitle$
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub horizontalupdate_Click()
-    On Error GoTo ErrorHandler
-    updatetype = 1
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
+'=========================================================================
+' Fill in the form with info
+'=========================================================================
 Private Sub infofill()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Option3.value = True
-    Option1.value = True
-    Option5.value = True
     If mainMem.startupPrg$ <> "" Then
         startupbox.Text = mainMem.startupPrg$          'start up program
     Else
@@ -2394,18 +2417,17 @@ Private Sub infofill()
     mnuplugin.Text = mainMem.menuPlugin
     fgtPlugin.Text = mainMem.fightPlugin
     
+    Dim a As String
     a$ = UCase$(chr$(mainMem.runKey))
     If mainMem.runKey = 32 Then a$ = "SPC"
     If mainMem.runKey = 27 Then a$ = "ESC"
     If mainMem.runKey = 13 Then a$ = "ENTR"
     runkeybox.Text = a$
-
     a$ = UCase$(chr$(mainMem.menuKey))
     If mainMem.menuKey = 32 Then a$ = "SPC"
     If mainMem.menuKey = 27 Then a$ = "ESC"
     If mainMem.menuKey = 13 Then a$ = "ENTR"
     menukeybox.Text = a$
-
     a$ = UCase$(chr$(mainMem.Key))
     If mainMem.Key = 32 Then a$ = "SPC"
     If mainMem.Key = 27 Then a$ = "ESC"
@@ -2425,10 +2447,6 @@ Private Sub infofill()
 
     Option4.value = mainMem.fightgameYN             'fighting in game? 0-yes, 1-no
 
-    'If updatetype = 0 Then noupdate.Value = True
-    'If updatetype = 1 Then horizontalupdate.Value = True
-    'If updatetype = 2 Then tileupdate.Value = True
-
     If mainMem.mainScreenType = 0 Then fullscreen.value = True
     If mainMem.mainScreenType = 1 Then fullscreen.value = True
     If mainMem.mainScreenType = 2 Then smallwindowed.value = True
@@ -2437,18 +2455,8 @@ Private Sub infofill()
     gametitlebox2.Text = mainMem.gameTitle$
     editmainfile.Caption = LoadStringLoc(800, "Main Project Editor") + "  (" + mainfile$ + ")"
     
-    pathbox.Caption = projectPath$
+    pathbox.Caption = projectPath
     
-    'Call testGraphicsMode
-    If targetPlatform = 0 Or targetPlatform = 2 Then
-        win9x.value = True
-    End If
-    'If targetPlatform = 2 Then
-    '    win3.Value = True
-    'End If
-    If targetPlatform = 1 Then
-        winNT.value = True
-    End If
     stretchbox.value = mainMem.extendToFullScreen
     
     If mainMem.mainResolution = 0 Then
@@ -2461,7 +2469,7 @@ Private Sub infofill()
         tentwentyfour.value = True
     End If
     
-    Call plugininfofill
+    Call pluginInfoFill
 
     daynightcheckbox.value = mainMem.mainUseDayNight
     If mainMem.mainUseDayNight = 1 Then
@@ -2495,247 +2503,189 @@ Private Sub infofill()
     Select Case mainMem.colordepth
         Case COLOR16:
             color16bit.value = True
-                    
         Case COLOR24:
             color24bit.value = True
-        
         Case COLOR32:
             color32bit.value = True
     End Select
+   
+    If mainMem.pixelMovement = 1 Then
+        optPixelBased.value = True
+    Else
+        optTileBased.value = True
+    End If
+    
+    sliGameSpeed.value = mainMem.gameSpeed
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Change game title
+'=========================================================================
 Private Sub gametitlebox2_Change()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     mainNeedUpdate = True
     mainMem.gameTitle$ = gametitlebox2.Text
     gametitlebox.Text = mainMem.gameTitle$
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Change initial board
+'=========================================================================
 Private Sub initboardbox_Change()
     On Error Resume Next
-    mainMem.initBoard$ = initboardbox.Text
+    mainMem.initBoard = initboardbox.Text
 End Sub
 
+'=========================================================================
+' Change initial character
+'=========================================================================
 Private Sub initcharbox_Change()
     On Error Resume Next
     mainMem.initChar$ = initcharbox.Text
 End Sub
 
-Private Sub keybox_KeyPress(KeyAscii As Integer)
-    On Error GoTo ErrorHandler
+'=========================================================================
+' Press a key in the key box
+'=========================================================================
+Private Sub keybox_KeyPress(ByRef KeyAscii As Integer)
+    On Error Resume Next
     mainNeedUpdate = True
+    Dim ascii As Long
     ascii = KeyAscii
-    If mainMem.menuKey = ascii Or mainMem.runKey = ascii Then MsgBox LoadStringLoc(963, "That's already being used!"): KeyAscii = 0: Exit Sub
+    If mainMem.menuKey = ascii Or mainMem.runKey = ascii Then
+        MsgBox LoadStringLoc(963, "That's already being used!")
+        KeyAscii = 0
+        Exit Sub
+    End If
     mainMem.Key = ascii
+    Dim a As String
     a$ = UCase$(chr$(ascii))
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
     keybox.Text = a$
     KeyAscii = 0
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Show the enemy editor
+'=========================================================================
 Private Sub Label2_Click()
-    On Error GoTo ErrorHandler
-    activeEnemy.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call activeEnemy.Show
 End Sub
 
+'=========================================================================
+' Show the player editor
+'=========================================================================
 Private Sub Label21_Click()
-    On Error GoTo ErrorHandler
-    activePlayer.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call activePlayer.Show
 End Sub
 
+'=========================================================================
+' Show the RPGCode editor
+'=========================================================================
 Private Sub Label22_Click()
-    On Error GoTo ErrorHandler
-    activeRPGCode.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call activeRPGCode.Show
 End Sub
 
-
+'=========================================================================
+' Show the board editor
+'=========================================================================
 Private Sub Label24_Click()
-    On Error GoTo ErrorHandler
-    activeBoard.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call activeBoard.Show
 End Sub
-
 Private Sub Label9_Click()
-    On Error GoTo ErrorHandler
-    activeBoard.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call activeBoard.Show
 End Sub
 
-
-Private Sub menukeybox_KeyPress(KeyAscii As Integer)
-    On Error GoTo ErrorHandler
+'=========================================================================
+' Press a key in a key box
+'=========================================================================
+Private Sub menukeybox_KeyPress(ByRef KeyAscii As Integer)
+    On Error Resume Next
     mainNeedUpdate = True
+    Dim ascii As Long
     ascii = KeyAscii
     If mainMem.runKey = ascii Or mainMem.Key = ascii Then MsgBox LoadStringLoc(963, "That's already being used!"): KeyAscii = 0: Exit Sub
     mainMem.menuKey = ascii
+    Dim a As String
     a$ = UCase$(chr$(ascii))
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
     menukeybox.Text = a$
     KeyAscii = 0
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Close menu
+'=========================================================================
 Private Sub mnuCLose_Click()
-    Unload Me
+    Call Unload(Me)
 End Sub
 
+'=========================================================================
+' Change menu plugin
+'=========================================================================
 Private Sub mnuplugin_Change()
     On Error Resume Next
     mainMem.menuPlugin = mnuplugin.Text
 End Sub
 
+'=========================================================================
+' Clear all data
+'=========================================================================
 Private Sub newmain()
-    On Error GoTo ErrorHandler
     Call clearAll
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' New menu
+'=========================================================================
 Private Sub newmainmnu_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
+    Dim user As VbMsgBoxResult
     user = MsgBox(LoadStringLoc(947, "Remove current data and start a new file.  Are you sure?"), 4)
     If user = 6 Then
         mainfile$ = ""
         Call newmain
         Call infofill
     End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub noupdate_Click()
-    On Error GoTo ErrorHandler
-    updatetype = 0
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub openmnu_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gamPath$
-    
-    dlg.strTitle = "Open Main File"
-    dlg.strDefaultExt = "gam"
-    dlg.strFileTypes = "RPG Toolkit Main File (*.gam)|*.gam|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), gamPath$ + antiPath$
-    Call openMainFile(filename$(1))
-    mainfile$ = antiPath$
-    editmainfile.Caption = LoadStringLoc(800, "Project Properties") + "  (" + antiPath$ + ")"
-    Call infofill
-    lastProject$ = antiPath$
-    mainoption.Caption = "RPG Toolkit Development System, Version 3.0 (" + antiPath$ + ")"
-End Sub
-
-
-
+'=========================================================================
+' Save menu
+'=========================================================================
 Private Sub mnusave_Click()
     Call saveFile
 End Sub
 
+'=========================================================================
+' Save as menu
+'=========================================================================
 Private Sub mnusaveas_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = gamPath$
-    
     dlg.strTitle = "Save Main File As"
     dlg.strDefaultExt = "gam"
     dlg.strFileTypes = "RPG Toolkit Main File (*.gam)|*.gam|All files(*.*)|*.*"
-    'dlg2
     If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
         filename$(1) = dlg.strSelectedFile
+        Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
     End If
     ChDir (currentDir$)
-    
     If filename$(1) = "" Then Exit Sub
     If fileExists(filename(1)) Then
+        Dim bb As VbMsgBoxResult
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
         If bb = 7 Then Exit Sub
     End If
-    
     Call saveMain(filename$(1), mainMem)
     mainfile$ = antiPath$
     editmainfile.Caption = LoadStringLoc(800, "Project Properties") + " (" + antiPath$ + ")"
@@ -2743,38 +2693,45 @@ Private Sub mnusaveas_Click()
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
-
+'=========================================================================
+' Disable fighting
+'=========================================================================
 Private Sub Option3_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     mainNeedUpdate = True
     mainMem.fightgameYN = 0
     Command1.Enabled = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Enable fighting
+'=========================================================================
 Private Sub Option4_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     mainNeedUpdate = True
     mainMem.fightgameYN = 1
     Command1.Enabled = False
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Change to pixel movement
+'=========================================================================
+Private Sub optPixelBased_Click()
+    Call frmCodeTip.showTip("Pixel Movement", "Please note that pixel movement is still in the early " _
+                 & "stages and does not yet work well on isometric boards.", 5)
+    mainMem.pixelMovement = 1
+End Sub
 
+'=========================================================================
+' Change to tile movement
+'=========================================================================
+Private Sub optTileBased_Click()
+    mainMem.pixelMovement = 0
+End Sub
 
-
-
-
+'=========================================================================
+' Enable / disable registration protection
+'=========================================================================
 Private Sub regprotect_Click()
     If regprotect.value = 0 Then
         mainMem.mainDisableProtectReg = 1
@@ -2783,365 +2740,241 @@ Private Sub regprotect_Click()
     End If
 End Sub
 
-Private Sub runkeybox_KeyPress(KeyAscii As Integer)
+'=========================================================================
+' Press a key in the key box
+'=========================================================================
+Private Sub runkeybox_KeyPress(ByRef KeyAscii As Integer)
     mainNeedUpdate = True
+    Dim ascii As Long
     ascii = KeyAscii
     If mainMem.menuKey = ascii Or mainMem.Key = ascii Then MsgBox LoadStringLoc(963, "That's already being used!"): KeyAscii = 0: Exit Sub
     mainMem.runKey = ascii
+    Dim a As String
     a$ = UCase$(chr$(ascii))
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
     runkeybox.Text = a$
     KeyAscii = 0
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Change run-time program
+'=========================================================================
 Private Sub runtimebox_Change()
     On Error Resume Next
     mainMem.runTime$ = runtimebox.Text
 End Sub
 
-
-Private Sub savemnu_Click()
-    On Error GoTo ErrorHandler
-    filename$(2) = mainfile$
-    If filename$(2) = "" Then mnusaveas_Click: Exit Sub
-    Call saveMain(gamPath$ + filename$(2), mainMem)
-    mainNeedUpdate = False
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
+'=========================================================================
+' Set resolution to 640 x 480
+'=========================================================================
 Private Sub sixfourty_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     mainMem.mainResolution = 0
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub smallwindowed_Click()
-    On Error GoTo ErrorHandler
+'=========================================================================
+' Change initial game speed
+'=========================================================================
+Private Sub sliGameSpeed_Change()
+    mainMem.gameSpeed = sliGameSpeed.value
+End Sub
+
+'=========================================================================
+' Set game to windowed mode
+'=========================================================================
+Private Sub smallWindowed_Click()
+    On Error Resume Next
     mainNeedUpdate = True
     mainMem.mainScreenType = 2
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Change startup program
+'=========================================================================
 Private Sub startupbox_Change()
     On Error Resume Next
     mainMem.startupPrg$ = startupbox.Text
 End Sub
 
-Private Sub tileupdate_Click()
-    On Error GoTo ErrorHandler
-    updatetype = 2
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
+'=========================================================================
+' Extend game to full screen
+'=========================================================================
 Private Sub stretchbox_Click()
-    On Error GoTo ErrorHandler
-    mainMem.extendToFullScreen = stretchbox.value
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub TabStrip1_Click()
     On Error Resume Next
-    pluginframe.Visible = False
-    rpgcodeframe.Visible = False
-    fgtframe.Visible = False
-    graphicsframe.Visible = False
-    startupframe.Visible = False
-    daynightframe.Visible = False
-    projectframe.Visible = False
-'FIXIT: p1.SelectedItem.Index property has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
-'FIXIT: electedItem.Index property has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
-    Select Case TabStrip1.SelectedItem.Index
-        Case 1:
-            projectframe.Visible = True
-        Case 2:
-            startupframe.Visible = True
-        Case 3:
-            rpgcodeframe.Visible = True
-        Case 4:
-            fgtframe.Visible = True
-        'Case 5:
-        '    daynightframe.Visible = True
-        Case 5:
-            graphicsframe.Visible = True
-        Case 6:
-            pluginframe.Visible = True
-    End Select
+    mainMem.extendToFullScreen = stretchbox.value
 End Sub
 
+'=========================================================================
+' Set resolution to 1024 x 768
+'=========================================================================
 Private Sub tentwentyfour_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     mainMem.mainResolution = 2
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Change game over program
+'=========================================================================
 Private Sub Text1_Change()
     On Error Resume Next
     mainMem.gameOverPrg$ = Text1.Text
-'    End If
-
 End Sub
 
-Private Sub toc_Click()
-    On Error GoTo ErrorHandler
-    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
-Private Sub win3_Click()
-    On Error GoTo ErrorHandler
-    usefastdrawYN = True
-    targetPlatform = 2
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
+'=========================================================================
+' Windowed mode
+'=========================================================================
 Private Sub windowed_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     mainNeedUpdate = True
     mainMem.mainScreenType = 0
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
+'=========================================================================
+' Common menus
+'=========================================================================
 Private Sub mnutilehorizontally_Click()
     On Error Resume Next
     Call tkMainForm.tilehorizonatllymnu_Click
 End Sub
-
 Private Sub mnutilevertically_Click()
     On Error Resume Next
     Call tkMainForm.tileverticallymnu_Click
 End Sub
-
-
 Private Sub mnuTutorial_Click()
     On Error Resume Next
     Call tkMainForm.tutorialmnu_Click
 End Sub
-
 Private Sub mnuusersguide_Click()
     On Error Resume Next
     Call tkMainForm.usersguidemnu_Click
 End Sub
-
 Private Sub mnuAbout_Click()
     On Error Resume Next
     Call tkMainForm.aboutmnu_Click
 End Sub
-
 Private Sub mnuArrangeIcons_Click()
     On Error Resume Next
     Call tkMainForm.arrangeiconsmnu_Click
 End Sub
-
 Private Sub mnuCascade_Click()
     On Error Resume Next
     Call tkMainForm.cascademnu_Click
 End Sub
-
 Private Sub mnucreatepakfile_Click()
     On Error Resume Next
     Call tkMainForm.createpakfilemnu_Click
 End Sub
-
 Private Sub mnucreatesetup_Click()
     On Error Resume Next
     Call tkMainForm.createsetupmnu_Click
 End Sub
-
 Private Sub mnuexit_Click()
     On Error Resume Next
     Call tkMainForm.exitmnu_Click
 End Sub
-
 Private Sub mnuHistorytxt_Click()
     On Error Resume Next
     Call tkMainForm.historytxtmnu_Click
 End Sub
-
 Private Sub mnuinstallupgrade_Click()
     On Error Resume Next
     Call tkMainForm.installupgrademnu_Click
 End Sub
-
 Private Sub mnumakeexe_Click()
     On Error Resume Next
     Call tkMainForm.makeexemnu_Click
 End Sub
-
 Private Sub mnunewanimatedtile_Click()
     On Error Resume Next
     Call tkMainForm.newanimtilemnu_Click
 End Sub
-
 Private Sub mnunewanimation_Click()
     On Error Resume Next
     Call tkMainForm.newanimationmnu_Click
 End Sub
-
 Private Sub mnunewboard_Click()
     On Error Resume Next
     Call tkMainForm.newboardmnu_Click
 End Sub
-
 Private Sub mnunewenemy_Click()
     On Error Resume Next
     Call tkMainForm.newenemymnu_Click
 End Sub
-
 Private Sub mnunewitem_Click()
     On Error Resume Next
     Call tkMainForm.newitemmnu_Click
 End Sub
-
 Private Sub mnunewplayer_Click()
     On Error Resume Next
     Call tkMainForm.newplayermnu_Click
 End Sub
-
-
 Private Sub mnunewproject_Click()
     On Error Resume Next
     Call tkMainForm.newprojectmnu_Click
 End Sub
-
 Private Sub mnunewrpgcodeprogram_Click()
     On Error Resume Next
     Call tkMainForm.newrpgcodemnu_Click
 End Sub
-
 Private Sub mnunewspecialmove_Click()
     On Error Resume Next
     Call tkMainForm.newspecialmovemnu_Click
 End Sub
-
-
 Private Sub mnunewstatuseffect_Click()
     On Error Resume Next
     Call tkMainForm.newstatuseffectmnu_Click
 End Sub
-
-
 Private Sub mnunewtile_Click()
     On Error Resume Next
     Call tkMainForm.newtilemnu_Click
 End Sub
-
-
 Private Sub mnunewtilebitmap_Click()
     On Error Resume Next
     Call tkMainForm.newtilebitmapmnu_Click
 End Sub
-
 Private Sub mnuopen_Click()
     On Error Resume Next
     Call tkMainForm.openmnu_Click
 End Sub
-
-
 Private Sub mnuRegistrationInfo_Click()
     On Error Resume Next
     Call tkMainForm.registrationinfomnu_Click
 End Sub
-
 Private Sub mnuRPGCodePrimer_Click()
     On Error Resume Next
     Call tkMainForm.rpgcodeprimermnu_Click
 End Sub
-
 Private Sub mnurpgcodereference_Click()
     On Error Resume Next
     Call tkMainForm.rpgcodereferencemnu_Click
 End Sub
-
-
 Private Sub mnusaveall_Click()
     On Error Resume Next
     Call tkMainForm.saveallmnu_Click
 End Sub
-
-
 Private Sub mnuselectlanguage_Click()
     On Error Resume Next
     Call tkMainForm.selectlanguagemnu_Click
 End Sub
-
 Private Sub mnushowprojectlist_Click()
     On Error Resume Next
     Call tkMainForm.showprojectlistmnu_Click
 End Sub
-
 Private Sub mnushowtools_Click()
     On Error Resume Next
     Call tkMainForm.showtoolsmnu_Click
 End Sub
-
 Private Sub mnutestgame_Click()
     On Error Resume Next
     tkMainForm.testgamemnu_Click
 End Sub
-
-
 Private Sub mnuOpenProject_Click()
     On Error Resume Next
     Call tkMainForm.mnuOpenProject_Click
 End Sub
-
 Private Sub mnuNewFightBackground_Click()
     On Error Resume Next
     Call tkMainForm.mnuNewFightBackground_Click
 End Sub
-

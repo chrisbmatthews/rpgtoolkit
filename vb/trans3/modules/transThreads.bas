@@ -56,23 +56,21 @@ Sub ClearNonPersistentThreads()
         End If
     Next c
 
-    ' ADDED BY KSNiloc...
     For c = 0 To UBound(multitaskAnimations)
         If Not multitaskAnimationPersistent(c) Then
-            ceaseMultitaskAnimation c
+            Call ceaseMultitaskAnimation(c)
         End If
     Next c
     For c = 0 To UBound(loopPRG)
         If Not threads(loopPRG(c).threadID).bPersistent Then
-            endThreadLoop c
+            Call endThreadLoop(c)
         End If
     Next c
 
 End Sub
 
+Public Sub ClearAllThreads()
 
-Sub ClearAllThreads()
-    'clear all threads
     On Error Resume Next
     
     Dim c As Long
@@ -91,21 +89,13 @@ Sub ClearAllThreads()
         Call ClearRPGCodeProcess(threads(c).thread)
     Next c
     
-    ' ADDED BY KSNiloc...
-    ceaseAllMultitaskingAnimations
-    endAllThreadLoops
-    
+    Call ceaseAllMultitaskingAnimations
+    Call endAllThreadLoops
+
 End Sub
 
+Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean) As Long
 
-
-Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean) As Long
-    'create a thread
-    'file is the rpgcode program
-    'bPersistent determines if it is a persistent thread (true) or a regular
-    'board-thread (only runs while we are on this board)
-    'return a 'thread id'
-    
     Dim c As Long
     Dim size As Long
     
@@ -135,8 +125,7 @@ Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean) As Lon
     CreateThread = size
 End Function
 
-
-Sub ExecuteAllThreads()
+Public Sub ExecuteAllThreads()
     'execute all threads
     On Error Resume Next
     
@@ -159,16 +148,13 @@ Sub ExecuteAllThreads()
     Next c
 End Sub
 
-Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
-    'execute a program as a thread
-    'ie, it will only execute *one* command right now.
-    'call this repeatedly until it returns false (indicating that the thread is done)
-    'returns true while there is still more to execute, or false if it is done
+Public Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
+
     If theProgram.programPos = -1 Or theProgram.programPos = -2 Then
         ExecuteThread = False
     Else
-        Dim retVal As RPGCODE_RETURN
-        theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retVal)
+        Dim retval As RPGCODE_RETURN
+        theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval)
         If theProgram.programPos = -1 Or theProgram.programPos = -2 Then
             'clear the program
             Call ClearRPGCodeProcess(theProgram)
@@ -178,8 +164,9 @@ Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
         End If
     End If
 End Function
-Sub InitThreads()
-    'initialize thread system
+
+Public Sub InitThreads()
+
     On Error Resume Next
     
     'init persistent threads...
@@ -193,10 +180,10 @@ Sub InitThreads()
         Call InitRPGCodeProcess(threads(c).thread)
         Call ClearRPGCodeProcess(threads(c).thread)
     Next c
+
 End Sub
 
-
-Sub KillThread(ByVal threadID As Long)
+Public Sub KillThread(ByVal threadID As Long)
     'kill a thread
     On Error Resume Next
     threads(threadID).filename = ""
@@ -208,18 +195,17 @@ Sub KillThread(ByVal threadID As Long)
     Call ClearRPGCodeProcess(threads(threadID).thread)
 End Sub
 
-
-Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retVal As RPGCODE_RETURN)
+Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN)
     'force a thread to call rpgcodeCommand
     On Error Resume Next
     Dim shortName As String
     shortName = UCase$(GetCommandName$(rpgcodeCommand, threads(threadID).thread))   'get command name without extra info
         
     'call the method...
-    Call MethodCallRPG(rpgcodeCommand, shortName, threads(threadID).thread, retVal)
+    Call MethodCallRPG(rpgcodeCommand, shortName, threads(threadID).thread, retval)
 End Sub
 
-Sub ThreadSleep(ByVal threadID As Long, ByVal durationInSeconds As Double)
+Public Sub ThreadSleep(ByVal threadID As Long, ByVal durationInSeconds As Double)
     'put a thread to sleep
     On Error Resume Next
     threads(threadID).bIsSleeping = True
@@ -227,9 +213,7 @@ Sub ThreadSleep(ByVal threadID As Long, ByVal durationInSeconds As Double)
     threads(threadID).sleepDuration = durationInSeconds
 End Sub
 
-
-
-Function ThreadSleepRemaining(ByVal threadID As Long) As Double
+Public Function ThreadSleepRemaining(ByVal threadID As Long) As Double
     'return sleep time remaining for a thread...
     On Error Resume Next
     Dim dRet As Double
@@ -240,7 +224,7 @@ Function ThreadSleepRemaining(ByVal threadID As Long) As Double
     ThreadSleepRemaining = dRet
 End Function
 
-Sub ThreadWake(ByVal threadID As Long)
+Public Sub ThreadWake(ByVal threadID As Long)
     'wake a sleeping thread...
     On Error Resume Next
     threads(threadID).bIsSleeping = False
@@ -266,10 +250,10 @@ skip:
     On Error GoTo skipAgain
 
     'Alert persistent threads
-    Dim retVal As RPGCODE_RETURN
+    Dim retval As RPGCODE_RETURN
     For a = 0 To UBound(threads)
         If threads(a).bPersistent Then
-            TellThread a, "EnterNewBoard()", retVal
+            TellThread a, "EnterNewBoard()", retval
         End If
     Next a
 
@@ -296,8 +280,8 @@ Public Sub endAllThreadLoops()
 End Sub
 
 Public Sub startThreadLoop( _
-                              ByRef PRG As RPGCodeProgram, _
-                              ByVal tType As THREAD_LOOP_TYPE, _
+                              ByRef prg As RPGCodeProgram, _
+                              ByVal ttype As THREAD_LOOP_TYPE, _
                               Optional ByVal condition As String, _
                               Optional ByVal increment As String _
                                                                    )
@@ -324,10 +308,10 @@ Public Sub startThreadLoop( _
     ReDim Preserve loopIncrement(ub)
 
     'Setup the loop...
-    moveToStartOfBlock PRG
-    loopStart(ub) = PRG.programPos
-    loopType(ub) = tType
-    loopPRG(ub) = PRG
+    moveToStartOfBlock prg
+    loopStart(ub) = prg.programPos
+    loopType(ub) = ttype
+    loopPRG(ub) = prg
     loopCondition(ub) = condition
     loopIncrement(ub) = increment
 
@@ -444,32 +428,32 @@ Public Sub incrementThreadLoop(ByVal num As Long)
     '======================================
     'Added by KSNiloc
 
-    Dim PRG As RPGCodeProgram
+    Dim prg As RPGCodeProgram
     Dim rV As RPGCODE_RETURN
-    PRG = loopPRG(num)
+    prg = loopPRG(num)
 
-    Select Case LCase(GetCommandName(PRG.program(PRG.programPos), PRG))
+    Select Case LCase(GetCommandName(prg.program(prg.programPos), prg))
 
         Case "openblock"
             loopDepth(num) = loopDepth(num) + 1
-            PRG.programPos = increment(PRG)
+            prg.programPos = increment(prg)
             
         Case "closeblock"
             loopDepth(num) = loopDepth(num) - 1
-            PRG.programPos = increment(PRG)
+            prg.programPos = increment(prg)
 
         Case "end"
             loopOver(num) = True
-            PRG.programPos = increment(PRG)
+            prg.programPos = increment(prg)
             
         Case Else
 
             If Not loopOver(num) Then
-                PRG.looping = False
-                PRG.programPos = DoCommand(PRG, rV)
-                PRG.looping = True
+                prg.looping = False
+                prg.programPos = DoCommand(prg, rV)
+                prg.looping = True
             Else
-                PRG.programPos = increment(PRG)
+                prg.programPos = increment(prg)
             End If
 
 
@@ -478,12 +462,12 @@ Public Sub incrementThreadLoop(ByVal num As Long)
     'Don't let us lock up...
     DoEvents
 
-    loopPRG(num) = PRG
+    loopPRG(num) = prg
     If loopDepth(num) = 0 Then endThreadLoop num
 
 End Sub
 
-Public Function startMultitaskAnimation(ByVal x As Long, ByVal y As Long, ByRef PRG As RPGCodeProgram) As Double
+Public Function startMultitaskAnimation(ByVal x As Long, ByVal y As Long, ByRef prg As RPGCodeProgram) As Double
 
     '=======================================
     'Initiates an animation for multitasking
@@ -514,7 +498,7 @@ Public Function startMultitaskAnimation(ByVal x As Long, ByVal y As Long, ByRef 
     ReDim Preserve multitaskAnimationY(ub + 1)
     ReDim Preserve multitaskAnimationPersistent(ub + 1)
 
-    multitaskAnimationPersistent(ub + 1) = threads(PRG.threadID).bPersistent
+    multitaskAnimationPersistent(ub + 1) = threads(prg.threadID).bPersistent
     multitaskAnimations(ub + 1) = animationMem
     multitaskAnimationX(ub + 1) = x
     multitaskAnimationY(ub + 1) = y

@@ -51,7 +51,13 @@ Public Sub closeSystems()
 End Sub
 
 Public Function getMainFilename() As String
-    'prompt user for a main file, or get one off the command line
+
+    'Get a main filename
+    'Precedurence is as follows:
+    ' + Command line
+    ' + Main.gam
+    ' + File dialog
+
     On Error Resume Next
 
     Dim toRet As String
@@ -214,7 +220,7 @@ Public Sub mainLoop()
     On Error Resume Next
 
     Dim bDone As Boolean
-
+  
     #Const isRelease = 1
 
     #If Not isRelease = 1 Then
@@ -259,9 +265,12 @@ Public Sub mainLoop()
 
                 If movementCounter < 4 Then
                     gGameState = GS_MOVEMENT
-                    If (Not GS_ANIMATING) And (Not GS_LOOPING) Then Call delay(walkDelay)
+                    If (Not GS_ANIMATING) And (Not GS_LOOPING) Then
+                        Call delay(walkDelay / ((framesPerMove * movementSize) / 2))
+                    End If
                 Else
                     gGameState = GS_DONEMOVE
+                    movementCounter = 0
                 End If
 
             Case GS_DONEMOVE:
@@ -300,10 +309,14 @@ Public Sub mainLoop()
                     Call programTest(tempPos)
                     pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
 
-                    checkFight = checkFight + 1
-                    If checkFight = 4 Then
+                    If usingPixelMovement() Then
+                        checkFight = checkFight + 1
+                        If checkFight = 4 Then
+                            Call fightTest
+                            checkFight = 0
+                        End If
+                    Else
                         Call fightTest
-                        checkFight = 0
                     End If
 
                 End If
@@ -456,11 +469,15 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     mwinLines = 4
     textX = 1                       'Text location
     textY = 1
-    
     loaded = 0
-
-    'Setting an initial value for GameSpeed(), = 2.
-    walkDelay = 0.06
+    
+    Call gameSpeed(mainMem.gameSpeed)
+    
+    If mainMem.pixelMovement = 1 Then
+        movementSize = 0.25
+    Else
+        movementSize = 1
+    End If
     
     Call LoadFontsFromFolder(projectPath & fontPath)
     
@@ -478,7 +495,9 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call CreateCharacter(projectPath$ + temPath$ + charFile$, 0)
     End If
     
-    If Not testingPRG Then Call runProgram(projectPath$ + prgPath$ + mainMem.startupPrg)
+    If Not testingPRG Then
+        Call runProgram(projectPath & prgPath & mainMem.startupPrg)
+    End If
     
     'Initial board
     If loaded = 0 And (Not testingPRG) Then

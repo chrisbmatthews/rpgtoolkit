@@ -180,9 +180,9 @@ Sub BeginPlugins()
 
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
-                VBPlugin(plugName).Initialize
+                Call VBPlugin(plugName).Initialize
             Else
-                PLUGBegin plugName
+                Call PLUGBegin(plugName)
             End If
         End If
     Next t
@@ -232,144 +232,144 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub generateCallbacks(cblist() As Long)
+Sub generateCallbacks(cbList() As Long)
     'generate the callbacks for us...
     On Error GoTo errorhandler
     
-    cblist(0) = GFXFunctionPtr(AddressOf CBRpgCode)
-    cblist(1) = GFXFunctionPtr(AddressOf CBGetString)
-    cblist(2) = GFXFunctionPtr(AddressOf CBGetNumerical)
-    cblist(3) = GFXFunctionPtr(AddressOf CBSetString)
-    cblist(4) = GFXFunctionPtr(AddressOf CBSetNumerical)
-    cblist(5) = GFXFunctionPtr(AddressOf CBGetScreenDC)
-    cblist(6) = GFXFunctionPtr(AddressOf CBGetScratch1DC)
-    cblist(7) = GFXFunctionPtr(AddressOf CBGetScratch2DC)
-    cblist(8) = GFXFunctionPtr(AddressOf CBGetMwinDC)
-    cblist(9) = GFXFunctionPtr(AddressOf CBPopupMwin)
-    cblist(10) = GFXFunctionPtr(AddressOf CBHideMwin)
-    cblist(11) = GFXFunctionPtr(AddressOf CBLoadEnemy)
-    cblist(12) = GFXFunctionPtr(AddressOf CBGetEnemyNum)
-    cblist(13) = GFXFunctionPtr(AddressOf CBGetEnemyString)
-    cblist(14) = GFXFunctionPtr(AddressOf CBSetEnemyNum)
-    cblist(15) = GFXFunctionPtr(AddressOf CBSetEnemyString)
-    cblist(16) = GFXFunctionPtr(AddressOf CBGetPlayerNum)
-    cblist(17) = GFXFunctionPtr(AddressOf CBGetPlayerString)
-    cblist(18) = GFXFunctionPtr(AddressOf CBSetPlayerNum)
-    cblist(19) = GFXFunctionPtr(AddressOf CBSetPlayerString)
-    cblist(20) = GFXFunctionPtr(AddressOf CBGetGeneralString)
-    cblist(21) = GFXFunctionPtr(AddressOf CBGetGeneralNum)
-    cblist(22) = GFXFunctionPtr(AddressOf CBSetGeneralString)
-    cblist(23) = GFXFunctionPtr(AddressOf CBSetGeneralNum)
-    cblist(24) = GFXFunctionPtr(AddressOf CBGetCommandName)
-    cblist(25) = GFXFunctionPtr(AddressOf CBGetBrackets)
-    cblist(26) = GFXFunctionPtr(AddressOf CBCountBracketElements)
-    cblist(27) = GFXFunctionPtr(AddressOf CBGetBracketElement)
-    cblist(28) = GFXFunctionPtr(AddressOf CBGetStringElementValue)
-    cblist(29) = GFXFunctionPtr(AddressOf CBGetNumElementValue)
-    cblist(30) = GFXFunctionPtr(AddressOf CBGetElementType)
-    cblist(31) = GFXFunctionPtr(AddressOf CBDebugMessage)
-    cblist(32) = GFXFunctionPtr(AddressOf CBGetPathString)
-    cblist(33) = GFXFunctionPtr(AddressOf CBLoadSpecialMove)
-    cblist(34) = GFXFunctionPtr(AddressOf CBGetSpecialMoveString)
-    cblist(35) = GFXFunctionPtr(AddressOf CBGetSpecialMoveNum)
-    cblist(36) = GFXFunctionPtr(AddressOf CBLoadItem)
-    cblist(37) = GFXFunctionPtr(AddressOf CBGetItemString)
-    cblist(38) = GFXFunctionPtr(AddressOf CBGetItemNum)
-    cblist(39) = GFXFunctionPtr(AddressOf CBGetBoardNum)
-    cblist(40) = GFXFunctionPtr(AddressOf CBGetBoardString)
-    cblist(41) = GFXFunctionPtr(AddressOf CBSetBoardNum)
-    cblist(42) = GFXFunctionPtr(AddressOf CBSetBoardString)
-    cblist(43) = GFXFunctionPtr(AddressOf CBGetHwnd)
-    cblist(44) = GFXFunctionPtr(AddressOf CBRefreshScreen)
+    cbList(0) = GFXFunctionPtr(AddressOf CBRpgCode)
+    cbList(1) = GFXFunctionPtr(AddressOf CBGetString)
+    cbList(2) = GFXFunctionPtr(AddressOf CBGetNumerical)
+    cbList(3) = GFXFunctionPtr(AddressOf CBSetString)
+    cbList(4) = GFXFunctionPtr(AddressOf CBSetNumerical)
+    cbList(5) = GFXFunctionPtr(AddressOf CBGetScreenDC)
+    cbList(6) = GFXFunctionPtr(AddressOf CBGetScratch1DC)
+    cbList(7) = GFXFunctionPtr(AddressOf CBGetScratch2DC)
+    cbList(8) = GFXFunctionPtr(AddressOf CBGetMwinDC)
+    cbList(9) = GFXFunctionPtr(AddressOf CBPopupMwin)
+    cbList(10) = GFXFunctionPtr(AddressOf CBHideMwin)
+    cbList(11) = GFXFunctionPtr(AddressOf CBLoadEnemy)
+    cbList(12) = GFXFunctionPtr(AddressOf CBGetEnemyNum)
+    cbList(13) = GFXFunctionPtr(AddressOf CBGetEnemyString)
+    cbList(14) = GFXFunctionPtr(AddressOf CBSetEnemyNum)
+    cbList(15) = GFXFunctionPtr(AddressOf CBSetEnemyString)
+    cbList(16) = GFXFunctionPtr(AddressOf CBGetPlayerNum)
+    cbList(17) = GFXFunctionPtr(AddressOf CBGetPlayerString)
+    cbList(18) = GFXFunctionPtr(AddressOf CBSetPlayerNum)
+    cbList(19) = GFXFunctionPtr(AddressOf CBSetPlayerString)
+    cbList(20) = GFXFunctionPtr(AddressOf CBGetGeneralString)
+    cbList(21) = GFXFunctionPtr(AddressOf CBGetGeneralNum)
+    cbList(22) = GFXFunctionPtr(AddressOf CBSetGeneralString)
+    cbList(23) = GFXFunctionPtr(AddressOf CBSetGeneralNum)
+    cbList(24) = GFXFunctionPtr(AddressOf CBGetCommandName)
+    cbList(25) = GFXFunctionPtr(AddressOf CBGetBrackets)
+    cbList(26) = GFXFunctionPtr(AddressOf CBCountBracketElements)
+    cbList(27) = GFXFunctionPtr(AddressOf CBGetBracketElement)
+    cbList(28) = GFXFunctionPtr(AddressOf CBGetStringElementValue)
+    cbList(29) = GFXFunctionPtr(AddressOf CBGetNumElementValue)
+    cbList(30) = GFXFunctionPtr(AddressOf CBGetElementType)
+    cbList(31) = GFXFunctionPtr(AddressOf CBDebugMessage)
+    cbList(32) = GFXFunctionPtr(AddressOf CBGetPathString)
+    cbList(33) = GFXFunctionPtr(AddressOf CBLoadSpecialMove)
+    cbList(34) = GFXFunctionPtr(AddressOf CBGetSpecialMoveString)
+    cbList(35) = GFXFunctionPtr(AddressOf CBGetSpecialMoveNum)
+    cbList(36) = GFXFunctionPtr(AddressOf CBLoadItem)
+    cbList(37) = GFXFunctionPtr(AddressOf CBGetItemString)
+    cbList(38) = GFXFunctionPtr(AddressOf CBGetItemNum)
+    cbList(39) = GFXFunctionPtr(AddressOf CBGetBoardNum)
+    cbList(40) = GFXFunctionPtr(AddressOf CBGetBoardString)
+    cbList(41) = GFXFunctionPtr(AddressOf CBSetBoardNum)
+    cbList(42) = GFXFunctionPtr(AddressOf CBSetBoardString)
+    cbList(43) = GFXFunctionPtr(AddressOf CBGetHwnd)
+    cbList(44) = GFXFunctionPtr(AddressOf CBRefreshScreen)
     '3.0
-    cblist(45) = GFXFunctionPtr(AddressOf CBCreateCanvas)
-    cblist(46) = GFXFunctionPtr(AddressOf CBDestroyCanvas)
-    cblist(47) = GFXFunctionPtr(AddressOf CBDrawCanvas)
-    cblist(48) = GFXFunctionPtr(AddressOf CBDrawCanvasPartial)
-    cblist(49) = GFXFunctionPtr(AddressOf CBDrawCanvasTransparent)
-    cblist(50) = GFXFunctionPtr(AddressOf CBDrawCanvasTransparentPartial)
-    cblist(51) = GFXFunctionPtr(AddressOf CBDrawCanvasTranslucent)
-    cblist(52) = GFXFunctionPtr(AddressOf CBCanvasLoadImage)
-    cblist(53) = GFXFunctionPtr(AddressOf CBCanvasLoadSizedImage)
-    cblist(54) = GFXFunctionPtr(AddressOf CBCanvasFill)
-    cblist(55) = GFXFunctionPtr(AddressOf CBCanvasResize)
-    cblist(56) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBlt)
-    cblist(57) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBltPartial)
-    cblist(58) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBltTransparent)
-    cblist(59) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBltTransparentPartial)
-    cblist(60) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBltTranslucent)
-    cblist(61) = GFXFunctionPtr(AddressOf CBCanvasGetScreen)
-    cblist(62) = GFXFunctionPtr(AddressOf CBLoadString)
-    cblist(63) = GFXFunctionPtr(AddressOf CBCanvasDrawText)
-    cblist(64) = GFXFunctionPtr(AddressOf CBCanvasPopup)
-    cblist(65) = GFXFunctionPtr(AddressOf CBCanvasWidth)
-    cblist(66) = GFXFunctionPtr(AddressOf CBCanvasHeight)
-    cblist(67) = GFXFunctionPtr(AddressOf CBCanvasDrawLine)
-    cblist(68) = GFXFunctionPtr(AddressOf CBCanvasDrawRect)
-    cblist(69) = GFXFunctionPtr(AddressOf CBCanvasFillRect)
-    cblist(70) = GFXFunctionPtr(AddressOf CBCanvasDrawHand)
-    cblist(71) = GFXFunctionPtr(AddressOf CBDrawHand)
-    cblist(72) = GFXFunctionPtr(AddressOf CBCheckKey)
-    cblist(73) = GFXFunctionPtr(AddressOf CBPlaySound)
-    cblist(74) = GFXFunctionPtr(AddressOf CBMessageWindow)
-    cblist(75) = GFXFunctionPtr(AddressOf CBFileDialog)
-    cblist(76) = GFXFunctionPtr(AddressOf CBDetermineSpecialMoves)
-    cblist(77) = GFXFunctionPtr(AddressOf CBGetSpecialMoveListEntry)
-    cblist(78) = GFXFunctionPtr(AddressOf CBRunProgram)
-    cblist(79) = GFXFunctionPtr(AddressOf CBSetTarget)
-    cblist(80) = GFXFunctionPtr(AddressOf CBSetSource)
-    cblist(81) = GFXFunctionPtr(AddressOf CBGetPlayerHP)
-    cblist(82) = GFXFunctionPtr(AddressOf CBGetPlayerMaxHP)
-    cblist(83) = GFXFunctionPtr(AddressOf CBGetPlayerSMP)
-    cblist(84) = GFXFunctionPtr(AddressOf CBGetPlayerMaxSMP)
-    cblist(85) = GFXFunctionPtr(AddressOf CBGetPlayerFP)
-    cblist(86) = GFXFunctionPtr(AddressOf CBGetPlayerDP)
-    cblist(87) = GFXFunctionPtr(AddressOf CBGetPlayerName)
-    cblist(88) = GFXFunctionPtr(AddressOf CBAddPlayerHP)
-    cblist(89) = GFXFunctionPtr(AddressOf CBAddPlayerSMP)
-    cblist(90) = GFXFunctionPtr(AddressOf CBSetPlayerHP)
-    cblist(91) = GFXFunctionPtr(AddressOf CBSetPlayerSMP)
-    cblist(92) = GFXFunctionPtr(AddressOf CBSetPlayerFP)
-    cblist(93) = GFXFunctionPtr(AddressOf CBSetPlayerDP)
-    cblist(94) = GFXFunctionPtr(AddressOf CBGetEnemyHP)
-    cblist(95) = GFXFunctionPtr(AddressOf CBGetEnemyMaxHP)
-    cblist(96) = GFXFunctionPtr(AddressOf CBGetEnemySMP)
-    cblist(97) = GFXFunctionPtr(AddressOf CBGetEnemyMaxSMP)
-    cblist(98) = GFXFunctionPtr(AddressOf CBGetEnemyFP)
-    cblist(99) = GFXFunctionPtr(AddressOf CBGetEnemyDP)
-    cblist(100) = GFXFunctionPtr(AddressOf CBAddEnemyHP)
-    cblist(101) = GFXFunctionPtr(AddressOf CBAddEnemySMP)
-    cblist(102) = GFXFunctionPtr(AddressOf CBSetEnemyHP)
-    cblist(103) = GFXFunctionPtr(AddressOf CBSetEnemySMP)
-    cblist(104) = GFXFunctionPtr(AddressOf CBCanvasDrawBackground)
-    cblist(105) = GFXFunctionPtr(AddressOf CBCreateAnimation)
-    cblist(106) = GFXFunctionPtr(AddressOf CBDestroyAnimation)
-    cblist(107) = GFXFunctionPtr(AddressOf CBCanvasDrawAnimation)
-    cblist(108) = GFXFunctionPtr(AddressOf CBCanvasDrawAnimationFrame)
-    cblist(109) = GFXFunctionPtr(AddressOf CBAnimationCurrentFrame)
-    cblist(110) = GFXFunctionPtr(AddressOf CBAnimationMaxFrames)
-    cblist(111) = GFXFunctionPtr(AddressOf CBAnimationSizeX)
-    cblist(112) = GFXFunctionPtr(AddressOf CBAnimationSizeY)
-    cblist(113) = GFXFunctionPtr(AddressOf CBAnimationFrameImage)
-    cblist(114) = GFXFunctionPtr(AddressOf CBGetPartySize)
-    cblist(115) = GFXFunctionPtr(AddressOf CBGetFighterHP)
-    cblist(116) = GFXFunctionPtr(AddressOf CBGetFighterMaxHP)
-    cblist(117) = GFXFunctionPtr(AddressOf CBGetFighterSMP)
-    cblist(118) = GFXFunctionPtr(AddressOf CBGetFighterMaxSMP)
-    cblist(119) = GFXFunctionPtr(AddressOf CBGetFighterFP)
-    cblist(120) = GFXFunctionPtr(AddressOf CBGetFighterDP)
-    cblist(121) = GFXFunctionPtr(AddressOf CBGetFighterName)
-    cblist(122) = GFXFunctionPtr(AddressOf CBGetFighterAnimation)
-    cblist(123) = GFXFunctionPtr(AddressOf CBGetFighterChargePercent)
-    cblist(124) = GFXFunctionPtr(AddressOf CBFightTick)
-    cblist(125) = GFXFunctionPtr(AddressOf CBDrawTextAbsolute)
-    cblist(126) = GFXFunctionPtr(AddressOf CBReleaseFighterCharge)
-    cblist(127) = GFXFunctionPtr(AddressOf CBFightDoAttack)
-    cblist(128) = GFXFunctionPtr(AddressOf CBFightUseItem)
-    cblist(129) = GFXFunctionPtr(AddressOf CBFightUseSpecialMove)
-    cblist(130) = GFXFunctionPtr(AddressOf CBDoEvents)
-    cblist(131) = GFXFunctionPtr(AddressOf CBFighterAddStatusEffect)
-    cblist(132) = GFXFunctionPtr(AddressOf CBFighterRemoveStatusEffect)
+    cbList(45) = GFXFunctionPtr(AddressOf CBCreateCanvas)
+    cbList(46) = GFXFunctionPtr(AddressOf CBDestroyCanvas)
+    cbList(47) = GFXFunctionPtr(AddressOf CBDrawCanvas)
+    cbList(48) = GFXFunctionPtr(AddressOf CBDrawCanvasPartial)
+    cbList(49) = GFXFunctionPtr(AddressOf CBDrawCanvasTransparent)
+    cbList(50) = GFXFunctionPtr(AddressOf CBDrawCanvasTransparentPartial)
+    cbList(51) = GFXFunctionPtr(AddressOf CBDrawCanvasTranslucent)
+    cbList(52) = GFXFunctionPtr(AddressOf CBCanvasLoadImage)
+    cbList(53) = GFXFunctionPtr(AddressOf CBCanvasLoadSizedImage)
+    cbList(54) = GFXFunctionPtr(AddressOf CBCanvasFill)
+    cbList(55) = GFXFunctionPtr(AddressOf CBCanvasResize)
+    cbList(56) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBlt)
+    cbList(57) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBltPartial)
+    cbList(58) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBltTransparent)
+    cbList(59) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBltTransparentPartial)
+    cbList(60) = GFXFunctionPtr(AddressOf CBCanvas2CanvasBltTranslucent)
+    cbList(61) = GFXFunctionPtr(AddressOf CBCanvasGetScreen)
+    cbList(62) = GFXFunctionPtr(AddressOf CBLoadString)
+    cbList(63) = GFXFunctionPtr(AddressOf CBCanvasDrawText)
+    cbList(64) = GFXFunctionPtr(AddressOf CBCanvasPopup)
+    cbList(65) = GFXFunctionPtr(AddressOf CBCanvasWidth)
+    cbList(66) = GFXFunctionPtr(AddressOf CBCanvasHeight)
+    cbList(67) = GFXFunctionPtr(AddressOf CBCanvasDrawLine)
+    cbList(68) = GFXFunctionPtr(AddressOf CBCanvasDrawRect)
+    cbList(69) = GFXFunctionPtr(AddressOf CBCanvasFillRect)
+    cbList(70) = GFXFunctionPtr(AddressOf CBCanvasDrawHand)
+    cbList(71) = GFXFunctionPtr(AddressOf CBDrawHand)
+    cbList(72) = GFXFunctionPtr(AddressOf CBCheckKey)
+    cbList(73) = GFXFunctionPtr(AddressOf CBPlaySound)
+    cbList(74) = GFXFunctionPtr(AddressOf CBMessageWindow)
+    cbList(75) = GFXFunctionPtr(AddressOf CBFileDialog)
+    cbList(76) = GFXFunctionPtr(AddressOf CBDetermineSpecialMoves)
+    cbList(77) = GFXFunctionPtr(AddressOf CBGetSpecialMoveListEntry)
+    cbList(78) = GFXFunctionPtr(AddressOf CBRunProgram)
+    cbList(79) = GFXFunctionPtr(AddressOf CBSetTarget)
+    cbList(80) = GFXFunctionPtr(AddressOf CBSetSource)
+    cbList(81) = GFXFunctionPtr(AddressOf CBGetPlayerHP)
+    cbList(82) = GFXFunctionPtr(AddressOf CBGetPlayerMaxHP)
+    cbList(83) = GFXFunctionPtr(AddressOf CBGetPlayerSMP)
+    cbList(84) = GFXFunctionPtr(AddressOf CBGetPlayerMaxSMP)
+    cbList(85) = GFXFunctionPtr(AddressOf CBGetPlayerFP)
+    cbList(86) = GFXFunctionPtr(AddressOf CBGetPlayerDP)
+    cbList(87) = GFXFunctionPtr(AddressOf CBGetPlayerName)
+    cbList(88) = GFXFunctionPtr(AddressOf CBAddPlayerHP)
+    cbList(89) = GFXFunctionPtr(AddressOf CBAddPlayerSMP)
+    cbList(90) = GFXFunctionPtr(AddressOf CBSetPlayerHP)
+    cbList(91) = GFXFunctionPtr(AddressOf CBSetPlayerSMP)
+    cbList(92) = GFXFunctionPtr(AddressOf CBSetPlayerFP)
+    cbList(93) = GFXFunctionPtr(AddressOf CBSetPlayerDP)
+    cbList(94) = GFXFunctionPtr(AddressOf CBGetEnemyHP)
+    cbList(95) = GFXFunctionPtr(AddressOf CBGetEnemyMaxHP)
+    cbList(96) = GFXFunctionPtr(AddressOf CBGetEnemySMP)
+    cbList(97) = GFXFunctionPtr(AddressOf CBGetEnemyMaxSMP)
+    cbList(98) = GFXFunctionPtr(AddressOf CBGetEnemyFP)
+    cbList(99) = GFXFunctionPtr(AddressOf CBGetEnemyDP)
+    cbList(100) = GFXFunctionPtr(AddressOf CBAddEnemyHP)
+    cbList(101) = GFXFunctionPtr(AddressOf CBAddEnemySMP)
+    cbList(102) = GFXFunctionPtr(AddressOf CBSetEnemyHP)
+    cbList(103) = GFXFunctionPtr(AddressOf CBSetEnemySMP)
+    cbList(104) = GFXFunctionPtr(AddressOf CBCanvasDrawBackground)
+    cbList(105) = GFXFunctionPtr(AddressOf CBCreateAnimation)
+    cbList(106) = GFXFunctionPtr(AddressOf CBDestroyAnimation)
+    cbList(107) = GFXFunctionPtr(AddressOf CBCanvasDrawAnimation)
+    cbList(108) = GFXFunctionPtr(AddressOf CBCanvasDrawAnimationFrame)
+    cbList(109) = GFXFunctionPtr(AddressOf CBAnimationCurrentFrame)
+    cbList(110) = GFXFunctionPtr(AddressOf CBAnimationMaxFrames)
+    cbList(111) = GFXFunctionPtr(AddressOf CBAnimationSizeX)
+    cbList(112) = GFXFunctionPtr(AddressOf CBAnimationSizeY)
+    cbList(113) = GFXFunctionPtr(AddressOf CBAnimationFrameImage)
+    cbList(114) = GFXFunctionPtr(AddressOf CBGetPartySize)
+    cbList(115) = GFXFunctionPtr(AddressOf CBGetFighterHP)
+    cbList(116) = GFXFunctionPtr(AddressOf CBGetFighterMaxHP)
+    cbList(117) = GFXFunctionPtr(AddressOf CBGetFighterSMP)
+    cbList(118) = GFXFunctionPtr(AddressOf CBGetFighterMaxSMP)
+    cbList(119) = GFXFunctionPtr(AddressOf CBGetFighterFP)
+    cbList(120) = GFXFunctionPtr(AddressOf CBGetFighterDP)
+    cbList(121) = GFXFunctionPtr(AddressOf CBGetFighterName)
+    cbList(122) = GFXFunctionPtr(AddressOf CBGetFighterAnimation)
+    cbList(123) = GFXFunctionPtr(AddressOf CBGetFighterChargePercent)
+    cbList(124) = GFXFunctionPtr(AddressOf CBFightTick)
+    cbList(125) = GFXFunctionPtr(AddressOf CBDrawTextAbsolute)
+    cbList(126) = GFXFunctionPtr(AddressOf CBReleaseFighterCharge)
+    cbList(127) = GFXFunctionPtr(AddressOf CBFightDoAttack)
+    cbList(128) = GFXFunctionPtr(AddressOf CBFightUseItem)
+    cbList(129) = GFXFunctionPtr(AddressOf CBFightUseSpecialMove)
+    cbList(130) = GFXFunctionPtr(AddressOf CBDoEvents)
+    cbList(131) = GFXFunctionPtr(AddressOf CBFighterAddStatusEffect)
+    cbList(132) = GFXFunctionPtr(AddressOf CBFighterRemoveStatusEffect)
       
     Exit Sub
 
@@ -389,11 +389,11 @@ Sub InitPlugins()
     Call testPlugins
     
     'first, set up the callbacks...
-    ReDim cblist(255) As Long
-    Call generateCallbacks(cblist())
+    ReDim cbList(255) As Long
+    Call generateCallbacks(cbList())
     
     'array length is max index + 1
-    Call PLUGInitSystem(cblist(0), 133)
+    Call PLUGInitSystem(cbList(0), 133)
     
     'call tracestring("Done InitPlugins")
 
@@ -521,7 +521,7 @@ Function CBGetString(ByVal varname As String) As String
     Dim lit As String
     Dim num As Double
     Dim a As Long
-    a = GetIndependentVariable(varname, lit$, num)
+    a = getIndependentVariable(varname, lit$, num)
     CBGetString = lit$
 
     Exit Function
@@ -540,7 +540,7 @@ Function CBGetNumerical(ByVal varname As String) As Double
     Dim lit As String
     Dim num As Double
     Dim a As Long
-    a = GetIndependentVariable(varname, lit$, num)
+    a = getIndependentVariable(varname, lit$, num)
     CBGetNumerical = num
 
     Exit Function
@@ -674,7 +674,7 @@ Sub CBLoadEnemy(ByVal file As String, ByVal eneSlot As Long)
     'file should be *without* path info
     'callback 11
     On Error GoTo errorhandler
-    eneSlot = inbounds(eneSlot, 0, 3)
+    eneSlot = inBounds(eneSlot, 0, 3)
     Call openEnemy(projectPath$ + enePath$ + file, enemyMem(eneSlot))
 
     Exit Sub
@@ -705,7 +705,7 @@ Function CBGetEnemyNum(ByVal infoCode As Long, ByVal eneSlot As Long) As Long
     '   13- gp the enemy gives you.
     On Error GoTo errorhandler
     
-    eneSlot = inbounds(eneSlot, 0, 3)
+    eneSlot = inBounds(eneSlot, 0, 3)
     Select Case infoCode
         Case 0:
             CBGetEnemyNum = enemyMem(eneSlot).eneHP
@@ -775,7 +775,7 @@ Function CBGetEnemyString(ByVal infoCode As Long, ByVal eneSlot As Long) As Stri
     '   8- sound to play when enemy dies
     On Error GoTo errorhandler
     
-    eneSlot = inbounds(eneSlot, 0, 3)
+    eneSlot = inBounds(eneSlot, 0, 3)
     Select Case infoCode
         Case 0:
             CBGetEnemyString = enemyMem(eneSlot).eneFileName$
@@ -824,7 +824,7 @@ Sub CBSetEnemyNum(ByVal infoCode As Long, ByVal newValue As Long, ByVal eneSlot 
     'same as CBGetEnemyNum
     On Error GoTo errorhandler
     
-    eneSlot = inbounds(eneSlot, 0, 3)
+    eneSlot = inBounds(eneSlot, 0, 3)
     Select Case infoCode
         Case 0:
             enemyMem(eneSlot).eneHP = newValue
@@ -886,7 +886,7 @@ Sub CBSetEnemyString(ByVal infoCode As Long, ByVal newValue As String, ByVal ene
     'same as CBGetEnemyString
     On Error GoTo errorhandler
     
-    eneSlot = inbounds(eneSlot, 0, 3)
+    eneSlot = inBounds(eneSlot, 0, 3)
     Select Case infoCode
         Case 0:
             enemyMem(eneSlot).eneFileName$ = newValue
@@ -955,7 +955,7 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
     On Error GoTo errorhandler
     Dim Temp As Long
 
-    playerSlot = inbounds(playerSlot, 0, 4)
+    playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
             CBGetPlayerNum = playerMem(playerSlot).initExperience
@@ -987,15 +987,15 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
             If Temp = 1 Then CBGetPlayerNum = 0
             Exit Function
         Case 9:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             CBGetPlayerNum = playerMem(playerSlot).spcMinExp(arrayPos)
             Exit Function
         Case 10:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             CBGetPlayerNum = playerMem(playerSlot).spcMinLevel(arrayPos)
             Exit Function
         Case 11:
-            arrayPos = inbounds(arrayPos, 0, 6)
+            arrayPos = inBounds(arrayPos, 0, 6)
             CBGetPlayerNum = playerMem(playerSlot).armorType(arrayPos)
             Exit Function
         Case 12:
@@ -1076,7 +1076,7 @@ Function CBGetPlayerString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal
     '   19- death sound
     '   20- rpgcode program to run on level up
     On Error GoTo errorhandler
-    playerSlot = inbounds(playerSlot, 0, 4)
+    playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
             CBGetPlayerString = playerMem(playerSlot).charname$
@@ -1112,22 +1112,22 @@ Function CBGetPlayerString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal
             CBGetPlayerString = playerMem(playerSlot).profilePic$
             Exit Function
         Case 11:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             CBGetPlayerString = playerMem(playerSlot).smlist$(arrayPos)
             Exit Function
         Case 12:
             CBGetPlayerString = playerMem(playerSlot).specialMoveName$
             Exit Function
         Case 13:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             CBGetPlayerString = playerMem(playerSlot).spcVar$(arrayPos)
             Exit Function
         Case 14:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             CBGetPlayerString = playerMem(playerSlot).spcEquals$(arrayPos)
             Exit Function
         Case 15:
-            arrayPos = inbounds(arrayPos, 0, 10)
+            arrayPos = inBounds(arrayPos, 0, 10)
             CBGetPlayerString = playerMem(playerSlot).accessoryName$(arrayPos)
             Exit Function
         Case 16:
@@ -1165,7 +1165,7 @@ Sub CBSetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal newVal 
     'same as CBGetPlayerNum above
     On Error GoTo errorhandler
     
-    playerSlot = inbounds(playerSlot, 0, 4)
+    playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
             playerMem(playerSlot).initExperience = newVal
@@ -1196,15 +1196,15 @@ Sub CBSetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal newVal 
             If newVal = 1 Then playerMem(playerSlot).smYN = 0
             Exit Sub
         Case 9:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             playerMem(playerSlot).spcMinExp(arrayPos) = newVal
             Exit Sub
         Case 10:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             playerMem(playerSlot).spcMinLevel(arrayPos) = newVal
             Exit Sub
         Case 11:
-            arrayPos = inbounds(arrayPos, 0, 6)
+            arrayPos = inBounds(arrayPos, 0, 6)
             playerMem(playerSlot).armorType(arrayPos) = newVal
             Exit Sub
         Case 12:
@@ -1232,7 +1232,7 @@ Sub CBSetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal newVal 
             playerMem(playerSlot).charLevelUpType = newVal
             Exit Sub
         Case 20:
-            newVal = inbounds(newVal, 1, 4)
+            newVal = inBounds(newVal, 1, 4)
             facing = newVal
     End Select
 
@@ -1253,7 +1253,7 @@ Sub CBSetPlayerString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal newV
     'same as CBGetPlayerString above
     On Error GoTo errorhandler
     
-    playerSlot = inbounds(playerSlot, 0, 4)
+    playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
             playerMem(playerSlot).charname$ = newVal
@@ -1289,22 +1289,22 @@ Sub CBSetPlayerString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal newV
             playerMem(playerSlot).profilePic$ = newVal
             Exit Sub
         Case 11:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             playerMem(playerSlot).smlist$(arrayPos) = newVal
             Exit Sub
         Case 12:
             playerMem(playerSlot).specialMoveName$ = newVal
             Exit Sub
         Case 13:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             playerMem(playerSlot).spcVar$(arrayPos) = newVal
             Exit Sub
         Case 14:
-            arrayPos = inbounds(arrayPos, 0, 200)
+            arrayPos = inBounds(arrayPos, 0, 200)
             playerMem(playerSlot).spcEquals$(arrayPos) = newVal
             Exit Sub
         Case 15:
-            arrayPos = inbounds(arrayPos, 0, 10)
+            arrayPos = inBounds(arrayPos, 0, 10)
             playerMem(playerSlot).accessoryName$(arrayPos) = newVal
             Exit Sub
         Case 16:
@@ -1362,7 +1362,7 @@ Function CBGetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVa
     '   20- filename of cursor cancel sound (mainMem.cursorcancelsound)
     On Error GoTo errorhandler
     
-    playerSlot = inbounds(playerSlot, 0, 4)
+    playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
             CBGetGeneralString = playerListAr$(playerSlot)
@@ -1371,27 +1371,27 @@ Function CBGetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVa
             CBGetGeneralString = playerFile$(playerSlot)
             Exit Function
         Case 2:
-            arrayPos = inbounds(arrayPos, 0, 25)
+            arrayPos = inBounds(arrayPos, 0, 25)
             CBGetGeneralString = otherPlayers$(arrayPos)
             Exit Function
         Case 3:
-            arrayPos = inbounds(arrayPos, 0, 25)
+            arrayPos = inBounds(arrayPos, 0, 25)
             CBGetGeneralString = otherPlayersHandle$(arrayPos)
             Exit Function
         Case 4:
-            arrayPos = inbounds(arrayPos, 0, UBound(inv.item))
+            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
             CBGetGeneralString = inv.item(arrayPos).file
             Exit Function
         Case 5:
-            arrayPos = inbounds(arrayPos, 0, UBound(inv.item))
+            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
             CBGetGeneralString = inv.item(arrayPos).handle
             Exit Function
         Case 6:
-            arrayPos = inbounds(arrayPos, 0, 16)
+            arrayPos = inBounds(arrayPos, 0, 16)
             CBGetGeneralString = playerEquip$(arrayPos, playerSlot)
             Exit Function
         Case 7:
-            arrayPos = inbounds(arrayPos, 0, 16)
+            arrayPos = inBounds(arrayPos, 0, 16)
             CBGetGeneralString = equipList$(arrayPos, playerSlot)
             Exit Function
         Case 8:
@@ -1413,15 +1413,15 @@ Function CBGetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVa
             CBGetGeneralString = fontName$
             Exit Function
         Case 14:
-            playerSlot = inbounds(playerSlot, 0, 3)
+            playerSlot = inBounds(playerSlot, 0, 3)
             CBGetGeneralString = enemies$(playerSlot)
             Exit Function
         Case 15:
-            playerSlot = inbounds(playerSlot, 0, 3)
+            playerSlot = inBounds(playerSlot, 0, 3)
             CBGetGeneralString = enemyMem(playerSlot).eneWinPrg
             Exit Function
         Case 16:
-            playerSlot = inbounds(playerSlot, 0, 3)
+            playerSlot = inBounds(playerSlot, 0, 3)
             CBGetGeneralString = enemyMem(playerSlot).status(arrayPos).statusFile
             Exit Function
         Case 17:
@@ -1485,10 +1485,10 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
     '   28-  transparent color (gTranspColor)
     On Error GoTo errorhandler
     
-    playerSlot = inbounds(playerSlot, 0, 4)
+    playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
-            arrayPos = inbounds(arrayPos, 0, UBound(inv.item))
+            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
             CBGetGeneralNum = inv.item(arrayPos).number
             Exit Function
         Case 1:
@@ -1504,10 +1504,10 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
             CBGetGeneralNum = equipFPadd(playerSlot)
             Exit Function
         Case 5:
-            CBGetGeneralNum = ppos(playerSlot).X
+            CBGetGeneralNum = ppos(playerSlot).x
             Exit Function
         Case 6:
-            CBGetGeneralNum = ppos(playerSlot).Y
+            CBGetGeneralNum = ppos(playerSlot).y
             Exit Function
         Case 7:
             CBGetGeneralNum = ppos(playerSlot).l
@@ -1561,12 +1561,12 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
             CBGetGeneralNum = canrun
             Exit Function
         Case 24:
-            playerSlot = inbounds(playerSlot, 0, 3)
-            CBGetGeneralNum = enemyMem(playerSlot).X
+            playerSlot = inBounds(playerSlot, 0, 3)
+            CBGetGeneralNum = enemyMem(playerSlot).x
             Exit Function
         Case 25:
-            playerSlot = inbounds(playerSlot, 0, 3)
-            CBGetGeneralNum = enemyMem(playerSlot).Y
+            playerSlot = inBounds(playerSlot, 0, 3)
+            CBGetGeneralNum = enemyMem(playerSlot).y
             Exit Function
         Case 26:
             CBGetGeneralNum = 0
@@ -1595,7 +1595,7 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
     'playerSlot is the optional player slot to obtain (0-4) (some codes only)
     'infoCodes same as CBGetGeneralString
     On Error GoTo errorhandler
-    playerSlot = inbounds(playerSlot, 0, 4)
+    playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
             playerListAr$(playerSlot) = newVal
@@ -1605,27 +1605,27 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
             Call openchar(projectPath$ + temPath$ + newVal, playerMem(playerSlot))
             Exit Sub
         Case 2:
-            arrayPos = inbounds(arrayPos, 0, 25)
+            arrayPos = inBounds(arrayPos, 0, 25)
             otherPlayers$(arrayPos) = newVal
             Exit Sub
         Case 3:
-            arrayPos = inbounds(arrayPos, 0, 25)
+            arrayPos = inBounds(arrayPos, 0, 25)
             otherPlayersHandle$(arrayPos) = newVal
             Exit Sub
         Case 4:
-            arrayPos = inbounds(arrayPos, 0, UBound(inv.item))
+            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
             inv.item(arrayPos).file = newVal
             Exit Sub
         Case 5:
-            arrayPos = inbounds(arrayPos, 0, UBound(inv.item))
+            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
             inv.item(arrayPos).handle = newVal
             Exit Sub
         Case 6:
-            arrayPos = inbounds(arrayPos, 0, 16)
+            arrayPos = inBounds(arrayPos, 0, 16)
             playerEquip$(arrayPos, playerSlot) = newVal
             Exit Sub
         Case 7:
-            arrayPos = inbounds(arrayPos, 0, 16)
+            arrayPos = inBounds(arrayPos, 0, 16)
             equipList$(arrayPos, playerSlot) = newVal
             Exit Sub
         Case 8:
@@ -1658,16 +1658,16 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
             fontName$ = newVal
             Exit Sub
         Case 14:
-            playerSlot = inbounds(playerSlot, 0, 3)
+            playerSlot = inBounds(playerSlot, 0, 3)
             Call openEnemy(projectPath$ + enePath$ + newVal, enemyMem(playerSlot))
             enemies$(playerSlot) = newVal
             Exit Sub
         Case 15:
-            playerSlot = inbounds(playerSlot, 0, 3)
+            playerSlot = inBounds(playerSlot, 0, 3)
             enemyMem(playerSlot).eneWinPrg = newVal
             Exit Sub
         Case 16:
-            playerSlot = inbounds(playerSlot, 0, 3)
+            playerSlot = inBounds(playerSlot, 0, 3)
             enemyMem(playerSlot).status(arrayPos).statusFile = newVal
             Exit Sub
         Case 17:
@@ -1691,10 +1691,10 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
     'playerSlot is the optional player slot to obtain (0-4) (some codes only)
     'infoCodes same as CBGetGeneralNum
     On Error GoTo errorhandler
-    playerSlot = inbounds(playerSlot, 0, 4)
+    playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
-            arrayPos = inbounds(arrayPos, 0, UBound(inv.item))
+            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
             inv.item(arrayPos).number = newVal
             Exit Sub
         Case 1:
@@ -1710,16 +1710,16 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
             equipFPadd(playerSlot) = newVal
             Exit Sub
         Case 5:
-            ppos(playerSlot).X = newVal
+            ppos(playerSlot).x = newVal
             Exit Sub
         Case 6:
-            ppos(playerSlot).Y = newVal
+            ppos(playerSlot).y = newVal
             Exit Sub
         Case 7:
             ppos(playerSlot).l = newVal
             Exit Sub
         Case 8:
-            newVal = inbounds(newVal, 0, 4)
+            newVal = inBounds(newVal, 0, 4)
             selectedPlayer = newVal
             Exit Sub
         Case 9:
@@ -1729,19 +1729,19 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
             tilesY = newVal
             Exit Sub
         Case 11:
-            newVal = inbounds(newVal, 0, 8)
+            newVal = inBounds(newVal, 0, 8)
             'BattleSpeed = newVal
             Exit Sub
         Case 12:
-            newVal = inbounds(newVal, 0, 3)
+            newVal = inBounds(newVal, 0, 3)
             'TextSpeed = newVal
             Exit Sub
         Case 13:
-            newVal = inbounds(newVal, 0, 3)
+            newVal = inBounds(newVal, 0, 3)
             'CharacterSpeed = newVal
             Exit Sub
         Case 14:
-            newVal = inbounds(newVal, 0, 1)
+            newVal = inBounds(newVal, 0, 1)
             'scrollingOff = newVal
             Exit Sub
         Case 15:
@@ -1769,16 +1769,16 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
             stepsTaken = newVal
             Exit Sub
         Case 23:
-            newVal = inbounds(newVal, 0, 1)
+            newVal = inBounds(newVal, 0, 1)
             canrun = newVal
             Exit Sub
         Case 24:
-            playerSlot = inbounds(playerSlot, 0, 3)
-            enemyMem(playerSlot).X = newVal
+            playerSlot = inBounds(playerSlot, 0, 3)
+            enemyMem(playerSlot).x = newVal
             Exit Sub
         Case 25:
-            playerSlot = inbounds(playerSlot, 0, 3)
-            enemyMem(playerSlot).X = newVal
+            playerSlot = inBounds(playerSlot, 0, 3)
+            enemyMem(playerSlot).x = newVal
             Exit Sub
         Case 26:
             'fwOffsetX = newVal
@@ -1884,7 +1884,7 @@ Function CBGetStringElementValue(ByVal rpgcodeCommand As String) As String
     Dim aProgram As RPGCodeProgram
     ReDim aProgram.program(10)
     aProgram.boardNum = -1
-    a = GetValue(rpgcodeCommand, lit$, num, aProgram)
+    a = getValue(rpgcodeCommand, lit$, num, aProgram)
     CBGetStringElementValue = lit$
 
     Exit Function
@@ -1910,7 +1910,7 @@ Function CBGetNumElementValue(ByVal rpgcodeCommand As String) As Double
     Dim aProgram As RPGCodeProgram
     ReDim aProgram.program(10)
     aProgram.boardNum = -1
-    a = GetValue(rpgcodeCommand, lit$, num, aProgram)
+    a = getValue(rpgcodeCommand, lit$, num, aProgram)
     CBGetNumElementValue = num
 
     Exit Function
@@ -1933,7 +1933,7 @@ Function CBGetElementType(ByVal rpgcodeCommand As String) As Long
     Dim aProgram As RPGCodeProgram
     ReDim aProgram.program(10)
     aProgram.boardNum = -1
-    CBGetElementType = GetValue(rpgcodeCommand, lit$, num, aProgram)
+    CBGetElementType = getValue(rpgcodeCommand, lit$, num, aProgram)
 
     Exit Function
 
@@ -2066,7 +2066,7 @@ Function CBGetSpecialMoveString(ByVal infoCode As Long) As String
     On Error GoTo errorhandler
     Select Case infoCode
         Case 0:
-            CBGetSpecialMoveString = specialMoveMem.smname$
+            CBGetSpecialMoveString = specialMoveMem.smName$
             Exit Function
         Case 1:
             CBGetSpecialMoveString = specialMoveMem.smPrg$
@@ -2164,7 +2164,7 @@ Function CBGetItemString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal i
     '   9-  item description
     '   10-  item animation
     On Error GoTo errorhandler
-    itmSlot = inbounds(itmSlot, 0, 11)
+    itmSlot = inBounds(itmSlot, 0, 11)
     Select Case infoCode
         Case 0:
             CBGetItemString = itemMem(itmSlot).itemName$
@@ -2191,7 +2191,7 @@ Function CBGetItemString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal i
             CBGetItemString = itemMem(itmSlot).itmPrgPickUp$
             Exit Function
         Case 8:
-            arrayPos = inbounds(arrayPos, 0, 10)
+            arrayPos = inBounds(arrayPos, 0, 10)
             CBGetItemString = itemMem(itmSlot).itmChars$(arrayPos)
             Exit Function
         Case 9:
@@ -2234,7 +2234,7 @@ Function CBGetItemNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal itmS
     '   15- selling price       sellprice
     '   16- key item 0=no, 1=yes    keyitem
     On Error GoTo errorhandler
-    itmSlot = inbounds(itmSlot, 0, 11)
+    itmSlot = inBounds(itmSlot, 0, 11)
     Select Case infoCode
         Case 0:
             CBGetItemNum = itemMem(itmSlot).EquipYN
@@ -2249,7 +2249,7 @@ Function CBGetItemNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal itmS
             CBGetItemNum = itemMem(itmSlot).FightYN
             Exit Function
         Case 4:
-            arrayPos = inbounds(arrayPos, 1, 7)
+            arrayPos = inBounds(arrayPos, 1, 7)
             CBGetItemNum = itemMem(itmSlot).itemarmor(arrayPos)
             Exit Function
         Case 5:
@@ -2340,27 +2340,27 @@ Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal ar
             CBGetBoardNum = boardList(activeBoardIndex).theData.Bsizey
             Exit Function
         Case 2:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
             CBGetBoardNum = boardList(activeBoardIndex).theData.ambientred(arrayPos1, arrayPos2, arrayPos3)
             Exit Function
         Case 3:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
             CBGetBoardNum = boardList(activeBoardIndex).theData.ambientgreen(arrayPos1, arrayPos2, arrayPos3)
             Exit Function
         Case 4:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
             CBGetBoardNum = boardList(activeBoardIndex).theData.ambientblue(arrayPos1, arrayPos2, arrayPos3)
             Exit Function
         Case 5:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
             CBGetBoardNum = boardList(activeBoardIndex).theData.tiletype(arrayPos1, arrayPos2, arrayPos3)
             Exit Function
         Case 6:
@@ -2376,47 +2376,47 @@ Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal ar
             CBGetBoardNum = boardList(activeBoardIndex).theData.fightingYN
             Exit Function
         Case 10:
-            arrayPos1 = inbounds(arrayPos1, 1, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 1, MAXITEM)
             CBGetBoardNum = boardList(activeBoardIndex).theData.brdConst(arrayPos1)
             Exit Function
         Case 11:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             CBGetBoardNum = boardList(activeBoardIndex).theData.progX(arrayPos1)
             Exit Function
         Case 12:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             CBGetBoardNum = boardList(activeBoardIndex).theData.progY(arrayPos1)
             Exit Function
         Case 13:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             CBGetBoardNum = boardList(activeBoardIndex).theData.progLayer(arrayPos1)
             Exit Function
         Case 14:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             CBGetBoardNum = boardList(activeBoardIndex).theData.progActivate(arrayPos1)
             Exit Function
         Case 15:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             CBGetBoardNum = boardList(activeBoardIndex).theData.activationType(arrayPos1)
             Exit Function
         Case 16:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmX(arrayPos1)
             Exit Function
         Case 17:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmY(arrayPos1)
             Exit Function
         Case 18:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmLayer(arrayPos1)
             Exit Function
         Case 19:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmActivate(arrayPos1)
             Exit Function
         Case 20:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardNum = boardList(activeBoardIndex).theData.activationType(arrayPos1)
             Exit Function
         Case 21:
@@ -2470,9 +2470,9 @@ Function CBGetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal
     On Error GoTo errorhandler
     Select Case infoCode
         Case 0:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
             CBGetBoardString = BoardGetTile(arrayPos1, arrayPos2, arrayPos3, boardList(activeBoardIndex).theData)
             Exit Function
         Case 1:
@@ -2482,7 +2482,7 @@ Function CBGetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal
             CBGetBoardString = boardList(activeBoardIndex).theData.borderBack$
             Exit Function
         Case 3:
-            arrayPos1 = inbounds(arrayPos1, 1, 4)
+            arrayPos1 = inBounds(arrayPos1, 1, 4)
             CBGetBoardString = boardList(activeBoardIndex).theData.dirLink$(arrayPos1)
             Exit Function
         Case 4:
@@ -2492,59 +2492,59 @@ Function CBGetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal
             CBGetBoardString = boardList(activeBoardIndex).theData.boardMusic$
             Exit Function
         Case 6:
-            arrayPos1 = inbounds(arrayPos1, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 1, 8)
             CBGetBoardString = boardList(activeBoardIndex).theData.boardTitle$(arrayPos1)
             Exit Function
         Case 7:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             CBGetBoardString = boardList(activeBoardIndex).theData.programName$(arrayPos1)
             Exit Function
         Case 8:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
             CBGetBoardString = boardList(activeBoardIndex).theData.progGraphic$(arrayPos1)
             Exit Function
         Case 9:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
             CBGetBoardString = boardList(activeBoardIndex).theData.progVarActivate$(arrayPos1)
             Exit Function
         Case 10:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
             CBGetBoardString = boardList(activeBoardIndex).theData.progDoneVarActivate$(arrayPos1)
             Exit Function
         Case 11:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
             CBGetBoardString = boardList(activeBoardIndex).theData.activateInitNum$(arrayPos1)
             Exit Function
         Case 12:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
             CBGetBoardString = boardList(activeBoardIndex).theData.activateDoneNum$(arrayPos1)
             Exit Function
         Case 13:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmName$(arrayPos1)
             Exit Function
         Case 14:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmVarActivate$(arrayPos1)
             Exit Function
         Case 15:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmDoneVarActivate$(arrayPos1)
             Exit Function
         Case 16:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmActivateInitNum$(arrayPos1)
             Exit Function
         Case 17:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmActivateDoneNum$(arrayPos1)
             Exit Function
         Case 18:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardString = boardList(activeBoardIndex).theData.itemProgram$(arrayPos1)
             Exit Function
         Case 19:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             CBGetBoardString = boardList(activeBoardIndex).theData.itemMulti$(arrayPos1)
             Exit Function
     End Select
@@ -2566,39 +2566,39 @@ Sub CBSetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arrayPo
     On Error GoTo errorhandler
     Select Case infoCode
         Case 0:
-            nValue = inbounds(nValue, 1, 50)
+            nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.Bsizex = nValue
             Exit Sub
         Case 1:
-            nValue = inbounds(nValue, 1, 50)
+            nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.Bsizey = nValue
             Exit Sub
         Case 2:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
-            nValue = inbounds(nValue, -255, 255)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
+            nValue = inBounds(nValue, -255, 255)
             boardList(activeBoardIndex).theData.ambientred(arrayPos1, arrayPos2, arrayPos3) = nValue
             Exit Sub
         Case 3:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
-            nValue = inbounds(nValue, -255, 255)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
+            nValue = inBounds(nValue, -255, 255)
             boardList(activeBoardIndex).theData.ambientgreen(arrayPos1, arrayPos2, arrayPos3) = nValue
             Exit Sub
         Case 4:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
-            nValue = inbounds(nValue, -255, 255)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
+            nValue = inBounds(nValue, -255, 255)
             boardList(activeBoardIndex).theData.ambientblue(arrayPos1, arrayPos2, arrayPos3) = nValue
             Exit Sub
         Case 5:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
-            nValue = inbounds(nValue, 0, 18)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
+            nValue = inBounds(nValue, 0, 18)
             boardList(activeBoardIndex).theData.tiletype(arrayPos1, arrayPos2, arrayPos3) = nValue
             Exit Sub
         Case 6:
@@ -2614,77 +2614,77 @@ Sub CBSetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arrayPo
             boardList(activeBoardIndex).theData.boardskill = nValue
             Exit Sub
         Case 9:
-            nValue = inbounds(nValue, 0, 1)
+            nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.fightingYN = nValue
             Exit Sub
         Case 10:
-            arrayPos1 = inbounds(arrayPos1, 1, 10)
+            arrayPos1 = inBounds(arrayPos1, 1, 10)
             boardList(activeBoardIndex).theData.brdConst(arrayPos1) = nValue
             Exit Sub
         Case 11:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
-            nValue = inbounds(nValue, 1, 50)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
+            nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.progX(arrayPos1) = nValue
             Exit Sub
         Case 12:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
-            nValue = inbounds(nValue, 1, 50)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
+            nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.progY(arrayPos1) = nValue
             Exit Sub
         Case 13:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
-            nValue = inbounds(nValue, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
+            nValue = inBounds(nValue, 1, 8)
             boardList(activeBoardIndex).theData.progLayer(arrayPos1) = nValue
             Exit Sub
         Case 14:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
-            nValue = inbounds(nValue, 0, 1)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
+            nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.progActivate(arrayPos1) = nValue
             Exit Sub
         Case 15:
-            arrayPos1 = inbounds(arrayPos1, 0, 50)
-            nValue = inbounds(nValue, 0, 1)
+            arrayPos1 = inBounds(arrayPos1, 0, 50)
+            nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.activationType(arrayPos1) = nValue
             Exit Sub
         Case 16:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
-            nValue = inbounds(nValue, 1, 50)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.itmX(arrayPos1) = nValue
             Exit Sub
         Case 17:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
-            nValue = inbounds(nValue, 1, 50)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.itmY(arrayPos1) = nValue
             Exit Sub
         Case 18:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
-            nValue = inbounds(nValue, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            nValue = inBounds(nValue, 1, 8)
             boardList(activeBoardIndex).theData.itmLayer(arrayPos1) = nValue
             Exit Sub
         Case 19:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
-            nValue = inbounds(nValue, 0, 1)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.itmActivate(arrayPos1) = nValue
             Exit Sub
         Case 20:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
-            nValue = inbounds(nValue, 0, 1)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.activationType(arrayPos1) = nValue
             Exit Sub
         Case 21:
-            nValue = inbounds(nValue, 1, 50)
+            nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.playerX = nValue
             Exit Sub
         Case 22:
-            nValue = inbounds(nValue, 1, 50)
+            nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.playerY = nValue
             Exit Sub
         Case 23:
-            nValue = inbounds(nValue, 1, 8)
+            nValue = inBounds(nValue, 1, 8)
             boardList(activeBoardIndex).theData.playerLayer = nValue
             Exit Sub
         Case 24:
-            nValue = inbounds(nValue, 0, 1)
+            nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.brdSavingYN = nValue
             Exit Sub
     End Select
@@ -2709,9 +2709,9 @@ Sub CBSetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arra
     On Error GoTo errorhandler
     Select Case infoCode
         Case 0:
-            arrayPos1 = inbounds(arrayPos1, 1, 50)
-            arrayPos2 = inbounds(arrayPos2, 1, 50)
-            arrayPos3 = inbounds(arrayPos3, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 1, 50)
+            arrayPos2 = inBounds(arrayPos2, 1, 50)
+            arrayPos3 = inBounds(arrayPos3, 1, 8)
             Call BoardSetTile(arrayPos1, arrayPos2, arrayPos3, newVal, boardList(activeBoardIndex).theData)
             Exit Sub
         Case 1:
@@ -2724,7 +2724,7 @@ Sub CBSetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arra
             'boardList(activeBoardIndex).theData.borderBack$ = newVal
             Exit Sub
         Case 3:
-            arrayPos1 = inbounds(arrayPos1, 1, 4)
+            arrayPos1 = inBounds(arrayPos1, 1, 4)
             boardList(activeBoardIndex).theData.dirLink$(arrayPos1) = newVal
             Exit Sub
         Case 4:
@@ -2735,59 +2735,59 @@ Sub CBSetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arra
             Call checkMusic
             Exit Sub
         Case 6:
-            arrayPos1 = inbounds(arrayPos1, 1, 8)
+            arrayPos1 = inBounds(arrayPos1, 1, 8)
             boardList(activeBoardIndex).theData.boardTitle$(arrayPos1) = newVal
             Exit Sub
         Case 7:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             boardList(activeBoardIndex).theData.programName$(arrayPos1) = newVal
             Exit Sub
         Case 8:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             boardList(activeBoardIndex).theData.progGraphic$(arrayPos1) = newVal
             Exit Sub
         Case 9:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             boardList(activeBoardIndex).theData.progVarActivate$(arrayPos1) = newVal
             Exit Sub
         Case 10:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             boardList(activeBoardIndex).theData.progDoneVarActivate$(arrayPos1) = newVal
             Exit Sub
         Case 11:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             boardList(activeBoardIndex).theData.activateInitNum$(arrayPos1) = newVal
             Exit Sub
         Case 12:
-            arrayPos1 = inbounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
+            arrayPos1 = inBounds(arrayPos1, 0, UBound(boardList(activeBoardIndex).theData.programName))
             boardList(activeBoardIndex).theData.activateDoneNum$(arrayPos1) = newVal
             Exit Sub
         Case 13:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             boardList(activeBoardIndex).theData.itmName$(arrayPos1) = newVal
             Exit Sub
         Case 14:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             boardList(activeBoardIndex).theData.itmVarActivate$(arrayPos1) = newVal
             Exit Sub
         Case 15:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             boardList(activeBoardIndex).theData.itmDoneVarActivate$(arrayPos1) = newVal
             Exit Sub
         Case 16:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             boardList(activeBoardIndex).theData.itmActivateInitNum$(arrayPos1) = newVal
             Exit Sub
         Case 17:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             boardList(activeBoardIndex).theData.itmActivateDoneNum$(arrayPos1) = newVal
             Exit Sub
         Case 18:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             boardList(activeBoardIndex).theData.itemProgram$(arrayPos1) = newVal
             Exit Sub
         Case 19:
-            arrayPos1 = inbounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
             boardList(activeBoardIndex).theData.itemMulti$(arrayPos1) = newVal
             Exit Sub
     End Select
@@ -2818,12 +2818,12 @@ Function CBDestroyCanvas(ByVal canvasID As Long) As Long
     CBDestroyCanvas = 1
 End Function
 
-Function CBDrawCanvas(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long) As Long
+Function CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) As Long
     'callback 47
     'display an offscreen canvas
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvas(canvasID, X, Y)
+        Call DXDrawCanvas(canvasID, x, y)
         CBDrawCanvas = 1
     Else
         CBDrawCanvas = 0
@@ -2842,12 +2842,12 @@ Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal 
     End If
 End Function
 
-Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crTransparentColor As Long) As Long
+Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTransparentColor As Long) As Long
     'callback 49
     'display an offscreen canvas with transparency
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTransparent(canvasID, X, Y, crTransparentColor)
+        Call DXDrawCanvasTransparent(canvasID, x, y, crTransparentColor)
         CBDrawCanvasTransparent = 1
     Else
         CBDrawCanvasTransparent = 0
@@ -2866,13 +2866,13 @@ Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As L
     End If
 End Function
 
-Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
+Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
     'callback 51
     'display an offscreen canvas with translucency
     On Error Resume Next
     
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTranslucent(canvasID, X, Y, dIntensity, crUnaffectedColor, crTransparentColor)
+        Call DXDrawCanvasTranslucent(canvasID, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
         CBDrawCanvasTranslucent = 1
     Else
         CBDrawCanvasTranslucent = 0
@@ -2972,7 +2972,7 @@ Function CBLoadString(ByVal id As Long, ByVal defaultString As String) As String
     CBLoadString = LoadStringLoc(id, defaultString)
 End Function
 
-Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Double, ByVal Y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
+Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
     'callback 63
     'draw text to a canvas
     On Error Resume Next
@@ -2997,16 +2997,16 @@ Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal fo
         outlined = True
     End If
     
-    Call CanvasDrawText(canvasID, Text, font, size, X, Y, crColor, Bold, Italics, Underline, centred, outlined)
+    Call CanvasDrawText(canvasID, Text, font, size, x, y, crColor, Bold, Italics, Underline, centred, outlined)
     CBCanvasDrawText = 1
 End Function
 
-Function CBCanvasPopup(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal stepSize As Long, ByVal popupType As Long) As Long
+Function CBCanvasPopup(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal stepSize As Long, ByVal popupType As Long) As Long
     'callback 64
     'draw canvas (but pop it up)
     On Error Resume Next
-    stepSize = inbounds(stepSize, 1, 100)
-    Call PopupCanvas(canvasID, X, Y, stepSize, popupType)
+    stepSize = inBounds(stepSize, 1, 100)
+    Call PopupCanvas(canvasID, x, y, stepSize, popupType)
     CBCanvasPopup = 1
 End Function
 
@@ -3095,7 +3095,7 @@ Function CBPlaySound(ByVal soundFile As String) As Long
     'callback 73
     'play a sound effect (do not include path info!)
     On Error Resume Next
-    Call PlaySoundFX(projectPath$ + mediaPath$ + soundFile)
+    Call playSoundFX(projectPath$ + mediaPath$ + soundFile)
     CBPlaySound = 1
 End Function
 
@@ -3176,7 +3176,7 @@ Function CBGetPlayerHP(ByVal playerIdx As Long) As Double
     'callback 81
     'get player hp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     CBGetPlayerHP = getPlayerHP(playerMem(playerIdx))
 End Function
 
@@ -3184,7 +3184,7 @@ Function CBGetPlayerMaxHP(ByVal playerIdx As Long) As Double
     'callback 82
     'get player max hp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     CBGetPlayerMaxHP = getPlayerMaxHP(playerMem(playerIdx))
 End Function
 
@@ -3192,7 +3192,7 @@ Function CBGetPlayerSMP(ByVal playerIdx As Long) As Double
     'callback 83
     'get player smp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     CBGetPlayerSMP = getPlayerSMP(playerMem(playerIdx))
 End Function
 
@@ -3200,7 +3200,7 @@ Function CBGetPlayerMaxSMP(ByVal playerIdx As Long) As Double
     'callback 84
     'get player max smp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     CBGetPlayerMaxSMP = getPlayerMaxSMP(playerMem(playerIdx))
 End Function
 
@@ -3208,7 +3208,7 @@ Function CBGetPlayerFP(ByVal playerIdx As Long) As Double
     'callback 85
     'get player fp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     CBGetPlayerFP = getPlayerFP(playerMem(playerIdx))
 End Function
 
@@ -3216,7 +3216,7 @@ Function CBGetPlayerDP(ByVal playerIdx As Long) As Double
     'callback 86
     'get player hp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     CBGetPlayerDP = getPlayerDP(playerMem(playerIdx))
 End Function
 
@@ -3224,7 +3224,7 @@ Function CBGetPlayerName(ByVal playerIdx As Long) As String
     'callback 87
     'get player hp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     CBGetPlayerName = getPlayerName(playerMem(playerIdx))
 End Function
 
@@ -3232,7 +3232,7 @@ Sub CBAddPlayerHP(ByVal amount As Long, ByVal playerIdx As Long)
     'callback 88
     'add player hp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     Call addPlayerHP(amount, playerMem(playerIdx))
 End Sub
 
@@ -3240,7 +3240,7 @@ Sub CBAddPlayerSMP(ByVal amount As Long, ByVal playerIdx As Long)
     'callback 89
     'add player smp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     Call addPlayerSMP(amount, playerMem(playerIdx))
 End Sub
 
@@ -3248,7 +3248,7 @@ Sub CBSetPlayerHP(ByVal amount As Long, ByVal playerIdx As Long)
     'callback 90
     'set player hp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     Call setPlayerHP(amount, playerMem(playerIdx))
 End Sub
 
@@ -3256,7 +3256,7 @@ Sub CBSetPlayerSMP(ByVal amount As Long, ByVal playerIdx As Long)
     'callback 91
     'set player hp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     Call setPlayerSMP(amount, playerMem(playerIdx))
 End Sub
 
@@ -3264,7 +3264,7 @@ Sub CBSetPlayerFP(ByVal amount As Long, ByVal playerIdx As Long)
     'callback 92
     'set player hp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     Call setPlayerFP(amount, playerMem(playerIdx))
 End Sub
 
@@ -3272,7 +3272,7 @@ Sub CBSetPlayerDP(ByVal amount As Long, ByVal playerIdx As Long)
     'callback 93
     'set player hp
     On Error Resume Next
-    playerIdx = inbounds(playerIdx, 0, 4)
+    playerIdx = inBounds(playerIdx, 0, 4)
     Call setPlayerDP(amount, playerMem(playerIdx))
 End Sub
 
@@ -3280,7 +3280,7 @@ Function CBGetEnemyHP(ByVal eneIdx As Long) As Long
     'callback 94
     'get enemy hp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     CBGetEnemyHP = getEnemyHP(enemyMem(eneIdx))
 End Function
 
@@ -3288,7 +3288,7 @@ Function CBGetEnemyMaxHP(ByVal eneIdx As Long) As Long
     'callback 95
     'get enemy max hp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     CBGetEnemyMaxHP = getEnemyMaxHP(enemyMem(eneIdx))
 End Function
 
@@ -3296,7 +3296,7 @@ Function CBGetEnemySMP(ByVal eneIdx As Long) As Long
     'callback 96
     'get enemy max smp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     CBGetEnemySMP = getEnemySMP(enemyMem(eneIdx))
 End Function
 
@@ -3304,7 +3304,7 @@ Function CBGetEnemyMaxSMP(ByVal eneIdx As Long) As Long
     'callback 97
     'get enemy max smp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     CBGetEnemyMaxSMP = getEnemyMaxSMP(enemyMem(eneIdx))
 End Function
 
@@ -3312,7 +3312,7 @@ Function CBGetEnemyFP(ByVal eneIdx As Long) As Long
     'callback 98
     'get enemy fp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     CBGetEnemyFP = getEnemyFP(enemyMem(eneIdx))
 End Function
 
@@ -3320,7 +3320,7 @@ Function CBGetEnemyDP(ByVal eneIdx As Long) As Long
     'callback 99
     'get enemy max hp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     CBGetEnemyDP = getEnemyDP(enemyMem(eneIdx))
 End Function
 
@@ -3328,7 +3328,7 @@ Sub CBAddEnemyHP(ByVal amount As Long, ByVal eneIdx As Long)
     'callback 100
     'add enemy hp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     Call addEnemyHP(amount, enemyMem(eneIdx))
 End Sub
 
@@ -3336,7 +3336,7 @@ Sub CBAddEnemySMP(ByVal amount As Long, ByVal eneIdx As Long)
     'callback 101
     'add enemy smp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     Call addEnemySMP(amount, enemyMem(eneIdx))
 End Sub
 
@@ -3344,7 +3344,7 @@ Sub CBSetEnemyHP(ByVal amount As Long, ByVal eneIdx As Long)
     'callback 102
     'set enemy hp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     Call setEnemyHP(amount, enemyMem(eneIdx))
 End Sub
 
@@ -3352,15 +3352,15 @@ Sub CBSetEnemySMP(ByVal amount As Long, ByVal eneIdx As Long)
     'callback 103
     'set enemy smp
     On Error Resume Next
-    eneIdx = inbounds(eneIdx, 0, 3)
+    eneIdx = inBounds(eneIdx, 0, 3)
     Call setEnemySMP(amount, enemyMem(eneIdx))
 End Sub
 
-Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal height As Long)
+Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
     'callback 104
     'draw fight background to canvas
     On Error Resume Next
-    Call CanvasDrawBackground(canvasID, projectPath$ + bkgPath$ + bkgFile, X, Y, Width, height)
+    Call CanvasDrawBackground(canvasID, projectPath$ + bkgPath$ + bkgFile, x, y, Width, height)
 End Sub
 
 Function CBCreateAnimation(ByVal file As String) As Long
@@ -3377,7 +3377,7 @@ Sub CBDestroyAnimation(ByVal idx As Long)
     Call DestroyAnimation(idx)
 End Sub
 
-Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal X As Long, ByVal Y As Long, ByVal forceDraw As Long, ByVal forceTranspFill As Long)
+Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal forceDraw As Long, ByVal forceTranspFill As Long)
     'callback 107
     'draw a loaded animation inot a canvas -- advance the frame if necissary
     'if forcedraw = 1 then it will force the frma eot be re-drawn
@@ -3394,10 +3394,10 @@ Sub CBCanvasDrawAnimation(ByVal canvasID As Long, ByVal idx As Long, ByVal X As 
         forceFill = True
     End If
     
-    Call DrawAnimationIndexCanvas(idx, X, Y, canvasID, force, forceFill)
+    Call DrawAnimationIndexCanvas(idx, x, y, canvasID, force, forceFill)
 End Sub
 
-Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal frame As Long, ByVal X As Long, ByVal Y As Long, ByVal forceTranspFill As Long)
+Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal frame As Long, ByVal x As Long, ByVal y As Long, ByVal forceTranspFill As Long)
     'callback 108
     'draw a loaded animation inot a canvas (specific frame)
     On Error Resume Next
@@ -3408,7 +3408,7 @@ Sub CBCanvasDrawAnimationFrame(ByVal canvasID As Long, ByVal idx As Long, ByVal 
         forceFill = True
     End If
     
-    Call DrawAnimationIndexCanvasFrame(idx, frame, X, Y, canvasID, forceFill)
+    Call DrawAnimationIndexCanvasFrame(idx, frame, x, y, canvasID, forceFill)
 End Sub
 
 
@@ -3528,11 +3528,11 @@ Sub CBFightTick()
     Call fightTick
 End Sub
 
-Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
+Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal isBold As Long, ByVal isItalics As Long, ByVal isUnderline As Long, ByVal isCentred As Long, Optional ByVal isOutlined As Long = 0) As Long
     'callback 125
     'draw text directly to the screen at x, y (pixels)
     On Error Resume Next
-    CBDrawTextAbsolute = DXDrawText(X, Y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
+    CBDrawTextAbsolute = DXDrawText(x, y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
 End Function
 
 Sub CBReleaseFighterCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)

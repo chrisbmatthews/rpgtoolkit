@@ -592,85 +592,63 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
+
+'=========================================================================
+' Background editor
+'=========================================================================
 
 Option Explicit
 
-Public dataIndex As Long    'index into the vector of enemies maintained in commonBackground
+'=========================================================================
+' Integral variables
+'=========================================================================
 
-Public Function formType() As Long
-    'identify type of form
+Public dataIndex As Long    'index into the vector of backgrounds
+
+'=========================================================================
+' Property identifying this form
+'=========================================================================
+Public Property Get formType() As Long
     On Error Resume Next
     formType = FT_BACKGROUND
-End Function
+End Property
 
-
+'=========================================================================
+' Save the file
+'=========================================================================
 Public Sub saveFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Dim file As String
-    'If bkgList(activeBkgIndex).needUpdate = True Then
-        file = bkgList(activeBkgIndex).filename
-        bkgList(activeBkgIndex).needUpdate = False
-        If file = "" Then
-            Me.Show
-            Call mnusaveas_Click
-            Exit Sub
-        End If
-        Call saveBackground(projectPath$ + enePath$ + filename$(2), bkgList(activeBkgIndex).theData)
-    'End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    file = bkgList(activeBkgIndex).filename
+    bkgList(activeBkgIndex).needUpdate = False
+    If file = "" Then
+        Call Me.Show
+        Call mnusaveas_Click
+        Exit Sub
+    End If
+    Call saveBackground(projectPath$ + enePath$ + filename$(2), bkgList(activeBkgIndex).theData)
 End Sub
 
-
+'=========================================================================
+' Save file as
+'=========================================================================
 Public Sub saveAsFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     If bkgList(activeBkgIndex).needUpdate = True Then
-        Me.Show
-        mnusaveas_Click
+        Call Me.Show
+        Call mnusaveas_Click
     End If
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-
-
-Public Sub checkSave()
-    'check if the file has changed an it needs to be saved...
-    On Error GoTo ErrorHandler
-    If bkgList(activeBkgIndex).needUpdate = True Then
-        Dim aa As Long
-        aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo)
-        If aa = 6 Then
-            'yes-- save
-            Call saveFile
-        End If
-    End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
-
-Public Sub openFile(filename$)
-    'open an effect
+'=========================================================================
+' Open a file
+'=========================================================================
+Public Sub openFile(ByVal filename As String)
     On Error Resume Next
     Dim antiPath As String
     Call checkSave
@@ -680,17 +658,17 @@ Public Sub openFile(filename$)
     antiPath$ = absNoPath(filename$)
     bkgList(activeBkgIndex).filename = antiPath$
     Me.Caption = LoadStringLoc(1435, "Edit Background") + "  (" + antiPath$ + ")"
-    
-    Call infofill
-    
+    Call infoFill
     bkgList(activeBkgIndex).needUpdate = False
 End Sub
 
+'=========================================================================
+' Fields on the form
+'=========================================================================
 Private Sub clickbox_Change()
     On Error Resume Next
     bkgList(activeBkgIndex).theData.bkgSelWav$ = clickbox.Text
 End Sub
-
 Private Sub Command1_Click()
     On Error Resume Next
     ChDir (currentDir$)
@@ -713,7 +691,6 @@ Private Sub Command1_Click()
     bkgList(activeBkgIndex).theData.image = antiPath$
     Text2.Text = antiPath$
 End Sub
-
 Private Sub Command2_Click()
     On Error Resume Next
     ChDir (currentDir$)
@@ -736,7 +713,6 @@ Private Sub Command2_Click()
     bkgList(activeBkgIndex).theData.bkgSelWav$ = antiPath$
     clickbox.Text = antiPath$
 End Sub
-
 Private Sub Command3_Click()
     On Error Resume Next
     ChDir (currentDir$)
@@ -759,7 +735,6 @@ Private Sub Command3_Click()
     bkgList(activeBkgIndex).theData.bkgChooseWav$ = antiPath$
     selectbox.Text = antiPath$
 End Sub
-
 Private Sub Command4_Click()
     On Error Resume Next
     ChDir (currentDir$)
@@ -782,7 +757,6 @@ Private Sub Command4_Click()
     bkgList(activeBkgIndex).theData.bkgCantDoWav$ = antiPath$
     illegalbox.Text = antiPath$
 End Sub
-
 Private Sub Command5_Click()
     On Error Resume Next
     ChDir (currentDir$)
@@ -805,7 +779,6 @@ Private Sub Command5_Click()
     bkgList(activeBkgIndex).theData.bkgReadyWav$ = antiPath$
     readybox.Text = antiPath$
 End Sub
-
 Private Sub Command6_Click()
     On Error Resume Next
     ChDir (currentDir$)
@@ -828,8 +801,6 @@ Private Sub Command6_Click()
     bkgList(activeBkgIndex).theData.bkgMusic$ = antiPath$
     Text1.Text = antiPath$
 End Sub
-
-
 Private Sub Command8_Click()
     On Error GoTo errmid2
     If bkgList(activeBkgIndex).theData.bkgMusic$ = "" Then MsgBox LoadStringLoc(957, "Please Select A Filename!"), , LoadStringLoc(958, "Music Player"): Exit Sub
@@ -848,12 +819,9 @@ Private Sub Command8_Click()
             'mp3player.playSong (projectPath$ + mediapath$ + bkgList(activeBkgIndex).theData.bkgMusic$)
         'End If
     End If
-    Exit Sub
 errmid2:
-Exit Sub
 
 End Sub
-
 Private Sub Command9_Click()
     On Error GoTo ErrorHandler
     
@@ -873,134 +841,110 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
+Private Sub illegalbox_Change()
+    On Error Resume Next
+    bkgList(activeBkgIndex).theData.bkgCantDoWav$ = illegalbox.Text
+End Sub
+Private Sub readybox_Change()
+    On Error Resume Next
+    bkgList(activeBkgIndex).theData.bkgReadyWav$ = readybox.Text
+End Sub
+Private Sub selectbox_Change()
+    On Error Resume Next
+    bkgList(activeBkgIndex).theData.bkgChooseWav$ = selectbox.Text
+End Sub
+Private Sub Text1_Change()
+    bkgList(activeBkgIndex).theData.bkgMusic$ = Text1.Text
+End Sub
+Private Sub Text2_Change()
+    On Error Resume Next
+    bkgList(activeBkgIndex).theData.image = Text2.Text
+End Sub
 
+'=========================================================================
+' Form activate
+'=========================================================================
 Private Sub Form_Activate()
     On Error Resume Next
-    
     Set activeBackground = Me
     Set activeForm = Me
     activeBkgIndex = dataIndex
-    
-    'extras
-    tkMainForm.bottomFrame.Visible = False
-    tkMainForm.tileBmpExtras.Visible = False
-    tkMainForm.animationExtras.Visible = False
-    tkMainForm.tileExtras.Visible = False
-    
-    'tools
-    tkMainForm.tilebmpTools.Visible = False
-    tkMainForm.animationTools.Visible = False
-    tkMainForm.rpgcodeTools.Visible = False
-    tkMainForm.tileTools.Visible = False
-    tkMainForm.boardTools.Visible = False
+    Call hideAllTools
 End Sub
 
+'=========================================================================
+' Form load
+'=========================================================================
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
-    
     Set activeBackground = Me
     dataIndex = VectBackgroundNewSlot()
     activeBkgIndex = dataIndex
     Call BackgroundClear(bkgList(dataIndex).theData)
-    
-    Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Form unload
+'=========================================================================
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     Call hideAllTools
 End Sub
 
-Private Sub illegalbox_Change()
+'=========================================================================
+' Fill in this form
+'=========================================================================
+Private Sub infoFill()
     On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgCantDoWav$ = illegalbox.Text
-End Sub
-
-Private Sub infofill()
-    On Error GoTo ErrorHandler
     If bkgList(activeBkgIndex).theData.image <> "" Then
         Text2.Text = bkgList(activeBkgIndex).theData.image
     End If
     If bkgList(activeBkgIndex).theData.bkgMusic$ <> "" Then
-        Text1.Text = bkgList(activeBkgIndex).theData.bkgMusic$
+        Text1.Text = bkgList(activeBkgIndex).theData.bkgMusic
     End If
     If bkgList(activeBkgIndex).theData.bkgSelWav$ <> "" Then
-        clickbox.Text = bkgList(activeBkgIndex).theData.bkgSelWav$
+        clickbox.Text = bkgList(activeBkgIndex).theData.bkgSelWav
     End If
     If bkgList(activeBkgIndex).theData.bkgChooseWav$ <> "" Then
-        selectbox.Text = bkgList(activeBkgIndex).theData.bkgChooseWav$
+        selectbox.Text = bkgList(activeBkgIndex).theData.bkgChooseWav
     End If
     If bkgList(activeBkgIndex).theData.bkgReadyWav$ <> "" Then
-        readybox.Text = bkgList(activeBkgIndex).theData.bkgReadyWav$
+        readybox.Text = bkgList(activeBkgIndex).theData.bkgReadyWav
     End If
     If bkgList(activeBkgIndex).theData.bkgCantDoWav$ <> "" Then
-        illegalbox.Text = bkgList(activeBkgIndex).theData.bkgCantDoWav$
+        illegalbox.Text = bkgList(activeBkgIndex).theData.bkgCantDoWav
     End If
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub readybox_Change()
-    On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgReadyWav$ = readybox.Text
+'=========================================================================
+' Close this form
+'=========================================================================
+Private Sub mnuClose_Click()
+    Call Unload(Me)
 End Sub
 
-Private Sub selectbox_Change()
-    On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgChooseWav$ = selectbox.Text
-End Sub
-
-Private Sub Text1_Change()
-    bkgList(activeBkgIndex).theData.bkgMusic$ = Text1.Text
-End Sub
-
-
-Private Sub mnuCLose_Click()
-    On Error GoTo ErrorHandler
-    Unload Me
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
+'========================================================================='
+' Save menu
+'=========================================================================
 Private Sub mnusave_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Dim file As String
     file = bkgList(activeBkgIndex).filename
     If file = "" Then Call mnusaveas_Click: Exit Sub
-    Call saveBackground(projectPath$ + bkgPath$ + file, bkgList(activeBkgIndex).theData)
+    Call saveBackground(projectPath & bkgPath & file, bkgList(activeBkgIndex).theData)
     bkgList(activeBkgIndex).needUpdate = False
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
+'=========================================================================
+' Save as
+'=========================================================================
 Private Sub mnusaveas_Click()
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String, aa As Long, bb As Long
-    
     dlg.strDefaultFolder = projectPath$ + bkgPath$
-    
     dlg.strTitle = "Save Background As"
     dlg.strDefaultExt = "bkg"
     dlg.strFileTypes = "RPG Toolkit Background (*.bkg)|*.bkg|All files(*.*)|*.*"
@@ -1012,7 +956,6 @@ Private Sub mnusaveas_Click()
         Exit Sub
     End If
     ChDir (currentDir$)
-    
     If filename$(1) = "" Then Exit Sub
     If fileExists(filename(1)) Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
@@ -1025,211 +968,150 @@ Private Sub mnusaveas_Click()
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
-
-Private Sub toc_Click()
-    On Error GoTo ErrorHandler
-    Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
+'=========================================================================
+' Common menus
+'=========================================================================
 Private Sub mnutilehorizontally_Click()
     On Error Resume Next
     Call tkMainForm.tilehorizonatllymnu_Click
 End Sub
-
 Private Sub mnutilevertically_Click()
     On Error Resume Next
     Call tkMainForm.tileverticallymnu_Click
 End Sub
-
-
 Private Sub mnuTutorial_Click()
     On Error Resume Next
     Call tkMainForm.tutorialmnu_Click
 End Sub
-
 Private Sub mnuusersguide_Click()
     On Error Resume Next
     Call tkMainForm.usersguidemnu_Click
 End Sub
-
 Private Sub mnuAbout_Click()
     On Error Resume Next
     Call tkMainForm.aboutmnu_Click
 End Sub
-
 Private Sub mnuArrangeIcons_Click()
     On Error Resume Next
     Call tkMainForm.arrangeiconsmnu_Click
 End Sub
-
 Private Sub mnuCascade_Click()
     On Error Resume Next
     Call tkMainForm.cascademnu_Click
 End Sub
-
 Private Sub mnucreatepakfile_Click()
     On Error Resume Next
     Call tkMainForm.createpakfilemnu_Click
 End Sub
-
 Private Sub mnucreatesetup_Click()
     On Error Resume Next
     Call tkMainForm.createsetupmnu_Click
 End Sub
-
 Private Sub mnuexit_Click()
     On Error Resume Next
     Call tkMainForm.exitmnu_Click
 End Sub
-
 Private Sub mnuHistorytxt_Click()
     On Error Resume Next
     Call tkMainForm.historytxtmnu_Click
 End Sub
-
 Private Sub mnuinstallupgrade_Click()
     On Error Resume Next
     Call tkMainForm.installupgrademnu_Click
 End Sub
-
 Private Sub mnumakeexe_Click()
     On Error Resume Next
     Call tkMainForm.makeexemnu_Click
 End Sub
-
 Private Sub mnunewanimatedtile_Click()
     On Error Resume Next
     Call tkMainForm.newanimtilemnu_Click
 End Sub
-
 Private Sub mnunewanimation_Click()
     On Error Resume Next
     Call tkMainForm.newanimationmnu_Click
 End Sub
-
 Private Sub mnunewboard_Click()
     On Error Resume Next
     Call tkMainForm.newboardmnu_Click
 End Sub
-
 Private Sub mnunewenemy_Click()
     On Error Resume Next
     Call tkMainForm.newenemymnu_Click
 End Sub
-
 Private Sub mnunewitem_Click()
     On Error Resume Next
     Call tkMainForm.newitemmnu_Click
 End Sub
-
 Private Sub mnunewplayer_Click()
     On Error Resume Next
     Call tkMainForm.newplayermnu_Click
 End Sub
-
-
 Private Sub mnunewproject_Click()
     On Error Resume Next
     Call tkMainForm.newprojectmnu_Click
 End Sub
-
 Private Sub mnunewrpgcodeprogram_Click()
     On Error Resume Next
     Call tkMainForm.newrpgcodemnu_Click
 End Sub
-
 Private Sub mnunewspecialmove_Click()
     On Error Resume Next
     Call tkMainForm.newspecialmovemnu_Click
 End Sub
-
-
 Private Sub mnunewstatuseffect_Click()
     On Error Resume Next
     Call tkMainForm.newstatuseffectmnu_Click
 End Sub
-
-
 Private Sub mnunewtile_Click()
     On Error Resume Next
     Call tkMainForm.newtilemnu_Click
 End Sub
-
-
 Private Sub mnunewtilebitmap_Click()
     On Error Resume Next
     Call tkMainForm.newtilebitmapmnu_Click
 End Sub
-
 Private Sub mnuopen_Click()
     On Error Resume Next
     Call tkMainForm.openmnu_Click
 End Sub
-
-
 Private Sub mnuRegistrationInfo_Click()
     On Error Resume Next
     Call tkMainForm.registrationinfomnu_Click
 End Sub
-
 Private Sub mnuRPGCodePrimer_Click()
     On Error Resume Next
     Call tkMainForm.rpgcodeprimermnu_Click
 End Sub
-
 Private Sub mnurpgcodereference_Click()
     On Error Resume Next
     Call tkMainForm.rpgcodereferencemnu_Click
 End Sub
-
-
 Private Sub mnusaveall_Click()
     On Error Resume Next
     Call tkMainForm.saveallmnu_Click
 End Sub
-
-
 Private Sub mnuselectlanguage_Click()
     On Error Resume Next
     Call tkMainForm.selectlanguagemnu_Click
 End Sub
-
 Private Sub mnushowprojectlist_Click()
     On Error Resume Next
     Call tkMainForm.showprojectlistmnu_Click
 End Sub
-
 Private Sub mnushowtools_Click()
     On Error Resume Next
     Call tkMainForm.showtoolsmnu_Click
 End Sub
-
 Private Sub mnutestgame_Click()
     On Error Resume Next
     tkMainForm.testgamemnu_Click
 End Sub
-
-
 Private Sub mnuOpenProject_Click()
     On Error Resume Next
     Call tkMainForm.mnuOpenProject_Click
 End Sub
-
 Private Sub mnuNewFightBackground_Click()
     On Error Resume Next
     Call tkMainForm.mnuNewFightBackground_Click
 End Sub
-
-Private Sub Text2_Change()
-    On Error Resume Next
-    bkgList(activeBkgIndex).theData.image = Text2.Text
-End Sub
-
-

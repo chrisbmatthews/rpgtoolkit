@@ -1,40 +1,46 @@
 Attribute VB_Name = "transFightParties"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
+
+'=========================================================================
+' Procedures for managing in-fight statistics
+'=========================================================================
 
 Option Explicit
-'fighting parties
-'manages stats for managed battles
 
-Public Type Fighter
-    isPlayer As Boolean 'is this a player (if no, then it's an enemy)
-    enemy As TKEnemy    'enemy
-    player As TKPlayer  'player
-    
-    chargeCounter As Long   'charge counter
-    maxChargeTime As Long   'what the counter must reach before charged.
-    
-    freezeCharge As Boolean 'if true, then charging is frozen until unforzen
+'=========================================================================
+' Integral variables
+'=========================================================================
+
+Public Type Fighter                      'fighter structure
+    isPlayer As Boolean                  '  is this a player (if no, then it's an enemy)
+    enemy As TKEnemy                     '  enemy
+    player As TKPlayer                   '  player
+    chargeCounter As Long                '  charge counter
+    maxChargeTime As Long                '  what the counter must reach before charged.
+    freezeCharge As Boolean              '  if true, then charging is frozen until unforzen
 End Type
 
-Public Type FighterParty
-    isPlayerControlled As Boolean   'is it controlled by a player (if not, then controlled by cpu)
-    fighterList() As Fighter        'list of fighters in party
-    
-    'rewards...
-    gp As Long      'gp to win
-    fightInventory As TKInventory 'inventory of this party
-    winProgram As String    'rpgcode program to run when you beat them
+Public Type FighterParty                 'fighting party structure
+    isPlayerControlled As Boolean        '  is it controlled by a player (if not, then controlled by cpu)
+    fighterList() As Fighter             '  list of fighters in party
+    gp As Long                           '  gp to win
+    fightInventory As TKInventory        '  inventory of this party
+    winProgram As String                 '  rpgcode program to run when you beat them
 End Type
 
-Public parties(2) As FighterParty   'fighting parties -- 0 is enemy, 1 is player
+Public parties(1 To 2) As FighterParty   'fighting parties -- 0 is enemy, 1 is player
 
-Public Const ENEMY_PARTY = 0
-Public Const PLAYER_PARTY = 1
+Public Const ENEMY_PARTY = 0             'enemy party
+Public Const PLAYER_PARTY = 1            'player party
 
+'=========================================================================
+' Attack a fighter
+'=========================================================================
 Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long, ByVal toSMP As Boolean) As Long
-    'attack a fighter
     'amount is the amount of FP to attack with (use a negative number to *give* hp or SMP)
     'if toSMP is true, then we remove (or add) amount to SMP
     'adjust FP to the figher's DP
@@ -98,9 +104,10 @@ Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long
     AttackFighter = amount
 End Function
 
-
-Function AttackPartyMember(ByVal partyIndex As Long, ByVal fighterIndex As Long, ByVal amount As Long, ByVal toSMP As Boolean) As Long
-    'attack a fighter in the parties() array
+'=========================================================================
+' Attack a fighter belonging to a party
+'=========================================================================
+Public Function AttackPartyMember(ByVal partyIndex As Long, ByVal fighterIndex As Long, ByVal amount As Long, ByVal toSMP As Boolean) As Long
     'if amount < 0, it *adds* to the player/emeny
     'return actual amount
     'call into the plugin to inform the system that the player/enemy was attacked
@@ -112,8 +119,10 @@ Function AttackPartyMember(ByVal partyIndex As Long, ByVal fighterIndex As Long,
     AttackPartyMember = toRet
 End Function
 
-Sub CreateEnemyParty(ByRef party As FighterParty, ByRef enemies() As TKEnemy)
-    'create an enemy party (in party) from an array of enemies
+'=========================================================================
+' Create an enemy party
+'=========================================================================
+Public Sub CreateEnemyParty(ByRef party As FighterParty, ByRef enemies() As TKEnemy)
     On Error Resume Next
     Call CreateParty(party, UBound(enemies), True)
     
@@ -146,9 +155,10 @@ Sub CreateEnemyParty(ByRef party As FighterParty, ByRef enemies() As TKEnemy)
     Next t
 End Sub
 
-
-Sub CreateParty(ByRef party As FighterParty, ByVal members As Long, ByVal asEnemies As Boolean)
-    'initialize party
+'=========================================================================
+' Create a party
+'=========================================================================
+Public Sub CreateParty(ByRef party As FighterParty, ByVal members As Long, ByVal asEnemies As Boolean)
     'with members # of fighters
     'if asEnemies is true, it sets them as enemies
     On Error Resume Next
@@ -173,9 +183,10 @@ Sub CreateParty(ByRef party As FighterParty, ByVal members As Long, ByVal asEnem
     End If
 End Sub
 
-
-Sub CreatePlayerParty(ByRef party As FighterParty, ByRef players() As TKPlayer, ByRef inventory As TKInventory, ByVal gp As Long)
-    'create a player party (in party) from an array of players
+'=========================================================================
+' Create a player party
+'=========================================================================
+Public Sub CreatePlayerParty(ByRef party As FighterParty, ByRef players() As TKPlayer, ByRef inventory As TKInventory, ByVal gp As Long)
     On Error Resume Next
     Call CreateParty(party, UBound(players), False)
     
@@ -196,9 +207,10 @@ Sub CreatePlayerParty(ByRef party As FighterParty, ByRef players() As TKPlayer, 
     Next t
 End Sub
 
-
-Function getPartyMemberCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
-    'determine the charge percent for a fighter
+'=========================================================================
+' Get charge percent of a fighter
+'=========================================================================
+Public Function getPartyMemberCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
     On Error Resume Next
     If parties(partyIdx).fighterList(fighterIdx).maxChargeTime <> 0 Then
         getPartyMemberCharge = parties(partyIdx).fighterList(fighterIdx).chargeCounter / _
@@ -206,8 +218,11 @@ Function getPartyMemberCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long) 
     End If
 End Function
 
-Function doAttack(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal amount As Long, ByVal toSMP As Boolean) As Long
-    'cause one figher to attack another
+'=========================================================================
+' Cause one fighter to attack another
+'=========================================================================
+Public Function doAttack(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal amount As Long, ByVal toSMP As Boolean) As Long
+
     On Error Resume Next
     
     'only do the attack if the source has HP left...
@@ -232,8 +247,11 @@ Function doAttack(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, By
     doAttack = actualAmount
 End Function
 
-Sub doUseItem(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal itemFile As String)
-    'cause one figher to use an item on another
+'=========================================================================
+' Cause one fighter to use an item on another
+'=========================================================================
+Public Sub doUseItem(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal itemFile As String)
+
     On Error Resume Next
     
     'only do the attack if the source has HP left...
@@ -299,9 +317,11 @@ Sub doUseItem(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal 
     Call fightInformItemUse(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, -hp, -smp, itemFile)
 End Sub
 
+'=========================================================================
+' Cause one fighter to use a special move on another
+'=========================================================================
+Public Sub doUseSpecialMove(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal moveFile As String)
 
-Sub doUseSpecialMove(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal moveFile As String)
-    'cause one figher to use a special move on another
     On Error Resume Next
     
     'only do the attack if the source has HP left...
@@ -362,11 +382,13 @@ Sub doUseSpecialMove(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long,
     Call fightInformSpecialMove(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, sourceSMP, hp, smp, moveFile)
 End Sub
 
+'=========================================================================
+' Apply a status effect to a fighter
+'=========================================================================
+Public Sub invokeStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByRef theEffect As TKStatusEffect, Optional ByVal statusFile As String = "")
 
-
-Sub invokeStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByRef theEffect As TKStatusEffect, Optional ByVal statusFile As String = "")
-    'apply effects of status effect to a fighter...
     On Error Resume Next
+
     If theEffect.nStatusHP = 1 Then
         If parties(partyIdx).fighterList(fightIdx).isPlayer Then
             Call addPlayerHP(-1 * theEffect.nStatusHPAmount, parties(partyIdx).fighterList(fightIdx).player)
@@ -400,9 +422,13 @@ Sub invokeStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByRef theEffect
             Call runProgram(theEffect.sStatusRPGCode, -1, False)
         End If
     End If
+
 End Sub
 
-Function isPartyDefeated(ByVal partyIdx As Long) As Boolean
+'=========================================================================
+' Determine if a party is defeated
+'=========================================================================
+Public Function isPartyDefeated(ByVal partyIdx As Long) As Boolean
     On Error Resume Next
     'determine if a party is defeated
     Dim bRet As Boolean
@@ -422,11 +448,11 @@ Function isPartyDefeated(ByVal partyIdx As Long) As Boolean
     isPartyDefeated = bRet
 End Function
 
-Sub partyMemberAddStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
-    'add a status effect to a fighter
+'=========================================================================
+' Add a status effect to a fighter
+'=========================================================================
+Public Sub partyMemberAddStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
     On Error Resume Next
-    
-    
     If parties(partyIdx).fighterList(fightIdx).isPlayer Then
         Call PlayerAddStatus(statusFile, parties(partyIdx).fighterList(fightIdx).player)
     Else
@@ -434,10 +460,11 @@ Sub partyMemberAddStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal s
     End If
 End Sub
 
-Sub partyMemberRemoveStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
-    'add a status effect to a fighter
+'=========================================================================
+' Remove a status effect from a fighter
+'=========================================================================
+Public Sub partyMemberRemoveStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
     On Error Resume Next
-    
     Dim t As Long
     'check if the fighter already has this status effect...
     If parties(partyIdx).fighterList(fightIdx).isPlayer Then
@@ -447,17 +474,19 @@ Sub partyMemberRemoveStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVa
     End If
 End Sub
 
-
-Sub setPartyMemberMaxCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long, ByVal ticks As Long)
-    'determine the charge percent for a fighter
+'=========================================================================
+' Change max charge of a fighter
+'=========================================================================
+Public Sub setPartyMemberMaxCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long, ByVal ticks As Long)
     On Error Resume Next
     parties(partyIdx).fighterList(fighterIdx).maxChargeTime = ticks
 End Sub
 
-Function getPartyMemberHP(ByVal partyIdx, ByVal fighterIdx) As Long
-    'get the hp of a fighter in the party
+'=========================================================================
+' Get a fighter's HP
+'=========================================================================
+Public Function getPartyMemberHP(ByVal partyIdx, ByVal fighterIdx) As Long
     On Error Resume Next
-        
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
         getPartyMemberHP = getPlayerHP(parties(partyIdx).fighterList(fighterIdx).player)
@@ -466,10 +495,11 @@ Function getPartyMemberHP(ByVal partyIdx, ByVal fighterIdx) As Long
     End If
 End Function
 
-Function getPartyMemberMaxHP(ByVal partyIdx, ByVal fighterIdx) As Long
-    'get the max hp of a fighter in the party
+'=========================================================================
+' Get a fighter's max HP
+'=========================================================================
+Public Function getPartyMemberMaxHP(ByVal partyIdx, ByVal fighterIdx) As Long
     On Error Resume Next
-        
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
         getPartyMemberMaxHP = getPlayerMaxHP(parties(partyIdx).fighterList(fighterIdx).player)
@@ -478,10 +508,11 @@ Function getPartyMemberMaxHP(ByVal partyIdx, ByVal fighterIdx) As Long
     End If
 End Function
 
-Function getPartyMemberSMP(ByVal partyIdx, ByVal fighterIdx) As Long
-    'get the smp of a fighter in the party
+'=========================================================================
+' Get a fighter's SMP
+'=========================================================================
+Public Function getPartyMemberSMP(ByVal partyIdx, ByVal fighterIdx) As Long
     On Error Resume Next
-        
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
         getPartyMemberSMP = getPlayerSMP(parties(partyIdx).fighterList(fighterIdx).player)
@@ -490,10 +521,11 @@ Function getPartyMemberSMP(ByVal partyIdx, ByVal fighterIdx) As Long
     End If
 End Function
 
-Function getPartyMemberMaxSMP(ByVal partyIdx, ByVal fighterIdx) As Long
-    'get the max smp of a fighter in the party
+'=========================================================================
+' Get a fighter's max SMP
+'=========================================================================
+Public Function getPartyMemberMaxSMP(ByVal partyIdx, ByVal fighterIdx) As Long
     On Error Resume Next
-        
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
         getPartyMemberMaxSMP = getPlayerMaxSMP(parties(partyIdx).fighterList(fighterIdx).player)
@@ -502,10 +534,11 @@ Function getPartyMemberMaxSMP(ByVal partyIdx, ByVal fighterIdx) As Long
     End If
 End Function
 
-Function getPartyMemberFP(ByVal partyIdx, ByVal fighterIdx) As Long
-    'get the hp of a fighter in the party
+'=========================================================================
+' Get a fighter's FP
+'=========================================================================
+Public Function getPartyMemberFP(ByVal partyIdx, ByVal fighterIdx) As Long
     On Error Resume Next
-        
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
         getPartyMemberFP = getPlayerFP(parties(partyIdx).fighterList(fighterIdx).player)
@@ -514,10 +547,11 @@ Function getPartyMemberFP(ByVal partyIdx, ByVal fighterIdx) As Long
     End If
 End Function
 
-Function getPartyMemberDP(ByVal partyIdx, ByVal fighterIdx) As Long
-    'get the hp of a fighter in the party
+'=========================================================================
+' Get a fighter's DP
+'=========================================================================
+Public Function getPartyMemberDP(ByVal partyIdx, ByVal fighterIdx) As Long
     On Error Resume Next
-        
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
         getPartyMemberDP = getPlayerDP(parties(partyIdx).fighterList(fighterIdx).player)
@@ -526,11 +560,11 @@ Function getPartyMemberDP(ByVal partyIdx, ByVal fighterIdx) As Long
     End If
 End Function
 
-
-Function getPartyMemberName(ByVal partyIdx, ByVal fighterIdx) As String
-    'get the name of a fighter in the party
+'=========================================================================
+' Get a fighter's name
+'=========================================================================
+Public Function getPartyMemberName(ByVal partyIdx, ByVal fighterIdx) As String
     On Error Resume Next
-        
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
         'hitting a player...
         getPartyMemberName = getPlayerName(parties(partyIdx).fighterList(fighterIdx).player)
@@ -539,13 +573,13 @@ Function getPartyMemberName(ByVal partyIdx, ByVal fighterIdx) As String
     End If
 End Function
 
+'=========================================================================
+' Get a fighter's animation
+'=========================================================================
+Public Function getPartyMemberAnimation(ByVal partyIdx, ByVal fighterIdx, ByVal animationName) As String
 
-
-Function getPartyMemberAnimation(ByVal partyIdx, ByVal fighterIdx, ByVal animationName) As String
-    'get the filename for an animation of a fighter in the party
-    'animationName can be:
-    'rest, attack, defend, special move, die, or any custom name
     On Error Resume Next
+
     animationName = UCase(animationName)
         
     If parties(partyIdx).fighterList(fighterIdx).isPlayer Then
@@ -582,12 +616,11 @@ Function getPartyMemberAnimation(ByVal partyIdx, ByVal fighterIdx, ByVal animati
     End If
 End Function
 
-
-Function getPartySize(ByVal partyIdx As Long) As Long
+'=========================================================================
+' Get the size of a party
+'=========================================================================
+Public Function getPartySize(ByVal partyIdx As Long) As Long
     'get the number of fighters in a party
     On Error Resume Next
-    
     getPartySize = UBound(parties(partyIdx).fighterList)
 End Function
-
-
