@@ -369,7 +369,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
     Next idx
 
     ' At this point I'm going to check for user defined casts
-    If (getVariable(Text, lit, num, prg) = DT_NUM) Then
+    If (getVariable(Text & "!", lit, num, prg) = DT_NUM) Then
         ' It turned out numerical... that's good :)
         If (num <> 0) Then
             ' We got a number, to boot
