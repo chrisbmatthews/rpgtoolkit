@@ -240,7 +240,10 @@ Function joyDirection(ByRef buttonOnOff() As Boolean) As Integer
     'get button info:
     
     Dim masks() As Long
-    masks = Array(JOY_BUTTON1, JOY_BUTTON2, JOY_BUTTON3, JOY_BUTTON4)
+    masks(0) = JOY_BUTTON1
+    masks(1) = JOY_BUTTON2
+    masks(2) = JOY_BUTTON3
+    masks(3) = JOY_BUTTON4
     For mask = 0 To 3
         buttonOnOff(mask) = (ji.dwButtons And masks(mask))
     Next mask
