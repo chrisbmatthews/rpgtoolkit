@@ -317,20 +317,22 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
                 run = evaluate(parts(pIdx), prg)
 
                 ' Check how toRet should change
-                If ((run = 1) And (Not doneLoop)) Then
-                    Select Case idx
-                        Case 2, 3
-                            ' Fin
-                            toRet = 1
-                            doneLoop = True
-                    End Select
-                Else
-                    Select Case idx
-                        Case 0, 1
-                            ' Fin
-                            toRet = 0
-                            doneLoop = True
-                    End Select
+                If (Not doneLoop) Then
+                    If (run = 1) Then
+                        Select Case idx
+                            Case 2, 3
+                                ' Fin
+                                toRet = 1
+                                doneLoop = True
+                        End Select
+                    Else
+                        Select Case idx
+                            Case 0, 1
+                                ' Fin
+                                toRet = 0
+                                doneLoop = True
+                        End Select
+                    End If
                 End If
 
             Next pIdx
