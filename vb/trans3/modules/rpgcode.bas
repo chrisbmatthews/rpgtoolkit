@@ -9244,7 +9244,7 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         'Let's equip!
         Call removeEquip(num2, theOne)
-        Call addEquip(num2, theOne, inv.fileNames(theOne))
+        Call addEquip(num2, theOne, inv.fileNames(theItem))
     End If
 
     Exit Sub
