@@ -267,7 +267,7 @@ Private Sub cmdBrowse_Click()
     Dim dlg As FileDialogInfo, antiPath As String
     With dlg
         .strDefaultFolder = projectPath & bmpPath
-        .strTitle = "Open Profile"
+        .strTitle = "Open Image"
         .strDefaultExt = "bmp"
         .strFileTypes = strFileDialogFilterWithTiles
         If (OpenFileDialog(dlg, Me.hwnd)) Then
