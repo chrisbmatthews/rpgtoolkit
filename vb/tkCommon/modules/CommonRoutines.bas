@@ -424,7 +424,17 @@ error:
         filename(1) = filenm
         Dim ex As String
         ex = UCase$(extention(filenm$))
-    
+
+        ' Colin, 3.06: Get the first frame of a tile animation
+        If (ex = "TAN") Then
+            Dim tan As TKTileAnm
+            Call openTileAnm(file, tan)
+            file = TileAnmGet(tan, 0)
+            filenm = file
+            filename(1) = filenm
+            ex = UCase$(extention(filenm))
+        End If
+
         If ex = "TST" Or ex = "ISO" Then
 
             Call openFromTileSet(tilesetFilename(filenm), getTileNum(filenm))
@@ -635,7 +645,7 @@ loadtileerr:
         Dim num As Long
         num = FreeFile
         Open file For Output As num
-            Print #num, activeRPGCode.CodeForm.Text
+            Print #num, activeRPGCode.codeForm.Text
         Close num
     End Sub
 

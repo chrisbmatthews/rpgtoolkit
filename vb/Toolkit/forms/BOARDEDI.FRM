@@ -1788,10 +1788,22 @@ Public Sub boardSelectTile(): On Error Resume Next
             Call openTileAnm(filename$(1), selectedAnm)
             
             ' open tileset
-            Call openWinTile(projectPath$ + tilePath$ + TileAnmGet(selectedAnm, 0))
-            
+            Dim strFirstFrame As String
+            strFirstFrame = TileAnmGet(selectedAnm, 0)
+            If (LenB(strFirstFrame)) Then
+                Call openWinTile(projectPath & tilePath & strFirstFrame)
+            Else
+                ' Colin, 3.06: Deal with lack of first frame
+                boardList(activeBoardIndex).selectedTile = vbNullString
+                For x = 1 To 32
+                    For y = 1 To 32
+                        tileMem(x, y) = RGB(255, 255, 255)
+                    Next y
+                Next x
+            End If
+
             ' if tileset detail inappropiate, increase detail
-            If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
+            If (detail = 2 Or detail = 4 Or detail = 6) Then Call increaseDetail
             
             ' call draw isomtric tile routine
             Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
