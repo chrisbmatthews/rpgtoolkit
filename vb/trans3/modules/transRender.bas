@@ -1235,7 +1235,7 @@ Private Function isItemIdle(ByVal num As Long) As Boolean
     Static timeStamps() As Double       'Time stamps of idleness
     ReDim Preserve timeStamps(maxItem)  'Make one spot for each item
 
-    If (Right(UCase(itmPos(num).frame), 5) = "STAND") Then
+    If (Left(UCase(itmPos(num).frame), 5) = "STAND") Then
         'Item is already marked as idle
         isItemIdle = True
     End If
@@ -1273,7 +1273,7 @@ Private Function isPlayerIdle(ByVal num As Long) As Boolean
 
     Static timeStamps(4) As Double   'Time stamps of idleness
 
-    If (Right(UCase(pPos(num).frame), 5) = "STAND") Then
+    If (Left(UCase(pPos(num).frame), 5) = "STAND") Then
         'Player is already marked as idle
         isPlayerIdle = True
     End If
