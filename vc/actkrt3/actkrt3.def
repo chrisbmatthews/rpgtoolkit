@@ -189,3 +189,4 @@ EXPORTS
 	RPGCParseBefore		@236
 	RPGCInitParser		@237
 	RPGCGetVarList		@238
+	RPGCStringContains	@239
