@@ -12,7 +12,7 @@ Attribute VB_Name = "modSetup"
 Option Explicit
 
 '=========================================================================
-' Member ZIP extraction declarations
+' Declarations
 '=========================================================================
 Private Declare Function ZIPOpen Lib "tkzip.dll" (ByVal fileOpen As String) As Long
 Private Declare Function ZIPGetFileCount Lib "tkzip.dll" () As Long
@@ -23,10 +23,15 @@ Private Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVa
 Private Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
 Private Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, lpData As Any, ByVal cbData As Long) As Long
 Private Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
+Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Any, ByVal Msg As Any, ByVal wParam As Any, ByVal lParam As Any) As Long
+Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
+Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 
 '=========================================================================
 ' Constants
 '=========================================================================
+Private Const S_OK = 0
 Private Const REG_SZ = 1
 Private Const HKEY_LOCAL_MACHINE = &H80000002
 
@@ -89,6 +94,30 @@ Public Function selfExtract( _
 End Function
 
 '=========================================================================
+' Register a COM server
+'=========================================================================
+Private Sub registerServer(ByRef strServer As String, ByVal hWnd As Long, Optional ByVal bRegister As Boolean = True)
+
+    ' First, make sure the file exists
+    If (GetAttr(strServer) And vbDirectory) Then Exit Sub
+
+    ' Load the server
+    Dim pServer As Long
+    pServer = LoadLibrary(strServer)
+
+    ' Obtain the procedure address we want
+    Dim pProc As Long
+    pProc = GetProcAddress(pServer, IIf(bRegister, "DllRegisterServer", "DllUnregisterServer"))
+
+    ' Call the procedure
+    Call CallWindowProc(pProc, hWnd, 0&, 0&, 0&)
+
+    ' Unload the server
+    Call FreeLibrary(pServer)
+
+End Sub
+
+'=========================================================================
 ' Perform the installation
 '=========================================================================
 Public Sub performSetup()
@@ -114,8 +143,8 @@ Public Sub performSetup()
     Call extractDir("zip.zip", strPath)
 
     ' Register ActiveX controls
-    Call Shell("regsvr32 /s """ & strPath & "richtx32.ocx""")
-    Call Shell("regsvr32 /s """ & strPath & "tabctl32.ocx""")
+    Call registerServer(strPath & "richtx32.ocx", frmMain.hWnd)
+    Call registerServer(strPath & "tabctl32.ocx", frmMain.hWnd)
 
     ' Store path in a key
     Call SaveSetting("RPGToolkit3", "Settings", "Path", strPath)
