@@ -73,11 +73,17 @@ void APIENTRY DXKillMusic(void)
 void APIENTRY DXPlayMidi(TCHAR* strFileName, VARIANT_BOOL bLoop)
 {
 
-	// Stop any current segment
-	SAFE_DELETE(g_pMusicSegment);
+	// If DirectMusic hasn't been initiated
+	if (!g_pMusicManager)
+	{
 
-	// Collect any garbage
-	g_pMusicManager->CollectGarbage();
+		// Cannot play a MIDI
+		return;
+
+	}
+
+	// Stop any current segment
+	DXStopMidi();
 
 	// Create a new segment
 	if (FAILED(g_pMusicManager->CreateSegmentFromFile(&g_pMusicSegment, strFileName, TRUE, TRUE)))
@@ -114,8 +120,20 @@ void APIENTRY DXPlayMidi(TCHAR* strFileName, VARIANT_BOOL bLoop)
 void APIENTRY DXStopMidi(void)
 {
 
-	// Delete the music segment
-	SAFE_DELETE(g_pMusicSegment);
+	// If a segment exists
+	if (g_pMusicSegment)
+	{
+
+		// Stop the segment
+		g_pMusicSegment->Stop();
+
+		// Delete the segment
+		SAFE_DELETE(g_pMusicSegment);
+
+		// Collect any garbage
+		g_pMusicManager->CollectGarbage();
+
+	}
 
 }
 
