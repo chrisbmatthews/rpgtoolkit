@@ -14,7 +14,7 @@
 #define CNV_HANDLE long
 //#include "..\tkCanvas\tkCanvas.h"
 
-int APIENTRY DXInitGfxMode( long hWndHost, long nScreenX, long nScreenY, long nUseDirectX, long nColorDepth, long nFullScreen );
+int APIENTRY DXInitGfxMode( int hostHwnd, long nScreenX, long nScreenY, long nUseDirectX, long nColorDepth, long nFullScreen );
 
 int APIENTRY DXKillGfxMode();
 

@@ -10,7 +10,7 @@
 
 #include "tkDirectX.h"
 
-int APIENTRY DXInitGfxMode( long hWndHost, long nScreenX, long nScreenY, long nUseDirectX, long nColorDepth, long nFullScreen  )
+int APIENTRY DXInitGfxMode( int hostHwnd, long nScreenX, long nScreenY, long nUseDirectX, long nColorDepth, long nFullScreen  )
 {
 	//go into graphics mode
 	bool bUseDX = false;
@@ -23,7 +23,7 @@ int APIENTRY DXInitGfxMode( long hWndHost, long nScreenX, long nScreenY, long nU
 	{
 		bUseDX = true;
 	}
-	bool bRet = InitGraphicsMode((HWND)hWndHost, nScreenX, nScreenY, bUseDX, nColorDepth, bFullScreen);
+	bool bRet = InitGraphicsMode((HWND)hostHwnd, nScreenX, nScreenY, bUseDX, nColorDepth, bFullScreen);
 
 	if (bRet)
 		return 1;

@@ -21,7 +21,6 @@
 #include "ddraw.h"	//for DirectX
 #include "..\..\tkCanvas\GDICanvas.h"	//for gdi canvas objects
 
-
 //Definition of an RGB color...
 typedef struct colorTag
 {
@@ -46,9 +45,6 @@ typedef struct dxInfoTag
 
 class CGDICanvas;
 
-//code for Windows...
-LRESULT CALLBACK TheWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 //////////////////////////////////////////////////////////
 //
 // Supporting Code
@@ -64,7 +60,7 @@ void CloseDC(HDC hdc);
 // Graphics System
 //
 //////////////////////////////////////////////////////////
-bool InitGraphicsMode(HWND hWndHost, int nWidth, int nHeight, bool bUseDirectX, long nColorDepth, bool bFullScreen);
+bool InitGraphicsMode(HWND hostHwnd, int nWidth, int nHeight, bool bUseDirectX, long nColorDepth, bool bFullScreen);
 bool KillGraphicsMode();
 bool DrawPixel(int x, int y, long clr);
 bool DrawLine(int x1, int y1, int x2, int y2, long clr);

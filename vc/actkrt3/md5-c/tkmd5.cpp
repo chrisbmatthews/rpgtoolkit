@@ -5,7 +5,6 @@
 #include "..\stdafx.h"
 #include "tkmd5.h"
 
-
 //assumes digest is 16 chars long...
 void convertHexString(unsigned char* digest, char* pstrString)
 {

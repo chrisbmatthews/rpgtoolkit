@@ -15,13 +15,16 @@
 #define WINDOWCLASS "GFXCLASS"
 #define WINDOWTITLE "Christopher B. Matthews B00109714"
 
+//////////////////////////////////////////////////////////////////////////
+// Globals
+//////////////////////////////////////////////////////////////////////////
+HWND ghWndMain = NULL;
 
 //Globals
 bool g_bUseDirectX = false;		//now the option to use directX is not #defined
 
 //globals
 HINSTANCE ghInstance;			//handle of instance to app
-HWND ghWndMain = NULL;		//handle of main window
 HDC ghDCLocked = NULL;		//HDC of locked surface
 
 //globals for directx...
@@ -80,166 +83,6 @@ MOUSESTATE CreateMouseState(int x, int y, WPARAM wParam)
 	return toRet;
 }
 
-//Windows specific functions...
-LRESULT CALLBACK TheWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	//check the message we received...
-	switch(uMsg)
-	{
-		case WM_ACTIVATE:
-		{
-			//refresh the screen when we alt-tab into the program
-			Refresh();
-			return 0;
-		} break;
-
-		case WM_MOUSEMOVE:
-		{
-			if (gEvtHandler)
-			{
-				int x = LOWORD(lParam);
-				int y = HIWORD(lParam);
-				gEvtHandler(EVT_MOUSEMOVE, CreateMouseState(x, y, wParam), 0);
-				return 0;
-			}
-		} break;
-
-
-		case WM_RBUTTONDOWN:
-		case WM_MBUTTONDOWN:
-		case WM_LBUTTONDOWN:
-		{
-			if (gEvtHandler)
-			{
-				int x = LOWORD(lParam);
-				int y = HIWORD(lParam);
-				gEvtHandler(EVT_MOUSEDOWN, CreateMouseState(x, y, wParam), 0);
-				return 0;
-			}
-		} break;
-
-
-		case WM_RBUTTONUP:
-		case WM_MBUTTONUP:
-		case WM_LBUTTONUP:
-		{
-			if (gEvtHandler)
-			{
-				int x = LOWORD(lParam);
-				int y = HIWORD(lParam);
-				MOUSESTATE ms = CreateMouseState(x, y, wParam);
-				if (uMsg == WM_RBUTTONUP)
-				{
-					ms.bRButtonActive = true;
-				}
-				if (uMsg == WM_MBUTTONUP)
-				{
-					ms.bMButtonActive = true;
-				}
-				if (uMsg == WM_LBUTTONUP)
-				{
-					ms.bLButtonActive = true;
-				}
-				gEvtHandler(EVT_MOUSEUP, ms, 0);
-				return 0;
-			}
-		} break;
-
-
-		case WM_RBUTTONDBLCLK:
-		case WM_MBUTTONDBLCLK:
-		case WM_LBUTTONDBLCLK:
-		{
-			if (gEvtHandler)
-			{
-				int x = LOWORD(lParam);
-				int y = HIWORD(lParam);
-				MOUSESTATE ms = CreateMouseState(x, y, wParam);
-				if (uMsg == WM_RBUTTONDBLCLK)
-				{
-					ms.bRButtonActive = true;
-				}
-				if (uMsg == WM_MBUTTONDBLCLK)
-				{
-					ms.bMButtonActive = true;
-				}
-				if (uMsg == WM_LBUTTONDBLCLK)
-				{
-					ms.bLButtonActive = true;
-				}
-				gEvtHandler(EVT_DOUBLECLICK, ms, 0);
-				return 0;
-			}
-		} break;
-
-
-		case WM_CHAR:
-		{
-			//check for escape key
-			if(wParam==VK_ESCAPE)
-			{
-				DestroyWindow(ghWndMain);
-			}
-
-			//pass off to event handler...
-			if (gEvtHandler)
-			{
-				MOUSESTATE ms;
-				ms.x = 0;
-				ms.y = 0;
-				gEvtHandler(EVT_KEYPRESS, ms, wParam);
-			}
-			return 0;//handled message
-		} break;
-
-
-		case WM_KEYDOWN:
-		{
-			//check for escape key
-			if(wParam==VK_ESCAPE)
-			{
-				DestroyWindow(ghWndMain);
-			}
-
-			//pass off to event handler...
-			if (gEvtHandler)
-			{
-				MOUSESTATE ms;
-				ms.x = 0;
-				ms.y = 0;
-				gEvtHandler(EVT_KEYDOWN, ms, wParam);
-			}
-			return 0;//handled message
-		} break;
-
-		case WM_DESTROY:	//window is being destroyed
-		{
-			//PostQuitMessage(0);	//tell the rest of the app we are quitting...
-			return 0;
-		} break;
-
-		case WM_PAINT:		//window requires repainting
-		{
-			//refresh the screen every time it needs to be painted.
-			Refresh();
-
-			PAINTSTRUCT ps;
-			//begin...
-			HDC hdc = BeginPaint(hwnd, &ps);
-
-			//do painting here...
-
-			//end...
-			EndPaint(hwnd, &ps);
-			return 0;
-		} break;
-	}
-
-	//fall thru to default message handler...
-	return (DefWindowProc(hwnd, uMsg, wParam, lParam));
-}
-
-
 ////////////////////////////////////////
 // SetCustomEventHandler
 //
@@ -273,7 +116,7 @@ void SetCustomEventHandler(EVENT_HANDLER eh)
 // true - success
 // false - failure
 ////////////////////////////////////////
-bool InitGraphicsMode(HWND hWndHost, int nWidth, int nHeight, bool bUseDirectX, long nColorDepth, bool bFullScreen)
+bool InitGraphicsMode(HWND handle, int nWidth, int nHeight, bool bUseDirectX, long nColorDepth, bool bFullScreen)
 {
 	g_bUseDirectX = bUseDirectX;
 	gDXInfo.lpdd = NULL;
@@ -282,11 +125,10 @@ bool InitGraphicsMode(HWND hWndHost, int nWidth, int nHeight, bool bUseDirectX, 
 	gDXInfo.bFullScreen = false;
 	gDXInfo.nColorDepth = 0;
 
-	ghWndMain = hWndHost;
+	ghWndMain = handle;
 
 	if (!ghWndMain)
 		return false;
-
 
 	//initialize direct draw, but only of we're using DirectX
 	if(g_bUseDirectX)
@@ -313,73 +155,6 @@ bool InitGraphicsMode(HWND hWndHost, int nWidth, int nHeight, bool bUseDirectX, 
 
 	return true;
 }
-
-
-////////////////////////////////////////
-// MakeWindow
-//
-// Description:
-// Create a dialog window.
-// (adapted from code found in Isometric Game Programming)
-//
-// Parameterss:
-// hInstance - hinstance of controlling app
-// nWidth - width of window
-// nHeight - hiehgt of window
-//
-// Return:
-// handle of created window.
-////////////////////////////////////////
-HWND MakeWindow(HINSTANCE hInstance, int nWidth, int nHeight)
-{
-	//keep track of hInstance...
-	ghInstance = hInstance;
-
-	//create the main window...
-	WNDCLASSEX wcx;
-	//fill out window info structure 
-	wcx.cbSize = sizeof(WNDCLASSEX);
-	wcx.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-	//callback for handling events...
-	wcx.lpfnWndProc = TheWindowProc;
-	wcx.cbClsExtra = 0;
-	wcx.cbWndExtra = 0;
-	wcx.hInstance = hInstance;
-	wcx.hIcon = LoadIcon(NULL, IDI_APPLICATION);	//load default app icon
-	wcx.hCursor = LoadCursor(NULL, IDC_ARROW);		//load default cursor.
-	wcx.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	wcx.lpszMenuName = NULL;	//no menu
-	wcx.lpszClassName = WINDOWCLASS;
-	wcx.hIconSm = NULL;
-	
-	//now register this new window type with the system...
-	if (!RegisterClassEx(&wcx))
-		return 0;
-
-	HWND hWnd = 0;
-
-	//now finally create the window...
-	if(g_bUseDirectX)
-	{
-
-		//create the window with params we want in dx mode...
-		hWnd = CreateWindowEx(0, WINDOWCLASS, WINDOWTITLE, 
-								WS_POPUP | WS_VISIBLE, 
-								0, 0, nWidth, nHeight, NULL, NULL, hInstance, NULL);
-	}
-	else
-	{
-		hWnd = CreateWindowEx(0, WINDOWCLASS, WINDOWTITLE, 
-								WS_BORDER | WS_SYSMENU | WS_VISIBLE, 
-								0, 0, nWidth, nHeight, NULL, NULL, hInstance, NULL);
-	}
-
-	if (!hWnd)
-		return 0;
-
-	return hWnd;
-}
-
 
 ////////////////////////////////////////
 // InitDirectX
