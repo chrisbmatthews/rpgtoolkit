@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.Form boardinformation 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Board Information"
@@ -79,6 +79,41 @@ Begin VB.Form boardinformation
       Tag             =   "1057"
       Top             =   720
       Width           =   6855
+      Begin VB.CommandButton cmdEnterPrg 
+         Appearance      =   0  'Flat
+         Caption         =   "Browse..."
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   345
+         Left            =   3600
+         TabIndex        =   59
+         Tag             =   "1021"
+         Top             =   2160
+         Width           =   1095
+      End
+      Begin VB.TextBox txtEnterPrg 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   285
+         Left            =   1680
+         TabIndex        =   58
+         Top             =   2160
+         Width           =   1815
+      End
       Begin VB.TextBox wl 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -218,6 +253,40 @@ Begin VB.Form boardinformation
          Tag             =   "1021"
          Top             =   360
          Width           =   1095
+      End
+      Begin VB.Label lblDirLinkInfo 
+         Caption         =   "Tip:"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   1335
+         Left            =   4920
+         TabIndex        =   61
+         Top             =   360
+         Width           =   1695
+      End
+      Begin VB.Label lblEnterPrg 
+         Caption         =   "Program to run when entering board"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   495
+         Left            =   120
+         TabIndex        =   60
+         Top             =   2160
+         Width           =   1575
       End
       Begin VB.Label Label10 
          Caption         =   "Western Link"
@@ -1116,7 +1185,7 @@ Attribute VB_Exposed = False
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 
 Sub infofill()
-On Error GoTo ErrorHandler
+On Error Resume Next
     If boardList(activeBoardIndex).theData.dirLink$(1) <> "" Then nl.Text = boardList(activeBoardIndex).theData.dirLink$(1)
     If boardList(activeBoardIndex).theData.dirLink$(2) <> "" Then sl.Text = boardList(activeBoardIndex).theData.dirLink$(2)
     If boardList(activeBoardIndex).theData.dirLink$(3) <> "" Then el.Text = boardList(activeBoardIndex).theData.dirLink$(3)
@@ -1184,12 +1253,12 @@ On Error GoTo ErrorHandler
     End If
     VScroll2.value = boardList(activeBoardIndex).theData.bSizeX
     VScroll3.value = boardList(activeBoardIndex).theData.bSizeY
+    
+    txtEnterPrg.Text = boardList(activeBoardIndex).theData.enterPrg
+    'Add the caption for the directional board links.
+    lblDirLinkInfo.Caption = "Tip: You can also set a program as a link to run " & _
+                             "instead of being sent to a new board."
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 
@@ -1219,7 +1288,30 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub Check2_Click()
+Private Sub cmdEnterPrg_Click(): On Error Resume Next
+'====================================================
+'Program to run on entering board Browse button.
+'====================================================
+
+    ChDir (currentDir)
+
+    Dim dlg As FileDialogInfo
+    dlg.strDefaultFolder = projectPath & prgPath
+    dlg.strTitle = "Program to run on entering board"
+    dlg.strDefaultExt = "prg"
+    dlg.strFileTypes = "Supported Files|*.prg|RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
+    
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
+    ChDir (currentDir)
+    
+    If dlg.strSelectedFile = "" Then Exit Sub
+    
+    If UCase$(GetExt(dlg.strSelectedFileNoPath)) = "PRG" Then
+        FileCopy dlg.strSelectedFile, projectPath & prgPath & antiPath
+        boardList(activeBoardIndex).theData.enterPrg = dlg.strSelectedFileNoPath
+        txtEnterPrg.Text = dlg.strSelectedFileNoPath
+    End If
+
 End Sub
 
 Private Sub Command1_Click()
@@ -1472,6 +1564,13 @@ Private Sub sy_LostFocus(): On Error Resume Next
         End If
     
         VScroll3.value = val(sy.Text)
+End Sub
+
+Private Sub txtEnterPrg_Change(): On Error Resume Next
+'=====================================================
+'Program to run on entering board text field.
+'=====================================================
+    boardList(activeBoardIndex).theData.enterPrg = txtEnterPrg.Text
 End Sub
 
 Private Sub VScroll2_Change(): On Error Resume Next
