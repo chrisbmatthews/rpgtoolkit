@@ -48,7 +48,7 @@ Dim runningTotal As Double
 Dim StartTime As Double
 Dim StopTime As Double
 Dim TimeToColor As Double
-Dim X As Long
+Dim x As Long
 
 Dim currentObject As RichTextBox
 Set currentObject = activeRPGCode.CodeForm
@@ -72,13 +72,13 @@ linesArray() = Split(currentObject.Text, vbNewLine)
 runningTotal = 0
 
 'StartTime = GetTickCount
-For X = 0 To UBound(linesArray())
+For x = 0 To UBound(linesArray())
     'If UBound(linesArray()) > 0 Then frmMain.StatusBar1.Panels(1).text = "Coloring " & Int((x / UBound(linesArray())) * 100) & "%"
 
     currentObject.selStart = runningTotal
-    currentObject.SelLength = Len(linesArray(X))
+    currentObject.SelLength = Len(linesArray(x))
 
-    If (X >= min And X <= max) Or (min = -1 And max = -1) Then
+    If (x >= min And x <= max) Or (min = -1 And max = -1) Then
 
         With currentObject
             .SelFontName = "Courier New"
@@ -86,18 +86,18 @@ For X = 0 To UBound(linesArray())
         End With
 
         If min = -1 Then
-            ColorLine linesArray(X), runningTotal
+            ColorLine linesArray(x), runningTotal
         Else
-            ColorLine linesArray(X), runningTotal, True
+            ColorLine linesArray(x), runningTotal, True
         End If
         
     End If
 
-    If Not min - 1 Then addBookmark linesArray(X)
+    If Not min - 1 Then addBookmark linesArray(x)
 
-    runningTotal = runningTotal + Len(linesArray(X)) + 2
+    runningTotal = runningTotal + Len(linesArray(x)) + 2
      
-Next X
+Next x
 
 'StopTime = GetTickCount
 If min = -1 Then currentObject.selStart = 1
@@ -256,7 +256,7 @@ Function ColorSection(SectionStart As Double, SectionLen As Double, SectionColor
 
  'Access the RTF box...
  Dim currentObject As RichTextBox
- Set currentObject = tkMainForm.activeForm.CodeForm
+ Set currentObject = activeRPGCode.CodeForm ' 3.06: Use the active RPGCode form
  
  'Select the text...
  currentObject.selStart = SectionStart

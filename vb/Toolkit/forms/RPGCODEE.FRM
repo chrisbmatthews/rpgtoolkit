@@ -27,11 +27,6 @@ Begin VB.Form rpgcodeedit
    ScaleWidth      =   8010
    Tag             =   "12"
    WindowState     =   2  'Maximized
-   Begin VB.Timer splitLinesTimer 
-      Interval        =   1
-      Left            =   1320
-      Top             =   4200
-   End
    Begin VB.PictureBox bookmarkToolbar 
       Align           =   1  'Align Top
       Appearance      =   0  'Flat
@@ -117,7 +112,6 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
-      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -1434,17 +1428,6 @@ Private Sub SavePrgMnu_Click(): On Error Resume Next
     'File is now unaltered.
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = False
 
-End Sub
-
-Private Sub splitLinesTimer_Timer()
-    On Error Resume Next
-    splitLinesTimer.Enabled = False
-    ' If codeForm.tag <> "1" Then
-        SplitLines
-        Call CodeForm.SetFocus
-        CodeForm.selStart = Len(CodeForm.Text)
-        blackLine = False
-    ' End If
 End Sub
 
 ' VISUAL EDITOR MENU

@@ -330,8 +330,8 @@ Dim lTabAvg As Long
    End If
 End Function
 
-Public Sub ScrollLeft()
-Attribute ScrollLeft.VB_Description = "Scrolls the tab display to the left as if the user had clicked the left scroll button."
+Public Sub scrollLeft()
+Attribute scrollLeft.VB_Description = "Scrolls the tab display to the left as if the user had clicked the left scroll button."
 Dim lDist As Long
    ' determine how far to go:
    lDist = getTypicalScrollDistance()
@@ -341,8 +341,8 @@ Dim lDist As Long
    End If
    ForceRefresh
 End Sub
-Public Sub ScrollRight()
-Attribute ScrollRight.VB_Description = "Scrolls the tab display to the right as if the user had clicked the right scroll button."
+Public Sub scrollRight()
+Attribute scrollRight.VB_Description = "Scrolls the tab display to the right as if the user had clicked the right scroll button."
 Dim lDist As Long
    ' determine how far to go:
    lDist = getTypicalScrollDistance()
@@ -588,7 +588,7 @@ End Function
 
 Private Sub drawTabs(ByVal lhWnd As Long, ByVal wParam As Long)
 
-   If (m_bShowTabs) Then
+   If (m_bShowTabs And (Not (tkMainForm.g_bNoTabRefresh))) Then
       determineWindows
          
       Dim lHDCW As Long
@@ -597,7 +597,7 @@ Private Sub drawTabs(ByVal lhWnd As Long, ByVal wParam As Long)
       Dim tR As RECT
       GetWindowRect lhWnd, tR
       OffsetRect tR, -tR.Left, -tR.Top
-      m_cMemDC.Width = Abs(tR.Right - tR.Left)
+      m_cMemDC.width = Abs(tR.Right - tR.Left)
       m_cMemDC.Height = Abs(tR.Bottom - tR.Top) + 1
       Dim lHDC As Long
       lHDC = m_cMemDC.hdc
@@ -1333,13 +1333,13 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
          Case 1
             ' left scroll:
             If IsLeftButtonEnabled Then
-               ScrollLeft
+               scrollLeft
                m_tmr.Interval = 150
             End If
          Case 2
             ' right scroll:
             If IsRightButtonEnabled Then
-               ScrollRight
+               scrollRight
                m_tmr.Interval = 150
             End If
          End Select
@@ -1605,10 +1605,10 @@ End Property
 Private Sub m_tmr_ThatTime()
    '
    If (m_iTrackButton = 1) And (IsLeftButtonEnabled) Then
-      ScrollLeft
+      scrollLeft
       ForceRefresh
    ElseIf (m_iTrackButton = 2) And (IsRightButtonEnabled) Then
-      ScrollRight
+      scrollRight
       ForceRefresh
    End If
 

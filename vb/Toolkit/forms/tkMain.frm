@@ -438,8 +438,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -2605,13 +2605,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "19/02/2005"
+            TextSave        =   "2/19/2005"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "15:54"
+            TextSave        =   "12:12 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2827,6 +2827,7 @@ Public boardToolbar As cBoardToolbar    ' The board toolbar
 Public boardCount As Long               ' Number of open boards
 Public toolTop As Integer               ' Distance from top of tools
 Public ignoreFocus As Boolean           ' Ignore obtaining of the focus?
+Public g_bNoTabRefresh As Boolean       ' Do not refresh the tabs?
 
 '============================================================================
 ' Members
@@ -3189,6 +3190,28 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x 
             activeTile.Show
             Call activeTile.openFile(projectPath & tilePath & setFilename)
     End Select
+
+End Sub
+
+'============================================================================
+' Click a tab
+'============================================================================
+Private Sub m_tabs_TabClick(ByVal iButton As MouseButtonConstants, ByVal hwnd As Long, ByVal screenX As Long, ByVal screenY As Long)
+
+    ' Find the window
+    Dim frm As Form
+    For Each frm In Forms
+        If (frm.hwnd = hwnd) Then
+
+            ' Hide then show this window
+            g_bNoTabRefresh = True
+            Call frm.Hide
+            Call frm.Show
+            g_bNoTabRefresh = False
+            Exit For
+
+        End If
+    Next frm
 
 End Sub
 
