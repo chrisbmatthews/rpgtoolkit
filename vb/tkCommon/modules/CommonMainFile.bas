@@ -183,7 +183,7 @@ Private Sub upgradeBattleSystem()
 
                     'It's trans3 and the DLL is supposed to already be registered
                     'but it's not-- make it happen
-                    Call ExecCmd("regsrv32 /s " & Chr(34) & fullPath & Chr(34))
+                    Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
 
                     'Now setup the plugin for usage
                     Call setupVBPlugin(fullPath)
