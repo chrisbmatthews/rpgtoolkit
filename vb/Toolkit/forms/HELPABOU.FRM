@@ -1,12 +1,13 @@
 VERSION 5.00
-Begin VB.Form helpabout 
+Begin VB.Form helpAbout 
    Appearance      =   0  'Flat
-   BorderStyle     =   1  'Fixed Single
+   BackColor       =   &H80000005&
+   BorderStyle     =   0  'None
    Caption         =   "About RPG Toolkit"
-   ClientHeight    =   5850
-   ClientLeft      =   2595
-   ClientTop       =   2730
-   ClientWidth     =   7365
+   ClientHeight    =   5670
+   ClientLeft      =   2550
+   ClientTop       =   2400
+   ClientWidth     =   7335
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -22,12 +23,24 @@ Begin VB.Form helpabout
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   5850
-   ScaleWidth      =   7365
+   ScaleHeight     =   5670
+   ScaleWidth      =   7335
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1115"
+   Begin Toolkit.TKTopBar TopBar 
+      Height          =   480
+      Left            =   0
+      TabIndex        =   10
+      Top             =   0
+      Width           =   6975
+      _extentx        =   12303
+      _extenty        =   847
+      Object.width           =   6975
+      caption         =   "About the RPGToolkit Development System, Version 3"
+   End
    Begin VB.TextBox Text1 
-      BackColor       =   &H8000000F&
+      Appearance      =   0  'Flat
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -43,15 +56,24 @@ Begin VB.Form helpabout
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   6
-      Top             =   3720
+      Top             =   3840
       Width           =   6855
    End
+   Begin VB.Shape Shape1 
+      Height          =   5655
+      Left            =   0
+      Top             =   0
+      Width           =   7335
+   End
    Begin VB.Label Label7 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   $"HELPABOU.frx":0CCA
-      Height          =   855
+      ForeColor       =   &H80000008&
+      Height          =   735
       Left            =   480
       TabIndex        =   9
-      Top             =   2640
+      Top             =   3000
       Width           =   6255
    End
    Begin VB.Label Label4 
@@ -74,7 +96,7 @@ Begin VB.Form helpabout
       Left            =   240
       TabIndex        =   8
       Tag             =   "1125"
-      Top             =   2040
+      Top             =   2520
       Width           =   6975
    End
    Begin VB.Label Label6 
@@ -96,7 +118,7 @@ Begin VB.Form helpabout
       Left            =   120
       TabIndex        =   7
       Tag             =   "1126"
-      Top             =   1800
+      Top             =   2160
       Width           =   4095
    End
    Begin VB.Label lname 
@@ -116,7 +138,7 @@ Begin VB.Form helpabout
       Left            =   4440
       TabIndex        =   5
       Tag             =   "1120"
-      Top             =   1080
+      Top             =   1440
       Visible         =   0   'False
       Width           =   2655
    End
@@ -139,7 +161,7 @@ Begin VB.Form helpabout
       Left            =   120
       TabIndex        =   4
       Tag             =   "1122"
-      Top             =   480
+      Top             =   840
       Width           =   2895
    End
    Begin VB.Label Label5 
@@ -149,11 +171,11 @@ Begin VB.Form helpabout
       BackStyle       =   0  'Transparent
       Caption         =   "-Unregistered Version-"
       ForeColor       =   &H000000FF&
-      Height          =   615
+      Height          =   375
       Left            =   4440
       TabIndex        =   3
       Tag             =   "1124"
-      Top             =   480
+      Top             =   1080
       Width           =   2415
    End
    Begin VB.Label Label3 
@@ -175,7 +197,7 @@ Begin VB.Form helpabout
       Left            =   120
       TabIndex        =   2
       Tag             =   "1126"
-      Top             =   1320
+      Top             =   1680
       Width           =   4095
    End
    Begin VB.Label Label2 
@@ -197,7 +219,7 @@ Begin VB.Form helpabout
       Left            =   120
       TabIndex        =   1
       Tag             =   "1094"
-      Top             =   840
+      Top             =   1200
       Width           =   3855
    End
    Begin VB.Label Label1 
@@ -219,7 +241,7 @@ Begin VB.Form helpabout
       Left            =   120
       TabIndex        =   0
       Tag             =   "1127"
-      Top             =   120
+      Top             =   480
       Width           =   6615
    End
 End
@@ -236,6 +258,8 @@ Option Explicit
 
 Private Sub Form_Load()
     On Error GoTo ErrorHandler
+
+    Set TopBar.theForm = Me
 
     Label5.Caption = "Community Edition [Open Source]"
     Label4.Caption = ""
