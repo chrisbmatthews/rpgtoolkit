@@ -372,6 +372,7 @@ Private mVarIndice As Long
 
 'Ignore reactivation action
 Public ignoreDeactivate As Boolean
+Public ignoreActivate As Boolean
 
 'Have we begun dragging?
 Private bDragBegin As Boolean
@@ -480,15 +481,11 @@ End Function
 '========================================================================
 ' Change the mode to normal/ISO
 '========================================================================
-Public Sub isoChange( _
-                        ByVal isoCheck As Boolean, _
-                        Optional ByVal doNotDealWithImport As Boolean _
-                                                                        )
+Public Sub isoChange(ByVal isoCheck As Boolean): On Error Resume Next
 
-    On Error Resume Next
-
-    'Exit sub if the mode is already the called mode
+    'Exit sub if the mode is already the called mode.
     If isoCheck = openTileEditorDocs(indice).isometric Then Exit Sub
+    If ignoreActivate Then Exit Sub
 
     If isoCheck Then
         If openTileEditorDocs(indice).tileNeedUpdate Then
@@ -502,7 +499,7 @@ Public Sub isoChange( _
         End If
         
         'Convert the tilemem to isometric through the rotation code, and store it
-        'in the buffer tile
+        'in the buffer tile.
         Call tstToIsometric
         
         'Copy the buffer tile into tilemem.
@@ -517,11 +514,9 @@ Public Sub isoChange( _
         xMod = 2
         xRange = 64
         
-        'Delete border of the isomirror in TkMainForm
-        tkMainForm.isoMirror.BorderStyle = 0
-        'Clear mirror in TkMainForm
-        Call vbPicFillRect(tkMainForm.mirror, 0, 0, 100, 100, vbQBColor(15))
     Else
+        '32x32.
+    
         If openTileEditorDocs(indice).tileNeedUpdate Then
             If MsgBox("Conversion from isometric to 2D is not possible. The" _
                        & " current tile will be erased. Do you wish to continue?", vbOKCancel + vbExclamation, "Isometric Mode") = vbCancel Then
@@ -537,36 +532,26 @@ Public Sub isoChange( _
             Next y
         Next x
         
-        'Clear the tilename.
-        openTileEditorDocs(indice).tileName = ""
-        activeTile.Caption = LoadStringLoc(801, "Tile Editor") + "  (Untitled)"
-        
-        For x = 0 To 64
-            For y = 0 To 32
-                tileMem(x, y) = -1
-            Next y
-        Next x
         xMod = 1
         xRange = 32
-
-        'Show border of the isomirror in TkMainForm
-        tkMainForm.isoMirror.BorderStyle = 1
-        tkMainForm.isoMirror.Cls
+    
     End If
     
-    'Update ISO variable
+    'Update ISO variable.
     openTileEditorDocs(indice).isometric = isoCheck
     
-    'Update buttons/menu
+    'Disable some tools for isometric mode (or enable for 2D).
     Call isoUpdate
     
-    'Update tilename
-    openTileEditorDocs(indice).tileName = ""
-    'Update caption
-    Me.Caption = LoadStringLoc(801, "Tile Editor") + "  (Untitled)"
+    'Update tilename.
+    openTileEditorDocs(indice).tileName = vbNullString
+    'Update caption.
+    Me.Caption = LoadStringLoc(801, "Tile Editor") & "  (Untitled)"
     
-    'Resize/Redraw
+    'Resize/Redraw.
+    tkMainForm.isoMirror.Cls
     Call Form_Resize
+    
 End Sub
 
 '========================================================================
@@ -589,7 +574,7 @@ Private Sub isoUpdate(): On Error Resume Next
 End Sub
 
 '========================================================================
-' Set the color to transparant
+' Set the color to transparent
 '========================================================================
 Public Sub Command1_Click(): On Error GoTo ErrorHandler
     'Set the current color to transparent
@@ -1084,14 +1069,13 @@ End Sub
 ' Form_Activate
 '========================================================================
 Private Sub Form_Activate(): On Error Resume Next
-    'Set some variables for the form
 
     Set activeTile = Me
     Set activeForm = Me
 
-    filename(2) = ""
     ignoreDeactivate = False
-
+    ignoreActivate = True
+    
     If openTileEditorDocs(indice).isometric Then
         tkMainForm.tileIsoCheck.value = 1
         xRange = 64
@@ -1101,21 +1085,24 @@ Private Sub Form_Activate(): On Error Resume Next
         xRange = 32
         xMod = 1
     End If
+        
+    ignoreActivate = False
 
+    'Disable several tools for isometric mode.
     Call isoUpdate
     
-    'Redraw
+    'Redraw.
+    tkMainForm.tileGrid.value = openTileEditorDocs(indice).grid
     Call tileRedraw
     
-    'Set the current tool
+    'Set the current tool.
     Call ToolSet(openTileEditorDocs(indice).tileMode)
     
-    'Set the selected color
+    'Set the selected color.
     Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 1000, 1000, openTileEditorDocs(indice).currentColor)
     
-    'Hide tools/extra's
+    'Hide tools/extras. Show the ones we need.
     Call hideAllTools
-    'Show the ones we need
     tkMainForm.bBar.Visible = True
     tkMainForm.tileExtras.Visible = True
     tkMainForm.tileTools.Visible = True
@@ -1127,28 +1114,85 @@ End Sub
 ' Form_KeyPress
 '========================================================================
 Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
+
     If UCase(chr(KeyAscii)) = "L" Then
-        If configfile.lastTileset = "" Then
+    
+        'Open last used tileset, and load any chosen tile into the open editor.
+    
+        If configfile.lastTileset = vbNullString Then
+            'No last used tileset.
             Call opentile_Click
             Exit Sub
         End If
+        
         tstFile = configfile.lastTileset
         ignoreDeactivate = True
-        tilesetForm.Show vbModal ', me
-        If setFilename$ = "" Then Exit Sub
         
-        'Open tile
-        Call openTile2(projectPath$ + tilePath$ + setFilename$)
+        'Pop up the tileset browser. If no tile is selected, exit.
+        tilesetForm.Show vbModal
+        If setFilename = vbNullString Then Exit Sub
+                
+        If UCase$(GetExt(tstFile)) = "ISO" Then
+            'Set the mode to isometric.
+            activeTile.isoChange (True)
         
-        'Redraw tile
-        Call highRedraw
+            Call openFromTileSet(projectPath & tilePath & tstFile, getTileNum(setFilename))
         
-        'Update filename
-        openTileEditorDocs(indice).tileName = setFilename$
+            'Now we need to rearrange the pixels in the tilemem from 32x32 to 62x32.
+            
+            Dim xCount As Byte, yCount As Byte, x As Long, y As Long
+            xCount = 1: yCount = 1
         
-        'Update caption
+            'Temporarily hold tilemem in the buffer.
+            For x = 1 To 32
+                For y = 1 To 32
+                    bufTile(x, y) = tileMem(x, y)
+                Next y
+            Next x
+            
+            For x = 1 To 64
+                For y = 1 To 32
+                                
+                    If isoMaskBmp(x, y) <> RGB(0, 0, 0) Then
+                        'Masked pixel.
+                        tileMem(x, y) = -1
+                    Else
+                        'Unmasked pixel.
+                        tileMem(x, y) = bufTile(xCount, yCount)
+                                            
+                        'Increment the tilemem entry.
+                        yCount = yCount + 1
+                        If yCount > 32 Then
+                            xCount = xCount + 1
+                            yCount = 1
+                        End If
+                    End If
+                Next y
+            Next x
+            
+        Else
+        
+            activeTile.isoChange (False)
+            
+            Call openFromTileSet(projectPath & tilePath & tstFile, getTileNum(setFilename))
+            
+            If detail = 2 Or detail = 4 Or detail = 6 Then
+                'Only 32x32 tiles allowed.
+                Call increaseDetail
+            End If
+            Call color_16million
+          
+        End If '(whichtype = "ISO")
+        
+        'Redraw tile.
+        Call tileRedraw
+        
+        'Update filename.
+        openTileEditorDocs(indice).tileName = setFilename
+        
+        'Update caption.
         Caption = LoadStringLoc(801, "Tile Editor") & "  (" & setFilename & ")"
-        activeTile.Caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
+        activeTile.Caption = LoadStringLoc(801, "Tile Editor") & "  (" & setFilename & ")"
 
     End If
 
@@ -1158,24 +1202,17 @@ End Sub
 ' Form_Load
 '========================================================================
 Private Sub Form_Load(): On Error Resume Next
+    
+    Set activeTile = Me
 
     'Create a new index.
     indice = newTileEditIndice()
     Set openTileEditors(indice) = Me
-    Set activeTile = Me
     Call clearTileDoc(openTileEditorDocs(indice))
 
     'Set some variables for the form
     ' Call LocalizeForm(Me)
 
-    'Refresh Data
-    Dim x As Integer, y As Integer
-    For x = 1 To 64
-        For y = 1 To 32
-            openTileEditorDocs(indice).tileMem(x, y) = -1
-        Next y
-    Next x
-    
     'Set some variables for ISO
     xMod = 1
     xRange = 32
@@ -1295,9 +1332,7 @@ End Sub
 '========================================================================
 ' Redraws the tileform
 '========================================================================
-Private Sub highRedraw()
-
-    On Error GoTo ErrorHandler
+Private Sub highRedraw(): On Error Resume Next
 
     'Clear tileform and mirrors in TkMainForm
     tileform.Cls
@@ -1326,23 +1361,27 @@ Private Sub highRedraw()
             yy = (y * pixelHeight) - (pixelHeight - 1)
             
             If isoMaskBmp(x, y) <> vbQBColor(0) And openTileEditorDocs(indice).isometric Then
+                
                 'Draw background color pixels at the corners if this tile is isometric
                 Call vbPicFillRect(tileform, xx, yy, xx + (pixelWidth - 1), yy + (pixelHeight - 1), Me.BackColor)
                 Call vbPicPSet(tkMainForm.isoMirror, x - 1, y - 1, Me.BackColor)
                 
                 'Clear the tilemem entry
-                tileMem(x, y) = -1
-            ElseIf tileMem(x, y) <> -1 Then
+                'tileMem(x, y) = -1         'No! This isn't always the active tile! (3.0.6 fix)
+                openTileEditorDocs(indice).tileMem(x, y) = -1
+                
+            ElseIf openTileEditorDocs(indice).tileMem(x, y) <> -1 Then
+            
                 'If the pixel isn't transparent and isn't masked - both isometric and 2D
                     
                 Call vbPicFillRect(tileform, xx - 1, yy - 1, xx + (pixelWidth - 1) - 2, yy + (pixelHeight - 1) - 2, tileMem(x, y))
                 
                 If openTileEditorDocs(indice).isometric Then
                     'Draw the isomirror here (moved from tileRedraw.) Don't draw the 2D mirror
-                    Call vbPicPSet(tkMainForm.isoMirror, x - 1, y - 1, tileMem(x, y))
+                    Call vbPicPSet(tkMainForm.isoMirror, x - 1, y - 1, openTileEditorDocs(indice).tileMem(x, y))
                 Else
                     'Draw the 2D mirror - isomirror drawn in tileRedraw
-                    Call vbPicPSet(tkMainForm.mirror, x - 1, y - 1, tileMem(x, y))
+                    Call vbPicPSet(tkMainForm.mirror, x - 1, y - 1, openTileEditorDocs(indice).tileMem(x, y))
                 End If
                 
             Else
@@ -1353,11 +1392,6 @@ Private Sub highRedraw()
         Next y
     Next x
     
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 '========================================================================
@@ -1391,7 +1425,8 @@ End Sub
 '========================================================================
 ' Redraw the tile
 '========================================================================
-Public Sub tileRedraw(): On Error GoTo ErrorHandler
+Public Sub tileRedraw(): On Error Resume Next
+    
     Call highRedraw
     Call drawGrid
     
@@ -1404,12 +1439,6 @@ Public Sub tileRedraw(): On Error GoTo ErrorHandler
     
      Call vbPicRefresh(tkMainForm.isoMirror)
 
-
-    Exit Sub
-'Error Handler
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub mnuRedo_Click()
