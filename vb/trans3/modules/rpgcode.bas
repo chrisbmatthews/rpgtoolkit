@@ -8059,7 +8059,7 @@ Sub DrawCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPG
         c = getValue(useIt3$, lit3$, num3, theProgram)
         d = getValue(useIt4$, lit4$, num4, theProgram)
         e = getValue(useIt5$, lit5$, num5, theProgram)
-        f = getValue(useIt5$, lit6$, num6, theProgram)
+        f = getValue(useIt6$, lit6$, num6, theProgram)
         
         'If a <> DT_NUM Or b <> DT_NUM Or c <> DT_NUM Or d <> DT_NUM Or E <> DT_NUM Or f <> DT_NUM Then
         '    Call debugger("Error: DrawCanvas data type must be num, num, num, num, num!-- " + text$)
