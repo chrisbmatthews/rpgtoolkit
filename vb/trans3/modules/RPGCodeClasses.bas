@@ -924,6 +924,8 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             'Assume object
             cLine = replace(replace(cLine & "!", "-", ""), " ", "")
         End If
+        'Parse the var
+        cLine = parseArray(cLine, prg)
     End If
 
     'Flag we're not in quotes
