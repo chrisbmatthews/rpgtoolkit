@@ -722,14 +722,17 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     
     Dim targetTile As Double, originTile As Double
     
-    targetTile = boardList(activeBoardIndex).theData.tiletype(xTarg, yTarg, Int(boardL))
-    originTile = boardList(activeBoardIndex).theData.tiletype(xOrig, yOrig, Int(boardL))
+    targetTile = boardList(activeBoardIndex).theData.tileType(xTarg, yTarg, Int(boardL))
+    originTile = boardList(activeBoardIndex).theData.tileType(xOrig, yOrig, Int(boardL))
        
     Dim centreX As Long, centreY As Long
     
     'Determine the centrepoint of the tile in pixels.
-    centreX = getBottomCentreX(boardX, boardY, pending) 'Note: new arguments!
-    centreY = getBottomCentreY(boardY)
+    centreX = getBottomCentreX(boardX, boardY)
+    centreY = getBottomCentreY(boardX, boardY)
+    
+    ' + 8 offsets the sprite 3/4 of way down tile rather than 1/2 for isometrics.
+    If boardIso() Then centreY = centreY + 8
        
     Dim spriteWidth As Long, spriteHeight As Long, cornerX As Long, cornerY As Long
     
