@@ -1115,11 +1115,11 @@ End Sub
 '========================================================================
 Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
 
-    If UCase(chr(KeyAscii)) = "L" Then
+    If UCase$(chr$(KeyAscii)) = "L" Then
     
         'Open last used tileset, and load any chosen tile into the open editor.
     
-        If configfile.lastTileset = vbNullString Then
+        If LenB(configfile.lastTileset) = 0 Then
             'No last used tileset.
             Call opentile_Click
             Exit Sub
@@ -1130,7 +1130,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
         
         'Pop up the tileset browser. If no tile is selected, exit.
         tilesetForm.Show vbModal
-        If setFilename = vbNullString Then Exit Sub
+        If LenB(setFilename) = 0 Then Exit Sub
                 
         If UCase$(GetExt(tstFile)) = "ISO" Then
             'Set the mode to isometric.
@@ -1183,6 +1183,9 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
             Call color_16million
           
         End If '(whichtype = "ISO")
+        
+        'Set a new undo.
+        Call setUndo
         
         'Redraw tile.
         Call tileRedraw
@@ -1502,7 +1505,7 @@ Private Sub tileform_MouseDown(Button As Integer, Shift As Integer, x As Single,
                                            
                     'Draw grid around the tile
                     If openTileEditorDocs(indice).grid Then
-                        Call vbPicRect(tileform, newX - 1, newY - 1, newX + (pixelWidth - 1), newY + (pixelHeight - 1), vbQBColor(1))
+                        Call vbPicRect(tileform, newX - 2, newY - 2, newX + (pixelWidth - 1) - 1, newY + (pixelHeight - 1) - 1, vbQBColor(1))
                     End If
                         
                     'Store pixel color
