@@ -13,7 +13,9 @@
 //--------------------------------------------------------------------------
 #ifndef _CGDICANVAS_H_
 #define _CGDICANVAS_H_
-#pragma once
+#ifdef _MSC_VER
+#	pragma once
+#endif
 
 //--------------------------------------------------------------------------
 // Inclusions
@@ -35,8 +37,13 @@ struct COLOR24
 //--------------------------------------------------------------------------
 // Definitions
 //--------------------------------------------------------------------------
-#define INLINE inline
-#define FAST_CALL __fastcall
+#ifdef _MSC_VER
+#	define INLINE __inline // VC++ uses the __inline keyword natively
+#	define FAST_CALL __fastcall
+#else
+#	define INLINE inline
+#	define FAST_CALL // Register (fast) calls are specific to VC++
+#endif
 #define DOUBLE double
 #define STATIC static
 
