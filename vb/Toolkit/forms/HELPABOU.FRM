@@ -4,10 +4,10 @@ Begin VB.Form helpAbout
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
    Caption         =   "About RPG Toolkit"
-   ClientHeight    =   5655
+   ClientHeight    =   5295
    ClientLeft      =   2550
    ClientTop       =   2400
-   ClientWidth     =   7335
+   ClientWidth     =   7215
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -23,21 +23,21 @@ Begin VB.Form helpAbout
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   5655
-   ScaleWidth      =   7335
+   ScaleHeight     =   5295
+   ScaleWidth      =   7215
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1115"
    Begin Toolkit.TKTopBar TopBar 
       Height          =   480
       Left            =   0
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   0
       Width           =   6975
-      _ExtentX        =   12303
-      _ExtentY        =   847
-      Object.Width           =   6975
-      Caption         =   "About the RPGToolkit Development System, Version 3"
+      _extentx        =   12303
+      _extenty        =   847
+      Object.width           =   6975
+      caption         =   "About the RPGToolkit Development System, Version 3"
    End
    Begin VB.TextBox Text1 
       Appearance      =   0  'Flat
@@ -55,15 +55,15 @@ Begin VB.Form helpAbout
       Left            =   240
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
-      TabIndex        =   6
-      Top             =   3840
+      TabIndex        =   5
+      Top             =   3480
       Width           =   6855
    End
    Begin VB.Shape Shape1 
-      Height          =   5655
+      Height          =   5295
       Left            =   0
       Top             =   0
-      Width           =   7335
+      Width           =   7215
    End
    Begin VB.Label Label7 
       Appearance      =   0  'Flat
@@ -72,32 +72,9 @@ Begin VB.Form helpAbout
       ForeColor       =   &H80000008&
       Height          =   735
       Left            =   480
-      TabIndex        =   9
-      Top             =   3000
+      TabIndex        =   7
+      Top             =   2640
       Width           =   6255
-   End
-   Begin VB.Label Label4 
-      Alignment       =   2  'Center
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "You May Distribute This Program  Freely"
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
-      Height          =   375
-      Left            =   240
-      TabIndex        =   8
-      Tag             =   "1125"
-      Top             =   2520
-      Width           =   6975
    End
    Begin VB.Label Label6 
       Appearance      =   0  'Flat
@@ -116,31 +93,10 @@ Begin VB.Form helpAbout
       ForeColor       =   &H00000000&
       Height          =   375
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   6
       Tag             =   "1126"
       Top             =   2160
       Width           =   4095
-   End
-   Begin VB.Label lname 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Licensed To Christopher Matthews"
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
-      Height          =   375
-      Left            =   4440
-      TabIndex        =   5
-      Tag             =   "1120"
-      Top             =   1440
-      Visible         =   0   'False
-      Width           =   2655
    End
    Begin VB.Label Label8 
       Appearance      =   0  'Flat
@@ -170,12 +126,21 @@ Begin VB.Form helpAbout
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "- Open Source -"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   13.5
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H000000FF&
-      Height          =   255
-      Left            =   4440
+      Height          =   375
+      Left            =   4320
       TabIndex        =   3
       Tag             =   "1124"
-      Top             =   1080
+      Top             =   1440
       Width           =   2415
    End
    Begin VB.Label Label3 
@@ -260,10 +225,6 @@ Private Sub Form_Load()
     On Error GoTo ErrorHandler
 
     Set TopBar.theForm = Me
-
-    Label4.Caption = ""
-    lname.Caption = ""
-    lname.Visible = True
 
     Dim theText As String
     theText = theText & "Open source contributions by: Colin James Fitzpatrick (KSNiloc), Phil Carty (Xavier), John@aljo, Jonathan Hughes (Delano), Chris Hutchinson (Euix), Geoff, Sander Knape (Woozy), Samuel Bedwell (Occasionally_Correct)" & vbCrLf & vbCrLf
