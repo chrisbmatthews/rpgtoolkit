@@ -1,20 +1,15 @@
 Attribute VB_Name = "RPGCodeVars"
 '=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
 '=========================================================================
 
 '=========================================================================
-' Interface with actkrt3.dll :: variables
+' RPGCode Variables
 '=========================================================================
 
 Option Explicit
-
-'=========================================================================
-' Globals
-'=========================================================================
-Public globalHeap As Long                  ' The ID of the global heap
 
 '=========================================================================
 ' Declarations
@@ -45,6 +40,18 @@ Private Declare Function RPGCKillRedirect Lib "actkrt3.dll" (ByVal pstrMethod As
 Private Declare Function RPGCGetRedirectName Lib "actkrt3.dll" (ByVal nItrOffset As Long, ByVal pstrToVal As String) As Long
 Private Declare Function RPGCClearRedirects Lib "actkrt3.dll" () As Long
 Private Declare Function RPGCCountRedirects Lib "actkrt3.dll" () As Long
+
+'=========================================================================
+' Members
+'=========================================================================
+Private m_globalHeap As Long            ' The ID of the global heap
+
+'=========================================================================
+' Get the ID of the global heap
+'=========================================================================
+Public Property Get globalHeap() As Long
+    globalHeap = m_globalHeap
+End Property
 
 '=========================================================================
 ' Add a local heap to a program
@@ -166,7 +173,7 @@ Public Sub declareVariable(ByRef strVarName As String, ByRef prg As RPGCodeProgr
 
     ' First, get the variable's type
     Dim dtVarType As RPGC_DT
-    dtVarType = variType(strVarName, globalHeap)
+    dtVarType = variType(strVarName, m_globalHeap)
 
     If (dtVarType = DT_NUM) Then
 
@@ -567,7 +574,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
     lngHeapFrame = prg.heapStack(prg.currentHeapFrame)
     If (lngHeapFrame) Then
         If (numVarExists(Text, lngHeapFrame) Or _
-            numVarExists(Text, globalHeap)) Then
+            numVarExists(Text, m_globalHeap)) Then
 
             ' It's a numerical var
             dataType = DT_NUM
@@ -1311,11 +1318,11 @@ Public Function SearchNumVar(ByVal varname As String, ByRef thePrg As RPGCodePro
             SearchNumVar = GetNumVar(varname, thePrg.heapStack(thePrg.currentHeapFrame))
         Else
             ' Not found: use the global heap
-            SearchNumVar = GetNumVar(varname, globalHeap)
+            SearchNumVar = GetNumVar(varname, m_globalHeap)
         End If
     Else
         ' No local heap: use global heap
-        SearchNumVar = GetNumVar(varname, globalHeap)
+        SearchNumVar = GetNumVar(varname, m_globalHeap)
     End If
 
     Exit Function
@@ -1326,7 +1333,7 @@ invalidFrame:
     On Error Resume Next
 
     ' Check the global heap:
-    SearchNumVar = GetNumVar(varname, globalHeap)
+    SearchNumVar = GetNumVar(varname, m_globalHeap)
 
 End Function
 
@@ -1344,11 +1351,11 @@ Public Function SearchLitVar(ByVal varname As String, ByRef thePrg As RPGCodePro
             SearchLitVar = GetLitVar(varname, thePrg.heapStack(thePrg.currentHeapFrame))
         Else
             ' Not found: use the global heap
-            SearchLitVar = GetLitVar(varname, globalHeap)
+            SearchLitVar = GetLitVar(varname, m_globalHeap)
         End If
     Else
         ' No local heap: use global heap
-        SearchLitVar = GetLitVar(varname, globalHeap)
+        SearchLitVar = GetLitVar(varname, m_globalHeap)
     End If
 
     Exit Function
@@ -1359,7 +1366,7 @@ invalidFrame:
     On Error Resume Next
 
     ' Check the global heap:
-    SearchLitVar = GetLitVar(varname, globalHeap)
+    SearchLitVar = GetLitVar(varname, m_globalHeap)
 
 End Function
 
@@ -1437,7 +1444,7 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
 
     'Get its type
     Dim varType As RPGC_DT
-    varType = variType(theVar, globalHeap)
+    varType = variType(theVar, m_globalHeap)
 
     ' Declare some vars
     Dim rV As RPGCODE_RETURN, exists As Boolean
@@ -1461,11 +1468,11 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
                 Call SetNumVar(theVar, CDbl(value), theProgram.heapStack(theProgram.currentHeapFrame))
             Else
                 ' Global
-                Call SetNumVar(theVar, CDbl(value), globalHeap)
+                Call SetNumVar(theVar, CDbl(value), m_globalHeap)
             End If
         Else
             ' Global
-            Call SetNumVar(theVar, CDbl(value), globalHeap)
+            Call SetNumVar(theVar, CDbl(value), m_globalHeap)
         End If
 
     ElseIf (varType = DT_LIT) Then    'LITERAL VARIABLE
@@ -1487,11 +1494,11 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
                 Call SetLitVar(theVar, value, theProgram.heapStack(theProgram.currentHeapFrame))
             Else
                 ' Global
-                Call SetLitVar(theVar, value, globalHeap)
+                Call SetLitVar(theVar, value, m_globalHeap)
             End If
         Else
             ' Global
-            Call SetLitVar(theVar, value, globalHeap)
+            Call SetLitVar(theVar, value, m_globalHeap)
         End If
 
     End If
@@ -1542,13 +1549,13 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
 
     ' Get the var's type
     Dim varType As RPGC_DT
-    varType = variType(theVar, globalHeap)
+    varType = variType(theVar, m_globalHeap)
     getVariable = varType
 
     Dim tdc As String
     tdc = RightB$(theVar, 2)
     If ((tdc <> "!") And (tdc <> "$")) Then
-        If Not (numVarExists(theVar, globalHeap)) Then
+        If Not (numVarExists(theVar, m_globalHeap)) Then
             If Not (numVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame))) Then
                 ' Get value of the destination
                 Dim litA As String, numA As Double
@@ -1622,7 +1629,7 @@ Public Sub initVarSystem()
     On Error GoTo anErr
 
     Call RPGCInit
-    globalHeap = RPGCCreateHeap()
+    m_globalHeap = RPGCCreateHeap()
     Call initRPGCodeClasses
     Call buildSignArrays
     Call SetVariable("true", 1, errorKeep, True)
