@@ -130,7 +130,7 @@ VOID APIENTRY mainEventLoop(INT gameLogicAddress)
 	gameLogic = FUNCTIONPOINTER(gameLogicAddress);
 
 	// Calculate how long one frame should take
-	CONST DWORD dblOneFrame = 1 / FPS_CAP * 1000;
+	CONST DWORD dblOneFrame = 1000 / FPS_CAP;
 
 	// Define a structure to hold the messages we recieve
     MSG message;
