@@ -320,10 +320,10 @@ Sub infofill()
     xx = tileBmpList(activeTileBmpIndex).theData.sizex
     yy = tileBmpList(activeTileBmpIndex).theData.sizey
     
-    arena.Width = xx * 32 * Screen.TwipsPerPixelX
+    arena.width = xx * 32 * Screen.TwipsPerPixelX
     arena.height = yy * 32 * Screen.TwipsPerPixelY
       
-    Me.Width = arena.Width + 1200
+    Me.width = arena.width + 1200
     Me.height = arena.height + 1200
     arena.Left = 500
     arena.Top = 400
@@ -536,7 +536,7 @@ Public Sub tileBmpSizeOK()
     Call infofill
 End Sub
 
-Private Sub arena_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
     
     Dim xx As Long, yy As Long, x2 As Long, y2 As Long
@@ -579,39 +579,29 @@ Private Sub arena_MouseDown(button As Integer, Shift As Integer, X As Single, Y 
     End Select
 End Sub
 
-Private Sub arena_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub arena_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
     Dim xx As Long, yy As Long
     
     xx = Int(X / 32) + tileBmpList(activeTileBmpIndex).topX
     yy = Int(Y / 32) + tileBmpList(activeTileBmpIndex).topY
     tkMainForm.tileBmpCoords.Caption = str$(xx + 1) + "," + str$(yy + 1)
-    If button <> 0 Then
-        Call arena_MouseDown(button, Shift, X, Y)
+    If Button <> 0 Then
+        Call arena_MouseDown(Button, Shift, X, Y)
     End If
 End Sub
 
 
 Private Sub Form_Activate()
     On Error Resume Next
-    
     Set activeTileBmp = Me
     Set activeForm = Me
     activeTileBmpIndex = dataIndex
-    
-    'extras
+    Call hideAllTools
     tkMainForm.bottomFrame.Visible = True
     tkMainForm.tileBmpExtras.Visible = True
-    tkMainForm.animationExtras.Visible = False
-    tkMainForm.tileExtras.Visible = False
-    
-    'tools
     tkMainForm.tilebmpTools.Visible = True
     tkMainForm.tilebmpTools.Top = tkMainForm.toolTop
-    tkMainForm.animationTools.Visible = False
-    tkMainForm.rpgcodeTools.Visible = False
-    tkMainForm.tileTools.Visible = False
-    tkMainForm.boardTools.Visible = False
 End Sub
 
 Private Sub Form_Load()

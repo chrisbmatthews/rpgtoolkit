@@ -140,10 +140,10 @@ Begin VB.Form editstatus
          End
          Begin VB.TextBox rpgcodebox 
             Height          =   285
-            Left            =   2400
+            Left            =   2530
             TabIndex        =   4
             Top             =   2160
-            Width           =   2535
+            Width           =   2400
          End
          Begin VB.CommandButton Command14 
             Caption         =   "Browse..."
@@ -567,20 +567,7 @@ Private Sub Form_Activate()
     Set activeStatusEffect = Me
     Set activeForm = Me
     activeStatusEffectIndex = dataIndex
-
-    'extras
-    tkMainForm.animationExtras.Visible = False
-    tkMainForm.bottomFrame.Visible = False
-    tkMainForm.tileExtras.Visible = False
-    tkMainForm.tileBmpExtras.Visible = False
-    
-    'tools
-    tkMainForm.tilebmpTools.Visible = False
-    tkMainForm.animationTools.Visible = False
-    tkMainForm.rpgcodeTools.Visible = False
-    tkMainForm.tileTools.Visible = False
-    tkMainForm.tileTools.Top = tkMainForm.toolTop
-    tkMainForm.boardTools.Visible = False
+    Call hideAllTools
 End Sub
 
 Private Sub Form_Load()
