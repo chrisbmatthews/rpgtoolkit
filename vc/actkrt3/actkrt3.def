@@ -188,3 +188,5 @@ EXPORTS
 	RPGCGetLitVarByteLen @ 246
 
 	initCounter			@251
+
+	CNVBltCanvasTranslucentPart @ 252
