@@ -56,6 +56,12 @@ Public Const STAIRS6 = 16
 Public Const STAIRS7 = 17
 Public Const STAIRS8 = 18
 
+Private Type IDLE_INFO      'IDLE information for players / items.
+    frameTime As Double     'Length of time this frame of the idle animation has played for.
+    frameDelay As Double    'Frame delay of the frames of the idle animation.
+    time As Double          'Length of time this item has been idle for.
+End Type
+
 Public Type PLAYER_POSITION
     stance As String        'Current stance.
     frame As Long           'Animation frame.
@@ -65,8 +71,7 @@ Public Type PLAYER_POSITION
     
     '3.0.5
     loopFrame As Long       'Current frame in a movement loop (different from .frame).
-    idleTime As Double      'Length of time this item has been idle for.
-    
+    idle As IDLE_INFO
 End Type
 
 Public pPos(4) As PLAYER_POSITION       'Player positions of 5 players.
@@ -1372,7 +1377,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                             End With
 
                             'Start the idle timer:
-                            .idleTime = Timer()
+                            .idle.time = Timer()
 
                             .loopFrame = 0
 
@@ -1576,7 +1581,7 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                             End With
 
                             ' Start the idle timer:
-                            .idleTime = Timer()
+                            .idle.time = Timer()
 
                             ' Set -1 temporarily to flag the next loop.
                             .loopFrame = -1

@@ -243,7 +243,7 @@ Public Sub openItems()
             itmPos(itemNum).x = .itmX(itemNum)
             itmPos(itemNum).y = .itmY(itemNum)
             itmPos(itemNum).l = .itmLayer(itemNum)
-            itmPos(itemNum).stance = "stand_s"
+            itmPos(itemNum).stance = "walk_s"
 
             ' Indicate that there was no last render
             lastItemRender(itemNum).canvas = -1

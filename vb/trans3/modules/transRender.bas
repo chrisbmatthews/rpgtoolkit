@@ -1224,43 +1224,43 @@ Private Function renderPlayer(ByVal cnv As Long, _
             Dim bIdleGfx As Boolean
             bIdleGfx = (LeftB$(LCase$(.stance), 10) = "stand")
 
-            If Timer() - .idleTime >= thePlayer.idleTime And (Not (bIdleGfx)) Then
+            If Timer() - .idle.time >= thePlayer.idleTime And (Not (bIdleGfx)) Then
                 'Push into idle graphics if not already.
 
                 'Check that a standing graphic for this direction exists.
                 If direction <> -1 Then
                     If LenB(thePlayer.standingGfx(direction)) Then
                         'If so, change the stance to STANDing.
-                        .stance = "stand" & Right$(.stance, Len(.stance) - 4)
+                        .stance = "stand" & RightB$(.stance, LenB(.stance) - 8)
 
                         bIdleGfx = True
 
-                        'Start the loop counter for idleness.
+                        'Set the loop counter and timer for idleness.
                         .loopFrame = -1
-
+                        .idle.frameTime = Timer()
+                        
+                        'Load the frame delay for the idle animation.
+                        Dim idleAnim As TKAnimation
+                        Call openAnimation(projectPath & miscPath & thePlayer.standingGfx(direction), idleAnim)
+                        .idle.frameDelay = idleAnim.animPause
+                        
                     End If
                 End If
 
             End If
-
+            
             If (bIdleGfx) And LenB(thePlayer.standingGfx(direction)) <> 0 Then
                 'We're standing!
-
-                If .loopFrame Mod ((thePlayer.loopSpeed) / movementSize) = 0 Then
-                    'Only increment the frame if we're on a multiple of .speed.
-                    '/ movementSize to handle pixel movement.
+                
+                If Timer() - .idle.frameTime >= .idle.frameDelay Then
+                    'Increment the animation frame when the delay is up.
                     .frame = .frame + 1
-                    .loopFrame = 0
+                    
+                    'Start the timer for this frame.
+                    .idle.frameTime = Timer()
+                    
                 End If
-
-                'Let's make use of those negative numbers.
-                .loopFrame = .loopFrame - 1
-
-                'Force a draw even though there's nothing new.
-                'renderPlayer = True
-
             End If
-
         End If '.direction <> MV_IDLE
 
     End With
@@ -1346,19 +1346,26 @@ Private Function renderItem(ByVal cnv As Long, _
             Dim bIdleGfx As Boolean
             bIdleGfx = (LeftB$(LCase$(.stance), 10) = "stand")
             
-            If Timer() - .idleTime >= theItem.idleTime And (Not (bIdleGfx)) Then
+            If Timer() - .idle.time >= theItem.idleTime And (Not (bIdleGfx)) Then
                 'Push into idle graphics if not already.
                 
                 'Check that a standing graphic for this direction exists.
                 If direction <> -1 Then
                     If LenB(theItem.standingGfx(direction)) Then
                         'If so, change the stance to STANDing.
-                        .stance = "stand" & Right$(.stance, Len(.stance) - 4)
+                        .stance = "stand" & RightB$(.stance, LenB(.stance) - 8)
 
                         bIdleGfx = True
 
                         'Start the loop counter for idleness.
                         .loopFrame = -1
+                        .idle.frameTime = Timer()
+                        
+                        'Load the frame delay for the idle animation.
+                        Dim idleAnim As TKAnimation
+                        Call openAnimation(projectPath & miscPath & theItem.standingGfx(direction), idleAnim)
+                        .idle.frameDelay = idleAnim.animPause
+                        
                     End If
                 End If
                 
@@ -1367,21 +1374,15 @@ Private Function renderItem(ByVal cnv As Long, _
             If (bIdleGfx) And LenB(theItem.standingGfx(direction)) <> 0 Then
                 'We're standing and we have idling graphics.
                 
-                If .loopFrame Mod ((theItem.loopSpeed) / movementSize) = 0 Then
-                    'Only increment the frame if we're on a multiple of .speed.
-                    '/ movementSize to handle pixel movement.
+                If Timer() - .idle.frameTime >= .idle.frameDelay Then
+                    'Increment the animation frame when the delay is up.
                     .frame = .frame + 1
-                    .loopFrame = 0
-                End If
-                
-                'Let's make use of those negative numbers.
-                .loopFrame = .loopFrame - 1
-                
-                'Force a draw even though there's nothing new.
-                'renderItem = True
                     
+                    'Start the timer for this frame.
+                    .idle.frameTime = Timer()
+                    
+                End If
             End If
-            
         End If '.direction <> MV_IDLE
         '===============================
         
@@ -1407,7 +1408,7 @@ Private Function renderItem(ByVal cnv As Long, _
         
         Call renderAnimationFrame(cnv, itemGetStanceAnm(.stance, theItem), .frame, 0, 0)
         
-    End With
+    End With 'itemPosition
     
     renderItem = True
 
