@@ -30,8 +30,8 @@ Option Explicit
 '=========================================================================
 Public Type TKBoardAnimTile
     theTile As TKTileAnm
-    x As Long
-    y As Long
+    X As Long
+    Y As Long
     layer As Long
 End Type
 
@@ -106,7 +106,7 @@ Public Type TKBoard
     playerLayer As Integer                'player layer coord
     brdSavingYN As Integer                'can player save on board? 0-yes, 1-no
     isIsometric As Byte                   'is it an isometric board? (0- no, 1-yes)
-    threads() As String                   'filenames of threads on board
+    Threads() As String                   'filenames of threads on board
     hasAnmTiles As Boolean                'does board have anim tiles?
     animatedTile() As TKBoardAnimTile     'animated tiles associated with this board
     anmTileInsertIdx As Long              'index of animated tile insertion
@@ -169,12 +169,16 @@ Public tilesY As Double                   'tiles screen can hold on y
 ' Enlarge item related arrays
 '=========================================================================
 Public Sub dimensionItemArrays()
-   
+
     With boardList(activeBoardIndex).theData
-    
+
+        'Check our dimensioning situation
         On Error GoTo needsDim
+
+        'Get upper bound
         Dim ub As Long
         ub = UBound(.itmName) + 1
+
         On Error Resume Next
 
         ReDim Preserve .itmActivate(ub)
@@ -209,7 +213,7 @@ End Sub
 '=========================================================================
 ' Add an animated tile to the board
 '=========================================================================
-Public Sub BoardAddTileAnmRef(ByRef theBoard As TKBoard, ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal layer As Long)
+Public Sub BoardAddTileAnmRef(ByRef theBoard As TKBoard, ByVal file As String, ByVal X As Long, ByVal Y As Long, ByVal layer As Long)
     On Error Resume Next
     'add a reference to an animated tile to this board
     
@@ -228,8 +232,8 @@ Public Sub BoardAddTileAnmRef(ByRef theBoard As TKBoard, ByVal file As String, B
         lastAnmFile = file
     End If
     theBoard.animatedTile(theBoard.anmTileInsertIdx).theTile = lastAnm
-    theBoard.animatedTile(theBoard.anmTileInsertIdx).x = x
-    theBoard.animatedTile(theBoard.anmTileInsertIdx).y = y
+    theBoard.animatedTile(theBoard.anmTileInsertIdx).X = X
+    theBoard.animatedTile(theBoard.anmTileInsertIdx).Y = Y
     theBoard.animatedTile(theBoard.anmTileInsertIdx).layer = layer
     
     theBoard.anmTileInsertIdx = theBoard.anmTileInsertIdx + 1
@@ -259,7 +263,7 @@ End Sub
 '=========================================================================
 ' Find the number of consective tiles
 '=========================================================================
-Public Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByRef l As Integer, ByRef theBoard As TKBoard) As Long
+Public Function BoardFindConsecutive(ByRef X As Integer, ByRef Y As Integer, ByRef l As Integer, ByRef theBoard As TKBoard) As Long
     'find the number of consecutive identical tiles there are
     'starting at x, y, l
     'return 1 if there's only the one, else return the number of consecutive tiles
@@ -270,19 +274,19 @@ Public Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByR
     Dim theTile As String
     Dim theRed As Long, theGreen As Long, theBlue As Long, theType As Long
     
-    theTile = theBoard.board(x, y, l)
-    theRed = theBoard.ambientRed(x, y, l)
-    theGreen = theBoard.ambientGreen(x, y, l)
-    theBlue = theBoard.ambientBlue(x, y, l)
-    theType = theBoard.tiletype(x, y, l)
+    theTile = theBoard.board(X, Y, l)
+    theRed = theBoard.ambientRed(X, Y, l)
+    theGreen = theBoard.ambientGreen(X, Y, l)
+    theBlue = theBoard.ambientBlue(X, Y, l)
+    theType = theBoard.tiletype(X, Y, l)
     
     Dim count As Long, sx As Long, sy As Long, sl As Long
     Dim ll As Long, yy As Long, xx As Long
     
     count = 0
     
-    sx = x
-    sy = y
+    sx = X
+    sy = Y
     sl = l
     
     'now finf the consecutive similar ones...
@@ -296,13 +300,13 @@ Public Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByR
                     theBoard.ambientBlue(xx, yy, ll) <> theBlue Or _
                     theBoard.tiletype(xx, yy, ll) <> theType Then
                     'does not match-- return!
-                    x = xx: y = yy: l = ll
+                    X = xx: Y = yy: l = ll
                     BoardFindConsecutive = count
                     Exit Function
                 Else
                     count = count + 1
                     If count > 30000 Then
-                        x = xx: y = yy: l = ll
+                        X = xx: Y = yy: l = ll
                         BoardFindConsecutive = count - 1
                         Exit Function
                     End If
@@ -311,8 +315,8 @@ Public Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByR
         Next yy
     Next ll
     
-    x = xx
-    y = yy
+    X = xx
+    Y = yy
     l = ll
     BoardFindConsecutive = count
 End Function
@@ -336,19 +340,19 @@ Public Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLa
     ReDim b(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Integer
     ReDim t(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Byte
     
-    Dim x As Long, y As Long, l As Long
+    Dim X As Long, Y As Long, l As Long
     
-    For x = 0 To theBoard.bSizeX
-        For y = 0 To theBoard.bSizeY
+    For X = 0 To theBoard.bSizeX
+        For Y = 0 To theBoard.bSizeY
             For l = 0 To theBoard.bSizeL
-                brd(x, y, l) = theBoard.board(x, y, l)
-                r(x, y, l) = theBoard.ambientRed(x, y, l)
-                g(x, y, l) = theBoard.ambientGreen(x, y, l)
-                b(x, y, l) = theBoard.ambientBlue(x, y, l)
-                t(x, y, l) = theBoard.tiletype(x, y, l)
+                brd(X, Y, l) = theBoard.board(X, Y, l)
+                r(X, Y, l) = theBoard.ambientRed(X, Y, l)
+                g(X, Y, l) = theBoard.ambientGreen(X, Y, l)
+                b(X, Y, l) = theBoard.ambientBlue(X, Y, l)
+                t(X, Y, l) = theBoard.tiletype(X, Y, l)
             Next l
-        Next y
-    Next x
+        Next Y
+    Next X
     
     'resize...
     ReDim theBoard.board(sizex, sizey, sizeLayer)
@@ -364,17 +368,17 @@ Public Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLa
     If sizeLayer < theBoard.bSizeL Then ll = sizeLayer Else ll = theBoard.bSizeL
     
     'now fill it in with the old info...
-    For x = 0 To xx
-        For y = 0 To yy
+    For X = 0 To xx
+        For Y = 0 To yy
             For l = 0 To ll
-                theBoard.board(x, y, l) = brd(x, y, l)
-                theBoard.ambientRed(x, y, l) = r(x, y, l)
-                theBoard.ambientGreen(x, y, l) = g(x, y, l)
-                theBoard.ambientBlue(x, y, l) = b(x, y, l)
-                theBoard.tiletype(x, y, l) = t(x, y, l)
+                theBoard.board(X, Y, l) = brd(X, Y, l)
+                theBoard.ambientRed(X, Y, l) = r(X, Y, l)
+                theBoard.ambientGreen(X, Y, l) = g(X, Y, l)
+                theBoard.ambientBlue(X, Y, l) = b(X, Y, l)
+                theBoard.tiletype(X, Y, l) = t(X, Y, l)
             Next l
-        Next y
-    Next x
+        Next Y
+    Next X
     
     theBoard.bSizeX = sizex
     theBoard.bSizeY = sizey
@@ -431,7 +435,7 @@ End Function
 '=========================================================================
 ' Change a board's size
 '=========================================================================
-Public Sub boardSize(ByVal fName As String, ByRef x As Long, ByRef y As Long)
+Public Sub boardSize(ByVal fName As String, ByRef X As Long, ByRef Y As Long)
     'give board x, y size
     On Error Resume Next
     Dim fileOpen As String, xx As Long, yy As Long, num As Long
@@ -465,8 +469,8 @@ Public Sub boardSize(ByVal fName As String, ByRef x As Long, ByRef y As Long)
         
         'new style boards.
         'first is the board size...
-        x = BinReadInt(num)
-        y = BinReadInt(num)
+        X = BinReadInt(num)
+        Y = BinReadInt(num)
         l = BinReadInt(num)
     Close #num
     Exit Sub
@@ -477,7 +481,7 @@ ver2oldboard:
         Input #num, fileHeader$        'Filetype
         If fileHeader$ <> "RPGTLKIT BOARD" Then
             Close #num
-            x = 19: y = 11
+            X = 19: Y = 11
             Exit Sub
         End If
         Input #num, majorVer           'Version
@@ -496,7 +500,7 @@ ver2oldboard:
             yy = 11
         End If
     Close #num
-    x = xx: y = yy
+    X = xx: Y = yy
 End Sub
 
 '=========================================================================
@@ -508,19 +512,19 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
 
     With theBoard
         ReDim .tileIndex(5)
-        Dim x As Long, y As Long, layer As Long, t As Long
+        Dim X As Long, Y As Long, layer As Long, t As Long
         Call dimensionItemArrays
-        For x = 0 To .bSizeX
-            For y = 0 To .bSizeY
+        For X = 0 To .bSizeX
+            For Y = 0 To .bSizeY
                 For layer = 0 To .bSizeL
-                    .board(x, y, layer) = 0
-                    .ambientRed(x, y, layer) = 0
-                    .ambientGreen(x, y, layer) = 0
-                    .ambientBlue(x, y, layer) = 0
-                    .tiletype(x, y, layer) = 0
+                    .board(X, Y, layer) = 0
+                    .ambientRed(X, Y, layer) = 0
+                    .ambientGreen(X, Y, layer) = 0
+                    .ambientBlue(X, Y, layer) = 0
+                    .tiletype(X, Y, layer) = 0
                 Next layer
-            Next y
-        Next x
+            Next Y
+        Next X
         .brdBack = ""
         .borderBack = ""
         .brdColor = RGB(255, 255, 255)
@@ -599,7 +603,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
 
     On Error Resume Next
 
-    Dim num As Long, t As Long, l As Long, x As Long, y As Long
+    Dim num As Long, t As Long, l As Long, X As Long, Y As Long
 
     num = FreeFile()
 
@@ -612,7 +616,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
         Call BinWriteString(num, "RPGTLKIT BOARD")    'Filetype
         Call BinWriteInt(num, major)
         Call BinWriteInt(num, 2)    'Minor version (ie 2.2 new type, allowing large boards)
-        Call BinWriteInt(num, 0)         'registered yn (0 allowing boards to be read by TK2-CE)
+        Call BinWriteInt(num, 1)
         Call BinWriteString(num, "NOCODE")            'No reg code
         
         'first is the board size...
@@ -634,10 +638,10 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
         Next t
         'now the board tiles...
         For l = 1 To theBoard.bSizeL
-            For y = 1 To theBoard.bSizeY
-                For x = 1 To theBoard.bSizeX
+            For Y = 1 To theBoard.bSizeY
+                For X = 1 To theBoard.bSizeX
                     Dim x2 As Integer, y2 As Integer, l2 As Integer
-                    x2 = x: y2 = y: l2 = l
+                    x2 = X: y2 = Y: l2 = l
                     Dim rep As Long
                     rep = BoardFindConsecutive(x2, y2, l2, theBoard)
                     If rep > 1 Then
@@ -647,24 +651,24 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
                         rep = rep * -1
                         Call BinWriteInt(num, rep)
                         'now write out the board data...
-                        Call BinWriteInt(num, theBoard.board(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientRed(x, y, l))  'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientGreen(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientBlue(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteByte(num, theBoard.tiletype(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.board(X, Y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientRed(X, Y, l))  'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientGreen(X, Y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientBlue(X, Y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteByte(num, theBoard.tiletype(X, Y, l))   'board tiles -- codes indicating where the tiles are on the board
                         'set the new x, y, l...
                         x2 = x2 - 1
-                        x = x2: y = y2: l = l2
+                        X = x2: Y = y2: l = l2
                     Else
                         'no repetitions-- just write as normal...
-                        Call BinWriteInt(num, theBoard.board(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientRed(x, y, l))  'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientGreen(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientBlue(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteByte(num, theBoard.tiletype(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.board(X, Y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientRed(X, Y, l))  'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientGreen(X, Y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteInt(num, theBoard.ambientBlue(X, Y, l))   'board tiles -- codes indicating where the tiles are on the board
+                        Call BinWriteByte(num, theBoard.tiletype(X, Y, l))   'board tiles -- codes indicating where the tiles are on the board
                     End If
-                Next x
-            Next y
+                Next X
+            Next Y
         Next l
         Call BinWriteString(num, theBoard.brdBack)      'board background img (parallax layer)
         Call BinWriteString(num, theBoard.brdFore)      'board foreground image (parallax)
@@ -726,9 +730,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
         
         Call BinWriteByte(num, theBoard.isIsometric)
 
-        For t = 0 To UBound(theBoard.threads)
-            If theBoard.threads(t) <> "" Then
-                Call BinWriteString(num, theBoard.threads(t))
+        For t = 0 To UBound(theBoard.Threads)
+            If theBoard.Threads(t) <> "" Then
+                Call BinWriteString(num, theBoard.Threads(t))
             End If
         Next t
 
@@ -841,10 +845,10 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
             Next t
 
             'now the board tiles...
-            Dim l As Long, y As Long, x As Long
+            Dim l As Long, Y As Long, X As Long
             For l = 1 To .bSizeL
-                For y = 1 To .bSizeY
-                    For x = 1 To .bSizeX
+                For Y = 1 To .bSizeY
+                    For X = 1 To .bSizeX
                         Dim test As Integer
                         test = BinReadInt(num)
                         If test < 0 Then
@@ -856,25 +860,25 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                             bl = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile blue
                             tt = BinReadByte(num)  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
                             For cnt = 1 To test
-                                .board(x, y, l) = bb   'board tiles -- codes indicating where the tiles are on the board
-                                .ambientRed(x, y, l) = rr 'ambiebnt tile red
-                                .ambientGreen(x, y, l) = gg 'boardList(activeBoardIndex).ambient tile green
-                                .ambientBlue(x, y, l) = bl 'boardList(activeBoardIndex).ambient tile blue
-                                .tiletype(x, y, l) = tt  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
+                                .board(X, Y, l) = bb   'board tiles -- codes indicating where the tiles are on the board
+                                .ambientRed(X, Y, l) = rr 'ambiebnt tile red
+                                .ambientGreen(X, Y, l) = gg 'boardList(activeBoardIndex).ambient tile green
+                                .ambientBlue(X, Y, l) = bl 'boardList(activeBoardIndex).ambient tile blue
+                                .tiletype(X, Y, l) = tt  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
                                 Dim tAnm As Long
                                 'check tile type for animations
                                 For tAnm = 0 To .anmTileLUTInsertIdx - 1
-                                    If .board(x, y, l) = .anmTileLUTIndices(tAnm) Then
+                                    If .board(X, Y, l) = .anmTileLUTIndices(tAnm) Then
                                         'this is an animated tile
-                                        Call BoardAddTileAnmRef(theBoard, .tileIndex(.board(x, y, l)), x, y, l)
+                                        Call BoardAddTileAnmRef(theBoard, .tileIndex(.board(X, Y, l)), X, Y, l)
                                     End If
                                 Next tAnm
-                                x = x + 1
-                                If x > .bSizeX Then
-                                    x = 1
-                                    y = y + 1
-                                    If y > .bSizeY Then
-                                        y = 1
+                                X = X + 1
+                                If X > .bSizeX Then
+                                    X = 1
+                                    Y = Y + 1
+                                    If Y > .bSizeY Then
+                                        Y = 1
                                         l = l + 1
                                         If l > .bSizeL Then
                                             GoTo exitTheFor
@@ -882,24 +886,24 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                                     End If
                                 End If
                             Next cnt
-                            x = x - 1
+                            X = X - 1
                         Else
-                            .board(x, y, l) = test   'board tiles -- codes indicating where the tiles are on the board
-                            .ambientRed(x, y, l) = BinReadInt(num) 'ambiebnt tile red
-                            .ambientGreen(x, y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile green
-                            .ambientBlue(x, y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile blue
-                            .tiletype(x, y, l) = BinReadByte(num)  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
+                            .board(X, Y, l) = test   'board tiles -- codes indicating where the tiles are on the board
+                            .ambientRed(X, Y, l) = BinReadInt(num) 'ambiebnt tile red
+                            .ambientGreen(X, Y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile green
+                            .ambientBlue(X, Y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile blue
+                            .tiletype(X, Y, l) = BinReadByte(num)  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
                     
                             'check tile type for animations
                             For tAnm = 0 To .anmTileLUTInsertIdx - 1
-                                If .board(x, y, l) = .anmTileLUTIndices(tAnm) Then
+                                If .board(X, Y, l) = .anmTileLUTIndices(tAnm) Then
                                     'this is an animated tile
-                                    Call BoardAddTileAnmRef(theBoard, .tileIndex(.board(x, y, l)), x, y, l)
+                                    Call BoardAddTileAnmRef(theBoard, .tileIndex(.board(X, Y, l)), X, Y, l)
                                 End If
                             Next tAnm
                         End If
-                    Next x
-                Next y
+                    Next X
+                Next Y
             Next l
 exitTheFor:
             .brdBack = BinReadString(num)      'board background img (parallax layer)
@@ -981,8 +985,8 @@ exitTheFor:
             Dim tCount As Long
             Dim thread As String
             Do Until EOF(num)
-                ReDim Preserve .threads(tCount)
-                .threads(tCount) = BinReadString(num)
+                ReDim Preserve .Threads(tCount)
+                .Threads(tCount) = BinReadString(num)
                 tCount = tCount + 1
             Loop
 
@@ -1017,18 +1021,18 @@ ver2oldboard:
                 Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, theBoard)
             End If
             Dim lay As Long
-            For x = 1 To .bSizeX
-                For y = 1 To .bSizeY
+            For X = 1 To .bSizeX
+                For Y = 1 To .bSizeY
                     For lay = 1 To .bSizeL
                         Temp$ = fread(num)              'Board tiles (the ,8 on the end is 8 layers)
-                        Call BoardSetTile(x, y, lay, Temp$, theBoard)
-                        .ambientRed(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile red
-                        .ambientGreen(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile green
-                        .ambientBlue(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile blue
-                        .tiletype(x, y, lay) = fread(num) 'Board tile types... 0- Normal, 1- solid
+                        Call BoardSetTile(X, Y, lay, Temp$, theBoard)
+                        .ambientRed(X, Y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile red
+                        .ambientGreen(X, Y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile green
+                        .ambientBlue(X, Y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile blue
+                        .tiletype(X, Y, lay) = fread(num) 'Board tile types... 0- Normal, 1- solid
                     Next lay
-                Next y
-            Next x
+                Next Y
+            Next X
             .brdBack$ = fread(num)        'Board background image
             .borderBack$ = fread(num)     'Border background image
             .brdColor = fread(num)        'Board color
@@ -1111,20 +1115,20 @@ Ver1Board:
                 Call MsgBox("Unable to open selected filename", "Board editor")
                 Exit Function
             End If
-            For y = 1 To 11
-                For x = 1 To 19
-                    .tiletype(x, y, 1) = fread(num)          ' PULL IN SOLID DATA
-                Next x
-            Next y
+            For Y = 1 To 11
+                For X = 1 To 19
+                    .tiletype(X, Y, 1) = fread(num)          ' PULL IN SOLID DATA
+                Next X
+            Next Y
             Call fread(num)
-            For y = 1 To 11
-                For x = 1 To 19
+            For Y = 1 To 11
+                For X = 1 To 19
                     Temp$ = fread(num)
                     If Temp$ = "VOID" Then Temp$ = ""
                     Temp$ = pth & Temp$
-                    Call BoardSetTile(x, y, 1, Temp$, theBoard)
-                Next x
-            Next y
+                    Call BoardSetTile(X, Y, 1, Temp$, theBoard)
+                Next X
+            Next Y
             Call fread(num)
             .playerX = fread(num)             ' PULL IN PLAYER X POSITION (unsupported)
             .playerY = fread(num)             ' PULL IN PLAYER Y POSITION (unsuppt)
@@ -1173,9 +1177,9 @@ End Function
 '=========================================================================
 ' Get a tile
 '=========================================================================
-Public Function BoardGetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByRef theBoard As TKBoard) As String
+Public Function BoardGetTile(ByVal X As Integer, ByVal Y As Integer, ByVal layer As Integer, ByRef theBoard As TKBoard) As String
     On Error Resume Next
-    BoardGetTile = theBoard.tileIndex(theBoard.board(x, y, layer))
+    BoardGetTile = theBoard.tileIndex(theBoard.board(X, Y, layer))
 End Function
 
 '=========================================================================
@@ -1209,7 +1213,7 @@ End Sub
 '=========================================================================
 ' Set RGB value of tile
 '=========================================================================
-Public Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByVal ttype As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef theBoard As TKBoard)
+Public Sub BoardSetTileRGB(ByVal X As Integer, ByVal Y As Integer, ByVal layer As Integer, ByVal filename As String, ByVal ttype As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef theBoard As TKBoard)
 
     On Error Resume Next
     
@@ -1220,7 +1224,7 @@ Public Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer A
     For t = 0 To UBound(theBoard.tileIndex)
         If LCase$(filename) = theBoard.tileIndex(t) Then
             'found it in lookup table...
-            theBoard.board(x - 1, y - 1, layer - 1) = t
+            theBoard.board(X - 1, Y - 1, layer - 1) = t
             bWasSet = True
             Exit For
         End If
@@ -1236,7 +1240,7 @@ Public Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer A
             If theBoard.tileIndex(t) = "" Then
                 'found a position!
                 theBoard.tileIndex(t) = LCase$(filename)
-                theBoard.board(x - 1, y - 1, layer - 1) = t
+                theBoard.board(X - 1, Y - 1, layer - 1) = t
                 bFoundPos = True
                 Exit For
             End If
@@ -1249,21 +1253,21 @@ Public Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer A
             insertPos = UBound(theBoard.tileIndex) + 1
             ReDim Preserve theBoard.tileIndex(newSize)
             theBoard.tileIndex(insertPos) = LCase$(filename)
-            theBoard.board(x - 1, y - 1, layer - 1) = insertPos
+            theBoard.board(X - 1, Y - 1, layer - 1) = insertPos
         End If
     End If
     
     'now set the other info...
-    theBoard.tiletype(x - 1, y - 1, layer - 1) = ttype
-    theBoard.ambientRed(x - 1, y - 1, layer - 1) = r
-    theBoard.ambientGreen(x - 1, y - 1, layer - 1) = g
-    theBoard.ambientBlue(x - 1, y - 1, layer - 1) = b
+    theBoard.tiletype(X - 1, Y - 1, layer - 1) = ttype
+    theBoard.ambientRed(X - 1, Y - 1, layer - 1) = r
+    theBoard.ambientGreen(X - 1, Y - 1, layer - 1) = g
+    theBoard.ambientBlue(X - 1, Y - 1, layer - 1) = b
 End Sub
 
 '=========================================================================
 ' Set a tile on the board
 '=========================================================================
-Public Sub BoardSetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByRef theBoard As TKBoard)
+Public Sub BoardSetTile(ByVal X As Integer, ByVal Y As Integer, ByVal layer As Integer, ByVal filename As String, ByRef theBoard As TKBoard)
 
     On Error Resume Next
     
@@ -1273,7 +1277,7 @@ Public Sub BoardSetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As I
     For t = 0 To UBound(theBoard.tileIndex)
         If LCase$(filename) = theBoard.tileIndex(t) Then
             'found it in lookup table...
-            theBoard.board(x, y, layer) = t
+            theBoard.board(X, Y, layer) = t
             bWasSet = True
             Exit For
         End If
@@ -1289,7 +1293,7 @@ Public Sub BoardSetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As I
             If theBoard.tileIndex(t) = "" Then
                 'found a position!
                 theBoard.tileIndex(t) = LCase$(filename)
-                theBoard.board(x, y, layer) = t
+                theBoard.board(X, Y, layer) = t
                 bFoundPos = True
                 Exit For
             End If
@@ -1302,7 +1306,7 @@ Public Sub BoardSetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As I
             insertPos = UBound(theBoard.tileIndex) + 1
             ReDim Preserve theBoard.tileIndex(newSize)
             theBoard.tileIndex(insertPos) = LCase$(filename)
-            theBoard.board(x, y, layer) = insertPos
+            theBoard.board(X, Y, layer) = insertPos
         End If
     End If
 End Sub
