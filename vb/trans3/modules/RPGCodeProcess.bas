@@ -233,7 +233,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 done = False
                 Do Until done
                     If Not EOF(num) Then
-                        buildTemp = replace(Trim(fread(num)), vbTab, "")
+                        buildTemp = replace(Trim(stripComments(fread(num))), vbTab, "")
                         Select Case Right(buildTemp, 1)
                             Case "_"
                                 buildTemp = _

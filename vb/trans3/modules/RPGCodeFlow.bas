@@ -250,14 +250,21 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
                 'Call traceString(Mid(Text, quotes(pList - 1), 1))
                 If ((Mid(Text, quotes(pList - 1), 1) <> Chr(34))) _
                  And (Right(lit, 1) <> "!") And (Right(lit, 1) <> "$") Then
-                    'Call traceString("Assuming object")
-                    lit = lit & "!"
-                    If (getValue(lit, lit, num, theProgram) = DT_NUM) Then
-                        dUse = CStr(num)
-                        'Call traceString("Leaving at DT_NUM with: " & dUse)
-                    Else
+                    If (lit <> parameterList(pList)) Then
+                        'Call traceString("Caught one: " & lit)
                         dUse = lit
-                        'Call traceString("Leaving at DT_LIT with: " & dUse)
+                    Else
+                        'Call traceString("Assuming object")
+                        lit = lit & "!"
+                        theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
+                        If (getValue(lit, lit, num, theProgram) = DT_NUM) Then
+                            dUse = CStr(num)
+                            'Call traceString("Leaving at DT_NUM with: " & dUse)
+                        Else
+                            dUse = lit
+                            'Call traceString("Leaving at DT_LIT with: " & dUse)
+                        End If
+                        theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
                     End If
                 Else
                     dUse = lit
@@ -268,7 +275,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             If Right(destList$(pList), 1) <> "!" And Right(destList$(pList), 1) <> "$" Then
                 destList$(pList) = destList$(pList) & "!"
             End If
-            
+
             'make sure the variable becomes local to the method...
             Dim dummyRet As RPGCODE_RETURN
             Call LocalRPG("#local(" + destList$(pList) + ")", theProgram, dummyRet)

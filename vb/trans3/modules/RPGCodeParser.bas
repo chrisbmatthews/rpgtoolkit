@@ -852,12 +852,20 @@ Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeP
     Dim lit As String
     Dim num As Double
     Dim dataType As RPGC_DT
- 
+
+    'Call traceString("Text is: " & Text)
+    'Call traceString("")
+
     'Get the parameters...
     count = CountData(Text)
     brackets = GetBrackets(Text)
     For a = 1 To count
-        dataType = getValue(GetElement(brackets, a), lit, num, theProgram)
+        dataType = getValue(Trim(GetElement(brackets, a)), lit, num, theProgram)
+        'Call traceString("Element is: " & Trim(GetElement(brackets, a)))
+        'Call traceString("Data type is: " & dataType)
+        'Call traceString("Lit is: " & lit)
+        'Call traceString("Num is: " & num)
+        'Call traceString("")
         ReDim Preserve ret(a - 1)
         Select Case dataType
             Case DT_LIT
