@@ -70,6 +70,11 @@ Type TKPlayer
     customGfxNames() As String    'Customized animations (handles)
     standingGfx(7) As String      'Filenames of the standing animations/graphics
 
+    idleTime As Double            'Seconds to wait proir to switching to
+                                  'STAND_ graphics
+
+    speed As Double               'Seconds between each frame increase
+
     'volatile -- used by trans only
     status(10) As FighterStatus
     nextLevel As Integer
@@ -343,7 +348,7 @@ Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
     Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT CHAR")   'Filetype
         Call BinWriteInt(num, major)               'Version
-        Call BinWriteInt(num, 6)            'Minor version (ie 2.5 = Version 3.0 file  2.3-- binary 2.2-- 64x64 fight gfx, 2.1-- 64x32 chars (2.0== 32x32 chars))
+        Call BinWriteInt(num, 7)            'Minor version (ie 2.5 = Version 3.0 file  2.3-- binary 2.2-- 64x64 fight gfx, 2.1-- 64x32 chars (2.0== 32x32 chars))
         Call BinWriteString(num, thePlayer.charname$)      'Charactername
         Call BinWriteString(num, thePlayer.experienceVar$)
         Call BinWriteString(num, thePlayer.defenseVar$)
@@ -397,7 +402,11 @@ Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
         For t = 0 To UBound(thePlayer.standingGfx)
             Call BinWriteString(num, thePlayer.standingGfx(t))
         Next t
-        
+
+        'MINOR VERSION 7: WRITE IDLE TIME
+        Call BinWriteDouble(num, thePlayer.idleTime)
+        Call BinWriteDouble(num, thePlayer.speed)
+
         Dim sz As Long
         sz = UBound(thePlayer.customGfxNames)
         Call BinWriteLong(num, sz)
@@ -550,6 +559,19 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                 For t = 0 To UBound(thePlayer.standingGfx)
                     thePlayer.standingGfx(t) = BinReadString(num)
                 Next t
+            End If
+
+            'MINOR VERSION 7: READ IDLE TIME
+            If (minorVer >= 7) Then
+                thePlayer.idleTime = BinReadDouble(num)
+                thePlayer.speed = BinReadDouble(num)
+            Else
+                thePlayer.idleTime = 3
+                #If (isToolkit = 1) Then
+                    thePlayer.speed = 0.01
+                #Else
+                    thePlayer.specialMoveName = walkDelay
+                #End If
             End If
 
             Dim cnt As Long
@@ -1151,6 +1173,8 @@ End Sub
 Sub PlayerClear(ByRef thePlayer As TKPlayer)
     On Error Resume Next
 
+    thePlayer.speed = 0.01
+    thePlayer.idleTime = 3
     thePlayer.charname = ""
     thePlayer.experienceVar = ""
     thePlayer.defenseVar = ""

@@ -4,14 +4,14 @@ Begin VB.Form characterGraphics
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
    Caption         =   "Character Graphics"
-   ClientHeight    =   6375
+   ClientHeight    =   6975
    ClientLeft      =   435
    ClientTop       =   840
    ClientWidth     =   7575
    Icon            =   "characterGraphics.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
-   ScaleHeight     =   6375
+   ScaleHeight     =   6975
    ScaleWidth      =   7575
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
@@ -53,11 +53,27 @@ Begin VB.Form characterGraphics
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
-      Height          =   5535
+      Height          =   6135
       Left            =   120
       TabIndex        =   0
       Top             =   600
       Width           =   6495
+      Begin VB.TextBox txtFrameTime 
+         Appearance      =   0  'Flat
+         Height          =   285
+         Left            =   4200
+         TabIndex        =   23
+         Top             =   5640
+         Width           =   735
+      End
+      Begin VB.TextBox txtIdleTime 
+         Appearance      =   0  'Flat
+         Height          =   285
+         Left            =   1800
+         TabIndex        =   21
+         Top             =   5640
+         Width           =   735
+      End
       Begin VB.ListBox lstStand 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
@@ -180,6 +196,24 @@ Begin VB.Form characterGraphics
          Top             =   3480
          Width           =   1215
       End
+      Begin VB.Label lblSecond2 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Seconds between each frame:"
+         Height          =   495
+         Left            =   2760
+         TabIndex        =   22
+         Top             =   5520
+         Width           =   1575
+      End
+      Begin VB.Label lblDelay 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Seconds before player is considered idle:"
+         Height          =   495
+         Left            =   120
+         TabIndex        =   20
+         Top             =   5520
+         Width           =   1695
+      End
       Begin VB.Label lblToBig 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
@@ -256,7 +290,7 @@ Begin VB.Form characterGraphics
       End
    End
    Begin VB.Shape Shape1 
-      Height          =   6375
+      Height          =   6975
       Left            =   0
       Top             =   0
       Width           =   7575
@@ -279,7 +313,11 @@ Option Explicit
 ' Set the info of the listboxes
 '========================================================================
 Private Sub fillInfo(Optional ByVal list As ListBox, Optional ByVal Index As Integer): On Error Resume Next
-    
+
+    'Delay and idle time
+    txtFrameTime.Text = CStr(playerList(activePlayerIndex).theData.speed)
+    txtIdleTime.Text = CStr(playerList(activePlayerIndex).theData.idleTime)
+
     'The movement listbox
     With lstMove
     
@@ -619,33 +657,29 @@ Private Sub picBrowse_Click(): On Error Resume Next
     
     'Put the info in the textbox
     txtAnim.Text = noPath
-    
-    'Get the selected animation
-    idx = lstCustom.ListIndex
-    If idx = -1 Then idx = 0
-    
+       
     With playerList(activePlayerIndex).theData
     
         'See what exactly the player wants to add
         If lstMove.SelCount <> 0 Then
             
             'A built in move!
-            .gfx(idx) = noPath
+            .gfx(lstMove.ListIndex) = noPath
             
         ElseIf lstStand.SelCount <> 0 Then
             
             'A standing animation/graphic!
-            .standingGfx(idx) = noPath
+            .standingGfx(lstStand.ListIndex) = noPath
             
         ElseIf lstBattle.SelCount <> 0 Then
             
             'A battle move!
-            .gfx(idx + 8) = noPath
+            .gfx(lstBattle.ListIndex + 8) = noPath
         
         Else
             
             'A custom animation!
-            dx = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, idx - UBound(.gfx))
+            dx = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, lstCustom.ListIndex - UBound(.gfx))
             .customGfx(dx) = noPath
             
         End If
@@ -795,4 +829,44 @@ Private Sub txtAnim_Change(): On Error Resume Next
     'Also update the animation
     Call setAnim
     
+End Sub
+
+'========================================================================
+' Change idle time
+'========================================================================
+Private Sub txtIdleTime_Change()
+    On Error Resume Next
+    playerList(activePlayerIndex).theData.idleTime = CDbl(txtIdleTime.Text)
+End Sub
+
+'========================================================================
+' Change speed
+'========================================================================
+Private Sub txtFrameTime_Change()
+    On Error Resume Next
+    playerList(activePlayerIndex).theData.speed = CDbl(txtFrameTime.Text)
+End Sub
+
+'========================================================================
+' Type a key in the speed field
+'========================================================================
+Private Sub txtFrameTime_KeyPress(ByRef KeyAscii As Integer)
+    On Error GoTo noKey
+    If (KeyAscii = 8) Then Exit Sub
+    KeyAscii = Asc(CStr(CDbl(chr(KeyAscii))))
+    Exit Sub
+noKey:
+    KeyAscii = 0
+End Sub
+
+'========================================================================
+' Type a key in the idle time field
+'========================================================================
+Private Sub txtIdleTime_KeyPress(ByRef KeyAscii As Integer)
+    On Error GoTo noKey
+    If (KeyAscii = 8) Then Exit Sub
+    KeyAscii = Asc(CStr(CDbl(chr(KeyAscii))))
+    Exit Sub
+noKey:
+    KeyAscii = 0
 End Sub
