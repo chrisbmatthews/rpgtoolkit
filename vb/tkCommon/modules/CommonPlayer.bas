@@ -86,7 +86,6 @@ Public Type TKPlayer
     nextLevel As Integer            '  exp value at which level up occurs
     levelProgression As Integer     '  exp required until level up
     levelStarts() As Double         '  exp values at which all levels start
-    hasIdleGfx(7) As Boolean        '  do we have idling graphics?
 #End If
 
 End Type
@@ -127,26 +126,6 @@ Public Sub playerAddCustomGfx(ByRef thePlayer As TKPlayer, ByVal handle As Strin
 End Sub
 
 #If (isToolkit = 0) Then
-
-'=========================================================================
-' Check if we have idling graphics
-'=========================================================================
-
-Public Function playerHasIdlingGfx(ByRef player As TKPlayer, ByVal theGfx As String) As Boolean
-
-    With player
-        Select Case UCase$(theGfx)
-            Case "STAND_N": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_N)
-            Case "STAND_S": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_S)
-            Case "STAND_W": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_W)
-            Case "STAND_E": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_E)
-            Case "STAND_NW": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_NW)
-            Case "STAND_NE": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_NE)
-            Case "STAND_SW": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_SW)
-            Case "STAND_SE": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_SE)
-        End Select
-    End With
-End Function
 
 '=========================================================================
 ' Clear all status effects applied to a player
@@ -585,12 +564,6 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                 Next t
             End If
 
-#If (isToolkit = 0) Then
-            For t = 0 To UBound(thePlayer.standingGfx)
-                thePlayer.hasIdleGfx(t) = (LenB(thePlayer.standingGfx(t)) <> 0)
-            Next t
-#End If
-
             'MINOR VERSION 7: READ IDLE TIME
             If (minorVer >= 7) Then
                 thePlayer.idleTime = BinReadDouble(num)
@@ -598,9 +571,9 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             Else
                 thePlayer.idleTime = 3
 #If (isToolkit = 1) Then
-            thePlayer.speed = 0.01
+                thePlayer.speed = 0.01
 #Else
-            thePlayer.speed = walkDelay
+                thePlayer.speed = walkDelay
 #End If
             End If
 

@@ -1,9 +1,9 @@
 Attribute VB_Name = "CommonAnimation"
-'========================================================================
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
-'========================================================================
+'=========================================================================
 
 '=========================================================================
 ' RPGToolkit animation file format (*.anm)
@@ -50,22 +50,24 @@ End Type
 ' One frame of an animation
 '========================================================================
 Private Type AnimationFrame
-    cnv As Long                     'Canvas of frame
-    file As String                  'Animation filename
-    frame As Long                   'Frame number
+    cnv As Long                     ' Canvas of frame
+    file As String                  ' Animation filename
+    frame As Long                   ' Frame number
+    maxFrames As Long               ' Max frames in this anim
 End Type
 
 '========================================================================
 ' Other variables
 '========================================================================
 
-'array of animations that can be created by a plugin
+' Array of animations that can be created by a plugin
 Public anmList() As animationDoc
 Public anmListOccupied() As Boolean
 
-'Cache of animation frames
-Private anmCache(250) As AnimationFrame
-'Next index for animation cache
+' Cache of animation frames
+Private anmCache() As AnimationFrame
+
+' Next index for animation cache
 Private nextAnmCacheIdx As Long
 
 Declare Function TransparentBlt Lib "msimg32" (ByVal hdcDest As Long, _
@@ -368,24 +370,23 @@ Public Function AnimationIndexCurrentFrame(ByVal idx As Long) As Long
     End If
 End Function
 
+'========================================================================
+' Clear the animation cache
+'========================================================================
 Public Sub clearAnmCache(): On Error Resume Next
-'===============================================
-'Added by Delano.
-'To ensure sprites are redrawn with ambient
-'effects when entering boards.
-'Called from TestLink, Send(RPG)
-'===============================================
 
+    ' Kill all cache entires
     Dim i As Long
-    
     For i = 0 To UBound(anmCache)
-    
         Call DestroyCanvas(anmCache(i).cnv)
         anmCache(i).cnv = 0
         anmCache(i).file = vbNullString
         anmCache(i).frame = 0
-
+        anmCache(i).maxFrames = 0
     Next i
+
+    ' Flag to use first position again
+    nextAnmCacheIdx = 0
 
 End Sub
 
@@ -401,177 +402,182 @@ Public Sub AnimationShutdown()
 End Sub
 
 '========================================================================
+' Initialize the sprite system
+'========================================================================
+Public Sub initSprites()
+
+    ' Make some space in the animation cache
+    ReDim anmCache(250)
+
+End Sub
+
+'========================================================================
 ' Render an animation frame at canvas cnv, file if the animation filename,
 ' frame is the frame. Checks through the animation cache for previous
 ' renderings of this frame, if not found, it is rendered here and copied
 ' to the animation cache.
 '========================================================================
-Public Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal frame As Long, ByVal x As Long, ByVal y As Long)
-    
-    Dim anm As TKAnimation
-    
-    If (LenB(file) <> 0) Then
-        'Only if it exists, we can open it.
-        
-        Call openAnimation(projectPath & miscPath & file, anm)
-        
-        Dim maxF As Long
-        'Get number of frames.
-        maxF = animGetMaxFrame(anm)
-        If maxF = 0 Then
-            frame = 0
-        Else
-            '+ 1 here *not* in animGetMaxFrame. Frames run from 0 to x, but here maxF needs
-            'to be the total number of frames.
-            frame = frame Mod (maxF + 1)
-        End If
-    Else
+Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal frame As Long, ByVal x As Long, ByVal y As Long)
+
+    '// Passing string(s) ByRef for preformance related reasons
+
+    Dim anm As TKAnimation, maxF As Long
+
+    If (LenB(file) = 0) Then
+        ' Bail if we were passed NULL
         Exit Sub
     End If
-    
-    'First check sprite cache...
+
+    ' Get canvas width and height
+    Dim w As Long, h As Long
+    w = GetCanvasWidth(cnv)
+    h = GetCanvasHeight(cnv)
+
+    ' Capitalize the file
+    file = UCase$(file)     ' Safe because this is never passed important things
+
+    ' First check sprite cache
     Dim t As Long
     For t = 0 To UBound(anmCache)
-    
-        If UCase$(anmCache(t).file) = UCase$(file) And _
-            anmCache(t).frame = frame Then
-            'Found a match!
-            
-            'Resize target canvas, if required...
-            If GetCanvasWidth(cnv) <> GetCanvasWidth(anmCache(t).cnv) Or _
-                GetCanvasHeight(cnv) <> GetCanvasHeight(anmCache(t).cnv) Then
-                Call SetCanvasSize(cnv, GetCanvasWidth(anmCache(t).cnv), GetCanvasHeight(anmCache(t).cnv))
-            End If
-            
-            'Blt contents over...
-            Call Canvas2CanvasBlt(anmCache(t).cnv, cnv, x, y, SRCCOPY)
-            
-            'All done!
-            Exit Sub
-        End If
-    Next t
-    
-    'Not found in cache, we need to render the frame!
-    
-    If (LenB(file) <> 0) Then
-        'The animation for the sprite's stance exists...
-        'Open animation file...
-        
-        Dim frameFile As String
-        frameFile = anm.animFrame(frame)
-        
-        'Now we have the filename of the frame...
-        Dim ext As String
-        Dim hdc As Long
-        Dim cnvTbm As Long, cnvMaskTbm As Long
-        Dim tbm As TKTileBitmap
-        
-        ext = GetExt(frameFile)
-        If (LenB(frameFile) <> 0) Or Left$(UCase$(ext), 3) = "TST" Then
 
-            'We can draw the frame!
-            
-            'Get the ambient level here. Must be done before opening the DC,
-            'otherwise trans3 *will* crash on Win9x
-            Call getAmbientLevel(addOnR, addOnB, addOnG)
-            
-            'Resize the canvas if needed.
-            Dim W As Long
-            Dim h As Long
-            W = GetCanvasWidth(cnv)
-            h = GetCanvasHeight(cnv)
-            
-            If W <> anm.animSizeX Or h <> anm.animSizeY Then
-                Call SetCanvasSize(cnv, anm.animSizeX, anm.animSizeY)
-            End If
-            
-            Call CanvasFill(cnv, TRANSP_COLOR)
+        If (anmCache(t).file = file) Then   ' All files in cache are already capital
 
-            If UCase$(ext) = "TBM" Then
-            
-                'You *must* load a tile bitmap before opening an hdc
-                'because it'll lock up on windows 98 if you don't.
-                
-                Call OpenTileBitmap(projectPath$ & bmpPath$ & frameFile, tbm)
-                
-                
-                'DrawSizedTileBitmap moved to here. The following lines must be
-                'done in this order! Don't do *anything* whilst the DC is open!
-                
-                    cnvTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
-                    cnvMaskTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
-                    Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
+            maxF = anmCache(t).maxFrames
+            frame = frame Mod (maxF + 1)
 
-                    hdc = CanvasOpenHDC(cnv)
-                    Call CanvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
-                    Call CanvasCloseHDC(cnv, hdc)
-                    
-                    Call DestroyCanvas(cnvTbm)
-                    Call DestroyCanvas(cnvMaskTbm)
-                    
-                'Done.
-                
-            ElseIf Left$(UCase$(ext), 3) = "TST" Or UCase$(ext) = "GPH" Then
-            
-                'Set the tbm to a single tile.
-                Call TileBitmapClear(tbm)
-                Call TileBitmapSize(tbm, 1, 1)
-                tbm.tiles(0, 0) = frameFile
-                
-                'DrawSizedTileBitmap code moved to here. The following lines must be
-                'done in this order! Don't do *anything* whilst the DC is open!
-                
-                    cnvTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
-                    cnvMaskTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
-                    Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
+            If (anmCache(t).frame = frame) Then
 
-                    hdc = CanvasOpenHDC(cnv)
-                    Call CanvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
-                    Call CanvasCloseHDC(cnv, hdc)
-                    
-                    Call DestroyCanvas(cnvTbm)
-                    Call DestroyCanvas(cnvMaskTbm)
-                    
-                'Done.
-                
-            Else
-            
-                'Have to blt it across from an image...
-                Dim c2 As Long
-                
-                c2 = CreateCanvas(anm.animSizeX, anm.animSizeY)
-                Call CanvasLoadSizedPicture(c2, projectPath$ & bmpPath$ & frameFile)
-                Call Canvas2CanvasBltTransparent(c2, cnv, x, y, anm.animTransp(frame))
-                Call DestroyCanvas(c2)
-                
-            End If
-
-            'Now place this frame in the sprite cache...
-            t = nextAnmCacheIdx
-            If GetCanvasWidth(cnv) <> GetCanvasWidth(anmCache(t).cnv) Or _
-                GetCanvasHeight(cnv) <> GetCanvasHeight(anmCache(t).cnv) Then
-                
-                If anmCache(t).cnv <> 0 Then
-                    Call SetCanvasSize(anmCache(t).cnv, GetCanvasWidth(cnv), GetCanvasHeight(cnv))
-                Else
-                    'Create the canvas...
-                    anmCache(t).cnv = CreateCanvas(GetCanvasWidth(cnv), GetCanvasHeight(cnv))
+                ' Resize target canvas, if required
+                If (w <> GetCanvasWidth(anmCache(t).cnv) Or h <> GetCanvasHeight(anmCache(t).cnv)) Then
+                    Call SetCanvasSize(cnv, w, h)
                 End If
-                
+
+                ' Blt contents over
+                Call Canvas2CanvasBlt(anmCache(t).cnv, cnv, x, y, SRCCOPY)
+
+                ' All done!
+                Exit Sub
+
             End If
-            
-            Call Canvas2CanvasBlt(cnv, anmCache(nextAnmCacheIdx).cnv, 0, 0, SRCCOPY)
-            anmCache(nextAnmCacheIdx).file = UCase$(file)
-            anmCache(nextAnmCacheIdx).frame = frame
-            nextAnmCacheIdx = nextAnmCacheIdx + 1
-            
-            If nextAnmCacheIdx > UBound(anmCache) Then
-                nextAnmCacheIdx = 0
-            End If
-            
+
         End If
+
+    Next t
+
+    Call openAnimation(projectPath & miscPath & file, anm)
+    maxF = animGetMaxFrame(anm)
+    frame = frame Mod (maxF + 1)
+
+    Dim frameFile As String
+    frameFile = anm.animFrame(frame)
+
+    ' Now we have the filename of the frame
+    Dim ext As String
+    Dim hdc As Long
+    Dim cnvTbm As Long, cnvMaskTbm As Long
+    Dim tbm As TKTileBitmap
+
+    ext = UCase$(GetExt(frameFile))
+    If (LenB(frameFile) <> 0) Or Left$(ext, 3) = "TST" Then
+
+        ' We can draw the frame!
+
+        ' Get the ambient level here. Must be done before opening the DC,
+        ' otherwise trans3 *will* crash on Win9x
+        Call getAmbientLevel(addOnR, addOnB, addOnG)
+
+        ' Resize the canvas if needed.
+        If (w <> anm.animSizeX Or h <> anm.animSizeY) Then
+            Call SetCanvasSize(cnv, anm.animSizeX, anm.animSizeY)
+        End If
+
+        Call CanvasFill(cnv, TRANSP_COLOR)
+
+        If ext = "TBM" Then
+
+            ' You *must* load a tile bitmap before opening an hdc
+            ' because it'll lock up on windows 98 if you don't.
+
+            Call OpenTileBitmap(projectPath & bmpPath & frameFile, tbm)
+
+            ' DrawSizedTileBitmap moved to here. The following lines must be
+            ' done in this order! Don't do *anything* whilst the DC is open!
+
+            cnvTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
+            cnvMaskTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
+            Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
+
+            hdc = CanvasOpenHDC(cnv)
+            Call CanvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
+            Call CanvasCloseHDC(cnv, hdc)
+
+            Call DestroyCanvas(cnvTbm)
+            Call DestroyCanvas(cnvMaskTbm)
+
+            ' Done
+
+        ElseIf Left$(ext, 3) = "TST" Or ext = "GPH" Then
+
+            ' Set the tbm to a single tile.
+            Call TileBitmapClear(tbm)
+            Call TileBitmapSize(tbm, 1, 1)
+            tbm.tiles(0, 0) = frameFile
+
+            ' DrawSizedTileBitmap code moved to here. The following lines must be
+            ' done in this order! Don't do *anything* whilst the DC is open!
+
+            cnvTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
+            cnvMaskTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
+            Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
+
+            hdc = CanvasOpenHDC(cnv)
+            Call CanvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
+            Call CanvasCloseHDC(cnv, hdc)
+
+            Call DestroyCanvas(cnvTbm)
+            Call DestroyCanvas(cnvMaskTbm)
+
+            ' Done
+
+        Else
+
+            ' Have to blt it across from an image
+            Dim c2 As Long
+            c2 = CreateCanvas(anm.animSizeX, anm.animSizeY)
+            Call CanvasLoadSizedPicture(c2, projectPath & bmpPath & frameFile)
+            Call Canvas2CanvasBltTransparent(c2, cnv, x, y, anm.animTransp(frame))
+            Call DestroyCanvas(c2)
+
+        End If
+
+        ' Now place this frame in the sprite cache
+        t = nextAnmCacheIdx
+        If (anm.animSizeX <> GetCanvasWidth(anmCache(t).cnv) Or anm.animSizeY <> GetCanvasHeight(anmCache(t).cnv)) Then
+
+            If (anmCache(t).cnv <> 0) Then
+                Call SetCanvasSize(anmCache(t).cnv, anm.animSizeX, anm.animSizeY)
+            Else
+                ' Create the canvas
+                anmCache(t).cnv = CreateCanvas(anm.animSizeX, anm.animSizeY)
+            End If
+
+        End If
+
+        Call Canvas2CanvasBlt(cnv, anmCache(nextAnmCacheIdx).cnv, 0, 0, SRCCOPY)
+        anmCache(nextAnmCacheIdx).file = file
+        anmCache(nextAnmCacheIdx).frame = frame
+        anmCache(nextAnmCacheIdx).maxFrames = maxF
+        nextAnmCacheIdx = nextAnmCacheIdx + 1
+
+        Dim ub As Long
+        ub = UBound(anmCache)
+        If (nextAnmCacheIdx > ub) Then
+            ' Enlarge the array
+            ReDim Preserve anmCache(ub + 250)
+        End If
+
     End If
-    
+
 End Sub
 
 '========================================================================
@@ -592,21 +598,8 @@ End Function
 ' return false otherwise, but will advance the timer counter.
 '========================================================================
 Public Function AnimationShouldDrawFrame(ByRef theAnm As TKAnimation) As Boolean
-    On Error Resume Next
-    
-    Dim toRet As Boolean
-    toRet = False
-    
-    Dim interval As Long
-    interval = 80 * theAnm.animPause
-    
-    If theAnm.timerFrame Mod interval = 0 Then
-        toRet = True
-    End If
-    
+    AnimationShouldDrawFrame = (theAnm.timerFrame Mod (80 * theAnm.animPause) = 0)
     theAnm.timerFrame = theAnm.timerFrame + 1
-    
-    AnimationShouldDrawFrame = toRet
 End Function
 
 Public Sub DrawAnimationIndex(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long)

@@ -119,7 +119,11 @@ Public Const plugPath = "Plugin\"              'plugin path
 
 Public bufTile(64, 32) As Long
 Public activeTileBmpIndex As Long              'index for active tile bitmap
+#If (isToolkit = 1) Then
 Public activeBoardIndex As Long                'index for active board
+#Else
+Public Const activeBoardIndex = 0
+#End If
 Public activePlayerIndex As Long               'index for active board
 Public activeItemIndex As Long                 'index for active item
 Public mainMem As TKMain                       'main file
