@@ -1,5 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////
-//All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
+//All contents copyright 2004 Colin James Fitzpatrick (KSNiloc)
+//and Sander Knape (Woozy)
 //All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 //Read LICENSE.txt for licensing info
 ///////////////////////////////////////////////////////////////////////////
