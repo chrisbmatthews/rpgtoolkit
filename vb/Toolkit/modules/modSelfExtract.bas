@@ -1,10 +1,9 @@
 Attribute VB_Name = "modSelfExtract"
 '==============================================================================
-'TK3 Excutable Game Host
+'TK3 Compilation Procedures
 'Designed and Programmed by Colin James Fitzpatrick
 'Copyright 2004
 '==============================================================================
-'This module adds files to the ends of other files
 
 Option Explicit
 
@@ -41,4 +40,3 @@ Public Sub addToSelfExtract( _
     Close iFreeFile
     
 End Sub
-

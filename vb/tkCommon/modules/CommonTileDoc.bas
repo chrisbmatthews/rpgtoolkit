@@ -126,6 +126,21 @@ newArray:
     End Sub
 
     '========================================================================
+    'Redraw all open tiles
+    '========================================================================
+    Public Sub redrawAllTiles()
+        Dim a As Long, currentTile As tileedit
+        Set currentTile = activeTile
+        For a = 0 To UBound(openTileEditors)
+            If Not openTileEditors(a) Is Nothing Then
+                Set activeTile = openTileEditors(a)
+                Call activeTile.tileRedraw
+            End If
+        Next a
+        Set activeTile = currentTile
+    End Sub
+
+    '========================================================================
     'Tile memory array
     '========================================================================
     Public Property Get tileMem(ByVal x As Long, ByVal y As Long) As Long

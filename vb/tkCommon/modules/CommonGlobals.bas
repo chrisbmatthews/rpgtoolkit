@@ -32,7 +32,7 @@ Option Explicit
     'Misc variables
     Public savPath As String                   'saved games
     Public host As Form                        'host form object
-    
+
     'File type memories
     Public animationMem As TKAnimation         'animation file
     Public playerMem(4) As TKPlayer            'player files
@@ -102,6 +102,8 @@ Option Explicit
     Public programEditorCount As Long
     Public programEditorCountDown As Long
     Public Images As New clsImages
+    Public lockIndice As Long
+    Public useLockIndice As Boolean
     
     'Active forms
     Public activeTileBmp As editTileBitmap     'active mdi child form

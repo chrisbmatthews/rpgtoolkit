@@ -227,18 +227,19 @@ Private Sub Form_Load()
     On Error GoTo ErrorHandler
     
     Dim x As Integer, y As Integer, setType As Integer
-    
+
+    Call redrawAllTiles
     Call LocalizeForm(Me)
     
     setFilename$ = ""
     If tstnum = 0 Then tstnum = 1
     
     'Put the current tilemem into the buffer.
-    'For x = 1 To 32
-    '    For y = 1 To 32
-    '        bufTile(x, y) = tileMem(x, y)
-    '    Next y
-    'Next x
+    For x = 1 To 32
+        For y = 1 To 32
+            bufTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
     
     'Get the type and header of the selected set.
     setType = tilesetInfo(projectPath$ + tilePath$ + tstFile$)
@@ -366,12 +367,12 @@ Private Sub Form_Unload(Cancel As Integer)
 'Added clear code.
     On Error GoTo ErrorHandler
     
-    'Dim x As Byte, y As Byte
-    'For x = 1 To 32
-    '    For y = 1 To 32
-    '        tileMem(x, y) = bufTile(x, y)
-    '    Next y
-    'Next x
+    Dim x As Byte, y As Byte
+    For x = 1 To 32
+        For y = 1 To 32
+            tileMem(x, y) = bufTile(x, y)
+        Next y
+    Next x
 
     'Clear the picture box - moved from redraw.
     Call vbPicAutoRedraw(tiles, False)

@@ -379,8 +379,8 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 ' Variable declaration
 '========================================================================
 
-'This editor's indice
-Public indice As Long
+'This form's indice
+Private mVarIndice As Long
 
 'Ignore reactivation action
 Public ignoreDeactivate As Boolean
@@ -440,6 +440,20 @@ End Enum
 Public Function formType() As Long
     formType = FT_TILE
 End Function
+
+'========================================================================
+' Indice property
+'========================================================================
+Public Property Let indice(ByVal newVal As Long)
+    mVarIndice = newVal
+End Property
+Public Property Get indice() As Long
+    If useLockIndice Then
+        indice = lockIndice
+    Else
+        indice = mVarIndice
+    End If
+End Property
 
 '========================================================================
 ' Change the mode to normal/ISO
@@ -1053,9 +1067,10 @@ End Sub
 '========================================================================
 Private Sub Form_Activate(): On Error GoTo ErrorHandler
     'Set some variables for the form
+
     Set activeTile = Me
     Set activeForm = Me
-    
+
     filename(2) = ""
     ignoreDeactivate = False
 
@@ -1689,8 +1704,13 @@ End Sub
 Public Sub openFile(ByVal file As String): On Error Resume Next
 
     Set activeTile = Me
+
+    lockIndice = indice
+    useLockIndice = True
+
     Call Show
     Call ChDir(currentDir)
+    ignoreDeactivate = True
     
     If tag <> 1 Then Call checkSave      'Check if a tile is already open and needs saving.
     openTileEditorDocs(indice).tileNeedUpdate = False
@@ -1719,16 +1739,19 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         lastTileset = antiPath
         tstFile = antiPath
 
-        ignoreDeactivate = True
-
         Call Hide
+        Call redrawAllTiles
         Call tilesetform.Show(vbModal)             'Show the tileset browser.
         Call Show
         Set activeTile = Me
         DoEvents
 
         'setFilename created in tilesetform. Contains the tilenumber.
-        If setFilename = "" Then Exit Sub
+        If setFilename = "" Then
+            useLockIndice = False
+            Call redrawAllTiles
+            Exit Sub
+        End If
 
         Call openFromTileSet(projectPath & tilePath & tilesetFilename(setFilename), getTileNum(setFilename))
 
@@ -1775,13 +1798,11 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
             Next xx
         End If '(whichtype$ = "ISO")
         
-        
         Call highRedraw
         
         openTileEditorDocs(indice).tileName = setFilename
         Caption = LoadStringLoc(801, "Tile Editor") & "  (" & setFilename & ")"
 
-        
     Else
         '.gph
 
@@ -1790,11 +1811,14 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         Call highRedraw
         openTileEditorDocs(indice).tileName = antiPath
         Caption = LoadStringLoc(801, "Tile Editor") & "  (" & antiPath & ")"
-        
+
     End If
-    
+
     Call tileGrid(tkMainForm.tileGrid.value)
-    
+
+    useLockIndice = False
+    Call redrawAllTiles
+
 End Sub
 
 '========================================================================
