@@ -162,4 +162,6 @@ EXPORTS
 	TKAudiereGetPosition	@218
 	TKAudiereSetPosition	@219
 
+	RPGCEvaluate		@220
+
     ; Explicit exports can go here

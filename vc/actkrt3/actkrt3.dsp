@@ -414,6 +414,10 @@ SOURCE=.\tkrpgcode\tkrpgcode.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\tkrpgcode\calculator.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\tkrpgcode\tkrpgcode.h
 # End Source File
 # End Group

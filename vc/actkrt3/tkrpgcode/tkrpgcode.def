@@ -26,4 +26,5 @@ EXPORTS
 	RPGCGetRedirectName		@20
 	RPGCClearRedirects		@21
 	RPGCCountRedirects		@22
+	RPGCEvaluate			@23
 	; Explicit exports can go here
