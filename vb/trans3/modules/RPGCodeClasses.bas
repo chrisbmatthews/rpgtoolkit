@@ -1208,7 +1208,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         Select Case char
 
             Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "(", ")", _
-            "%", "`", "|", "&"
+            "%", "`", "|", "&", "~"
                 ' It's a divider
                 If ((Not ignore) And (arrayDepth = 0)) Then
                     start = a + 1
