@@ -65,7 +65,7 @@ End Type
 '=========================================================================
 ' Call a method in a class
 '=========================================================================
-Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, ByVal methodName As String)
+Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef prg As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN, ByVal methodName As String)
 
     On Error Resume Next
 
@@ -102,7 +102,7 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef pr
         End If
 
         ' Call the method
-        Call MethodCallRPG(thePrefix & "::" & Text, thePrefix & "::" & methodName, prg, retval, True, True)
+        Call MethodCallRPG(thePrefix & "::" & Text, thePrefix & "::" & methodName, prg, retVal, True, True)
 
     Else
 
@@ -189,7 +189,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean)
 
     On Error Resume Next
 
@@ -207,7 +207,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         mName = commandName
     End If
 
-    If QueryPlugins(mName, Text, retval) Then
+    If QueryPlugins(mName, Text, retVal) Then
         'Found the command in a plugin, don't waste time checking for a method!
         Exit Sub
     End If
@@ -224,7 +224,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     If (theProgram.classes.insideClass And (Not doNotCheckForClasses)) Then
         If (isMethodMember(mName, topNestle(theProgram), theProgram)) Then
-            Call callObjectMethod(topNestle(theProgram), Text, theProgram, retval, mName)
+            Call callObjectMethod(topNestle(theProgram), Text, theProgram, retVal, mName)
             Exit Sub
         End If
     End If
@@ -358,7 +358,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Next t
 
         'set up method return value...
-        methodReturn = retval
+        methodReturn = retVal
 
         'OK- data is passed.  Now run the method:
         theProgram.programPos = increment(theProgram)
@@ -375,7 +375,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         theProgram.programPos = oldPos
 
         'set up return value...
-        retval = methodReturn
+        retVal = methodReturn
 
         'Clear our variables from pointer list
         For t = 1 To number
@@ -586,7 +586,7 @@ Public Function runBlock( _
                             ByRef prg As RPGCodeProgram _
                                                           ) As Long
 
-    Dim retval As RPGCODE_RETURN
+    Dim retVal As RPGCODE_RETURN
     Dim done As Boolean
     Dim depth As Long
 
@@ -615,7 +615,7 @@ Public Function runBlock( _
             Case Else
 
                 If (runCommands = 1) Then
-                    Call DoCommand(prg, retval)
+                    Call DoCommand(prg, retVal)
                 Else
                     prg.programPos = increment(prg)
                 End If
@@ -831,7 +831,7 @@ Public Sub runProgram( _
     theProgram.threadID = -1
 
     Call FlushKB
-    Dim retval As RPGCODE_RETURN
+    Dim retVal As RPGCODE_RETURN
 
     Call renderRPGCodeScreen
 
@@ -852,7 +852,7 @@ Public Sub runProgram( _
                    And (runningProgram))
 
             prgPos = theProgram.programPos
-            theProgram.programPos = DoCommand(theProgram, retval)
+            theProgram.programPos = DoCommand(theProgram, retVal)
 
             If errorsA = 1 Then
                 errorsA = 0
@@ -895,9 +895,9 @@ End Sub
 '=========================================================================
 ' Do a command from the program passed in and return its value
 '=========================================================================
-Public Function DoCommand(ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
+Public Function DoCommand(ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN) As Long
     On Error GoTo error
-    DoCommand = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval)
+    DoCommand = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retVal)
     Exit Function
 error:
     theProgram.programPos = -1
@@ -907,19 +907,19 @@ End Function
 '=========================================================================
 ' Do any single command - unattached to a program
 '=========================================================================
-Public Function DoIndependentCommand(ByRef rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN) As Long
+Public Function DoIndependentCommand(ByRef rpgcodeCommand As String, ByRef retVal As RPGCODE_RETURN) As Long
     On Error Resume Next
     '// Passing string(s) ByRef for preformance related reasons
     Dim oPP As Long
     oPP = errorKeep.programPos
-    DoSingleCommand rpgcodeCommand, errorKeep, retval
+    DoSingleCommand rpgcodeCommand, errorKeep, retVal
     errorKeep.programPos = oPP
 End Function
 
 '=========================================================================
 ' Do any single command - attached to a program
 '=========================================================================
-Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
+Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN) As Long
 
     ' Performs a command, and returns the new line number
     ' afterwards.  If it returns -1, then the program is done.
@@ -974,30 +974,39 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     cLine = spliceForObjects(cLine, theProgram)
     cLine = ParseRPGCodeCommand(cLine, theProgram)
 
-    retval.dataType = DT_VOID
+    retVal.dataType = DT_VOID
 
     Dim splice As String, cType As String, testText As String
 
-    splice$ = cLine$
-    cType$ = GetCommandName$(splice$)   'get command name without extra info
-    testText$ = UCase$(cType$)
+    ' Check for methods that might elude this code
+    If (LeftB$(UCase$(cLine), 12) = "METHOD") Then
 
-    'check for redirects...
-    If redirectExists(testText) Then
-        testText = getRedirect(testText)
-    End If
+        testText = "METHOD"
 
-    If Left$(testText, 1) = "." Then testText = UCase$(GetWithPrefix() & testText)
+    Else
 
-    If testText <> "MWIN" Then
-        'if the command is not a MWin command, then
-        'check if we have just finished puttin text
-        'int the message window
-        'if so, show the message window :)
-        If bFillingMsgBox Then
-            bFillingMsgBox = False
-            Call renderRPGCodeScreen
+        splice$ = cLine$
+        cType$ = GetCommandName$(splice$)   'get command name without extra info
+        testText$ = UCase$(cType$)
+
+        'check for redirects...
+        If redirectExists(testText) Then
+            testText = getRedirect(testText)
         End If
+
+        If Left$(testText, 1) = "." Then testText = UCase$(GetWithPrefix() & testText)
+
+        If testText <> "MWIN" Then
+            'if the command is not a MWin command, then
+            'check if we have just finished putting text
+            'in the message window
+            'if so, show the message window :)
+            If bFillingMsgBox Then
+                bFillingMsgBox = False
+                Call renderRPGCodeScreen
+            End If
+        End If
+
     End If
 
     Select Case testText
@@ -1013,7 +1022,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "WAIT":
-            Call WaitRPG(splice$, theProgram, retval) 'wait
+            Call WaitRPG(splice$, theProgram, retVal) 'wait
             DoSingleCommand = increment(theProgram)
             Exit Function
         
@@ -1071,25 +1080,25 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     
         'undocumented
         Case "COM_POP_PILER":
-            Call CompilerPopRPG(splice$, theProgram, retval) 'compiler pop var
+            Call CompilerPopRPG(splice$, theProgram, retVal) 'compiler pop var
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         'undocumented
         Case "COM_PUSH_PILER":
-            Call CompilerPushRPG(splice$, theProgram, retval) 'compiler push var
+            Call CompilerPushRPG(splice$, theProgram, retVal) 'compiler push var
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         'undocumented
         Case "COM_ENTERLOCAL_PILER":
-            Call CompilerEnterLocalRPG(splice$, theProgram, retval) 'compiler enter local
+            Call CompilerEnterLocalRPG(splice$, theProgram, retVal) 'compiler enter local
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         'undocumented
         Case "COM_EXITLOCAL_PILER":
-            Call CompilerExitLocalRPG(splice$, theProgram, retval) 'compiler exit local
+            Call CompilerExitLocalRPG(splice$, theProgram, retVal) 'compiler exit local
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1150,7 +1159,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "GET":
-            Call GetRPG(splice$, theProgram, retval) 'Get command
+            Call GetRPG(splice$, theProgram, retVal) 'Get command
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1226,7 +1235,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     
         'TBD: prompt
         Case "PROMPT":
-            Call Prompt(splice$, theProgram, retval)  'Prompt
+            Call Prompt(splice$, theProgram, retVal)  'Prompt
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1277,7 +1286,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
       
         Case "GETHP":
-            Call GetHPRPG(splice$, theProgram, retval)  'get player HP
+            Call GetHPRPG(splice$, theProgram, retVal)  'get player HP
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1287,7 +1296,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "GETMAXHP":
-            Call GetMaxHPRPG(splice$, theProgram, retval) 'get player max HP
+            Call GetMaxHPRPG(splice$, theProgram, retVal) 'get player max HP
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1302,7 +1311,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
             
         Case "GETSMP":
-            Call GetSmpRPG(splice$, theProgram, retval) 'get player smp
+            Call GetSmpRPG(splice$, theProgram, retVal) 'get player smp
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1312,7 +1321,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "GETMAXSMP":
-            Call GetMaxSmpRPG(splice$, theProgram, retval) 'get player Max smp
+            Call GetMaxSmpRPG(splice$, theProgram, retVal) 'get player Max smp
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1342,7 +1351,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "RANDOM":
-            Call RandomRPG(splice$, theProgram, retval) 'random
+            Call RandomRPG(splice$, theProgram, retVal) 'random
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1431,17 +1440,17 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "CASTNUM":
-            Call CastNumRPG(splice$, theProgram, retval) 'cast num
+            Call CastNumRPG(splice$, theProgram, retVal) 'cast num
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "CASTLIT":
-            Call CastLitRPG(splice$, theProgram, retval) 'cast lit
+            Call CastLitRPG(splice$, theProgram, retVal) 'cast lit
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "CASTINT":
-            Call CastIntRPG(splice$, theProgram, retval) 'cast int
+            Call CastIntRPG(splice$, theProgram, retVal) 'cast int
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1466,7 +1475,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "DIRSAV":
-            Call DirSavRPG(splice$, theProgram, retval) 'dir saved games.
+            Call DirSavRPG(splice$, theProgram, retVal) 'dir saved games.
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1496,12 +1505,12 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "RPGCODE":
-            Call RPGCodeRPG(splice$, theProgram, retval) 'perform rpgcode command
+            Call RPGCodeRPG(splice$, theProgram, retVal) 'perform rpgcode command
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "CHARAT":
-            Call CharAtRPG(splice$, theProgram, retval) 'mid$
+            Call CharAtRPG(splice$, theProgram, retVal) 'mid$
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1546,7 +1555,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "GETGP":
-            Call GetGPRPG(splice$, theProgram, retval) 'get gp value
+            Call GetGPRPG(splice$, theProgram, retVal) 'get gp value
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1649,7 +1658,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "CHECKBUTTON":
-            Call checkButtonRPG(splice$, theProgram, retval) 'check if a button was pressed
+            Call checkButtonRPG(splice$, theProgram, retVal) 'check if a button was pressed
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1680,7 +1689,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     
         'Above commands are now all documented.
         Case "ITEMCOUNT":
-            Call itemCountRPG(splice$, theProgram, retval) 'item count
+            Call itemCountRPG(splice$, theProgram, retVal) 'item count
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1720,7 +1729,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     
         'patch 8
         Case "GETLEVEL":
-            Call getLevelRPG(splice$, theProgram, retval) 'get player level
+            Call getLevelRPG(splice$, theProgram, retVal) 'get player level
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1779,12 +1788,12 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     
         'dec 28.99
         Case "GETDP":
-            Call getDPRPG(splice$, theProgram, retval) 'get dp
+            Call getDPRPG(splice$, theProgram, retVal) 'get dp
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "GETFP":
-            Call getFPRPG(splice$, theProgram, retval) 'get fp
+            Call getFPRPG(splice$, theProgram, retVal) 'get fp
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1833,17 +1842,17 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
        
         Case "SIN":
-            Call SinRPG(splice$, theProgram, retval) 'sin function
+            Call SinRPG(splice$, theProgram, retVal) 'sin function
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "COS":
-            Call CosRPG(splice$, theProgram, retval) 'cos function
+            Call CosRPG(splice$, theProgram, retVal) 'cos function
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "TAN":
-            Call TanRPG(splice$, theProgram, retval) 'tan function
+            Call TanRPG(splice$, theProgram, retVal) 'tan function
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1858,7 +1867,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "GETFONTSIZE":
-            Call GetFontSizeRPG(splice$, theProgram, retval) 'get font size
+            Call GetFontSizeRPG(splice$, theProgram, retVal) 'get font size
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1885,12 +1894,12 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "TARGETHANDLE":
-            Call TargetHandleRPG(splice$, theProgram, retval) 'get handle of target
+            Call TargetHandleRPG(splice$, theProgram, retVal) 'get handle of target
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "SOURCEHANDLE":
-            Call SourceHandleRPG(splice$, theProgram, retval) 'get handle of source
+            Call SourceHandleRPG(splice$, theProgram, retVal) 'get handle of source
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1919,17 +1928,17 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "GETBOARDTILE", "BOARDGETTILE":
-            Call GetBoardTileRPG(splice$, theProgram, retval)  'get the board tile name
+            Call GetBoardTileRPG(splice$, theProgram, retVal)  'get the board tile name
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "SQRT":
-            Call SqrtRPG(splice$, theProgram, retval)  'get the squareroot
+            Call SqrtRPG(splice$, theProgram, retVal)  'get the squareroot
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "GETBOARDTILETYPE":
-            Call GetBoardTileTypeRPG(splice$, theProgram, retval)  'get the tile type
+            Call GetBoardTileTypeRPG(splice$, theProgram, retVal)  'get the tile type
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1941,12 +1950,12 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
         
         'ver 2.13 sept/00
         Case "ANIMATION":
-            Call AnimationRPG(splice, theProgram, retval)  'run animation
+            Call AnimationRPG(splice, theProgram, retVal)  'run animation
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "SIZEDANIMATION":
-            Call SizedAnimationRPG(splice$, theProgram, retval)  'run sized animation
+            Call SizedAnimationRPG(splice$, theProgram, retVal)  'run sized animation
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -1983,7 +1992,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     
         'v.2.18 (july, 2001)
         Case "PATHFIND":
-            Call PathFindRPG(splice$, theProgram, retval)
+            Call PathFindRPG(splice$, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -2045,7 +2054,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "THREAD":
-            Call ThreadRPG(splice$, theProgram, retval) 'create a thread
+            Call ThreadRPG(splice$, theProgram, retVal) 'create a thread
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -2055,7 +2064,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "GETTHREADID":
-            Call GetThreadIDRPG(splice$, theProgram, retval) 'get thread id
+            Call GetThreadIDRPG(splice$, theProgram, retVal) 'get thread id
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -2065,7 +2074,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "TELLTHREAD":
-            Call TellThreadRPG(splice$, theProgram, retval) 'call #ThreadListener in the thread
+            Call TellThreadRPG(splice$, theProgram, retVal) 'call #ThreadListener in the thread
             DoSingleCommand = increment(theProgram)
             Exit Function
     
@@ -2075,57 +2084,57 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "THREADSLEEPREMAINING":
-            Call ThreadSleepRemainingRPG(splice$, theProgram, retval) 'find remaining sleep time for thread
+            Call ThreadSleepRemainingRPG(splice$, theProgram, retVal) 'find remaining sleep time for thread
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "LOCAL":
-            Call LocalRPG(splice$, theProgram, retval) 'init a local variable
+            Call LocalRPG(splice$, theProgram, retVal) 'init a local variable
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "GLOBAL":
-            Call GlobalRPG(splice$, theProgram, retval) 'init a global variable
+            Call GlobalRPG(splice$, theProgram, retVal) 'init a global variable
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "AUTOCOMMAND":
-            Call AutoCommandRPG(splice$, theProgram, retval) 'turn autocommand on or off
+            Call AutoCommandRPG(splice$, theProgram, retVal) 'turn autocommand on or off
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "CREATECURSORMAP":
-            Call CreateCursorMapRPG(splice$, theProgram, retval) 'create cursor map
+            Call CreateCursorMapRPG(splice$, theProgram, retVal) 'create cursor map
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "KILLCURSORMAP":
-            Call KillCursorMapRPG(splice$, theProgram, retval) 'kill cursor map
+            Call KillCursorMapRPG(splice$, theProgram, retVal) 'kill cursor map
             DoSingleCommand = increment(theProgram)
             Exit Function
         
         Case "CURSORMAPADD":
-            Call CursorMapAddRPG(splice$, theProgram, retval) 'add element to cursor map
+            Call CursorMapAddRPG(splice$, theProgram, retVal) 'add element to cursor map
             DoSingleCommand = increment(theProgram)
             Exit Function
         
         Case "CURSORMAPRUN":
-            Call CursorMapRunRPG(splice$, theProgram, retval) 'run cursor map
+            Call CursorMapRunRPG(splice$, theProgram, retVal) 'run cursor map
             DoSingleCommand = increment(theProgram)
             Exit Function
         
         Case "CREATECANVAS":
-            Call CreateCanvasRPG(splice$, theProgram, retval) 'create canvas
+            Call CreateCanvasRPG(splice$, theProgram, retVal) 'create canvas
             DoSingleCommand = increment(theProgram)
             Exit Function
         
         Case "KILLCANVAS":
-            Call KillCanvasRPG(splice$, theProgram, retval) 'destroy canvas
+            Call KillCanvasRPG(splice$, theProgram, retVal) 'destroy canvas
             DoSingleCommand = increment(theProgram)
             Exit Function
         
         Case "DRAWCANVAS":
-            Call DrawCanvasRPG(splice$, theProgram, retval) 'draw canvas
+            Call DrawCanvasRPG(splice$, theProgram, retVal) 'draw canvas
             DoSingleCommand = increment(theProgram)
             Exit Function
         
@@ -2155,7 +2164,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "FILEINPUT"
-            FileInputRPG splice$, theProgram, retval
+            FileInputRPG splice$, theProgram, retVal
             DoSingleCommand = increment(theProgram)
             Exit Function
 
@@ -2165,7 +2174,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "FILEGET"
-            FileGetRPG splice$, theProgram, retval
+            FileGetRPG splice$, theProgram, retVal
             DoSingleCommand = increment(theProgram)
             Exit Function
             
@@ -2175,37 +2184,37 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
 
         Case "FILEEOF"
-            FileEOFRPG splice$, theProgram, retval
+            FileEOFRPG splice$, theProgram, retVal
             DoSingleCommand = increment(theProgram)
             Exit Function
        
         Case "LENGTH", "LEN"
-            Call StringLenRPG(splice$, theProgram, retval)
+            Call StringLenRPG(splice$, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
         
         Case "INSTR"
-            Call InStrRPG(splice$, theProgram, retval)
+            Call InStrRPG(splice$, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "GETITEMNAME"
-            Call GetItemNameRPG(splice$, theProgram, retval)
+            Call GetItemNameRPG(splice$, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "GETITEMDESC"
-            Call GetItemDescRPG(splice$, theProgram, retval)
+            Call GetItemDescRPG(splice$, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "GETITEMCOST"
-            Call GetItemCostRPG(splice$, theProgram, retval)
+            Call GetItemCostRPG(splice$, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "GETITEMSELLPRICE"
-            Call GetItemSellRPG(splice$, theProgram, retval)
+            Call GetItemSellRPG(splice$, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
@@ -2233,27 +2242,27 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
 
         Case "SPLICEVARIABLES" 'Splice Variables
-            spliceVariables splice, theProgram, retval
+            spliceVariables splice, theProgram, retVal
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "SPLIT" 'Split string
-            SplitRPG splice, theProgram, retval
+            SplitRPG splice, theProgram, retVal
             DoSingleCommand = increment(theProgram)
             Exit Function
 
         Case "ASC", "CHR" 'ASCII commands
-            asciiToChr splice, theProgram, retval
+            asciiToChr splice, theProgram, retVal
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "TRIM"
-            trimRPG splice, theProgram, retval
+            trimRPG splice, theProgram, retVal
             DoSingleCommand = increment(theProgram)
             Exit Function
         
         Case "RIGHT", "LEFT"
-            rightLeft splice, theProgram, retval
+            rightLeft splice, theProgram, retVal
             DoSingleCommand = increment(theProgram)
             Exit Function
             
@@ -2283,7 +2292,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
 
         Case "MSGBOX"
-            Call MBoxRPG(splice, theProgram, retval)
+            Call MBoxRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
         
@@ -2303,12 +2312,12 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
             
         Case "LOG"
-            Call logRPG(splice, theProgram, retval)
+            Call logRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
         Case "ONBOARD"
-            Call onBoardRPG(splice, theProgram, retval)
+            Call onBoardRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
@@ -2318,39 +2327,39 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
             
         Case "GETBOARDNAME"
-            Call getBoardNameRPG(splice, theProgram, retval)
+            Call getBoardNameRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
 
         'End more of KSNiloc's commands
         
         Case "PIXELMOVEMENT"
-            Call pixelMovementRPG(splice, theProgram, retval)
+            Call pixelMovementRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
         
         Case "LCASE"
-            Call LCaseRPG(splice, theProgram, retval)
+            Call LCaseRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
 
         Case "UCASE"
-            Call UCaseRPG(splice, theProgram, retval)
+            Call UCaseRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
 
         Case "APPPATH"
-            Call appPathRPG(splice, theProgram, retval)
+            Call appPathRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
 
         Case "MID"
-            Call midRPG(splice, theProgram, retval)
+            Call midRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
 
         Case "REPLACE"
-            Call replaceRPG(splice, theProgram, retval)
+            Call replaceRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
             
@@ -2389,18 +2398,18 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
 
         Case "NEW"
-            Call newRPG(splice, theProgram, retval)
+            Call newRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
 
         Case "GETTEXTWIDTH", "GETTEXTHEIGHT"
-            Call GetTextWidthRPG(splice, theProgram, retval)
+            Call GetTextWidthRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
 
         '[Faero]
         Case "IIF"
-            Call IIfRPG(splice, theProgram, retval)
+            Call IIfRPG(splice, theProgram, retVal)
             DoSingleCommand = increment(theProgram)
             Exit Function
 
@@ -2422,7 +2431,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
         Case Else
             'If we got this far, it's an unrecognised command and
             'is probably a method call
-            Call MethodCallRPG(splice, testText, theProgram, retval) 'method called
+            Call MethodCallRPG(splice, testText, theProgram, retVal) 'method called
             DoSingleCommand = increment(theProgram)
             Exit Function
 

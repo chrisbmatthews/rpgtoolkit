@@ -24,7 +24,7 @@ End Type
 '=========================================================================
 ' Commonly used operators
 '=========================================================================
-Private m_mathSigns(21) As String
+Private m_mathSigns(22) As String
 Private m_compSigns(9) As String
 
 '=========================================================================
@@ -44,17 +44,18 @@ Public Sub buildSignArrays()
     m_mathSigns(8) = "--"
     m_mathSigns(9) = "*="
     m_mathSigns(10) = "/="
-    m_mathSigns(11) = "="
-    m_mathSigns(12) = "+"
-    m_mathSigns(13) = "-"
-    m_mathSigns(14) = "/"
-    m_mathSigns(15) = "*"
-    m_mathSigns(16) = "^"
-    m_mathSigns(17) = "\"
-    m_mathSigns(18) = "|"
-    m_mathSigns(19) = "&"
-    m_mathSigns(20) = "`"
-    m_mathSigns(21) = "%"
+    m_mathSigns(11) = "=="
+    m_mathSigns(12) = "="
+    m_mathSigns(13) = "+"
+    m_mathSigns(14) = "-"
+    m_mathSigns(15) = "/"
+    m_mathSigns(16) = "*"
+    m_mathSigns(17) = "^"
+    m_mathSigns(18) = "\"
+    m_mathSigns(19) = "|"
+    m_mathSigns(20) = "&"
+    m_mathSigns(21) = "`"
+    m_mathSigns(22) = "%"
 
     ' Build m_compSigns
     m_compSigns(0) = vbNullChar ' Prefixed NULL
@@ -264,12 +265,7 @@ End Function
 '=========================================================================
 ' Evaluates if the text passed in is true (1) or false (0)
 '=========================================================================
-Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As Long
-
-    '=========================================================================
-    ' Re-written by Colin [November 13, 2004]
-    ' + Allows math in the text
-    '=========================================================================
+Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Optional ByRef didEvaluate As Boolean) As Long
 
     '// Passing string(s) ByRef for preformance related reasons
 
@@ -317,7 +313,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
                 run = evaluate(parts(pIdx), prg)
 
                 ' Check how toRet should change
-                If (Not doneLoop) Then
+                If Not (doneLoop) Then
                     If (run = 1) Then
                         Select Case idx
                             Case 2, 3
@@ -362,12 +358,21 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
         ' Check if we got a sign
         If (signs(idx - 1) = vbNullChar) Then
 
+            If (idx = 1) Then
+
+                ' Flag we did not evaluate
+                didEvaluate = False
+                Exit Function
+
+            End If
+
             ' Leave this loop
             Exit Do
 
         End If
 
         ' Remove said sign from the text
+        If (signs(idx - 1) = "=") Then signs(idx - 1) = "=="
         str = replace(str, signs(idx - 1), vbNullChar, , 1)
 
     Loop
@@ -380,6 +385,15 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
     Dim valueUb As Long
     valueUb = UBound(values)
     ReDim strVal(valueUb) As String, numVal(valueUb) As Double, typeVal(valueUb) As RPGC_DT
+
+    ' If we got only one value values
+    If ((valueUb = 0) And (didEvaluate)) Then
+
+        ' Flag we did not evaluate
+        didEvaluate = False
+        Exit Function
+
+    End If
 
     ' Loop over each values
     For idx = 0 To valueUb
@@ -463,15 +477,44 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
 
         For idx = 0 To valueUb - 1
 
-            ' Switch on the sign
-            Select Case signs(idx)
-                Case "==", "=": numVal(idx + 1) = (numVal(idx) = numVal(idx + 1))
-                Case "~=": numVal(idx + 1) = (numVal(idx) <> numVal(idx + 1))
-                Case ">=", "=>": numVal(idx + 1) = (numVal(idx) >= numVal(idx + 1))
-                Case "<=", "=<": numVal(idx + 1) = (numVal(idx) <= numVal(idx + 1))
-                Case ">": numVal(idx + 1) = (numVal(idx) > numVal(idx + 1))
-                Case "<": numVal(idx + 1) = (numVal(idx) < numVal(idx + 1))
-            End Select
+            Dim signSwitch As Boolean
+            signSwitch = True
+
+            ' Check for overloaded operator
+            Dim tdc As String
+            tdc = RightB$(values(idx), 2)
+            If ((tdc <> "!") And (tdc <> "$")) Then
+
+                ' It's an object
+                Dim outside As Boolean, hClass As Long, op As String
+                hClass = CLng(numVal(idx))
+                outside = (topNestle(prg) <> hClass)
+                op = "operator" & signs(idx)
+
+                If (isMethodMember(op, hClass, prg, outside)) Then
+
+                    ' It handles this operator
+                    Dim retval As RPGCODE_RETURN
+                    signSwitch = False
+                    retval.num = 0
+                    Call callObjectMethod(hClass, op & "(" & CStr(numVal(idx + 1)) & ")", prg, retval, op)
+                    numVal(idx + 1) = -retval.num
+
+                End If
+
+            End If
+
+            If (signSwitch) Then
+                ' Switch on the sign
+                Select Case signs(idx)
+                    Case "==": numVal(idx + 1) = (numVal(idx) = numVal(idx + 1))
+                    Case "~=": numVal(idx + 1) = (numVal(idx) <> numVal(idx + 1))
+                    Case ">=", "=>": numVal(idx + 1) = (numVal(idx) >= numVal(idx + 1))
+                    Case "<=", "=<": numVal(idx + 1) = (numVal(idx) <= numVal(idx + 1))
+                    Case ">": numVal(idx + 1) = (numVal(idx) > numVal(idx + 1))
+                    Case "<": numVal(idx + 1) = (numVal(idx) < numVal(idx + 1))
+                End Select
+            End If
 
         Next idx
 
@@ -485,7 +528,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
 
             ' Switch on the sign
             Select Case signs(idx)
-                Case "==", "=": strVal(idx + 1) = CStr(CLng(strVal(idx) = strVal(idx + 1)))
+                Case "==": strVal(idx + 1) = CStr(CLng(strVal(idx) = strVal(idx + 1)))
                 Case "~=": strVal(idx + 1) = CStr(CLng(strVal(idx) <> strVal(idx + 1)))
                 Case ">=", "=>": strVal(idx + 1) = CStr(CLng(strVal(idx) >= strVal(idx + 1)))
                 Case "<=", "=<": strVal(idx + 1) = CStr(CLng(strVal(idx) <= strVal(idx + 1)))
@@ -1098,7 +1141,7 @@ Public Function ParseRPGCodeCommand( _
 
                                         ' Replace the command's name with
                                         ' the value it returned
-                                        If (Not varExp) Then
+                                        If Not (varExp) Then
                                             ret = _
                                                     prefix & _
                                                     "(" & _
@@ -1251,15 +1294,15 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     ' Have something to return incase we leave early
     parseArray = variable
 
+    If (InStrB(1, variable, "[") = 0) Then
+        ' There's not a [ so it's not an array and we're not needed
+        Exit Function
+    End If
+
     Dim toParse As String
     ' First remove spaces and tabs
     toParse = replaceOutsideQuotes(variable, " ", vbNullString)
     toParse = replaceOutsideQuotes(toParse, vbTab, vbNullString)
-
-    If (InStrB(1, toParse, "[") = 0) Then
-        ' There's not a [ so it's not an array and we're not needed
-        Exit Function
-    End If
 
     Dim variableType As String
     ' Grab the variable's type (! or $)

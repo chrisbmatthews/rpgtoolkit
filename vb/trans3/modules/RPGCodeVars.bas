@@ -78,7 +78,7 @@ End Function
 '=========================================================================
 ' Evaluate an equation (Asimir & KSNiloc)
 '=========================================================================
-Private Function evaluate(ByVal Text As String) As Double
+Private Function equEvaluate(ByVal Text As String) As Double
 
     On Error Resume Next
 
@@ -198,7 +198,7 @@ Private Function evaluate(ByVal Text As String) As Double
     ' Before we try and solve this equation, let's make sure all's good
     If ((depth <> 0) Or ((operatorIdx + 1) <> tokenIdx)) Then
         ' Error out
-        evaluate = -1
+        equEvaluate = -1
         Exit Function
     End If
 
@@ -239,7 +239,7 @@ Private Function evaluate(ByVal Text As String) As Double
     Loop
 
     ' Return the result
-    evaluate = tokens(0)
+    equEvaluate = tokens(0)
 
 End Function
 
@@ -272,7 +272,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
     If (allowEquations) Then
 
         ' Create an array of signs
-        Dim signs(9) As String
+        Dim signs(10) As String
         signs(0) = "+"
         signs(1) = "-"
         signs(2) = "/"
@@ -283,6 +283,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
         signs(7) = "&"
         signs(8) = "`"
         signs(9) = "%"
+        signs(10) = "=="
 
         ' Remove brackets from the text for this test
         Text = replace(replace(Text, ")", vbNullString), "(", vbNullString)
@@ -503,6 +504,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     Dim destLit As String           ' Destination as a string
     Dim destNum As Double           ' Destination as a num
     Dim noVar As Boolean            ' No var on left side?
+    Dim logicEval As Boolean        ' Can we evaluate with logic?
 
     ' Check if a type was passed
     If (solveType <> DT_VOID) Then
@@ -512,7 +514,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         dType = solveType
     End If
 
-    If (Not noVar) Then ' If there's a var
+    If Not (noVar) Then ' If there's a var
 
         ' Get the destination variable and remove unwanted characters
         Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", vbNullString), " ", vbNullString), vbTab, vbNullString), theProgram)
@@ -541,11 +543,11 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     End If
 
-    If ((dType = DT_NUM) Or (dType = DT_VOID)) Then
-        ' If we have a numerical variable then add to
-        ' the string to evaluate (prevents some errors)
-        Text = Text & " +0+0"
-    End If
+    ' If ((dType = DT_NUM) Or (dType = DT_VOID)) Then
+    '     ' If we have a numerical variable then add to
+    '     ' the string to evaluate (prevents some errors)
+    '    Text = Text & " +0+0"
+    ' End If
 
     ' Check what type of conjuction we have
     equal = MathFunction(Text, 1)
@@ -573,7 +575,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     Next tokenIdx
 
-    If (Not noVar) Then
+    If Not (noVar) Then
         ' Get the value of the destination
         Call getValue(Destination, destLit, destNum, theProgram)
     End If
@@ -621,96 +623,104 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
             End Select
 
-            ' Put all the tokens into an array
-            ReDim numberUse(number) As Double, conjunctions(number) As String
-            ReDim nulled(number) As Boolean
-            For tokenIdx = 2 To number
-                ' Get the conjuction here
-                conjunctions(tokenIdx) = MathFunction(Text, tokenIdx)
-                ' Get the value of the token
-                Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram)
-                ' If this isn't the first token
-                If ((tokenIdx <> 2) And (tokenIdx <= (number - 2))) Then
-                    ' Find a token
-                    Dim toFind As Long
-                    toFind = 0
-                    Do
-                        If ((tokenIdx + toFind) = 2) Then
-                            ' No luck at all
-                            toFind = 0
-                            Exit Do
-                        End If
-                        toFind = toFind - 1
-                        If (Not nulled(tokenIdx + toFind)) Then
-                            ' This one will do
-                            Exit Do
-                        End If
-                    Loop
-                    ' If we found one
-                    If (toFind <> 0) Then
-                        ' Check for operator overloading on previous token
-                        Dim prevToken As String
-                        prevToken = valueList(tokenIdx + toFind)
-                        ' Get its value
-                        If (getVariable(prevToken & "!", lit, num, theProgram) = DT_NUM) Then
-                            ' If it's not NULL
-                            If (num <> 0) Then
-                                ' See if it's an object
-                                Dim hTokenClass As Long
-                                hTokenClass = CLng(num)
-                                If (isObject(hTokenClass, theProgram)) Then
-                                    ' See if it handles said conjuction
-                                    Dim cnj As String
-                                    cnj = "operator" & conjunctions(tokenIdx + toFind)
-                                    If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
-                                        ' Call the method
-                                        Call callObjectMethod(hTokenClass, cnj & "(" & CStr(numberUse(tokenIdx)) & ")", theProgram, retval, cnj)
-                                        ' Switch on returned type
-                                        Dim theVal As String
-                                        Select Case retval.dataType
-                                            Case DT_LIT: theVal = retval.lit
-                                            Case DT_NUM: theVal = CStr(retval.num)
-                                            Case DT_REFERENCE: theVal = retval.ref
-                                        End Select
-                                        ' Fill in new data
-                                        Call getValue(theVal, lit, numberUse(tokenIdx + toFind), theProgram)
-                                        ' Switch on the conjuction we used
-                                        Select Case conjunctions(tokenIdx + toFind)
-                                            Case "+", "-"
-                                                ' Additive identity is 0
-                                                numberUse(tokenIdx) = 0
-                                            Case "/", "*", "^", "%"
-                                                ' Multiplicative identity is 1
-                                                numberUse(tokenIdx) = 1
-                                            Case "`", "|"
-                                                ' Binary [X]OR identity is 0
-                                                numberUse(tokenIdx) = 0
-                                            Case "&"
-                                                ' Binary AND identity is 255
-                                                numberUse(tokenIdx) = 255
-                                        End Select
-                                        ' Flag this spot holds an identity
-                                        nulled(tokenIdx) = True
+            ' Check if we can evaluate using logic
+            Dim dRes As Double
+            logicEval = True
+            dRes = CDbl(evaluate(MidB$(Text, InStrB(1, Text, equal) + 2), theProgram, logicEval))
+
+            If Not (logicEval) Then
+
+                ' Put all the tokens into an array
+                ReDim numberUse(number) As Double, conjunctions(number) As String
+                ReDim nulled(number) As Boolean
+                For tokenIdx = 2 To number
+                    ' Get the conjuction here
+                    conjunctions(tokenIdx) = MathFunction(Text, tokenIdx)
+                    ' Get the value of the token
+                    Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram)
+                    ' If this isn't the first token
+                    If ((tokenIdx <> 2) And (tokenIdx <= (number - 2))) Then
+                        ' Find a token
+                        Dim toFind As Long
+                        toFind = 0
+                        Do
+                            If ((tokenIdx + toFind) = 2) Then
+                                ' No luck at all
+                                toFind = 0
+                                Exit Do
+                            End If
+                            toFind = toFind - 1
+                            If (Not nulled(tokenIdx + toFind)) Then
+                                ' This one will do
+                                Exit Do
+                            End If
+                        Loop
+                        ' If we found one
+                        If (toFind <> 0) Then
+                            ' Check for operator overloading on previous token
+                            Dim prevToken As String
+                            prevToken = valueList(tokenIdx + toFind)
+                            ' Get its value
+                            If (getVariable(prevToken & "!", lit, num, theProgram) = DT_NUM) Then
+                                ' If it's not NULL
+                                If (num <> 0) Then
+                                    ' See if it's an object
+                                    Dim hTokenClass As Long
+                                    hTokenClass = CLng(num)
+                                    If (isObject(hTokenClass, theProgram)) Then
+                                        ' See if it handles said conjuction
+                                        Dim cnj As String
+                                        cnj = "operator" & conjunctions(tokenIdx + toFind)
+                                        If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
+                                            ' Call the method
+                                            Call callObjectMethod(hTokenClass, cnj & "(" & CStr(numberUse(tokenIdx)) & ")", theProgram, retval, cnj)
+                                            ' Switch on returned type
+                                            Dim theVal As String
+                                            Select Case retval.dataType
+                                                Case DT_LIT: theVal = retval.lit
+                                                Case DT_NUM: theVal = CStr(retval.num)
+                                                Case DT_REFERENCE: theVal = retval.ref
+                                            End Select
+                                            ' Fill in new data
+                                            Call getValue(theVal, lit, numberUse(tokenIdx + toFind), theProgram)
+                                            ' Switch on the conjuction we used
+                                            Select Case conjunctions(tokenIdx + toFind)
+                                                Case "+", "-"
+                                                    ' Additive identity is 0
+                                                    numberUse(tokenIdx) = 0
+                                                Case "/", "*", "^", "%"
+                                                    ' Multiplicative identity is 1
+                                                    numberUse(tokenIdx) = 1
+                                                Case "`", "|"
+                                                    ' Binary [X]OR identity is 0
+                                                    numberUse(tokenIdx) = 0
+                                                Case "&"
+                                                    ' Binary AND identity is 255
+                                                    numberUse(tokenIdx) = 255
+                                            End Select
+                                            ' Flag this spot holds an identity
+                                            nulled(tokenIdx) = True
+                                        End If
                                     End If
                                 End If
                             End If
                         End If
                     End If
-                End If
-            Next tokenIdx
+                Next tokenIdx
 
-            ' Build the equation into a string
-            Dim build As String
-            For tokenIdx = 2 To number
-                build = build & numberUse(tokenIdx)
-                If (tokenIdx <> number) Then
-                    build = build & conjunctions(tokenIdx)
-                End If
-            Next tokenIdx
+                ' Build the equation into a string
+                Dim build As String
+                For tokenIdx = 2 To number
+                    build = build & numberUse(tokenIdx)
+                    If (tokenIdx <> number) Then
+                        build = build & conjunctions(tokenIdx)
+                    End If
+                Next tokenIdx
 
-            ' Now actually evaluate the quation
-            Dim dRes As Double
-            dRes = evaluate(build)
+                ' Now actually evaluate the equation
+                dRes = equEvaluate(build)
+
+            End If
 
             If ((hClass <> 0) And (equal <> "=") And (Not noVar)) Then
                 ' If this class handles this *specific* operator
@@ -744,7 +754,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 End If
             End If
 
-            If (Not noVar) Then
+            If Not (noVar) Then
                 ' Set destination to the result
                 Call SetVariable(Destination, CStr(dRes), theProgram)
             Else
@@ -783,7 +793,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 End If
             End If
 
-            If (Not noVar) Then
+            If Not (noVar) Then
                 ' Set destination to result
                 Call SetVariable(Destination, res, theProgram)
             Else
@@ -1260,10 +1270,11 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
 
     Dim tdc As String
     tdc = RightB$(theVar, 2)
-    If ((tdc <> "!") And (tdc <> "$")) Then
+    If ((tdc <> "!") And (tdc <> "$") And ((Not numVarExists(theVar, globalHeap) And (Not numVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame)))))) Then
         ' Get value of the destination
         Dim litA As String, numA As Double
-        Call getValue(theVar & "!", litA, numA, theProgram)
+        theVar = theVar & "!"
+        Call getValue(theVar, litA, numA, theProgram)
         ' If it's not NULL
         If (numA <> 0) Then
             ' Check if it's already an object
@@ -1345,9 +1356,11 @@ Public Function initVarSystem() As Boolean
     globalHeap = RPGCCreateHeap()
     Call initRPGCodeClasses
     Call buildSignArrays
+    Call SetVariable("true", 1, errorKeep, True)
+    Call SetVariable("false", 0, errorKeep, True)
 
     Exit Function
-    
+
 anErr:
     bRPGCStarted = False
     initVarSystem = bRPGCStarted
