@@ -432,12 +432,13 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
     Dim w As Long, h As Long
     w = getCanvasWidth(cnv)
     h = getCanvasHeight(cnv)
-
+    
     ' Capitalize the file
     file = UCase$(file)     ' Safe because this is never passed important things
 
     ' First check sprite cache
     Dim t As Long
+    Dim cacheFrameWidth As Long, cacheFrameHeight As Long
     For t = 0 To UBound(anmCache)
 
         If (anmCache(t).file = file) Then   ' All files in cache are already capital
@@ -448,8 +449,11 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
             If (anmCache(t).frame = frame) Then
 
                 ' Resize target canvas, if required
-                If (w <> getCanvasWidth(anmCache(t).cnv) Or h <> getCanvasHeight(anmCache(t).cnv)) Then
-                    Call setCanvasSize(cnv, w, h)
+                cacheFrameWidth = getCanvasWidth(anmCache(t).cnv)
+                cacheFrameHeight = getCanvasHeight(anmCache(t).cnv)
+                
+                If (w <> cacheFrameWidth Or h <> cacheFrameHeight) Then
+                    Call setCanvasSize(cnv, cacheFrameWidth, cacheFrameHeight)
                 End If
 
                 ' Blt contents over
