@@ -1266,7 +1266,7 @@ Private Function isItemIdle(ByVal num As Long) As Boolean
                 isItemIdle = True
             End If
         End If
-        
+
     End With
 
     If (isItemIdle) Then
@@ -1315,7 +1315,7 @@ Private Function isPlayerIdle(ByVal num As Long) As Boolean
                 isPlayerIdle = True
             End If
         End If
-        
+
     End With
 
     If (isPlayerIdle) Then
