@@ -454,7 +454,7 @@ Public Sub setTransp(): On Error Resume Next
     animationList(activeAnimationIndex).theData.animGetTransp = True
     
     'Tell the user what to do
-    MsgBox LoadStringLoc(970, "Please click on the image to select a color.")
+    MsgBox LoadStringLoc(970, "Please click on the image to select the transparent color.")
 
 End Sub
 
@@ -471,8 +471,8 @@ Public Sub animPlay(): On Error Resume Next
     Call arena.cls
     
     'Animate the frames
-    Call animateFrames
-    
+    Call AnimateAt(animationList(activeAnimationIndex).theData, 0, 0, animationList(activeAnimationIndex).theData.animSizeX, animationList(activeAnimationIndex).theData.animSizeY, arena)
+
     'Set the current frame again
     animationList(activeAnimationIndex).theData.animCurrentFrame = oldF
     
@@ -594,19 +594,10 @@ Private Sub DrawFrame(ByVal framenum As Long): On Error Resume Next
         'Update the boxes and such
         tkMainForm.lblAnimFrameCount.Caption = "Frame " & CStr(.animCurrentFrame + 1) & " / " & CStr(maxFrame + 1)
         tkMainForm.txtAnimSound.Text = .animSound(.animCurrentFrame)
-        Call vbPicFillRect(tkMainForm.transpcolor, 0, 0, 1000, 1000, .animTransp(.animCurrentFrame))
+        tkMainForm.transpcolor.BackColor = .animTransp(.animCurrentFrame)
     
     End With
     
-End Sub
-
-'========================================================================
-' Animate
-'========================================================================
-Private Sub animateFrames(): On Error Resume Next
-    
-    Call AnimateAt(animationList(activeAnimationIndex).theData, 0, 0, animationList(activeAnimationIndex).theData.animSizeX, animationList(activeAnimationIndex).theData.animSizeY, arena)
-
 End Sub
 
 '========================================================================
@@ -666,6 +657,7 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
         
             'Cancel unload
             Cancel = 1
+            Exit Sub
             
         ElseIf answer = vbYes Then
         
@@ -677,7 +669,7 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     End If
     
     'Hide the tools
-    If Cancel = 0 Then Call hideAllTools
+    Call hideAllTools
        
 End Sub
 
@@ -733,7 +725,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
         
             'Open it
             tstFile = configfile.lastTileset
-            tilesetform.Show vbModal ', me
+            tilesetForm.Show vbModal ', me
             
             'Set it
             Call changeSelectedTile(setFilename)
@@ -767,15 +759,15 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y 
             .animGetTransp = False
             
             'Get the color of the pixel
-            Dim col As Integer
-            col = vbFrmPoint(arena, X, Y)
+            Dim colour As Long
+            colour = vbFrmPoint(arena, X, Y)
             
             'Set the transparent color
-            .animTransp(.animCurrentFrame) = col
+            .animTransp(.animCurrentFrame) = colour
             
             'If the next frame is empty, set the transparent color there too
             If .animFrame(.animCurrentFrame + 1) = "" Then
-                .animTransp(.animCurrentFrame + 1) = col
+                .animTransp(.animCurrentFrame + 1) = colour
             End If
             
             'Redraw the current frame
@@ -825,7 +817,7 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, X As Single, Y 
                     
                     'Update the last tileset variable
                     configfile.lastTileset = tstFile
-                    tilesetform.Show vbModal
+                    tilesetForm.Show vbModal
                     
                     'If the filename is empty, exit sub
                     If setFilename$ = "" Then Exit Sub

@@ -2296,7 +2296,7 @@ Begin VB.MDIForm tkMainForm
                Top             =   480
                Width           =   2175
             End
-            Begin VB.CommandButton Command5 
+            Begin VB.CommandButton cmdAnimTransp 
                Caption         =   "Select"
                Height          =   195
                Left            =   2760
