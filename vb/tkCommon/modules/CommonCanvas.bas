@@ -335,6 +335,40 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
         cnvInt = createCanvas(newWidth, newHeight)
         Call canvasFill(cnvInt, crTranspColor)
 
+#If (True) Then
+
+        Dim hdcInt As Long, hdcSource As Long, hdcMask As Long
+
+        hdcInt = canvasOpenHDC(cnvInt)
+
+        ' Stretch the mask onto the intermediate canvas
+        hdcMask = canvasOpenHDC(cnvMask)
+        Call StretchBlt(hdcInt, _
+                           0, 0, _
+                           newWidth, _
+                           newHeight, _
+                           hdcMask, _
+                           0, 0, _
+                           w, h, _
+                           SRCAND)
+        Call canvasCloseHDC(cnvMask, hdcMask)
+
+        ' Stretch the image onto the intermediate canvas
+        hdcSource = canvasOpenHDC(cnvSource)
+        Call StretchBlt(hdcInt, _
+                           0, 0, _
+                           newWidth, _
+                           newHeight, _
+                           hdcSource, _
+                           0, 0, _
+                           w, h, _
+                           SRCPAINT)
+        Call canvasCloseHDC(cnvSource, hdcSource)
+ 
+        Call canvasCloseHDC(cnvInt, hdcInt)
+
+#Else
+
         Call CNVBltStretchCanvas( _
             cnvMask, cnvInt, _
             0, 0, 0, 0, _
@@ -348,6 +382,8 @@ Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
             w, h, newWidth, newHeight, _
             SRCPAINT _
         )
+
+#End If
 
         ' Blt the intermediate canvas to the target canvas
         Call canvas2CanvasBltTransparent(cnvInt, cnvTarget, destX, destY, crTranspColor)
