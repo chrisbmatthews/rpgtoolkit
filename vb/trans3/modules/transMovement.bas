@@ -77,7 +77,7 @@ Public pendingItemMovement() As PENDING_MOVEMENT 'pending movements for the item
 Public Enum FACING_DIRECTION
     South = 1
     West = 2
-    North = 2
+    North = 3
     East = 4
 End Enum
 

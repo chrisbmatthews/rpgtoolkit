@@ -129,7 +129,7 @@ Public useNumberPad As Boolean       'Use number pad?
 Public useJoystick As Boolean        'Use joystick?
 
 '=========================================================================
-' Get the lasy key pressed
+' Get the last key pressed
 '=========================================================================
 Public Property Get lastKeyPressed() As String
     lastKeyPressed = keyWaitState

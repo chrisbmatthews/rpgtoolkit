@@ -14,7 +14,7 @@ Option Explicit
 '=========================================================================
 ' DirectX declarations
 '=========================================================================
-Public Declare Function DXInitGfxMode Lib "actkrt3.dll" (ByVal hostHwnd As Long, ByVal nScreenX As Long, ByVal nScreenY As Long, ByVal nUseDirectX As Long, ByVal nColorDepth As Long, ByVal nFullScreen As Long) As Long
+Public Declare Function DXInitGfxMode Lib "actkrt3.dll" (ByVal hwnd As Long, ByVal nScreenX As Long, ByVal nScreenY As Long, ByVal nUseDirectX As Long, ByVal nColorDepth As Long, ByVal nFullScreen As Long) As Long
 Public Declare Function DXKillGfxMode Lib "actkrt3.dll" () As Long
 Public Declare Function DXRefresh Lib "actkrt3.dll" () As Long
 Public Declare Function DXLockScreen Lib "actkrt3.dll" () As Long

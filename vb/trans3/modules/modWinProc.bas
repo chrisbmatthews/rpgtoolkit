@@ -19,9 +19,9 @@ Public Declare Sub endProgram Lib "actkrt3.dll" ()
 Public Declare Sub processEvent Lib "actkrt3.dll" ()
 
 '=========================================================================
-' Mmeber declarations
+' Member declarations
 '=========================================================================
-Private Declare Sub TKShowEndForm Lib "actkrt3.dll" Alias "showEndForm" (ByVal endFormBackHdc As Long, ByVal X As Long, ByVal Y As Long, ByVal hIcon As Long, ByVal hInstance As Long)
+Private Declare Sub TKShowEndForm Lib "actkrt3.dll" Alias "showEndForm" (ByVal endFormBackHdc As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long, ByVal hInstance As Long)
 Private Declare Sub createEventCallbacks Lib "actkrt3.dll" (ByVal forceRender As Long, ByVal closeSystems As Long, ByVal setAsciiKeyState As Long, ByVal keyDownEvent As Long, ByVal mouseMoveEvent As Long, ByVal mouseDownEvent As Long, ByVal isShuttingDown As Long, ByVal getGameState As Long, ByVal setGameState As Long)
 
 '=========================================================================

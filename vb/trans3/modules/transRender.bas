@@ -206,35 +206,35 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
     Call getAmbientLevel(shadeR, shadeB, shadeG)
     
     'now redraw the layers...
-    Dim xx As Long, yy As Long, X As Long, Y As Long, layer As Long
+    Dim xx As Long, yy As Long, x As Long, y As Long, layer As Long
     
-    X = xBoardCoord
-    Y = yBoardCoord
+    x = xBoardCoord
+    y = yBoardCoord
 
-    xx = X - scTopX
-    yy = Y - scTopY
+    xx = x - scTopX
+    yy = y - scTopY
     
     For layer = 1 To boardList(activeBoardIndex).theData.bSizeL
-        If BoardGetTile(X, Y, layer, boardList(activeBoardIndex).theData) <> "" Then
+        If BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData) <> "" Then
             'If there is a tile here.
         
             Call drawTileCNV(cnvScrollCache, _
-                          projectPath & tilePath & BoardGetTile(X, Y, layer, boardList(activeBoardIndex).theData), _
+                          projectPath & tilePath & BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData), _
                           xx, _
                           yy, _
-                          boardList(activeBoardIndex).theData.ambientRed(X, Y, layer) + shadeR, _
-                          boardList(activeBoardIndex).theData.ambientGreen(X, Y, layer) + shadeG, _
-                          boardList(activeBoardIndex).theData.ambientBlue(X, Y, layer) + shadeB, False)
+                          boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                          boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                          boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, False)
             
             If cnvScrollCacheMask <> -1 Then
                 
                 Call drawTileCNV(cnvScrollCacheMask, _
-                              projectPath & tilePath & BoardGetTile(X, Y, layer, boardList(activeBoardIndex).theData), _
+                              projectPath & tilePath & BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData), _
                               xx, _
                               yy, _
-                              boardList(activeBoardIndex).theData.ambientRed(X, Y, layer) + shadeR, _
-                              boardList(activeBoardIndex).theData.ambientGreen(X, Y, layer) + shadeG, _
-                              boardList(activeBoardIndex).theData.ambientBlue(X, Y, layer) + shadeB, True, False)
+                              boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                              boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                              boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, True, False)
             
             End If
         End If
@@ -302,31 +302,31 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
                 runIt = True
             End If
             If (runIt) And (boardList(activeBoardIndex).theData.progGraphic$(prgNum) <> "None") Then
-                Dim layAt As Long, X As Long, Y As Long
+                Dim layAt As Long, x As Long, y As Long
                 layAt = boardList(activeBoardIndex).theData.progLayer(prgNum)
                 If layAt = layer Then
                     'yes!  it's on this layer!
-                    X = boardList(activeBoardIndex).theData.progX(prgNum)
-                    Y = boardList(activeBoardIndex).theData.progY(prgNum)
+                    x = boardList(activeBoardIndex).theData.progX(prgNum)
+                    y = boardList(activeBoardIndex).theData.progY(prgNum)
                     
                     If cnv <> -1 Then
                         Call drawTileCNV(cnv, _
                                         projectPath & tilePath & boardList(activeBoardIndex).theData.progGraphic$(prgNum), _
-                                        X - scTopX, _
-                                        Y - scTopY, _
-                                        boardList(activeBoardIndex).theData.ambientRed(X, Y, layer) + shadeR, _
-                                        boardList(activeBoardIndex).theData.ambientGreen(X, Y, layer) + shadeG, _
-                                        boardList(activeBoardIndex).theData.ambientBlue(X, Y, layer) + shadeB, False)
+                                        x - scTopX, _
+                                        y - scTopY, _
+                                        boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                                        boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                                        boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, False)
                     End If
                         
                     If cnvMask <> -1 Then
                         Call drawTileCNV(cnvMask, _
                                         projectPath & tilePath & boardList(activeBoardIndex).theData.progGraphic$(prgNum), _
-                                        X - scTopX, _
-                                        Y - scTopY, _
-                                        boardList(activeBoardIndex).theData.ambientRed(X, Y, layer) + shadeR, _
-                                        boardList(activeBoardIndex).theData.ambientGreen(X, Y, layer) + shadeG, _
-                                        boardList(activeBoardIndex).theData.ambientBlue(X, Y, layer) + shadeB, True, False)
+                                        x - scTopX, _
+                                        y - scTopY, _
+                                        boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                                        boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                                        boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, True, False)
                     End If
                 End If
             End If
@@ -449,7 +449,7 @@ End Sub
 '=========================================================================
 ' Render a canvas in a certain way (called only by CBPopupCanvas)
 '=========================================================================
-Public Sub PopupCanvas(ByVal cnv As Long, ByVal X As Long, ByVal Y As Long, ByVal stepSize As Long, ByVal popupType As Long)
+Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVal stepSize As Long, ByVal popupType As Long)
 
     On Error Resume Next
 
@@ -464,33 +464,33 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal X As Long, ByVal Y As Long, ByVa
         Select Case popupType
             Case POPUP_NOFX:
                 'just put it on the screen
-                Call DXDrawCanvas(cnv, X, Y)
+                Call DXDrawCanvas(cnv, x, y)
                 Call DXRefresh
                 
             Case POPUP_VERTICAL:
                 stepSize = -stepSize
                 For c = h / 2 To 0 Step stepSize
                     Call DXDrawCanvas(cnvAllPurpose, 0, 0)
-                    Call DXDrawCanvasPartial(cnv, X, Y + c, 0, 0, W, h / 2 - c)
-                    Call DXDrawCanvasPartial(cnv, X, Y + h / 2, 0, h - cnt, W, h / 2 - c)
+                    Call DXDrawCanvasPartial(cnv, x, y + c, 0, 0, W, h / 2 - c)
+                    Call DXDrawCanvasPartial(cnv, x, y + h / 2, 0, h - cnt, W, h / 2 - c)
                     Call DXRefresh
                     cnt = cnt - stepSize
                     Call delay(walkDelay)
                 Next c
-                Call DXDrawCanvas(cnv, X, Y)
+                Call DXDrawCanvas(cnv, x, y)
                 Call DXRefresh
         
             Case POPUP_HORIZONTAL:
                 stepSize = -stepSize
                 For c = W / 2 To 0 Step stepSize
                     Call DXDrawCanvas(cnvAllPurpose, 0, 0)
-                    Call DXDrawCanvasPartial(cnv, X + c, Y, 0, 0, W / 2 - c, h)
-                    Call DXDrawCanvasPartial(cnv, X + W / 2, Y, W - cnt, 0, W / 2 - c, h)
+                    Call DXDrawCanvasPartial(cnv, x + c, y, 0, 0, W / 2 - c, h)
+                    Call DXDrawCanvasPartial(cnv, x + W / 2, y, W - cnt, 0, W / 2 - c, h)
                     Call DXRefresh
                     cnt = cnt - stepSize
                     Call delay(walkDelay)
                 Next c
-                Call DXDrawCanvas(cnv, X, Y)
+                Call DXDrawCanvas(cnv, x, y)
                 Call DXRefresh
         End Select
     End If
@@ -508,8 +508,8 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
     Dim hdcMask As Long
     Dim t As Long
     Dim lightShade As Long
-    Dim X As Double
-    Dim Y As Double
+    Dim x As Double
+    Dim y As Double
     Dim xx As Double
     Dim yy As Double
     Dim lll As Long
@@ -527,34 +527,34 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                 Call getAmbientLevel(shadeR, shadeB, shadeG)
                 
                 'now redraw the layers...
-                X = boardList(activeBoardIndex).theData.animatedTile(t).X
-                Y = boardList(activeBoardIndex).theData.animatedTile(t).Y
-                xx = boardList(activeBoardIndex).theData.animatedTile(t).X - scTopX
-                yy = boardList(activeBoardIndex).theData.animatedTile(t).Y - scTopY
+                x = boardList(activeBoardIndex).theData.animatedTile(t).x
+                y = boardList(activeBoardIndex).theData.animatedTile(t).y
+                xx = boardList(activeBoardIndex).theData.animatedTile(t).x - scTopX
+                yy = boardList(activeBoardIndex).theData.animatedTile(t).y - scTopY
                 
                 For lll = 1 To boardList(activeBoardIndex).theData.bSizeL
-                    If BoardGetTile(X, Y, lll, boardList(activeBoardIndex).theData) <> "" Then
-                        ext$ = GetExt(BoardGetTile(X, Y, lll, boardList(activeBoardIndex).theData))
+                    If BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData) <> "" Then
+                        ext$ = GetExt(BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData))
                         If UCase$(ext$) <> "TAN" Then
                             'not the animated part
                             If cnv <> -1 Then
                                 Call drawTileCNV(cnv, _
-                                              projectPath & tilePath & BoardGetTile(X, Y, lll, boardList(activeBoardIndex).theData), _
+                                              projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                                               xx, _
                                               yy, _
-                                              boardList(activeBoardIndex).theData.ambientRed(X, Y, lll) + shadeR, _
-                                              boardList(activeBoardIndex).theData.ambientGreen(X, Y, lll) + shadeG, _
-                                              boardList(activeBoardIndex).theData.ambientBlue(X, Y, lll) + shadeB, False)
+                                              boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                              boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                              boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
                             End If
                             
                             If cnvMask <> -1 Then
                                 Call drawTileCNV(cnvMask, _
-                                              projectPath & tilePath & BoardGetTile(X, Y, lll, boardList(activeBoardIndex).theData), _
+                                              projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                                               xx, _
                                               yy, _
-                                              boardList(activeBoardIndex).theData.ambientRed(X, Y, lll) + shadeR, _
-                                              boardList(activeBoardIndex).theData.ambientGreen(X, Y, lll) + shadeG, _
-                                              boardList(activeBoardIndex).theData.ambientBlue(X, Y, lll) + shadeB, True, False)
+                                              boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                              boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                              boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, False)
                             End If
                         Else
                             If cnv <> -1 Then
@@ -563,17 +563,17 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                                                 cnv, _
                                                                 xx, _
                                                                 yy, _
-                                                                boardList(activeBoardIndex).theData.ambientRed(X, Y, lll) + shadeR, _
-                                                                boardList(activeBoardIndex).theData.ambientGreen(X, Y, lll) + shadeG, _
-                                                                boardList(activeBoardIndex).theData.ambientBlue(X, Y, lll) + shadeB, False)
+                                                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
                                 Else
                                     Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
                                                                 cnv, _
                                                                 xx, _
                                                                 yy, _
-                                                                boardList(activeBoardIndex).theData.ambientRed(X, Y, lll) + shadeR, _
-                                                                boardList(activeBoardIndex).theData.ambientGreen(X, Y, lll) + shadeG, _
-                                                                boardList(activeBoardIndex).theData.ambientBlue(X, Y, lll) + shadeB, True, True, False)
+                                                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, False)
                                 End If
                             End If
                             If cnvMask <> -1 Then
@@ -581,9 +581,9 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                                             cnvMask, _
                                                             xx, _
                                                             yy, _
-                                                            boardList(activeBoardIndex).theData.ambientRed(X, Y, lll) + shadeR, _
-                                                            boardList(activeBoardIndex).theData.ambientGreen(X, Y, lll) + shadeG, _
-                                                            boardList(activeBoardIndex).theData.ambientBlue(X, Y, lll) + shadeB, True, True, True)
+                                                            boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                                            boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                                            boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, True)
                             End If
                         End If
                     End If
@@ -950,18 +950,18 @@ Private Function renderItem(ByVal cnvFrameID As Long, ByRef theItem As TKItem, B
     If boardIso() Then
         'Substituting for isoTopY = topY * 2 + 1
         'might need to substitute topx for topx + 1
-        If itmPos(idx).X < topX - 1 Or _
-            itmPos(idx).X > topX + isoTilesX + 1 Or _
-            itmPos(idx).Y < (topY * 2 + 1) - 1 Or _
-            itmPos(idx).Y > (topY * 2 + 1) + isoTilesY + 1 Then
+        If itmPos(idx).x < topX - 1 Or _
+            itmPos(idx).x > topX + isoTilesX + 1 Or _
+            itmPos(idx).y < (topY * 2 + 1) - 1 Or _
+            itmPos(idx).y > (topY * 2 + 1) + isoTilesY + 1 Then
             renderItem = False
             Exit Function
         End If
     Else
-        If itmPos(idx).X < topX - 1 Or _
-            itmPos(idx).X > topX + tilesX + 1 Or _
-            itmPos(idx).Y < topY - 1 Or _
-            itmPos(idx).Y > topY + tilesY + 1 Then
+        If itmPos(idx).x < topX - 1 Or _
+            itmPos(idx).x > topX + tilesX + 1 Or _
+            itmPos(idx).y < topY - 1 Or _
+            itmPos(idx).y > topY + tilesY + 1 Then
             renderItem = False
             Exit Function
         End If
@@ -1272,7 +1272,7 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
     For t = 0 To UBound(cnvPlayer)
         If showPlayer(t) Then
             'determine a location value...
-            theValue = (pPos(t).Y * boardList(activeBoardIndex).theData.bSizeY) + pPos(t).X
+            theValue = (pPos(t).y * boardList(activeBoardIndex).theData.bSizeY) + pPos(t).x
             'playes will have a negative index so we can differentiate them
             indicies(curIdx) = -(t + 1)
             locationValues(curIdx) = theValue
@@ -1284,7 +1284,7 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
     For t = 0 To maxItem
         If itemMem(t).bIsActive Then
             'determine a location value...
-            theValue = (itmPos(t).Y * boardList(activeBoardIndex).theData.bSizeY) + itmPos(t).X
+            theValue = (itmPos(t).y * boardList(activeBoardIndex).theData.bSizeY) + itmPos(t).x
             'items will have a positive index so we can differentiate them
             indicies(curIdx) = t
             locationValues(curIdx) = theValue
@@ -1301,8 +1301,8 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
             'this is a player
             curNum = (-indicies(t)) - 1
             Call putSpriteAt(cnvPlayer(curNum), _
-                    pPos(curNum).X, _
-                    pPos(curNum).Y, _
+                    pPos(curNum).x, _
+                    pPos(curNum).y, _
                     pPos(curNum).l, _
                     pendingPlayerMovement(curNum), _
                     cnvTarget)
@@ -1310,8 +1310,8 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
             'this is an item
             curNum = indicies(t)
             Call putSpriteAt(cnvSprites(curNum), _
-                    itmPos(curNum).X, _
-                    itmPos(curNum).Y, _
+                    itmPos(curNum).x, _
+                    itmPos(curNum).y, _
                     itmPos(curNum).l, _
                     pendingItemMovement(curNum), _
                     cnvTarget)
