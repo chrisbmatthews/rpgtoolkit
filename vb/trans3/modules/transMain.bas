@@ -533,9 +533,10 @@ Public Sub setupMain(): On Error Resume Next
         ' Setup player position, only if an initial board has been specified.
         If (LenB(mainMem.initBoard)) Then
             With pPos(selectedPlayer)
-                .x = boardList(activeBoardIndex).theData.playerX
-                .y = boardList(activeBoardIndex).theData.playerY
-                .l = boardList(activeBoardIndex).theData.playerLayer
+                'If there isn't a start position, place at 1,1,1.
+                .x = IIf(boardList(activeBoardIndex).theData.playerX > 0, boardList(activeBoardIndex).theData.playerX, 1)
+                .y = IIf(boardList(activeBoardIndex).theData.playerY > 0, boardList(activeBoardIndex).theData.playerY, 1)
+                .l = IIf(boardList(activeBoardIndex).theData.playerLayer > 0, boardList(activeBoardIndex).theData.playerLayer, 1)
                 pendingPlayerMovement(selectedPlayer).xOrig = .x
                 pendingPlayerMovement(selectedPlayer).yOrig = .y
                 pendingPlayerMovement(selectedPlayer).lOrig = .l
