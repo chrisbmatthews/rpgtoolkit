@@ -5,7 +5,7 @@ Attribute VB_Name = "Global"
 
 Option Explicit
 
-Public currentdir As String          'Current directory
+Public currentDir As String          'Current directory
 Public CurrentVersion As String      'Version "2.0"
 Public Major As Variant              'Major version
 Public Minor As Variant              'Minor version
@@ -33,7 +33,7 @@ Public resourcePath As String        'resource path
 Public nocodeYN As Boolean           'did it have nocode?
 
 'Tile Editor
-Public buftile(32, 32) As Long               'Tile buffer
+Public buftile(32, 32) As Long       'Tile buffer
 Public lastTileset As String
 
 'Board Editor
@@ -53,7 +53,7 @@ Public mainMem As TKMain
 
 'enemy editor
 Public enemyMem(4) As TKEnemy
-Public activeEnemyIndex As Long 'index of active enemy
+Public activeEnemyIndex As Long      'index of active enemy
 
 'Special move editor
 Public specialMoveMem As TKSpecialMove
@@ -68,11 +68,10 @@ Public statusMem As TKStatusEffect
 Public activeStatusEffectIndex As Long
 
 'animation editor
-Public animationMem As TKAnimation  'animation file
+Public animationMem As TKAnimation   'animation file
 Public activeAnimationIndex As Long
-
 Public activeTileAnmIndex As Long
 
-'file manipulation (modified by KSNiloc)
+'file manipulation
 Public OpenFile() As String
 Public OpenFullFile() As String
