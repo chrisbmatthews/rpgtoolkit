@@ -20,10 +20,10 @@ Begin VB.Form frmLayerTile
       TabIndex        =   7
       Top             =   960
       Width           =   1095
-      _extentx        =   661
-      _extenty        =   873
-      Object.width           =   360
-      caption         =   "Cancel"
+      _ExtentX        =   661
+      _ExtentY        =   873
+      Object.Width           =   360
+      Caption         =   "Cancel"
    End
    Begin Toolkit.TKButton butOK 
       Height          =   495
@@ -31,10 +31,10 @@ Begin VB.Form frmLayerTile
       TabIndex        =   6
       Top             =   480
       Width           =   855
-      _extentx        =   661
-      _extenty        =   873
-      Object.width           =   360
-      caption         =   "OK"
+      _ExtentX        =   661
+      _ExtentY        =   873
+      Object.Width           =   360
+      Caption         =   "OK"
    End
    Begin VB.Frame Frame1 
       Appearance      =   0  'Flat
@@ -46,8 +46,10 @@ Begin VB.Form frmLayerTile
       Top             =   360
       Width           =   2295
       Begin VB.CheckBox chkTrans 
+         Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          Caption         =   "Transparently Layer"
+         ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
          TabIndex        =   5
@@ -55,8 +57,10 @@ Begin VB.Form frmLayerTile
          Width           =   1695
       End
       Begin VB.CheckBox chkPreview 
+         Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          Caption         =   "Preview"
+         ForeColor       =   &H80000008&
          Height          =   375
          Left            =   120
          TabIndex        =   4
@@ -82,10 +86,10 @@ Begin VB.Form frmLayerTile
          TabIndex        =   2
          Top             =   240
          Width           =   1335
-         _extentx        =   661
-         _extenty        =   661
-         Object.width           =   360
-         caption         =   "Open Tile"
+         _ExtentX        =   661
+         _ExtentY        =   661
+         Object.Width           =   360
+         Caption         =   "Open Tile"
       End
    End
    Begin Toolkit.TKTopBar TopBar 
@@ -94,10 +98,10 @@ Begin VB.Form frmLayerTile
       TabIndex        =   0
       Top             =   0
       Width           =   2895
-      _extentx        =   5106
-      _extenty        =   847
-      Object.width           =   2895
-      caption         =   "Layer Tile"
+      _ExtentX        =   5106
+      _ExtentY        =   847
+      Object.Width           =   2895
+      Caption         =   "Layer Tile"
    End
    Begin VB.Shape Shape1 
       Height          =   2415
