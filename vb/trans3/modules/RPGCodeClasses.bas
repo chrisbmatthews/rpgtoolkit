@@ -447,9 +447,11 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 End If
             Else
                 ' Found a variable
-                If (scope = "public") Then
-                    ' Issue a warning
-                    Call debugger("You seem to be exposing variables from your class--this defeats abstraction by circumventing encapsulation--you may want to reconsider this choice of action; " & prg.program(lineIdx))
+                If Not (inStruct) Then
+                    If (scope = "public") Then
+                        ' Issue a warning
+                        Call debugger("You seem to be exposing variables from your class--this defeats abstraction by circumventing encapsulation--you may want to reconsider this choice of action; " & prg.program(lineIdx))
+                    End If
                 End If
                 If (InStrB(1, prg.program(lineIdx), "[")) Then
                     ' It's an array
