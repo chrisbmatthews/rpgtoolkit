@@ -1,20 +1,12 @@
 Attribute VB_Name = "CommonImage"
 '=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
 '=========================================================================
 
 '=========================================================================
 ' Interface with actkrt3.dll :: FreeImage (image loading)
-'=========================================================================
-
-'=========================================================================
-'EDITED [KSNiloc] [Augest 31, 2004]
-'----------------------------------
-' + Remove dependencies on forms
-' + Combined common code
-' + Privatized some things
 '=========================================================================
 
 Option Explicit
@@ -25,11 +17,11 @@ Option Explicit
 Private Declare Function IMGInit Lib "actkrt3.dll" () As Long
 Private Declare Function IMGClose Lib "actkrt3.dll" () As Long
 Private Declare Function IMGDraw Lib "actkrt3.dll" (ByVal filename As String, ByVal x As Long, ByVal y As Long, ByVal hdc As Long) As Long
-Private Declare Function IMGDrawSized Lib "actkrt3.dll" (ByVal filename As String, ByVal x As Long, ByVal y As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long) As Long
+Private Declare Function IMGDrawSized Lib "actkrt3.dll" (ByVal filename As String, ByVal x As Long, ByVal y As Long, ByVal sizeX As Long, ByVal sizeY As Long, ByVal hdc As Long) As Long
 Private Declare Function IMGFree Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGGetDIB Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGGetBitmapInfo Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
-Private Declare Function IMGStretchBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal x As Long, ByVal y As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long) As Long
+Private Declare Function IMGStretchBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal x As Long, ByVal y As Long, ByVal sizeX As Long, ByVal sizeY As Long, ByVal hdc As Long) As Long
 
 '=========================================================================
 ' Dialog flags
@@ -44,8 +36,8 @@ Public Sub DrawSizedImage( _
                              ByVal filename As String, _
                              ByVal x As Long, _
                              ByVal y As Long, _
-                             ByVal sizex As Long, _
-                             ByVal sizey As Long, _
+                             ByVal sizeX As Long, _
+                             ByVal sizeY As Long, _
                              ByVal hdc As Long _
                                                  )
 
@@ -57,21 +49,59 @@ Public Sub DrawSizedImage( _
         Call OpenTileBitmap(filename, tbm)
         Dim cnv As Long
         Dim cnvMask As Long
-        cnv = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
-        cnvMask = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
+        cnv = createCanvas(tbm.sizeX * 32, tbm.sizeY * 32)
+        cnvMask = createCanvas(tbm.sizeX * 32, tbm.sizeY * 32)
         Call DrawTileBitmapCNV(cnv, cnvMask, 0, 0, tbm)
-        Call CanvasMaskBltStretch(cnv, cnvMask, x, y, sizex, sizey, hdc)
-        Call DestroyCanvas(cnv)
-        Call DestroyCanvas(cnvMask)
+        Call canvasMaskBltStretch(cnv, cnvMask, x, y, sizeX, sizeY, hdc)
+        Call destroyCanvas(cnv)
+        Call destroyCanvas(cnvMask)
     Else
         'Real image
-        Call IMGDrawSized(filename, x, y, sizex, sizey, hdc)
+        Call IMGDrawSized(filename, x, y, sizeX, sizeY, hdc)
     End If
 
 End Sub
 
 '=========================================================================
-' Draw an image at actual size on a device context
+' Draw a sized image onto a canvas
+'=========================================================================
+Public Sub drawSizedImageCNV( _
+                             ByVal filename As String, _
+                             ByVal x As Long, _
+                             ByVal y As Long, _
+                             ByVal sizeX As Long, _
+                             ByVal sizeY As Long, _
+                             ByVal cnv As Long _
+                                                 )
+
+    On Error Resume Next
+
+    Dim hdc As Long
+    If UCase$(commonRoutines.extention(filename)) = "TBM" Then
+        ' Tile bitmap
+        Dim tbm As TKTileBitmap
+        Call OpenTileBitmap(filename, tbm)
+        Dim tempCnv As Long
+        Dim cnvMask As Long
+        tempCnv = createCanvas(tbm.sizeX * 32, tbm.sizeY * 32)
+        cnvMask = createCanvas(tbm.sizeX * 32, tbm.sizeY * 32)
+        Call DrawTileBitmapCNV(tempCnv, cnvMask, 0, 0, tbm)
+        hdc = canvasOpenHDC(cnv)
+        Call canvasMaskBltStretch(tempCnv, cnvMask, x, y, sizeX, sizeY, hdc)
+        Call canvasCloseHDC(cnv, hdc)
+        Call destroyCanvas(tempCnv)
+        Call destroyCanvas(cnvMask)
+    Else
+        ' Real image
+        hdc = canvasOpenHDC(cnv)
+        Call IMGDrawSized(filename, x, y, sizeX, sizeY, hdc)
+        Call canvasCloseHDC(cnv, hdc)
+    End If
+
+End Sub
+
+'=========================================================================
+' Draw an image at actual size onto a device context
 '=========================================================================
 Public Sub drawImage( _
                         ByVal filename As String, _
@@ -91,6 +121,35 @@ Public Sub drawImage( _
         'Real image
         Call IMGDraw(filename, x, y, hdc)
     End If
+
+End Sub
+
+'=========================================================================
+' Draw an image at actual size onto a canvas
+'=========================================================================
+Public Sub drawImageCNV( _
+                        ByVal filename As String, _
+                        ByVal x As Long, _
+                        ByVal y As Long, _
+                        ByVal cnv As Long _
+                                            )
+
+    On Error Resume Next
+
+    Dim hdc As Long
+    If UCase$(GetExt(filename)) = "TBM" Then
+        'Tile bitmap
+        Dim tbm As TKTileBitmap
+        Call OpenTileBitmap(filename, tbm)
+        hdc = canvasOpenHDC(cnv)
+        Call DrawTileBitmap(hdc, -1, x, y, tbm)
+    Else
+        'Real image
+        hdc = canvasOpenHDC(cnv)
+        Call IMGDraw(filename, x, y, hdc)
+    End If
+
+    Call canvasCloseHDC(cnv, hdc)
 
 End Sub
 

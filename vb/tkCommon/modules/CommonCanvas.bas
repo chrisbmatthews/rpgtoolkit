@@ -835,30 +835,6 @@ Public Sub setCanvasSize(ByVal canvasID As Long, ByVal newWidth As Long, ByVal n
 End Sub
 
 '=========================================================================
-' Draw an image onto a canvas
-'=========================================================================
-Public Sub drawImageCNV( _
-                           ByVal filename As String, _
-                           ByVal x As Long, _
-                           ByVal y As Long, _
-                           ByVal cnv As Long _
-                                               )
-
-    On Error Resume Next
-
-    'Get the canvas' HDC
-    Dim hdc As Long
-    hdc = canvasOpenHDC(cnv)
-
-    'Draw the image onto the canvas
-    Call drawImage(filename, x, y, hdc)
-
-    'Close the canvas' HDC
-    Call canvasCloseHDC(cnv, hdc)
-
-End Sub
-
-'=========================================================================
 ' Determine if a canvas exists
 '=========================================================================
 Public Property Get canvasOccupied(ByVal handle As Long) As Boolean

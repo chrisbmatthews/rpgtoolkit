@@ -125,9 +125,7 @@ Public Property Let mousePointer(ByVal newValue As String)
     Else
         newValue = projectPath & bmpPath & newValue
     End If
-    hdc = canvasOpenHDC(cnvMousePointer)
-    Call DrawSizedImage(newValue, 0, 0, 32, 32, hdc)
-    Call canvasCloseHDC(cnvMousePointer, hdc)
+    Call drawSizedImageCNV(newValue, 0, 0, 32, 32, cnvMousePointer)
     If (LenB(theFile)) Then Call Kill(theFile)
 End Property
 
