@@ -3,75 +3,68 @@ Attribute VB_Name = "Global"
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
-'Global
-'Global registered           'registered? 0- No, 1-Yes
-Global currentdir$          'Current directory
-'Global oldpal(255)          'Old palette
-Global CurrentVersion$      'Version "2.0"
-'FIXIT: Declare 'Major' with an early-bound data type                                      FixIT90210ae-R1672-R1B8ZE
-Global Major                'Major version
-'FIXIT: Declare 'Minor' with an early-bound data type                                      FixIT90210ae-R1672-R1B8ZE
-Global Minor                'Minor version
-'FIXIT: Declare 'compression' with an early-bound data type                                FixIT90210ae-R1672-R1B8ZE
-Global compression          'compression used?
-Global filename$(30)        'Filename array
-Global tilePath$            'Tile dir path
-Global brdPath$             'board dir path
-Global temPath$             'character dir path
-Global arcPath$             'archive dir path
-Global spcPath$             'special move dir
-Global bkgPath$             'board background dir
-Global mediaPath$           'media files
-Global prgPath$             'prg files
-Global fontPath$            'font files
-Global itmPath$             'item path
-Global enePath$             'enemy path
-Global gamPath$             'mainForm file path
-Global bmpPath$             'bmp files
-Global statusPath$          'status effect path
-Global miscPath$            'miscellaneous path (ie, anims)
-Global pluginPath$          'plugin path
-Global savPath$             'saved games
-Global projectPath$         'project path
-Global resourcePath$        'resource path
-'Global gfxgetdoscolor(255)
-Global nocodeYN As Boolean   'did it have nocode?
+Option Explicit
 
+Public currentdir As String          'Current directory
+Public CurrentVersion As String      'Version "2.0"
+Public Major As Variant              'Major version
+Public Minor As Variant              'Minor version
+Public compression As Variant        'compression used?
+Public filename(30) As String        'Filename array
+Public tilePath As String            'Tile dir path
+Public brdPath As String             'board dir path
+Public temPath As String             'character dir path
+Public arcPath As String             'archive dir path
+Public spcPath As String             'special move dir
+Public bkgPath As String             'board background dir
+Public mediaPath As String           'media files
+Public prgPath As String             'prg files
+Public fontPath As String            'font files
+Public itmPath As String             'item path
+Public enePath As String             'enemy path
+Public gamPath As String             'mainForm file path
+Public bmpPath As String             'bmp files
+Public statusPath As String          'status effect path
+Public miscPath As String            'miscellaneous path (ie, anims)
+Public pluginPath As String          'plugin path
+Public savPath As String             'saved games
+Public projectPath As String         'project path
+Public resourcePath As String        'resource path
+Public nocodeYN As Boolean           'did it have nocode?
 
 'Tile Editor
-Global buftile(32, 32)      'Tile buffer
+Public buftile(32, 32)               'Tile buffer
 
 'Board Editor
-Public activeBoardIndex As Long     'index for active board
+Public activeBoardIndex As Long      'index for active board
 
 'Character Editor
-Global playerMem(4) As TKPlayer
+Public playerMem(4) As TKPlayer
 Public activePlayerIndex As Long
 
 'Item Editor:
 ' ! MODIFIED BY KSNiloc...
-Global itemMem() As TKItem
+Public itemMem() As TKItem
 
 Public activeItemIndex As Long
 
 'mainForm File editor
-Global mainMem As TKMain
+Public mainMem As TKMain
 
 'enemy editor
-Global enemyMem(4) As TKEnemy
+Public enemyMem(4) As TKEnemy
 Public activeEnemyIndex As Long 'index of active enemy
 
 'Special move editor
-Global specialMoveMem As TKSpecialMove
+Public specialMoveMem As TKSpecialMove
 Public activeSpecialMoveIndex As Long
 
 'Background editor
-Global bkgMem As TKBackground
+Public bkgMem As TKBackground
 Public activeBkgIndex As Long
 
 'status effect editor
-Global statusMem As TKStatusEffect
+Public statusMem As TKStatusEffect
 Public activeStatusEffectIndex As Long
 
 'animation editor
@@ -79,8 +72,6 @@ Public animationMem As TKAnimation  'animation file
 Public activeAnimationIndex As Long
 
 Public activeTileAnmIndex As Long
-
-'''Globals added by KSNiloc'''
 
 'file manipulation (modified by KSNiloc)
 Public OpenFile() As String
