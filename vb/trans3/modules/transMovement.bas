@@ -1756,22 +1756,24 @@ Public Sub runQueuedMovements(): On Error Resume Next
 End Sub
 
 Public Sub setQueuedMovements(ByRef queue As MOVEMENT_QUEUE, ByRef strPath As String)
+
     '===========================================================================
-    'Parse a string of movements for pushing and add them to the objects' queue.
-    'Called by PushItemRPG, PushRPG, PlayerStepRPG, ItemStepRPG, WanderRPG
+    ' Parse a string of movements for pushing and add them to the object's queue
+    ' Called by PushItemRPG, PushRPG, PlayerStepRPG, ItemStepRPG, WanderRPG
     '===========================================================================
+
     On Error Resume Next
 
-    ' First, split at comma delimed directions.
+    ' First, split at comma delimed directions
     Dim strMovements() As String
     strMovements = Split(strPath, ",")
 
-    ' Count the number of movements, and get the bound on the current queue.
+    ' Count the number of movements, and get the bound on the current queue
     Dim ub As Long, ubQueue As Long
     ub = UBound(strMovements)
     ubQueue = UBound(queue.lngMovements)
 
-    ' Number of movements to add to queue will be larger if in pixel movement.
+    ' Number of movements to add to queue will be larger if in pixel movement
     Dim lngQueueSize As Long
     If mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH Then
         lngQueueSize = 1 / movementSize
@@ -1779,13 +1781,13 @@ Public Sub setQueuedMovements(ByRef queue As MOVEMENT_QUEUE, ByRef strPath As St
         lngQueueSize = 1
     End If
 
-    ' Get the next position in the queue.
+    ' Get the next position in the queue
     Dim lngQueueOffset As Long
     lngQueueOffset = queue.lngSize + 1
 
-    ' Enlarge the queue, and the array if needed.
+    ' Enlarge the queue, and the array if needed
     queue.lngSize = queue.lngSize + lngQueueSize * (ub + 1)
-    If queue.lngSize >= ubQueue Then
+    If (queue.lngSize >= ubQueue) Then
         ReDim Preserve queue.lngMovements(queue.lngSize)
     End If
 
@@ -1798,17 +1800,14 @@ Public Sub setQueuedMovements(ByRef queue As MOVEMENT_QUEUE, ByRef strPath As St
         Select Case UCase$(Trim$(strMovements(i)))
 
             ' Fill in correct movement code
-            Case "NORTH", "N": lngMovement = MV_NORTH
-            Case "SOUTH", "S": lngMovement = MV_SOUTH
-            Case "EAST", "E": lngMovement = MV_EAST
-            Case "WEST", "W": lngMovement = MV_WEST
-            Case "NORTHEAST", "NE": lngMovement = MV_NE
-            Case "NORTHWEST", "NW": lngMovement = MV_NW
-            Case "SOUTHEAST", "SE": lngMovement = MV_SE
-            Case "SOUTHWEST", "SW": lngMovement = MV_SE
-            Case MVQ_NORTH, MVQ_SOUTH, MVQ_EAST, MVQ_WEST, MVQ_NE, MVQ_NW, MVQ_SE, MVQ_SW:
-                ' Cast the number to a long
-                lngMovement = CLng(strMovements(i))
+            Case "NORTH", "N", MVQ_NORTH: lngMovement = MV_NORTH
+            Case "SOUTH", "S", MVQ_SOUTH: lngMovement = MV_SOUTH
+            Case "EAST", "E", MVQ_EAST: lngMovement = MV_EAST
+            Case "WEST", "W", MVQ_WEST: lngMovement = MV_WEST
+            Case "NORTHEAST", "NE", MVQ_NE: lngMovement = MV_NE
+            Case "NORTHWEST", "NW", MVQ_NW: lngMovement = MV_NW
+            Case "SOUTHEAST", "SE", MVQ_SE: lngMovement = MV_SE
+            Case "SOUTHWEST", "SW", MVQ_SW: lngMovement = MV_SW
             Case Else: lngMovement = MV_IDLE
 
         End Select
