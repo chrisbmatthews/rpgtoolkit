@@ -185,7 +185,7 @@ End Sub
 '=========================================================================
 Private Function isPlayedByMCI(ByRef ext As String) As Boolean
     Select Case ext
-        Case "MID", "MIDI", "RMI", "MPL", "MP3"
+        Case "MID", "MIDI", "RMI", "MPL"
             ' MCI plays this
             isPlayedByMCI = True
     End Select
@@ -208,7 +208,7 @@ End Function
 Private Function isPlayedByAudiere(ByRef ext As String) As Boolean
     On Error Resume Next
     Select Case ext
-        Case "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "WAV", "MLP", "OOG", "OGG"
+        Case "MP3", "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "WAV", "MLP", "OOG", "OGG"
             ' Audiere plays this
             isPlayedByAudiere = True
     End Select
