@@ -583,7 +583,12 @@ Public Function runBlock( _
                 prg.programPos = increment(prg)
                 
             Case "end"
-                runningProgram = False
+                If Not endCausesStop Then
+                    res = 0
+                    prg.programPos = increment(prg)
+                Else
+                    runningProgram = False
+                End If
                 
             Case Else
            
