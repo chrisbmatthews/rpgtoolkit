@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
@@ -444,8 +444,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -2591,13 +2591,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "2/27/2005"
+            TextSave        =   "10/03/2005"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "6:47 PM"
+            TextSave        =   "16:48"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2794,7 +2794,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '============================================================================
-' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 ' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '============================================================================
@@ -2994,6 +2994,7 @@ Private Sub changedSelectedTileset_Click(): On Error Resume Next
     tstFile = dlg.strSelectedFileNoPath
     tstnum = 0
     
+    currentTilesetForm.Cls
     Call fillTilesetBar                                 'Draw the tileset.
 End Sub
 
@@ -3928,28 +3929,17 @@ Public Sub openmnu_Click(): On Error Resume Next
 '=================================================
 'Open file in main menu/on toolbar/folder tree
 '=================================================
-'Edited by Delano for 3.0.4 new isometric tilesets.
-'Added .iso to the list of openable files.
 
-    ChDir (currentDir$)
-    Dim antiPath As String
+    ChDir (currentDir)
     Dim dlg As FileDialogInfo
+    dlg.strDefaultFolder = projectPath
+    dlg.strTitle = "Open Toolkit File"
+    dlg.strFileTypes = "Supported Files|*.tbm;*.brd;*.gph;*.tst;*.iso;*.tan;*.prg;*.tem;*.itm;*.ene;*.bkg;*.ste;*.spc;*.anm;*.rfm|Tile (*.tst;*.tan;*.gph;*.iso)|*.tst;*.tan;*.gph;*.iso|Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|Player (*.tem)|*.tem|Item (*.itm)|*.itm|Enemy (*.ene)|*.ene|Fight Background (*.bkg)|*.bkg|Status Effect (*.ste)|*.ste|Special Move (*.spc)|*.spc|Animation (*.anm)|*.anm|Tile Bitmap (*.tbm)|*.tbm|Visual Form (*.rfm)|*.rfm|All files(*.*)|*.*"
     
-    dlg.strDefaultFolder = projectPath$
-    dlg.strTitle = "Open"
-    'dlg.strDefaultExt = "brd"
-    dlg.strFileTypes = "Supported Files|*.tbm;*.brd;*.gph;*.tst;*.iso;*.tan;*.prg;*.tem;*.itm;*.ene;*.bkg;*.ste;*.anm;*.rfm|Tile (*.tst;*.tan;*.gph;*.iso)|*.tst;*.tan;*.gph;*.iso|Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|Player (*.tem)|*.tem|Item (*.itm)|*.itm|Enemy (*.ene)|*.ene|Fight Background (*.bkg)|*.bkg|Status Effect (*.ste)|*.ste|Animation (*.anm)|*.anm|Tile Bitmap (*.tbm)|*.tbm|Visual Form (*.rfm)|*.rfm|All files(*.*)|*.*"
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
+    ChDir (currentDir)
+    If LenB(dlg.strSelectedFile) Then Call tkMainForm.openFile(dlg.strSelectedFile)
     
-    If OpenFileDialog(dlg, Me.hwnd) Then   'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    
-    Call tkMainForm.openFile(filename$(1))
 End Sub
 
 Private Sub palettebox_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
