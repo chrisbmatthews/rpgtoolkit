@@ -70,7 +70,7 @@ Begin VB.Form frmMain
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Copyright 2004 By Christopher Matthews and the TK3 Dev Team"
+      Caption         =   "Copyright 2005 By Christopher Matthews and the TK3 Dev Team"
       ForeColor       =   &H00000000&
       Height          =   375
       Left            =   240

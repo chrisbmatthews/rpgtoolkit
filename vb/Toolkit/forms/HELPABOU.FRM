@@ -147,7 +147,7 @@ Begin VB.Form helpAbout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Copyright 2004 By Christopher Matthews and the TK3 Dev Team"
+      Caption         =   "Copyright 2004, 2005 By Christopher Matthews and the TK3 Dev Team"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
