@@ -2025,7 +2025,7 @@ Public Function movePlayers() As Boolean: On Error Resume Next
             End If '.loopFrame = 0
             
 
-Call traceString("MVPLY.x=" & pPos(playerIdx).x & ".y=" & pPos(playerIdx).y & _
+'Call traceString("MVPLY.x=" & pPos(playerIdx).x & ".y=" & pPos(playerIdx).y & _
                 ".lpf=" & pPos(playerIdx).loopFrame & _
                 " .dir=" & pendingPlayerMovement(playerIdx).direction)
                 
@@ -2141,7 +2141,7 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
         Case MV_WEST: pPos(pNum).stance = "walk_w"
     End Select
     
-Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
+'Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
                 ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
                 ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
                 ".loopFrame=" & pPos(pNum).loopFrame & _
