@@ -229,9 +229,11 @@ Public Sub playVideo(ByVal file As String, Optional ByVal windowed As Boolean)
 
     On Error Resume Next
 
-    Dim quartz As New FilgraphManager
+    Dim quartz As FilgraphManager
     Dim video As IVideoWindow
     Dim pos As IMediaPosition
+
+    Set quartz = New FilgraphManager
 
     'Set the interfaces to quartz
     Set video = quartz

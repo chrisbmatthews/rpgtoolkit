@@ -106,7 +106,7 @@ End Type
 '=========================================================================
 ' VB plugins manager
 '=========================================================================
-Public vbPlugins() As New CVbPlugin
+Public vbPlugins() As CVbPlugin
 
 '=========================================================================
 ' Get description of a plugin
@@ -148,23 +148,26 @@ Public Sub setupVBPlugin(ByVal plugName As String)
 
     On Error Resume Next
 
-    'Get the upper bound
+    ' Get the upper bound
     Dim ub As Long
     ub = UBound(vbPlugins)
     ub = ub + 1
 
-    'Enlarge the array
+    ' Enlarge the array
     ReDim Preserve vbPlugins(ub)
+
+    ' Create the object
+    Set vbPlugins(ub) = New CVbPlugin
 
     With vbPlugins(ub)
 
-        'Create the object
+        ' Create the object
         Set .obj = CreateObject(getObjectFromFile(plugName))
 
-        'Setup the callbacks
+        ' Setup the callbacks
         .obj.setCallbacks = New CVbPlugin
 
-        'Record the filename
+        ' Record the filename
         .filename = plugName
 
     End With

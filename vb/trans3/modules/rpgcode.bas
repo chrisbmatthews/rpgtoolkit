@@ -8218,9 +8218,11 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     On Error Resume Next
 
     Dim paras() As parameters           'parsed parameters
-    Dim forSale As New CInventory       'items for sale at the shop
+    Dim forSale As CInventory           'items for sale at the shop
     Dim itmNum As Long                  'current item
     Dim error As Boolean                'error occured?
+
+    Set forSale = New CInventory
 
     'Make sure we have at least one element
     If (CountData(Text) = 0) Then
@@ -8262,7 +8264,8 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     End If
 
     'Construct a shop
-    Dim theShop As New CShop
+    Dim theShop As CShop
+    Set theShop = New CShop
     With theShop
         .saleItems = forSale    'items for sale
         .playerItems = inv      'current inventory

@@ -832,10 +832,10 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     'Called by DXDrawSprites only. New arguments added in these calls.
 
     On Error Resume Next
-  
+
     'Using local varibles as the values may change. Or could pass the co-ords as ByVal arguments instead.
     Dim xOrig As Double, yOrig As Double, xTarg As Double, yTarg As Double
-    
+
     xOrig = pending.xOrig
     yOrig = pending.yOrig
     xTarg = pending.xTarg

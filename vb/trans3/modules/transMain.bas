@@ -55,7 +55,7 @@ Public runningAsEXE As Boolean
 Public gShuttingDown As Boolean
 
 ' DirectX host window
-Public host As New CDirectXHost
+Public host As CDirectXHost
 
 '=======================================================================
 ' Main entry point
@@ -105,7 +105,7 @@ Public Sub closeSystems()
     Call killMedia
     Call DeletePakTemp
     Call host.Destroy
-    Call Unload(debugwin)
+    Call Unload(debugWin)
     Call closeActiveX
     Call showEndForm
 End Sub
@@ -236,7 +236,8 @@ Private Sub initGame()
     currentDir = CurDir()
     Call InitThreads
     Call initVarSystem
-    Call Load(inv)
+    Set inv = New CInventory
+    Set host = New CDirectXHost
     menuColor = RGB(0, 0, 0)
     MWinSize = 90
     mainMem.mainScreenType = 2
