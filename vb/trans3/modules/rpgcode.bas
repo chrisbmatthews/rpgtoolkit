@@ -1263,7 +1263,7 @@ Public Sub CreateItemRPG( _
     'See if the arrays are large enough
     Do While (UBound(boardList(activeBoardIndex).theData.itmActivate)) < theOne
         'Enlarge the arrays
-        dimensionItemArrays
+        Call dimensionItemArrays(boardList(activeBoardIndex).theData)
     Loop
 
     'Put it on the board

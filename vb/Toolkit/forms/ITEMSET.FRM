@@ -577,9 +577,9 @@ Attribute VB_Exposed = False
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + itmpath$
+    dlg.strDefaultFolder = projectPath$ + itmPath$
     
     dlg.strTitle = "Item Filename"
     dlg.strDefaultExt = "itm"
@@ -591,18 +591,18 @@ Private Sub Command1_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + itmpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + itmPath$ + antiPath$
 '        dirlink$(1) = antipath$
-    prgfilename.text = antiPath$
+    prgfilename.Text = antiPath$
 End Sub
 
 Private Sub Command2_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Program Filename"
     dlg.strDefaultExt = "prg"
@@ -614,35 +614,36 @@ Private Sub Command2_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     whichType$ = extention(filename$(1))
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
 '        dirlink$(1) = antipath$
-    iprg.text = antiPath$
+    iprg.Text = antiPath$
 End Sub
 
 Private Sub Command3_Click()
 'search for a free itm space.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
 ' ! MODIFIED BY KSNiloc...
 Dim thisProgram As Long
-dimensionItemArrays
+Call dimensionItemArrays(boardList(activeBoardIndex).theData)
+
 thisProgram = UBound(boardList(activeBoardIndex).theData.itmName)
 'If boardList(activeBoardIndex).itmCondition <> -1 Then thisProgram = boardList(activeBoardIndex).itmCondition
 
 On Error Resume Next
 
 If thisProgram = -1 Then MsgBox LoadStringLoc(964, "This board already has 10 items.  This is the set limit."), , LoadStringLoc(964, "Too many items."): Exit Sub
-If prgfilename.text = LoadStringLoc(1010, "None") Or prgfilename.text = "" Then
+If prgfilename.Text = LoadStringLoc(1010, "None") Or prgfilename.Text = "" Then
     Unload itemset
     Exit Sub
 End If
 
-boardList(activeBoardIndex).theData.itmName$(thisProgram) = prgfilename.text
-boardList(activeBoardIndex).theData.itemProgram$(thisProgram) = iprg.text
-boardList(activeBoardIndex).theData.itemMulti$(thisProgram) = multi.text
+boardList(activeBoardIndex).theData.itmName$(thisProgram) = prgfilename.Text
+boardList(activeBoardIndex).theData.itemProgram$(thisProgram) = iprg.Text
+boardList(activeBoardIndex).theData.itemMulti$(thisProgram) = multi.Text
 boardList(activeBoardIndex).theData.itmX(thisProgram) = boardList(activeBoardIndex).infoX              'program x
 boardList(activeBoardIndex).theData.itmY(thisProgram) = boardList(activeBoardIndex).infoY              'program y
 boardList(activeBoardIndex).theData.itmLayer(thisProgram) = boardList(activeBoardIndex).currentLayer   'program layer
@@ -652,22 +653,22 @@ If Option1.value = True Then
     boardList(activeBoardIndex).theData.itmActivate(thisProgram) = 1
 End If
 If Option2.value = True Then
-    boardList(activeBoardIndex).theData.itmVarActivate$(thisProgram) = prgactivation.text 'activation variable
+    boardList(activeBoardIndex).theData.itmVarActivate$(thisProgram) = prgactivation.Text 'activation variable
     Else
     boardList(activeBoardIndex).theData.itmVarActivate$(thisProgram) = ""
 End If
 If Option2.value = True Then
-    boardList(activeBoardIndex).theData.itmDoneVarActivate$(thisProgram) = afterprgvar.text 'activation variable at end of prg.
+    boardList(activeBoardIndex).theData.itmDoneVarActivate$(thisProgram) = afterprgvar.Text 'activation variable at end of prg.
     Else
     boardList(activeBoardIndex).theData.itmDoneVarActivate$(thisProgram) = ""
 End If
 If Option2.value = True Then
-    boardList(activeBoardIndex).theData.itmActivateInitNum$(thisProgram) = prgequals.text 'initial number of activation
+    boardList(activeBoardIndex).theData.itmActivateInitNum$(thisProgram) = prgequals.Text 'initial number of activation
     Else
     boardList(activeBoardIndex).theData.itmActivateInitNum$(thisProgram) = ""
 End If
 If Option2.value = True Then
-    boardList(activeBoardIndex).theData.itmActivateDoneNum$(thisProgram) = afteractivate.text    'what to make variable at end of activation.
+    boardList(activeBoardIndex).theData.itmActivateDoneNum$(thisProgram) = afteractivate.Text    'what to make variable at end of activation.
     Else
     boardList(activeBoardIndex).theData.itmActivateDoneNum$(thisProgram) = ""
 End If
@@ -680,13 +681,13 @@ Unload itemset
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
     If itemset.height = 1950 Then
         Command4.Caption = LoadStringLoc(911, "Advanced <<")
@@ -699,16 +700,16 @@ Private Sub Command4_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command5_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Program Filename"
     dlg.strDefaultExt = "prg"
@@ -720,28 +721,28 @@ Private Sub Command5_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
 '        dirlink$(1) = antipath$
-    multi.text = antiPath$
+    multi.Text = antiPath$
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     itemset.height = 1950
         
     setat.Caption = str$(boardList(activeBoardIndex).infoX) + "," + str$(boardList(activeBoardIndex).infoY) + " Layer" + str$(boardList(activeBoardIndex).currentLayer)
     thevar$ = "BoardName[" + str$(boardList(activeBoardIndex).infoX) + str$(boardList(activeBoardIndex).infoY) + str$(boardList(activeBoardIndex).currentLayer) + "]!"
-    thevar$ = NoSpaces(thevar$)
-    prgactivation.text = thevar$
-    afterprgvar.text = thevar$
+    thevar$ = noSpaces(thevar$)
+    prgactivation.Text = thevar$
+    afterprgvar.Text = thevar$
     If boardList(activeBoardIndex).itmCondition = -1 Then Exit Sub     'we are starting a new prg.
     'If we are here, that means we are looking at a previously set prg.
     thisProgram = boardList(activeBoardIndex).itmCondition
-    prgfilename.text = boardList(activeBoardIndex).theData.itmName$(thisProgram)
+    prgfilename.Text = boardList(activeBoardIndex).theData.itmName$(thisProgram)
     If boardList(activeBoardIndex).theData.itmX(thisProgram) <> 0 Then boardList(activeBoardIndex).infoX = boardList(activeBoardIndex).theData.itmX(thisProgram)
     If boardList(activeBoardIndex).theData.itmY(thisProgram) <> 0 Then boardList(activeBoardIndex).infoY = boardList(activeBoardIndex).theData.itmY(thisProgram)
     prglayer = boardList(activeBoardIndex).theData.itmLayer(thisProgram)
@@ -749,10 +750,10 @@ Private Sub Form_Load()
         Option1.value = True
         Else
         Option2.value = True
-        prgactivation.text = boardList(activeBoardIndex).theData.itmVarActivate$(thisProgram)
-        afterprgvar.text = boardList(activeBoardIndex).theData.itmDoneVarActivate$(thisProgram)
-        prgequals.text = boardList(activeBoardIndex).theData.itmActivateInitNum$(thisProgram)
-        afteractivate.text = boardList(activeBoardIndex).theData.itmActivateDoneNum$(thisProgram)
+        prgactivation.Text = boardList(activeBoardIndex).theData.itmVarActivate$(thisProgram)
+        afterprgvar.Text = boardList(activeBoardIndex).theData.itmDoneVarActivate$(thisProgram)
+        prgequals.Text = boardList(activeBoardIndex).theData.itmActivateInitNum$(thisProgram)
+        afteractivate.Text = boardList(activeBoardIndex).theData.itmActivateDoneNum$(thisProgram)
     End If
     If boardList(activeBoardIndex).theData.itmActivationType(thisProgram) = 0 Then
         Option3.value = True
@@ -761,12 +762,12 @@ Private Sub Form_Load()
     End If
     setat.Caption = str$(boardList(activeBoardIndex).infoX) + "," + str$(boardList(activeBoardIndex).infoY) + " Layer" + str$(prglayer)
 
-    iprg.text = boardList(activeBoardIndex).theData.itemProgram$(thisProgram)
-    multi.text = boardList(activeBoardIndex).theData.itemMulti$(thisProgram)
+    iprg.Text = boardList(activeBoardIndex).theData.itemProgram$(thisProgram)
+    multi.Text = boardList(activeBoardIndex).theData.itemMulti$(thisProgram)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -782,18 +783,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeItem.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Label2.Enabled = False
     prgactivation.Enabled = False
     prgequals.Enabled = False
@@ -804,13 +805,13 @@ Private Sub Option1_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Label2.Enabled = True
     prgactivation.Enabled = True
     prgequals.Enabled = True
@@ -821,7 +822,7 @@ Private Sub Option2_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

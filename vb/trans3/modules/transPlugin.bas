@@ -2104,7 +2104,7 @@ Sub CBLoadItem(ByVal file As String, ByVal itmSlot As Long)
 
         'Preform all actions associated with opening the item
         Do While (UBound(boardList(activeBoardIndex).theData.itmActivate)) < itmSlot
-            Call dimensionItemArrays
+            Call dimensionItemArrays(boardList(activeBoardIndex).theData)
         Loop
 
         'Open the item

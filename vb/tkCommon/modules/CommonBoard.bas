@@ -165,11 +165,13 @@ Public tilesX As Double                   'tiles screen can hold on x
 Public tilesY As Double                   'tiles screen can hold on y
 
 '=========================================================================
-' Enlarge item related arrays
+'Enlarge item related arrays
+'Called by: BoardInit, openBoard, saveBoard, BoardClear, CreateItemRPG,
+'           CBLoadItem, + itemset.frm: Command3_Click (toolkit3)
 '=========================================================================
-Public Sub dimensionItemArrays()
+Public Sub dimensionItemArrays(ByRef theBoard As TKBoard)
 
-    With boardList(activeBoardIndex).theData
+    With theBoard
 
         'Check our dimensioning situation
         On Error GoTo needsDim
@@ -509,7 +511,7 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
     With theBoard
         ReDim .tileIndex(5)
         Dim x As Long, y As Long, layer As Long, t As Long
-        Call dimensionItemArrays
+        Call dimensionItemArrays(theBoard)
         For x = 0 To .bSizeX
             For y = 0 To .bSizeY
                 For layer = 0 To .bSizeL
@@ -703,7 +705,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
         Call BinWriteString(num, theBoard.enterPrg)     'program to run on entrance''''''''''''''''''
         Call BinWriteString(num, theBoard.bgPrg)       'background program
 
-        Call dimensionItemArrays
+        Call dimensionItemArrays(theBoard)
         Call BinWriteInt(num, UBound(theBoard.itmName))   'number of items on the board...
         For t = 0 To UBound(theBoard.itmName)
             Call BinWriteString(num, theBoard.itmName(t))   'filenameames of items
@@ -936,15 +938,18 @@ exitTheFor:
             Next t
             .enterPrg = BinReadString(num)     'program to run on entrance''''''''''''''''''
             .bgPrg = BinReadString(num)       'background program
+            
             On Error Resume Next
-            Dim numItm As Long
-            numItm = BinReadInt(num)
-            Dim done As Boolean
-            Dim count As Long
-            t = 0: count = -1
-            ReDim boardList(activeBoardIndex).theData.itmName(0)
-            Call dimensionItemArrays
-            Do Until done
+            
+            Dim numItm As Long, count As Long
+            
+            'Dimension the arrays of this board *not* the activeboard.
+            ReDim .itmName(0)
+            Call dimensionItemArrays(theBoard)
+            
+            numItm = BinReadInt(num)            'The number of written item slots.
+            t = 0
+            For count = 0 To numItm
                 .itmName(t) = BinReadString(num)   'filenames of items
                 .itmX(t) = BinReadInt(num)     'x coord
                 .itmY(t) = BinReadInt(num)     'y coord
@@ -959,11 +964,9 @@ exitTheFor:
                 .itemMulti(t) = BinReadString(num)     'multitask program for item
                 If LenB(.itmName(t)) <> 0 Then
                     t = t + 1
-                    Call dimensionItemArrays
+                    Call dimensionItemArrays(theBoard)
                 End If
-                count = count + 1
-                done = (count >= numItm)
-             Loop
+            Next count
 
             Dim tCount As Long
 
@@ -1064,7 +1067,7 @@ ver2oldboard:
             Next loopControl
             ReDim boardList(activeBoardIndex).theData.itmName(0)
             For loopControl = 0 To 10
-                Call dimensionItemArrays
+                Call dimensionItemArrays(theBoard)
                 .itmName(loopControl) = fread(num)   'filenames of items
                 .itmX(loopControl) = fread(num)        'x coord
                 .itmY(loopControl) = fread(num)             'y coord
@@ -1187,7 +1190,7 @@ Public Sub BoardInit(ByRef theBoard As TKBoard)
     On Error Resume Next
     ReDim theBoard.tileIndex(5)
     Call BoardSetSize(19, 11, 8, theBoard)
-    Call dimensionItemArrays
+    Call dimensionItemArrays(theBoard)
 End Sub
 
 '=========================================================================
