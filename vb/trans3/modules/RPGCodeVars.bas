@@ -530,6 +530,8 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     Dim num As Double               ' Numerical value
     Dim hClass As Long              ' Handle to a class
     Dim retval As RPGCODE_RETURN    ' Return value
+    Dim destLit As String           ' Destination as a string
+    Dim destNum As Double           ' Destination as a num
 
     ' Get the destination variable and remove unwanted characters
     Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", ""), " ", ""), vbTab, ""), theProgram)
@@ -588,10 +590,13 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     Next tokenIdx
 
+    ' Get the value of the destination
+    Call getValue(Destination, destLit, destNum, theProgram)
+
     ' Switch on the data type
     Select Case dType
 
-        Case DT_NUM, DT_STRING  'NUMERICAL
+        Case DT_NUM             'NUMERICAL
                                 '---------
 
             ' Put all the tokens into an array
@@ -605,12 +610,12 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
                 Case "++"                           'INCREMENTAION OPERATOR
                                                     '----------------------
-                    Call SetVariable(Destination, CBGetNumerical(Destination) + 1, theProgram)
+                    Call SetVariable(Destination, destNum + 1, theProgram)
                     Exit Sub
 
                 Case "--"                           'DECREMENTATION OPERATOR
                                                     '-----------------------
-                    Call SetVariable(Destination, CBGetNumerical(Destination) - 1, theProgram)
+                    Call SetVariable(Destination, destNum - 1, theProgram)
                     Exit Sub
 
                 Case "+=", "-=", "*=", "/=", "="    'OTHER VALID OPERATOR
@@ -634,62 +639,43 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             build = Mid(build, 1, Len(build) - 2)
 
             ' Now actually evaluate the quation
-            numberUse(number) = evaluate(build)
+            Dim dRes As Double
+            dRes = evaluate(build)
 
-            ' Switch on the equal sign
+            If ((hClass <> 0) And (equal <> "=")) Then
+                ' If this class handles this *specific* operator
+                If (isMethodMember("operator" & equal, hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                    ' Call the method
+                    Call callObjectMethod(hClass, "operator" & equal & "(" & CStr(dRes) & ")", theProgram, retval, "operator" & equal)
+                    ' Leave this procedure
+                    Exit Sub
+                End If
+            End If
+
+            ' Preform any special effects
             Select Case equal
-
-                Case "-="       'RELATIVE SUBTRACTION OPERATOR
-                                '-----------------------------
-                    Call SetVariable(Destination, CStr(CBGetNumerical(Destination) - numberUse(number)), theProgram)
-
-                Case "+="       'RELATIVE ADDITION OPERATOR
-                                '--------------------------
-                    Call SetVariable(Destination, CStr(numberUse(number) + CBGetNumerical(Destination)), theProgram)
-
-                Case "*="       'RELATIVE MULTIPLICATION OPERATOR
-                                '--------------------------------
-                    Call SetVariable(Destination, CStr(numberUse(number) * CBGetNumerical(Destination)), theProgram)
-
-                Case "/="       'RELATIVE DIVISION OPERATOR
-                                '--------------------------
-                    Call SetVariable(Destination, CStr(CBGetNumerical(Destination) / numberUse(number)), theProgram)
-
-                Case "="        'NORMAL EQUAL OPERATOR
-                                '---------------------
-
-                    ' If we recorded a class' handle earlier
-                    If (hClass <> 0) Then
-                        ' If this class handles =
-                        If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
-                            ' Call the method
-                            Call callObjectMethod(hClass, "operator=(" & CStr(numberUse(number)) & ")", theProgram, retval, "operator=")
-                            ' Leave this procedure
-                            Exit Sub
-                        End If
-                    End If
-
-                    ' Set destination to result
-                    Call SetVariable(Destination, CStr(numberUse(number)), theProgram)
-
-                Case "|="      '[Faero] Or
-                                '---------------------
-
-                    Call SetVariable(Destination, CStr(numberUse(number) Or CBGetNumerical(Destination)), theProgram)
-
-                Case "&="      '[Faero] And
-                                '---------------------
-                    Call SetVariable(Destination, CStr(numberUse(number) And CBGetNumerical(Destination)), theProgram)
-
-                Case "`="      '[Faero] XOr
-                                '---------------------
-                    Call SetVariable(Destination, CStr(numberUse(number) Xor CBGetNumerical(Destination)), theProgram)
-
-                Case "%="      '[Faero] Modulus
-                                '---------------------
-                    Call SetVariable(Destination, CStr(numberUse(number) Mod CBGetNumerical(Destination)), theProgram)
-
+                Case "-=": dRes = destNum - dRes
+                Case "+=": dRes = dRes + destNum
+                Case "*=": dRes = dRes * destNum
+                Case "/=": dRes = destNum / dRes
+                Case "|=": dRes = dRes Or destNum
+                Case "&=": dRes = dRes And destNum
+                Case "`=": dRes = dRes Xor destNum
+                Case "%=": dRes = dRes Mod destNum
             End Select
+
+            If (hClass <> 0) Then
+                ' If this class handles =
+                If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                    ' Call the method
+                    Call callObjectMethod(hClass, "operator=(" & CStr(dRes) & ")", theProgram, retval, "operator=")
+                    ' Leave this procedure
+                    Exit Sub
+                End If
+            End If
+
+            ' Set destination to the result
+            Call SetVariable(Destination, CStr(dRes), theProgram)
 
         Case DT_LIT         'LITERAL
                             '-------
@@ -708,21 +694,22 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
             If (equal = "+=") Then
                 ' Add result to existing value
-                Call SetVariable(Destination, CBGetString(Destination) & res, theProgram)
-            Else
-                ' If we recorded a class' handle earlier
-                If (hClass <> 0) Then
-                    ' If this class handles =
-                    If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
-                        ' Call the method
-                        Call callObjectMethod(hClass, "operator=(" & Chr(34) & res & Chr(34) & ")", theProgram, retval, "operator=")
-                        ' Leave this procedure
-                        Exit Sub
-                    End If
-                End If
-                ' Set destination to result
-                Call SetVariable(Destination, res, theProgram)
+                res = destLit & res
             End If
+
+            ' If we recorded a class' handle earlier
+            If (hClass <> 0) Then
+                ' If this class handles =
+                If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                    ' Call the method
+                    Call callObjectMethod(hClass, "operator=(" & Chr(34) & res & Chr(34) & ")", theProgram, retval, "operator=")
+                    ' Leave this procedure
+                    Exit Sub
+                End If
+            End If
+
+            ' Set destination to result
+            Call SetVariable(Destination, res, theProgram)
 
         Case Else       'INVALID DESTINATION VARIABLE
                         '----------------------------
