@@ -78,6 +78,8 @@ Public Type TKPlayer
     idleTime As Double              'Seconds to wait proir to switching to
                                     'STAND_ graphics
     speed As Double                 'Seconds between each frame increase
+    
+    loopSpeed As Long               '.speed converted to loops
 
     #If (isToolkit = 0) Then        '--Trans3 only
         status(10) As FighterStatus '  status effects applied to player
@@ -129,7 +131,9 @@ End Sub
 '=========================================================================
 ' Check if we have idling graphics
 '=========================================================================
+
 Public Function playerHasIdlingGfx(ByRef player As TKPlayer, ByVal theGfx As String) As Boolean
+
     With player
         Select Case UCase(theGfx)
             Case "STAND_N": playerHasIdlingGfx = .hasIdleGfx(PLYR_WALK_N)
