@@ -10846,7 +10846,7 @@ Public Sub SplitRPG( _
     Next a
 
     postFix = Right$(paras(2).lit, 1)
-    paras(2).lit = replace(paras(2).lit, "[]", "", , , vbTextCompare)
+    paras(2).lit = replace(paras(2).lit, "[]", vbNullString, , , vbTextCompare)
     paras(2).lit = Mid$(paras(2).lit, 1, Len(paras(2).lit) - 1)
        
     splitIt = Split(paras(0).lit, paras(1).lit, , vbTextCompare)
@@ -10924,7 +10924,7 @@ Public Sub trimRPG( _
     End If
 
     retval.dataType = DT_LIT
-    retval.lit = replace(Trim$(paras(0).lit), vbTab, "")
+    retval.lit = replace(Trim$(paras(0).lit), vbTab, vbNullString)
 
 End Sub
 

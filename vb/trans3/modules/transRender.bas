@@ -9,13 +9,6 @@ Attribute VB_Name = "transRender"
 ' Trans3 rendering engine
 '=========================================================================
 
-'=========================================================================
-' Here I've cleaned things up and added g_primarySurface and g_backBuffer
-' which point to surfaces created in actkrt3; I've also removed an
-' assortment of redundant code.
-' - Colin
-'=========================================================================
-
 Option Explicit
 
 '=========================================================================
@@ -74,7 +67,7 @@ Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long,
 Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 
 ' Move memory around
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal length As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 
 '=========================================================================
 ' Globals
@@ -368,11 +361,13 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
     yy = y - scTopY
 
     For layer = 1 To boardList(activeBoardIndex).theData.bSizeL
-        If BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData) <> "" Then
+        Dim bgt As String
+        bgt = BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData)
+        If LenB(bgt) <> 0 Then
             'If there is a tile here.
 
             Call drawTileCNV(cnvScrollCache, _
-                          projectPath & tilePath & BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData), _
+                          projectPath & tilePath & bgt, _
                           xx, _
                           yy, _
                           boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
@@ -428,7 +423,7 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
     'first things first- what prgs are on this layer?
     Dim prgNum As Long
     For prgNum = 0 To UBound(boardList(activeBoardIndex).theData.programName)
-        If boardList(activeBoardIndex).theData.programName$(prgNum) <> "" And boardList(activeBoardIndex).theData.progGraphic$(prgNum) <> "None" And boardList(activeBoardIndex).theData.progGraphic$(prgNum) <> "" Then
+        If (LenB(boardList(activeBoardIndex).theData.programName$(prgNum)) <> 0) And boardList(activeBoardIndex).theData.progGraphic$(prgNum) <> "None" And (LenB(boardList(activeBoardIndex).theData.progGraphic$(prgNum)) <> 0) Then
             'check if it's activated
             Dim runIt As Boolean, checkIt As Long
             Dim valueTest As Double, num As Double
@@ -493,7 +488,7 @@ Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
     
     On Error Resume Next
 
-    If boardList(activeBoardIndex).theData.brdBack <> "" Then
+    If LenB(boardList(activeBoardIndex).theData.brdBack) <> 0 Then
         'If there is a background.
     
         Dim pixelTopX As Long, pixelTopY As Long
@@ -691,13 +686,15 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                 yy = boardList(activeBoardIndex).theData.animatedTile(t).y - scTopY
                 
                 For lll = 1 To boardList(activeBoardIndex).theData.bSizeL
-                    If BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData) <> "" Then
-                        ext$ = GetExt(BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData))
+                    Dim bgt As String
+                    bgt = BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData)
+                    If LenB(bgt) <> 0 Then
+                        ext$ = GetExt(bgt)
                         If UCase$(ext$) <> "TAN" Then
                             'not the animated part
                             If cnv <> -1 Then
                                 Call drawTileCNV(cnv, _
-                                              projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
+                                              projectPath & tilePath & bgt, _
                                               xx, _
                                               yy, _
                                               boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
@@ -763,7 +760,7 @@ Private Function renderBackground() As Boolean
         ' Fill bkg will black
         Call CanvasFill(cnvBackground, 0)
         ' If there's an image set
-        If (boardList(activeBoardIndex).theData.brdBack <> "") Then
+        If (LenB(boardList(activeBoardIndex).theData.brdBack) <> 0) Then
             ' Load the image, stretching to fit the board
             Call CanvasLoadFullPicture(cnvBackground, projectPath & bmpPath & boardList(activeBoardIndex).theData.brdBack, resX, resY)
         End If
