@@ -38,7 +38,7 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   345
       Left            =   6240
-      TabIndex        =   9
+      TabIndex        =   30
       Tag             =   "1008"
       Top             =   3960
       Width           =   1095
@@ -57,7 +57,7 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   345
       Left            =   5040
-      TabIndex        =   0
+      TabIndex        =   29
       Tag             =   "1022"
       Top             =   3960
       Width           =   1095
@@ -75,17 +75,17 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   4
+      TabIndex        =   33
       Tag             =   "1057"
       Top             =   600
       Width           =   6855
       Begin VB.PictureBox Picture1 
          BorderStyle     =   0  'None
          Height          =   2415
-         Left            =   240
+         Left            =   120
          ScaleHeight     =   2415
          ScaleWidth      =   6615
-         TabIndex        =   38
+         TabIndex        =   51
          Top             =   360
          Width           =   6615
          Begin VB.CommandButton Command1 
@@ -102,7 +102,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   345
             Left            =   3480
-            TabIndex        =   48
+            TabIndex        =   1
             Tag             =   "1021"
             Top             =   0
             Width           =   1095
@@ -121,7 +121,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   345
             Left            =   3480
-            TabIndex        =   47
+            TabIndex        =   3
             Tag             =   "1021"
             Top             =   360
             Width           =   1095
@@ -140,7 +140,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   345
             Left            =   3480
-            TabIndex        =   46
+            TabIndex        =   5
             Tag             =   "1021"
             Top             =   720
             Width           =   1095
@@ -159,7 +159,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   345
             Left            =   3480
-            TabIndex        =   45
+            TabIndex        =   7
             Tag             =   "1021"
             Top             =   1080
             Width           =   1095
@@ -176,7 +176,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1560
-            TabIndex        =   44
+            TabIndex        =   0
             Top             =   0
             Width           =   1815
          End
@@ -192,7 +192,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1560
-            TabIndex        =   43
+            TabIndex        =   2
             Top             =   360
             Width           =   1815
          End
@@ -208,7 +208,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1560
-            TabIndex        =   42
+            TabIndex        =   4
             Top             =   720
             Width           =   1815
          End
@@ -224,7 +224,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1560
-            TabIndex        =   41
+            TabIndex        =   6
             Top             =   1080
             Width           =   1815
          End
@@ -240,7 +240,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1560
-            TabIndex        =   40
+            TabIndex        =   8
             Top             =   1800
             Width           =   1815
          End
@@ -258,7 +258,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   345
             Left            =   3480
-            TabIndex        =   39
+            TabIndex        =   9
             Tag             =   "1021"
             Top             =   1800
             Width           =   1095
@@ -276,7 +276,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   375
             Left            =   0
-            TabIndex        =   54
+            TabIndex        =   57
             Tag             =   "1061"
             Top             =   0
             Width           =   1455
@@ -294,7 +294,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   375
             Left            =   0
-            TabIndex        =   53
+            TabIndex        =   56
             Tag             =   "1060"
             Top             =   360
             Width           =   1455
@@ -312,7 +312,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   375
             Left            =   0
-            TabIndex        =   52
+            TabIndex        =   55
             Tag             =   "1059"
             Top             =   720
             Width           =   1455
@@ -330,7 +330,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   375
             Left            =   0
-            TabIndex        =   51
+            TabIndex        =   54
             Tag             =   "1058"
             Top             =   1080
             Width           =   1455
@@ -348,7 +348,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   495
             Left            =   0
-            TabIndex        =   50
+            TabIndex        =   53
             Top             =   1800
             Width           =   1575
          End
@@ -365,7 +365,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   1335
             Left            =   4800
-            TabIndex        =   49
+            TabIndex        =   52
             Top             =   0
             Width           =   1695
          End
@@ -384,7 +384,7 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   3
+      TabIndex        =   32
       Tag             =   "1062"
       Top             =   600
       Width           =   6855
@@ -394,7 +394,7 @@ Begin VB.Form boardinformation
          Left            =   120
          ScaleHeight     =   1815
          ScaleWidth      =   5655
-         TabIndex        =   55
+         TabIndex        =   58
          Top             =   360
          Width           =   5655
          Begin VB.CommandButton Command9 
@@ -412,7 +412,7 @@ Begin VB.Form boardinformation
             Left            =   360
             Picture         =   "BOARDINF.frx":0CCA
             Style           =   1  'Graphical
-            TabIndex        =   59
+            TabIndex        =   13
             Top             =   720
             Width           =   375
          End
@@ -431,7 +431,7 @@ Begin VB.Form boardinformation
             Left            =   0
             Picture         =   "BOARDINF.frx":1994
             Style           =   1  'Graphical
-            TabIndex        =   58
+            TabIndex        =   12
             Top             =   720
             Width           =   375
          End
@@ -447,7 +447,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   0
-            TabIndex        =   57
+            TabIndex        =   10
             Top             =   360
             Width           =   3255
          End
@@ -465,7 +465,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   345
             Left            =   3480
-            TabIndex        =   56
+            TabIndex        =   11
             Tag             =   "1021"
             Top             =   360
             Width           =   1095
@@ -483,7 +483,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   255
             Left            =   0
-            TabIndex        =   60
+            TabIndex        =   59
             Tag             =   "1024"
             Top             =   0
             Width           =   2295
@@ -503,7 +503,7 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   5
+      TabIndex        =   34
       Tag             =   "1051"
       Top             =   600
       Width           =   6855
@@ -513,7 +513,7 @@ Begin VB.Form boardinformation
          Left            =   240
          ScaleHeight     =   2055
          ScaleWidth      =   5415
-         TabIndex        =   61
+         TabIndex        =   60
          Top             =   360
          Width           =   5415
          Begin VB.CommandButton Command5 
@@ -530,7 +530,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   345
             Left            =   3480
-            TabIndex        =   65
+            TabIndex        =   17
             Tag             =   "1053"
             Top             =   1200
             Width           =   1095
@@ -547,7 +547,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1560
-            TabIndex        =   64
+            TabIndex        =   15
             Text            =   "1"
             Top             =   360
             Width           =   1815
@@ -565,7 +565,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   255
             Left            =   0
-            TabIndex        =   63
+            TabIndex        =   14
             Tag             =   "1052"
             Top             =   0
             Width           =   3255
@@ -582,7 +582,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1560
-            TabIndex        =   62
+            TabIndex        =   16
             Top             =   1200
             Width           =   1815
          End
@@ -604,7 +604,7 @@ Begin VB.Form boardinformation
             Left            =   1800
             MouseIcon       =   "BOARDINF.frx":265E
             MousePointer    =   99  'Custom
-            TabIndex        =   68
+            TabIndex        =   63
             Tag             =   "1055"
             Top             =   720
             Visible         =   0   'False
@@ -624,7 +624,7 @@ Begin VB.Form boardinformation
             Height          =   375
             Index           =   0
             Left            =   0
-            TabIndex        =   67
+            TabIndex        =   62
             Tag             =   "1054"
             Top             =   360
             Width           =   1335
@@ -642,7 +642,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   255
             Left            =   0
-            TabIndex        =   66
+            TabIndex        =   61
             Tag             =   "1053"
             Top             =   1200
             Width           =   1455
@@ -662,37 +662,43 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   2
+      TabIndex        =   31
       Tag             =   "1063"
       Top             =   600
       Width           =   6855
-      Begin VB.PictureBox Picture3 
-         BorderStyle     =   0  'None
-         Height          =   615
-         Left            =   120
-         ScaleHeight     =   615
-         ScaleWidth      =   2415
-         TabIndex        =   11
-         Top             =   240
-         Width           =   2415
-         Begin VB.CheckBox Check1 
-            Caption         =   "Disable Progress Saving"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   495
-            Left            =   120
-            TabIndex        =   12
-            Tag             =   "1064"
-            Top             =   0
-            Width           =   2655
-         End
+      Begin VB.CheckBox Check1 
+         Caption         =   "Disable progress saving on this board"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Left            =   240
+         TabIndex        =   64
+         Top             =   360
+         Width           =   3135
+      End
+      Begin VB.Label lblProgressSaving 
+         Caption         =   "This disables saving in the default menu and using the Save() RPGCode command"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   495
+         Left            =   3360
+         TabIndex        =   65
+         Top             =   390
+         Width           =   3375
       End
    End
    Begin VB.Frame Frame1 
@@ -708,7 +714,7 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   1
+      TabIndex        =   28
       Tag             =   "1065"
       Top             =   600
       Width           =   6855
@@ -718,7 +724,7 @@ Begin VB.Form boardinformation
          Left            =   240
          ScaleHeight     =   1695
          ScaleWidth      =   5055
-         TabIndex        =   13
+         TabIndex        =   39
          Top             =   360
          Width           =   5055
          Begin VB.TextBox Text1 
@@ -733,7 +739,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1680
-            TabIndex        =   15
+            TabIndex        =   19
             Text            =   "0"
             Top             =   240
             Width           =   735
@@ -751,7 +757,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   315
             Left            =   0
-            TabIndex        =   14
+            TabIndex        =   18
             Text            =   "Constant 1"
             Top             =   240
             Width           =   1455
@@ -773,7 +779,7 @@ Begin VB.Form boardinformation
             ForeColor       =   &H00000000&
             Height          =   255
             Left            =   1680
-            TabIndex        =   17
+            TabIndex        =   41
             Tag             =   "1067"
             Top             =   0
             Width           =   735
@@ -796,7 +802,7 @@ Begin VB.Form boardinformation
             Height          =   255
             Index           =   0
             Left            =   0
-            TabIndex        =   16
+            TabIndex        =   40
             Tag             =   "1066"
             Top             =   0
             Width           =   735
@@ -816,7 +822,7 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   8
+      TabIndex        =   37
       Tag             =   "1040"
       Top             =   600
       Width           =   6855
@@ -826,7 +832,7 @@ Begin VB.Form boardinformation
          Left            =   240
          ScaleHeight     =   1695
          ScaleWidth      =   4815
-         TabIndex        =   18
+         TabIndex        =   42
          Top             =   360
          Width           =   4815
          Begin VB.TextBox layername 
@@ -841,7 +847,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1560
-            TabIndex        =   20
+            TabIndex        =   21
             Top             =   240
             Width           =   1815
          End
@@ -858,7 +864,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   315
             Left            =   0
-            TabIndex        =   19
+            TabIndex        =   20
             Text            =   "Layer 1"
             Top             =   240
             Width           =   1215
@@ -881,7 +887,7 @@ Begin VB.Form boardinformation
             Height          =   255
             Index           =   2
             Left            =   1560
-            TabIndex        =   22
+            TabIndex        =   44
             Tag             =   "1040"
             Top             =   0
             Width           =   495
@@ -904,7 +910,7 @@ Begin VB.Form boardinformation
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   21
+            TabIndex        =   43
             Tag             =   "1041"
             Top             =   0
             Width           =   855
@@ -924,7 +930,7 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   6
+      TabIndex        =   35
       Tag             =   "1048"
       Top             =   600
       Width           =   6855
@@ -934,7 +940,7 @@ Begin VB.Form boardinformation
          Left            =   240
          ScaleHeight     =   1215
          ScaleWidth      =   4455
-         TabIndex        =   23
+         TabIndex        =   45
          Top             =   360
          Width           =   4455
          Begin VB.CheckBox daynight 
@@ -950,7 +956,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   375
             Left            =   0
-            TabIndex        =   25
+            TabIndex        =   22
             Tag             =   "1050"
             Top             =   0
             Width           =   2175
@@ -969,7 +975,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   345
             Left            =   2280
-            TabIndex        =   24
+            TabIndex        =   23
             Tag             =   "1049"
             Top             =   0
             Width           =   1215
@@ -989,7 +995,7 @@ Begin VB.Form boardinformation
       EndProperty
       Height          =   2895
       Left            =   360
-      TabIndex        =   7
+      TabIndex        =   36
       Tag             =   "1042"
       Top             =   600
       Width           =   6855
@@ -999,31 +1005,9 @@ Begin VB.Form boardinformation
          Left            =   240
          ScaleHeight     =   1815
          ScaleWidth      =   4335
-         TabIndex        =   26
+         TabIndex        =   46
          Top             =   240
          Width           =   4335
-         Begin VB.VScrollBar VScroll1 
-            Height          =   375
-            Left            =   2280
-            Max             =   512
-            Min             =   11
-            TabIndex        =   34
-            Top             =   600
-            Value           =   11
-            Visible         =   0   'False
-            Width           =   135
-         End
-         Begin VB.HScrollBar HScroll1 
-            Height          =   135
-            Left            =   2400
-            Max             =   512
-            Min             =   19
-            TabIndex        =   33
-            Top             =   960
-            Value           =   19
-            Visible         =   0   'False
-            Width           =   375
-         End
          Begin VB.TextBox sx 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -1036,7 +1020,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   240
-            TabIndex        =   32
+            TabIndex        =   24
             Top             =   120
             Width           =   495
          End
@@ -1052,7 +1036,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   285
             Left            =   1200
-            TabIndex        =   31
+            TabIndex        =   25
             Top             =   120
             Width           =   495
          End
@@ -1061,7 +1045,7 @@ Begin VB.Form boardinformation
             Left            =   720
             Max             =   0
             Min             =   2048
-            TabIndex        =   30
+            TabIndex        =   48
             TabStop         =   0   'False
             Top             =   120
             Value           =   2048
@@ -1072,7 +1056,7 @@ Begin VB.Form boardinformation
             Left            =   1680
             Max             =   0
             Min             =   2048
-            TabIndex        =   29
+            TabIndex        =   47
             TabStop         =   0   'False
             Top             =   120
             Width           =   135
@@ -1090,7 +1074,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   255
             Left            =   2040
-            TabIndex        =   28
+            TabIndex        =   26
             Tag             =   "1044"
             Top             =   0
             Width           =   1815
@@ -1113,6 +1097,23 @@ Begin VB.Form boardinformation
             Top             =   240
             Width           =   1575
          End
+         Begin VB.Label lblBoardSizePx 
+            Caption         =   "0 x 0 pixels"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   240
+            TabIndex        =   66
+            Top             =   480
+            Width           =   1695
+         End
          Begin VB.Label Label1 
             Caption         =   "X"
             BeginProperty Font 
@@ -1126,7 +1127,7 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   255
             Left            =   0
-            TabIndex        =   37
+            TabIndex        =   50
             Tag             =   "1046"
             Top             =   120
             Width           =   135
@@ -1144,36 +1145,17 @@ Begin VB.Form boardinformation
             EndProperty
             Height          =   255
             Left            =   960
-            TabIndex        =   36
+            TabIndex        =   49
             Tag             =   "1045"
             Top             =   120
             Width           =   135
-         End
-         Begin VB.Label bs 
-            Caption         =   "xx X yy"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   2520
-            TabIndex        =   35
-            Tag             =   "1047"
-            Top             =   720
-            Visible         =   0   'False
-            Width           =   855
          End
       End
    End
    Begin MSComctlLib.TabStrip TabStrip1 
       Height          =   3735
       Left            =   240
-      TabIndex        =   10
+      TabIndex        =   38
       Top             =   120
       Width           =   7095
       _ExtentX        =   12515
@@ -1309,6 +1291,14 @@ On Error Resume Next
     End If
     VScroll2.value = boardList(activeBoardIndex).theData.bSizeX
     VScroll3.value = boardList(activeBoardIndex).theData.bSizeY
+    
+    If boardList(activeBoardIndex).theData.isIsometric Then
+        lblBoardSizePx.Caption = boardList(activeBoardIndex).theData.bSizeX * 64 - 32 & " x " & _
+                                 boardList(activeBoardIndex).theData.bSizeY * 16 - 16 & " pixels"
+    Else
+        lblBoardSizePx.Caption = boardList(activeBoardIndex).theData.bSizeX * 32 & " x " & _
+                                 boardList(activeBoardIndex).theData.bSizeY * 32 & " pixels"
+    End If
     
     txtEnterPrg.Text = boardList(activeBoardIndex).theData.enterPrg
     'Add the caption for the directional board links.
@@ -1563,7 +1553,7 @@ Private Sub Command6_Click(): On Error GoTo ErrorHandler
         Call BoardResize(bx, By, bl, boardList(activeBoardIndex).theData)
         
         ' Resize form
-        Call activeBoard.resizeForm(activeBoard.Width, activeBoard.Height)
+        Call activeBoard.resizeForm(activeBoard.width, activeBoard.Height)
         
         boardNeedUpdate = True
         
@@ -1602,6 +1592,15 @@ Private Sub sx_LostFocus(): On Error Resume Next
         End If
     
         VScroll2.value = val(sx.Text)
+        
+        If boardList(activeBoardIndex).theData.isIsometric Then
+            lblBoardSizePx.Caption = VScroll2.value * 64 - 32 & " x " & _
+                                     VScroll3.value * 16 - 16 & " pixels"
+        Else
+            lblBoardSizePx.Caption = VScroll2.value * 32 & " x " & _
+                                     VScroll3.value * 32 & " pixels"
+        End If
+        
 End Sub
 
 Private Sub sy_LostFocus(): On Error Resume Next
@@ -1620,6 +1619,14 @@ Private Sub sy_LostFocus(): On Error Resume Next
         End If
     
         VScroll3.value = val(sy.Text)
+
+        If boardList(activeBoardIndex).theData.isIsometric Then
+            lblBoardSizePx.Caption = VScroll2.value * 64 - 32 & " x " & _
+                                     VScroll3.value * 16 - 16 & " pixels"
+        Else
+            lblBoardSizePx.Caption = VScroll2.value * 32 & " x " & _
+                                     VScroll3.value * 32 & " pixels"
+        End If
 End Sub
 
 Private Sub txtEnterPrg_Change(): On Error Resume Next
@@ -1806,7 +1813,7 @@ Private Sub HScroll1_Change()
     activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
     activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.Width, activeBoard.Height)
+    Call activeBoard.resizeForm(activeBoard.width, activeBoard.Height)
 
     Exit Sub
 'Begin error handling code:
@@ -1825,7 +1832,6 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
-
 
 Private Sub Label5_Click(index As Integer)
     On Error GoTo ErrorHandler
@@ -1923,7 +1929,7 @@ Private Sub VScroll1_Change()
     activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - tilesY + 1
     activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.bSizeX, boardList(activeBoardIndex).theData.bSizeY, boardList(activeBoardIndex).theData.bSizeL, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.Width, activeBoard.Height)
+    Call activeBoard.resizeForm(activeBoard.width, activeBoard.Height)
 
     Exit Sub
 'Begin error handling code:
