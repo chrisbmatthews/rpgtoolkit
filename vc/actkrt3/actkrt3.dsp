@@ -456,6 +456,14 @@ SOURCE=.\audiere\TKAudiere.cpp
 SOURCE=.\audiere\audiere.lib
 # End Source File
 # End Group
+# Begin Group "transClock"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\transClock.cpp
+# End Source File
+# End Group
 # End Target
 # Begin Group "tkzip"
 

@@ -16,6 +16,11 @@ Option Explicit
 ' Declarations
 '=======================================================================
 
+'Clock sync procedures
+Private Declare Sub initClock Lib "actkrt3.dll" (ByVal fps As Long)
+Private Declare Sub clockStart Lib "actkrt3.dll" ()
+Private Declare Sub clockSync Lib "actkrt3.dll" ()
+
 Public gGameState As GAME_LOGIC_STATE   'current state of logic
 
 Public Enum GAME_LOGIC_STATE            'state of gameLogic() procedure
@@ -271,9 +276,6 @@ Public Sub gameLogic()
             'Make sure this is run four times
             If movementCounter < framesPerMove Then
                 gGameState = GS_MOVEMENT
-                If (Not GS_ANIMATING) And (Not GS_LOOPING) Then
-                    Call delay(walkDelay / ((framesPerMove * movementSize) / 2))
-                End If
             Else
                 'We're done movement
                 gGameState = GS_DONEMOVE
@@ -370,6 +372,7 @@ Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call setupMain(testingPRG)
     Call DXRefresh
     Call calculateSlackTime
+    Call initClock(RENDER_FPS)
 End Sub
 
 '=======================================================================

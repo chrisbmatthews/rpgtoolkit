@@ -165,6 +165,7 @@ EXPORTS
 	;Misc
 	RPGCEvaluate		@220
 
-	;RPGCodeParser
-	;RPGCGetMethodName	@221
-	;RPGCGetStringBuffer	@222
+	;transClock
+	initClock			@221
+	clockStart			@222
+	clockSync			@223
