@@ -707,14 +707,19 @@ Public Sub fillBoard(ByVal x As Long, ByVal y As Long, ByVal l As Long, ByVal ti
     Dim newTile As Long
     newTile = BoardTileInLUT(tileFile, boardList(activeBoardIndex).theData)
     
-    ' check if old and new tile are the same
-    If replaceTile = newTile Then Exit Sub
+    ' check if old and new tile are the same.
+    ' also compare rgb ambient levels, in case we're flooding a different shade.
+    If replaceTile = newTile _
+        And boardList(activeBoardIndex).theData.ambientRed(x, y, l) = boardList(activeBoardIndex).ambientR _
+        And boardList(activeBoardIndex).theData.ambientGreen(x, y, l) = boardList(activeBoardIndex).ambientG _
+        And boardList(activeBoardIndex).theData.ambientBlue(x, y, l) = boardList(activeBoardIndex).ambientB _
+        Then Exit Sub
     
     ' enter the tile data of the copying tile.
     boardList(activeBoardIndex).theData.board(x, y, l) = newTile
     boardList(activeBoardIndex).theData.tiletype(x, y, l) = boardList(activeBoardIndex).currentTileType
                 
-    ' set ambient details
+    ' set ambient levels.
     boardList(activeBoardIndex).theData.ambientRed(x, y, l) = boardList(activeBoardIndex).ambientR
     boardList(activeBoardIndex).theData.ambientGreen(x, y, l) = boardList(activeBoardIndex).ambientG
     boardList(activeBoardIndex).theData.ambientBlue(x, y, l) = boardList(activeBoardIndex).ambientB
@@ -851,7 +856,7 @@ Public Sub drawLayers(Optional ByVal buttonClick As Boolean = False): On Error R
     ' fill picture box with board color
     Call vbPicFillRect(boardform, 0, 0, 2000, 2000, boardList(activeBoardIndex).theData.brdColor)
     
-    Dim Temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
+    Dim temp As String, col As Long, ext As String, offsetX As Long, offsetY As Long, x As Long, y As Long, xx As Long, yy As Long
     
     ' drawbackground
     DrawBackground
@@ -1512,12 +1517,12 @@ Public Sub DrawBackground()
         
             If .brdBackCNV = 0 Then
                 'Not yet opened, or we changed backgrounds.
-                .brdBackCNV = CreateCanvas(1, 1)
-                Call CanvasLoadFullPicture(.brdBackCNV, projectPath & bmpPath & .brdBack, -1, -1)
+                .brdBackCNV = createCanvas(1, 1)
+                Call canvasLoadFullPicture(.brdBackCNV, projectPath & bmpPath & .brdBack, -1, -1)
             End If
             
             ' Blt the image from the canvas, if it's open. Much quicker!
-            If .brdBackCNV <> 0 Then Call CanvasBlt(.brdBackCNV, x, y, vbPicHDC(boardform))
+            If .brdBackCNV <> 0 Then Call canvasBlt(.brdBackCNV, x, y, vbPicHDC(boardform))
             
         End If
         
@@ -2916,6 +2921,28 @@ End Sub
 '========================================================================
 Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
 
+    'See if the board needs saving:
+    If boardList(activeBoardIndex).boardNeedUpdate Then
+        
+        'Yup, ask if the user wants to. Use caption to set "Untitled" for blank boards.
+        Dim answer As VbMsgBoxResult
+        answer = MsgBox("Save changes to " & insideBrackets(Me.Caption) & "?", vbYesNoCancel + vbQuestion)
+        
+        If answer = vbCancel Then
+        
+            'Cancel unload.
+            Cancel = 1
+            Exit Sub
+            
+        ElseIf answer = vbYes Then
+        
+            'Ask where to save.
+            Call saveFile
+            
+        End If
+    
+    End If
+
     tkMainForm.boardCount = tkMainForm.boardCount - 1
 
     If tkMainForm.boardCount = 0 Then
@@ -2930,7 +2957,7 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     
     'Destroy the background image canvas.
     If boardList(activeBoardIndex).theData.brdBackCNV <> 0 Then
-        Call DestroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
+        Call destroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
     End If
     
 End Sub
@@ -3211,51 +3238,43 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
 End Sub
 
 '========================================================================
-' save as routine
+' Save as routine: File -> Save Board As...
 '========================================================================
 Private Sub savebrdasmnu_click(): On Error Resume Next
 
-    ' change directory
-    ChDir (currentDir$)
+    ChDir (currentDir)
     
-    ' initialise file dialog
+    ' initialise file dialog.
     Dim dlg As FileDialogInfo
-    Dim antipath As String, aa As Long, bb As Long
     
-    ' set values
-    dlg.strDefaultFolder = projectPath$ + brdPath$
+    dlg.strDefaultFolder = projectPath & brdPath
     dlg.strTitle = "Save Board As"
     dlg.strDefaultExt = "brd"
     dlg.strFileTypes = "RPG Toolkit Board (*.brd)|*.brd|All files(*.*)|*.*"
     
-    ' get filename selected
-    If SaveFileDialog(dlg, Me.hwnd) Then
-        filename$(1) = dlg.strSelectedFile
-        antipath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
+    ' get filename selected, set prompt to ask for overwrite.
+    If Not (SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub
     
-    ' change direcoty
-    ChDir (currentDir$)
+    ' change directory back.
+    ChDir (currentDir)
     
-    ' if no filename entered
-    If filename$(1) = "" Then Exit Sub
+    ' if no filename entered, exit.
+    If dlg.strSelectedFile = "" Then Exit Sub
     
-    ' save board
-    Call saveBoard(filename$(1), boardList(activeBoardIndex).theData)
+    ' save board.
+    Call saveBoard(dlg.strSelectedFile, boardList(activeBoardIndex).theData)
     
-    ' set filename
-    boardList(activeBoardIndex).boardName$ = antipath$
+    ' set filename.
+    boardList(activeBoardIndex).boardName = dlg.strSelectedFileNoPath
     
-    ' update form caption
-    activeBoard.Caption = LoadStringLoc(802, "Board Editor") + " (" + antipath$ + ")"
+    ' update form caption.
+    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & dlg.strSelectedFileNoPath & ")"
     
-    ' set changes to false
+    ' set board state to "unaltered".
     boardList(activeBoardIndex).boardNeedUpdate = False
     
-    ' add to project tree
-    Call tkMainForm.fillTree("", projectPath$)
+    ' add to project tree.
+    Call tkMainForm.fillTree("", projectPath)
     
 End Sub
 
