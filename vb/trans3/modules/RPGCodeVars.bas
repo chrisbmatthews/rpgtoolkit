@@ -1664,7 +1664,7 @@ End Sub
 Public Sub ShutdownVarSystem()
     On Error Resume Next
     Call RPGCShutdown
-    ' Call killAllTimers
+    Call killAllTimers
 End Sub
 
 '=========================================================================
