@@ -739,7 +739,18 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTransparentPartial(
 //------------------------------------------------------------------------
 // Draw part of a canvas, using translucency
 //------------------------------------------------------------------------
-BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(CONST CGDICanvas *pCanvas, CONST INT x, CONST INT y, CONST INT xSrc, CONST INT ySrc, CONST INT width, CONST INT height, CONST DOUBLE dIntensity, CONST LONG crUnaffectedColor, CONST LONG crTransparentColor)
+BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(
+	CONST CGDICanvas *pCanvas,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST DOUBLE dIntensity,
+	CONST LONG crUnaffectedColor,
+	CONST LONG crTransparentColor
+		)
 {
 	if (pCanvas)
 	{
@@ -761,7 +772,9 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(CONST CGDICanvas *pCanv
 //------------------------------------------------------------------------
 // Copy contents of screen to a canvas
 //------------------------------------------------------------------------
-BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(CONST CGDICanvas *pCanvas) CONST
+BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(
+	CONST CGDICanvas *pCanvas
+		) CONST
 {
 	if (pCanvas)
 	{
