@@ -3730,7 +3730,7 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
         yy = num2 - scTopY
         For lll = 1 To 8
             If (LenB(BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData))) Then
-                Call drawTileCNV(cnvScrollCache, _
+                Call drawTileCnv(cnvScrollCache, _
                                 projectPath & tilePath & BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData), _
                                 xx, _
                                 yy, _
@@ -5048,7 +5048,7 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim file As String, hdc As Long
         file$ = addExt(lit1$, ".gph")
         file$ = projectPath$ & tilePath$ & file$
-        Call drawTileCNV(cnvRPGCodeScreen, file$, num1, num2, addOnR, addOnG, addOnB, False)
+        Call drawTileCnv(cnvRPGCodeScreen, file$, num1, num2, addOnR, addOnG, addOnB, False)
         Call renderRPGCodeScreen
     End If
 
@@ -11859,7 +11859,7 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
         ' Bail
         Exit Sub
 
-    ElseIf (UBound(paras) = 7) Then
+    ElseIf (UBound(paras) >= 7) Then
 
         ' Read width and height
         width = CLng(paras(6).num)
@@ -11884,7 +11884,7 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
     If (UBound(paras) = 7) Then
 
         ' Blt to the screen
-        Call canvas2CanvasBltTransparent(cnvSource, cnvRPGCodeScreen, x, y, transpcolor)
+        Call canvas2CanvasBltTransparent(cnv, cnvRPGCodeScreen, x, y, transpcolor)
         Call renderRPGCodeScreen
 
     Else
