@@ -640,10 +640,111 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 //
 // Surface target
 //
-INT FAST_CALL CGDICanvas::BltTranslucent(
+INLINE INT CGDICanvas::BltTranslucent(
 	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 	CONST INT x,
 	CONST INT y,
+	CONST DOUBLE dIntensity,
+	CONST LONG crUnaffectedColor,
+	CONST LONG crTransparentColor
+		) CONST
+{
+
+	// Use the partial blitter
+	return BltTranslucentPart(
+		lpddsSurface,
+		x, y, 0, 0,
+		m_nWidth, m_nHeight,
+		dIntensity, crUnaffectedColor, crTransparentColor
+	);
+
+}
+
+//
+// Partial - HDC target
+//
+INT FAST_CALL CGDICanvas::BltTranslucentPart(
+	CONST HDC hdcTarget,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST DOUBLE dIntensity,
+	CONST LONG crUnaffectedColor,
+	CONST LONG crTransparentColor
+		) CONST
+{
+
+	// GDI translucent blts are way too slow - don't do it
+	if (crTransparentColor == -1)
+	{
+		// Blt opaque
+		return Blt(hdcTarget, x, y);
+	}
+	else
+	{
+		// Blt transp
+		return BltTransparent(hdcTarget, x, y, crTransparentColor);
+	}
+
+}
+
+//
+// Partial - canvas target
+//
+INT FAST_CALL CGDICanvas::BltTranslucentPart(
+	CONST CGDICanvas *pCanvas,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST DOUBLE dIntensity,
+	CONST LONG crUnaffectedColor,
+	CONST LONG crTransparentColor
+		) CONST
+{
+
+	if (pCanvas->usingDX() && usingDX())
+	{
+		// Blt using DirectX
+		return BltTranslucentPart(
+			pCanvas->GetDXSurface(),
+			x, y, xSrc, ySrc,
+			width, height,
+			dIntensity, crUnaffectedColor, crTransparentColor
+		);
+	}
+	else
+	{
+		// Blt using GDI
+		CONST HDC hdc = pCanvas->OpenDC();
+		CONST INT toRet = BltTranslucentPart(
+			hdc,
+			x, y, xSrc, ySrc,
+			width, height,
+			dIntensity, crUnaffectedColor, crTransparentColor
+		);
+		pCanvas->CloseDC(hdc);
+		return toRet;
+	}
+
+}
+
+//
+// Partial - surface target
+//
+INT FAST_CALL CGDICanvas::BltTranslucentPart(
+	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
 	CONST DOUBLE dIntensity,
 	CONST LONG crUnaffectedColor,
 	CONST LONG crTransparentColor
@@ -662,7 +763,7 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 		if (FAILED(hr))
 		{
 			// Return failed
-			return 0;
+			return FALSE;
 		}
 
 		// Lock the source surface
@@ -677,7 +778,7 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 			lpddsSurface->Unlock(NULL);
 
 			// Failed
-			return 0;
+			return FALSE;
 
 		}
 
@@ -706,7 +807,7 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 				DWORD *CONST pSurfSrc = reinterpret_cast<DWORD *>(srcSurface.lpSurface);
 
 				// For the y axis
-				for (INT yy = 0; yy < m_nHeight; yy++)
+				for (INT yy = ySrc; yy < height; yy++)
 				{
 
 					// Calculate index into destination and source, respectively
@@ -714,7 +815,7 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 					INT idx = yy * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
 
 					// For the x axis
-					for (INT xx = 0; xx < m_nWidth; xx++)
+					for (INT xx = xSrc; xx < width; xx++)
 					{
 
 						// Obtain a pixel in RGB format
@@ -775,11 +876,11 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 				SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTemp);
 
 				// For the y axis
-				for (INT yy = 0; yy < m_nHeight; yy++)
+				for (INT yy = ySrc; yy < height; yy++)
 				{
 
 					// For the x axis
-					for (INT xx = 0; xx < m_nWidth; xx++)
+					for (INT xx = xSrc; xx < width; xx++)
 					{
 
 						// Get pixel on source surface
@@ -827,7 +928,7 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 				WORD *CONST pSurfSrc = reinterpret_cast<WORD *>(srcSurface.lpSurface);
 
 				// For the y axis
-				for (INT yy = 0; yy < m_nHeight; yy++)
+				for (INT yy = ySrc; yy < height; yy++)
 				{
 
 					// Calculate index into destination and source, respectively
@@ -835,7 +936,7 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 					INT idx = yy * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
 
 					// For the x axis
-					for (INT xx = 0; xx < m_nWidth; xx++)
+					for (INT xx = xSrc; xx < width; xx++)
 					{
 
 						// Obtain a pixel in RGB format
@@ -902,7 +1003,7 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 		lpddsSurface->Unlock(NULL);
 
 		// All's good
-		return 1;
+		return TRUE;
 
 	} // Can use DirectX
 
@@ -923,7 +1024,7 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 	}
 
 	// If we made it here, we failed
-	return 0;
+	return FALSE;
 
 }
 
@@ -1166,13 +1267,12 @@ INLINE LONG CGDICanvas::GetRGBColor(
 
 }
 
-
 //--------------------------------------------------------------------------
 // Obtain width of the canvas
 //--------------------------------------------------------------------------
 INLINE INT CGDICanvas::GetWidth(VOID) CONST
 {
-	return(m_nWidth);
+	return m_nWidth;
 }
 
 //--------------------------------------------------------------------------
@@ -1180,7 +1280,7 @@ INLINE INT CGDICanvas::GetWidth(VOID) CONST
 //--------------------------------------------------------------------------
 INLINE INT CGDICanvas::GetHeight(VOID) CONST
 {
-	return(m_nHeight);
+	return m_nHeight;
 }
 
 //--------------------------------------------------------------------------

@@ -38,7 +38,7 @@ struct COLOR24
 // Definitions
 //--------------------------------------------------------------------------
 #ifdef _MSC_VER
-#	define INLINE __inline // VC++ uses the __inline keyword natively
+#	define INLINE __inline // VC++ prefers the __inline keyword
 #	define FAST_CALL __fastcall
 #else
 #	define INLINE inline
@@ -246,6 +246,45 @@ public:
 		CONST LONG crTransparentColor
 	) CONST;
 
+	INT FAST_CALL BltTranslucentPart(
+		CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST DOUBLE dIntensity,
+		CONST LONG crUnaffectedColor,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTranslucentPart(
+		CONST CGDICanvas *pCanvas,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST DOUBLE dIntensity,
+		CONST LONG crUnaffectedColor,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTranslucentPart(
+		CONST HDC hdcTarget,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST DOUBLE dIntensity,
+		CONST LONG crUnaffectedColor,
+		CONST LONG crTransparentColor
+			) CONST;
+
 	INT FAST_CALL BltTranslucent(
 		CONST HDC hdcTarget,
 		CONST INT x,
@@ -264,7 +303,7 @@ public:
 		CONST LONG crTransparentColor
 	) CONST;
 
-	INT FAST_CALL BltTranslucent(
+	INT BltTranslucent(
 		CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 		CONST INT x,
 		CONST INT y,
