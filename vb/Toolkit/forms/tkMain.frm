@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
@@ -308,7 +308,6 @@ Begin VB.MDIForm tkMainForm
             Style           =   3
          EndProperty
          BeginProperty Button12 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Object.Visible         =   0   'False
             Key             =   "configTk"
             Object.ToolTipText     =   "Config"
             ImageIndex      =   10
@@ -444,8 +443,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -2591,13 +2590,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "10/03/2005"
+            TextSave        =   "3/13/2003"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "16:48"
+            TextSave        =   "7:06 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2817,7 +2816,7 @@ Public g_bNoTabRefresh As Boolean       ' Do not refresh the tabs?
 '============================================================================
 ' Members
 '============================================================================
-Private cnvBkgImage As Long             ' Canvas holding the background image
+Private m_cnvBkgImage As Long           ' Background image canvas
 Private ignoreFlag As Boolean           ' All-purpose ignore flag
 Private WithEvents m_tabs As cMDITabs   ' The MDI tab bar
 Attribute m_tabs.VB_VarHelpID = -1
@@ -2843,6 +2842,50 @@ End Type
 ' Declarations
 '============================================================================
 Private Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
+
+'============================================================================
+' Draw the background image
+'============================================================================
+Public Sub drawBackground()
+
+    ' If an image is set
+    If (m_cnvBkgImage) Then
+
+        ' Obtain the window
+        Dim hwnd As Long, hdc As Long
+        hwnd = FindWindowEx(Me.hwnd, 0&, "MDIClient", vbNullChar)
+
+        ' Get the window's DC
+        hdc = GetDC(hwnd)
+
+        ' Draw the image
+        Call canvasBlt(m_cnvBkgImage, 0, 0, hdc)
+
+        ' Release the DC!
+        Call ReleaseDC(hwnd, hdc)
+
+    End If
+
+End Sub
+
+'============================================================================
+' Load the background image
+'============================================================================
+Public Sub loadBackgroundImage()
+    If (m_cnvBkgImage) Then Call destroyCanvas(m_cnvBkgImage)
+    If (LenB(configfile.wallpaper)) Then
+        If (fileExists(configfile.wallpaper)) Then
+            m_cnvBkgImage = createCanvas( _
+                Me.width / Screen.TwipsPerPixelX, _
+                Me.Height / Screen.TwipsPerPixelY _
+            )
+            Call canvasLoadSizedPicture( _
+                m_cnvBkgImage, _
+                configfile.wallpaper _
+            )
+        End If
+    End If
+End Sub
 
 '============================================================================
 ' Force a refresh of the tab bar
@@ -3674,16 +3717,20 @@ End Sub
 Private Sub MDIForm_Activate()
     tilesetContainer.Height = Me.Height - 50
     Call MDIForm_Resize
-    Call configForm
 End Sub
 
 Private Sub MDIForm_Load(): On Error Resume Next
 '=====================================================
 'Call added for isometrics, 3.0.4
 
+    Call Show
+
     Set m_tabs = New cMDITabs
     Call m_tabs.Attach(Me.hwnd)
     Call m_tabs.ForceRefresh
+    Call configForm
+
+    Call loadBackgroundImage
 
     Set boardToolbar = New cBoardToolbar
 
@@ -3740,27 +3787,31 @@ End Sub
 '=====================================================
 Public Sub configForm()
     On Error Resume Next
-    If configfile.wallpaper <> "" Then
-        Call ShowPic(configfile.wallpaper)
-    End If
-    With mainToolbar.Buttons
-        Call .Remove(16)
-        Call .Remove(17)
-        Call .Remove(18)
-        Call .Remove(19)
-        Dim a As Long
-        For a = 0 To 4
-            If configfile.quickTarget(a) <> "" Then
-                Call .Add(, , "Quick Launch " & a, , LoadPicture(configfile.quickIcon(a)))
-                .Item(a).Enabled = integerToBoolean(configfile.quickEnabled(a))
+    Call mainToolbar.Buttons.Remove(16)
+    Call mainToolbar.Buttons.Remove(17)
+    Call mainToolbar.Buttons.Remove(18)
+    Call mainToolbar.Buttons.Remove(19)
+    Dim i As Long
+    For i = 0 To 4
+        If (LenB(configfile.quickTarget(i))) Then
+            Dim icon As IPictureDisp
+            If (LenB(configfile.quickIcon(i))) Then
+                Set icon = LoadPicture(configfile.quickIcon(i))
+            Else
+                Set icon = LoadResPicture(101, vbResBitmap)
             End If
-        Next a
-    End With
+            Dim btn As Button
+            Set btn = mainToolbar.Buttons.Add(, , , , LoadPicture(configfile.quickIcon(i)))
+            btn.Visible = True
+            btn.Enabled = configfile.quickEnabled(i)
+        End If
+    Next i
 End Sub
 
 Private Sub MDIForm_Unload(ByRef Cancel As Integer)
     Set m_tabs = Nothing
     Set boardToolbar = Nothing
+    If (m_cnvBkgImage) Then Call destroyCanvas(m_cnvBkgImage)
     Call exitTheBard
     Call saveConfigAndEnd("toolkit.cfg")
     End
@@ -4283,26 +4334,6 @@ Public Sub usersguidemnu_Click(): On Error GoTo ErrorHandler
 ErrorHandler:
     Call HandleError
     Resume Next
-End Sub
-
-Public Sub ShowPic(ByRef file As String): On Error Resume Next
-    
-    Dim w As Long, h As Long
-    
-    w = Me.width / Screen.TwipsPerPixelX
-    h = Me.Height / Screen.TwipsPerPixelY
-    
-    If cnvBkgImage = 0 Then
-        cnvBkgImage = createCanvas(w, h)
-        Call canvasFill(cnvBkgImage, 0)
-    End If
-    
-    If fileExists(file) Then
-        Call canvasLoadSizedPicture(cnvBkgImage, file)
-    End If
-    
-    Call canvasBlt(cnvBkgImage, 0, 0, GetDC(hwnd))
-       
 End Sub
 
 '=========================================================================================

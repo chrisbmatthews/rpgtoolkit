@@ -1,23 +1,32 @@
 VERSION 5.00
 Begin VB.Form config 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "Toolkit3 (Configuration)"
-   ClientHeight    =   5250
+   Caption         =   "Configuration"
+   ClientHeight    =   3855
    ClientLeft      =   45
    ClientTop       =   330
-   ClientWidth     =   6540
+   ClientWidth     =   6315
    Icon            =   "config.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MDIChild        =   -1  'True
    MinButton       =   0   'False
-   ScaleHeight     =   5250
-   ScaleWidth      =   6540
+   ScaleHeight     =   3855
+   ScaleWidth      =   6315
    Tag             =   "1823"
+   Begin VB.CommandButton cmdOkay 
+      Caption         =   "OK"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   4680
+      TabIndex        =   12
+      Top             =   3360
+      Width           =   1455
+   End
    Begin VB.PictureBox Picture2 
       BorderStyle     =   0  'None
       Height          =   2775
-      Left            =   360
+      Left            =   240
       ScaleHeight     =   2775
       ScaleWidth      =   5775
       TabIndex        =   8
@@ -26,12 +35,12 @@ Begin VB.Form config
       Begin VB.PictureBox wallpaperthumb 
          AutoRedraw      =   -1  'True
          Height          =   2250
-         Left            =   2520
+         Left            =   1440
          ScaleHeight     =   2190
-         ScaleWidth      =   2940
+         ScaleWidth      =   3900
          TabIndex        =   10
          Top             =   0
-         Width           =   3000
+         Width           =   3960
       End
       Begin VB.CommandButton Command1 
          Caption         =   "Change"
@@ -39,18 +48,17 @@ Begin VB.Form config
          Left            =   0
          TabIndex        =   9
          Tag             =   "1829"
-         Top             =   2280
+         Top             =   1920
          Width           =   1095
       End
       Begin VB.Label wallpath 
-         Alignment       =   1  'Right Justify
          Caption         =   "path"
-         Height          =   255
-         Left            =   1200
+         Height          =   375
+         Left            =   0
          TabIndex        =   11
          Tag             =   "1830"
-         Top             =   2400
-         Width           =   4335
+         Top             =   2520
+         Width           =   5895
       End
    End
    Begin VB.PictureBox Picture1 
@@ -60,7 +68,7 @@ Begin VB.Form config
       ScaleHeight     =   1095
       ScaleWidth      =   5895
       TabIndex        =   2
-      Top             =   3840
+      Top             =   4320
       Width           =   5895
       Begin VB.ComboBox Combo1 
          Height          =   315
@@ -110,13 +118,14 @@ Begin VB.Form config
       Left            =   240
       TabIndex        =   1
       Tag             =   "1824"
-      Top             =   3480
+      Top             =   4320
+      Visible         =   0   'False
       Width           =   6135
    End
    Begin VB.Frame Frame1 
       Caption         =   "Wallpaper"
       Height          =   3135
-      Left            =   240
+      Left            =   120
       TabIndex        =   0
       Tag             =   "1828"
       Top             =   120
@@ -191,6 +200,10 @@ ErrorHandler:
     Resume Next
 End Sub
 
+Private Sub cmdOkay_Click()
+    Call Unload(Me)
+End Sub
+
 Private Sub Combo1_Click()
     On Error GoTo ErrorHandler
     i = Combo1.ListIndex
@@ -223,7 +236,8 @@ Private Sub Command1_Click()
     configfile.wallpaper$ = filename$(1)
     wallpath.Caption = configfile.wallpaper$
     Call ShowPic
-    Call tkMainForm.ShowPic(configfile.wallpaper$)
+    Call tkMainForm.loadBackgroundImage
+    Call tkMainForm.drawBackground
 End Sub
 
 Private Sub Command2_Click()
