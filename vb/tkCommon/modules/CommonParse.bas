@@ -4,59 +4,52 @@ Attribute VB_Name = "CommonParse"
 'Read LICENSE.txt for licensing info
 
 'simple string parsing...
+
 Option Explicit
 
-Public Function countSubStrings(ByVal theString As String, ByVal stringSeperator As String) As Long
+'=======================================================
+'Cleaned up a bit, 3.0.4 by KSNiloc
+'
+' ---What is done
+' + Functions re-written to use VB standard functions
+'
+'=======================================================
+
+Public Function countSubStrings( _
+                                   ByVal theString As String, _
+                                   ByVal stringSeperator As String _
+                                                                     ) As Long
+
     'count the numbver of substrings contained in the string
     'seperated by stringSeperator
+    
     On Error Resume Next
     
     If theString = "" Then
         countSubStrings = 0
-        Exit Function
+    Else
+        Dim parse() As String
+        parse() = Split(theString, stringSeperator)
+        countSubStrings = UBound(parse) + 1
     End If
-    
-    Dim toRet As Long
-    toRet = 1
-    
-    Dim t As Long
-    Dim part As String
-    
-    For t = 1 To Len(theString)
-        part = Mid$(theString, t, 1)
-        If part = stringSeperator Then
-            toRet = toRet + 1
-        End If
-    Next t
-    
-    countSubStrings = toRet
+
 End Function
 
-Public Function getSubString(ByVal theString As String, ByVal stringSeperator As String, ByVal idx As Long) As String
+Public Function getSubString( _
+                                ByVal theString As String, _
+                                ByVal stringSeperator As String, _
+                                ByVal idx As Long _
+                                                    ) As String
+
     'return the substring at index idx (starting at 0)
     'seperated by stringSeperator
-    Dim toRet As String
-    
-    Dim cnt As Long
-    Dim t As Long
-    Dim part As String
-    Dim substr As String
-    
-    For t = 1 To Len(theString)
-        part = Mid$(theString, t, 1)
-        If part = stringSeperator Then
-            If cnt = idx Then
-                getSubString = substr
-                Exit Function
-            End If
-            cnt = cnt + 1
-            substr = ""
-        Else
-            substr = substr + part
-        End If
-    Next t
-    
-    getSubString = substr
+
+    On Error Resume Next
+
+    Dim parse() As String
+    parse() = Split(theString, stringSeperator)
+    getSubString = parse(idx)
+
 End Function
 
 

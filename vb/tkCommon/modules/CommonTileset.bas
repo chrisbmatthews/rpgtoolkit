@@ -46,7 +46,7 @@ Public Const ISOTYPE As Byte = 2
 Public Const ISODETAIL As Byte = 150    'Arbitrary value!
 
 
-Function addToTileSet(ByVal file As String) As Integer: On Error GoTo ErrorHandler
+Function addToTileSet(ByVal file As String) As Integer: On Error GoTo errorhandler
 '==================================================
 'Adds the current tile to the end of the tileset.
 'Returns the number in the tst.
@@ -56,7 +56,7 @@ Function addToTileSet(ByVal file As String) As Integer: On Error GoTo ErrorHandl
 'Isometric tilesets (.iso) added.
 'Variable a >> setType
 
-'Called by: CommonItem openitem         -tk2 compat
+'Called by: CommonItem openItem         -tk2 compat
 '           CommonPlayer openchar       -tk2 compat
 '(toolkit)  tileedit mnusts_click, savetile2
 '           tilesetedit Command1_Click      - unneeded changes, since cannot add .gph to .iso
@@ -93,7 +93,7 @@ Function addToTileSet(ByVal file As String) As Integer: On Error GoTo ErrorHandl
     Exit Function
 
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Function
@@ -110,7 +110,7 @@ Function calcInsertionPoint(ByRef ts As tilesetHeader, ByVal num As Long) As Lon
 
 'Called by openTileSet and insertIntoTileSet
 
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     Dim ret As Long
     
     Select Case ts.detail
@@ -157,7 +157,7 @@ Function calcInsertionPoint(ByRef ts As tilesetHeader, ByVal num As Long) As Lon
     Exit Function
 
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Function
@@ -172,7 +172,7 @@ Function createNewTileSet(ByVal file As String, Optional ByVal bIsometric As Boo
 'Edited by Delano for 3.0.4
 'Now returns the tilenumber! -> converted to function
 
-'Called by: CommonItem openitem                 -tk2 compat
+'Called by: CommonItem openItem                 -tk2 compat
 '           CommonPlayer openchar               -tk2 compat
 '(toolkit)  tileedit mnusts_click, savetile2
 '           tilesetedit Command1_Click  - unneeded changes, since cannot add .gph to .iso
@@ -214,7 +214,7 @@ Function createNewTileSet(ByVal file As String, Optional ByVal bIsometric As Boo
 End Function
 
 
-Function getTileNum(ByVal file As String) As Long: On Error GoTo ErrorHandler
+Function getTileNum(ByVal file As String) As Long: On Error GoTo errorhandler
 '================================================
 'Extracts the tile number from the filename.
 'e.g. tileset.tst148 would return 148.
@@ -254,7 +254,7 @@ Function getTileNum(ByVal file As String) As Long: On Error GoTo ErrorHandler
     Exit Function
 
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Function
@@ -470,7 +470,7 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
     
 End Sub
 
-Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo ErrorHandler
+Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo errorhandler
 '=====================================
 'Opens tile number from a tileset.
 'Loads it into tilemem
@@ -496,7 +496,7 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo E
     'Check the tile number being accessed is in the tileset.
     If number < 1 Or number > tileset.tilesInSet Then Exit Sub
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     'New tile type. This is exactly the same as for the case of standard high colour tsts!
     'Note: we're reading isometric tiles into tilemem! But this won't look right!
@@ -608,12 +608,12 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo E
 
     Exit Sub
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Sub
 
-Function tilesetFilename(ByVal file As String) As String: On Error GoTo ErrorHandler
+Function tilesetFilename(ByVal file As String) As String: On Error GoTo errorhandler
 '========================================================
 'Returns filename without the number after the extention.
 'e.g. "default.tst123" returns "default.tst"
@@ -640,7 +640,7 @@ Function tilesetFilename(ByVal file As String) As String: On Error GoTo ErrorHan
     Exit Function
 
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Function

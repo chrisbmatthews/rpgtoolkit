@@ -22,7 +22,7 @@ Begin VB.Form editenemy
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5280
    ScaleWidth      =   8580
-   Tag             =   "1331"
+   Tag             =   "5"
    Begin VB.Frame mainFrame 
       Height          =   4935
       Left            =   120
@@ -677,7 +677,7 @@ End Function
 
 Public Sub saveAsFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If enemylist(activeEnemyIndex).eneNeedUpdate = True Then
         Me.Show
         mnusaveas_Click
@@ -685,7 +685,7 @@ Public Sub saveAsFile()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -694,7 +694,7 @@ End Sub
 
 Public Sub checkSave()
     'check if the file has changed an it needs to be saved...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If enemylist(activeEnemyIndex).eneNeedUpdate = True Then
         Dim aa As Long
         aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo)
@@ -706,7 +706,7 @@ Public Sub checkSave()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -714,7 +714,7 @@ End Sub
 
 Public Sub saveFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'If enemylist(activeEnemyIndex).eneNeedUpdate = True Then
         filename$(2) = enemylist(activeEnemyIndex).eneFile$
         enemylist(activeEnemyIndex).eneNeedUpdate = False
@@ -728,7 +728,7 @@ Public Sub saveFile()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -749,7 +749,7 @@ Public Sub openFile(file$)
 End Sub
 
 Private Sub Check1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemylist(activeEnemyIndex).theData.eneRun = Check1.value
     If enemylist(activeEnemyIndex).theData.eneRun = 0 Then
@@ -764,61 +764,61 @@ Private Sub Check1_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemyGfx.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemyspecialmoves.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemytactics.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemyrewards.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command6_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If enemylist(activeEnemyIndex).eneNeedUpdate = True Then
         MsgBox LoadStringLoc(995, "Make sure you save your enemy first!")
         Exit Sub
@@ -828,14 +828,14 @@ Private Sub Command6_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command7_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim antiPath As String
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + prgpath$
@@ -849,97 +849,97 @@ Private Sub Command7_Click()
         Exit Sub
     End If
     enemylist(activeEnemyIndex).eneNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    rprg.text = antiPath$
+    rprg.Text = antiPath$
     enemylist(activeEnemyIndex).theData.eneRunPrg$ = antiPath$
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub edp_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
-    enemylist(activeEnemyIndex).theData.eneDP = val(edp.text)
+    enemylist(activeEnemyIndex).theData.eneDP = val(edp.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub efp_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
-    enemylist(activeEnemyIndex).theData.eneFP = val(efp.text)
+    enemylist(activeEnemyIndex).theData.eneFP = val(efp.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub ehp_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
-    enemylist(activeEnemyIndex).theData.eneHP = val(ehp.text)
+    enemylist(activeEnemyIndex).theData.eneHP = val(ehp.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub ename_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
-    enemylist(activeEnemyIndex).theData.eneName$ = ename.text
+    enemylist(activeEnemyIndex).theData.eneName$ = ename.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub esmp_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
-    enemylist(activeEnemyIndex).theData.eneSMP = val(esmp.text)
+    enemylist(activeEnemyIndex).theData.eneSMP = val(esmp.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub eSneak_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
-    enemylist(activeEnemyIndex).theData.eneSneakChances = val(eSneak.text)
+    enemylist(activeEnemyIndex).theData.eneSneakChances = val(eSneak.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub eSneakYou_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     enemylist(activeEnemyIndex).eneNeedUpdate = True
-    enemylist(activeEnemyIndex).theData.eneSneakUp = val(eSneakYou.text)
+    enemylist(activeEnemyIndex).theData.eneSneakUp = val(eSneakYou.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -969,7 +969,7 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Set activeEnemy = Me
@@ -981,14 +981,14 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub infofill()
     'Fills in info
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim use As String
     
     If enemylist(activeEnemyIndex).eneFile$ = "" Then use$ = "Untitled" Else use$ = enemylist(activeEnemyIndex).eneFile$
@@ -999,12 +999,12 @@ Private Sub infofill()
     Else
         use$ = enemylist(activeEnemyIndex).theData.eneName$
     End If
-    ename.text = use$
+    ename.Text = use$
 
-    ehp.text = str$(enemylist(activeEnemyIndex).theData.eneHP)
-    esmp.text = str$(enemylist(activeEnemyIndex).theData.eneSMP)
-    efp.text = str$(enemylist(activeEnemyIndex).theData.eneFP)
-    edp.text = str$(enemylist(activeEnemyIndex).theData.eneDP)
+    ehp.Text = str$(enemylist(activeEnemyIndex).theData.eneHP)
+    esmp.Text = str$(enemylist(activeEnemyIndex).theData.eneSMP)
+    efp.Text = str$(enemylist(activeEnemyIndex).theData.eneFP)
+    edp.Text = str$(enemylist(activeEnemyIndex).theData.eneDP)
 
     Check1.value = enemylist(activeEnemyIndex).theData.eneRun
     If enemylist(activeEnemyIndex).theData.eneRun = 1 Then
@@ -1016,14 +1016,14 @@ Private Sub infofill()
         rprg.Enabled = False
         Command7.Enabled = False
     End If
-    eSneak.text = str$(enemylist(activeEnemyIndex).theData.eneSneakChances)
-    eSneakYou.text = str$(enemylist(activeEnemyIndex).theData.eneSneakUp)
+    eSneak.Text = str$(enemylist(activeEnemyIndex).theData.eneSneakChances)
+    eSneakYou.Text = str$(enemylist(activeEnemyIndex).theData.eneSneakUp)
     
-    rprg.text = enemylist(activeEnemyIndex).theData.eneRunPrg$
+    rprg.Text = enemylist(activeEnemyIndex).theData.eneRunPrg$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1034,18 +1034,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub mnuCLose_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload editenemy
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub mnusave_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     filename$(2) = enemylist(activeEnemyIndex).eneFile$
     If filename$(2) = "" Then Call mnusaveas_Click: Exit Sub
     Call saveEnemy(projectPath$ + enepath$ + filename$(2), enemylist(activeEnemyIndex).theData)
@@ -1053,14 +1053,14 @@ Private Sub mnusave_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub mnusaveas_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String, aa As Long, bb As Long
     
@@ -1076,7 +1076,7 @@ Private Sub mnusaveas_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
     aa = fileExist(filename$(1))
@@ -1092,26 +1092,26 @@ Private Sub mnusaveas_Click()
 End Sub
 
 Private Sub newEnemy()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Call EnemyClear(enemylist(activeEnemyIndex).theData)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub toc_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1309,7 +1309,7 @@ End Sub
 Private Sub rprg_Change()
     On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
-    enemylist(activeEnemyIndex).theData.eneRunPrg = rprg.text
+    enemylist(activeEnemyIndex).theData.eneRunPrg = rprg.Text
 End Sub
 
 

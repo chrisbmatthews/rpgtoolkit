@@ -22,7 +22,7 @@ Begin VB.Form grab
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   6960
    ScaleWidth      =   9105
-   Tag             =   "1608"
+   Tag             =   "11"
    Begin VB.HScrollBar scrHorizontal 
       Height          =   255
       Left            =   120
@@ -901,7 +901,7 @@ Private Sub cmdOpen_Click(): On Error Resume Next
 '=====================================
     Dim antiPath As String, thextention As String
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     'Setup file info object.
     Dim dlg As FileDialogInfo
@@ -918,7 +918,7 @@ Private Sub cmdOpen_Click(): On Error Resume Next
         Exit Sub  'user pressed cancel
     End If
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     thextention$ = extention(filename$(1))
     
@@ -952,7 +952,7 @@ Private Sub cmdOpen_Click(): On Error Resume Next
     Call vbPicAutoRedraw(grab.grabForm, True)
     Call DrawImage(filename$(1), 0, 0, vbPicHDC(grab.grabForm))
     Call vbPicRefresh(grab.grabForm)
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     
     Call Form_Resize
@@ -1003,7 +1003,7 @@ Private Sub cmdBatch32_Click()
     
     'batch32 moved to here - altered!
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     'Setup the filetype info object for saving the tiles.
     'Changed the default to tst - now saving into tilesets only.
@@ -1029,7 +1029,7 @@ Private Sub cmdBatch32_Click()
         Exit Sub        'User pressed cancel.
     End If
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     
     'Clear the grid.
@@ -1074,7 +1074,7 @@ Private Sub cmdBatch16_Click()
     
     'batch16 moved to here - altered!
 
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     'Setup the filetype info object for saving the tiles.
     'Changed the default to tst - now saving into tilesets only.
@@ -1092,7 +1092,7 @@ Private Sub cmdBatch16_Click()
         Exit Sub        'User pressed cancel.
     End If
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     
     'Clear the grid.

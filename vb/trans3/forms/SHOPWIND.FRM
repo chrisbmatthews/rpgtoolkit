@@ -493,7 +493,7 @@ Private Sub Command1_Click()
         If itemsforsale$(t) <> "" Then theOne = theOne + 1
         If theOne = n Then selone = t: Exit For
     Next t
-    Call openitem(projectPath$ + itmPath$ + itemsforsale$(selone), anItem)
+    anItem = openItem(projectPath$ + itmPath$ + itemsforsale$(selone))
     bp = anItem.buyPrice
     bp = bp * val(quantity.caption)
     cost.caption = str$(bp)
@@ -530,7 +530,7 @@ Private Sub Command2_Click()
     If n = -1 Then n = 0
     n = itemMap(n)
     If inv.item(n).file <> "" Then
-        Call openitem(projectPath$ + itmPath$ + inv.item(n).file, anItem)
+        anItem = openItem(projectPath$ + itmPath$ + inv.item(n).file)
         If anItem.keyItem = 1 Then
             Call MsgBox(LoadStringLoc(850, "You cannot sell this item!"), , LoadStringLoc(839, "Key Item"))
             'MsgBox "You cannot sell this item!", , "Key Item"
@@ -576,7 +576,7 @@ Private Sub Command4_Click()
         If itemsforsale$(t) <> "" Then theOne = theOne + 1
         If theOne = n Then selone = t: Exit For
     Next t
-    Call openitem(projectPath$ + itmPath$ + itemsforsale$(selone), anItem)
+    anItem = openItem(projectPath$ + itmPath$ + itemsforsale$(selone))
     iteminfo.Show   'Show item info.
 
     Exit Sub
@@ -595,7 +595,7 @@ Private Sub Command5_Click()
     If n = -1 Then n = 0
     n = itemMap(n)
     If inv.item(n).file <> "" Then
-        Call openitem(projectPath$ + itmPath$ + inv.item(n).file, anItem)
+        anItem = openItem(projectPath$ + itmPath$ + inv.item(n).file)
         iteminfo.Show   'Show item info.
     End If
 
@@ -728,7 +728,7 @@ Private Sub salelist_Click()
         If itemsforsale$(t) <> "" Then theOne = theOne + 1
         If theOne = n Then selone = t: Exit For
     Next t
-    Call openitem(projectPath$ + itmPath$ + itemsforsale$(selone), anItem)
+    anItem = openItem(projectPath$ + itmPath$ + itemsforsale$(selone))
     bp = anItem.buyPrice
     bp = bp * val(quantity.caption)
     cost.caption = str$(bp)
@@ -761,7 +761,7 @@ Private Sub yourinventory_Click()
     If n = -1 Then n = 0
     'n = ItemMap(n)
     If inv.item(n).file <> "" Then
-        Call openitem(projectPath$ + itmPath$ + inv.item(n).file, anItem)
+        anItem = openItem(projectPath$ + itmPath$ + inv.item(n).file)
         bp = anItem.sellPrice
         bp = bp * val(qsell.caption)
         sell.caption = str$(bp)

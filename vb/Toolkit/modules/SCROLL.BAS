@@ -16,7 +16,7 @@ Dim miSavedBitmaps(3) As Long        'Used in resources example
 
 
 'Windows resources functions
-Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal dwrop As Long) As Long
+Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal dwrop As Long) As Long
 Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
 'FIXIT: As Any is not supported in Visual Basic .NET. Use a specific type.                 FixIT90210ae-R5608-H1984
 Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal nPlanes As Long, ByVal nBitCount As Long, ByVal lpBits As Any) As Long
@@ -24,7 +24,7 @@ Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nW
 Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
 Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
-Declare Function SetPixelV& Lib "gdi32" (ByVal hdc&, ByVal x&, ByVal y&, ByVal crColor&)
+Declare Function SetPixelV& Lib "gdi32" (ByVal hdc&, ByVal X&, ByVal Y&, ByVal crColor&)
 'Windows resources functions for VB 4 users
 'Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 'Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
@@ -97,14 +97,14 @@ Sub scrollDown(ByVal isIsometric As Long): On Error GoTo ErrorHandler
         cnt = 1
         For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
             xx = boardList(activeBoardIndex).topX + cnt
-            y = boardList(activeBoardIndex).topY + 2
+            Y = boardList(activeBoardIndex).topY + 2
             lay = boardList(activeBoardIndex).currentLayer
     
-            tname$ = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
-            If y Mod 2 = 0 Then
+            tname$ = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
+            ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+            If Y Mod 2 = 0 Then
                 eo = False
             Else
                 eo = True
@@ -118,14 +118,14 @@ Sub scrollDown(ByVal isIsometric As Long): On Error GoTo ErrorHandler
     cnt = 1
     For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
         xx = boardList(activeBoardIndex).topX + cnt
-        y = boardList(activeBoardIndex).topY + 1
+        Y = boardList(activeBoardIndex).topY + 1
         lay = boardList(activeBoardIndex).currentLayer
 
-        tname$ = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
-        If y Mod 2 = 0 Then
+        tname$ = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
+        ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+        If Y Mod 2 = 0 Then
             eo = True
         Else
             eo = False
@@ -138,7 +138,7 @@ Sub scrollDown(ByVal isIsometric As Long): On Error GoTo ErrorHandler
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -148,7 +148,7 @@ Sub scrollLeft(ByVal isIsometric As Long)
     'assumes that the column is already
     'saved onto the colstrip.
     'now scroll the board left...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     tX = boardList(activeBoardIndex).tilesX
     tY = boardList(activeBoardIndex).tilesY
@@ -205,13 +205,13 @@ Sub scrollLeft(ByVal isIsometric As Long)
         cnt = 1
         For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
             xx = boardList(activeBoardIndex).topX + tX - 1
-            y = boardList(activeBoardIndex).topY + cnt
+            Y = boardList(activeBoardIndex).topY + cnt
             lay = boardList(activeBoardIndex).currentLayer
     
-            tname$ = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
+            tname$ = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
+            ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
             Call drawtile(vbPicHDC(activeBoard.boardform), projectPath$ + tilepath$ + tname$, tX - 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
@@ -221,13 +221,13 @@ Sub scrollLeft(ByVal isIsometric As Long)
     cnt = 1
     For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
         xx = boardList(activeBoardIndex).topX + tX
-        y = boardList(activeBoardIndex).topY + cnt
+        Y = boardList(activeBoardIndex).topY + cnt
         lay = boardList(activeBoardIndex).currentLayer
 
-        tname$ = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
+        tname$ = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
+        ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
         Call drawtile(vbPicHDC(activeBoard.boardform), projectPath$ + tilepath$ + tname$, tX, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
@@ -253,7 +253,7 @@ Sub scrollLeft(ByVal isIsometric As Long)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -263,7 +263,7 @@ Sub scrollRight(ByVal isIsometric As Long)
     'assumes that the column is already
     'saved onto the colstrip.
     'now scroll the board right...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     tX = boardList(activeBoardIndex).tilesX
     tY = boardList(activeBoardIndex).tilesY
@@ -319,13 +319,13 @@ Sub scrollRight(ByVal isIsometric As Long)
         cnt = 1
         For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
             xx = boardList(activeBoardIndex).topX + 2
-            y = boardList(activeBoardIndex).topY + cnt
+            Y = boardList(activeBoardIndex).topY + cnt
             lay = boardList(activeBoardIndex).currentLayer
     
-            tname$ = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
+            tname$ = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
+            ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
             Call drawtile(vbPicHDC(activeBoard.boardform), projectPath$ + tilepath$ + tname$, 2, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
@@ -335,13 +335,13 @@ Sub scrollRight(ByVal isIsometric As Long)
     cnt = 1
     For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
         xx = boardList(activeBoardIndex).topX + 1
-        y = boardList(activeBoardIndex).topY + cnt
+        Y = boardList(activeBoardIndex).topY + cnt
         lay = boardList(activeBoardIndex).currentLayer
 
-        tname$ = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
+        tname$ = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
+        ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
         Call drawtile(vbPicHDC(activeBoard.boardform), projectPath$ + tilepath$ + tname$, 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
@@ -349,7 +349,7 @@ Sub scrollRight(ByVal isIsometric As Long)
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -358,7 +358,7 @@ Sub scrollUp(ByVal isIsometric As Long)
     'assumes that the row is already
     'saved onto the rowstrip.
     'now scroll the board up...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call vbPicAutoRedraw(activeBoard.boardform, True)
     
     tX = boardList(activeBoardIndex).tilesX
@@ -406,14 +406,14 @@ Sub scrollUp(ByVal isIsometric As Long)
         cnt = 1
         For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
             xx = boardList(activeBoardIndex).topX + cnt
-            y = boardList(activeBoardIndex).topY + tY - 1
+            Y = boardList(activeBoardIndex).topY + tY - 1
             lay = boardList(activeBoardIndex).currentLayer
     
-            tname$ = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
-            If y Mod 2 = 0 Then
+            tname$ = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
+            ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+            If Y Mod 2 = 0 Then
                 eo = False
             Else
                 eo = True
@@ -427,14 +427,14 @@ Sub scrollUp(ByVal isIsometric As Long)
     cnt = 1
     For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
         xx = boardList(activeBoardIndex).topX + cnt
-        y = boardList(activeBoardIndex).topY + tY
+        Y = boardList(activeBoardIndex).topY + tY
         lay = boardList(activeBoardIndex).currentLayer
 
-        tname$ = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientred(xx, y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientblue(xx, y, lay)
-        If y Mod 2 = 0 Then
+        tname$ = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
+        ar = boardList(activeBoardIndex).theData.ambientred(xx, Y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientgreen(xx, Y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientblue(xx, Y, lay)
+        If Y Mod 2 = 0 Then
             eo = True
         Else
             eo = False
@@ -447,7 +447,7 @@ Sub scrollUp(ByVal isIsometric As Long)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -461,7 +461,7 @@ End Sub
 
 Sub shiftDown()
     'shifts the board down (scroll north)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If boardList(activeBoardIndex).topY < 0 Then Exit Sub
     
     'Call activeBoard.boardRedraw
@@ -469,14 +469,14 @@ Sub shiftDown()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub shiftLeft()
     'shifts the board left (scroll east)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     If boardList(activeBoardIndex).topY = 50 - boardList(activeBoardIndex).tilesX Then Exit Sub
     
@@ -486,28 +486,28 @@ Sub shiftLeft()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub shiftRight()
     'scrolls the board right (west)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If boardList(activeBoardIndex).topX < 0 Then Exit Sub
     'Call setupColumnScroll(boardList(activeBoardIndex).topX + 1, boardList(activeBoardIndex).topY + 1)
     Call scrollRight(boardList(activeBoardIndex).theData.isIsometric)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub shiftUp()
     'shifts the board up (scroll south)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If boardList(activeBoardIndex).topY = 50 - boardList(activeBoardIndex).tilesX Then Exit Sub
     
     'Call activeBoard.boardRedraw
@@ -515,7 +515,7 @@ Sub shiftUp()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

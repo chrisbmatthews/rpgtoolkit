@@ -4,55 +4,43 @@ Attribute VB_Name = "CommonStrings"
 'Read LICENSE.txt for licensing info
 
 'string parsing functions
+
+'=======================================================
+'Cleaned up a bit, 3.0.4 by KSNiloc
+'
+' --What is done
+' + insideCharacters re-written to comply much closer to
+'   VB standards
+'
+'=======================================================
+
 Option Explicit
 
-Function insideBrackets(ByVal text As String) As String
+Public Function insideBrackets(ByVal text As String) As String
     'return text enclosed in brackets
     On Error Resume Next
     insideBrackets = insideCharacters(text, "(", ")")
 End Function
 
+Public Function insideCharacters( _
+                                    ByVal toParse As String, _
+                                    ByVal c1 As String, _
+                                    ByVal c2 As String _
+                                                         ) As String
 
-Function insideCharacters(ByVal text As String, ByVal c1 As String, ByVal c2 As String) As String
-    On Error Resume Next
-    'return text enclosed by characters c1 and c2
+    Dim start As Long
+    Dim tEnd As Long
+
+    'See where the first char is
+    start = InStr(1, toParse, c1, vbTextCompare)
     
-    Dim toRet As String
-    Dim c As Long
-    Dim part As String
-    
-    If Len(c1) > 1 Then
-        c1 = Mid(c1, 1, 1)
-    End If
-    If Len(c2) > 1 Then
-        c2 = Mid(c2, 1, 1)
-    End If
-    
-    Dim nextStart As Long
-    
-    nextStart = 1
-    For c = nextStart To Len(text)
-        part = Mid(text, c, 1)
-        If part = c1 Then
-            nextStart = c + 1
-            Exit For
-        End If
-    Next c
-    
-    If nextStart = 1 Then
-        Exit Function
-    End If
-    
-    For c = nextStart To Len(text)
-        part = Mid(text, c, 1)
-        If part = c2 Then
-            Exit For
-        Else
-            toRet = toRet + part
-        End If
-    Next c
-    
-    insideCharacters = toRet
+    'Find the last char
+    tEnd = InStr(1, StrReverse(toParse), c2, vbTextCompare)
+    tEnd = Len(toParse) - tEnd + 1
+
+    'Just keep what's in between the two
+    insideCharacters = Mid(toParse, start + 1, tEnd - start - 1)
+
 End Function
 
 

@@ -22,7 +22,7 @@ Begin VB.Form editsm
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   4545
    ScaleWidth      =   7470
-   Tag             =   "1351"
+   Tag             =   "8"
    Begin VB.Frame mainFrame 
       Height          =   4215
       Left            =   120
@@ -603,7 +603,7 @@ End Function
 
 Public Sub saveAsFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True Then
         Me.Show
         saveasmnu_Click
@@ -611,7 +611,7 @@ Public Sub saveAsFile()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -621,7 +621,7 @@ End Sub
 
 Public Sub checkSave()
     'check if the file has changed an it needs to be saved...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True Then
         aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo)
         If aa = 6 Then
@@ -632,7 +632,7 @@ Public Sub checkSave()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -640,7 +640,7 @@ End Sub
 
 Public Sub saveFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'If specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True Then
         filename$(2) = specialMoveList(activeSpecialMoveIndex).smFile$
         specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
@@ -654,7 +654,7 @@ Public Sub saveFile()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -667,51 +667,51 @@ Public Sub openFile(file$)
     FileCopy filename$(1), projectPath$ + spcpath$ + antiPath$
     Call openSpecialMove(filename$(1), specialMoveList(activeSpecialMoveIndex).theData)
     spfile$ = antiPath$
-    activeSpecialMove.caption = LoadStringLoc(808, "Special Move Editor") + "  (" + antiPath$ + ")"
+    activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") + "  (" + antiPath$ + ")"
     Call infofill
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
 End Sub
 
 
 Private Sub Check1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
     If Check1.value = 0 Then specialMoveList(activeSpecialMoveIndex).theData.smBattle = 1 Else specialMoveList(activeSpecialMoveIndex).theData.smBattle = 0
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
     If Check2.value = 0 Then specialMoveList(activeSpecialMoveIndex).theData.smMenu = 1 Else specialMoveList(activeSpecialMoveIndex).theData.smMenu = 0
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub closemnu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload editsm
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + statuspath$
     
@@ -726,16 +726,16 @@ Private Sub Command1_Click()
         Exit Sub
     End If
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + statuspath$ + antiPath$
-    statuse.text = antiPath$
+    statuse.Text = antiPath$
     specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect$ = antiPath$
 End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + prgpath$
     
@@ -750,16 +750,16 @@ Private Sub Command14_Click()
         Exit Sub
     End If
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    rpgcodebox.text = antiPath$
+    rpgcodebox.Text = antiPath$
     specialMoveList(activeSpecialMoveIndex).theData.smPrg$ = antiPath$
 End Sub
 
 Private Sub Command2_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + miscPath$
     
@@ -774,20 +774,20 @@ Private Sub Command2_Click()
         Exit Sub
     End If
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + miscPath$ + antiPath$
-    effectanim.text = antiPath$
+    effectanim.Text = antiPath$
     specialMoveList(activeSpecialMoveIndex).theData.smAnimation$ = antiPath$
 End Sub
 
 Private Sub description_Change()
-    specialMoveList(activeSpecialMoveIndex).theData.smDescription$ = Description.text
+    specialMoveList(activeSpecialMoveIndex).theData.smDescription$ = description.Text
 End Sub
 
 Private Sub effectanim_Change()
     On Error Resume Next
-    specialMoveList(activeSpecialMoveIndex).theData.smAnimation$ = effectanim.text
+    specialMoveList(activeSpecialMoveIndex).theData.smAnimation$ = effectanim.Text
 End Sub
 
 Private Sub Form_Activate()
@@ -812,7 +812,7 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Set activeSpecialMove = Me
@@ -824,7 +824,7 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -835,93 +835,93 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub fpbox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smFP = val(fpbox.text)
+    specialMoveList(activeSpecialMoveIndex).theData.smFP = val(fpbox.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub infofill()
-    On Error GoTo errorhandler
-    namebox.text = specialMoveList(activeSpecialMoveIndex).theData.smname$
-    fpbox.text = toString(specialMoveList(activeSpecialMoveIndex).theData.smFP)
-    smbox.text = toString(specialMoveList(activeSpecialMoveIndex).theData.smSMP)
-    targSMPbox.text = toString(specialMoveList(activeSpecialMoveIndex).theData.smtargSMP)
-    rpgcodebox.text = specialMoveList(activeSpecialMoveIndex).theData.smPrg$
+    On Error GoTo ErrorHandler
+    namebox.Text = specialMoveList(activeSpecialMoveIndex).theData.smname$
+    fpbox.Text = toString(specialMoveList(activeSpecialMoveIndex).theData.smFP)
+    smbox.Text = toString(specialMoveList(activeSpecialMoveIndex).theData.smSMP)
+    targSMPbox.Text = toString(specialMoveList(activeSpecialMoveIndex).theData.smtargSMP)
+    rpgcodebox.Text = specialMoveList(activeSpecialMoveIndex).theData.smPrg$
     If specialMoveList(activeSpecialMoveIndex).theData.smBattle = 0 Then Check1.value = 1 Else Check1.value = 0
     If specialMoveList(activeSpecialMoveIndex).theData.smMenu = 0 Then Check2.value = 1 Else Check2.value = 0
-    statuse.text = specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect$ 'status effect cast
-    effectanim.text = specialMoveList(activeSpecialMoveIndex).theData.smAnimation$
-    Description.text = specialMoveList(activeSpecialMoveIndex).theData.smDescription$
+    statuse.Text = specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect$ 'status effect cast
+    effectanim.Text = specialMoveList(activeSpecialMoveIndex).theData.smAnimation$
+    description.Text = specialMoveList(activeSpecialMoveIndex).theData.smDescription$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Label3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeStatusEffect.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Label4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeRPGCode.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeAnimation.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub namebox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smname$ = namebox.text
+    specialMoveList(activeSpecialMoveIndex).theData.smname$ = namebox.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub newsm()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
         
     Call SpecialMoveClear(specialMoveList(activeSpecialMoveIndex).theData)
-    activeSpecialMove.caption = LoadStringLoc(1351, "Special Move Editor (Untitled)")
+    activeSpecialMove.Caption = LoadStringLoc(1351, "Special Move Editor (Untitled)")
     Call infofill
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -929,12 +929,12 @@ End Sub
 'FIXIT: rpgcodebox_Change event has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
 Private Sub rpgcodebox_Change()
     On Error Resume Next
-    specialMoveList(activeSpecialMoveIndex).theData.smPrg$ = rpgcodebox.text
+    specialMoveList(activeSpecialMoveIndex).theData.smPrg$ = rpgcodebox.Text
 End Sub
 
 Private Sub saveasmnu_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + spcpath$
     
@@ -948,7 +948,7 @@ Private Sub saveasmnu_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
     aa = fileExist(filename$(1))
@@ -958,13 +958,13 @@ Private Sub saveasmnu_Click()
     End If
     Call saveSpecialMove(filename$(1), specialMoveList(activeSpecialMoveIndex).theData)
     specialMoveList(activeSpecialMoveIndex).smFile$ = antiPath$
-    activeSpecialMove.caption = LoadStringLoc(808, "Special Move Editor") + " (" + antiPath$ + ")"
+    activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") + " (" + antiPath$ + ")"
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 Private Sub savemnu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     filename$(2) = specialMoveList(activeSpecialMoveIndex).smFile$
     If filename$(2) = "" Then saveasmnu_Click: Exit Sub
     Call saveSpecialMove(projectPath$ + spcpath$ + filename$(2), specialMoveList(activeSpecialMoveIndex).theData)
@@ -972,47 +972,47 @@ Private Sub savemnu_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub smbox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smSMP = val(smbox.text)
+    specialMoveList(activeSpecialMoveIndex).theData.smSMP = val(smbox.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub statuse_Change()
     On Error Resume Next
-    specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect$ = statuse.text
+    specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect$ = statuse.Text
 End Sub
 
 Private Sub targSMPbox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
-    specialMoveList(activeSpecialMoveIndex).theData.smtargSMP = val(targSMPbox.text)
+    specialMoveList(activeSpecialMoveIndex).theData.smtargSMP = val(targSMPbox.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub toc_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

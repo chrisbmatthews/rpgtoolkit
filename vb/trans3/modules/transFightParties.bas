@@ -243,7 +243,7 @@ Sub doUseItem(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal 
        
     'now use the item...
     Dim theItem As TKItem
-    Call openitem(projectPath$ + itmPath$ + itemFile, theItem)
+    theItem = openItem(projectPath & itmPath & itemFile)
     
     Dim hp As Double, smp As Double
     

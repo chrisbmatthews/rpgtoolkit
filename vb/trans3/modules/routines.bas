@@ -5,7 +5,7 @@ Attribute VB_Name = "Routines"
 
 Option Explicit
 
-Public Sub openMainFile(byval file as string)
+Public Sub openMainFile(ByVal file As String)
     'opens mainForm file
     On Error Resume Next
 

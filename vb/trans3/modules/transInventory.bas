@@ -58,7 +58,7 @@ Sub AddItemToList(ByVal file As String, ByRef theInv As TKInventory)
     'Now get item handle:
     file$ = projectPath$ + itmPath$ + lit$
     Dim anItem As TKItem
-    Call openitem(file$, anItem)
+    anItem = openItem(file$)
     
     Dim nameItm As String
     nameItm$ = anItem.itemName

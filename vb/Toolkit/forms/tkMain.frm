@@ -96,13 +96,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   570
+      Height          =   360
       Left            =   0
       TabIndex        =   7
       Top             =   0
-      Width           =   11880
-      _ExtentX        =   20955
-      _ExtentY        =   1005
+      Width           =   15240
+      _ExtentX        =   26882
+      _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -291,11 +291,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1335
       Left            =   0
       ScaleHeight     =   1335
-      ScaleWidth      =   11880
+      ScaleWidth      =   15240
       TabIndex        =   123
-      Top             =   6225
+      Top             =   8865
       Visible         =   0   'False
-      Width           =   11880
+      Width           =   15240
       Begin VB.Frame tileBmpExtras 
          BorderStyle     =   0  'None
          BeginProperty Font 
@@ -858,12 +858,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3990
-      Left            =   465
-      ScaleHeight     =   3990
+      Height          =   6840
+      Left            =   3825
+      ScaleHeight     =   6840
       ScaleWidth      =   3510
       TabIndex        =   99
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -1086,12 +1086,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
-      Left            =   -1350
-      ScaleHeight     =   3990
+      Height          =   6840
+      Left            =   2010
+      ScaleHeight     =   6840
       ScaleWidth      =   1815
       TabIndex        =   95
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   1815
       Begin VB.PictureBox newBar 
@@ -1131,12 +1131,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   3990
+      Height          =   6840
       Left            =   0
-      ScaleHeight     =   3990
+      ScaleHeight     =   6840
       ScaleWidth      =   975
       TabIndex        =   50
-      Top             =   570
+      Top             =   360
       Width           =   975
       Begin VB.PictureBox leftbar 
          BorderStyle     =   0  'None
@@ -1743,11 +1743,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   11880
+      ScaleWidth      =   15240
       TabIndex        =   29
-      Top             =   4560
+      Top             =   7200
       Visible         =   0   'False
-      Width           =   11880
+      Width           =   15240
       Begin VB.CommandButton Command21 
          Appearance      =   0  'Flat
          Caption         =   "Draw All Layers"
@@ -2047,12 +2047,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
-      Left            =   11505
-      ScaleHeight     =   3990
+      Height          =   6840
+      Left            =   14865
+      ScaleHeight     =   6840
       ScaleWidth      =   375
       TabIndex        =   22
-      Top             =   570
+      Top             =   360
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2108,10 +2108,10 @@ Begin VB.MDIForm tkMainForm
       Height          =   375
       Left            =   0
       ScaleHeight     =   375
-      ScaleWidth      =   11880
+      ScaleWidth      =   15240
       TabIndex        =   9
-      Top             =   7560
-      Width           =   11880
+      Top             =   10200
+      Width           =   15240
       Begin VB.CommandButton openWindowsScrollRight 
          Height          =   255
          Left            =   11760
@@ -2251,12 +2251,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
-      Left            =   3975
-      ScaleHeight     =   3990
+      Height          =   6840
+      Left            =   7335
+      ScaleHeight     =   6840
       ScaleWidth      =   4800
       TabIndex        =   8
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2358,12 +2358,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
-      Left            =   8775
-      ScaleHeight     =   3990
+      Height          =   6840
+      Left            =   12135
+      ScaleHeight     =   6840
       ScaleWidth      =   2730
       TabIndex        =   1
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   2730
       Begin VB.CommandButton exitbutton 
@@ -2455,22 +2455,22 @@ Begin VB.MDIForm tkMainForm
       Height          =   255
       Left            =   0
       TabIndex        =   0
-      Top             =   7935
-      Width           =   11880
-      _ExtentX        =   20955
+      Top             =   10575
+      Width           =   15240
+      _ExtentX        =   26882
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "08/08/2004"
+            TextSave        =   "09/08/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   5054
-            TextSave        =   "6:05 PM"
+            Object.Width           =   10980
+            TextSave        =   "1:11 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2483,6 +2483,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
+            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -3347,7 +3348,7 @@ Private Sub mainToolbar_ButtonClick(ByVal button As MSComctlLib.button): On Erro
         Case "configTk":
             config.Show
         Case "tilesetedit":                 'Added.
-            tilesetedit.Show 'vbModal
+            tilesetedit.Show vbModal
         Case "testrun":
             Call testgamemnu_Click
     End Select
@@ -3426,6 +3427,8 @@ Private Sub ProjectListSize_Timer()
 
     'Overkill, I know (heh...)
     
+    On Error Resume Next
+
     projectListSize.Enabled = False
     
     If (Not fileTree1.height = rightbar.height - 400) Or _
@@ -3516,41 +3519,30 @@ Private Sub mainToolbar_ButtonMenuClick(ByVal ButtonMenu As MSComctlLib.ButtonMe
     Select Case ButtonMenu.Index
         Case 1:
             Set frm = New tileedit
-            frm.Show
         Case 2:
             Set frm = New tileanim
-            frm.Show
         Case 3:
             Set frm = New boardedit
-            frm.Show
         Case 4:
             Set frm = New characteredit
-            frm.Show
         Case 5:
             Set frm = New EditItem
-            frm.Show
         Case 6:
             Set frm = New editenemy
-            frm.Show
         Case 7:
             Set frm = New rpgcodeedit
-            frm.Show
         Case 8:
             Set frm = New editBackground
-            frm.Show
         Case 9:
             Set frm = New editsm
-            frm.Show
         Case 10:
             Set frm = New editstatus
-            frm.Show
         Case 11:
             Set frm = New animationeditor
-            frm.Show
         Case 12:
             Set frm = New editTileBitmap
-            frm.Show
     End Select
+    frm.Show
 
 End Sub
 
@@ -3611,8 +3603,8 @@ Private Sub MDIForm_Load(): On Error GoTo ErrorHandler
     If Command = "" Then
         SaveSetting "RPGToolkit3", "Settings", "Path", App.path & "\"
     Else
-        currentdir = GetSetting("RPGToolkit3", "Settings", "Path")
-        ChDir currentdir
+        currentDir = GetSetting("RPGToolkit3", "Settings", "Path")
+        ChDir currentDir
     End If
     
     If lastProject <> "" And Command = "" Then
@@ -3658,7 +3650,7 @@ Public Sub mnuNewFightBackground_Click()
 End Sub
 
 Public Sub mnuOpenProject_Click(): On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = gampath$
     
@@ -3675,7 +3667,7 @@ Public Sub mnuOpenProject_Click(): On Error Resume Next
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), gampath$ + antiPath$
     Call openMainFile(filename$(1))
@@ -3780,7 +3772,7 @@ Public Sub openmnu_Click(): On Error Resume Next
 'Edited by Delano for 3.0.4 new isometric tilesets.
 'Added .iso to the list of openable files.
 
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim antiPath As String
     Dim dlg As FileDialogInfo
     
@@ -3795,7 +3787,7 @@ Public Sub openmnu_Click(): On Error Resume Next
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     
     Call tkMainForm.openFile(filename$(1))
@@ -3978,9 +3970,64 @@ End Sub
 
 Public Sub saveallmnu_Click(): On Error Resume Next
     'save all...
+    'KSNiloc says: If/when we upgrade to vb.net this can be improved
+    '              via inheritance
     Dim frm As VB.Form
+    Dim ani As animationeditor
+    Dim brd As boardedit
+    Dim chr As characteredit
+    Dim bkg As editBackground
+    Dim ene As editenemy
+    Dim itm As EditItem
+    Dim man As editmainfile
+    Dim spcMove As editsm
+    Dim sta As editstatus
+    Dim tbm As editTileBitmap
+    Dim rpg As rpgcodeedit
+    Dim aniTile As tileanim
+    Dim tile As tileedit
     For Each frm In Forms
-        Call frm.saveFile
+        Select Case frm.tag
+            Case 1
+                Set ani = frm
+                ani.saveFile
+            Case 2
+                Set brd = frm
+                brd.saveFile
+            Case 3
+                Set chr = frm
+                chr.saveFile
+            Case 4
+                Set bkg = frm
+                bkg.saveFile
+            Case 5
+                Set ene = frm
+                ene.saveFile
+            Case 6
+                Set itm = frm
+                itm.saveFile
+            Case 7
+                Set man = frm
+                man.saveFile
+            Case 8
+                Set spcMove = frm
+                spcMove.saveFile
+            Case 9
+                Set sta = frm
+                sta.saveFile
+            Case 10
+                Set tbm = frm
+                tbm.saveFile
+            Case 12
+                Set rpg = frm
+                rpg.saveFile
+            Case 13
+                Set aniTile = frm
+                aniTile.saveFile
+            Case 14
+                Set tile = frm
+                tile.saveFile
+        End Select
     Next frm
 End Sub
 
@@ -3989,7 +4036,8 @@ Public Sub saveasmnu_Click(): On Error Resume Next
 End Sub
 
 Public Sub savemnu_Click(): On Error Resume Next
-    Call activeForm.saveFile
+    'TBD
+    activeForm.saveFile
 End Sub
 
 Public Sub selectlanguagemnu_Click(): On Error Resume Next
@@ -4371,7 +4419,7 @@ Private Sub changedSelectedTileset_Click(): On Error Resume Next
 
     Dim antiPath As String, whichType As String
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     'Set up the dialog window for opening the tileset.
     Dim dlg As FileDialogInfo
@@ -4389,7 +4437,7 @@ Private Sub changedSelectedTileset_Click(): On Error Resume Next
         Exit Sub 'user pressed cancel
     End If
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     
     lastTileset$ = antiPath$                    'The current tileset, without path.

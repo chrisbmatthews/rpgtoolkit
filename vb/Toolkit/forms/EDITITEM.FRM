@@ -22,7 +22,7 @@ Begin VB.Form edititem
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5040
    ScaleWidth      =   8385
-   Tag             =   "1365"
+   Tag             =   "6"
    Begin VB.Frame mainFrame 
       Height          =   4695
       Left            =   120
@@ -735,7 +735,7 @@ End Function
 
 Public Sub saveAsFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If itemList(activeItemIndex).itemNeedUpdate = True Then
         Me.Show
         saveasmnu_Click
@@ -743,7 +743,7 @@ Public Sub saveAsFile()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -753,7 +753,7 @@ End Sub
 
 Public Sub checkSave()
     'check if the file has changed an it needs to be saved...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If itemList(activeItemIndex).itemNeedUpdate = True Then
         aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo)
         If aa = 6 Then
@@ -764,7 +764,7 @@ Public Sub checkSave()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -772,7 +772,7 @@ End Sub
 
 Public Sub saveFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'If itemList(activeItemIndex).itemNeedUpdate = True Then
         filename$(2) = itemList(activeItemIndex).itemFile$
         itemList(activeItemIndex).itemNeedUpdate = False
@@ -786,7 +786,7 @@ Public Sub saveFile()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -797,114 +797,114 @@ Public Sub openFile(file$)
     filename$(1) = file$
     antiPath$ = absNoPath(file$)
     FileCopy filename$(1), projectPath$ + itmpath$ + antiPath$
-    Call openitem(filename$(1), itemList(activeItemIndex).theData)
+    itemList(activeItemIndex).theData = openItem(filename$(1))
     itemList(activeItemIndex).itemFile$ = antiPath$
-    activeItem.caption = LoadStringLoc(805, "Item Editor") + "  (" + antiPath$ + ")"
+    activeItem.Caption = LoadStringLoc(805, "Item Editor") + "  (" + antiPath$ + ")"
     Call infofill
     itemList(activeItemIndex).itemNeedUpdate = False
 End Sub
 
 Private Sub board_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     If board.value = 1 Then Command3.Enabled = True Else Command3.Enabled = False
     itemList(activeItemIndex).theData.BoardYN = board.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub charname_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     a = chars.ListIndex + 1
     If a = 0 Then a = 1
-    itemList(activeItemIndex).theData.itmChars$(a) = charname.text
+    itemList(activeItemIndex).theData.itmChars$(a) = charname.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub chars_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     a = chars.ListIndex + 1
-    charname.text = itemList(activeItemIndex).theData.itmChars$(a)
+    charname.Text = itemList(activeItemIndex).theData.itmChars$(a)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.keyItem = Check1.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itmequip.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itmmenu.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itmboard.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itmfight.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command5_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     'If itmSizeType = 0 Then
     '    itmgfx.Show
@@ -915,39 +915,39 @@ Private Sub Command5_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub equipable_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     If equipable.value = 1 Then Command1.Enabled = True Else Command1.Enabled = False
     itemList(activeItemIndex).theData.EquipYN = equipable.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub fight_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     If fight.value = 1 Then Command4.Enabled = True Else Command4.Enabled = False
     itemList(activeItemIndex).theData.FightYN = fight.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Activate()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     filename$(2) = ""
     
     Set activeItem = Me
@@ -972,13 +972,13 @@ Private Sub Form_Activate()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Set activeItem = Me
@@ -991,38 +991,38 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub infofill()
-    On Error GoTo errorhandler
-    itemnamebox.text = itemList(activeItemIndex).theData.itemName
+    On Error GoTo ErrorHandler
+    itemnamebox.Text = itemList(activeItemIndex).theData.itemName
     equipable.value = itemList(activeItemIndex).theData.EquipYN
-    Menu.value = itemList(activeItemIndex).theData.MenuYN
+    menu.value = itemList(activeItemIndex).theData.MenuYN
     board.value = itemList(activeItemIndex).theData.BoardYN
     fight.value = itemList(activeItemIndex).theData.FightYN
     If fight.value = 1 Then Command4.Enabled = True Else Command4.Enabled = False
-    If Menu.value = 1 Then Command2.Enabled = True Else Command2.Enabled = False
+    If menu.value = 1 Then Command2.Enabled = True Else Command2.Enabled = False
     If equipable.value = 1 Then Command1.Enabled = True Else Command1.Enabled = False
     If board.value = 1 Then Command3.Enabled = True Else Command3.Enabled = False
     If itemList(activeItemIndex).theData.usedBy = 1 Then Option2.value = True: Option1.value = False
     If itemList(activeItemIndex).theData.usedBy = 2 Then Option2.value = False: Option1.value = True
 
-    Text1.text = str$(itemList(activeItemIndex).theData.buyPrice)
-    Text2.text = str$(itemList(activeItemIndex).theData.sellPrice)
+    Text1.Text = str$(itemList(activeItemIndex).theData.buyPrice)
+    Text2.Text = str$(itemList(activeItemIndex).theData.sellPrice)
 
     chars.Clear
-    chars.text = "Character 1"
+    chars.Text = "Character 1"
     For t = 1 To 50
         chars.AddItem "Character" + str$(t)
     Next t
-    charname.text = itemList(activeItemIndex).theData.itmChars$(1)
+    charname.Text = itemList(activeItemIndex).theData.itmChars$(1)
 
     Check1.value = itemList(activeItemIndex).theData.keyItem
     
-    Text3.text = itemList(activeItemIndex).theData.ITMDescription
+    Text3.Text = itemList(activeItemIndex).theData.ITMDescription
     If itemList(activeItemIndex).theData.itmSizeType = 0 Then
         Option4.value = True
     Else
@@ -1031,7 +1031,7 @@ Private Sub infofill()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1042,32 +1042,32 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub itemnamebox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
-    itemList(activeItemIndex).theData.itemName$ = itemnamebox.text
+    itemList(activeItemIndex).theData.itemName$ = itemnamebox.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub menu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
-    If Menu.value = 1 Then Command2.Enabled = True Else Command2.Enabled = False
-    itemList(activeItemIndex).theData.MenuYN = Menu.value
+    If menu.value = 1 Then Command2.Enabled = True Else Command2.Enabled = False
+    itemList(activeItemIndex).theData.MenuYN = menu.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub mnuCLose_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload itmequip
     Unload itmmenu
     Unload itmfight
@@ -1077,25 +1077,25 @@ Private Sub mnuCLose_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub newitem()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
     Call ItemClear(itemList(activeItemIndex).theData)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.usedBy = 0
     chars.Visible = False
@@ -1104,13 +1104,13 @@ Private Sub Option1_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.usedBy = 1
     chars.Visible = True
@@ -1119,14 +1119,14 @@ Private Sub Option2_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub saveasmnu_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + itmpath$
     
@@ -1140,10 +1140,10 @@ Private Sub saveasmnu_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    aa = fileExist(filename$(1))
+    aa = FileExist(filename$(1))
     If aa = 1 Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
         If bb = 7 Then Exit Sub
@@ -1151,13 +1151,13 @@ Private Sub saveasmnu_Click()
     
     Call saveitem(filename$(1), itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemFile$ = antiPath$
-    activeItem.caption = LoadStringLoc(805, "Item Editor") + " (" + antiPath$ + ")"
+    activeItem.Caption = LoadStringLoc(805, "Item Editor") + " (" + antiPath$ + ")"
     itemList(activeItemIndex).itemNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 Private Sub savemnu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     filename$(2) = itemList(activeItemIndex).itemFile$
     If filename$(2) = "" Then saveasmnu_Click: Exit Sub
     Call saveitem(projectPath$ + itmpath$ + filename$(2), itemList(activeItemIndex).theData)
@@ -1166,54 +1166,54 @@ Private Sub savemnu_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Text1_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
-    itemList(activeItemIndex).theData.buyPrice = val(Text1.text)
+    itemList(activeItemIndex).theData.buyPrice = val(Text1.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Text2_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     itemList(activeItemIndex).itemNeedUpdate = True
-    itemList(activeItemIndex).theData.sellPrice = val(Text2.text)
+    itemList(activeItemIndex).theData.sellPrice = val(Text2.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Text3_Change()
-    On Error GoTo errorhandler
-    itemList(activeItemIndex).theData.ITMDescription = Text3.text
+    On Error GoTo ErrorHandler
+    itemList(activeItemIndex).theData.ITMDescription = Text3.Text
     'MsgBox ITMDescription$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub toc_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

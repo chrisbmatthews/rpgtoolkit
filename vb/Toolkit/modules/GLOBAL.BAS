@@ -4,6 +4,12 @@ Attribute VB_Name = "GLOBAL"
 'Read LICENSE.txt for licensing info
 
 '=======================================================
+' Global
+'
+' Contains various misc globals and constants.
+'=======================================================
+
+'=======================================================
 'Cleaned up a bit, 3.0.4 by KSNiloc
 '
 ' ---What is done

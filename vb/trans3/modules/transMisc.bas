@@ -281,7 +281,7 @@ Sub openItems()
         End If
         'OK, if runit=1 then we activate it!
         If runIt = 1 And boardList(activeBoardIndex).theData.itmName$(itemNum) <> "" Then
-            Call openitem(projectPath$ + itmPath$ + boardList(activeBoardIndex).theData.itmName$(itemNum), itemMem(itemNum))
+            itemMem(itemNum) = openItem(projectPath$ + itmPath$ + boardList(activeBoardIndex).theData.itmName$(itemNum))
             itemMem(itemNum).bIsActive = True
             'multilist(itemnum) = CreateThread(projectPath$ + prgpath$ + boardList(activeBoardIndex).theData.itemMulti$(itemnum), False)
             If boardList(activeBoardIndex).theData.itemMulti$(itemNum) <> "" Then
@@ -300,12 +300,12 @@ End Sub
 Function GetSpacedElement(ByVal Text As String, ByVal eleeNum As Long) As String
     'gets element number from struing (seperated by spaces)
     On Error Resume Next
-    Dim length As Long, element As Long, p As Long, part As String, ignore As Long
+    Dim Length As Long, element As Long, p As Long, part As String, ignore As Long
     Dim returnVal As String
     
-    length = Len(Text$)
+    Length = Len(Text$)
     element = 0
-    For p = 1 To length + 1
+    For p = 1 To Length + 1
         part$ = Mid$(Text$, p, 1)
         If part$ = chr$(34) Then
             'A quote
@@ -368,7 +368,7 @@ Function CanPlayerUse(ByVal file As String, ByVal num As Long) As Boolean
     'file is item file, num is player num
     On Error Resume Next
     Dim anItem As TKItem
-    Call openitem(file$, anItem)
+    anItem = openItem(file$)
     
     Dim okAll As Long
     okAll = 0
@@ -401,7 +401,7 @@ Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     
     If playerEquip$(equipNum, playerNum) = "" Then Exit Sub
     
-    Call openitem(projectPath$ + itmPath$ + playerEquip$(equipNum, playerNum), anItem)
+    anItem = openItem(projectPath$ + itmPath$ + playerEquip$(equipNum, playerNum))
     If anItem.prgRemove$ <> "" Then
         Call runProgram(projectPath$ + prgPath$ + anItem.prgRemove$)
     End If
@@ -455,21 +455,19 @@ Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     Call setIndependentVariable(playerMem(playerNum).smMaxVar$, str$(maxSM))
 End Sub
 
-Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file As String)
+Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file As String)
     'Add equipment to equipnum on playernum
     On Error Resume Next
     
     Dim aFile As String
     Dim anItem As TKItem
     
-    aFile$ = projectPath$ + itmPath$ + file$
-    aFile$ = FindFile(aFile$)
-    Call openitem(aFile$, anItem)
-    
-    Call RemoveItemfromList(file$, inv)
-    playerEquip$(equipNum, playerNum) = file$
-    equipList$(equipNum, playerNum) = anItem.itemName$
+    aFile = projectPath & itmPath & file
+    anItem = openItem(aFile)
 
+    Call RemoveItemfromList(file$, inv)
+    playerEquip(equipNum, playerNum) = file
+    equipList(equipNum, playerNum) = anItem.itemName
 
     'Modify HP,DP,etc
     equipHPadd(playerNum) = anItem.equipHP     'amount of HP added because of equipment.
@@ -486,26 +484,26 @@ Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file As Stri
     Dim dp As Double
     Dim fp As Double
 
-    a = GetIndependentVariable(playerMem(playerNum).defenseVar$, lit$, dp)
-    a = GetIndependentVariable(playerMem(playerNum).fightVar$, lit$, fp)
-    a = GetIndependentVariable(playerMem(playerNum).maxHealthVar$, lit$, maxHP)
-    a = GetIndependentVariable(playerMem(playerNum).smMaxVar$, lit$, maxSM)
+    Call GetIndependentVariable(playerMem(playerNum).defenseVar, lit, dp)
+    Call GetIndependentVariable(playerMem(playerNum).fightVar, lit, fp)
+    Call GetIndependentVariable(playerMem(playerNum).maxHealthVar, lit, maxHP)
+    Call GetIndependentVariable(playerMem(playerNum).smMaxVar, lit, maxSM)
 
     dp = dp + anItem.equipDP
     fp = fp + anItem.equipFP
     maxHP = maxHP + anItem.equipHP
     maxSM = maxSM + anItem.equipSM
 
-    Call setIndependentVariable(playerMem(playerNum).defenseVar$, str$(dp))
-    Call setIndependentVariable(playerMem(playerNum).fightVar$, str$(fp))
-    Call setIndependentVariable(playerMem(playerNum).maxHealthVar$, str$(maxHP))
-    Call setIndependentVariable(playerMem(playerNum).smMaxVar$, str$(maxSM))
+    Call setIndependentVariable(playerMem(playerNum).defenseVar, CStr(dp))
+    Call setIndependentVariable(playerMem(playerNum).fightVar, CStr(fp))
+    Call setIndependentVariable(playerMem(playerNum).maxHealthVar, CStr(maxHP))
+    Call setIndependentVariable(playerMem(playerNum).smMaxVar, CStr(maxSM))
 
     'Run equip program:
-    targetType = 0
+    targetType = TYPE_PLAYER
     target = playerNum
-    If anItem.prgEquip$ <> "" Then
-        Call runProgram(projectPath$ + prgPath$ + anItem.prgEquip$)
+    If anItem.prgEquip <> "" Then
+        Call runProgram(projectPath & prgPath & anItem.prgEquip)
     End If
 
 End Sub

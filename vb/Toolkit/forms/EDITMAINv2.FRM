@@ -23,7 +23,7 @@ Begin VB.Form editmainfile
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   6030
    ScaleWidth      =   7515
-   Tag             =   "1128"
+   Tag             =   "7"
    Begin VB.TextBox gametitlebox 
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -75,43 +75,34 @@ Begin VB.Form editmainfile
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "startframe"
-      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
       Tab(2).Control(0)=   "prgframe"
-      Tab(2).Control(0).Enabled=   0   'False
       Tab(2).Control(1)=   "actionframe"
-      Tab(2).Control(1).Enabled=   0   'False
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
       Tab(3).ControlEnabled=   0   'False
       Tab(3).Control(0)=   "fightframe"
-      Tab(3).Control(0).Enabled=   0   'False
       Tab(3).ControlCount=   1
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
       Tab(4).ControlEnabled=   0   'False
       Tab(4).Control(0)=   "screenframe"
-      Tab(4).Control(0).Enabled=   0   'False
       Tab(4).ControlCount=   1
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
       Tab(5).Control(0)=   "Label24"
-      Tab(5).Control(0).Enabled=   0   'False
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(1).Enabled=   0   'False
       Tab(5).Control(2)=   "Frame3"
-      Tab(5).Control(2).Enabled=   0   'False
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
       Tab(6).ControlEnabled=   0   'False
       Tab(6).Control(0)=   "Frame1"
-      Tab(6).Control(0).Enabled=   0   'False
       Tab(6).ControlCount=   1
       Begin VB.Frame fightframe 
          Caption         =   "Fighting:"
@@ -1947,7 +1938,7 @@ Private Sub Command10_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + pluginPath$ + antiPath$
-    fgtPlugin.text = antiPath$
+    fgtPlugin.Text = antiPath$
     mainMem.fightPlugin = antiPath$
 End Sub
 
@@ -1971,7 +1962,7 @@ Private Sub Command14_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + brdpath$ + antiPath$
-    initboardbox.text = antiPath$
+    initboardbox.Text = antiPath$
     mainMem.initBoard$ = antiPath$
 End Sub
 
@@ -1995,7 +1986,7 @@ Private Sub Command15_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + tempath$ + antiPath$
-    initcharbox.text = antiPath$
+    initcharbox.Text = antiPath$
     mainMem.initChar$ = antiPath$
 End Sub
 
@@ -2019,7 +2010,7 @@ Private Sub Command16_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    runtimebox.text = antiPath$
+    runtimebox.Text = antiPath$
     mainMem.runTime$ = antiPath$
 End Sub
 
@@ -2043,7 +2034,7 @@ Private Sub Command17_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    startupbox.text = antiPath$
+    startupbox.Text = antiPath$
     mainMem.startupPrg$ = antiPath$
 End Sub
 
@@ -2068,7 +2059,7 @@ Private Sub Command18_Click()
     If filename$(1) = "" Then Exit Sub
     whichType$ = extention(filename$(1))
     FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    Text1.text = antiPath$
+    Text1.Text = antiPath$
     mainMem.gameOverPrg$ = antiPath$
 End Sub
 
@@ -2160,7 +2151,7 @@ Private Sub Command6_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + pluginPath$ + antiPath$
-    mnuplugin.text = antiPath$
+    mnuplugin.Text = antiPath$
     mainMem.menuPlugin = antiPath$
 End Sub
 
@@ -2185,7 +2176,7 @@ Private Sub Command7_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
-    cursormove.text = antiPath$
+    cursormove.Text = antiPath$
     mainMem.cursorMoveSound = antiPath$
 End Sub
 
@@ -2210,7 +2201,7 @@ Private Sub Command8_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
-    cursorselect.text = antiPath$
+    cursorselect.Text = antiPath$
     mainMem.cursorSelectSound = antiPath$
 End Sub
 
@@ -2234,30 +2225,30 @@ Private Sub Command9_Click()
     ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
-    cursorcancel.text = antiPath$
+    cursorcancel.Text = antiPath$
     mainMem.cursorCancelSound = antiPath$
 End Sub
 
 Private Sub cursorcancel_Change()
     On Error Resume Next
-    mainMem.cursorCancelSound = cursorcancel.text
+    mainMem.cursorCancelSound = cursorcancel.Text
 End Sub
 
 Private Sub cursormove_Change()
     On Error Resume Next
-    mainMem.cursorMoveSound = cursormove.text
+    mainMem.cursorMoveSound = cursormove.Text
 End Sub
 
 Private Sub cursorselect_Change()
     On Error Resume Next
-    mainMem.cursorSelectSound = cursorselect.text
+    mainMem.cursorSelectSound = cursorselect.Text
 End Sub
 
 
 Private Sub daylengthbox_Change()
     On Error GoTo ErrorHandler
     
-    mainMem.mainDayLength = val(daylengthbox.text)
+    mainMem.mainDayLength = val(daylengthbox.Text)
 
     Exit Sub
 'Begin error handling code:
@@ -2313,7 +2304,7 @@ End Sub
 
 Private Sub fgtPlugin_Change()
     On Error Resume Next
-    mainMem.fightPlugin = fgtPlugin.text
+    mainMem.fightPlugin = fgtPlugin.Text
 End Sub
 
 Private Sub Form_Activate()
@@ -2358,8 +2349,8 @@ End Sub
 Private Sub gametitlebox_Change()
     On Error GoTo ErrorHandler
     mainNeedUpdate = True
-    mainMem.gameTitle$ = gametitlebox.text
-    gametitlebox2.text = mainMem.gameTitle$
+    mainMem.gameTitle$ = gametitlebox.Text
+    gametitlebox2.Text = mainMem.gameTitle$
 
     Exit Sub
 'Begin error handling code:
@@ -2385,50 +2376,50 @@ Private Sub infofill()
     Option1.value = True
     Option5.value = True
     If mainMem.startupPrg$ <> "" Then
-        startupbox.text = mainMem.startupPrg$          'start up program
+        startupbox.Text = mainMem.startupPrg$          'start up program
     Else
-        startupbox.text = LoadStringLoc(1010, "None")
+        startupbox.Text = LoadStringLoc(1010, "None")
     End If
     If mainMem.runTime$ <> "" Then
-        runtimebox.text = mainMem.runTime$             'run time program
+        runtimebox.Text = mainMem.runTime$             'run time program
     Else
-        runtimebox.text = LoadStringLoc(1010, "None")
+        runtimebox.Text = LoadStringLoc(1010, "None")
     End If
     If mainMem.gameOverPrg$ <> "" Then
-        Text1.text = mainMem.gameOverPrg$             'run time program
+        Text1.Text = mainMem.gameOverPrg$             'run time program
     Else
-        Text1.text = LoadStringLoc(1010, "None")
+        Text1.Text = LoadStringLoc(1010, "None")
     End If
-    mnuplugin.text = mainMem.menuPlugin
-    fgtPlugin.text = mainMem.fightPlugin
+    mnuplugin.Text = mainMem.menuPlugin
+    fgtPlugin.Text = mainMem.fightPlugin
     
     a$ = UCase$(chr$(mainMem.runKey))
     If mainMem.runKey = 32 Then a$ = "SPC"
     If mainMem.runKey = 27 Then a$ = "ESC"
     If mainMem.runKey = 13 Then a$ = "ENTR"
-    runkeybox.text = a$
+    runkeybox.Text = a$
 
     a$ = UCase$(chr$(mainMem.menuKey))
     If mainMem.menuKey = 32 Then a$ = "SPC"
     If mainMem.menuKey = 27 Then a$ = "ESC"
     If mainMem.menuKey = 13 Then a$ = "ENTR"
-    menukeybox.text = a$
+    menukeybox.Text = a$
 
     a$ = UCase$(chr$(mainMem.Key))
     If mainMem.Key = 32 Then a$ = "SPC"
     If mainMem.Key = 27 Then a$ = "ESC"
     If mainMem.Key = 13 Then a$ = "ENTR"
-    keybox.text = a$
+    keybox.Text = a$
 
     If mainMem.initBoard$ <> "" Then
-        initboardbox.text = mainMem.initBoard$           'initial board
+        initboardbox.Text = mainMem.initBoard$           'initial board
     Else
-        initboardbox.text = LoadStringLoc(1010, "None")
+        initboardbox.Text = LoadStringLoc(1010, "None")
     End If
     If mainMem.initChar$ <> "" Then
-        initcharbox.text = mainMem.initChar$            'initial character
+        initcharbox.Text = mainMem.initChar$            'initial character
     Else
-        initcharbox.text = LoadStringLoc(1010, "None")
+        initcharbox.Text = LoadStringLoc(1010, "None")
     End If
 
     Option4.value = mainMem.fightgameYN             'fighting in game? 0-yes, 1-no
@@ -2441,13 +2432,13 @@ Private Sub infofill()
     If mainMem.mainScreenType = 1 Then fullscreen.value = True
     If mainMem.mainScreenType = 2 Then smallwindowed.value = True
     
-    gametitlebox.text = mainMem.gameTitle$
-    gametitlebox2.text = mainMem.gameTitle$
+    gametitlebox.Text = mainMem.gameTitle$
+    gametitlebox2.Text = mainMem.gameTitle$
     editmainfile.Caption = LoadStringLoc(800, "Main Project Editor") + "  (" + mainfile$ + ")"
     
     pathbox.Caption = projectPath$
     
-    Call TestGraphicsMode
+    Call testGraphicsMode
     If targetPlatform = 0 Or targetPlatform = 2 Then
         win9x.value = True
     End If
@@ -2484,7 +2475,7 @@ Private Sub infofill()
         daynightvirtual.value = True
         daylengthbox.Enabled = True
     End If
-    daylengthbox.text = str$(mainMem.mainDayLength)
+    daylengthbox.Text = str$(mainMem.mainDayLength)
 
     If mainMem.mainDisableProtectReg = 0 Then
         regprotect.value = 1
@@ -2494,9 +2485,9 @@ Private Sub infofill()
     
     regprotect.Visible = False
    
-    cursormove.text = mainMem.cursorMoveSound
-    cursorselect.text = mainMem.cursorSelectSound
-    cursorcancel.text = mainMem.cursorCancelSound
+    cursormove.Text = mainMem.cursorMoveSound
+    cursorselect.Text = mainMem.cursorSelectSound
+    cursorcancel.Text = mainMem.cursorCancelSound
 
     enableJoystick.value = mainMem.useJoystick
 
@@ -2521,8 +2512,8 @@ End Sub
 Private Sub gametitlebox2_Change()
     On Error GoTo ErrorHandler
     mainNeedUpdate = True
-    mainMem.gameTitle$ = gametitlebox2.text
-    gametitlebox.text = mainMem.gameTitle$
+    mainMem.gameTitle$ = gametitlebox2.Text
+    gametitlebox.Text = mainMem.gameTitle$
 
     Exit Sub
 'Begin error handling code:
@@ -2533,12 +2524,12 @@ End Sub
 
 Private Sub initboardbox_Change()
     On Error Resume Next
-    mainMem.initBoard$ = initboardbox.text
+    mainMem.initBoard$ = initboardbox.Text
 End Sub
 
 Private Sub initcharbox_Change()
     On Error Resume Next
-    mainMem.initChar$ = initcharbox.text
+    mainMem.initChar$ = initcharbox.Text
 End Sub
 
 Private Sub keybox_KeyPress(KeyAscii As Integer)
@@ -2551,7 +2542,7 @@ Private Sub keybox_KeyPress(KeyAscii As Integer)
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
-    keybox.text = a$
+    keybox.Text = a$
     KeyAscii = 0
 
 
@@ -2629,7 +2620,7 @@ Private Sub menukeybox_KeyPress(KeyAscii As Integer)
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
-    menukeybox.text = a$
+    menukeybox.Text = a$
     KeyAscii = 0
 
 
@@ -2646,7 +2637,7 @@ End Sub
 
 Private Sub mnuplugin_Change()
     On Error Resume Next
-    mainMem.menuPlugin = mnuplugin.text
+    mainMem.menuPlugin = mnuplugin.Text
 End Sub
 
 Private Sub newmain()
@@ -2801,7 +2792,7 @@ Private Sub runkeybox_KeyPress(KeyAscii As Integer)
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
-    runkeybox.text = a$
+    runkeybox.Text = a$
     KeyAscii = 0
 
     Exit Sub
@@ -2813,7 +2804,7 @@ End Sub
 
 Private Sub runtimebox_Change()
     On Error Resume Next
-    mainMem.runTime$ = runtimebox.text
+    mainMem.runTime$ = runtimebox.Text
 End Sub
 
 
@@ -2856,7 +2847,7 @@ End Sub
 
 Private Sub startupbox_Change()
     On Error Resume Next
-    mainMem.startupPrg$ = startupbox.text
+    mainMem.startupPrg$ = startupbox.Text
 End Sub
 
 Private Sub tileupdate_Click()
@@ -2923,7 +2914,7 @@ End Sub
 
 Private Sub Text1_Change()
     On Error Resume Next
-    mainMem.gameOverPrg$ = Text1.text
+    mainMem.gameOverPrg$ = Text1.Text
 '    End If
 
 End Sub

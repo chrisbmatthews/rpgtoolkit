@@ -423,9 +423,9 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
 
             ' ! MODIFIED BY KSNiloc...
             If isVBPlugin(plugName) Then
-                tt = VBPlugin(plugName).PLUGType(PT_RPGCODE)
+                tt = VBPlugin(plugName).plugType(PT_RPGCODE)
             Else
-                tt = PLUGType(plugName, PT_RPGCODE)
+                tt = plugType(plugName, PT_RPGCODE)
             End If
            
             If tt = 1 Then
@@ -953,7 +953,7 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
     '   20- direction we are facing (1-s, 2-w, 3-n, 4-e)    facing
     '   21- percent till next level
     On Error GoTo errorhandler
-    Dim temp As Long
+    Dim Temp As Long
 
     playerSlot = inbounds(playerSlot, 0, 4)
     Select Case infoCode
@@ -982,9 +982,9 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
             CBGetPlayerNum = playerMem(playerSlot).initLevel
             Exit Function
         Case 8:
-            temp = playerMem(playerSlot).smYN
-            If temp = 0 Then CBGetPlayerNum = 1
-            If temp = 1 Then CBGetPlayerNum = 0
+            Temp = playerMem(playerSlot).smYN
+            If Temp = 0 Then CBGetPlayerNum = 1
+            If Temp = 1 Then CBGetPlayerNum = 0
             Exit Function
         Case 9:
             arrayPos = inbounds(arrayPos, 0, 200)
@@ -2138,7 +2138,7 @@ Sub CBLoadItem(ByVal file As String, ByVal itmSlot As Long)
     Do While MAXITEM < itmSlot
         dimensionItemArrays
     Loop
-    Call openitem(projectPath$ & itmPath$ & file, itemMem(itmSlot))
+    itemMem(itmSlot) = openItem(projectPath$ & itmPath$ & file)
 
     Exit Sub
 'Begin error handling code:

@@ -11,7 +11,7 @@ Begin VB.Form animationeditor
    MDIChild        =   -1  'True
    ScaleHeight     =   5925
    ScaleWidth      =   6705
-   Tag             =   "1515"
+   Tag             =   "1"
    Begin VB.PictureBox arena 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -309,8 +309,8 @@ Public Sub Option4_Click()
     tkMainForm.xsize.Enabled = True
     tkMainForm.ysize.Enabled = True
     'Update the size of the animation
-    animationList(activeAnimationIndex).theData.animSizeX = val(tkMainForm.xsize.text)
-    animationList(activeAnimationIndex).theData.animSizeY = val(tkMainForm.ysize.text)
+    animationList(activeAnimationIndex).theData.animSizeX = val(tkMainForm.xsize.Text)
+    animationList(activeAnimationIndex).theData.animSizeY = val(tkMainForm.ysize.Text)
     'Resize the form
     Call sizeform
     '(NEW for 3.0.4 by Woozy)
@@ -328,10 +328,10 @@ End Sub
 Public Sub xsize_Change()
     On Error GoTo ErrorHandler
     animationList(activeAnimationIndex).animNeedUpdate = True
-    If val(tkMainForm.xsize.text) < 0 Then tkMainForm.xsize.text = 0
+    If val(tkMainForm.xsize.Text) < 0 Then tkMainForm.xsize.Text = 0
     
     'Set the x-size of the animation
-    animationList(activeAnimationIndex).theData.animSizeX = val(tkMainForm.xsize.text)
+    animationList(activeAnimationIndex).theData.animSizeX = val(tkMainForm.xsize.Text)
     
     Call sizeform
     '(NEW for 3.0.4 by Woozy)
@@ -349,10 +349,10 @@ End Sub
 Public Sub ysize_Change()
     On Error GoTo ErrorHandler
     animationList(activeAnimationIndex).animNeedUpdate = True
-    If val(tkMainForm.ysize.text) < 0 Then tkMainForm.ysize.text = 0
+    If val(tkMainForm.ysize.Text) < 0 Then tkMainForm.ysize.Text = 0
     
     'Set the y-size of the animation
-    animationList(activeAnimationIndex).theData.animSizeY = val(tkMainForm.ysize.text)
+    animationList(activeAnimationIndex).theData.animSizeY = val(tkMainForm.ysize.Text)
     
     Call sizeform
     '(NEW for 3.0.4)
@@ -390,7 +390,7 @@ Public Sub soundeffect_Click()
     Dim dlg As FileDialogInfo
     Dim antiPath As String
     'Info of the Dialog Box we will open
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     dlg.strDefaultFolder = projectPath$ + mediapath$
     dlg.strTitle = "Select ISound"
     dlg.strDefaultExt = "wav"
@@ -404,7 +404,7 @@ Public Sub soundeffect_Click()
         'Needs to be updated
         animationList(activeAnimationIndex).animNeedUpdate = True
     
-        ChDir (currentdir$)
+        ChDir (currentDir$)
         'If filename is empty, exit sub
         If filename$(1) = "" Then Exit Sub
         'Copy the file to the media folder of the current project
@@ -412,7 +412,7 @@ Public Sub soundeffect_Click()
         'Set the current sound
         animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame) = antiPath
         'Put the filename in the textbox
-        tkMainForm.soundeffect.text = antiPath
+        tkMainForm.soundeffect.Text = antiPath
     End If
 End Sub
 '========================================================================
@@ -421,7 +421,7 @@ End Sub
 Public Sub Command7_Click()
     On Error GoTo ErrorHandler
     'Clear the textbox
-    tkMainForm.soundeffect.text = ""
+    tkMainForm.soundeffect.Text = ""
     'Clear the data
     animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame) = ""
 
@@ -451,8 +451,8 @@ End Sub
 Sub infofill()
     On Error GoTo ErrorHandler
     'Put the correct data in the animation size textboxes
-    tkMainForm.xsize.text = str$(animationList(activeAnimationIndex).theData.animSizeX)
-    tkMainForm.ysize.text = str$(animationList(activeAnimationIndex).theData.animSizeY)
+    tkMainForm.xsize.Text = str$(animationList(activeAnimationIndex).theData.animSizeX)
+    tkMainForm.ysize.Text = str$(animationList(activeAnimationIndex).theData.animSizeY)
     
     tkMainForm.xsize.Enabled = False
     tkMainForm.ysize.Enabled = False
@@ -501,7 +501,7 @@ End Sub
 '========================================================================
 ' When you click in the animation picturebox
 '========================================================================
-Private Sub arena_MouseDown(button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub arena_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     Dim antiPath As String, col As Long
     'If the user wants to set the transparent color
@@ -523,7 +523,7 @@ Private Sub arena_MouseDown(button As Integer, shift As Integer, x As Single, y 
     Else 'If the user didn't click on the "Select" button, he wants to set an image
         Dim dlg As FileDialogInfo
         'Info of the Dialog Box we will open
-        ChDir (currentdir$)
+        ChDir (currentDir$)
         dlg.strDefaultFolder = projectPath$ + bmppath$
         dlg.strTitle = "Select Image"
         dlg.strDefaultExt = "bmp"
@@ -537,7 +537,7 @@ Private Sub arena_MouseDown(button As Integer, shift As Integer, x As Single, y 
             'Needs to be updated
             animationList(activeAnimationIndex).animNeedUpdate = True
         
-            ChDir (currentdir$)
+            ChDir (currentDir$)
             'If the filename is empty, exit sub
             If filename$(1) = "" Then Exit Sub
             
@@ -632,7 +632,7 @@ Public Sub openFile(file$)
     'Set the animation file
     animationList(activeAnimationIndex).animFile$ = antiPath$
     'Set the caption
-    activeAnimation.caption = LoadStringLoc(811, "Animation Editor") + "  (" + antiPath$ + ")"
+    activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") + "  (" + antiPath$ + ")"
 End Sub
 '========================================================================
 ' Saves the file
@@ -650,7 +650,7 @@ Public Sub saveFile()
     'Save
     Call saveAnimation(projectPath$ + miscPath$ + animationList(activeAnimationIndex).animFile$, animationList(activeAnimationIndex).theData)
     'Update caption
-    activeAnimation.caption = LoadStringLoc(811, "Animation Editor") + " (" + animationList(activeAnimationIndex).animFile$ + ")"
+    activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") + " (" + animationList(activeAnimationIndex).animFile$ + ")"
 
     Exit Sub
 'Begin error handling code:
@@ -686,7 +686,7 @@ Private Sub saveasanimmnu_Click()
     Dim dlg As FileDialogInfo
     Dim antiPath As String, aa As Long, bb As Long
     'Info of the Dialog Box we will open
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     dlg.strDefaultFolder = projectPath$ + miscPath$
     dlg.strTitle = "Save Animation As"
     dlg.strDefaultExt = "anm"
@@ -697,7 +697,7 @@ Private Sub saveasanimmnu_Click()
         filename$(1) = dlg.strSelectedFile
         'Filename without path
         antiPath$ = dlg.strSelectedFileNoPath
-        ChDir (currentdir$)
+        ChDir (currentDir$)
         'No need to update
         animationList(activeAnimationIndex).animNeedUpdate = False
         'If the file is empty, exit sub
@@ -716,7 +716,7 @@ Private Sub saveasanimmnu_Click()
         'Set the animation nam
         animationList(activeAnimationIndex).animFile$ = antiPath$
         'Update the caption
-        activeAnimation.caption = LoadStringLoc(811, "Animation Editor") + " (" + antiPath$ + ")"
+        activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") + " (" + antiPath$ + ")"
         'Update the tree
         Call tkMainForm.fillTree("", projectPath$)
     End If
@@ -766,9 +766,9 @@ Private Sub DrawFrame(framenum As Variant)
     maxFrame = animGetMaxFrame(animationList(activeAnimationIndex).theData)
     'Update framecount caption, sound textbox and transparent picturebox
     '(EDIT for 3.0.4 by Woozy)
-    tkMainForm.framecount.caption = "Frame " + toString(animationList(activeAnimationIndex).theData.animCurrentFrame + 1) + " / " + toString(maxFrame + 1)
+    tkMainForm.framecount.Caption = "Frame " + toString(animationList(activeAnimationIndex).theData.animCurrentFrame + 1) + " / " + toString(maxFrame + 1)
     
-    tkMainForm.soundeffect.text = animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame)
+    tkMainForm.soundeffect.Text = animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame)
     Call vbPicFillRect(tkMainForm.transpcolor, 0, 0, 1000, 1000, animationList(activeAnimationIndex).theData.animTransp(animationList(activeAnimationIndex).theData.animCurrentFrame))
 End Sub
 '========================================================================
@@ -921,10 +921,10 @@ Private Sub Form_Resize()
     On Error Resume Next
     'Set a minimum width and height relative to the arena width and height
     If Me.height <= arena.height + 1000 Then Me.height = arena.height + 1000
-    If Me.width <= arena.width + 600 Then Me.width = arena.width + 600
+    If Me.Width <= arena.Width + 600 Then Me.Width = arena.Width + 600
         
     'The position
-    arena.Left = ((Me.width - arena.width) / 2) - 55
+    arena.Left = ((Me.Width - arena.Width) / 2) - 55
     arena.Top = (Me.height - arena.height) / 2 - 250
 End Sub
 '========================================================================
@@ -932,7 +932,7 @@ End Sub
 '========================================================================
 Private Sub Form_KeyPress(KeyAscii As Integer)
     On Error Resume Next
-    If UCase$(Chr$(KeyAscii)) = "L" Then
+    If UCase$(chr$(KeyAscii)) = "L" Then
         If lastTileset = "" Then
             Call arena_MouseDown(0, 0, 0, 0)
             Exit Sub
@@ -950,10 +950,10 @@ End Sub
 Private Sub sizeform()
     On Error GoTo ErrorHandler
     'Resize the arena
-    arena.width = Screen.TwipsPerPixelX * animationList(activeAnimationIndex).theData.animSizeX
+    arena.Width = Screen.TwipsPerPixelX * animationList(activeAnimationIndex).theData.animSizeX
     arena.height = Screen.TwipsPerPixelY * animationList(activeAnimationIndex).theData.animSizeY
     'Resize the form
-    Me.width = arena.width + 500
+    Me.Width = arena.Width + 500
     Me.height = arena.height + 500
     'Redraw the frame
     Call DrawFrame(animationList(activeAnimationIndex).theData.animCurrentFrame)

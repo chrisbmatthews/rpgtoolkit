@@ -11,7 +11,7 @@ Begin VB.Form editstatus
    MDIChild        =   -1  'True
    ScaleHeight     =   5550
    ScaleWidth      =   5715
-   Tag             =   "1473"
+   Tag             =   "9"
    Begin VB.Frame mainFrame 
       Height          =   5295
       Left            =   120
@@ -377,7 +377,7 @@ End Function
 
 Public Sub saveAsFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True Then
         Me.Show
         saveasmnu_Click
@@ -385,7 +385,7 @@ Public Sub saveAsFile()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -396,7 +396,7 @@ End Sub
 
 Public Sub checkSave()
     'check if the status effect has changed an it needs to be saved...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True Then
         aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current effect?"), vbYesNo)
         If aa = 6 Then
@@ -407,55 +407,55 @@ Public Sub checkSave()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Public Sub infofill()
     'fills in data
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If statusEffectList(activeStatusEffectIndex).statusFile$ <> "" Then
-        activeStatusEffect.caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
+        activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
     Else
-        activeStatusEffect.caption = LoadStringLoc(1473, "Status Effect Editor (Untitled)")
+        activeStatusEffect.Caption = LoadStringLoc(1473, "Status Effect Editor (Untitled)")
     End If
     statusnamebox = statusEffectList(activeStatusEffectIndex).theData.statusName$
-    roundsbox.text = str$(statusEffectList(activeStatusEffectIndex).theData.statusRounds)
+    roundsbox.Text = str$(statusEffectList(activeStatusEffectIndex).theData.statusRounds)
     speedupbox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusSpeed
     slowdownbox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusSlow
     disablebox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusDisable
     removehpbox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusHP
-    removehpamountbox.text = str$(statusEffectList(activeStatusEffectIndex).theData.nStatusHPAmount)
+    removehpamountbox.Text = str$(statusEffectList(activeStatusEffectIndex).theData.nStatusHPAmount)
     removesmpbox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusSMP
-    removesmpamountbox.text = str$(statusEffectList(activeStatusEffectIndex).theData.nStatusSMPAmount)
+    removesmpamountbox.Text = str$(statusEffectList(activeStatusEffectIndex).theData.nStatusSMPAmount)
     runrpgcodebox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusRPGCode
-    rpgcodebox.text = statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode$
+    rpgcodebox.Text = statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Sub newfile()
     'clears data for a new file
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     Call StatusClear(statusEffectList(activeStatusEffectIndex).theData)
     statusEffectList(activeStatusEffectIndex).statusFile$ = ""
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Public Sub saveFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'If statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True Then
         filename$(2) = statusEffectList(activeStatusEffectIndex).statusFile$
         boardNeedUpdate = False
@@ -466,13 +466,13 @@ Public Sub saveFile()
             Exit Sub
         End If
         Call saveStatus(projectPath$ + statuspath$ + statusEffectList(activeStatusEffectIndex).statusFile$, statusEffectList(activeStatusEffectIndex).theData)
-        activeStatusEffect.caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
+        activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
         statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     'End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -486,37 +486,37 @@ Public Sub openFile(filename$)
     Call openStatus(filename$, statusEffectList(activeStatusEffectIndex).theData)
     antiPath$ = absNoPath(filename$)
     statusEffectList(activeStatusEffectIndex).statusFile$ = antiPath$
-    activeStatusEffect.caption = LoadStringLoc(809, "Status Effect Editor") + "  (" + antiPath$ + ")"
+    activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + "  (" + antiPath$ + ")"
     Call infofill
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
 End Sub
 
 
 Private Sub closemnu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload editstatus
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
-    roundsbox.text = "0"
+    On Error GoTo ErrorHandler
+    roundsbox.Text = "0"
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + prgpath$
     
@@ -531,33 +531,33 @@ Private Sub Command14_Click()
         Exit Sub
     End If
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    rpgcodebox.text = antiPath$
+    rpgcodebox.Text = antiPath$
     statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode$ = antiPath$
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
-    roundsbox.text = "0"
+    On Error GoTo ErrorHandler
+    roundsbox.Text = "0"
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub disablebox_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     statusEffectList(activeStatusEffectIndex).theData.nStatusDisable = disablebox.value
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -584,7 +584,7 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Set activeStatusEffect = Me
@@ -596,7 +596,7 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -616,64 +616,64 @@ Private Sub removehpamountbox_Change()
 '    Global nStatusSMPAmount As Integer   'amount of smp
 'Global bStatusRPGCode As Boolean 'run rpgcode y/n
 '    Global sStatusRPGCode$      'rpgcode program to run
-    On Error GoTo errorhandler
-    statusEffectList(activeStatusEffectIndex).theData.nStatusHPAmount = val(removehpamountbox.text)
+    On Error GoTo ErrorHandler
+    statusEffectList(activeStatusEffectIndex).theData.nStatusHPAmount = val(removehpamountbox.Text)
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub removehpbox_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     statusEffectList(activeStatusEffectIndex).theData.nStatusHP = removehpbox.value
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub removesmpamountbox_Change()
-    On Error GoTo errorhandler
-    statusEffectList(activeStatusEffectIndex).theData.nStatusSMPAmount = val(removesmpamountbox.text)
+    On Error GoTo ErrorHandler
+    statusEffectList(activeStatusEffectIndex).theData.nStatusSMPAmount = val(removesmpamountbox.Text)
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub removesmpbox_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     statusEffectList(activeStatusEffectIndex).theData.nStatusSMP = removesmpbox.value
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub roundsbox_Change()
-    On Error GoTo errorhandler
-    rd = val(roundsbox.text)
+    On Error GoTo ErrorHandler
+    rd = val(roundsbox.Text)
     If rd < 0 Then rd = 0
     statusEffectList(activeStatusEffectIndex).theData.statusRounds = rd
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -681,17 +681,17 @@ End Sub
 'FIXIT: rpgcodebox_Change event has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
 Private Sub rpgcodebox_Change()
     On Error Resume Next
-    statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode$ = rpgcodebox.text
+    statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode$ = rpgcodebox.Text
 End Sub
 
 Private Sub runrpgcodebox_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     statusEffectList(activeStatusEffectIndex).theData.nStatusRPGCode = runrpgcodebox.value
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -699,7 +699,7 @@ End Sub
 
 Private Sub saveasmnu_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + statuspath$
     
@@ -713,7 +713,7 @@ Private Sub saveasmnu_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     
     If filename$(1) = "" Then Exit Sub
@@ -725,12 +725,12 @@ Private Sub saveasmnu_Click()
     
     Call saveStatus(filename$(1), statusEffectList(activeStatusEffectIndex).theData)
     statusEffectList(activeStatusEffectIndex).statusFile$ = antiPath$
-    activeStatusEffect.caption = LoadStringLoc(809, "Status Effect Editor") + " (" + antiPath$ + ")"
+    activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + antiPath$ + ")"
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 Private Sub savemnu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     filename$(2) = statusEffectList(activeStatusEffectIndex).statusFile$
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     If filename$(2) = "" Then
@@ -738,47 +738,47 @@ Private Sub savemnu_Click()
         Exit Sub
     End If
     Call saveStatus(projectPath$ + statuspath$ + statusEffectList(activeStatusEffectIndex).statusFile$, statusEffectList(activeStatusEffectIndex).theData)
-    activeStatusEffect.caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
+    activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub slowdownbox_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     statusEffectList(activeStatusEffectIndex).theData.nStatusSlow = slowdownbox.value
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub speedupbox_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     statusEffectList(activeStatusEffectIndex).theData.nStatusSpeed = speedupbox.value
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub statusnamebox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-    statusEffectList(activeStatusEffectIndex).theData.statusName$ = statusnamebox.text
+    statusEffectList(activeStatusEffectIndex).theData.statusName$ = statusnamebox.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

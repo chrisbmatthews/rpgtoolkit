@@ -3,6 +3,19 @@ Attribute VB_Name = "Global"
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
+'=======================================================
+'Cleaned up a bit, 3.0.4 by KSNiloc
+'
+' ---What is done
+' + Removed variants
+' + Added Option Explicit
+' + Removed unused variables
+'
+' ---What needs to be done
+' + Examine usage of variables to nominalize boxing
+'
+'=======================================================
+
 Option Explicit
 
 Public currentDir As String          'Current directory
@@ -72,6 +85,6 @@ Public animationMem As TKAnimation   'animation file
 Public activeAnimationIndex As Long
 Public activeTileAnmIndex As Long
 
-'file manipulation
-Public OpenFile() As String
-Public OpenFullFile() As String
+'File manipulation
+Public openFile() As String
+Public openFullFile() As String

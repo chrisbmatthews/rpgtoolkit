@@ -22,7 +22,7 @@ Begin VB.Form boardedit
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5715
    ScaleWidth      =   9615
-   Tag             =   "1264"
+   Tag             =   "2"
    Begin VB.HScrollBar HScroll1 
       Height          =   255
       Left            =   120
@@ -632,10 +632,10 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     boardList(activeBoardIndex).selectedTile$ = file
     
     ' open tileset
-    Call openwintile(projectPath$ + tilepath$ + file)
+    Call openWinTile(projectPath$ + tilepath$ + file)
     
     ' if tileset detail inappropiate, increase detail
-    If detail = 2 Or detail = 4 Or detail = 6 Then Call increasedetail
+    If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
     
     ' clear isometric tile picture box
     Call vbPicCls(tkMainForm.currenttileIso)
@@ -1171,13 +1171,13 @@ End Sub
 '========================================================================
 Public Sub ChangeTileType(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     
-    Dim tType As Long, colorCode As Long, levelnum As Long, aPoint As Long, xx As Long, yy As Long
+    Dim ttype As Long, colorCode As Long, levelnum As Long, aPoint As Long, xx As Long, yy As Long
     
     ' get tile type number from click x co-ord
-    tType = Int(x / 18)
+    ttype = Int(x / 18)
     
     ' update board tile type
-    boardList(activeBoardIndex).currentTileType = tType
+    boardList(activeBoardIndex).currentTileType = ttype
     
     ' if tile type if five, then set to 11
     If boardList(activeBoardIndex).currentTileType >= 5 Then boardList(activeBoardIndex).currentTileType = boardList(activeBoardIndex).currentTileType + 6
@@ -1580,7 +1580,7 @@ Public Sub boardSelectTile(): On Error Resume Next
     Next x
     
     ' change directory
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     ' initialise file dialog
     Dim dlg As FileDialogInfo
@@ -1606,7 +1606,7 @@ Public Sub boardSelectTile(): On Error Resume Next
     End If
     
     ' change directory
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     ' if no file selected
     If filename$(1) = "" Then Exit Sub
@@ -1635,10 +1635,10 @@ Public Sub boardSelectTile(): On Error Resume Next
         boardList(activeBoardIndex).selectedTile$ = setFilename$
         
         ' open tileset
-        Call openwintile(projectPath$ + tilepath$ + setFilename$)
+        Call openWinTile(projectPath$ + tilepath$ + setFilename$)
         
         ' if tileset detail inappropiate, increase detail
-        If detail = 2 Or detail = 4 Or detail = 6 Then Call increasedetail
+        If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
         
         ' call draw isomtric tile routine
         'Added: different argument for .iso
@@ -1697,10 +1697,10 @@ Public Sub boardSelectTile(): On Error Resume Next
             Call openTileAnm(filename$(1), selectedAnm)
             
             ' open tileset
-            Call openwintile(projectPath$ + tilepath$ + TileAnmGet(selectedAnm, 0))
+            Call openWinTile(projectPath$ + tilepath$ + TileAnmGet(selectedAnm, 0))
             
             ' if tileset detail inappropiate, increase detail
-            If detail = 2 Or detail = 4 Or detail = 6 Then Call increasedetail
+            If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
             
             ' call draw isomtric tile routine
             Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
@@ -1746,10 +1746,10 @@ Public Sub boardSelectTile(): On Error Resume Next
             boardList(activeBoardIndex).selectedTile$ = antiPath$
             
             ' open tileset
-            Call openwintile(filename$(1))
+            Call openWinTile(filename$(1))
             
             ' if tileset detail inappropiate, increase detail
-            If detail = 2 Or detail = 4 Or detail = 6 Then Call increasedetail
+            If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
             
             ' call draw isomtric tile routine
             Call tileDrawIso(tkMainForm.currenttileIso, 0, 0, 3)
@@ -2216,8 +2216,8 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, x As Single
                             xyx = Cos(radian)
                             yxy = Sin(radian)
                             
-                            xyx = roundoff(xyx * radius)
-                            yxy = roundoff(yxy * radius)
+                            xyx = roundOff(xyx * radius)
+                            yxy = roundOff(yxy * radius)
                             
                             Dim lx As Double, ly As Double
                             
@@ -3125,7 +3125,7 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
                     boardList(activeBoardIndex).theData.isIsometric)
     
     ' chane directory
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     ' restore tile
     For x = 1 To 32
@@ -3145,7 +3145,7 @@ End Sub
 Private Sub savebrdasmnu_click(): On Error Resume Next
 
     ' change directory
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     ' initialise file dialog
     Dim dlg As FileDialogInfo
@@ -3166,13 +3166,13 @@ Private Sub savebrdasmnu_click(): On Error Resume Next
     End If
     
     ' change direcoty
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     ' if no filename entered
     If filename$(1) = "" Then Exit Sub
     
     ' see if file exists
-    aa = FileExist(filename$(1))
+    aa = fileExist(filename$(1))
     
     ' confirm user wants to overwrite file
     If aa = 1 Then

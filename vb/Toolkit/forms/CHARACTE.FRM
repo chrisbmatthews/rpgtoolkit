@@ -23,7 +23,7 @@ Begin VB.Form characteredit
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5295
    ScaleWidth      =   7995
-   Tag             =   "1296"
+   Tag             =   "3"
    Begin VB.Frame mainFrame 
       Height          =   4935
       Left            =   120
@@ -1293,7 +1293,7 @@ End Function
 
 Public Sub saveAsFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If playerList(activePlayerIndex).charNeedUpdate = True Then
         Me.Show
         scharasmnu_Click
@@ -1301,7 +1301,7 @@ Public Sub saveAsFile()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1310,7 +1310,7 @@ End Sub
 
 Public Sub checkSave()
     'check if the file has changed an it needs to be saved...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If playerList(activePlayerIndex).charNeedUpdate = True Then
         aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo, LoadStringLoc(950, "Save file"))
         If aa = 6 Then
@@ -1321,14 +1321,14 @@ Public Sub checkSave()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Public Sub saveFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'If playerList(activePlayerIndex).charNeedUpdate = True Then
         filename$(2) = playerList(activePlayerIndex).charFile$
         playerList(activePlayerIndex).charNeedUpdate = False
@@ -1343,7 +1343,7 @@ Public Sub saveFile()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1357,7 +1357,7 @@ Public Sub openFile(file$)
     FileCopy filename$(1), projectPath$ + tempath$ + antiPath$
     Call clearchar
     Call openchar(filename$(1), playerList(activePlayerIndex).theData)
-    activePlayer.caption = LoadStringLoc(804, "Character Editor") + "  (" + antiPath$ + ")"
+    activePlayer.Caption = LoadStringLoc(804, "Character Editor") + "  (" + antiPath$ + ")"
     playerList(activePlayerIndex).charFile$ = antiPath$
     namedefault.value = False
     maxhealthdefault.value = False
@@ -1376,20 +1376,20 @@ End Sub
 
 
 Private Sub clearchar()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     filename$(2) = ""
     Call PlayerClear(playerList(activePlayerIndex).theData)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub clsemnu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload editcharsm
     'Unload chargfx
     Unload charequip
@@ -1398,14 +1398,14 @@ Private Sub clsemnu_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command1_Click()
 On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + bmppath$
     dlg.strTitle = "Open Profile"
@@ -1419,7 +1419,7 @@ On Error Resume Next
     End If
     playerList(activePlayerIndex).charNeedUpdate = True
     Call vbPicFillRect(profile, 0, 0, 1000, 1000, vbQBColor(15))
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + bmppath$ + antiPath$
     
@@ -1429,19 +1429,19 @@ On Error Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
     editcharsm.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
     'If charSizeType = 0 Then
     '    chargfx.Show
@@ -1452,31 +1452,31 @@ Private Sub Command3_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
     charequip.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command5_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
     charlevels.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1484,34 +1484,34 @@ End Sub
 Private Sub Command6_Click()
     advancedOn = Not (advancedOn)
     If advancedOn Then
-        Command6.caption = LoadStringLoc(911, "Advanced <<")
-        activePlayer.width = 9600
+        Command6.Caption = LoadStringLoc(911, "Advanced <<")
+        activePlayer.Width = 9600
     Else
-        Command6.caption = LoadStringLoc(912, "Advanced >>")
-        activePlayer.width = 4440
+        Command6.Caption = LoadStringLoc(912, "Advanced >>")
+        activePlayer.Width = 4440
     End If
 End Sub
 
 Private Sub defencestart_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initDefense = val(defencestart.text)
+    playerList(activePlayerIndex).theData.initDefense = val(defencestart.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub defensebox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.defenseVar$ = defensebox.text
+    playerList(activePlayerIndex).theData.defenseVar$ = defensebox.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1544,8 +1544,8 @@ ReDim supertile(64, 64)
         
         
         'Open new tile
-        Call openwintile(file$)
-        If detail = 2 Then Call increasedetail
+        Call openWinTile(file$)
+        If detail = 2 Then Call increaseDetail
         'Resize to 64x64
         xx = 1: yy = 1
         For x = 1 To 32
@@ -1593,44 +1593,44 @@ ReDim supertile(64, 64)
 End Sub
 
 Private Sub expbox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.experienceVar$ = expbox.text
+    playerList(activePlayerIndex).theData.experienceVar$ = expbox.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub fightbox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.fightVar$ = fightbox.text
+    playerList(activePlayerIndex).theData.fightVar$ = fightbox.Text
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub fightstart_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initFight = val(fightstart.text)
+    playerList(activePlayerIndex).theData.initFight = val(fightstart.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Activate()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Set activePlayer = Me
     Set activeForm = Me
@@ -1656,13 +1656,13 @@ Private Sub Form_Activate()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     Call LocalizeTabStrip(TabStrip1)
     
@@ -1673,7 +1673,7 @@ Private Sub Form_Load()
        
     y = Screen.height
     x = Screen.height * (1 / 0.75)
-    mainX = activePlayer.width
+    mainX = activePlayer.Width
     mainY = activePlayer.height
     dx = (x - mainX) / 2
     dy = (y - mainY) / 2
@@ -1687,7 +1687,7 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1704,39 +1704,39 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub healthbox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.healthVar$ = healthbox.text
+    playerList(activePlayerIndex).theData.healthVar$ = healthbox.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub infofill()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call drawprofile(projectPath$ + bmppath$ + playerList(activePlayerIndex).theData.profilePic$)
-    If playerList(activePlayerIndex).theData.charname$ <> "" Then namebox.text = playerList(activePlayerIndex).theData.charname$ Else namebox.text = "Undefined"
-    If playerList(activePlayerIndex).theData.experienceVar$ <> "" Then expbox.text = playerList(activePlayerIndex).theData.experienceVar$ Else expbox.text = "Undefined$"
-    If playerList(activePlayerIndex).theData.healthVar$ <> "" Then healthbox.text = playerList(activePlayerIndex).theData.healthVar$ Else healthbox.text = "Undefined!"
-    If playerList(activePlayerIndex).theData.defenseVar$ <> "" Then defensebox.text = playerList(activePlayerIndex).theData.defenseVar$ Else defensebox.text = "Undefined!"
-    If playerList(activePlayerIndex).theData.fightVar$ <> "" Then fightbox.text = playerList(activePlayerIndex).theData.fightVar$ Else fightbox.text = "Undefined!"
-    If playerList(activePlayerIndex).theData.nameVar$ <> "" Then namevarbox.text = playerList(activePlayerIndex).theData.nameVar$ Else namevarbox.text = "Undefined!"
-    If playerList(activePlayerIndex).theData.maxHealthVar$ <> "" Then maxhealthbox = playerList(activePlayerIndex).theData.maxHealthVar$ Else maxhealthbox.text = "Undefined!"
-    If playerList(activePlayerIndex).theData.smVar$ <> "" Then smpowervar = playerList(activePlayerIndex).theData.smVar$ Else smpowervar.text = "Undefined!"
-    If playerList(activePlayerIndex).theData.smMaxVar$ <> "" Then maxsmvar.text = playerList(activePlayerIndex).theData.smMaxVar$ Else maxsmvar.text = "Undefined!"
-    If playerList(activePlayerIndex).theData.leVar$ <> "" Then levelvar.text = playerList(activePlayerIndex).theData.leVar$ Else levelvar.text = "Undefined!"
+    If playerList(activePlayerIndex).theData.charname$ <> "" Then namebox.Text = playerList(activePlayerIndex).theData.charname$ Else namebox.Text = "Undefined"
+    If playerList(activePlayerIndex).theData.experienceVar$ <> "" Then expbox.Text = playerList(activePlayerIndex).theData.experienceVar$ Else expbox.Text = "Undefined$"
+    If playerList(activePlayerIndex).theData.healthVar$ <> "" Then healthbox.Text = playerList(activePlayerIndex).theData.healthVar$ Else healthbox.Text = "Undefined!"
+    If playerList(activePlayerIndex).theData.defenseVar$ <> "" Then defensebox.Text = playerList(activePlayerIndex).theData.defenseVar$ Else defensebox.Text = "Undefined!"
+    If playerList(activePlayerIndex).theData.fightVar$ <> "" Then fightbox.Text = playerList(activePlayerIndex).theData.fightVar$ Else fightbox.Text = "Undefined!"
+    If playerList(activePlayerIndex).theData.nameVar$ <> "" Then namevarbox.Text = playerList(activePlayerIndex).theData.nameVar$ Else namevarbox.Text = "Undefined!"
+    If playerList(activePlayerIndex).theData.maxHealthVar$ <> "" Then maxhealthbox = playerList(activePlayerIndex).theData.maxHealthVar$ Else maxhealthbox.Text = "Undefined!"
+    If playerList(activePlayerIndex).theData.smVar$ <> "" Then smpowervar = playerList(activePlayerIndex).theData.smVar$ Else smpowervar.Text = "Undefined!"
+    If playerList(activePlayerIndex).theData.smMaxVar$ <> "" Then maxsmvar.Text = playerList(activePlayerIndex).theData.smMaxVar$ Else maxsmvar.Text = "Undefined!"
+    If playerList(activePlayerIndex).theData.leVar$ <> "" Then levelvar.Text = playerList(activePlayerIndex).theData.leVar$ Else levelvar.Text = "Undefined!"
 
-    startexp.text = playerList(activePlayerIndex).theData.initExperience
-    starthealth.text = playerList(activePlayerIndex).theData.initHealth
-    maxhealthstart.text = playerList(activePlayerIndex).theData.initMaxHealth
-    defencestart.text = playerList(activePlayerIndex).theData.initDefense
-    fightstart.text = playerList(activePlayerIndex).theData.initFight
-    sminit.text = playerList(activePlayerIndex).theData.initSm
-    smmaxinit.text = playerList(activePlayerIndex).theData.initSmMax
-    initlevel1.text = playerList(activePlayerIndex).theData.initLevel
+    startexp.Text = playerList(activePlayerIndex).theData.initExperience
+    starthealth.Text = playerList(activePlayerIndex).theData.initHealth
+    maxhealthstart.Text = playerList(activePlayerIndex).theData.initMaxHealth
+    defencestart.Text = playerList(activePlayerIndex).theData.initDefense
+    fightstart.Text = playerList(activePlayerIndex).theData.initFight
+    sminit.Text = playerList(activePlayerIndex).theData.initSm
+    smmaxinit.Text = playerList(activePlayerIndex).theData.initSmMax
+    initlevel1.Text = playerList(activePlayerIndex).theData.initLevel
     If playerList(activePlayerIndex).theData.charSizeType = 0 Then
         Option1.value = True
     Else
@@ -1747,113 +1747,113 @@ Private Sub infofill()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub initlevel1_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initLevel = val(initlevel1.text)
+    playerList(activePlayerIndex).theData.initLevel = val(initlevel1.Text)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub initsmmax_Change()
-    On Error GoTo errorhandler
-    playerList(activePlayerIndex).theData.initSmMax = val(smmaxinit.text)
+    On Error GoTo ErrorHandler
+    playerList(activePlayerIndex).theData.initSmMax = val(smmaxinit.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub levelvar_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.leVar$ = levelvar.text
+    playerList(activePlayerIndex).theData.leVar$ = levelvar.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub maxhealthbox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.maxHealthVar$ = maxhealthbox.text
+    playerList(activePlayerIndex).theData.maxHealthVar$ = maxhealthbox.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub maxhealthstart_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initMaxHealth = val(maxhealthstart.text)
+    playerList(activePlayerIndex).theData.initMaxHealth = val(maxhealthstart.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub maxsmvar_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.smMaxVar$ = maxsmvar.text
+    playerList(activePlayerIndex).theData.smMaxVar$ = maxsmvar.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub namebox_Change()
-    On Error GoTo errorhandler
-    playerList(activePlayerIndex).theData.charname$ = namebox.text
-    temp$ = AddUnderscore(playerList(activePlayerIndex).theData.charname$)
-    If namedefault.value = 1 Then namevarbox.text = temp$ + "[name]$"
-    If maxhealthdefault.value = 1 Then maxhealthbox.text = temp$ + "[maxhealth]!"
-    If expdefault.value = 1 Then expbox.text = temp$ + "[experience]!"
-    If healthdefault.value = 1 Then healthbox.text = temp$ + "[health]!"
-    If defencedefault.value = 1 Then defensebox.text = temp$ + "[defence]!"
-    If fightdefault.value = 1 Then fightbox.text = temp$ + "[fight]!"
-    If smdefault.value = 1 Then smpowervar.text = temp$ + "[smpower]!"
-    If maxsmdefault.value = 1 Then maxsmvar.text = temp$ + "[maxsm]!"
-    If leveldefault.value = 1 Then levelvar.text = temp$ + "[level]!"
+    On Error GoTo ErrorHandler
+    playerList(activePlayerIndex).theData.charname$ = namebox.Text
+    Temp$ = addUnderscore(playerList(activePlayerIndex).theData.charname$)
+    If namedefault.value = 1 Then namevarbox.Text = Temp$ + "[name]$"
+    If maxhealthdefault.value = 1 Then maxhealthbox.Text = Temp$ + "[maxhealth]!"
+    If expdefault.value = 1 Then expbox.Text = Temp$ + "[experience]!"
+    If healthdefault.value = 1 Then healthbox.Text = Temp$ + "[health]!"
+    If defencedefault.value = 1 Then defensebox.Text = Temp$ + "[defence]!"
+    If fightdefault.value = 1 Then fightbox.Text = Temp$ + "[fight]!"
+    If smdefault.value = 1 Then smpowervar.Text = Temp$ + "[smpower]!"
+    If maxsmdefault.value = 1 Then maxsmvar.Text = Temp$ + "[maxsm]!"
+    If leveldefault.value = 1 Then levelvar.Text = Temp$ + "[level]!"
     playerList(activePlayerIndex).charNeedUpdate = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub namevarbox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.nameVar$ = namevarbox.text
+    playerList(activePlayerIndex).theData.nameVar$ = namevarbox.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1863,7 +1863,7 @@ Private Sub profile_Click()
 End Sub
 
 Private Sub savecharmenu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     filename$(2) = playerList(activePlayerIndex).charFile$
     If filename$(2) = "" Then Call scharasmnu_Click: Exit Sub
     Call savechar(projectPath$ + tempath$ + filename$(2), playerList(activePlayerIndex).theData)
@@ -1871,14 +1871,14 @@ Private Sub savecharmenu_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub scharasmnu_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + tempath$
     dlg.strTitle = "Save Character As (Archives cannot be used with characters!)"
@@ -1890,7 +1890,7 @@ Private Sub scharasmnu_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
     aa = fileExist(filename$(1))
@@ -1901,68 +1901,68 @@ Private Sub scharasmnu_Click()
     
     Call savechar(filename$(1), playerList(activePlayerIndex).theData)
     playerList(activePlayerIndex).charFile$ = antiPath$
-    activePlayer.caption = LoadStringLoc(804, "Character Editor") + " (" + antiPath$ + ")"
+    activePlayer.Caption = LoadStringLoc(804, "Character Editor") + " (" + antiPath$ + ")"
     playerList(activePlayerIndex).charNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 Private Sub sminit_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initSm = val(sminit.text)
+    playerList(activePlayerIndex).theData.initSm = val(sminit.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub smmaxinit_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initSmMax = val(smmaxinit.text)
+    playerList(activePlayerIndex).theData.initSmMax = val(smmaxinit.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub smpowervar_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.smVar$ = smpowervar.text
+    playerList(activePlayerIndex).theData.smVar$ = smpowervar.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub startexp_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initExperience = val(startexp.text)
+    playerList(activePlayerIndex).theData.initExperience = val(startexp.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub starthealth_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     playerList(activePlayerIndex).charNeedUpdate = True
-    playerList(activePlayerIndex).theData.initHealth = val(starthealth.text)
+    playerList(activePlayerIndex).theData.initHealth = val(starthealth.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1982,12 +1982,12 @@ Private Sub TabStrip1_Click()
 End Sub
 
 Private Sub toc_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

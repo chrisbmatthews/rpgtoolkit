@@ -1391,7 +1391,7 @@ Public Sub CreateItemRPG( _
     lit = projectPath & itmPath & lit
 
     'Load the item
-    openitem lit, itemMem(theOne)
+    itemMem(theOne) = openItem(lit)
 
 End Sub
 
@@ -3118,7 +3118,7 @@ Sub GiveItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'file$ = FindFile(file$)
         'file$ = PakLocate(file$)
         'Dim anItem As TKItem
-        'Call openitem(file$, anItem)
+        'Call openItem(file$, anItem)
         'nameItm$ = anItem.itemName
         'itemListAr$(theOne) = nameItm$
     End If
@@ -3523,18 +3523,18 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         With theProgram
         
             'Make the program large enough for the code we're adding...
-            ReDim Preserve .program(UBound(.program) + 2 + tempPRG.length)
+            ReDim Preserve .program(UBound(.program) + 2 + tempPRG.Length)
             
             'Don't let any loose code in the .prg file be run...
-            .program(.length + 1) = "End()"
+            .program(.Length + 1) = "End()"
             
             'Add each line from the included file to the main file...
             For count = 0 To UBound(tempPRG.program)
-                .program(.length + 2 + count) = tempPRG.program(count)
+                .program(.Length + 2 + count) = tempPRG.program(count)
             Next count
             
             'Update the length of the program...
-            .length = .length + 2 + UBound(tempPRG.program)
+            .Length = .Length + 2 + UBound(tempPRG.program)
             
         End With
         
@@ -4482,33 +4482,33 @@ Function MWinPrepare(Text$) As String
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = Text$
     
-    Dim length As Long
+    Dim Length As Long
     Dim total As String
     Dim t As Long
     
     Dim varName As String
     Dim v As Long
     
-    length = Len(use$)
+    Length = Len(use$)
     total$ = ""
     Dim part As String
-    For t = 1 To length
+    For t = 1 To Length
         part$ = Mid$(use$, t, 1)
         If part$ = "<" Then
             varName$ = ""
-            For v = t + 1 To length
+            For v = t + 1 To Length
                 part$ = Mid$(use$, v, 1)
                 If part$ = "<" Then
                     total$ = total$ + "<"
                     t = v
-                    v = length
+                    v = Length
                 Else
                     If part$ = ">" Then
                         a = GetIndependentVariable(varName$, lit$, num)
                         If a = 0 Then lit$ = str$(num)
                         total$ = total$ + lit$
                         t = v
-                        v = length
+                        v = Length
                     Else
                         varName$ = varName$ + part$
                     End If
@@ -8935,7 +8935,7 @@ Sub Branch(Text$, ByRef theProgram As RPGCodeProgram)
     'Now to find where this is at:
     Dim foundIt As Long, t As Long, test As String
     foundIt = -1
-    For t = 0 To theProgram.length
+    For t = 0 To theProgram.Length
         test$ = theProgram.program$(t)
         If UCase$(test$) = UCase$(useIt$) Then
             foundIt = t
@@ -9147,8 +9147,8 @@ Sub CharAtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     If redc = 0 Or greenc = 1 Then
         Call debugger("Error: CharAt data type must be lit, num, lit!-- " + Text$)
     Else
-        Dim length As Long, cH As String
-        length = Len(lit1$)
+        Dim Length As Long, cH As String
+        Length = Len(lit1$)
         'num2 = inbounds(num2, 1, length)
         cH$ = Mid$(lit1$, num2, 1)
         If number = 3 Then
@@ -10694,7 +10694,7 @@ Sub OpenFileInputRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
  Dim file As Integer
  file = DoOpenFile(Text$, theProgram)
- If Not file = 0 Then Open OpenFullFile(file) For Input As #file
+ If Not file = 0 Then Open openFullFile(file) For Input As #file
 End Sub
 
 Sub OpenFileOutputRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -10704,7 +10704,7 @@ Sub OpenFileOutputRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
  Dim file As Integer
  file = DoOpenFile(Text$, theProgram)
- If Not file = 0 Then Open OpenFullFile(file) For Output As #file
+ If Not file = 0 Then Open openFullFile(file) For Output As #file
 End Sub
 
 Sub OpenFileAppendRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -10714,7 +10714,7 @@ Sub OpenFileAppendRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
  Dim file As Integer
  file = DoOpenFile(Text$, theProgram)
- If Not file = 0 Then Open OpenFullFile(file) For Append As #file
+ If Not file = 0 Then Open openFullFile(file) For Append As #file
 End Sub
 
 Sub OpenFileBinaryRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -10724,7 +10724,7 @@ Sub OpenFileBinaryRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
  Dim file As Integer
  file = DoOpenFile(Text$, theProgram)
- If Not file = 0 Then Open OpenFullFile(file) For Binary As #file
+ If Not file = 0 Then Open openFullFile(file) For Binary As #file
 End Sub
 
 Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
@@ -10798,9 +10798,9 @@ Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
 
  ' ! ADDED BY KSNiloc...
  On Error GoTo dimOpenFile
- If ff > UBound(OpenFile) Then
-    ReDim Preserve OpenFile(ff)
-    ReDim Preserve OpenFullFile(ff)
+ If ff > UBound(openFile) Then
+    ReDim Preserve openFile(ff)
+    ReDim Preserve openFullFile(ff)
  End If
  On Error GoTo error
 
@@ -10812,8 +10812,8 @@ Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
     End If
  End If
 
- OpenFile(ff) = file 'record the filename
- OpenFullFile(ff) = App.path & "\" & fullfolder & file
+ openFile(ff) = file 'record the filename
+ openFullFile(ff) = App.path & "\" & fullfolder & file
 
  Open App.path & "\" & fullfolder & file For Append As #ff: Close #ff
  DoOpenFile = ff
@@ -10825,8 +10825,8 @@ error:
  
 ' ! ADDED BY KSNiloc...
 dimOpenFile:
-    ReDim OpenFile(0)
-    ReDim OpenFullFile(0)
+    ReDim openFile(0)
+    ReDim openFullFile(0)
     Resume
 End Function
 
@@ -10856,12 +10856,12 @@ Sub CloseFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
   debugger "CloseFile needs a literal data element-- " & Text$
   Exit Sub
  End If
- For a = 1 To UBound(OpenFile)
-  If OpenFile(a) = file Then
-   OpenFile(a) = ""
+ For a = 1 To UBound(openFile)
+  If openFile(a) = file Then
+   openFile(a) = ""
    Exit For
   End If
-  If a = UBound(OpenFile) Then debugger "File is not open-- " & file: Exit Sub
+  If a = UBound(openFile) Then debugger "File is not open-- " & file: Exit Sub
  Next a
 
  ' ! FIX BY KSNiloc...
@@ -10903,8 +10903,8 @@ Public Sub FileInputRPG( _
     Dim a As Long
     Dim fileNum As Long
     fileNum = -1
-    For a = 1 To UBound(OpenFile)
-        If LCase(paras(0).lit) = LCase(OpenFile(a)) Then
+    For a = 1 To UBound(openFile)
+        If LCase(paras(0).lit) = LCase(openFile(a)) Then
             fileNum = a
             Exit For
         End If
@@ -10953,8 +10953,8 @@ Public Sub FilePrintRPG( _
     Dim a As Long
     Dim fileNum As Long
     fileNum = -1
-    For a = 1 To UBound(OpenFile)
-        If LCase(paras(0).lit) = LCase(OpenFile(a)) Then
+    For a = 1 To UBound(openFile)
+        If LCase(paras(0).lit) = LCase(openFile(a)) Then
             fileNum = a
             Exit For
         End If
@@ -11003,8 +11003,8 @@ Public Sub FileGetRPG( _
     Dim a As Long
     Dim fileNum As Long
     fileNum = -1
-    For a = 1 To UBound(OpenFile)
-        If LCase(paras(0).lit) = LCase(OpenFile(a)) Then
+    For a = 1 To UBound(openFile)
+        If LCase(paras(0).lit) = LCase(openFile(a)) Then
             fileNum = a
             Exit For
         End If
@@ -11055,8 +11055,8 @@ Public Sub FilePutRPG( _
     Dim a As Long
     Dim fileNum As Long
     fileNum = -1
-    For a = 1 To UBound(OpenFile)
-        If LCase(paras(0).lit) = LCase(OpenFile(a)) Then
+    For a = 1 To UBound(openFile)
+        If LCase(paras(0).lit) = LCase(openFile(a)) Then
             fileNum = a
             Exit For
         End If
@@ -11103,9 +11103,9 @@ Sub FileEOFRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
   debugger "FileEOF element must be literal-- " & Text$
   Exit Sub
  End If
- For a = 1 To UBound(OpenFile)
-  If OpenFile(a) = file Then Exit For
-  If a = UBound(OpenFile) Then debugger "File is not open-- " & file: Exit Sub
+ For a = 1 To UBound(openFile)
+  If openFile(a) = file Then Exit For
+  If a = UBound(openFile) Then debugger "File is not open-- " & file: Exit Sub
  Next a
 
  With retval
@@ -11200,7 +11200,7 @@ BracketType = GetValue(BracketElement, itemFile, Temp, theProgram)
     If BracketType = DT_NUM Then Call debugger("Error: GetItemDesc element is literal-- " & Text)
 
 'Open item and get desc.
-Call openitem(App.path & "\" & projectPath$ & itmPath$ & itemFile, ItemData)
+ItemData = openItem(App.path & "\" & projectPath$ & itmPath$ & itemFile)
 
 'Return data
 retval.dataType = DT_LIT
@@ -11285,7 +11285,7 @@ BracketType = GetValue(BracketElement, itemFile, Temp, theProgram)
     End If
     
 'Open item and get the cost.
-Call openitem(App.path & "\" & projectPath$ & itmPath$ & itemFile, ItemData)
+ItemData = openItem(App.path & "\" & projectPath$ & itmPath$ & itemFile)
 
 'Return data
 retval.dataType = DT_NUM
@@ -11321,7 +11321,7 @@ BracketType = GetValue(BracketElement, itemFile, Temp, theProgram)
     End If
     
 'Open item and get the selling price.
-Call openitem(App.path & "\" & projectPath$ & itmPath$ & itemFile, ItemData)
+ItemData = openItem(App.path & "\" & projectPath$ & itmPath$ & itemFile)
 
 'Return data
 retval.dataType = DT_NUM

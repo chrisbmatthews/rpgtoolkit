@@ -12,7 +12,7 @@ Begin VB.Form tileanim
    MDIChild        =   -1  'True
    ScaleHeight     =   2520
    ScaleWidth      =   4815
-   Tag             =   "1814"
+   Tag             =   "13"
    Begin VB.Frame mainFrame 
       Height          =   2175
       Left            =   120
@@ -354,7 +354,7 @@ End Function
 
 Public Sub saveAsFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True Then
         Me.Show
         saveasmnu_Click
@@ -362,7 +362,7 @@ Public Sub saveAsFile()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -373,7 +373,7 @@ End Sub
 
 Public Sub saveFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'If tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True Then
         tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
         If tileAnmList(activeTileAnmIndex).animTileFile$ = "" Then
@@ -382,12 +382,12 @@ Public Sub saveFile()
             Exit Sub
         End If
         Call saveTileAnm(projectPath$ + tilepath$ + tileAnmList(activeTileAnmIndex).animTileFile$, tileAnmList(activeTileAnmIndex).theData)
-        Me.caption = LoadStringLoc(1814, "Create Animated Tile") + " (" + tileAnmList(activeTileAnmIndex).animTileFile$ + ")"
+        Me.Caption = LoadStringLoc(1814, "Create Animated Tile") + " (" + tileAnmList(activeTileAnmIndex).animTileFile$ + ")"
     'End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -396,7 +396,7 @@ End Sub
 
 Public Sub checkSave()
     'check if the anim has changed an it needs to be saved...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True Then
         aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current animation?"), vbYesNo)
         If aa = 6 Then
@@ -407,7 +407,7 @@ Public Sub checkSave()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -425,7 +425,7 @@ Public Sub openFile(file$)
     Call openTileAnm(filename$(1), tileAnmList(activeTileAnmIndex).theData)
     Call infofill
     tileAnmList(activeTileAnmIndex).animTileFile$ = antiPath$
-    Me.caption = LoadStringLoc(1814, "Create Animated Tile") + "  (" + antiPath$ + ")"
+    Me.Caption = LoadStringLoc(1814, "Create Animated Tile") + "  (" + antiPath$ + ")"
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
 End Sub
 
@@ -433,7 +433,7 @@ End Sub
 
 Sub animateTileFrames()
     'find max frame...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim pauseLen As Double
     pauseLen = 0
     pauseLen = 1 / tileAnmList(activeTileAnmIndex).theData.animTilePause
@@ -449,7 +449,7 @@ Sub animateTileFrames()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -459,23 +459,23 @@ End Sub
 Private Sub fillFrameNum(framenum)
     'now fill in frame number text box...
     'find max frame...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     mf = 0
     For t = 0 To UBound(tileAnmList(activeTileAnmIndex).theData.animTileFrame)
         If TileAnmGet(tileAnmList(activeTileAnmIndex).theData, t) <> "" Then
             mf = mf + 1
         End If
     Next t
-    framecount.caption = str$(framenum + 1) + " of"
+    framecount.Caption = str$(framenum + 1) + " of"
     If tileAnmList(activeTileAnmIndex).theData.animTileFrames = 0 Then
-        framecount.caption = framecount.caption + " 1"
+        framecount.Caption = framecount.Caption + " 1"
     Else
-        framecount.caption = framecount.caption + str$(TileAnmFrameCount(tileAnmList(activeTileAnmIndex).theData))
+        framecount.Caption = framecount.Caption + str$(TileAnmFrameCount(tileAnmList(activeTileAnmIndex).theData))
     End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -483,7 +483,7 @@ End Sub
 
 Sub infofill()
     'pausebar.Value = animationList(activeanimationindex).theData.animPause * 30
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     BF = tileAnmList(activeTileAnmIndex).animTileNeedUpdate
     Call DrawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
     pausebar.value = tileAnmList(activeTileAnmIndex).theData.animTilePause
@@ -491,7 +491,7 @@ Sub infofill()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -499,7 +499,7 @@ End Sub
 'FIXIT: Declare 'framenum' with an early-bound data type                                   FixIT90210ae-R1672-R1B8ZE
 Sub DrawTileFrame(framenum)
     'draw the frame number.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call GFXClearTileCache
     
     Call vbPicCls(tform)
@@ -516,7 +516,7 @@ Sub DrawTileFrame(framenum)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -540,20 +540,20 @@ Private Sub closemnu_Click()
 End Sub
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = UBound(tileAnmList(activeTileAnmIndex).theData.animTileFrame) Then Exit Sub
     tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame + 1
     Call DrawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'oldf = tileanmlist(activetileanmindex).thedata.animTileCurrentFrame
     'Call animateTileFrames
     'tileanmlist(activetileanmindex).thedata.animTileCurrentFrame = oldf
@@ -568,13 +568,13 @@ Private Sub Command2_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True
     For t = UBound(tileAnmList(activeTileAnmIndex).theData.animTileFrame) To tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame Step -1
         Call TileAnmInsert(TileAnmGet(tileAnmList(activeTileAnmIndex).theData, t), tileAnmList(activeTileAnmIndex).theData, t + 1)
@@ -584,27 +584,27 @@ Private Sub Command3_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = 0 Then Exit Sub
     tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame - 1
     Call DrawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Command5_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True
     For t = tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame To UBound(tileAnmList(activeTileAnmIndex).theData.animTileFrame)
         Call TileAnmInsert(TileAnmGet(tileAnmList(activeTileAnmIndex).theData, t + 1), tileAnmList(activeTileAnmIndex).theData, t)
@@ -614,7 +614,7 @@ Private Sub Command5_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -652,9 +652,9 @@ End Sub
 
 Private Sub Form_KeyPress(KeyAscii As Integer)
     On Error Resume Next
-    If UCase$(Chr$(KeyAscii)) = "L" Then
+    If UCase$(chr$(KeyAscii)) = "L" Then
         If lastTileset$ = "" Then
-            ChDir (currentdir$)
+            ChDir (currentDir$)
             Dim dlg As FileDialogInfo
             dlg.strDefaultFolder = projectPath$ + tilepath$
             
@@ -668,7 +668,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
             Else
                 Exit Sub
             End If
-            ChDir (currentdir$)
+            ChDir (currentDir$)
             If filename$(1) = "" Then Exit Sub
             FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
             whichType$ = extention(filename$(1))
@@ -694,7 +694,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Set activeTileAnm = Me
@@ -707,7 +707,7 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -731,21 +731,21 @@ End Sub
 
 'FIXIT: bar_Change event has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
 Private Sub pausebar_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True
     tileAnmList(activeTileAnmIndex).theData.animTilePause = pausebar.value
     'animTilePause = pausebar.Value / 30
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub saveasmnu_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + tilepath$
     dlg.strTitle = "Save Animation As"
@@ -757,7 +757,7 @@ Private Sub saveasmnu_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
     
     If filename$(1) = "" Then Exit Sub
@@ -769,19 +769,19 @@ Private Sub saveasmnu_Click()
     End If
     Call saveTileAnm(filename$(1), tileAnmList(activeTileAnmIndex).theData)
     animationList(activeAnimationIndex).animFile$ = antiPath$
-    Me.caption = LoadStringLoc(1814, "Create Animated Tile") + " (" + antiPath$ + ")"
+    Me.Caption = LoadStringLoc(1814, "Create Animated Tile") + " (" + antiPath$ + ")"
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 Private Sub savemnu_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If tileAnmList(activeTileAnmIndex).animTileFile$ = "" Then saveasmnu_Click: Exit Sub
     Call saveTileAnm(projectPath$ + tilepath$ + tileAnmList(activeTileAnmIndex).animTileFile, tileAnmList(activeTileAnmIndex).theData)
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -789,7 +789,7 @@ End Sub
 Private Sub tform_Click()
     On Error Resume Next
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + tilepath$
     
@@ -803,7 +803,7 @@ Private Sub tform_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
     whichType$ = extention(filename$(1))

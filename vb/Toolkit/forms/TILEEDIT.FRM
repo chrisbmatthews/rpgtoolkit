@@ -22,7 +22,7 @@ Begin VB.Form tileedit
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5520
    ScaleWidth      =   6555
-   Tag             =   "1636"
+   Tag             =   "14"
    Begin VB.PictureBox tileform 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -1044,7 +1044,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
             tilesetform.Show vbModal ', me
             'MsgBox setFilename$
             If setFilename$ = "" Then Exit Sub
-            Call opentile2(projectPath$ + tilepath$ + setFilename$)
+            Call openTile2(projectPath$ + tilepath$ + setFilename$)
             Call activeTile.highredraw
             publicTile.tileName = setFilename$
             activeTile.Caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
@@ -1576,7 +1576,7 @@ Public Sub saveFile()
         Exit Sub
     End If
     'Save the tile
-    Call savetile(projectPath$ + tilepath$ + filename$(2))
+    Call saveTile(projectPath$ + tilepath$ + filename$(2))
 
     Exit Sub
 'Begin error handling code:
@@ -1593,7 +1593,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     
     activeTile.Show
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     Call checkSave      'Check if a tile is already open and needs saving.
     publicTile.tileneedupdate = False
@@ -1632,7 +1632,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         
         If detail = 2 Or detail = 4 Or detail = 6 Then
             'only 32x32 tiles allowed
-            Call increasedetail
+            Call increaseDetail
         End If
         Call color_16million
         
@@ -1684,7 +1684,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     Else
         '.gph
         
-        Call opentile2(filename$(1))
+        Call openTile2(filename$(1))
         Call activeTile.highredraw
         publicTile.tileName$ = antiPath$
         activeTile.Caption = LoadStringLoc(801, "Tile Editor") + "  (" + antiPath$ + ")"
@@ -1813,7 +1813,7 @@ Public Sub opentile_Click()
 
     On Error Resume Next
     ignore = 1
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + tilepath$
     
@@ -1834,7 +1834,7 @@ Public Sub opentile_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
     whichType$ = GetExt(filename$(1))
@@ -1856,7 +1856,7 @@ Public Sub opentile_Click()
             
             If detail = 2 Or detail = 4 Or detail = 6 Then
                 'only 32x32 tiles allowed
-                Call increasedetail
+                Call increaseDetail
             End If
             Call color_16million
             
@@ -1865,7 +1865,7 @@ Public Sub opentile_Click()
             activeTile.Caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
         End If
     Else
-        Call opentile2(filename$(1))
+        Call openTile2(filename$(1))
         Call activeTile.highredraw
         publicTile.tileName$ = antiPath$
         activeTile.Caption = LoadStringLoc(801, "Tile Editor") + "  (" + antiPath$ + ")"
@@ -1967,7 +1967,7 @@ Private Sub savenoquestions_Click()
     End If
     
     'Else, the tile was opened, so update the file.
-    Call savetile(projectPath$ + tilepath$ + publicTile.tileName)
+    Call saveTile(projectPath$ + tilepath$ + publicTile.tileName)
     publicTile.tileneedupdate = False
     
     Exit Sub
@@ -1984,7 +1984,7 @@ End Sub
 Private Sub savetile2_Click(): On Error Resume Next
 
     ignore = 1
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + tilepath$
@@ -2011,7 +2011,7 @@ Private Sub savetile2_Click(): On Error Resume Next
         Exit Sub            'User pressed cancel.
     End If
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     publicTile.tileneedupdate = False
     
     If filename$(1) = "" Then Exit Sub
@@ -2059,7 +2059,7 @@ Private Sub savetile2_Click(): On Error Resume Next
             bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo)
             If bb = vbNo Then Exit Sub
         End If
-        Call savetile(filename$(1))
+        Call saveTile(filename$(1))
         publicTile.tileName = antiPath$
         activeTile.Caption = LoadStringLoc(801, "Tile Editor") + " (" + antiPath$ + ")"
         
@@ -2074,7 +2074,7 @@ End Sub
 Private Sub mnusts_Click(): On Error Resume Next
 
     ignore = 1
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     
     'Set up the save dialog window
@@ -2097,7 +2097,7 @@ Private Sub mnusts_Click(): On Error Resume Next
         Exit Sub    'user pressed cancel
     End If
     
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     publicTile.tileneedupdate = False
     
@@ -2429,9 +2429,9 @@ Private Sub blurmnu_Click()
                 If aa = -1 Then aa = vbQBColor(15)
             End If
             b2 = blue(aa) / 2
-            nr = inbounds(r + r2, 0, 255)
-            ng = inbounds(g + g2, 0, 255)
-            nb = inbounds(b + b2, 0, 255)
+            nr = inBounds(r + r2, 0, 255)
+            ng = inBounds(g + g2, 0, 255)
+            nb = inBounds(b + b2, 0, 255)
             If x = xRange Then                          '<-- Edit
                 tilemem(1, y) = RGB(nr, ng, nb)
             Else

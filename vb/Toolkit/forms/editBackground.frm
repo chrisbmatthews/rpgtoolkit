@@ -22,7 +22,7 @@ Begin VB.Form editBackground
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   4890
    ScaleWidth      =   6435
-   Tag             =   "1435"
+   Tag             =   "4"
    Begin VB.Frame Frame3 
       Caption         =   "Image"
       BeginProperty Font 
@@ -609,7 +609,7 @@ End Function
 
 Public Sub saveFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim file As String
     'If bkgList(activeBkgIndex).needUpdate = True Then
         file = bkgList(activeBkgIndex).filename
@@ -624,7 +624,7 @@ Public Sub saveFile()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -632,7 +632,7 @@ End Sub
 
 Public Sub saveAsFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If bkgList(activeBkgIndex).needUpdate = True Then
         Me.Show
         mnusaveas_Click
@@ -640,7 +640,7 @@ Public Sub saveAsFile()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -650,7 +650,7 @@ End Sub
 
 Public Sub checkSave()
     'check if the file has changed an it needs to be saved...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If bkgList(activeBkgIndex).needUpdate = True Then
         Dim aa As Long
         aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo)
@@ -662,7 +662,7 @@ Public Sub checkSave()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -679,7 +679,7 @@ Public Sub openFile(filename$)
     Call openBackground(filename$, bkgList(activeBkgIndex).theData)
     antiPath$ = absNoPath(filename$)
     bkgList(activeBkgIndex).filename = antiPath$
-    Me.caption = LoadStringLoc(1435, "Edit Background") + "  (" + antiPath$ + ")"
+    Me.Caption = LoadStringLoc(1435, "Edit Background") + "  (" + antiPath$ + ")"
     
     Call infofill
     
@@ -688,12 +688,12 @@ End Sub
 
 Private Sub clickbox_Change()
     On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgSelWav$ = clickbox.text
+    bkgList(activeBkgIndex).theData.bkgSelWav$ = clickbox.Text
 End Sub
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim antiPath As String
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + bmppath$
@@ -707,16 +707,16 @@ Private Sub Command1_Click()
         Exit Sub
     End If
     bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + bmppath$ + antiPath$
     bkgList(activeBkgIndex).theData.image = antiPath$
-    Text2.text = antiPath$
+    Text2.Text = antiPath$
 End Sub
 
 Private Sub Command2_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
     dlg.strDefaultFolder = projectPath$ + mediapath$
@@ -730,16 +730,16 @@ Private Sub Command2_Click()
         Exit Sub
     End If
     bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgSelWav$ = antiPath$
-    clickbox.text = antiPath$
+    clickbox.Text = antiPath$
 End Sub
 
 Private Sub Command3_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
     dlg.strDefaultFolder = projectPath$ + mediapath$
@@ -753,16 +753,16 @@ Private Sub Command3_Click()
         Exit Sub
     End If
     bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgChooseWav$ = antiPath$
-    selectbox.text = antiPath$
+    selectbox.Text = antiPath$
 End Sub
 
 Private Sub Command4_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
     dlg.strDefaultFolder = projectPath$ + mediapath$
@@ -776,16 +776,16 @@ Private Sub Command4_Click()
         Exit Sub
     End If
     bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgCantDoWav$ = antiPath$
-    illegalbox.text = antiPath$
+    illegalbox.Text = antiPath$
 End Sub
 
 Private Sub Command5_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
     dlg.strDefaultFolder = projectPath$ + mediapath$
@@ -799,16 +799,16 @@ Private Sub Command5_Click()
         Exit Sub
     End If
     bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgReadyWav$ = antiPath$
-    readybox.text = antiPath$
+    readybox.Text = antiPath$
 End Sub
 
 Private Sub Command6_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String
     dlg.strDefaultFolder = projectPath$ + mediapath$
@@ -822,11 +822,11 @@ Private Sub Command6_Click()
         Exit Sub
     End If
     bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
     bkgList(activeBkgIndex).theData.bkgMusic$ = antiPath$
-    Text1.text = antiPath$
+    Text1.Text = antiPath$
 End Sub
 
 
@@ -855,7 +855,7 @@ Exit Sub
 End Sub
 
 Private Sub Command9_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim ext As String
     ext$ = extention(bkgList(activeBkgIndex).theData.bkgMusic$)
@@ -869,7 +869,7 @@ Private Sub Command9_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -896,7 +896,7 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Set activeBackground = Me
@@ -908,7 +908,7 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -920,66 +920,66 @@ End Sub
 
 Private Sub illegalbox_Change()
     On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgCantDoWav$ = illegalbox.text
+    bkgList(activeBkgIndex).theData.bkgCantDoWav$ = illegalbox.Text
 End Sub
 
 Private Sub infofill()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If bkgList(activeBkgIndex).theData.image <> "" Then
-        Text2.text = bkgList(activeBkgIndex).theData.image
+        Text2.Text = bkgList(activeBkgIndex).theData.image
     End If
     If bkgList(activeBkgIndex).theData.bkgMusic$ <> "" Then
-        Text1.text = bkgList(activeBkgIndex).theData.bkgMusic$
+        Text1.Text = bkgList(activeBkgIndex).theData.bkgMusic$
     End If
     If bkgList(activeBkgIndex).theData.bkgSelWav$ <> "" Then
-        clickbox.text = bkgList(activeBkgIndex).theData.bkgSelWav$
+        clickbox.Text = bkgList(activeBkgIndex).theData.bkgSelWav$
     End If
     If bkgList(activeBkgIndex).theData.bkgChooseWav$ <> "" Then
-        selectbox.text = bkgList(activeBkgIndex).theData.bkgChooseWav$
+        selectbox.Text = bkgList(activeBkgIndex).theData.bkgChooseWav$
     End If
     If bkgList(activeBkgIndex).theData.bkgReadyWav$ <> "" Then
-        readybox.text = bkgList(activeBkgIndex).theData.bkgReadyWav$
+        readybox.Text = bkgList(activeBkgIndex).theData.bkgReadyWav$
     End If
     If bkgList(activeBkgIndex).theData.bkgCantDoWav$ <> "" Then
-        illegalbox.text = bkgList(activeBkgIndex).theData.bkgCantDoWav$
+        illegalbox.Text = bkgList(activeBkgIndex).theData.bkgCantDoWav$
     End If
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub readybox_Change()
     On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgReadyWav$ = readybox.text
+    bkgList(activeBkgIndex).theData.bkgReadyWav$ = readybox.Text
 End Sub
 
 Private Sub selectbox_Change()
     On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgChooseWav$ = selectbox.text
+    bkgList(activeBkgIndex).theData.bkgChooseWav$ = selectbox.Text
 End Sub
 
 Private Sub Text1_Change()
-    bkgList(activeBkgIndex).theData.bkgMusic$ = Text1.text
+    bkgList(activeBkgIndex).theData.bkgMusic$ = Text1.Text
 End Sub
 
 
 Private Sub mnuCLose_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload Me
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub mnusave_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim file As String
     file = bkgList(activeBkgIndex).filename
     If file = "" Then Call mnusaveas_Click: Exit Sub
@@ -988,14 +988,14 @@ Private Sub mnusave_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub mnusaveas_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String, aa As Long, bb As Long
     
@@ -1011,7 +1011,7 @@ Private Sub mnusaveas_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
     aa = fileExist(filename$(1))
@@ -1021,19 +1021,19 @@ Private Sub mnusaveas_Click()
     End If
     bkgList(activeBkgIndex).filename = antiPath$
     Call saveBackground(filename$(1), bkgList(activeBkgIndex).theData)
-    activeBackground.caption = LoadStringLoc(1435, "Edit Background") + " (" + antiPath$ + ")"
+    activeBackground.Caption = LoadStringLoc(1435, "Edit Background") + " (" + antiPath$ + ")"
     bkgList(activeBkgIndex).needUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 
 Private Sub toc_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1230,7 +1230,7 @@ End Sub
 
 Private Sub Text2_Change()
     On Error Resume Next
-    bkgList(activeBkgIndex).theData.image = Text2.text
+    bkgList(activeBkgIndex).theData.image = Text2.Text
 End Sub
 
 

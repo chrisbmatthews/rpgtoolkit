@@ -10,6 +10,7 @@ Begin VB.Form editTileBitmap
    MDIChild        =   -1  'True
    ScaleHeight     =   4515
    ScaleWidth      =   6585
+   Tag             =   "10"
    Begin VB.PictureBox arena 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -212,8 +213,8 @@ Public Sub changeSelectedTile(ByVal file As String)
     
     If file = "" Then Exit Sub
     tileBmpList(activeTileBmpIndex).selectedTile$ = file
-    Call openwintile(projectPath$ + tilepath$ + file)
-    If detail = 2 Or detail = 4 Or detail = 6 Then Call increasedetail
+    Call openWinTile(projectPath$ + tilepath$ + file)
+    If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
     
     Dim dx As Long, dy As Long, colorDraw As Long
     
@@ -225,7 +226,7 @@ Public Sub changeSelectedTile(ByVal file As String)
             Call vbPicPSet(tkMainForm.tileBmpSelectedTile, dx - 1, dy - 1, colorDraw)
         Next dy
     Next dx
-    tkMainForm.tilebmpCurrentTile.caption = tileBmpList(activeTileBmpIndex).selectedTile$
+    tkMainForm.tilebmpCurrentTile.Caption = tileBmpList(activeTileBmpIndex).selectedTile$
 
 End Sub
 
@@ -251,7 +252,7 @@ End Sub
 
 Public Sub saveFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     'If tileBmpList(activeTileBmpIndex).needUpdate = True Then
         filename$(2) = tileBmpList(activeTileBmpIndex).filename
         tileBmpList(activeTileBmpIndex).needUpdate = False
@@ -261,12 +262,12 @@ Public Sub saveFile()
             Exit Sub
         End If
         Call SaveTileBitmap(projectPath$ + bmppath$ + tileBmpList(activeTileBmpIndex).filename, tileBmpList(activeTileBmpIndex).theData)
-        Me.caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + tileBmpList(activeTileBmpIndex).filename + ")"
+        Me.Caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + tileBmpList(activeTileBmpIndex).filename + ")"
     'End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -274,7 +275,7 @@ End Sub
 
 Public Sub saveAsFile()
     'saves the file.
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If tileBmpList(activeTileBmpIndex).needUpdate = True Then
         Me.Show
         mnusaveas_Click
@@ -282,7 +283,7 @@ Public Sub saveAsFile()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -292,7 +293,7 @@ End Sub
 
 Public Sub checkSave()
     'check if the status effect has changed an it needs to be saved...
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim aa As Long
     
     If tileBmpList(activeTileBmpIndex).needUpdate = True Then
@@ -305,7 +306,7 @@ Public Sub checkSave()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -319,10 +320,10 @@ Sub infofill()
     xx = tileBmpList(activeTileBmpIndex).theData.sizex
     yy = tileBmpList(activeTileBmpIndex).theData.sizey
     
-    arena.width = xx * 32 * Screen.TwipsPerPixelX
+    arena.Width = xx * 32 * Screen.TwipsPerPixelX
     arena.height = yy * 32 * Screen.TwipsPerPixelY
       
-    Me.width = arena.width + 1200
+    Me.Width = arena.Width + 1200
     Me.height = arena.height + 1200
     arena.Left = 500
     arena.Top = 400
@@ -343,18 +344,18 @@ Sub infofill()
     End If
     
     'fill in other info
-    tkMainForm.tilebmpSizeX.text = toString(xx)
-    tkMainForm.tileBmpSizeY.text = toString(yy)
+    tkMainForm.tilebmpSizeX.Text = toString(xx)
+    tkMainForm.tileBmpSizeY.Text = toString(yy)
     
     Call vbPicFillRect(tkMainForm.tilebmpColor, 0, 0, 1000, 1000, RGB(tileBmpList(activeTileBmpIndex).ambientR, tileBmpList(activeTileBmpIndex).ambientG, tileBmpList(activeTileBmpIndex).ambientB))
     
     If tileBmpList(activeTileBmpIndex).selectedTile <> "" Then
         Call drawtile(vbPicHDC(tkMainForm.tileBmpSelectedTile), tilepath$ + tileBmpList(activeTileBmpIndex).selectedTile, 1, 1, 0, 0, 0, False)
         Call vbPicRefresh(tkMainForm.tileBmpSelectedTile)
-        tkMainForm.tilebmpCurrentTile.caption = tileBmpList(activeTileBmpIndex).selectedTile$
+        tkMainForm.tilebmpCurrentTile.Caption = tileBmpList(activeTileBmpIndex).selectedTile$
     Else
         Call vbPicFillRect(tkMainForm.tileBmpSelectedTile, 0, 0, 1000, 1000, RGB(255, 255, 255))
-        tkMainForm.tilebmpCurrentTile.caption = tileBmpList(activeTileBmpIndex).selectedTile$
+        tkMainForm.tilebmpCurrentTile.Caption = tileBmpList(activeTileBmpIndex).selectedTile$
     End If
     
     If tileBmpList(activeTileBmpIndex).drawState = 0 Then
@@ -381,7 +382,7 @@ Public Sub openFile(filename$)
     Call OpenTileBitmap(filename$, tileBmpList(activeTileBmpIndex).theData)
     antiPath$ = absNoPath(filename$)
     tileBmpList(activeTileBmpIndex).filename = antiPath$
-    Me.caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + antiPath$ + ")"
+    Me.Caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + antiPath$ + ")"
     
     Call infofill
     
@@ -390,16 +391,16 @@ End Sub
 
 Public Sub tileBmpAmbientSlider()
     On Error Resume Next
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     tileBmpList(activeTileBmpIndex).ambientR = tkMainForm.tileBmpAmbientSlider.value
     tileBmpList(activeTileBmpIndex).ambientG = tkMainForm.tileBmpAmbientSlider.value
     tileBmpList(activeTileBmpIndex).ambientB = tkMainForm.tileBmpAmbientSlider.value
-    tkMainForm.tileBmpAmbient.text = toString(tkMainForm.tileBmpAmbientSlider.value)
+    tkMainForm.tileBmpAmbient.Text = toString(tkMainForm.tileBmpAmbientSlider.value)
     Call vbPicFillRect(tkMainForm.tilebmpColor, 0, 0, 1000, 1000, RGB(tileBmpList(activeTileBmpIndex).ambientR, tileBmpList(activeTileBmpIndex).ambientG, tileBmpList(activeTileBmpIndex).ambientB))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -456,7 +457,7 @@ Public Sub tilebmpSelectTile()
             buftile(x, y) = tilemem(x, y)
         Next y
     Next x
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + tilepath$
     
@@ -470,7 +471,7 @@ Public Sub tilebmpSelectTile()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     
     whichType$ = extention(filename$(1))
@@ -487,8 +488,8 @@ Public Sub tilebmpSelectTile()
     Else
         FileCopy filename$(1), projectPath$ + tilepath$ + antiPath$
         tileBmpList(activeTileBmpIndex).selectedTile$ = antiPath$
-        Call openwintile(filename$(1))
-        If detail = 2 Or detail = 4 Or detail = 6 Then Call increasedetail
+        Call openWinTile(filename$(1))
+        If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
         'MsgBox boardList(activeBoardIndex).ambient
         detail = publicTile.oldDetail
         For dx = 1 To 32
@@ -499,7 +500,7 @@ Public Sub tilebmpSelectTile()
             Next dy
         Next dx
         Call vbPicRefresh(tkMainForm.tileBmpSelectedTile)
-        tkMainForm.tilebmpCurrentTile.caption = tileBmpList(activeTileBmpIndex).selectedTile$
+        tkMainForm.tilebmpCurrentTile.Caption = tileBmpList(activeTileBmpIndex).selectedTile$
     End If
     
     For x = 1 To 32
@@ -513,14 +514,14 @@ End Sub
 Public Sub tilebmpSizeX()
     On Error Resume Next
     If val(tkMainForm.tilebmpSizeX) > 40 Then
-        tkMainForm.tilebmpSizeX.text = "40"
+        tkMainForm.tilebmpSizeX.Text = "40"
     End If
 End Sub
 
 Public Sub tileBmpSizeY()
     On Error Resume Next
     If val(tkMainForm.tileBmpSizeY) > 40 Then
-        tkMainForm.tileBmpSizeY.text = "40"
+        tkMainForm.tileBmpSizeY.Text = "40"
     End If
 End Sub
 
@@ -535,7 +536,7 @@ Public Sub tileBmpSizeOK()
     Call infofill
 End Sub
 
-Private Sub arena_MouseDown(button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub arena_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     
     Dim xx As Long, yy As Long, x2 As Long, y2 As Long
@@ -578,15 +579,15 @@ Private Sub arena_MouseDown(button As Integer, shift As Integer, x As Single, y 
     End Select
 End Sub
 
-Private Sub arena_MouseMove(button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub arena_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     Dim xx As Long, yy As Long
     
     xx = Int(x / 32) + tileBmpList(activeTileBmpIndex).topX
     yy = Int(y / 32) + tileBmpList(activeTileBmpIndex).topY
-    tkMainForm.tileBmpCoords.caption = str$(xx + 1) + "," + str$(yy + 1)
+    tkMainForm.tileBmpCoords.Caption = str$(xx + 1) + "," + str$(yy + 1)
     If button <> 0 Then
-        Call arena_MouseDown(button, shift, x, y)
+        Call arena_MouseDown(button, Shift, x, y)
     End If
 End Sub
 
@@ -614,7 +615,7 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     Set activeTileBmp = Me
@@ -625,7 +626,7 @@ Private Sub Form_Load()
     Call infofill
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -644,18 +645,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub mnuCLose_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload Me
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub mnusaveas_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     Dim antiPath As String, aa As Long, bb As Long
     
@@ -671,7 +672,7 @@ Private Sub mnusaveas_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     tileBmpList(activeTileBmpIndex).needUpdate = False
     
     If filename$(1) = "" Then Exit Sub
@@ -683,18 +684,18 @@ Private Sub mnusaveas_Click()
     
     Call SaveTileBitmap(filename$(1), tileBmpList(activeTileBmpIndex).theData)
     tileBmpList(activeTileBmpIndex).filename = antiPath$
-    Me.caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + antiPath$ + ")"
+    Me.Caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + antiPath$ + ")"
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 
 Private Sub toc_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call BrowseFile(helppath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
