@@ -73,7 +73,7 @@ Public Type RPGCodeProgram
     methods() As RPGCodeMethod              ' Methods in this program
     programPos As Long                      ' Current position in program
     included(50) As String                  ' Included files
-    Length As Long                          ' Length of program
+    length As Long                          ' Length of program
     heapStack() As Long                     ' Stack of local heaps
     currentHeapFrame As Long                ' Current heap frame
     boardNum As Long                        ' The corresponding board index of the program (default to 0)
@@ -1056,6 +1056,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Dim var As Boolean              ' Variable?
     Dim outside As Boolean          ' Calling from outside class?
     Dim cmdName As String           ' Command's name
+    Dim length As Long              ' Length of the text
     Dim a As Long                   ' Loop var
 
     ' Get location of first ->
@@ -1067,8 +1068,11 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         Exit Function
     End If
 
+    ' Get the length of the text
+    length = Len(Text)
+
     ' Loop over each charater, forwards
-    For a = (begin + 2) To Len(Text)
+    For a = (begin + 2) To length
         ' Get a character
         char = Mid$(Text, a, 1)
         Select Case char
@@ -1109,7 +1113,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                 ' Leaving array
                 arrayDepth = arrayDepth - 1
 
-            Case ("""")
+            Case """"
                 ' Found a quote
                 ignore = (Not ignore)
 
@@ -1161,7 +1165,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                     Exit For
                 End If
 
-            Case ("""")
+            Case """"
                 ' Found a quote
                 ignore = (Not ignore)
                 spacesOK = False
@@ -1220,7 +1224,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                 If (retval.dataType = DT_NUM) Then
                     value = " " & CStr(retval.num)
                 ElseIf (retval.dataType = DT_LIT) Then
-                    value = " """ & retval.lit & ("""")
+                    value = " """ & retval.lit & """"
                 ElseIf (retval.dataType = DT_REFERENCE) Then
                     value = " " & retval.ref
                 End If
@@ -1243,15 +1247,12 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         End If
     End If
 
-    ' Internationalize
-    value = replace(value, ",", ".")
-
-    ' Complete the return string
-    spliceForObjects = Mid$(Text, 1, start - 1) & value & Mid$(Text, lngEnd + 1)
-
-    If ((lngEnd = Len(Text)) And (start = 1)) Then
+    If ((lngEnd = length) And (start = 1)) Then
+        ' Return NULL
         spliceForObjects = vbNullString
     Else
+        ' Complete the return string
+        spliceForObjects = Mid$(Text, 1, start - 1) & value & Mid$(Text, lngEnd + 1)
         ' Recurse, passing in the running text
         spliceForObjects = spliceForObjects(spliceForObjects, prg)
     End If

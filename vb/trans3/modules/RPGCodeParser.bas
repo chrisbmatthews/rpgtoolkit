@@ -29,15 +29,15 @@ Public Function GetMethodName(ByVal Text As String) As String
     On Error Resume Next
     
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    Dim Length As Long
+    Dim length As Long
     Dim t As Long
     Dim startHere As Long
     Dim mName As String
     
     dataUse$ = Text$
-    Length = Len(dataUse$)
+    length = Len(dataUse$)
     Dim part As String
-    For t = 1 To Length
+    For t = 1 To length
         'Find #
         part$ = Mid$(dataUse$, t, 1)
         If part$ <> " " And part$ <> vbTab And part$ <> "#" Then
@@ -50,26 +50,26 @@ Public Function GetMethodName(ByVal Text As String) As String
             Exit For
         End If
     Next t
-    For t = startHere To Length
+    For t = startHere To length
         'Find start of command name
         part$ = Mid$(dataUse$, t, 1)
-        If part$ <> " " Then startHere = t: t = Length
+        If part$ <> " " Then startHere = t: t = length
     Next t
-    For t = startHere To Length
+    For t = startHere To length
         'Find end of command name
         part$ = Mid$(dataUse$, t, 1)
-        If part$ = " " Then startHere = t: t = Length
+        If part$ = " " Then startHere = t: t = length
     Next t
-    For t = startHere To Length
+    For t = startHere To length
         'Find start  of method
         part$ = Mid$(dataUse$, t, 1)
-        If part$ <> " " Then startHere = t: t = Length
+        If part$ <> " " Then startHere = t: t = length
     Next t
-    For t = startHere To Length
+    For t = startHere To length
         'Find name  of method
         part$ = Mid$(dataUse$, t, 1)
         If part$ = " " Or part$ = "(" Then
-            t = Length
+            t = length
         Else
             mName$ = mName & part$
         End If
@@ -85,17 +85,17 @@ Public Function ParseAfter(ByVal Text As String, ByVal startSymbol As String) As
 
     On Error Resume Next
 
-    Dim Length As Integer
+    Dim length As Integer
     Dim t As Integer
     Dim part As String
     Dim toRet As String
     
-    Length = Len(Text)
+    length = Len(Text)
     Dim foundIt As Boolean, startAt As Long
     
     foundIt = False
     'find opening symbol...
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid$(Text, t, 1)
         If part = startSymbol Then
             'found start symbol.
@@ -106,7 +106,7 @@ Public Function ParseAfter(ByVal Text As String, ByVal startSymbol As String) As
     Next t
     
     If foundIt Then
-        For t = startAt + 1 To Length
+        For t = startAt + 1 To length
             part = Mid$(Text, t, 1)
             toRet = toRet + part
         Next t
@@ -122,14 +122,14 @@ Public Function ParseBefore(ByVal Text As String, ByVal startSymbol As String) A
 
     On Error Resume Next
 
-    Dim Length As Integer
+    Dim length As Integer
     Dim t As Integer
     Dim part As String
     Dim toRet As String
     
-    Length = Len(Text)
+    length = Len(Text)
     'find opening symbol...
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid$(Text, t, 1)
         If part = startSymbol Then
             'found start symbol.
@@ -231,7 +231,7 @@ Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     On Error GoTo errorhandler
 
-    Dim use As String, Length As Long, val1 As String, val2 As String, part As String, p As Long
+    Dim use As String, length As Long, val1 As String, val2 As String, part As String, p As Long
     Dim eqtype As String, startAt As Long, equ As String, val1type As Long, val2type As Long, var1type As Long, var2type As Long
 
     'Text = "Eval( " & Text & " )"
@@ -239,7 +239,7 @@ Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     'Text = Trim$(Mid$(Text, 7, Len(Text) - 8))
    
     use$ = Text$
-    Length = Len(use$)
+    length = Len(use$)
     val1$ = vbNullString
        
     Dim andOr() As String
@@ -290,34 +290,34 @@ Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     Next checkBoth
    
     'Get first variable
-    For p = 1 To Length
+    For p = 1 To length
         part$ = Mid$(use$, p, 1)
         If part$ = "=" Or part$ = "~" Or part$ = ">" Or part$ = "<" Then
             'Found equality operator
             eqtype$ = part$
             startAt = p
-            p = Length
+            p = length
         Else
             If part$ <> " " Then val1$ = val1 & part$
         End If
     Next p
     equ$ = eqtype$
-    For p = startAt + 1 To Length
+    For p = startAt + 1 To length
         part$ = Mid$(use$, p, 1)
         If part$ <> " " Then
             If part$ = "=" Or part$ = ">" Or part$ = "<" Then
                 equ$ = equ & part$
                 startAt = p + 1
-                p = Length
+                p = length
             Else
                 startAt = p
-                p = Length
+                p = length
             End If
         End If
     Next p
     'Now get the other variable
     val2$ = vbNullString
-    For p = startAt To Length
+    For p = startAt To length
          part$ = Mid$(use$, p, 1)
         If part$ <> " " Then val2$ = val2 & part$
     Next p
@@ -446,21 +446,21 @@ Public Function ParseWithin(ByVal Text As String, ByVal startSymbol As String, B
 
     On Error Resume Next
 
-    Dim Length As Integer
+    Dim length As Integer
     Dim t As Integer
     Dim l As Integer
     Dim part As String
     Dim toRet As String
     Dim ignoreDepth As Integer
     
-    Length = Len(Text)
+    length = Len(Text)
     'find opening symbol...
-    For t = 1 To Length
+    For t = 1 To length
         part = Mid$(Text, t, 1)
         If part = startSymbol Then
             'founf start symbol.
             'now locate end symbol...
-            For l = t + 1 To Length
+            For l = t + 1 To length
                 part = Mid$(Text, l, 1)
                 If part = startSymbol Then
                     ignoreDepth = ignoreDepth + 1
@@ -496,12 +496,12 @@ Public Function ValueNumber(ByVal Text As String) As Long
 
     On Error Resume Next
 
-    Dim ignoreNext As Long, Length As Long, ele As Long, p As Long, part As String
+    Dim ignoreNext As Long, length As Long, ele As Long, p As Long, part As String
     
     ignoreNext = 0
-    Length = Len(Text$)
+    length = Len(Text$)
     ele = 1
-    For p = 1 To Length
+    For p = 1 To length
         part = Mid$(Text, p, 1)
         If part = ("""") Then
             If ignoreNext = 1 Then
@@ -534,10 +534,10 @@ Public Function GetElement(ByVal Text As String, ByVal eleeNum As Long) As Strin
 
     On Error Resume Next
 
-    Dim Length As Long, element As Long, part As String, ignore As Long, returnVal As String, p As Long
+    Dim length As Long, element As Long, part As String, ignore As Long, returnVal As String, p As Long
     
-    Length = Len(Text$)
-    For p = 1 To Length + 1
+    length = Len(Text$)
+    For p = 1 To length + 1
         part = Mid$(Text, p, 1)
         If part = ("""") Then
             'A quote
@@ -602,11 +602,11 @@ Public Function LocateBrackets(ByVal Text As String) As Long
 
     On Error Resume Next
     
-    Dim Length As Long, p As Long, part As String, posAt As Long
+    Dim length As Long, p As Long, part As String, posAt As Long
     
     'First look for brackets--make it easy:
-    Length = Len(Text$)
-    For p = 1 To Length
+    length = Len(Text$)
+    For p = 1 To length
         part = Mid$(Text$, p, 1)
         If part = "(" Then
             posAt = p
@@ -619,7 +619,7 @@ Public Function LocateBrackets(ByVal Text As String) As Long
     End If
 
     'OK- no brackets.  Find position of first space after command.
-    For p = 1 To Length
+    For p = 1 To length
         part = Mid$(Text, p, 1)
         If part = "#" Then posAt = p
         Exit For
@@ -627,14 +627,14 @@ Public Function LocateBrackets(ByVal Text As String) As Long
     If posAt = 0 Then
         Exit Function 'couldn't find a command!
     End If
-    For p = posAt To Length     'Find first occurrence of command name
+    For p = posAt To length     'Find first occurrence of command name
         part = Mid$(Text$, p, 1)
         If part <> " " Then
             posAt = p
             Exit For
         End If
     Next p
-    For p = posAt To Length     'Find where command name ends.
+    For p = posAt To length     'Find where command name ends.
         part = Mid$(Text$, p, 1)
         If part = " " Then
             posAt = p
@@ -654,12 +654,12 @@ Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBr
     On Error Resume Next
 
     Dim ignoreClosing As Boolean
-    Dim use As String, location As Long, Length As Long, bracketDepth As Long, p As Long, part As String
+    Dim use As String, location As Long, length As Long, bracketDepth As Long, p As Long, part As String
     Dim fullUse As String
     
     use = Text
     location = LocateBrackets(use)
-    Length = Len(Text)
+    length = Len(Text)
     
     If Not doNotCheckForBrackets Then
         If Not stringContains(Text, "(") Then
@@ -670,7 +670,7 @@ Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBr
         End If
     End If
 
-    For p = location + 1 To Length
+    For p = location + 1 To length
         part$ = Mid$(Text$, p, 1)
         If ((part = ")") And (Not ignoreClosing) And bracketDepth <= 0) Or (LenB(part) = 0) Then
             Exit For
@@ -700,12 +700,12 @@ Public Function GetCommandName(ByVal splice As String) As String
 
     If (LenB(splice) = 0) Then Exit Function
 
-    Dim Length As Long, foundIt As Long, p As Long, part As String, starting As Long, commandName As String
+    Dim length As Long, foundIt As Long, p As Long, part As String, starting As Long, commandName As String
     Dim testIt As String, depth As Long
     
-    Length = Len(splice)
+    length = Len(splice)
 
-    For p = 1 To Length
+    For p = 1 To length
         part = Mid$(splice, p, 1)
         If (part = "(") Then depth = depth + 1
         If (part = ")") Then depth = depth - 1
@@ -715,7 +715,7 @@ Public Function GetCommandName(ByVal splice As String) As String
         End If
     Next p
 
-    For p = 1 To Length
+    For p = 1 To length
         part = Mid$(splice, p, 1)
         If (part = "[") Then
             GetCommandName = "VAR"
@@ -726,7 +726,7 @@ Public Function GetCommandName(ByVal splice As String) As String
     Next p
 
     'Look for #
-    For p = 1 To Length
+    For p = 1 To length
         part = Mid$(splice, p, 1)
         If part <> " " And part <> "#" And part <> vbTab Then
             If part$ = "*" Then
@@ -754,7 +754,7 @@ Public Function GetCommandName(ByVal splice As String) As String
     Next p
     If foundIt = 0 Then
         'Yipes- didn't find a #.  Maybe it's a @ command
-        For p = 1 To Length
+        For p = 1 To length
             part$ = Mid$(splice$, p, 1)
             If part$ <> " " And part$ <> "@" And part$ <> vbTab Then
                 foundIt = 0
@@ -768,33 +768,33 @@ Public Function GetCommandName(ByVal splice As String) As String
         If foundIt = 0 Then
             'Oh oh- still can't find it!  Probably a message
             'maybe a comment?
-            For p = 1 To Length
+            For p = 1 To length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> "*" And part$ <> vbTab Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> "*" And part$ <> vbTab Then foundIt = 0: p = length
                 If part$ = "*" Then GetCommandName$ = "*": Exit Function
             Next p
         End If
         If foundIt = 0 Then
             'Maybe a label
-            For p = 1 To Length
+            For p = 1 To length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> ":" And part$ <> vbTab Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> ":" And part$ <> vbTab Then foundIt = 0: p = length
                 If part$ = ":" Then GetCommandName$ = "LABEL": Exit Function
             Next p
         End If
         If foundIt = 0 Then
             'Maybe an if then start/stop
-            For p = 1 To Length
+            For p = 1 To length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> "<" And part$ <> "{" And part$ <> vbTab Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> "<" And part$ <> "{" And part$ <> vbTab Then foundIt = 0: p = length
                 If part$ = "<" Or part$ = "{" Then GetCommandName$ = "OPENBLOCK": Exit Function
             Next p
         End If
         If foundIt = 0 Then
             'Maybe an if then start/stop
-            For p = 1 To Length
+            For p = 1 To length
                 part$ = Mid$(splice$, p, 1)
-                If part$ <> " " And part$ <> ">" And part$ <> "}" And part$ <> vbTab Then foundIt = 0: p = Length
+                If part$ <> " " And part$ <> ">" And part$ <> "}" And part$ <> vbTab Then foundIt = 0: p = length
                 If part$ = ">" Or part$ = "}" Then GetCommandName$ = "CLOSEBLOCK": Exit Function
             Next p
         End If
@@ -806,7 +806,7 @@ Public Function GetCommandName(ByVal splice As String) As String
         End If
     End If
     'OK, if I'm here, that means that it is a # command
-    For p = starting + 1 To Length
+    For p = starting + 1 To length
         part$ = Mid$(splice$, p, 1)
         If part$ <> " " Then
             starting = p
@@ -816,9 +816,9 @@ Public Function GetCommandName(ByVal splice As String) As String
     
     commandName$ = vbNullString
     'now find command
-    For p = starting To Length
+    For p = starting To length
         part$ = Mid$(splice$, p, 1)
-        If part$ = " " Or part$ = "(" Or part$ = "=" Then p = Length: part$ = vbNullString
+        If part$ = " " Or part$ = "(" Or part$ = "=" Then p = length: part$ = vbNullString
         commandName$ = commandName & part$
     Next p
     'Now, before sending this back, let's see if it's a varibale
@@ -826,8 +826,8 @@ Public Function GetCommandName(ByVal splice As String) As String
     If commandName$ = "}" Then commandName$ = "CLOSEBLOCK"
 
     testIt$ = commandName$
-    Length = Len(testIt$)
-    For p = 1 To Length
+    length = Len(testIt$)
+    For p = 1 To length
         part$ = Mid$(testIt$, p, 1)
         If part$ = "!" Or part$ = "$" Then commandName$ = "VAR"
     Next p
@@ -897,94 +897,93 @@ Public Function ParseRPGCodeCommand( _
                                        Optional ByVal startAt As Long _
                                                                         ) As String
 
-    'We're going to find all the commands (functions) inside this command
-    'and replace them with their values. You can have nestled commands, and
-    'even commands added to variables. Yes, this is the parser to end all
-    'parsers (heh...)
+    ' We' re going to find all the commands (functions) inside this command
+    ' and replace them with their values. You can have nestled commands, and
+    ' even commands added to variables. Yes, this is the parser to end all
+    ' parsers (heh...)
 
     On Error Resume Next
 
-    Dim cmdName As String       'Command name of line we're parsing
+    Dim cmdName As String       ' Command name of line we' re parsing
     cmdName = UCase$(GetCommandName(line))
 
-    'Some things don't require parsing
+    ' Some things don' t require parsing
     Select Case cmdName
         Case "@", "*", "", "LABEL", "OPENBLOCK", "CLOSEBLOCK", "REDIRECT", "METHOD"
             ParseRPGCodeCommand = line
             Exit Function
     End Select
 
-    Dim depth As Long           'Depth within brackets
-    Dim char As String          'A character
-    Dim char2 As String         'Another character
-    Dim a As Long               'Loop control
-    Dim b As Long               'Loop control
-    Dim prefix As String        'Command name
-    Dim bT As String            'Line to work on
-    Dim cN As String            'Function to execute
-    Dim rV As RPGCODE_RETURN    'Value the function returned
-    Dim v As String             'String value of rV
-    Dim oPP As Long             'Program position before running function
-    Dim ignore As Boolean       'Within quotes?
-    Dim ret As String           'Value to return
-    Dim varExp As Boolean       'Variable expression?
+    Dim depth As Long           ' Depth within brackets
+    Dim char As String          ' A character
+    Dim char2 As String         ' Another character
+    Dim a As Long               ' Loop control
+    Dim b As Long               ' Loop control
+    Dim prefix As String        ' Command name
+    Dim bT As String            ' Line to work on
+    Dim cN As String            ' Function to execute
+    Dim rV As RPGCODE_RETURN    ' Value the function returned
+    Dim v As String             ' String value of rV
+    Dim oPP As Long             ' Program position before running function
+    Dim ignore As Boolean       ' Within quotes?
+    Dim ret As String           ' Value to return
+    Dim varExp As Boolean       ' Variable expression?
 
-    'Check if we have a variable expression
+    ' Check if we have a variable expression
     varExp = (cmdName = "VAR")
 
-    'Get the text to operate on
+    ' Get the text to operate on
     If (varExp) Then
-        bT = line
+        bT = " " & line
     Else
         prefix = cmdName
         bT = " " & GetBrackets(line)
     End If
 
-    'Loop over each character
+    ' Loop over each character
     For a = 1 To Len(bT)
 
-        'Get a character
+        ' Get a character
         char = Mid$(bT, a, 1)
 
         Select Case char
 
-            'Quote
-            Case ("""")
+            ' Quote
+            Case """"
                 ignore = (Not ignore)
 
-            'Opening bracket
-            Case "(": If Not ignore Then depth = depth + 1
+            ' Opening bracket
+            Case "(": If (Not ignore) Then depth = depth + 1
 
-            'Closing bracket
+            ' Closing bracket
             Case ")"
                 If (Not ignore) Then
                     depth = depth - 1
                     If (depth = 0) Then
 
-                        'Loop from current position backwards
+                        ' Loop from current position backwards
                         For b = a To 1 Step -1
 
-                            'Get a character
+                            ' Get a character
                             char2 = Mid$(bT, b, 1)
 
                             Select Case char2
 
-                                'Quote
-                                Case ("""")
+                                ' Quote
+                                Case """"
                                     ignore = (Not ignore)
 
-                                'Opening/closing bracket
+                                ' Opening/closing bracket
                                 Case "(": If Not ignore Then depth = depth - 1
                                 Case ")": If Not ignore Then depth = depth + 1
 
-                                'Divider
-                                Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", _
-                                "%", "`", "|", "&"
+                                ' Divider
+                                Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "%", "`", "|", "&"
 
                                     If ((depth = 0) And (Not ignore) And (b >= startAt)) Then
-                                        'We've found a space. This means that the name of the
-                                        'command is now to the right of us. Hence, it's between
-                                        'B and A.
+                                        ' We' ve found a space. This means that the name of the
+                                        ' command is now to the right of us. Hence, it' s between
+                                        ' B and A.
 
                                         cN = Mid$(bT, b + 1, a - b)
 
@@ -993,32 +992,32 @@ Public Function ParseRPGCodeCommand( _
 
                                         If (LenB(theInlineCommand) <> 0) Then
 
-                                            'Now let's execute this command
+                                            ' Now let' s execute this command
                                             oPP = prg.programPos
                                             rV.usingReturnData = True
                                             prg.programPos = DoSingleCommand(cN, prg, rV)
                                             prg.programPos = oPP
 
-                                            'Get the value it returned
+                                            ' Get the value it returned
                                             If (theInlineCommand <> "WAIT") _
                                              And (theInlineCommand <> "GET") Then
                                                 Select Case rV.dataType
                                                     Case DT_NUM: v = " " & CStr(rV.num)
-                                                    Case DT_LIT: v = " " & ("""") & rV.lit & ("""")
+                                                    Case DT_LIT: v = " """ & rV.lit & """"
                                                     Case DT_REFERENCE: v = " " & rV.ref
                                                 End Select
                                             Else
-                                                'Wait/Get command-- don't add quotes!
+                                                ' Wait/Get command-- don' t add quotes!
                                                 v = " " & rV.lit
                                             End If
 
                                         Else
-                                            'Math-- don't touch
+                                            ' Math-- don' t touch
                                             v = cN
                                         End If
 
-                                        'Replace the command's name with
-                                        'the value it returned
+                                        ' Replace the command' s name with
+                                        ' the value it returned
                                         If (Not varExp) Then
                                             ret = _
                                                     prefix & _
@@ -1034,20 +1033,20 @@ Public Function ParseRPGCodeCommand( _
                                                     Mid$(bT, a + 1, Len(bT) - a)
                                         End If
 
-                                        'Recurse!
+                                        ' Recurse!
                                         ParseRPGCodeCommand = _
                                             ParseRPGCodeCommand(ret, prg, b + 1)
 
                                         Exit Function
-                                    End If '(depth = 0) And (Not ignore)
-                            End Select '(char2)
-                        Next b '(b = a To 1 Step -1)
-                    End If '(depth = 0)
-                End If '(Not ignore)
-        End Select '(char)
-    Next a '(a = 1 To Len(bT))
+                                    End If ' (depth = 0) And (Not ignore)
+                            End Select ' (char2)
+                        Next b ' (b = a To 1 Step -1)
+                    End If ' (depth = 0)
+                End If ' (Not ignore)
+        End Select ' (char)
+    Next a ' (a = 1 To Len(bT))
 
-    'Return what we've done
+    ' Return what we' ve done
     ParseRPGCodeCommand = line
 
 End Function
