@@ -230,6 +230,7 @@ Public Sub openItems()
 
             'Copy item values to itmPos() array
             itmPos(itemNum).frame = 0
+            itmPos(itemNum).loopFrame = -1
             itmPos(itemNum).x = .itmX(itemNum)
             itmPos(itemNum).y = .itmY(itemNum)
             itmPos(itemNum).l = .itmLayer(itemNum)
@@ -250,6 +251,7 @@ Public Sub openItems()
                 .yTarg = .yOrig
                 .lOrig = itmPos(itemNum).l
                 .lTarg = .lOrig
+                .queue = vbNullString
             End With
 
             'Check if we should run this item
@@ -282,8 +284,6 @@ Public Sub openItems()
             End If
 
         End With
-
-        itemMem(itemNum).loopSpeed = 1 '[ 3.0.5 temp!]
 
     Next itemNum
 
