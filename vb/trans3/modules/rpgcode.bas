@@ -5732,17 +5732,17 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         Call debugger("Error: Thread data type must be literal, num!-- " + Text$)
     Else
         
-        Dim tid As Long
+        Dim tID As Long
         lit1$ = addExt(lit1$, ".prg")
-        tid = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
+        tID = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
         
         If number = 3 Then
             'save value in destination var...
-            Call SetVariable(useIt3$, CStr(tid), theProgram)
+            Call SetVariable(useIt3$, CStr(tID), theProgram)
         End If
         
         retval.dataType = DT_NUM
-        retval.num = tid
+        retval.num = tID
         Exit Sub
     End If
 End Sub
@@ -7281,9 +7281,9 @@ Sub TileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     yy = getValue(useIt2$, lit$, num2, theProgram)
     typea = getValue(useIt3$, lit1$, num3, theProgram)
     lay = getValue(useIt4$, lie$, num4, theProgram)
-    If xx = 1 Or yy = 1 Or lay = 1 Or typea = 0 Then
-        Call debugger("Error: TileType data type must be num, num, lit, num!-- " + Text$)
-    Else
+    ' If xx = 1 Or yy = 1 Or lay = 1 Or typea = 0 Then
+    '     Call debugger("Error: TileType data type must be num, num, lit, num!-- " + Text$)
+    ' Else
         theX = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
         theY = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
         theLay = inBounds(num4, 1, boardList(activeBoardIndex).theData.bSizeL)
@@ -7315,7 +7315,7 @@ Sub TileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Case "STAIRS8":
                 boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 18
         End Select
-    End If
+    ' End If
 
     Exit Sub
 'Begin error handling code:
