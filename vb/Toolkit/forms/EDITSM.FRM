@@ -795,20 +795,7 @@ Private Sub Form_Activate()
     Set activeSpecialMove = Me
     Set activeForm = Me
     activeSpecialMoveIndex = dataIndex
-
-    'extras
-    tkMainForm.animationExtras.Visible = False
-    tkMainForm.bottomFrame.Visible = False
-    tkMainForm.tileExtras.Visible = False
-    tkMainForm.tileBmpExtras.Visible = False
-    
-    'tools
-    tkMainForm.tilebmpTools.Visible = False
-    tkMainForm.animationTools.Visible = False
-    tkMainForm.rpgcodeTools.Visible = False
-    tkMainForm.tileTools.Visible = False
-    tkMainForm.tileTools.Top = tkMainForm.toolTop
-    tkMainForm.boardTools.Visible = False
+    Call hideAllTools
 End Sub
 
 Private Sub Form_Load()

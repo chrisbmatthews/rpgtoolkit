@@ -34,10 +34,10 @@ Begin VB.Form helpAbout
       TabIndex        =   8
       Top             =   0
       Width           =   6975
-      _extentx        =   12303
-      _extenty        =   847
-      Object.width           =   6975
-      caption         =   "About the RPGToolkit Development System, Version 3"
+      _ExtentX        =   12303
+      _ExtentY        =   847
+      Object.Width           =   6975
+      Caption         =   "About the RPGToolkit Development System, Version 3"
    End
    Begin VB.TextBox Text1 
       Appearance      =   0  'Flat
@@ -273,4 +273,8 @@ End Sub
 
 Private Sub Text1_KeyPress(KeyAscii As Integer)
     KeyAscii = 0
+End Sub
+
+Private Sub Text1_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    Button = -1: Shift = 0
 End Sub
