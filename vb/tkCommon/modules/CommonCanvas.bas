@@ -814,9 +814,4 @@ Public Property Get CanvasOccupied(ByVal handle As Long) As Boolean
     If (CNVExists(handle) <> 0) Then
         CanvasOccupied = True
     End If
-    #If isToolkit = 0 Then
-        Call processEvent
-    #Else
-        DoEvents
-    #End If
 End Property

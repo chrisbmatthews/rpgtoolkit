@@ -64,7 +64,7 @@ Public Sub checkMusic(Optional ByVal forceNow As Boolean)
     On Error Resume Next
 
     If (Not forceNow) Then
-        If (bWaitingForInput) Then Exit Sub
+        If (waitingForInput()) Then Exit Sub
     End If
 
     Dim boardMusic As String

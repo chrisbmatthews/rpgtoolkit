@@ -1,158 +1,176 @@
 Attribute VB_Name = "transInput"
-'=====================================================
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
-'=====================================================
+'=========================================================================
 
-'Process keyboard input (and eventually tcp/ip input).
+'=========================================================================
+' Handles keyboard and mouse input
+'=========================================================================
+
 Option Explicit
 
+'=========================================================================
+' Check status of a key
+'=========================================================================
+Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 
-Public Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-    'GetAsyncKeyState is the user32.lib function which function determines whether the key is
-    'up or down at the time the function is called, and whether the key was pressed after a
-    'previous call to GetAsyncKeyState.
-    'Returns: If the most significant bit is set (if return is negative), the key is down, and if the least
-    'significant bit is set, the key was pressed after the previous call to GetAsyncKeyState.
+'=========================================================================
+' Virtual key codes
+'=========================================================================
+Private Const VK_ADD = &H6B
+Private Const VK_ATTN = &HF6
+Private Const VK_BACK = &H8
+Private Const VK_CANCEL = &H3
+Private Const VK_CAPITAL = &H14
+Private Const VK_CLEAR = &HC
+Private Const VK_CONTROL = &H11
+Private Const VK_CRSEL = &HF7
+Private Const VK_DECIMAL = &H6E
+Private Const VK_DELETE = &H2E
+Private Const VK_DIVIDE = &H6F
+Private Const VK_DOWN = &H28
+Private Const VK_END = &H23
+Private Const VK_EREOF = &HF9
+Private Const VK_ESCAPE = &H1B
+Private Const VK_EXECUTE = &H2B
+Private Const VK_EXSEL = &HF8
+Private Const VK_F1 = &H70
+Private Const VK_F10 = &H79
+Private Const VK_F11 = &H7A
+Private Const VK_F12 = &H7B
+Private Const VK_F13 = &H7C
+Private Const VK_F14 = &H7D
+Private Const VK_F15 = &H7E
+Private Const VK_F16 = &H7F
+Private Const VK_F17 = &H80
+Private Const VK_F18 = &H81
+Private Const VK_F19 = &H82
+Private Const VK_F2 = &H71
+Private Const VK_F20 = &H83
+Private Const VK_F21 = &H84
+Private Const VK_F22 = &H85
+Private Const VK_F23 = &H86
+Private Const VK_F24 = &H87
+Private Const VK_F3 = &H72
+Private Const VK_F4 = &H73
+Private Const VK_F5 = &H74
+Private Const VK_F6 = &H75
+Private Const VK_F7 = &H76
+Private Const VK_F8 = &H77
+Private Const VK_F9 = &H78
+Private Const VK_HELP = &H2F
+Private Const VK_HOME = &H24
+Private Const VK_INSERT = &H2D
+Private Const VK_LBUTTON = &H1
+Private Const VK_LCONTROL = &HA2
+Private Const VK_LEFT = &H25
+Private Const VK_LMENU = &HA4
+Private Const VK_LSHIFT = &HA0
+Private Const VK_MBUTTON = &H4
+Private Const VK_MENU = &H12
+Private Const VK_MULTIPLY = &H6A
+Private Const VK_NEXT = &H22
+Private Const VK_NONAME = &HFC
+Private Const VK_NUMLOCK = &H90
+Private Const VK_NUMPAD0 = &H60
+Private Const VK_NUMPAD1 = &H61
+Private Const VK_NUMPAD2 = &H62
+Private Const VK_NUMPAD3 = &H63
+Private Const VK_NUMPAD4 = &H64
+Private Const VK_NUMPAD5 = &H65
+Private Const VK_NUMPAD6 = &H66
+Private Const VK_NUMPAD7 = &H67
+Private Const VK_NUMPAD8 = &H68
+Private Const VK_NUMPAD9 = &H69
+Private Const VK_OEM_CLEAR = &HFE
+Private Const VK_PA1 = &HFD
+Private Const VK_PAUSE = &H13
+Private Const VK_PLAY = &HFA
+Private Const VK_PRINT = &H2A
+Private Const VK_PRIOR = &H21
+Private Const VK_PROCESSKEY = &HE5
+Private Const VK_RBUTTON = &H2
+Private Const VK_RCONTROL = &HA3
+Private Const VK_RETURN = &HD
+Private Const VK_RIGHT = &H27
+Private Const VK_RMENU = &HA5
+Private Const VK_RSHIFT = &HA1
+Private Const VK_SCROLL = &H91
+Private Const VK_SELECT = &H29
+Private Const VK_SEPARATOR = &H6C
+Private Const VK_SHIFT = &H10
+Private Const VK_SNAPSHOT = &H2C
+Private Const VK_SPACE = &H20
+Private Const VK_SUBTRACT = &H6D
+Private Const VK_TAB = &H9
+Private Const VK_UP = &H26
+Private Const VK_ZOOM = &HFB
 
-    'Win32 virtual ANSI keycodes
-Public Const VK_ADD = &H6B
-Public Const VK_ATTN = &HF6
-Public Const VK_BACK = &H8
-Public Const VK_CANCEL = &H3
-Public Const VK_CAPITAL = &H14
-Public Const VK_CLEAR = &HC
-Public Const VK_CONTROL = &H11
-Public Const VK_CRSEL = &HF7
-Public Const VK_DECIMAL = &H6E
-Public Const VK_DELETE = &H2E
-Public Const VK_DIVIDE = &H6F
-Public Const VK_DOWN = &H28
-Public Const VK_END = &H23
-Public Const VK_EREOF = &HF9
-Public Const VK_ESCAPE = &H1B
-Public Const VK_EXECUTE = &H2B
-Public Const VK_EXSEL = &HF8
-Public Const VK_F1 = &H70
-Public Const VK_F10 = &H79
-Public Const VK_F11 = &H7A
-Public Const VK_F12 = &H7B
-Public Const VK_F13 = &H7C
-Public Const VK_F14 = &H7D
-Public Const VK_F15 = &H7E
-Public Const VK_F16 = &H7F
-Public Const VK_F17 = &H80
-Public Const VK_F18 = &H81
-Public Const VK_F19 = &H82
-Public Const VK_F2 = &H71
-Public Const VK_F20 = &H83
-Public Const VK_F21 = &H84
-Public Const VK_F22 = &H85
-Public Const VK_F23 = &H86
-Public Const VK_F24 = &H87
-Public Const VK_F3 = &H72
-Public Const VK_F4 = &H73
-Public Const VK_F5 = &H74
-Public Const VK_F6 = &H75
-Public Const VK_F7 = &H76
-Public Const VK_F8 = &H77
-Public Const VK_F9 = &H78
-Public Const VK_HELP = &H2F
-Public Const VK_HOME = &H24
-Public Const VK_INSERT = &H2D
-Public Const VK_LBUTTON = &H1
-Public Const VK_LCONTROL = &HA2
-Public Const VK_LEFT = &H25
-Public Const VK_LMENU = &HA4
-Public Const VK_LSHIFT = &HA0
-Public Const VK_MBUTTON = &H4             '  NOT contiguous with L RBUTTON
-Public Const VK_MENU = &H12
-Public Const VK_MULTIPLY = &H6A
-Public Const VK_NEXT = &H22
-Public Const VK_NONAME = &HFC
-Public Const VK_NUMLOCK = &H90
-Public Const VK_NUMPAD0 = &H60
-Public Const VK_NUMPAD1 = &H61
-Public Const VK_NUMPAD2 = &H62
-Public Const VK_NUMPAD3 = &H63
-Public Const VK_NUMPAD4 = &H64
-Public Const VK_NUMPAD5 = &H65
-Public Const VK_NUMPAD6 = &H66
-Public Const VK_NUMPAD7 = &H67
-Public Const VK_NUMPAD8 = &H68
-Public Const VK_NUMPAD9 = &H69
-Public Const VK_OEM_CLEAR = &HFE
-Public Const VK_PA1 = &HFD
-Public Const VK_PAUSE = &H13
-Public Const VK_PLAY = &HFA
-Public Const VK_PRINT = &H2A
-Public Const VK_PRIOR = &H21
-Public Const VK_PROCESSKEY = &HE5
-Public Const VK_RBUTTON = &H2
-Public Const VK_RCONTROL = &HA3
-Public Const VK_RETURN = &HD
-Public Const VK_RIGHT = &H27
-Public Const VK_RMENU = &HA5
-Public Const VK_RSHIFT = &HA1
-Public Const VK_SCROLL = &H91
-Public Const VK_SELECT = &H29
-Public Const VK_SEPARATOR = &H6C
-Public Const VK_SHIFT = &H10
-Public Const VK_SNAPSHOT = &H2C
-Public Const VK_SPACE = &H20
-Public Const VK_SUBTRACT = &H6D
-Public Const VK_TAB = &H9
-Public Const VK_UP = &H26
-Public Const VK_ZOOM = &HFB
+'=========================================================================
+' Member variables
+'=========================================================================
+Private mouseX As Integer            'x pos of mouse
+Private mouseY As Integer            'y pos of mouse
+Private mouseMoveX As Integer        'x pos of mouse (dynamic)
+Private mouseMoveY As Integer        'y pos of mouse (dynamic)
+Private bWaitingForInput As Boolean  'waiting for input?
+Private keyWaitState As Long         'Key pressed on last event.
+Private keyShiftState As Long        'Key pressed shift value on last event.
+Private keyAsciiState As Long        'Key pressed on last event (ascii).
+Private ignoreKeyDown As Boolean     'Ignore key down events?
 
+'=========================================================================
+' Public variables
+'=========================================================================
+Public useArrowKeys As Boolean       'Use arrow keys?
+Public useNumberPad As Boolean       'Use number pad?
+Public useJoystick As Boolean        'Use joystick?
 
-Public mouseX As Integer, mouseY As Integer         'Mouse x and y position.
-Public mouseMoveX As Integer, mouseMoveY As Integer 'Co-ords of mouse movement.
-Public bWaitingForInput As Boolean                  'Are we currently waiting for input? (i.e. joystick or keyboard?)
+'=========================================================================
+' Get the lasy key pressed
+'=========================================================================
+Public Property Get lastKeyPressed() As String
+    lastKeyPressed = keyWaitState
+End Property
 
-Public keyWaitState As Long         'Key pressed on last event.
-Public keyShiftState As Long        'Key pressed shift value on last event.
-                                    '1 = shift 2 = ctrl 4 = alt.
-Public keyAsciiState As Long        'Key pressed on last event (ascii).
+'=========================================================================
+' Makes us stop waiting for input
+'=========================================================================
+Public Sub stopWaitingForInput()
+    bWaitingForInput = False
+End Sub
 
-Private ignoreKeyDown As Boolean    'Ignore key down events?
+'=========================================================================
+' Read-only pointer to bWaitingForInput
+'=========================================================================
+Public Property Get waitingForInput() As Boolean
+    waitingForInput = bWaitingForInput
+End Property
 
-Public useJoystick As Boolean       'Using joystick.
-
-'===========================================
-'Temporary movement control booleans. Added by Delano. 4/05/04
-'Used in scanKeys to allow the use of the arrow keys and numberpad for movement.
-'Will mirror with variables in the mainFile for next release (3.0.4)
-'Assigned True in scankeys until otherwise.
-'===========================================
-Public useArrowKeys As Boolean
-Public useNumberPad As Boolean
-
+'=========================================================================
+' Update ASCII value of last key pressed
+'=========================================================================
 Public Sub setAsciiKeyState(ByVal state As Long)
     On Error Resume Next
     keyAsciiState = state
 End Sub
 
-Sub FlushKB()
-    '=============================
-    'Flush the keyboard buffer.
-    '=============================
-    'Waits until no key is being pressed.
-    
-    'Called by runFight, clearBufferRPG, ShowPromptDialog, ShowFileDialog, CursorMapRun, selectionBox, runProgram
-    
+'=========================================================================
+' Wait until no key is being pressed
+'=========================================================================
+Public Sub FlushKB()
     On Error Resume Next
-    Do Until getKey() = ""
+    Do Until (getKey() = "")
         Call processEvent
     Loop
 End Sub
 
+'=========================================================================
+' "Delay" for the number of milliseconds passed in
+'=========================================================================
 Public Sub DoEventsFor(ByVal milliSeconds As Long)
-
-    '================================================
-    'Do events for a certain period of time [KSNiloc]
-    '================================================
 
     Dim StartTime As Long
     Dim done As Boolean
@@ -167,20 +185,12 @@ Public Sub DoEventsFor(ByVal milliSeconds As Long)
 
 End Sub
 
+'=========================================================================
+' Check if a key is being pressed
+'=========================================================================
 Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
 
-    '=============================
-    'EDITED: Delano - 18/05/04
-    'Fixed error in Get command where LEFT and RIGHT are inversed.
-    'Added recognition for SPACE.
-    'Renamed variables: t >> repeat
-    'Removed: ll: call processevent does not need to return a value.
-    '=============================
-    'Gets the contents of the keyboard or joystick buffer.
-    
-    'Called by FlushKB and GetRPG only.
-    
-    On Error GoTo errorhandler
+    On Error Resume Next
 
     'Clear the last pressed key.
     keyWaitState = -1
@@ -218,7 +228,6 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
     
     'Check the key for common keys.
     If keyWaitState = 13 Then returnVal$ = "ENTER"
-    'If keyWaitState = 32 Then returnVal$ = "SPACE"
     If keyWaitState = 38 Then returnVal$ = "UP"
     If keyWaitState = 40 Then returnVal$ = "DOWN"
     If keyWaitState = 37 Then returnVal$ = "RIGHT"
@@ -227,28 +236,16 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
     If keyShiftState = 1 Then returnVal$ = UCase$(returnVal$) 'If shift was pressed, return an upper-case letter.
     'Might want to add numberpad here too.
     
-    getKey = returnVal$
+    getKey = returnVal
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
-
-
-Function getAsciiKey() As String
-    '=============================
-    'Renamed variables: t >> repeat
-    'Removed: ll: call processevent does not need to return a value.
-    '=============================
-    'Gets whatever is in keyboard buffer (ASCII values!)
+'=========================================================================
+' Wait for a key to be pressed and return its ASCII value
+'=========================================================================
+Public Function getAsciiKey() As String
     
-    'Called by ShowPromptDialog and ShowFileDialog only.
-    
-    On Error GoTo errorhandler
+    On Error Resume Next
     
     'Clear the last pressed key (ascii)
     keyAsciiState = -1
@@ -267,66 +264,48 @@ Function getAsciiKey() As String
     End If
     
     Dim returnVal As String
-   'Get a string of the key number.
-    returnVal$ = Chr$(keyAsciiState)
+    'Get a string of the key number.
+    returnVal = Chr(keyAsciiState)
     
-    getAsciiKey = returnVal$
+    getAsciiKey = returnVal
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
-
-Sub haltKeyDownScanning()
-    '=============================
-    'Causes the keyDownEvent to be ignored (i.e. key presses in the main form.)
-    '=============================
-    'Called by ShowPromptDialog, ShowFileDialog only.
-    
+'=========================================================================
+' Causes the key down event to be ignored
+'=========================================================================
+Public Sub haltKeyDownScanning()
     ignoreKeyDown = True
 End Sub
 
-
-Sub startKeyDownScanning()
-    '=============================
-    'Causes the keyDownEvent to begin (i.e. key presses in the main form.)
-    '=============================
-    'Called by ShowPromptDialog, ShowFileDialog only.
-    
+'=========================================================================
+' Causes the key down event to be processed
+'=========================================================================
+Public Sub startKeyDownScanning()
     ignoreKeyDown = False
 End Sub
 
+'=========================================================================
+' Wait for a key to be pressed
+'=========================================================================
+Public Function WaitForKey() As String
 
-Function WaitForKey() As String
-    '=============================
-    'EDITED: Delano - 18/05/04
-    'Added recognition for SPACE.
-    'Waits for key to be pressed.
-    'Renamed variables: t >> jButtonNum
-    '=============================
-
-    'Called by rewardPlayers, gameOver, showMenu, increaseLevel, WaitRPG, WinRPG, AddToMsgBox, DebugBox
-
-    On Error GoTo errorhandler
+    On Error Resume Next
 
     'Clear the last pressed key.
     keyWaitState = 0
     bWaitingForInput = True
-    
+
     'Check the joystick.
     Dim jButton(4) As Boolean
     Dim theDir As Long
-    
-    Do While keyWaitState = 0 And jButton(0) = False
+
+    Do While (keyWaitState = 0) And (Not jButton(0))
         Call processEvent
         'Get a movement direction and see any buttons that were pressed.
         theDir = joyDirection(jButton)
     Loop
-    
+
     bWaitingForInput = False
     
     If jButton(0) Then
@@ -341,57 +320,45 @@ Function WaitForKey() As String
     
     Dim jButtonNum As Integer
     For jButtonNum = 1 To UBound(jButton)
-        'Check the other buttons.
-    
+        'Check the other buttons
         If jButton(jButtonNum) Then
             WaitForKey = "BUTTON" & CStr(jButtonNum + 1)
         End If
     Next jButtonNum
-    
-    If keyWaitState = 88 And keyShiftState = 4 Then
+
+    If (keyWaitState = 88) And (keyShiftState = 4) Then
         'User pressed ALT-X: Force exit.
         gGameState = GS_QUIT
     End If
     
     Dim returnVal As String
     'Get a string of the key number.
-    returnVal$ = Chr$(keyWaitState)
+    returnVal = Chr(keyWaitState)
     
     'Check the key for common keys.
     If keyWaitState = 13 Then returnVal$ = "ENTER"
-    'If keyWaitState = 32 Then returnVal$ = "SPACE"
     If keyWaitState = 38 Then returnVal$ = "UP"
     If keyWaitState = 40 Then returnVal$ = "DOWN"
     If keyWaitState = 37 Then returnVal$ = "LEFT"
     If keyWaitState = 39 Then returnVal$ = "RIGHT"
-    If keyShiftState = 1 Then returnVal$ = UCase$(returnVal$)
+    If keyShiftState = 1 Then returnVal$ = UCase(returnVal)
     'Might want to add numberpad here too.
     
-    WaitForKey = returnVal$
+    WaitForKey = returnVal
     
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
-
-Sub getMouseMove(ByRef x As Long, ByRef y As Long)
-    '=============================================
-    'Waits for user to move mouse on mainFormform.
-    'Returns x and y.
-    '=============================================
-    'Called by MoveMouseRPG only.
+'=========================================================================
+' Wait for the mouse to be moved
+'=========================================================================
+Public Sub getMouseMove(ByRef x As Long, ByRef y As Long)
     
-    On Error GoTo errorhandler
+    On Error Resume Next
     
     mouseMoveX = -1
-    
     bWaitingForInput = True
     
-    Do While mouseMoveX = -1
+    Do While (mouseMoveX = -1)
         Call processEvent
     Loop
     
@@ -399,49 +366,33 @@ Sub getMouseMove(ByRef x As Long, ByRef y As Long)
     x = Int(mouseMoveX)
     y = Int(mouseMoveY)
 
-    Exit Sub
-    
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
-Sub getMouse(ByRef x As Long, ByRef y As Long)
-    '=========================================
-    'Waits for user to click mouse on mainForm.
-    'Returns x and y.
-    '=========================================
-    'Called by MouseClickRPG only.
-    
-    On Error GoTo errorhandler
-    
+'=========================================================================
+' Wait for the mouse to be clicked
+'=========================================================================
+Public Sub getMouse(ByRef x As Long, ByRef y As Long)
+
+    On Error Resume Next
+
     mouseX = -1
     bWaitingForInput = True
-    
-    Do While mouseX = -1
+
+    Do While (mouseX = -1)
         Call processEvent
     Loop
-    
+
     bWaitingForInput = False
-    
+
     x = Int(mouseX)
     y = Int(mouseY)
 
-    Exit Sub
-    
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
+'=========================================================================
+' Check if the mouse was moved
+'=========================================================================
 Public Sub getMouseNoWait(ByRef x As Long, ByRef y As Long)
-
-    '======================================================
-    'Waits only 15 milliseconds for the mouse to be clicked
-    '======================================================
-    '[KSNiloc]
 
     On Error Resume Next
     
@@ -454,32 +405,14 @@ Public Sub getMouseNoWait(ByRef x As Long, ByRef y As Long)
 
 End Sub
 
-Function isPressed(ByVal theKey As String) As Boolean
-    '=============================
-    'EDITED: [Delano - 4/05/04]
-    'Added recognition of numberpad keys.
-    '=============================
-    'Checks if the supplied key has been pressed.
-    'Special keys: LEFT, RIGHT, UP, DOWN, SPACE, ESC, ENTER
-    'Numberpad keys: NUMPAD0 to NUMPAD9
-    'Joystick buttons: BUTTON, BUTTON1, BUTTON2, BUTTON3, BUTTON4
-    
-    'Called by scanKeys when checking for movement.
-    'Called by ShowPromptDialog, ShowFileDialog, SelectionBox to move around Windows dialog boxes (i.e. PromptRPG)
-    'Called by CursorMapRun to move around the menu's cursor system.
-    'Called by CBCheckKey as the callback function to dlls to check for user-defined keys.
-    
-    'GetAsyncKeyState is the user32.lib function which function determines whether the key is
-    'up or down at the time the function is called, and whether the key was pressed after a
-    'previous call to GetAsyncKeyState.
-    'Returns: If the most significant bit is set (if return is negative), the key is down, and if the least
-    'significant bit is set, the key was pressed after the previous call to GetAsyncKeyState.
-    
-    On Error Resume Next
-    
-    isPressed = False
+'=========================================================================
+' Check if a key is pressed
+'=========================================================================
+Public Function isPressed(ByVal theKey As String) As Boolean
 
-    If gGameState = GS_PAUSE Then
+    On Error Resume Next
+
+    If (gGameState = GS_PAUSE) Then
         'Trans doesn't have focus!
         Exit Function
     End If
@@ -612,13 +545,12 @@ Function isPressed(ByVal theKey As String) As Boolean
     
 End Function
 
-Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
+'=========================================================================
+' Handles key down events
+'=========================================================================
+Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
+
     On Error Resume Next
-    '=============================
-    'Called when a key down event is discovered in the MainForm.
-    'Renamed: t >> index
-    '=============================
-    'Called by Form_KeyDown only.
     
     'Save old keycodes.
     keyWaitState = keyCode
@@ -626,7 +558,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     
     'When a dialog window is called, either ShowFileDialog or ShowPromptDialog.
     'Control is returned when the dialog is closed.
-    If ignoreKeyDown Then Exit Sub
+    If (ignoreKeyDown) Then Exit Sub
 
     'Inform plugins...
     Dim strKey As String
@@ -733,13 +665,11 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     
 End Sub
 
-Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Integer, ByVal button As Integer)
-    '======================================================
-    'Called when mouse down event detected on the MainForm.
-    'Renamed variables: t >> index
-    '======================================================
-    'Called by Form_MouseDown only.
-    
+'=========================================================================
+' Handles mouse down events
+'=========================================================================
+Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Integer, ByVal button As Integer)
+
     On Error Resume Next
     
     'Returned values from the form.
@@ -783,36 +713,25 @@ Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Intege
     
 End Sub
 
-Sub mouseMoveEvent(ByVal x As Integer, ByVal y As Integer)
-    '=====================================================
-    'Called when mouse move event detected on the MainForm
-    'Called by Form_MoveMouse only.
-    '=====================================================
+'=========================================================================
+' Handles mouse move events
+'=========================================================================
+Public Sub mouseMoveEvent(ByVal x As Integer, ByVal y As Integer)
     On Error Resume Next
-    
-    'Returned values from the form.
     mouseMoveX = x
     mouseMoveY = y
-    
 End Sub
 
-Sub scanKeys()
-    '=============================
-    'EDITED: [Delano - 4/05/04]
-    'Added support for the numberpad for moving on the boards,
-    'and controls to turn the arrow keys off.
-    '=============================
-    
-    'Called by the mainLoop only, when in the GS_IDLE state, and scans for any pressed keys.
-    'Initiates player movement via insertTarget; only updates the pending movements, all other
-    'movements handled independently in the GS_MOVEMENT state in the mainLoop.
-    
+'=========================================================================
+' Scan for important keys (like arrows)
+'=========================================================================
+Public Sub scanKeys()
+
     On Error Resume Next
     
     'Temporarily defining these true always. Defined at top of this module.
     useArrowKeys = True
     useNumberPad = True
-    'useJoyStick = false
     
     If (isPressed("RIGHT") And isPressed("UP") And useArrowKeys) Or (isPressed("NUMPAD9") And useNumberPad) Then
         'Move NorthEast
@@ -836,127 +755,104 @@ Sub scanKeys()
         'Set the mainLoop state to movement. The mainLoop will repeat until the required number of
         'frames are drawn.
         gGameState = GS_MOVEMENT
-        
-        Exit Sub
-    End If
-    
-    If (isPressed("LEFT") And isPressed("UP") And useArrowKeys) Or (isPressed("NUMPAD7") And useNumberPad) Then
+   
+    ElseIf (isPressed("LEFT") And isPressed("UP") And useArrowKeys) Or (isPressed("NUMPAD7") And useNumberPad) Then
         'Move NorthWest
-        
+
         pendingPlayerMovement(selectedPlayer).direction = MV_NW
         pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
         pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
-        
+
         movementCounter = 0
         gGameState = GS_MOVEMENT
-        Exit Sub
-    End If
-    
-    If (isPressed("RIGHT") And isPressed("DOWN") And useArrowKeys) Or (isPressed("NUMPAD3") And useNumberPad) Then
+
+    ElseIf (isPressed("RIGHT") And isPressed("DOWN") And useArrowKeys) Or (isPressed("NUMPAD3") And useNumberPad) Then
         'Move SouthEast
-        
+
         pendingPlayerMovement(selectedPlayer).direction = MV_SE
         pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
         pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
-        
+
         movementCounter = 0
         gGameState = GS_MOVEMENT
-        Exit Sub
-    End If
-    
-    If (isPressed("LEFT") And isPressed("DOWN") And useArrowKeys) Or (isPressed("NUMPAD1") And useNumberPad) Then
+
+    ElseIf (isPressed("LEFT") And isPressed("DOWN") And useArrowKeys) Or (isPressed("NUMPAD1") And useNumberPad) Then
         'Move SouthWest
-        
+
         pendingPlayerMovement(selectedPlayer).direction = MV_SW
         pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
         pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
-        
+
         movementCounter = 0
         gGameState = GS_MOVEMENT
-        Exit Sub
-    End If
     
-    If (isPressed("UP") And useArrowKeys) Or _
+    ElseIf (isPressed("UP") And useArrowKeys) Or _
         (isPressed("NUMPAD8") And useNumberPad) Or (isPressed("JOYUP") And useJoystick) Then
         'Move North
-        
+
         pendingPlayerMovement(selectedPlayer).direction = MV_NORTH
         pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
         pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
-        
+
         movementCounter = 0
         gGameState = GS_MOVEMENT
-        Exit Sub
-    End If
-    
-    If (isPressed("DOWN") And useArrowKeys) Or _
+
+    ElseIf (isPressed("DOWN") And useArrowKeys) Or _
         (isPressed("NUMPAD2") And useNumberPad) Or (isPressed("JOYDOWN") And useJoystick) Then
         'Move South
-        
+
         pendingPlayerMovement(selectedPlayer).direction = MV_SOUTH
         pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
         pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
-        
+
         movementCounter = 0
         gGameState = GS_MOVEMENT
-        Exit Sub
-    End If
-    
-    If (isPressed("RIGHT") And useArrowKeys) Or _
+
+    ElseIf (isPressed("RIGHT") And useArrowKeys) Or _
         (isPressed("NUMPAD6") And useNumberPad) Or (isPressed("JOYRIGHT") And useJoystick) Then
         'Move East
-        
+
         pendingPlayerMovement(selectedPlayer).direction = MV_EAST
         pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
         pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
-        
+
         movementCounter = 0
         gGameState = GS_MOVEMENT
-        Exit Sub
-    End If
-    
-    If (isPressed("LEFT") And useArrowKeys) Or _
+
+    ElseIf (isPressed("LEFT") And useArrowKeys) Or _
         (isPressed("NUMPAD4") And useNumberPad) Or (isPressed("JOYLEFT") And useJoystick) Then
         'Move West
-        
+
         pendingPlayerMovement(selectedPlayer).direction = MV_WEST
         pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
         pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
         pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
         Call insertTarget(pendingPlayerMovement(selectedPlayer))
-        
+
         movementCounter = 0
         gGameState = GS_MOVEMENT
-        Exit Sub
-    End If
 
-    If isPressed("BUTTON1") Then
+    ElseIf isPressed("BUTTON1") Then
         'Let joystick button 1 act as the activation key.
-        
         keyWaitState = mainMem.Key
         Call programTest(pPos(selectedPlayer))
-        Exit Sub
-    End If
-    
-    If isPressed("BUTTON2") Then
+
+    ElseIf isPressed("BUTTON2") Then
         'Bring up the menu when the user presses joystick button 2.
-        
         Call showMenu
-        Exit Sub
+
     End If
-    
+
 End Sub
-
-

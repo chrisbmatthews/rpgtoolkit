@@ -354,7 +354,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                     
                     'If [Next to] Or [On] tile.
                         
-                    If keyWaitState = mainMem.Key Then
+                    If (lastKeyPressed() = mainMem.Key) Then
                         'yes, we pressed the right key
                         toRet = runPrgYN(t)
                     End If
@@ -440,7 +440,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                         End Select
 
                     If tempItems(t).x = xx And tempItems(t).y = yy And tempItems(t).l = pos.l Then
-                        If keyWaitState = mainMem.Key Then
+                        If (lastKeyPressed() = mainMem.Key) Then
                             'yes, we pressed the right key
                             toRet = runItmYN(t)
                         End If
@@ -780,7 +780,7 @@ Public Sub runProgram( _
     Call FlushKB
     Call ClearRPGCodeProcess(theProgram)
     runningProgram = False
-    bWaitingForInput = False
+    Call stopWaitingForInput
 
     If nextProgram <> "" Then
         Dim oldNextProgram As String

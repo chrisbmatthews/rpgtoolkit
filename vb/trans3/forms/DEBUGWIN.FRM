@@ -60,9 +60,8 @@ Option Explicit
 '=========================================================================
 ' Key pressed down on debug window
 '=========================================================================
-Private Sub Form_KeyDown(keyCode As Integer, Shift As Integer)
-    keyWaitState = keyCode
-    keyShiftState = Shift
+Private Sub Form_KeyDown(ByRef keyCode As Integer, ByRef Shift As Integer)
+    Call keyDownEvent(keyCode, Shift)
 End Sub
 
 '=========================================================================
