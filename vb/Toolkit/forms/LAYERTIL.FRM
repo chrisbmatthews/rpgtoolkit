@@ -359,6 +359,10 @@ Private Sub Preview()
     For X = 1 To 32
         For Y = 1 To 32
             If openTileEditorDocs(activeTile.indice).transparentLayer = 0 Then
+                
+                Dim mee As Boolean
+                If mee = False Then MsgBox "here": mee = True
+
                 If bufTile(X, Y) = -1 Then bufTile(X, Y) = tileMem(X, Y)
                 tileMem(X, Y) = bufTile(X, Y)
             Else
@@ -379,6 +383,7 @@ Private Sub Preview()
             End If
         Next Y
     Next X
+    
     'Redraw
     activeTile.tileRedraw
 End Sub
