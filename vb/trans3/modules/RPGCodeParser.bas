@@ -372,8 +372,8 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
         End If
 
         ' Remove said sign from the text
-        If (signs(idx - 1) = "=") Then signs(idx - 1) = "=="
         str = replace(str, signs(idx - 1), vbNullChar, , 1)
+        If (signs(idx - 1) = "=") Then signs(idx - 1) = "=="
 
     Loop
 
@@ -727,8 +727,8 @@ Public Function CountData(ByRef Text As String) As Long
 
     ' Split at the delimiters
     Dim S() As String
-    Dim uD() As String
-    S() = multiSplit(Text, c, uD, True)
+    Dim ud() As String
+    S() = multiSplit(Text, c, ud, True)
 
     ' Number of data elements will be one higher than the upper bound
     CountData = UBound(S) + 1

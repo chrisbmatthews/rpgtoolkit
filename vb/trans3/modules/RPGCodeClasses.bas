@@ -242,15 +242,13 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
                 ' Only define if it's not existent
                 If ( _
-                        (Not numVarExists(constParts(1), globalHeap) And _
-                        (Not numVarExists(constParts(1), prg.heapStack(prg.currentHeapFrame))))) _
+                        (Not (numVarExists(constParts(1), globalHeap)) And _
+                        (Not (numVarExists(constParts(1), prg.heapStack(prg.currentHeapFrame)))))) _
                             Then
 
                     ' Create the var
                     Dim retval As RPGCODE_RETURN
                     Call DoSingleCommand(constParts(1) & "=" & constParts(2), prg, retval)
-                    ' constParts(2) = Mid$(ParseRPGCodeCommand(spliceForObjects("x=" & constParts(2), prg), prg), 3)
-                    ' Call SetVariable(constParts(1), constParts(2), prg)
 
                 End If
 
@@ -273,11 +271,11 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             opening = False
             depth = depth + 1
 
-        ElseIf (inClass And (Not opening) And (cmd = "OPENBLOCK")) Then
+        ElseIf (inClass And (Not (opening)) And (cmd = "OPENBLOCK")) Then
             ' Getting deeper
             depth = depth + 1
 
-        ElseIf (inClass And (Not opening) And (cmd = "CLOSEBLOCK")) Then
+        ElseIf (inClass And (Not (opening)) And (cmd = "CLOSEBLOCK")) Then
             ' Coming out
             depth = depth - 1
             ' Check if we're completely out
@@ -294,7 +292,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                         End If
                         Dim toInherit As String
                         toInherit = Trim$(parts(inheritIdx))
-                        If (Not canInstanceClass(toInherit, prg)) Then
+                        If Not (canInstanceClass(toInherit, prg)) Then
                             Call debugger("Base class " & toInherit & " not found-- " & prg.program(lineIdx))
                         Else
                             ' Make toInherit caps
@@ -306,7 +304,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                                     ' Found it!
                                     theClass = prg.classes.classes(idx)
                                     ' Make sure it's an interface if this class is an interface
-                                    If ((Not theClass.isInterface) And (prg.classes.classes(classIdx).isInterface)) Then
+                                    If ((Not (theClass.isInterface)) And (prg.classes.classes(classIdx).isInterface)) Then
                                         ' Not an interface
                                         Call debugger("Interfaces can only inherit other interfaces! -- " & prg.program(lineIdx))
                                         Exit Sub
@@ -486,7 +484,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             End If
 
             ' Make sure this line isn't run
-            If (Not methodHere) Then
+            If Not (methodHere) Then
                 prg.program(lineIdx) = vbNullString
             End If
 
@@ -644,7 +642,7 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
         theLine = getMethodLine(methodName, prg)
 
         ' Check if we errored out
-        If ((theLine = -1) And (Not needNotExist)) Then
+        If ((theLine = -1) And (Not (needNotExist))) Then
             Call debugger("Could not find method " & origName & " -- " & Text)
             Exit Sub
         ElseIf ((theLine <> -1) And (needNotExist)) Then
@@ -666,7 +664,7 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
     For idx = 0 To UBound(scope.methods)
         If (scope.methods(idx).name = UCase$(origName)) Then
             ' Illegal redifinition
-            If (Not noErrorOnRedefine) Then
+            If Not (noErrorOnRedefine) Then
                 Call debugger("Illegal redefinition of method " & origName & " -- " & Text)
             End If
             Exit Sub
@@ -735,7 +733,7 @@ Private Sub killHandle(ByVal hClass As Long)
 
     On Error Resume Next
 
-    If (Not UBound(objHandleUsed) < hClass) Then
+    If (Not (UBound(objHandleUsed) < hClass)) Then
         ' Write in the data
         objHandleUsed(hClass) = False
     End If
@@ -757,7 +755,7 @@ Private Function newHandle() As Long
 
     ' Loop over each handle
     For idx = 0 To UBound(objHandleUsed)
-        If (Not objHandleUsed(idx)) Then
+        If Not (objHandleUsed(idx)) Then
             ' Free position
             pos = idx
             Exit For
@@ -1135,7 +1133,7 @@ Private Function createParams(ByRef params() As String, ByVal noParams As Boolea
     ' Begin the return string
     createParams = "("
 
-    If (Not noParams) Then
+    If Not (noParams) Then
         ' Loop over each param
         For idx = 0 To UBound(params)
             createParams = createParams & params(idx) & ","
@@ -1195,7 +1193,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
             Case "!", "$", "-"
                 ' Could be a public var
-                If (depth = 0 And (Not ignore) And (arrayDepth = 0)) Then
+                If (depth = 0 And (Not (ignore)) And (arrayDepth = 0)) Then
                     If (char <> "-") Then
                         lngEnd = a
                     Else
@@ -1206,13 +1204,13 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                 End If
 
             Case "("
-                If (Not ignore) Then
+                If Not (ignore) Then
                     ' Increase depth
                     depth = depth + 1
                 End If
 
             Case ")"
-                If (Not ignore) Then
+                If Not (ignore) Then
                     ' Decrease depth
                     depth = depth - 1
                     If (depth = 0) Then
@@ -1231,14 +1229,14 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
             Case """"
                 ' Found a quote
-                ignore = (Not ignore)
+                ignore = Not (ignore)
 
         End Select
     Next a
 
     ' Record the method's command line
     cLine = ParseRPGCodeCommand(Trim$(Mid$(Text, begin + 2, lngEnd - begin - 1)), prg)
-    If (Not var) Then
+    If Not (var) Then
         cmdName = UCase$(GetCommandName(cLine))
     Else
         ' Parse the var
@@ -1276,14 +1274,14 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "(", ")", _
             "%", "`", "|", "&", "~"
                 ' It's a divider
-                If ((Not ignore) And (arrayDepth = 0)) Then
+                If ((Not (ignore)) And (arrayDepth = 0)) Then
                     start = a + 1
                     Exit For
                 End If
 
             Case """"
                 ' Found a quote
-                ignore = (Not ignore)
+                ignore = Not (ignore)
                 spacesOK = False
 
             Case "["
@@ -1320,7 +1318,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     ' Check if we're calling from outside
     outside = (topNestle(prg) <> hClass)
 
-    If (Not var) Then
+    If Not (var) Then
 
         ' Check if we're to release
         If (cmdName = "RELEASE") Then

@@ -158,10 +158,10 @@ Public cnvRPGCodeAccess As Long
 Public cnvRPGCode() As Long
 
 ' Transparent color
-Public Const TRANSP_COLOR = 16777215
+Public Const TRANSP_COLOR = 0
 
 ' Alternate transparent color
-Public Const TRANSP_COLOR_ALT = 0
+Public Const TRANSP_COLOR_ALT = 16777215
 
 ' In DirectX mode? (yes, always :P)
 Private Const inDXMode As Boolean = True

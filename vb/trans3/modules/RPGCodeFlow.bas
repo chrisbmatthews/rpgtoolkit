@@ -89,58 +89,18 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef pr
     Call getVariable("this!", lit, oldThis, prg)
     Call SetVariable("this!", CStr(hClass), prg, True)
 
-    If (classes(hClass).objClass Is Nothing) Then
+    ' Class name to call under
+    Dim thePrefix As String
 
-        ' Class name to call under
-        Dim thePrefix As String
-
-        ' Check for overridden name
-        thePrefix = checkOverrideName(theClass, methodName)
-        If (LenB(thePrefix) = 0) Then
-            ' Didn't find one
-            thePrefix = theClass.strName
-        End If
-
-        ' Call the method
-        Call MethodCallRPG(thePrefix & "::" & Text, thePrefix & "::" & methodName, prg, retval, True, True)
-
-    Else
-
-        ' Check if it's an operator
-        If (UCase$(Left$(methodName, 8)) = "OPERATOR") Then
-            ' It is, take the ninth character (the sign)
-            Dim theSign As String
-            theSign = Mid$(methodName, 9, 1)
-            ' Get its parameter
-            Dim value As String
-            If (LenB(GetBrackets(Text)) <> 0) Then
-                ' Param
-                Dim paras() As parameters
-                paras = GetParameters(Text, prg)
-                Select Case paras(0).dataType
-                    Case DT_LIT: value = paras(0).lit
-                    Case DT_NUM: value = CStr(paras(0).num)
-                End Select
-            Else
-                ' No param
-                value = vbNullString
-            End If
-
-            ' Call the method
-            ' Call classes(hClass).objClass.Operator(theSign, value, prg, retval)
-
-        Else
-
-            ' Parse all params
-            Dim params() As parameters
-            params = GetParameters(Text, prg)
-
-            ' Call the method
-            ' Call CallByName(classes(hClass).objClass, methodName, VbMethod, params, prg, retval)
-
-        End If
-
+    ' Check for overridden name
+    thePrefix = checkOverrideName(theClass, methodName)
+    If (LenB(thePrefix) = 0) Then
+        ' Didn't find one
+        thePrefix = theClass.strName
     End If
+
+    ' Call the method
+    Call MethodCallRPG(thePrefix & "::" & Text, thePrefix & "::" & methodName, prg, retval, True, True)
 
     ' Decrease the nestle
     Call decreaseNestle(prg)
@@ -597,7 +557,7 @@ Public Function runBlock( _
                 prg.programPos = increment(prg)
 
             Case "end"
-                If Not endCausesStop Then
+                If Not (endCausesStop) Then
                     runCommands = 0
                     prg.programPos = increment(prg)
                 Else
@@ -614,11 +574,10 @@ Public Function runBlock( _
 
         End Select
 
-        If depth = 0 _
+        done = (depth = 0 _
                        Or prg.programPos = -1 _
                        Or prg.programPos = -2 _
-                       Or (Not runningProgram) _
-                                                 Then done = True
+                       Or (Not (runningProgram)))
 
        'Prevent lockup...
        Call processEvent
