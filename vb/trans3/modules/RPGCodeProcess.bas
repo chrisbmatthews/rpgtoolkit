@@ -573,6 +573,7 @@ Public Sub includeProgram(ByRef prg As RPGCodeProgram, ByRef strFile As String)
     Next idx
 
     ' Prevent running of loose code
+    prg.strCommands(prg.Length + 1) = "STOP"
     prg.program(prg.Length + 1) = "stop()"
 
     ' Add its code to the program
