@@ -15,9 +15,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   12135
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   8775
+      ScaleHeight     =   5910
       ScaleWidth      =   2730
       TabIndex        =   161
       Top             =   360
@@ -195,8 +195,8 @@ Begin VB.MDIForm tkMainForm
       Left            =   0
       TabIndex        =   1
       Top             =   0
-      Width           =   15240
-      _ExtentX        =   26882
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
@@ -385,9 +385,9 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   8430
-      Left            =   3825
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   465
+      ScaleHeight     =   5910
       ScaleWidth      =   3510
       TabIndex        =   58
       Top             =   360
@@ -435,8 +435,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -613,9 +613,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   2010
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   -1350
+      ScaleHeight     =   5910
       ScaleWidth      =   1815
       TabIndex        =   55
       Top             =   360
@@ -684,9 +684,9 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   8430
+      Height          =   5910
       Left            =   0
-      ScaleHeight     =   8430
+      ScaleHeight     =   5910
       ScaleWidth      =   975
       TabIndex        =   11
       Top             =   360
@@ -1344,11 +1344,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   10
-      Top             =   8790
+      Top             =   6270
       Visible         =   0   'False
-      Width           =   15240
+      Width           =   11880
       Begin VB.Frame frmBoardExtras 
          BorderStyle     =   0  'None
          Caption         =   "Frame8"
@@ -2272,9 +2272,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   14865
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   11505
+      ScaleHeight     =   5910
       ScaleWidth      =   375
       TabIndex        =   3
       Top             =   360
@@ -2330,9 +2330,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   7335
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   3975
+      ScaleHeight     =   5910
       ScaleWidth      =   4800
       TabIndex        =   2
       Top             =   360
@@ -2449,9 +2449,9 @@ Begin VB.MDIForm tkMainForm
       Height          =   255
       Left            =   0
       TabIndex        =   0
-      Top             =   10455
-      Width           =   15240
-      _ExtentX        =   26882
+      Top             =   7935
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
@@ -2463,8 +2463,8 @@ Begin VB.MDIForm tkMainForm
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   10954
-            TextSave        =   "11:29 PM"
+            Object.Width           =   5027
+            TextSave        =   "11:46 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3085,27 +3085,8 @@ Public Sub openFile(ByVal fName As String)
 
 End Sub
 
-Private Function isFolder(ByVal path As String) As Boolean: On Error GoTo foldererr
-    'determine if something is a folder
-    
-    Dim num As Long
-    num = FreeFile
-    Open path For Input As #num
-    Close #num
-    isFolder = False
-
-    Exit Function
-foldererr:
-    isFolder = True
-    
-End Function
-
-
-
-
-
 Public Sub aboutmnu_Click(): On Error Resume Next
-    helpAbout.Show 1
+    Call helpAbout.Show(vbModal)
 End Sub
 
 Private Sub ambientlight_Change(): On Error Resume Next
@@ -3116,12 +3097,8 @@ Private Sub ambientnumber_Change(): On Error Resume Next
     Call activeBoard.changeAmbientNumber
 End Sub
 
-Private Sub animationForward_Click()
-
-End Sub
-
 Public Sub arrangeiconsmnu_Click(): On Error Resume Next
-    Me.Arrange 3
+    Call Me.Arrange(3)
 End Sub
 
 Private Sub arrowtype_Click()
@@ -3133,7 +3110,7 @@ Private Sub Command1_Click(): On Error Resume Next
 End Sub
 
 Public Sub cascademnu_Click(): On Error Resume Next
-    Me.Arrange 0
+    Call Me.Arrange(0)
 End Sub
 
 Private Sub Command14_Click()
@@ -3223,10 +3200,11 @@ End Sub
 
 Private Sub exitbutton_Click()
     popButton(0).value = 0
+    Call popButton_Click(0)
 End Sub
 
 Public Sub exitmnu_Click(): On Error Resume Next
-    End
+    Call Unload(Me)
 End Sub
 
 Public Sub historytxtmnu_Click(): On Error GoTo ErrorHandler
@@ -3259,10 +3237,7 @@ End Sub
 
 Private Sub killTilesetBar_Click()
     popButton(2).value = 0
-End Sub
-
-Private Sub Label1_Click()
-
+    Call popButton_Click(2)
 End Sub
 
 '============================================================================
@@ -3837,11 +3812,11 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
         Case 1
             'Open editors.
             If popButton(index).value = 1 Then
-                newBarContainerContainer.Visible = True
-            Else
                 popButton(0).value = 0
                 popButton(2).value = 0
                 popButton(3).value = 0
+                newBarContainerContainer.Visible = True
+            Else
                 newBarContainerContainer.Visible = False
             End If
             
