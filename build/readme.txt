@@ -32,7 +32,7 @@ method CTest::function(obj)
 	}
 }
 
-Unfortunately, code like this does not work. Methods must now specifiy the type of object they require. Objects passed in can derive from the type required, if desired. The corrected version of code like the above is as follows:
+Unfortunately, code like this does not work. Methods must now specifiy the type of object they require. Objects passed in can derive from that type if required. The corrected version of code like the above is as follows:
 
 method CTest::function(CTest obj)
 {
