@@ -28,7 +28,7 @@ Public Declare Function PLUGFight Lib "actkrt3.dll" (ByVal plugFilename As Strin
 Public Declare Function PLUGFightInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal sourceHPLost As Long, ByVal sourceSMPLost As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal strMessage As String, ByVal attackCode As Long) As Long
 Public Declare Function PLUGInputRequested Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal inputCode As Long) As Long
 Public Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal x As Long, ByVal y As Long, ByVal Button As Long, ByVal Shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
-Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Any, ByVal Msg As Any, ByVal wParam As Any, ByVal lParam As Any) As Long
+Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hwnd As Any, ByVal Msg As Any, ByVal wParam As Any, ByVal lParam As Any) As Long
 Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
@@ -67,7 +67,7 @@ Private m_comPlugins() As CComPlugin
 '=========================================================================
 ' Register or unregister a COM server
 '=========================================================================
-Public Sub registerServer(ByRef strServer As String, ByVal hWnd As Long, Optional ByVal bRegister As Boolean = True)
+Public Sub registerServer(ByRef strServer As String, ByVal hwnd As Long, Optional ByVal bRegister As Boolean = True)
 
     ' First, make sure the file exists
     If (GetAttr(strServer) And vbDirectory) Then Exit Sub
@@ -81,7 +81,7 @@ Public Sub registerServer(ByRef strServer As String, ByVal hWnd As Long, Optiona
     pProc = GetProcAddress(pServer, IIf(bRegister, "DllRegisterServer", "DllUnregisterServer"))
 
     ' Call the procedure
-    Call CallWindowProc(pProc, hWnd, 0&, 0&, 0&)
+    Call CallWindowProc(pProc, hwnd, 0&, 0&, 0&)
 
     ' Unload the server
     Call FreeLibrary(pServer)
@@ -256,7 +256,7 @@ Private Function getObjectFromFile(ByVal filename As String) As String
 
     #If (isToolkit = 1) Then
         ' First (try to) register the file
-        Call registerServer(filename, tkMainForm.hWnd, True)
+        Call registerServer(filename, tkMainForm.hwnd, True)
     #End If
 
     ' Remove the path from the file
