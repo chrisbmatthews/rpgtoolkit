@@ -258,12 +258,12 @@ Public Sub mainLoop()
                     framesDrawn = framesDrawn + 1
                 #End If
 
-                'this should be called 4 times (moving 0.25 each time)
+                'this should be called framesPerMove times (moving 1/framesPerMove each time)
                 movementCounter = movementCounter + 1
 
                 Call renderNow
 
-                If movementCounter < 4 Then
+                If movementCounter < framesPerMove Then
                     gGameState = GS_MOVEMENT
                     If (Not GS_ANIMATING) And (Not GS_LOOPING) Then
                         Call delay(walkDelay / ((framesPerMove * movementSize) / 2))

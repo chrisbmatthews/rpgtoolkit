@@ -90,7 +90,7 @@ Public Property Let animationDelay(ByVal newVal As Double)
 End Property
 
 Public Property Get framesPerMove() As Double
-    framesPerMove = Round(4 / slackTime)
+    framesPerMove = Round(2 / slackTime)
 End Property
 
 Public Function onlyDecimal(ByVal number As Double) As Double
@@ -2068,50 +2068,122 @@ Public Function ObtainTileType( _
     testLayer = Round(testLayer)
 
     Dim typetile As Byte
-    'Tiletype at the target.
     'typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testLayer)
     
     Dim first As Byte, second As Byte
     first = NORMAL: second = NORMAL
-
-    With boardList(activeBoardIndex).theData
-        Select Case theLink
-            Case LINK_NORTH:
-                'first = .tiletype(Int(testX), Int(testY), testLayer)  'To stay away!
-                'second = .tiletype(-Int(-testX), Int(testY), testLayer)
-                first = .tiletype(Int(testX), -Int(-testY), testLayer) 'To approach walls.
-                second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-            Case LINK_SOUTH:
-                first = .tiletype(Int(testX), -Int(-testY), testLayer)
-                second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-            Case LINK_EAST:
-                first = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-                'second = .tiletype(-Int(-testX), Int(testY), testLayer)    'To stay away!
-            Case LINK_WEST:
-                first = .tiletype(Int(testX), -Int(-testY), testLayer)
-                'second = .tiletype(Int(testX), Int(testY), testLayer)      'To stay away!
-                
-            'Problems if approaching walls.
-            Case LINK_NE:
-                typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-                'second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-            Case LINK_NW:
-                typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
-                'second = .tiletype(-Int(-testX), Int(testY), testLayer)
-            Case LINK_SE:
-                typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-            Case LINK_SW:
-                typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
-        End Select
-    End With
     
-    Dim a As Byte
-    For a = SOLID To STAIRS8
-        If first = a Or second = a Then
-            typetile = a
-            Exit For
-        End If
-    Next a
+    If Not (usingPixelMovement) Then
+        
+        'Tiletype at the target.
+        typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testLayer)
+        
+    Else
+
+        With boardList(activeBoardIndex).theData
+            Select Case theLink
+                Case LINK_NORTH:
+                    'first = .tiletype(Int(testX), Int(testY), testLayer)  'To stay away!
+                    'second = .tiletype(-Int(-testX), Int(testY), testLayer)
+                    first = .tiletype(Int(testX), -Int(-testY), testLayer) 'To approach walls.
+                    second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                Case LINK_SOUTH:
+                    first = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                Case LINK_EAST:
+                    first = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                    'second = .tiletype(-Int(-testX), Int(testY), testLayer)    'To stay away!
+                Case LINK_WEST:
+                    first = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    'second = .tiletype(Int(testX), Int(testY), testLayer)      'To stay away!
+                    
+                'Problems if approaching walls.
+                Case LINK_NE:
+                    'typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                    
+                    'The current type.
+                    typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                        
+                    If testX > Int(testX) Then
+                        'We're crossing two tiles horizontally. Test the tile to the right.
+                        typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                        
+                    End If
+                    If testY = Int(testY) Then
+                        'We're moving to two tiles vertically. Test tiles above and to the right.
+                        first = .tiletype(Int(testX), Int(testY), testLayer)
+                        second = .tiletype(-Int(-testX), Int(testY), testLayer)
+                        
+                    End If
+                    
+                    
+                Case LINK_NW:
+                    'typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    
+                    'The current type.
+                    typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                     
+                    If testX > Int(testX) Then
+                        'We're crossing two tiles horizontally. Test the tile to the left.
+                        typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                        
+                    End If
+                    If testY = Int(testY) Then
+                        'We're moving up to two tiles. Test tiles above and to the left.
+                        first = .tiletype(Int(testX), Int(testY), testLayer)
+                        second = .tiletype(-Int(-testX), Int(testY), testLayer)
+                    End If
+                    
+                    
+                Case LINK_SE:
+                    'typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                    
+                    'The current type.
+                    typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    
+                    If testX > Int(testX) Then
+                        'We're crossing two tiles horizontally. Test the tile to the right.
+                        typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                        
+                    End If
+                    If testY - movementSize = Int(testY) Then
+                        'We're moving down to two tiles. Test tiles above and to the right.
+                        first = .tiletype(Int(testX), -Int(-testY), testLayer)
+                        second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                    
+                    End If
+                    
+                    
+                Case LINK_SW:
+                    'typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    
+                    'The current type.
+                    typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                    
+                    If testX > Int(testX) Then
+                        'We're crossing two tiles horizontally. Test the tile to the left.
+                        typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                        
+                    End If
+                    If testY - movementSize = Int(testY) Then
+                        'We're moving down to two tiles. Test tiles above and to the left.
+                        first = .tiletype(Int(testX), -Int(-testY), testLayer)
+                        second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+   
+                    End If
+                    
+            End Select
+        End With
+        
+        Dim a As Byte
+        For a = SOLID To STAIRS8
+            If first = a Or second = a Then
+                typetile = a
+                Exit For
+            End If
+        Next a
+    
+    End If '(usingPixelMovement)
 
     'check if an item is blocking...
     Dim itemBlocking As Long
