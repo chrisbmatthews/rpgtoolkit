@@ -831,7 +831,7 @@ End Sub
 '=========================================================================
 Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal boardY As Double, ByVal boardL As Long, _
                 ByRef pending As PENDING_MOVEMENT, Optional ByVal cnvTarget As Long = -1, Optional ByVal bAccountForUnderTiles As Boolean = True)
-
+    
     '============================================================================
     'Draw the sprite in canvas cnv at boardx, boardy, boardlayer [playerPosition]
     'The bottom of the sprite will touch the centre of boardx, boardy
@@ -852,25 +852,25 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     yOrig = pending.yOrig
     xTarg = pending.xTarg
     yTarg = pending.yTarg
-
+    
     If xOrig > boardList(activeBoardIndex).theData.bSizeX Or xOrig < 0 Then xOrig = Round(boardX)
     If yOrig > boardList(activeBoardIndex).theData.bSizeY Or yOrig < 0 Then yOrig = Round(boardY)
     If xTarg > boardList(activeBoardIndex).theData.bSizeX Or xTarg < 0 Then xTarg = Round(boardX)
     If yTarg > boardList(activeBoardIndex).theData.bSizeY Or yTarg < 0 Then yTarg = Round(boardY)
-
+    
     Dim targetTile As Byte, originTile As Byte
-
+    
     targetTile = boardList(activeBoardIndex).theData.tiletype(Round(xTarg), -Int(-yTarg), Int(boardL))
     originTile = boardList(activeBoardIndex).theData.tiletype(Round(xOrig), -Int(-yOrig), Int(boardL))
-
+       
     'Do some tiletype checks now instead of later.
     Dim drawTransluscently As Boolean
-
+    
     '    If [tiles on layers above]
     '    OR [Moving *to* "under" tile (target)]
     '    OR [Moving *from* "under" tile (origin)]
     '    OR [Moving between "under" tiles]
-
+    
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
         If _
             checkAbove(boardX, boardY, boardL) = 1 _
@@ -890,70 +890,70 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     End If
 
     Dim centreX As Long, centreY As Long
-
+    
     'Determine the centrepoint of the tile in pixels.
     centreX = getBottomCentreX(boardX, boardY)
     centreY = getBottomCentreY(boardX, boardY)
-
+    
     ' + 8 offsets the sprite 3/4 of way down tile rather than 1/2 for isometrics.
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then centreY = centreY + 8
-
+       
     Dim spriteWidth As Long, spriteHeight As Long, cornerX As Long, cornerY As Long
-
+    
     'The dimensions of the sprite frame, in pixels.
     spriteWidth = GetCanvasWidth(cnvFrameID)
     spriteHeight = GetCanvasHeight(cnvFrameID)
-
+        
     'Will place the top left corner of the sprite frame at cornerX, cornerY:
     cornerX = centreX - spriteWidth \ 2
     cornerY = centreY - spriteHeight
-
+       
     Dim offsetX As Long, offsetY As Long
     'Offset on the sprite's frame from the top left corner (cornerX, cornerY)
-
+    
     Dim renderWidth As Long, renderHeight As Long
     'Portion of frame to be drawn, after offset considerations.
-
+       
     If cornerX < 0 Or cornerY < 0 Or _
         (cornerX + spriteWidth > resX) Or (cornerY + spriteHeight > resY) Then
         'If sprite frame will lie outside the bounds of the screen resolution.
-
+                
         If cornerX < 0 Then
             'Frame off left side. cornerX must never be less than zero! (will crash)
             offsetX = Abs(cornerX)
             renderWidth = spriteWidth - offsetX
             cornerX = 0
-
+            
             'Temporary fix. Until partial transparent function is written.
             bAccountForUnderTiles = False
-
+            
         ElseIf cornerX + spriteWidth > resX Then 'Must never be greater than resX!!
             'Frame off right side.
             offsetX = 0
             renderWidth = resX - cornerX
-
+            
             'Temporary fix. Until partial transparent function is written.
             bAccountForUnderTiles = False
-
+            
         Else
             offsetX = 0
             renderWidth = spriteWidth
         End If
-
+        
         If cornerY < 0 Then
             'Frame off top. cornerY must never be less than zero!
             offsetY = Abs(cornerY)
             renderHeight = spriteHeight - offsetY
             cornerY = 0
-
+            
             'Temporary fix. Until partial transparent function is written.
             bAccountForUnderTiles = False
-
+            
         ElseIf cornerY + spriteHeight > resY Then
             'Frame off bottom.
             offsetY = 0
             renderHeight = resY - cornerY
-
+            
             'Temporary fix. Until partial transparent function is written.
             bAccountForUnderTiles = False
             
@@ -961,74 +961,75 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
             offsetY = 0
             renderHeight = spriteHeight
         End If
-
+        
         'We now have the position and area of the sprite to draw.
         'Check if we need to draw the sprite transluscently:
-
+        
         If drawTransluscently And bAccountForUnderTiles Then
         'If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
             Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
             Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
             Or (targetTile = UNDER And originTile = UNDER)) Then
-
+            
             'If bAccountForUnderTiles AND [tiles on layers above
             '    OR [Moving *to* "under" tile (target)]
             '    OR [Moving *from* "under" tile (origin)]
             '    OR [Moving between "under" tiles]]
-
+            
             'If on "under" tiles, make sprite transluscent.
             '4th argument controls opacity of sprite.
-
+            
             If cnvTarget = -1 Then 'Draw to screen
-
+            
                'BUG: This should be a Draw-Partial function! But there is none for transluscent!!
                 Call DXDrawCanvasTranslucent(cnvFrameID, cornerX, cornerY, 0.25, -1, TRANSP_COLOR)
-
+                
             Else 'Draw to canvas.
-
+            
                 'BUG: This should be Partial AND Canvas2CanvasBlt AND transluscent!! No such function!
                 Call DXDrawCanvasTranslucent(cnvFrameID, cornerX, cornerY, 0.25, -1, TRANSP_COLOR)
-
+                
             End If
-
+            
         Else
             'Draw solid. Transparent refers to the transparent colour (alpha) on the frame.
-
+            
             If cnvTarget = -1 Then 'Draw to screen
                 Call DXDrawCanvasTransparentPartial(cnvFrameID, cornerX, cornerY, offsetX, offsetY, renderWidth, renderHeight, TRANSP_COLOR)
-
+                
             Else 'Draw to canvas
                 Call Canvas2CanvasBltTransparentPartial(cnvFrameID, cnvTarget, cornerX, cornerY, offsetX, offsetY, renderWidth, renderHeight, TRANSP_COLOR)
-
+                
             End If
         End If
         
+        
     Else 'Sprite is entirely on the board.
-
+    
         'Check if we need to draw the sprite transluscently.
-
+        
         If drawTransluscently And bAccountForUnderTiles Then
         'If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
             Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
             Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
             Or (targetTile = UNDER And originTile = UNDER)) Then
-
+            
             'If bAccountForUnderTiles AND [tiles on layers above
             '    OR [Moving *to* "under" tile (target)]
             '    OR [Moving *from* "under" tile (origin)]
             '    OR [Moving between "under" tiles]]
-
+            
             'If on "under" tiles, make sprite transluscent.
-
+            
             If cnvTarget = -1 Then 'Draw to screen
                Call DXDrawCanvasTranslucent(cnvFrameID, cornerX, cornerY, 0.25, -1, TRANSP_COLOR)
-
+               
             Else 'Draw to canvas
                 'This should be Canvas2CanvasBlt transluscent!!
                 Call DXDrawCanvasTranslucent(cnvFrameID, cornerX, cornerY, 0.25, -1, TRANSP_COLOR)
-
+                
             End If
-
+            
         Else
             If cnvTarget = -1 Then 'Draw to screen
                 Call DXDrawCanvasTransparent(cnvFrameID, cornerX, cornerY, TRANSP_COLOR)
@@ -1037,7 +1038,7 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
             End If
         End If
     End If
-
+        
 End Sub
 
 '=========================================================================
@@ -1056,25 +1057,24 @@ Private Function renderPlayer(ByVal cnv As Long, _
         'Check idleness.
         If pendingPlayerMovement(idx).direction = MV_IDLE And gGameState <> GS_MOVEMENT Then
             'We're idle, and we're not about to start moving.
+            
+            Dim direction As Long
+            Select Case LCase$(.stance)
+                Case "walk_n", "stand_n": direction = 1        'See CommonPlayer
+                Case "walk_s", "stand_s": direction = 0
+                Case "walk_e", "stand_e": direction = 3
+                Case "walk_w", "stand_w": direction = 2
+                Case "walk_nw", "stand_nw": direction = 4
+                Case "walk_ne", "stand_ne": direction = 5
+                Case "walk_sw", "stand_sw": direction = 6
+                Case "walk_se", "stand_se": direction = 7
+                Case Else: direction = -1
+            End Select
 
-            If Timer() - .idleTime >= thePlayer.idleTime And LeftB$(UCase$(.stance), 10) <> "STAND" Then
+            If Timer() - .idleTime >= thePlayer.idleTime And LeftB$(LCase$(.stance), 10) <> "stand" Then
                 'Push into idle graphics if not already.
 
                 'Check that a standing graphic for this direction exists.
-
-                Dim direction As Long
-                Select Case UCase$(.stance)
-                    Case "WALK_N": direction = 1        'See CommonPlayer
-                    Case "WALK_S": direction = 0
-                    Case "WALK_E": direction = 3
-                    Case "WALK_W": direction = 2
-                    Case "WALK_NW": direction = 4
-                    Case "WALK_NE": direction = 5
-                    Case "WALK_SW": direction = 6
-                    Case "WALK_SE": direction = 7
-                    Case Else: direction = -1
-                End Select
-
                 If direction <> -1 Then
                     If LenB(thePlayer.standingGfx(direction)) Then
                         'If so, change the stance to STANDing.
@@ -1088,12 +1088,11 @@ Private Function renderPlayer(ByVal cnv As Long, _
 
             End If
 
-            If Left$(UCase$(.stance), 5) = "STAND" Then
+            If LeftB$(LCase$(.stance), 10) = "stand" And LenB(thePlayer.standingGfx(direction)) Then
                 'We're standing!
 
-                If .loopFrame Mod ((thePlayer.loopSpeed * 8) / movementSize) = 0 Then
+                If .loopFrame Mod ((thePlayer.loopSpeed) / movementSize) = 0 Then
                     'Only increment the frame if we're on a multiple of .speed.
-                    'Include a scaling factor (8) to slow down this animation.
                     '/ movementSize to handle pixel movement.
                     .frame = .frame + 1
                     .loopFrame = 0
@@ -1124,7 +1123,7 @@ Private Function renderPlayer(ByVal cnv As Long, _
             Exit Function
         End If
 
-        'lastPlayerRender(idx) = currentRender
+        'Update the last render.
         .canvas = cnv
         .frame = playerPosition.frame
         .stance = playerPosition.stance
@@ -1176,21 +1175,21 @@ Private Function renderItem(ByVal cnv As Long, _
         If pendingItemMovement(idx).direction = MV_IDLE Then
             'We're idle.
             
-            If Timer() - .idleTime >= theItem.idleTime And LeftB$(UCase$(.stance), 10) <> "STAND" Then
-                'Push into idle graphics if not already.
+            Dim direction As Long
+            Select Case LCase$(.stance)
+                Case "walk_n", "stand_n": direction = 1        'See CommonItem
+                Case "walk_s", "stand_s": direction = 0
+                Case "walk_e", "stand_e": direction = 3
+                Case "walk_w", "stand_w": direction = 2
+                Case "walk_nw", "stand_nw": direction = 4
+                Case "walk_ne", "stand_ne": direction = 5
+                Case "walk_sw", "stand_sw": direction = 6
+                Case "walk_se", "stand_se": direction = 7
+                Case Else: direction = -1
+            End Select
                 
-                Dim direction As Long
-                Select Case UCase$(.stance)
-                    Case "WALK_N": direction = 1        'See CommonItem
-                    Case "WALK_S": direction = 0
-                    Case "WALK_E": direction = 3
-                    Case "WALK_W": direction = 2
-                    Case "WALK_NW": direction = 4
-                    Case "WALK_NE": direction = 5
-                    Case "WALK_SW": direction = 6
-                    Case "WALK_SE": direction = 7
-                    Case Else: direction = -1
-                End Select
+            If Timer() - .idleTime >= theItem.idleTime And LeftB$(LCase$(.stance), 10) <> "stand" Then
+                'Push into idle graphics if not already.
                 
                 'Check that a standing graphic for this direction exists.
                 If direction <> -1 Then
@@ -1205,12 +1204,11 @@ Private Function renderItem(ByVal cnv As Long, _
                 
             End If
             
-            If Left$(UCase$(.stance), 5) = "STAND" Then
-                'We're standing!
+            If LeftB$(UCase$(.stance), 10) = "stand" And LenB(theItem.standingGfx(direction)) Then
+                'We're standing and we have idling graphics.
                 
-                If .loopFrame Mod ((theItem.loopSpeed * 8) / movementSize) = 0 Then
+                If .loopFrame Mod ((theItem.loopSpeed) / movementSize) = 0 Then
                     'Only increment the frame if we're on a multiple of .speed.
-                    'Include a scaling factor (8) to slow down this animation.
                     '/ movementSize to handle pixel movement.
                     .frame = .frame + 1
                     .loopFrame = 0
@@ -1238,7 +1236,7 @@ Private Function renderItem(ByVal cnv As Long, _
                Exit Function
             End If
                
-            'lastItemRender(idx) = currentRender
+            'Update the last render.
             .canvas = cnv
             .frame = itemPosition.frame
             .stance = itemPosition.stance
