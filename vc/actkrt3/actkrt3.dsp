@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "actkrt3_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W1 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "actkrt3_EXPORTS" /FR /YX /FD /c
+# ADD CPP /nologo /MT /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "actkrt3_EXPORTS" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -298,22 +298,14 @@ SOURCE=.\tkCanvas\GDICanvas.cpp
 # Begin Group "tkDirectX"
 
 # PROP Default_Filter ""
-# Begin Group "DirectX - source"
-
-# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\GUISystem\platform\platform.cpp
+SOURCE=.\tkDirectX\platform.cpp
 # End Source File
-# End Group
-# Begin Group "DirectX - headers"
-
-# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\GUISystem\platform\platform.h
+SOURCE=.\tkDirectX\platform.h
 # End Source File
-# End Group
 # End Group
 # Begin Group "md5"
 
