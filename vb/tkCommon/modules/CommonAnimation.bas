@@ -198,9 +198,9 @@ End Function
 Public Sub animDelay(ByVal seconds As Double): On Error Resume Next
 
     Dim startTime As Double
-    startTime = Timer()
+    startTime = timer()
 
-    Do While Timer() - startTime < seconds
+    Do While timer() - startTime < seconds
 
         ' This loop is the "delay", during this loop nothing happens.
         ' Process user input for trans3.
@@ -213,61 +213,26 @@ Public Sub animDelay(ByVal seconds As Double): On Error Resume Next
 End Sub
 
 '========================================================================
-' Animate at xx, yy (Animation is presumed to be loaded)
+' Animate at x, y (Animation is presumed to be loaded)
+' Called by: trans3 (none)
+'            picPlay_Click (characterGraphics, itemGraphics)
+'            playAnimation (AnimationHost)
+'            animPlay      (AnimationEditor)
 '========================================================================
-Public Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As Long, ByVal pixelsMaxX As Long, ByVal pixelsMaxY As Long, ByRef pic As PictureBox)
+Public Sub AnimateAt(ByRef theAnim As TKAnimation, _
+                     ByVal x As Long, ByVal y As Long, _
+                     ByVal pixelsMaxX As Long, ByVal pixelsMaxY As Long, _
+                     ByRef pic As PictureBox)
+    
     On Error Resume Next
     
-    'Initialize
-    Dim allPurposeC2 As Long, apHDC As Long
-    allPurposeC2 = createCanvas(pixelsMaxX, pixelsMaxY)
-    apHDC = canvasOpenHDC(allPurposeC2)
-    Call BitBlt(apHDC, _
-               0, _
-               0, _
-               theAnim.animSizeX, _
-               theAnim.animSizeY, _
-               vbPicHDC(pic), _
-               xx, _
-               yy, _
-               &HCC0020)
-    Call canvasCloseHDC(allPurposeC2, apHDC)
+    Dim i As Long
     
-    Dim frames As Long
-    Dim aXX As Long, aYY As Long, t As Long
-    frames = animGetMaxFrame(theAnim)
-    aXX = xx
-    aYY = yy
-    
-    'Go through the frames
-    For t = 0 To frames '+ 1
-        apHDC = canvasOpenHDC(allPurposeC2)
-        Call BitBlt(apHDC, _
-               0, _
-               0, _
-               theAnim.animSizeX, _
-               theAnim.animSizeY, _
-               pic.hdc, _
-               xx, _
-               yy, _
-               &HCC0020)
-        Call canvasCloseHDC(allPurposeC2, apHDC)
-        Call AnimDrawFrame(theAnim, t, aXX, aYY, vbPicHDC(pic))
-        Call vbPicRefresh(pic)
+    For i = 0 To animGetMaxFrame(theAnim)
+        Call AnimDrawFrame(theAnim, i, x, y, pic.hdc)
+        pic.Refresh
         Call animDelay(theAnim.animPause)
-        apHDC = canvasOpenHDC(allPurposeC2)
-        Call BitBlt(vbPicHDC(pic), _
-               xx, _
-               yy, _
-               theAnim.animSizeX, _
-               theAnim.animSizeY, _
-               apHDC, _
-               0, _
-               0, _
-               &HCC0020)
-        Call canvasCloseHDC(allPurposeC2, apHDC)
-    Next t
-    Call destroyCanvas(allPurposeC2)
+    Next i
 
 End Sub
 
@@ -275,75 +240,71 @@ Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, B
 '================================================
 'draw the frame referenced by framenum
 'loads a file into a picture box and resizes it.
-'Called by:
+'Called by: DrawAnimationIndex (unused), AnimateAt (toolkit3 only) - not used in trans3
 '================================================
 
     On Error Resume Next
 
-    Dim ex As String, f As String, a As Long
+    Dim ex As String, tbm As TKTileBitmap
     
-    ex$ = GetExt(theAnim.animFrame(framenum))
-    If fileExists(projectPath$ & bmpPath$ & theAnim.animFrame(framenum)) Or Left$(UCase$(ex), 3) = "TST" Then
-        If UCase$(ex$) = "TBM" Then
-            #If isToolkit = 0 Then
-                If pakFileRunning Then
-                    f$ = PakLocate(bmpPath & theAnim.animFrame(framenum))
-                    Call DrawSizedImage(f$, x, y, theAnim.animSizeX, theAnim.animSizeY, hdc)
-            #Else
-                If 1 = 0 Then
-            #End If
-            Else
-                Call DrawSizedImage(projectPath$ & bmpPath$ & theAnim.animFrame(framenum), x, y, theAnim.animSizeX, theAnim.animSizeY, hdc)
-            End If
+    ex = GetExt(theAnim.animFrame(framenum))
+    
+    If fileExists(projectPath & bmpPath & theAnim.animFrame(framenum)) Or Left$(UCase$(ex), 3) = "TST" Then
+        
+        If UCase$(ex) = "TBM" Then
+        
+            Call DrawSizedImage(projectPath & bmpPath & theAnim.animFrame(framenum), _
+                                x, y, _
+                                theAnim.animSizeX, _
+                                theAnim.animSizeY, _
+                                hdc)
+        
         ElseIf Left$(UCase$(ex), 3) = "TST" Or UCase$(ex) = "GPH" Then
-            Dim tbm As TKTileBitmap
+        
             Call TileBitmapSize(tbm, 1, 1)
             tbm.tiles(0, 0) = theAnim.animFrame(framenum)
             Call DrawSizedTileBitmap(tbm, 0, 0, theAnim.animSizeX, theAnim.animSizeY, hdc)
+            
         Else
-            Dim backBuffer As Long, cnv As Long, transp As Long, bufHDC As Long
-            backBuffer = createCanvas(theAnim.animSizeX, theAnim.animSizeY)
-            #If isToolkit = 0 Then
-                If pakFileRunning Then
-                    f$ = PakLocate(bmpPath & theAnim.animFrame(framenum))
-                    Call canvasLoadSizedPicture(cnvAllPurpose, f$)
-            #Else
-                If 1 = 0 Then
-            #End If
-            Else
-                Call canvasLoadSizedPicture(backBuffer, projectPath$ & bmpPath$ & theAnim.animFrame(framenum))
-            End If
+        
+            Dim cnv As Long, anmHdc As Long
+            cnv = createCanvas(theAnim.animSizeX, theAnim.animSizeY)
+            Call canvasLoadSizedPicture(cnv, projectPath & bmpPath & theAnim.animFrame(framenum))
 
             'Blt it on
-            bufHDC = canvasOpenHDC(backBuffer)
-            Call TransparentBlt(hdc, _
+            anmHdc = canvasOpenHDC(cnv)
+            'Drawing the frame without the transparent color causes confusion.
+            'Also has a memory leak on Win9x.
+            'Call TransparentBlt(hdc, _
                                 x, _
                                 y, _
                                 theAnim.animSizeX - 1, _
                                 theAnim.animSizeY - 1, _
-                                bufHDC, _
+                                anmHDC, _
                                 0, _
                                 0, _
                                 theAnim.animSizeX - 1, _
                                 theAnim.animSizeY - 1, _
                                 theAnim.animTransp(framenum))
-            Call canvasCloseHDC(backBuffer, bufHDC)
-            Call destroyCanvas(backBuffer)
-           
-        End If
+            Call StretchBlt(hdc, _
+                            x, y, _
+                            theAnim.animSizeX, _
+                            theAnim.animSizeY, _
+                            anmHdc, _
+                            0, 0, _
+                            theAnim.animSizeX, _
+                            theAnim.animSizeY, _
+                            SRCCOPY)
             
-    End If
+            Call canvasCloseHDC(cnv, anmHdc)
+            Call destroyCanvas(cnv)
+           
+        End If 'UCase$(ex) = "TBM"
+            
+    End If 'fileExists
 
     If (playSound) And (LenB(theAnim.animSound(framenum)) <> 0) Then
-        #If isToolkit = 0 Then
-            If pakFileRunning Then
-                Call sndPlaySound(PakLocate(mediaPath$ & theAnim.animSound(framenum)), SND_ASYNC Or SND_NODEFAULT)
-        #Else
-            If 1 = 0 Then
-        #End If
-        Else
-            Call sndPlaySound(projectPath$ & mediaPath$ & theAnim.animSound(framenum), SND_ASYNC Or SND_NODEFAULT)
-        End If
+        Call sndPlaySound(projectPath & mediaPath & theAnim.animSound(framenum), SND_ASYNC Or SND_NODEFAULT)
     End If
 
 End Sub
@@ -607,10 +568,13 @@ Public Function AnimationShouldDrawFrame(ByRef theAnm As TKAnimation) As Boolean
     theAnm.timerFrame = theAnm.timerFrame + 1
 End Function
 
+'========================================================================
+'draw an animation from the anmList array
+'call this every 5ms and it'll draw it accroding to the animation speed
+'it will only advance the frame when required.  neato
+' Called by: trans3 - nothing, toolkit3 - nothing
+'========================================================================
 Public Sub DrawAnimationIndex(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long)
-    'draw an animation from the anmList array
-    'call this every 5ms and it'll draw it accroding to the animation speed
-    'it will only advance the frame when required.  neato
     On Error Resume Next
     If anmListOccupied(idx) Then
         
