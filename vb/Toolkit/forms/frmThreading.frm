@@ -96,12 +96,12 @@ Private Sub cmdAdd_Click()
     On Error Resume Next
     Dim antiPath As String
     Dim whichType As String
-    ChDir currentdir
+    ChDir currentDir
 
     Dim dlg As FileDialogInfo
     With dlg
 
-        .strDefaultFolder = projectPath & prgpath
+        .strDefaultFolder = projectPath & prgPath
         .strTitle = "Program Filename"
         .strDefaultExt = "prg"
         .strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
@@ -115,10 +115,10 @@ Private Sub cmdAdd_Click()
     
     End With
     
-    ChDir currentdir
+    ChDir currentDir
     If filename(1) = "" Then Exit Sub
     whichType = extention(filename(1))
-    FileCopy filename(1), projectPath & prgpath & antiPath
+    FileCopy filename(1), projectPath & prgPath & antiPath
 
     lstThreads.AddItem antiPath
     

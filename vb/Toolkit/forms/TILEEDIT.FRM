@@ -1118,14 +1118,14 @@ Private Sub Form_Resize()
     Dim need, wwidth, hheight As Integer
     
     'Little math thing to calculate the width (EDIT for 3.0.4 by Woozy)
-    wwidth = round(((Me.Width - 300) / Screen.TwipsPerPixelX) / 32) * 32
+    wwidth = Round(((Me.Width - 300) / Screen.TwipsPerPixelX) / 32) * 32
     need = (wwidth / 32) / 2
-    wwidth = round((wwidth + need) * Screen.TwipsPerPixelX - 50, 0)
+    wwidth = Round((wwidth + need) * Screen.TwipsPerPixelX - 50, 0)
     
     'Little math thing to calculate the height (EDIT for 3.0.4 by Woozy)
-    hheight = round(((Me.height - 1200) / Screen.TwipsPerPixelX) / 32) * 32
+    hheight = Round(((Me.height - 1200) / Screen.TwipsPerPixelX) / 32) * 32
     need = (hheight / 32) / 2
-    hheight = round((hheight + need) * Screen.TwipsPerPixelY - 50, 0)
+    hheight = Round((hheight + need) * Screen.TwipsPerPixelY - 50, 0)
     
     'Set the height/width
     If wwidth < hheight Then
@@ -1266,10 +1266,10 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, X As Single,
             'Update the variable with the current color
             If detail <> 1 And detail <> 2 Then
                 If detail = 3 Or detail = 4 Then
-                    publicTile.currentColor = toColor(publicTile.currentColor, "256")
+                    publicTile.currentColor = toColor(publicTile.currentColor, 256)
                 End If
                 If detail = 5 Or detail = 6 Then
-                    publicTile.currentColor = toColor(publicTile.currentColor, "16")
+                    publicTile.currentColor = toColor(publicTile.currentColor, 16)
                 End If
                 Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, GFXGetDOSColor(publicTile.currentColor))
             End If
@@ -1790,10 +1790,10 @@ Public Sub palettebox_MouseDown(button As Integer, Shift As Integer, X As Single
     
     If detail <> 1 And detail <> 2 Then
         If detail = 3 Or detail = 4 Then
-          publicTile.currentColor = toColor(vbFrmPoint(tkMainForm.palettebox, X, Y), "256")
+          publicTile.currentColor = toColor(vbFrmPoint(tkMainForm.palettebox, X, Y), 256)
         End If
         If detail = 5 Or detail = 6 Then
-          publicTile.currentColor = toColor(vbFrmPoint(tkMainForm.palettebox, X, Y), "16")
+          publicTile.currentColor = toColor(vbFrmPoint(tkMainForm.palettebox, X, Y), 16)
         End If
         Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, GFXGetDOSColor(publicTile.currentColor))
     End If
