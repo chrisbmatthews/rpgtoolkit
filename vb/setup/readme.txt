@@ -4,7 +4,7 @@ To build the installer:
 
 a) prepare a zip.zip (this will contain uninstall.exe built from prjUninstaller)
 
-b) build prjSetup.exe as setup.exe
+b) build prjSetup as setup.exe
 
 c) place setup.exe, zip.zip, tkzip.dll, helper.exe, and build.bat in the same direcory
 
