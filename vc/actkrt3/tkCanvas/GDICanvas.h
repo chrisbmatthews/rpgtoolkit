@@ -19,7 +19,7 @@
 #include <windows.h>
 
 ///for DirectX...
-#include "..\GUISystem\platform\platform.h"
+#include "..\tkDirectX\platform.h"
 
 typedef struct _tagColor24
 {
