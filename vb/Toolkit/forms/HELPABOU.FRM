@@ -80,7 +80,7 @@ Begin VB.Form helpAbout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Release 3.0.5 (December 2004)"
+      Caption         =   "Release 3.06 (March 2005)"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   9.75
@@ -203,7 +203,7 @@ Private Sub Form_Load()
     On Error GoTo ErrorHandler
 
     Dim theText As String
-    theText = theText & "Open source contributions by: Colin James Fitzpatrick (KSNiloc), Peter Fenner (Asimir), Phil Carty (Xavier), John@aljo, Jonathan Hughes (Delano), Chris Hutchinson (Euix), Geoff, Sander Knape (Woozy), Samuel Bedwell (Occasionally_Correct)" & vbCrLf & vbCrLf
+    theText = theText & "Open source contributions by: Colin James Fitzpatrick (Colin), Peter Fenner (Asimir), Phil Carty (Xavier), John@aljo, Jonathan Hughes (Delano), Chris Hutchinson (Euix), Geoff, Sander Knape (Woozy), Samuel Bedwell (Occasionally_Correct)" & vbCrLf & vbCrLf
     theText = theText & "Spanish translations provided by Ignacio Chitinsky and Jaime Peña.  French translation provided by Alexandre Thomas.  German translation provided by Martin Holtz.  Italian translation provided by Andrea Piras." & vbCrLf & vbCrLf
     theText = theText & "RPGToolkit Fo' Sho' Music Pak v2.18 composed by Chris and Craig Reeves, Copyright 2000.  Used with permission.  http://www.vipcouncil.com" & vbCrLf & vbCrLf
     theText = theText & "Menu System graphic and layout based on designs provided by |3lue.  Used with permission." & vbCrLf & vbCrLf
