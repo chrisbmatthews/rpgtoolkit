@@ -543,17 +543,47 @@ Private Sub cmdOK_Click()
  Next a
  
  'Flag to have any open programs be re-colored...
- needsReColor = True
- programEditorCountDown = programEditorCount
+ Call recolorPrograms
  
  'Save other settings
  ' SaveSetting "RPGToolkit3", "PRG Editor", "Cap", chkCapital.value
  SaveSetting "RPGToolkit3", "PRG Editor", "Tabs", booleanToLong(optTabs.value)
- SaveSetting "RPGToolkit3", "PRG Editor", "Common", codeForm.Text
+ SaveSetting "RPGToolkit3", "PRG Editor", "Common", codeform.Text
  
  'Unload this form...
  Unload Me
  
+End Sub
+
+Private Sub recolorPrograms()
+
+    ' Store current active RPGCode form
+    Dim active As rpgcodeedit
+    Set active = activeRPGCode
+
+    Dim frm As Form
+    For Each frm In Forms
+
+        If (TypeOf frm Is rpgcodeedit) Then
+
+            ' Set this as the active RPGCode form
+            Set activeRPGCode = frm
+
+            ' Colour the program
+            Dim oss As Long, osl As Long
+            oss = activeRPGCode.codeform.selStart()
+            osl = activeRPGCode.codeform.SelLength()
+            Call SplitLines
+            activeRPGCode.codeform.selStart() = oss
+            activeRPGCode.codeform.SelLength() = osl
+
+        End If
+
+    Next frm
+
+    ' Restore "real" active program
+    Set activeRPGCode = active
+
 End Sub
 
 Private Sub cmdDefault_Click()
@@ -596,7 +626,7 @@ Private Sub Form_Load(): On Error Resume Next
     If GetSetting("RPGToolkit3", "PRG Editor", "Tabs", 1) = 1 Then
         optTabs.value = True
     End If
-    codeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", "")
+    codeform.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", "")
 End Sub
 
 Private Sub updateColors()

@@ -69,9 +69,6 @@ Option Explicit
 
     'Misc
     Public askedAboutProject As Boolean            'have you already asked about the project existing?
-    Public needsReColor As Boolean
-    Public programEditorCount As Long
-    Public programEditorCountDown As Long
     Public Images As New CImages
     Public lockIndice As Long
     Public useLockIndice As Boolean
