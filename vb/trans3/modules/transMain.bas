@@ -624,6 +624,10 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         If (LenB(mainMem.initBoard)) Then
             Call destroyItemSprites
             Call openBoard(projectPath & brdPath & mainMem.initBoard, boardList(activeBoardIndex).theData)
+            Call checkMusic(True)
+            If (LenB(boardList(activeBoardIndex).theData.enterPrg)) Then
+                Call runProgram(projectPath & prgPath & boardList(activeBoardIndex).theData.enterPrg)
+            End If
         End If
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)
         Call openItems

@@ -509,10 +509,10 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                 ' Assignment operator
                 Call SetVariable(values(idx), CStr(numVal(idx + 1)), prg)
                 idx = idx + 1
-                Dim x As Long
-                For x = idx To valueUb
-                    typeVal(x) = getValue(values(x), strVal(x), numVal(x), prg)
-                Next x
+                Dim X As Long
+                For X = idx To valueUb
+                    typeVal(X) = getValue(values(X), strVal(X), numVal(X), prg)
+                Next X
                 If (idx = valueUb) Then Exit For
 
             End If
@@ -531,7 +531,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
                 If (hClass) Then
 
-                    outside = (topNestle(prg) <> hClass)
+                    outside = isOutside(hClass, prg) ' (topNestle(prg) <> hClass)
                     op = "operator" & signs(idx)
 
                     If (isMethodMember(op, hClass, prg, outside)) Then
@@ -579,10 +579,10 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                 ' Assignment operator
                 Call SetVariable(values(idx), strVal(idx + 1), prg)
                 idx = idx + 1
-                Dim y As Long
-                For y = idx To valueUb
-                    typeVal(y) = getValue(values(y), strVal(y), numVal(y), prg)
-                Next y
+                Dim Y As Long
+                For Y = idx To valueUb
+                    typeVal(Y) = getValue(values(Y), strVal(Y), numVal(Y), prg)
+                Next Y
                 If (idx = valueUb) Then Exit For
 
             End If
@@ -1416,7 +1416,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     If (hClass) Then
         If (isObject(hClass)) Then
             ' Check for overloaded [] operator
-            If Not (isMethodMember("operator[]", hClass, prg, topNestle(prg) <> hClass)) Then
+            If Not (isMethodMember("operator[]", hClass, prg, isOutside(hClass, prg))) Then
                 ' Alert the user
                 Call debugger("Overloaded [] operator not found or cannot be reached-- " & variable)
                 ' Nullify hClass

@@ -543,7 +543,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
             If (isObject(hClass)) Then
                 ' And it's an object, woo!
                 Dim outside As Boolean
-                outside = (topNestle(prg) <> hClass)
+                outside = isOutside(hClass, prg) ' (topNestle(prg) <> hClass)
                 If (isMethodMember("operator!", hClass, prg, outside)) Then
                     ' It's numerical
                     dataType = DT_NUM
@@ -787,7 +787,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Case "++"
                     If ((hClass <> 0) And (Not (noVar))) Then
                         ' If this class handles this operator
-                        If (isMethodMember("operator++", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                        If (isMethodMember("operator++", hClass, theProgram, isOutside(hClass, theProgram))) Then
                             ' Call the method
                             Call callObjectMethod(hClass, "operator++", theProgram, retval, "operator++")
                             ' Leave this procedure
@@ -800,7 +800,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Case "--"
                     If ((hClass <> 0) And (Not (noVar))) Then
                         ' If this class handles this operator
-                        If (isMethodMember("operator--", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                        If (isMethodMember("operator--", hClass, theProgram, isOutside(hClass, theProgram))) Then
                             ' Call the method
                             Call callObjectMethod(hClass, "operator--", theProgram, retval, "operator--")
                             ' Leave this procedure
@@ -876,7 +876,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                                         ' See if it handles said conjuction
                                         Dim cnj As String
                                         cnj = "operator" & conjunctions(tokenIdx - 1)
-                                        If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
+                                        If (isMethodMember(cnj, hTokenClass, theProgram, isOutside(hClass, theProgram))) Then
                                             ' Call the method
                                             Call callObjectMethod(hTokenClass, cnj & "(" & valueList(tokenIdx) & ")", theProgram, retval, cnj)
                                             ' Switch on returned type
@@ -929,7 +929,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
             If ((hClass <> 0) And (equal <> "=") And (Not (noVar))) Then
                 ' If this class handles this *specific* operator
-                If (isMethodMember("operator" & equal, hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                If (isMethodMember("operator" & equal, hClass, theProgram, isOutside(hClass, theProgram))) Then
                     ' Call the method
                     Call callObjectMethod(hClass, "operator" & equal & "(" & CStr(dRes) & ")", theProgram, retval, "operator" & equal)
                     ' Leave this procedure
@@ -953,7 +953,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
             If ((hClass <> 0) And (Not (noVar))) Then
                 ' If this class handles =
-                If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                If (isMethodMember("operator=", hClass, theProgram, isOutside(hClass, theProgram))) Then
                     ' Call the method
                     Call callObjectMethod(hClass, "operator=(" & CStr(dRes) & ")", theProgram, retval, "operator=")
                     ' Leave this procedure
@@ -1031,7 +1031,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             ' If we recorded a class' handle earlier
             If ((hClass <> 0) And (Not (noVar))) Then
                 ' If this class handles =
-                If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                If (isMethodMember("operator=", hClass, theProgram, isOutside(hClass, theProgram))) Then
                     ' Call the method
                     Call callObjectMethod(hClass, "operator=(""" & strRes & """)", theProgram, retval, "operator=")
                     ' Leave this procedure
@@ -1561,7 +1561,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
                         Dim hClass As Long
                         hClass = CLng(numA)
                         ' Check if it exists
-                        If (isMethodMember("operator!", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                        If (isMethodMember("operator!", hClass, theProgram, isOutside(hClass, theProgram))) Then
                             ' Call it
                             Call callObjectMethod(hClass, "operator!()", theProgram, rV, "operator!")
                             ' Return and leave
@@ -1574,7 +1574,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
                             num = rV.num
                             Exit Function
                         ElseIf Not (bTakeNumPath) Then
-                            If (isMethodMember("operator$", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                            If (isMethodMember("operator$", hClass, theProgram, isOutside(hClass, theProgram))) Then
                                 ' Call it
                                 Call callObjectMethod(hClass, "operator$()", theProgram, rV, "operator$")
                                 ' Return and leave
