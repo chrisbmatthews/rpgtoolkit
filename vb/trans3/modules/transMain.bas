@@ -43,6 +43,8 @@ Public host As CDirectXHost             ' DirectX host window
 Private m_renderCount As Long           ' Count of GS_MOVEMENT state loops
 Private m_renderTime As Double          ' Cumulative GS_MOVEMENT state loop time
 
+Private m_testingPRG As Boolean         'Are we testing a program?
+
 '=======================================================================
 ' Average time for one loop in the GS_MOVEMENT gamestate
 '=======================================================================
@@ -90,6 +92,7 @@ End Sub
 Public Sub closeSystems()
     On Error Resume Next
     gShuttingDown = True
+    Call saveSettings
     Call ClearAllThreads
     Call stopMedia
     Call stopMenuPlugin
@@ -114,7 +117,7 @@ End Sub
 '=======================================================================
 Private Function getMainFilename() As String
 
-    ' Precedurence is as follows:
+    ' Precedence is as follows:
     '  + Command line
     '  + Main.gam
     '  + File dialog
@@ -153,9 +156,10 @@ Private Function getMainFilename() As String
         ElseIf (UBound(args) = 1) Then
 
             ' Run program
+            m_testingPRG = True
             mainFile = gamPath & args(0)
             Call openMain(mainFile, mainMem)
-            Call openSystems(True)
+            Call openSystems
             Call DXClearScreen(0)
             Call DXRefresh
             Call runProgram(projectPath & prgPath & args(1), , , True)
@@ -258,8 +262,10 @@ Private Sub initDefaults()
     If Not (initRuntime()) Then
         Call ChDir("C:\Program Files\Toolkit3\")
         currentDir = CurDir$()
-        If Not (initRuntime()) Then
-            Call MsgBox("Could not initialize actkrt3.dll. Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
+        If Not initRuntime() Then
+            Call MsgBox("Could not initialize actkrt3.dll. Do you have actkrt3.dll, " & _
+                        "freeimage.dll, and audiere.dll in the working directory, " & _
+                        "and do you have DirectX version 8 or above installed?")
             End
         End If
     End If
@@ -314,7 +320,6 @@ Private Sub gameLogic()
 
             ' Render the scene
             renderOccured = renderNow()
-            'IDLErenderOccured = rendernow
 
         Case GS_PAUSE           'PAUSE STATE
                                 '-----------
@@ -415,7 +420,7 @@ Private Sub gameLogic()
     If (mainMem.bFpsInTitleBar) Then
 
         ' Build the string
-        host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / m_renderTime / m_renderCount, 1)) & " fps]"
+        host.Caption = mainMem.gameTitle & " [" & CStr(Round(m_renderCount / m_renderTime, 1)) & " fps]"
 
     End If
 
@@ -424,11 +429,11 @@ End Sub
 '=======================================================================
 ' Open systems
 '=======================================================================
-Private Sub openSystems(Optional ByVal testingPRG As Boolean)
+Private Sub openSystems()
     On Error Resume Next
     Call initEventProcessor
     Call initSprites
-    Call initGraphics(testingPRG) ' Creates host window
+    Call initGraphics(m_testingPRG) ' Creates host window
     Call setupCOM(True)
     Call correctPaths
     Call InitPlugins
@@ -438,7 +443,7 @@ Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call initMedia
     Call DXClearScreen(0)
     Call DXRefresh
-    Call setupMain(testingPRG)
+    Call setupMain
 End Sub
 
 '=======================================================================
@@ -467,9 +472,7 @@ End Sub
 '=======================================================================
 ' Set some things based on the main file
 '=======================================================================
-Public Sub setupMain(Optional ByVal testingPRG As Boolean)
-
-    On Error Resume Next
+Public Sub setupMain(): On Error Resume Next
 
     ' Setup the cursor
     host.cursorHotSpotX = mainMem.hotSpotX
@@ -506,21 +509,27 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     ' Set initial game speed
     Call gameSpeed(getGameSpeed(mainMem.gameSpeed))
 
-    ' Need a better method than this! Either more accurate estimate, or write last gAvgTime to file.
-    m_renderTime = Timer()
-    Dim i As Long
-    For i = 0 To 20
-        Call DXFlip
-    Next i
-    m_renderTime = Timer() - m_renderTime
-    m_renderCount = 15     ' Account for extra routine time in the movement loop
+    'Get the last gAvgTime from the registry.
+    m_renderCount = 10
+    m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime", -1)) * m_renderCount
+
+    If m_renderTime <= 0 Then
+        ' Do a bad estimate of the fps.
+        m_renderTime = Timer()
+        Dim i As Long
+        For i = 0 To 20
+            Call DXFlip
+        Next i
+        m_renderTime = Timer() - m_renderTime
+        m_renderCount = 15     ' Account for extra routine time in the movement loop
+    End If
 
     ' Register all fonts
     Call LoadFontsFromFolder(projectPath & fontPath)
 
     ' Change the DirectX host's caption to the game's title (for windowed mode)
     If (LenB(mainMem.gameTitle)) Then
-        host.Caption = mainMem.gameTitle ' & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps]"
+        host.Caption = mainMem.gameTitle
     End If
 
     If (LenB(mainMem.initChar)) Then
@@ -542,13 +551,13 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     Next i
 
     ' Unless we're testing a program from the PRG editor, run the startup program.
-    If Not (testingPRG) Then
+    If Not (m_testingPRG) Then
         Call runProgram(projectPath & prgPath & mainMem.startupPrg, , , True)
     End If
 
     ' Unless we loaded a game (using Load()) or we're testing a PRG from
     ' the program editor, send the player to the initial board
-    If ((Not (saveFileLoaded)) And (Not (testingPRG))) Then
+    If ((Not (saveFileLoaded)) And (Not (m_testingPRG))) Then
 
         ' Nullify some variables
         scTopX = -1000
@@ -580,6 +589,18 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
                 pendingPlayerMovement(selectedPlayer).lOrig = .l
             End With
         End If
+    End If
+
+End Sub
+
+'=======================================================================
+' Save settings
+'=======================================================================
+Private Sub saveSettings(): On Error Resume Next
+
+    'The average GS_MOVEMENT gamestate loop time.
+    If (Not m_testingPRG) And (gAvgTime > 0) Then
+        Call SaveSetting("RPGToolkit3", "Trans3", "gAvgTime", CStr(Round(gAvgTime, 5)))
     End If
 
 End Sub
