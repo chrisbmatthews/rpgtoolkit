@@ -454,13 +454,13 @@ LRESULT CALLBACK endFormWndProc(
 		)
 {
 
-	//Switch on the message we're to handle
+	// Switch on the message we're to handle
     switch (msg)
 	{
 
         case WM_PAINT:
 		{
-            //Window needs to be repainted
+            // Window needs to be repainted
             PAINTSTRUCT ps; HDC hdc;
             BeginPaint(hwnd, &ps);
             hdc = GetDC(hwnd);
@@ -471,7 +471,7 @@ LRESULT CALLBACK endFormWndProc(
 
         case WM_DESTROY:
 		{
-            //Window was closed-- bail!
+            // Window was closed-- bail!
             m_exitDo = TRUE;
 		} break;
 
@@ -482,14 +482,14 @@ LRESULT CALLBACK endFormWndProc(
 
                 case 100:
 				{
-                    //OK button pressed
+                    // OK button pressed
                     DestroyWindow(hwnd);
                     m_exitDo = TRUE;
 				} break;
 
                 case 101:
 				{
-                    //More info button pressed
+                    // More info button pressed
                     system("start http://www.toolkitzone.com");
                     DestroyWindow(hwnd);
                     m_exitDo = TRUE;
@@ -505,13 +505,13 @@ LRESULT CALLBACK endFormWndProc(
 
         default:
 		{
-            //Let windows deal with the rest
+            // Let windows deal with the rest
             return DefWindowProc(hwnd, msg, wParam, lParam);
 		} break;
 
     }
 
-	//Return success
+	// Return success
 	return TRUE;
 
 }
