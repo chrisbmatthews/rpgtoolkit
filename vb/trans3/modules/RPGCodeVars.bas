@@ -1487,6 +1487,16 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
             Call SetNumVar(theVar, CDbl(value), m_globalHeap)
         End If
 
+        ' Check for special variables
+        Select Case UCase$(theVar)
+
+            ' Ambience vars
+            Case "AMBIENTRED!", "AMBIENTBLUE!", "AMBIENTGREEN!"
+                ' Clear the sprite cache
+                Call clearAnmCache
+
+        End Select
+
     ElseIf (varType = DT_LIT) Then    'LITERAL VARIABLE
                                       '----------------
 
