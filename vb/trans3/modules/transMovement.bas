@@ -726,11 +726,6 @@ Private Function checkBoardEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum
     'Open the target board file and get some info from it.
     Call openBoard(projectPath & brdPath & targetBoard.strFilename, targetBoard)
    
-    'Check the target board extends to the player's location.
-    If testX > targetBoard.bSizeX Or testY > targetBoard.bSizeY Or testL > targetBoard.bSizeL Then
-        Exit Function
-    End If
-        
     'Modifiers to offset target position when the player enters: causes player to walk onto
     'the board from off-screen.
     'Dim modifierX As Long, modifierY As Long
@@ -766,7 +761,12 @@ Private Function checkBoardEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum
             testX = targetBoard.bSizeX
             'modifierX = movementSize
     End Select
-
+    
+    'Check the target board extends to the player's location.
+    If testX > targetBoard.bSizeX Or testY > targetBoard.bSizeY Or testL > targetBoard.bSizeL Then
+        Exit Function
+    End If
+    
     If targetBoard.tiletype(testX, testY, testL) = SOLID Then
         'If target tile is solid, stay at current position.
         Exit Function
@@ -781,6 +781,7 @@ Private Function checkBoardEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum
         pendingPlayerMovement(playerNum).yOrig = .y
         pendingPlayerMovement(playerNum).xTarg = .x '- modifierX
         pendingPlayerMovement(playerNum).yTarg = .y '- modifierY
+        .loopFrame = -1
         pendingPlayerMovement(playerNum).direction = MV_IDLE
     End With
 
@@ -810,6 +811,8 @@ Private Function checkBoardEdges(ByRef pend As PENDING_MOVEMENT, ByVal playerNum
     'The target wasn't blocked and the send succeeded, return false to continue movement;
     'i.e. player walks onto the next board from off-screen.
     checkBoardEdges = False
+    'Accept user input.
+    gGameState = GS_IDLE
 
 End Function
 
@@ -836,7 +839,8 @@ Public Function obtainTileType(ByVal testX As Double, _
     
     'typetile = boardTileType(testX, testY, testL, thelink)
     
-    If testX < 1 Or testY < 1 Then Exit Function
+    If testX < 1 Or testX > boardList(activeBoardIndex).theData.bSizeX _
+    Or testY < 1 Or testY > boardList(activeBoardIndex).theData.bSizeY Then Exit Function
     
     If Not ((movementSize <> 1)) Then
     'If True Then
@@ -1460,6 +1464,9 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
 
                     ' Insert the target co-ordinates
                     Call insertTarget(pendingPlayerMovement(playerIdx))
+                    
+                    ' We can start movement!
+                    pPos(playerIdx).loopFrame = 0
 
                     ' All cases: We only need to get the tiletype once in a move since it's not
                     '            going to change.
@@ -1468,7 +1475,7 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                     ' Pixel mv:  Check all items now: no checks during movement. The increments
                     '            ( <= 1/16th tile) are too small to notice. Moving items block
                     '            whole movement.
-
+                    
                     ' Evaluate the tiletype at the target (from tiles only).
                     With pendingPlayerMovement(playerIdx)
 
@@ -1482,48 +1489,36 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                     ' Check for stationary items only (for tile mvt).
                     ' Check all items only now (for pixel mvt).
                     ' Also check for the edge of the board.
-                    If (checkObstruction(pPos(playerIdx), _
+                    If checkObstruction(pPos(playerIdx), _
                                         pendingPlayerMovement(playerIdx), _
                                         playerIdx, _
                                         -1, _
                                         staticTileType(playerIdx), _
                                         True) _
-                                        = SOLID) _
+                                        = SOLID _
                         Or _
                         checkBoardEdges(pendingPlayerMovement(playerIdx), playerIdx) _
                         Then
-
                         staticTileType(playerIdx) = SOLID
-
                     End If
-                    
-                    ' We can start movement!
-                    pPos(playerIdx).loopFrame = 0
 
                     With playerMem(playerIdx)
-
                         ' Normalise the speed to the average mainloop time.
                         ' Scale the offset to match the fps. Take a 10th of the fps.
                         .loopSpeed = Round(.speed / gAvgTime) + (loopOffset * Round((1 / gAvgTime) / 10))
 
-                        ' Set all players to move at the selected player's speed regardless,
-                        ' (won't work otherwise!). I know this is a bug!
-                        .loopSpeed = playerMem(selectedPlayer).loopSpeed
-
                         ' Check divide by zero
                         If (.loopSpeed <= 0) Then .loopSpeed = 1
-                        
                     End With
                     
                 Else
 
-                    ' Get out of the mainloop state.
-                    gGameState = GS_IDLE
+                    ' Begin accepting user input in the mainloop, if this is the selected player.
+                    If playerIdx = selectedPlayer Then gGameState = GS_IDLE
 
                 End If ' .direction <> MV_IDLE
 
             End If ' .loopFrame < 0
-                    
 
             If (pendingPlayerMovement(playerIdx).direction <> MV_IDLE) Then
 

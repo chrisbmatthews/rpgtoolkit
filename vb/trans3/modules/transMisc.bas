@@ -133,15 +133,15 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
     End If
     
     If effectiveSizeX <= effectiveTilesX Then
-        'If board is smaller or equal to the screen size horizontally
-        topX = -((effectiveTilesX - effectiveSizeX) \ 2)
+        'If board is smaller or equal to the screen size horizontally (can be decimal).
+        topX = (effectiveSizeX - effectiveTilesX) / 2
     End If
     
     If effectiveSizeY <= effectiveTilesY Then
         'If board smaller or equal to the screen size vertically
         
-        'NOTE: Bug in iso board drawing where negative topYs are not properly placed!!
-        topY = -((effectiveTilesY - effectiveSizeY) \ 2)
+        'NOTE: Bug in iso board drawing where negative topYs are not properly placed!! (can be decimal).
+        topY = (effectiveSizeY - effectiveTilesY) / 2
         If (boardList(activeBoardIndex).theData.isIsometric = 1) Then topY = 0 'Take this line out when bug fixed!!
     End If
     
