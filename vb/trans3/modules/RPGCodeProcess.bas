@@ -417,22 +417,22 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                         End If
 
                     ElseIf (a = 0) Then
-                        openProgram.program(p + a) = Trim$(lines(a))
+                        openProgram.program(p + a) = lines(a)
 
                     Else
 
-                        lines(a) = Trim$(lines(a))
+                        lines(a) = lines(a)
 
                         Select Case uD(a - 1)
 
                             Case "{", "}"
                                 openProgram.program(p + a) = uD(a - 1)
-                                openProgram.program(p + a + 1) = lines(a)
+                                openProgram.program(p + a + 1) = Trim$(lines(a))
                                 p = p + 1
 
                             Case "#"
                                 If Left$(lines(a), 1) = " " Then
-                                    openProgram.program(p + a) = uD(a - 1) & lines(a)
+                                    openProgram.program(p + a) = uD(a - 1) & Trim$(lines(a))
                                 Else
                                     openProgram.program(p + a - 1) = _
                                         openProgram.program(p + a - 1) & uD(a - 1) & lines(a)
