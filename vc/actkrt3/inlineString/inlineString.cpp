@@ -14,6 +14,30 @@
 #include "inlineString.h"		//Contains integral stuff for this file
 
 ///////////////////////////////////////////////////////////////////////////
+// Resize the string (keeps current contents if possible)
+///////////////////////////////////////////////////////////////////////////
+void inlineString::resize(int newSize)
+{
+	if (newSize <= 0) newSize = 1;
+	if (newSize >= m_length)
+	{
+		//we can keep all contents
+		inlineString temp(m_contents, m_length);
+		delete(m_contents);
+		m_contents = new(char[newSize]);
+		strcmp(m_contents, (char*)temp);
+	}
+	else
+	{
+		//we can't keep all contents
+		inlineString temp((char*)getChars(1, newSize), newSize);
+		delete(m_contents);
+		m_contents = new(char[newSize]);
+		strcmp(m_contents, (char*)temp);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////
 // Get the length of the inlineString
 ///////////////////////////////////////////////////////////////////////////
 int inlineString::len()
