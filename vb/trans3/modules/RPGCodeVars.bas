@@ -252,7 +252,7 @@ Private Function equEvaluate(ByVal Text As String) As Double
     operatorIdx = -1
 
     ' Eat spaces, replace "(-" with "(-1*", and encase string in ()s
-    Text = replace(replace(replace("(" & Text & ")", vbTab, vbNullString), " ", vbNullString), "(-", "(-1*")
+    Text = replace(replace(replace(replace(replace(replace(replace("(" & Text & ")", vbTab, vbNullString), " ", vbNullString), "(-", "(-1*"), "*-", "*-1*"), "--", "+1*"), "+-", "-1*"), "/-", "/-1*")
 
     ' Loop over each character
     For idx = 1 To Len(Text)
@@ -451,6 +451,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
 
         ' Replace '-' with '+'
         Text = replace(Text, "-", "+")
+        If (LeftB$(Text, 2) = "+") Then Text = "0" & Text
 
         ' Remove brackets from the text for this test
         Text = replace(replace(Text, ")", vbNullString), "(", vbNullString)
