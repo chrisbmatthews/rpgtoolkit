@@ -7,6 +7,8 @@ Attribute VB_Name = "transMain"
 
 Option Explicit
 
+Public Declare Sub PostQuitMessage Lib "user32" (ByVal nExitCode As Long)
+
 Public gGameState As Long
 Public gPrevGameState As Long
 
@@ -47,6 +49,10 @@ Public Sub closeSystems()
         Call Kill(TempDir & "freeImage.dll")
         Call Kill(TempDir & "temp.tpk")
     End If
+
+    Call CloseWindow(host.hwnd)
+    'Call DestroyWindow(host.hwnd)
+    'Call UnregisterClass(host.className, App.hInstance)
 
 End Sub
 
@@ -209,11 +215,7 @@ Public Sub Main()
         Call openSystems
 
         'Run game
-        Call mainLoop
-
-        'Shut down
-        Call closeSystems
-        Call endform.Show(vbModal)
+        Call host.mainEventLoop
 
     End If
 
@@ -224,147 +226,125 @@ Public Sub mainLoop()
     'main execution loop
         
     On Error Resume Next
-
-    Dim bDone As Boolean
-  
-    #Const isRelease = 1
-
-    #If Not isRelease = 1 Then
-        Dim framesDrawn As Long
-        Dim tt As Long
-        tt = Timer()
-    #End If
-
-    Dim checkFight As Long
-
-    Do Until bDone
-    
-        Select Case gGameState
+ 
+    Static checkFight As Long
+   
+    Select Case gGameState
         
-            Case GS_IDLE
+        Case GS_IDLE
 
-                Call checkMusic
-                Call renderNow
-                Call multiTaskNow
-                Call scanKeys
-                Call updateGameTime
-                DoEvents
+            Call checkMusic
+            Call renderNow
+            Call multiTaskNow
+            Call scanKeys
+            Call updateGameTime
+            DoEvents
                 
-                #If Not isRelease = 1 Then
-                    framesDrawn = framesDrawn + 1
-                #End If
+        Case GS_MOVEMENT
+            'movement has occurred...
 
-            Case GS_MOVEMENT:
-                'movement has occurred...
+            Call moveItems
+            Call movePlayers
 
-                Call moveItems
-                Call movePlayers
+            'this should be called framesPerMove times (moving 1/framesPerMove each time)
+            movementCounter = movementCounter + 1
 
-                #If Not isRelease = 1 Then
-                    framesDrawn = framesDrawn + 1
-                #End If
+            Call renderNow
 
-                'this should be called framesPerMove times (moving 1/framesPerMove each time)
-                movementCounter = movementCounter + 1
+            If movementCounter < framesPerMove Then
+                gGameState = GS_MOVEMENT
+                If (Not GS_ANIMATING) And (Not GS_LOOPING) Then
+                    Call delay(walkDelay / ((framesPerMove * movementSize) / 2))
+                End If
+            Else
+                gGameState = GS_DONEMOVE
+                movementCounter = 0
+            End If
 
-                Call renderNow
+        Case GS_DONEMOVE
+            'movement is done...
+            'check rpgcode programs, etc...
 
-                If movementCounter < framesPerMove Then
-                    gGameState = GS_MOVEMENT
-                    If (Not GS_ANIMATING) And (Not GS_LOOPING) Then
-                        Call delay(walkDelay / ((framesPerMove * movementSize) / 2))
+            'clear pending item movements...
+            Dim cnt As Long
+            For cnt = 0 To UBound(pendingItemMovement)
+                pendingItemMovement(cnt).direction = MV_IDLE
+                    
+                'Isometric fix:
+                pendingItemMovement(cnt).xOrig = itmPos(cnt).x
+                pendingItemMovement(cnt).yOrig = itmPos(cnt).y
+            Next cnt
+                
+            'The pending movements have to be cleared *before* any programs are run,
+            'whereas the movement direction can only be cleared afterwards.
+            For cnt = 0 To UBound(pendingPlayerMovement)
+                pendingPlayerMovement(cnt).xOrig = ppos(cnt).x
+                pendingPlayerMovement(cnt).yOrig = ppos(cnt).y
+            Next cnt
+                
+            'check if player moved...
+            If pendingPlayerMovement(selectedPlayer).direction <> MV_IDLE Then
+                'will create a temporary player position which is based on
+                'the target location for that players' movement.
+                'lets us test solid tiles, etc
+                Dim tempPos As PLAYER_POSITION
+                tempPos = ppos(selectedPlayer)
+
+                tempPos.l = pendingPlayerMovement(selectedPlayer).lTarg
+                tempPos.x = pendingPlayerMovement(selectedPlayer).xTarg
+                tempPos.y = pendingPlayerMovement(selectedPlayer).yTarg
+
+                Call programTest(tempPos)
+                pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
+
+                If usingPixelMovement() Then
+                    checkFight = checkFight + 1
+                    If checkFight = 4 Then
+                        Call fightTest
+                        checkFight = 0
                     End If
                 Else
-                    gGameState = GS_DONEMOVE
-                    movementCounter = 0
+                    Call fightTest
                 End If
 
-            Case GS_DONEMOVE:
-                'movement is done...
-                'check rpgcode programs, etc...
-
-                'clear pending item movements...
-                Dim cnt As Long
-                For cnt = 0 To UBound(pendingItemMovement)
-                    pendingItemMovement(cnt).direction = MV_IDLE
-                    
-                    'Isometric fix:
-                    pendingItemMovement(cnt).xOrig = itmPos(cnt).X
-                    pendingItemMovement(cnt).yOrig = itmPos(cnt).Y
-                Next cnt
-                
-                'The pending movements have to be cleared *before* any programs are run,
-                'whereas the movement direction can only be cleared afterwards.
-                For cnt = 0 To UBound(pendingPlayerMovement)
-                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).X
-                    pendingPlayerMovement(cnt).yOrig = ppos(cnt).Y
-                Next cnt
-                
-                'check if player moved...
-                If pendingPlayerMovement(selectedPlayer).direction <> MV_IDLE Then
-                    'will create a temporary player position which is based on
-                    'the target location for that players' movement.
-                    'lets us test solid tiles, etc
-                    Dim tempPos As PLAYER_POSITION
-                    tempPos = ppos(selectedPlayer)
-
-                    tempPos.l = pendingPlayerMovement(selectedPlayer).lTarg
-                    tempPos.X = pendingPlayerMovement(selectedPlayer).xTarg
-                    tempPos.Y = pendingPlayerMovement(selectedPlayer).yTarg
-
-                    Call programTest(tempPos)
-                    pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
-
-                    If usingPixelMovement() Then
-                        checkFight = checkFight + 1
-                        If checkFight = 4 Then
-                            Call fightTest
-                            checkFight = 0
-                        End If
-                    Else
-                        Call fightTest
-                    End If
-
-                End If
-
-                'clear player movements
-                For cnt = 0 To UBound(pendingPlayerMovement)
-                    pendingPlayerMovement(cnt).direction = MV_IDLE
-                Next cnt
-
-                If UCase(ppos(selectedPlayer).stance) = "WALK_S" Then facing = 1
-                If UCase(ppos(selectedPlayer).stance) = "WALK_W" Then facing = 2
-                If UCase(ppos(selectedPlayer).stance) = "WALK_N" Then facing = 3
-                If UCase(ppos(selectedPlayer).stance) = "WALK_E" Then facing = 4
-
-                gGameState = GS_IDLE
-                
-            Case GS_QUIT:
-                bDone = True
-                
-            Case GS_PAUSE:
-                'do nothing!
-                DoEvents
-
-        End Select
-        
-        If Not gGameState = GS_PAUSE Then
-        
-            If GS_ANIMATING Then
-                'We're running multi-task animations here!
-                Call handleMultitaskingAnimations
             End If
 
-            If GS_LOOPING Then
-                'We're in a loop!
-                Call handleThreadLooping
-                movementCounter = 5
-            End If
+            'clear player movements
+            For cnt = 0 To UBound(pendingPlayerMovement)
+                pendingPlayerMovement(cnt).direction = MV_IDLE
+            Next cnt
 
+            If UCase(ppos(selectedPlayer).stance) = "WALK_S" Then facing = 1
+            If UCase(ppos(selectedPlayer).stance) = "WALK_W" Then facing = 2
+            If UCase(ppos(selectedPlayer).stance) = "WALK_N" Then facing = 3
+            If UCase(ppos(selectedPlayer).stance) = "WALK_E" Then facing = 4
+
+            gGameState = GS_IDLE
+                
+        Case GS_QUIT
+            Call PostQuitMessage(0)
+                
+        Case GS_PAUSE
+            'do nothing!
+            DoEvents
+
+    End Select
+
+    If gGameState <> GS_PAUSE Then
+        
+        If GS_ANIMATING Then
+            'We're running multi-task animations here!
+            Call handleMultitaskingAnimations
         End If
-        
-    Loop
-    
+
+        If GS_LOOPING Then
+            'We're in a loop!
+            Call handleThreadLooping
+            movementCounter = 5
+        End If
+
+    End If
+   
 End Sub
 
 Sub openSystems(Optional ByVal testingPRG As Boolean)
@@ -386,11 +366,7 @@ Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call DXRefresh
     
     Call calculateSlackTime
-
-    host.Visible = True
-    Call host.Show
-    DoEvents
-    
+   
 End Sub
 
 Private Sub calculateSlackTime(Optional ByVal recurse As Boolean = True)
@@ -523,8 +499,8 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
 
         'Setup player position.
-        ppos(0).X = boardList(activeBoardIndex).theData.playerX
-        ppos(0).Y = boardList(activeBoardIndex).theData.playerY
+        ppos(0).x = boardList(activeBoardIndex).theData.playerX
+        ppos(0).y = boardList(activeBoardIndex).theData.playerY
         ppos(0).l = boardList(activeBoardIndex).theData.playerLayer
         ppos(0).stance = "WALK_S"
         ppos(0).frame = 0

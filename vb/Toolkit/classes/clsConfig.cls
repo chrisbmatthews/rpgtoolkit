@@ -14,7 +14,7 @@ Attribute VB_Exposed = False
 '=========================================================================
 'All contents copyright 2004, Colin James Fitzpatrick
 'All rights reserved  YOU MAY NOT REMOVE THIS NOTICE
-'Read LICENSEtxt for licensing info
+'Read LICENSE.txt for licensing info
 '=========================================================================
 
 '=========================================================================
@@ -112,7 +112,8 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
             Close num
             Open file For Input As num
             Call fread(num)
-            tipsOnOff = fread(num)
+            Call fread(num)
+            tipsOnOff = 1
             tipFile = fread(num)
             tipNum = fread(num)
             Call fread(num)

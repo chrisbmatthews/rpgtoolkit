@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form config 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "Toolkit.exe Configuration"
+   Caption         =   "Toolkit3 (Configuration)"
    ClientHeight    =   5355
    ClientLeft      =   45
    ClientTop       =   330
@@ -9,10 +9,10 @@ Begin VB.Form config
    Icon            =   "config.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
+   MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   5355
    ScaleWidth      =   6540
-   StartUpPosition =   2  'CenterScreen
    Tag             =   "1823"
    Begin VB.Frame Frame2 
       Caption         =   "QuickLaunch"
@@ -21,7 +21,6 @@ Begin VB.Form config
       TabIndex        =   4
       Tag             =   "1824"
       Top             =   3480
-      Visible         =   0   'False
       Width           =   6135
       Begin VB.CommandButton Command2 
          Caption         =   "Browse..."
@@ -131,10 +130,13 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-Sub fillQuick(num)
+Public Property Get formType() As Long
+    formType = FT_CONFIG
+End Property
+
+Private Sub fillQuick(ByVal num As Long)
     'fill quick launch info with info about the
-On Error Resume Next
-    
+    On Error Resume Next
     'num-th quick launch item
     qltarget.Text = configfile.quickTarget(num)
     qlenabled.value = configfile.quickEnabled(num)
@@ -145,12 +147,12 @@ On Error Resume Next
     End If
 End Sub
 
-
-Sub ShowPic()
+Private Sub ShowPic()
     'loads a file into a picture box and resizes it.
-On Error Resume Next
-    If fileExists(resourcePath$ + configfile.wallpaper$) Then
-        f$ = resourcePath$ + configfile.wallpaper$
+    On Error Resume Next
+    Dim f As String
+    If fileExists(resourcePath$ & configfile.wallpaper$) Then
+        f$ = resourcePath$ & configfile.wallpaper$
     Else
         If fileExists(configfile.wallpaper$) Then
             f$ = configfile.wallpaper$
@@ -159,21 +161,12 @@ On Error Resume Next
         End If
     End If
     If f$ <> "" Then
-        'mainoption.PicClip1.Picture = LoadPicture(f$)
-        'mainoption.PicClip1.ClipX = 0
-        'mainoption.PicClip1.ClipY = 0
-        'mainoption.PicClip1.ClipHeight = mainoption.PicClip1.height
-        'mainoption.PicClip1.ClipWidth = mainoption.PicClip1.width
-        'mainoption.PicClip1.StretchX = configfile.wallpaperthumb.width / Screen.TwipsPerPixelX
-        'mainoption.PicClip1.StretchY = configfile.wallpaperthumb.height / Screen.TwipsPerPixelY
-        'configfile.wallpaperthumb.Picture = mainoption.PicClip1.Clip
         Call DrawSizedImage(f$, 0, 0, wallpaperthumb.Width / Screen.TwipsPerPixelX, wallpaperthumb.height / Screen.TwipsPerPixelY, vbPicHDC(wallpaperthumb))
         Call vbPicRefresh(wallpaperthumb)
-    Else
     End If
 End Sub
 
-Sub infofill()
+Private Sub infofill()
     'fill in info for this form
     On Error GoTo ErrorHandler
     
@@ -196,7 +189,6 @@ ErrorHandler:
     Resume Next
 End Sub
 
-
 Private Sub Combo1_Click()
     On Error GoTo ErrorHandler
     i = Combo1.ListIndex
@@ -209,7 +201,6 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
-
 
 Private Sub Command1_Click()
     On Error Resume Next
@@ -232,7 +223,6 @@ Private Sub Command1_Click()
     Call ShowPic
     Call tkMainForm.ShowPic(configfile.wallpaper$)
 End Sub
-
 
 Private Sub Command2_Click()
     On Error Resume Next
@@ -269,6 +259,9 @@ ErrorHandler:
     Resume Next
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    Call tkMainForm.configForm
+End Sub
 
 Private Sub qlenabled_Click()
     On Error GoTo ErrorHandler
@@ -313,4 +306,3 @@ Private Sub qltarget_Change()
     If i = -1 Then i = 0
     configfile.quickTarget(i) = qltarget.Text
 End Sub
-

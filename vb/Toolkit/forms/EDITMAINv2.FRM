@@ -85,7 +85,9 @@ Begin VB.Form editmainfile
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
       Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(0).Enabled=   0   'False
       Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(1).Enabled=   0   'False
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -100,9 +102,9 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label24"
+      Tab(5).Control(0)=   "Frame3"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Frame3"
+      Tab(5).Control(2)=   "Label24"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
@@ -120,11 +122,18 @@ Begin VB.Form editmainfile
             Italic          =   -1  'True
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   1215
+         Height          =   1575
          Left            =   -74760
          TabIndex        =   85
          Top             =   2520
          Width           =   6615
+         Begin VB.CheckBox chkMousePointer 
+            Height          =   255
+            Left            =   1680
+            TabIndex        =   92
+            Top             =   1080
+            Width           =   255
+         End
          Begin VB.OptionButton optTileBased 
             Caption         =   "Tile Based"
             BeginProperty Font 
@@ -171,6 +180,23 @@ Begin VB.Form editmainfile
             Max             =   3
             SelStart        =   1
             Value           =   1
+         End
+         Begin VB.Label Label26 
+            Caption         =   "Use mouse cursor"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   240
+            TabIndex        =   91
+            Top             =   1080
+            Width           =   1455
          End
          Begin VB.Label Label23 
             Caption         =   "Movement style:"
@@ -1942,6 +1968,13 @@ Private Sub closemnu_Click()
 End Sub
 
 '=========================================================================
+' Use mouse pointer?
+'=========================================================================
+Private Sub chkMousePointer_Click()
+    mainMem.mouseCursor = chkMousePointer.value
+End Sub
+
+'=========================================================================
 ' Color depth option boxes
 '=========================================================================
 Private Sub color16bit_Click()
@@ -1963,7 +1996,7 @@ End Sub
 Private Sub Command1_Click()
     On Error Resume Next
     mainNeedUpdate = True
-    Call mainfight.Show(vbModal)
+    Call mainfight.Show
 End Sub
 
 '=========================================================================
@@ -2133,7 +2166,7 @@ End Sub
 '=========================================================================
 Private Sub Command3_Click()
     On Error Resume Next
-    Call runtimeprograms.Show(vbModal)
+    Call runtimeprograms.Show
 End Sub
 
 '=========================================================================
@@ -2514,6 +2547,7 @@ Private Sub infofill()
     End If
     
     sliGameSpeed.value = mainMem.gameSpeed
+    chkMousePointer.value = mainMem.mouseCursor
 
 End Sub
 

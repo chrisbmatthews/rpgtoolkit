@@ -19,11 +19,11 @@ Begin VB.Form mainfight
    Icon            =   "MAINFIGH.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
+   MDIChild        =   -1  'True
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   5850
    ScaleWidth      =   8865
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton Command5 
       Appearance      =   0  'Flat
       Caption         =   "OK"
@@ -304,7 +304,7 @@ Begin VB.Form mainfight
             ForeColor       =   &H00FF0000&
             Height          =   255
             Left            =   3480
-            MouseIcon       =   "MAINFIGH.frx":030A
+            MouseIcon       =   "MAINFIGH.frx":0CCA
             MousePointer    =   99  'Custom
             TabIndex        =   6
             Tag             =   "1188"
@@ -344,13 +344,17 @@ Attribute VB_Exposed = False
 
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 
+Public Property Get formType() As Long
+    formType = FT_FIGHTING
+End Property
+
 Private Sub Command14_Click()
     On Error Resume Next
     a = enemylist.ListIndex
     If a < 0 Then a = 0
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -362,11 +366,11 @@ Private Sub Command14_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     mainMem.fightPrg$ = antiPath$
-    fprg.text = antiPath$
+    fprg.Text = antiPath$
 End Sub
 
 Private Sub Command5_Click()
@@ -374,14 +378,14 @@ Private Sub Command5_Click()
 End Sub
 
 Private Sub enemylist_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     a = enemylist.ListIndex
     If a < 0 Then a = 0
-    skillLevel.text = str$(mainMem.skill(a))
+    skilllevel.Text = str$(mainMem.skill(a))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -390,9 +394,9 @@ Private Sub enemylist_DblClick()
     On Error Resume Next
     a = enemylist.ListIndex
     If a < 0 Then a = 0
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + enepath$
+    dlg.strDefaultFolder = projectPath$ & enePath
     
     dlg.strTitle = "Select Enemy"
     dlg.strDefaultExt = "ene"
@@ -404,9 +408,9 @@ Private Sub enemylist_DblClick()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + enepath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + enePath$ + antiPath$
     mainMem.enemy$(a) = antiPath$
     enemylist.Clear
     For t = 0 To 500
@@ -414,13 +418,14 @@ Private Sub enemylist_DblClick()
         If aa$ = "" Then aa$ = LoadStringLoc(1010, "None")
         enemylist.AddItem "Enemy" + str$(t) + ": " + aa$
     Next t
-    skillLevel.text = str$(mainMem.skill(a))
+    skilllevel.Text = str$(mainMem.skill(a))
     enemylist.ListIndex = a
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
+    Me.Caption = "Main File (Fighting)"
     
     mainNeedUpdate = True
     enemylist.Clear
@@ -429,11 +434,11 @@ Private Sub Form_Load()
         If a$ = "" Then a$ = LoadStringLoc(1010, "None")
         enemylist.AddItem "Enemy" + str$(t) + ": " + a$
     Next t
-    skillLevel.text = str$(mainMem.skill(0))
+    skilllevel.Text = str$(mainMem.skill(0))
     Option2.value = mainMem.fightType
-    Text1.text = str$(mainMem.chances)
+    Text1.Text = str$(mainMem.chances)
     Option4.value = mainMem.fprgYN
-    fprg.text = mainMem.fightPrg$
+    fprg.Text = mainMem.fightPrg$
         
     If mainMem.fprgYN = 0 Then
         Frame2.Visible = True
@@ -443,95 +448,95 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub fprg_Change()
     On Error Resume Next
-    mainMem.fightPrg$ = fprg.text
+    mainMem.fightPrg$ = fprg.Text
 End Sub
 
 Private Sub link1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     activeEnemy.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option1_Click()
-    On Error GoTo errorhandler
-    chan.caption = LoadStringLoc(2024, "Chances of getting in a fight: (1 in x)")
+    On Error GoTo ErrorHandler
+    chan.Caption = LoadStringLoc(2024, "Chances of getting in a fight: (1 in x)")
     mainMem.fightType = 0
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option2_Click()
-    On Error GoTo errorhandler
-    chan.caption = LoadStringLoc(2025, "Number of steps to take before getting in fight:")
+    On Error GoTo ErrorHandler
+    chan.Caption = LoadStringLoc(2025, "Number of steps to take before getting in fight:")
     mainMem.fightType = 1
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     mainMem.fprgYN = 0
     Frame2.Visible = True
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Option4_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     mainMem.fprgYN = 1
     Frame2.Visible = False
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub skilllevel_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     a = enemylist.ListIndex
     If a < 0 Then a = 0
-    mainMem.skill(a) = val(skillLevel.text)
+    mainMem.skill(a) = val(skilllevel.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Text1_Change()
-    On Error GoTo errorhandler
-    mainMem.chances = val(Text1.text)
+    On Error GoTo ErrorHandler
+    mainMem.chances = val(Text1.Text)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

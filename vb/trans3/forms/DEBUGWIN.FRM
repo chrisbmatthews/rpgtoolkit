@@ -48,16 +48,12 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-Private Sub Form_Activate()
-    On Error Resume Next
-    host.ZOrder 0
-End Sub
+Option Explicit
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
-Private Sub Form_KeyDown(keyCode As Integer, shift As Integer)
+Private Sub Form_KeyDown(keyCode As Integer, Shift As Integer)
     On Error GoTo errorhandler
 keyWaitState = keyCode
-keyShiftState = shift
+keyShiftState = Shift
 
     Exit Sub
 'Begin error handling code:
@@ -69,8 +65,8 @@ End Sub
 Private Sub Form_Load()
     On Error GoTo errorhandler
     Call LocalizeForm(Me)
-    debugwin.Top = Screen.height - debugwin.height
-    debugwin.Left = Screen.width - debugwin.width
+    debugwin.top = screen.height - debugwin.height
+    debugwin.left = screen.width - debugwin.width
 
     Exit Sub
 'Begin error handling code:
@@ -78,5 +74,3 @@ errorhandler:
     Call HandleError
     Resume Next
 End Sub
-
-

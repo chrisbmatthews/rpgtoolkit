@@ -158,7 +158,7 @@ Public Sub doEventsFor(ByVal milliSeconds As Long)
 
     startTime = Timer()
     Do Until done
-        DoEvents
+        Call processEvent
         If Timer() - startTime >= milliSeconds / 1000 Then
             done = True
         End If
@@ -167,8 +167,6 @@ Public Sub doEventsFor(ByVal milliSeconds As Long)
 End Sub
 
 Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
-
-    ' ! MODIFIED BY KSNiloc !
 
     '=============================
     'EDITED: Delano - 18/05/04
@@ -191,10 +189,10 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
 
     'Check the joystick.
     Dim jButton(4) As Boolean
-    Dim thedir As Long
+    Dim theDir As Long
     
     'Get a movement direction and see any buttons that were pressed.
-    thedir = joyDirection(jButton)
+    theDir = joyDirection(jButton)
     
     If jButton(0) Then
         'If the primary button was pressed.
@@ -213,7 +211,7 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
     
     Dim returnVal As String
     'Get a string of the key number.
-    returnVal$ = chr$(keyWaitState)
+    returnVal$ = Chr$(keyWaitState)
     
     'Check the key for common keys.
     If keyWaitState = 13 Then returnVal$ = "ENTER"
@@ -255,7 +253,7 @@ Function getAsciiKey() As String
     
     'Call DoEvents 10 times(!). Give enough time for an input.
     For repeat = 0 To 10
-        DoEvents
+        Call processEvent
     Next repeat
     
     If keyAsciiState = -1 Then
@@ -266,7 +264,7 @@ Function getAsciiKey() As String
     
     Dim returnVal As String
    'Get a string of the key number.
-    returnVal$ = chr$(keyAsciiState)
+    returnVal$ = Chr$(keyAsciiState)
     
     getAsciiKey = returnVal$
 
@@ -317,12 +315,12 @@ Function WaitForKey() As String
     
     'Check the joystick.
     Dim jButton(4) As Boolean
-    Dim thedir As Long
+    Dim theDir As Long
     
     Do While keyWaitState = 0 And jButton(0) = False
-        DoEvents
+        Call processEvent
         'Get a movement direction and see any buttons that were pressed.
-        thedir = joyDirection(jButton)
+        theDir = joyDirection(jButton)
     Loop
     
     bWaitingForInput = False
@@ -353,7 +351,7 @@ Function WaitForKey() As String
     
     Dim returnVal As String
     'Get a string of the key number.
-    returnVal$ = chr$(keyWaitState)
+    returnVal$ = Chr$(keyWaitState)
     
     'Check the key for common keys.
     If keyWaitState = 13 Then returnVal$ = "ENTER"
@@ -390,7 +388,7 @@ Sub getMouseMove(ByRef x As Long, ByRef y As Long)
     bWaitingForInput = True
     
     Do While mouseMoveX = -1
-        DoEvents
+        Call processEvent
     Loop
     
     bWaitingForInput = False
@@ -418,7 +416,7 @@ Sub getMouse(ByRef x As Long, ByRef y As Long)
     bWaitingForInput = True
     
     Do While mouseX = -1
-        DoEvents
+        Call processEvent
     Loop
     
     bWaitingForInput = False
@@ -444,7 +442,7 @@ Public Sub getMouseNoWait(ByRef x As Long, ByRef y As Long)
     On Error Resume Next
     
     bWaitingForInput = True
-    doEventsFor 15
+    Call doEventsFor(15)
     bWaitingForInput = False
 
     x = Round(mouseX)
@@ -479,9 +477,9 @@ Function isPressed(ByVal theKey As String) As Boolean
     
     'First check the joystick...
     Dim but(4) As Boolean
-    Dim thedir As Long
+    Dim theDir As Long
     If mainMem.useJoystick = 1 Then
-        thedir = joyDirection(but)
+        theDir = joyDirection(but)
     End If
     
     Select Case UCase$(theKey)
@@ -504,20 +502,20 @@ Function isPressed(ByVal theKey As String) As Boolean
             Exit Function
             
         Case "JOYLEFT":
-            If thedir = 5 Or thedir = 6 Or thedir = 4 Then isPressed = True
+            If theDir = 5 Or theDir = 6 Or theDir = 4 Then isPressed = True
             'If the joystick was moved left.
             Exit Function
         
         Case "JOYRIGHT":
-            If thedir = 1 Or thedir = 2 Or thedir = 8 Then isPressed = True
+            If theDir = 1 Or theDir = 2 Or theDir = 8 Then isPressed = True
             Exit Function
             
         Case "JOYUP":
-            If thedir = 3 Or thedir = 4 Or thedir = 2 Then isPressed = True
+            If theDir = 3 Or theDir = 4 Or theDir = 2 Then isPressed = True
             Exit Function
             
         Case "JOYDOWN":
-            If thedir = 7 Or thedir = 8 Or thedir = 6 Then isPressed = True
+            If theDir = 7 Or theDir = 8 Or theDir = 6 Then isPressed = True
             Exit Function
             
         Case "SPACE":
@@ -642,8 +640,10 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         Case 40:
             strKey = "DOWN"
         Case Else:
-            strKey = chr$(keyCode)
+            strKey = Chr$(keyCode)
     End Select
+    
+    Debug.Print strKey
     
     'Check custom plugins to see if they request an input.
     Dim plugName As String
@@ -706,7 +706,7 @@ Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         
         'Check extended runtime keys...
         For Index = 0 To 50
-            If UCase$(chr$(keyCode)) = UCase$(chr$(mainMem.runTimeKeys(Index))) Then
+            If UCase$(Chr$(keyCode)) = UCase$(Chr$(mainMem.runTimeKeys(Index))) Then
                 If mainMem.runTimePrg$(Index) <> "" Then
                 
                     Call runProgram(projectPath$ + prgPath$ + mainMem.runTimePrg$(Index))

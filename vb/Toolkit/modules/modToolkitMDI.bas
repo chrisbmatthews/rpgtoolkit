@@ -33,6 +33,10 @@ Public Const FT_RPGCODE = 21
 Public Const FT_TILEANIM = 22
 Public Const FT_TILE = 23
 Public Const FT_GRAB = 24
+Public Const FT_CONFIG = 25
+Public Const FT_FIGHTING = 26
+Public Const FT_RUNTIME = 27
+Public Const FT_TIPS = 28
 
 '=========================================================================
 ' Editor documents
@@ -622,15 +626,15 @@ Public Sub clearTileDoc(ByRef theTileDoc As tileDoc)
 End Sub
 
 Public Sub redrawAllTiles()
-    Dim a As Long, currentTile As tileedit
-    Set currentTile = activeTile
+    Dim a As Long, currenttile As tileedit
+    Set currenttile = activeTile
     For a = 0 To UBound(openTileEditors)
         If Not openTileEditors(a) Is Nothing Then
             Set activeTile = openTileEditors(a)
             Call activeTile.tileRedraw
         End If
     Next a
-    Set activeTile = currentTile
+    Set activeTile = currenttile
 End Sub
 
 Public Property Get tileMem(ByVal X As Long, ByVal Y As Long) As Long

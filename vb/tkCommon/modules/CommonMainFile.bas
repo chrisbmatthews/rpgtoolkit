@@ -65,6 +65,7 @@ Public Type TKMain
     
     gameSpeed As Byte                 'speed which game runs at
     pixelMovement As Byte             'pixel movement (1 / 0)
+    mouseCursor As Byte               'show mouse cursor?
 End Type
 
 
@@ -347,6 +348,10 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
             Else
                 .gameSpeed = 2
             End If
+            
+            If minorVer >= 5 Then
+                .mouseCursor = BinReadByte(num)
+            End If
 
         Close num
     
@@ -503,7 +508,7 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT MAIN")    'Filetype
         Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 4)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
+        Call BinWriteInt(num, 5)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
         Call BinWriteInt(num, 1)    'registered
         Call BinWriteString(num, "NOCODE")            'No reg code
     
@@ -567,6 +572,7 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         
         Call BinWriteByte(num, theMain.gameSpeed)
         Call BinWriteByte(num, theMain.pixelMovement)
+        Call BinWriteByte(num, theMain.mouseCursor)
         
     Close num
 

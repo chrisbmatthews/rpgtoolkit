@@ -12,7 +12,7 @@ Public Const MAXPNAMELEN = 32
 ' point-of-view position, and button state.
 Type JOYINFOEX
    dwSize As Long                      ' size of structure
-   dwflags As Long                     ' flags to indicate what to return
+   dwFlags As Long                     ' flags to indicate what to return
    dwXpos As Long                      ' x position
    dwYpos As Long                      ' y position
    dwZpos As Long                      ' z position
@@ -218,7 +218,7 @@ Function joyDirection(ByRef buttonOnOff() As Boolean) As Integer
     Dim ji As JOYINFOEX     ' joystick state buffer
     Dim caps As JOYCAPS     ' joystick capabilities
     Dim rc As Long          ' return code
-    Dim I As Long           ' index
+    Dim i As Long           ' index
     Dim mask As Long        ' bitmask
     Dim numAxes As Long     ' number of axes added to form
     Dim axisY As Long       ' Y value for current axis control being added
@@ -226,7 +226,7 @@ Function joyDirection(ByRef buttonOnOff() As Boolean) As Integer
    
     ' Initialize struct
     ji.dwSize = Len(ji)
-    ji.dwflags = JOY_RETURNALL
+    ji.dwFlags = JOY_RETURNALL
    
     ' Get the current joystick data
     rc = joyGetPosEx(JOYSTICKID1, ji)

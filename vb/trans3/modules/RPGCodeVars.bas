@@ -239,7 +239,7 @@ Public Function isEquation( _
     lineText = Trim(lineText)
     If lineText = "" Then Exit Function
  
-    If Left(lineText, 1) = "-" Then
+    If left(lineText, 1) = "-" Then
         'Probably a negative number...
         Exit Function
     End If
@@ -770,7 +770,7 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
             Dim RPGCode As String
             Dim passData As RPGCODE_RETURN
             prop = ParseAfter(a$, ".")
-            propCall = Left(prop, Len(prop) - 1)
+            propCall = left(prop, Len(prop) - 1)
             Select Case vtype
                 Case DT_NUM
                     RPGCode = fromClass & "." & propCall & "_Set(" & CStr(valUse) & ")"
@@ -841,7 +841,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
             Dim RPGCode As String
             Dim passData As RPGCODE_RETURN
             prop = ParseAfter(a$, ".")
-            propCall = Left(prop, Len(prop) - 1)
+            propCall = left(prop, Len(prop) - 1)
             RPGCode = "#" & fromClass & "." & propCall & "_Get()"
             DoIndependentCommand RPGCode, passData
             With passData
@@ -874,7 +874,7 @@ Public Function initVarSystem() As Boolean
     bRPGCStarted = True
     initVarSystem = bRPGCStarted
     globalHeap = RPGCCreateHeap()
-    Call RPGCEvaluate("1 + 1")
+    'Call RPGCEvaluate("1 + 1")
 
     Exit Function
     

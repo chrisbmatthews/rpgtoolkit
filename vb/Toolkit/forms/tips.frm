@@ -1,19 +1,26 @@
 VERSION 5.00
 Begin VB.Form tips 
-   Caption         =   "RPG Toolkit Tip Of The Day"
+   BorderStyle     =   1  'Fixed Single
+   Caption         =   "Tip Of The Day"
    ClientHeight    =   3165
-   ClientLeft      =   60
-   ClientTop       =   345
+   ClientLeft      =   45
+   ClientTop       =   330
    ClientWidth     =   6555
    Icon            =   "tips.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
+   MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   3165
    ScaleWidth      =   6555
-   StartUpPosition =   2  'CenterScreen
    Tag             =   "1837"
+   Begin VB.Timer size 
+      Interval        =   1
+      Left            =   2280
+      Top             =   1440
+   End
    Begin VB.CommandButton Command2 
+      Cancel          =   -1  'True
       Caption         =   "Close"
       Height          =   375
       Left            =   5040
@@ -24,6 +31,7 @@ Begin VB.Form tips
    End
    Begin VB.CommandButton Command1 
       Caption         =   "Next Tip"
+      Default         =   -1  'True
       Height          =   375
       Left            =   3600
       TabIndex        =   5
@@ -47,7 +55,7 @@ Begin VB.Form tips
       ForeColor       =   &H80000008&
       Height          =   2295
       Left            =   240
-      Picture         =   "tips.frx":030A
+      Picture         =   "tips.frx":0CCA
       ScaleHeight     =   2295
       ScaleWidth      =   615
       TabIndex        =   1
@@ -120,6 +128,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Public Property Get formType() As Long
+    formType = FT_TIPS
+End Property
+
 Private Sub Check1_Click()
     On Error Resume Next
     If Check1.value = 1 Then
@@ -167,4 +179,9 @@ Private Sub Form_Unload(Cancel As Integer)
     configfile.tipNum = configfile.tipNum + 1
     Call configfile.saveConfig("toolkit.cfg")
     Call Unload(Me)
+End Sub
+
+Private Sub size_Timer()
+    If Width <> 6645 Then Width = 6645
+    If height <> 3540 Then height = 3540
 End Sub

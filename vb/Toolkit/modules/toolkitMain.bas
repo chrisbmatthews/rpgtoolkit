@@ -12,7 +12,7 @@ Public Sub Main()
     'Toolkit main entry point
     '=======================================================
     On Error Resume Next
-    Call Load(configFile)
+    Call Load(configfile)
     Call initRuntimes
     Call initTimer
     Call createFileAssociations
@@ -134,8 +134,8 @@ Private Sub displayTip()
     'Display a tip if they are enabled
     '=======================================================
     On Error Resume Next
-    If configFile.tipsOnOff = 1 Then
-        Call tips.Show(vbModal)
+    If configfile.tipsOnOff = 1 Then
+        Call tips.Show
     End If
 End Sub
 
@@ -144,7 +144,7 @@ Private Sub askTutorial()
     'Ask to show the tutorial if we haven't before
     '=======================================================
     On Error Resume Next
-    If configFile.tutCurrentLesson = 0 Then
+    If configfile.tutCurrentLesson = 0 Then
         Call tutorialask.Show(vbModal)
     End If
 End Sub

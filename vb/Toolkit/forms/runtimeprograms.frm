@@ -9,10 +9,10 @@ Begin VB.Form runtimeprograms
    Icon            =   "runtimeprograms.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
+   MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   2055
    ScaleWidth      =   6390
-   StartUpPosition =   1  'CenterOwner
    Tag             =   "1729"
    Begin VB.Frame Frame1 
       Caption         =   "Extended Run Time Keys"
@@ -101,44 +101,49 @@ Attribute VB_Exposed = False
 'Read LICENSE.txt for licensing info
 
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+
+Public Property Get formType() As Long
+    formType = FT_RUNTIME
+End Property
+
 Private Sub activationkey_KeyPress(KeyAscii As Integer)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     mainNeedUpdate = True
     ascii = KeyAscii
     li = keynum.ListIndex
     If li = -1 Then li = 0
     mainMem.runTimeKeys(li) = ascii
-    a$ = UCase$(Chr$(ascii))
+    a$ = UCase$(chr$(ascii))
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
-    activationkey.text = a$
+    activationkey.Text = a$
     KeyAscii = 0
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload runtimeprograms
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgpath$
+    dlg.strDefaultFolder = projectPath$ + prgPath$
     
     dlg.strTitle = "Select Program"
     dlg.strDefaultExt = "prg"
@@ -151,18 +156,19 @@ Private Sub Command14_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     lp = keynum.ListIndex
     If lp = -1 Then lp = 0
     mainMem.runTimePrg$(lp) = antiPath$
-    runtimep.text = antiPath$
+    runtimep.Text = antiPath$
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
+    Me.Caption = "Main File (Run-time Keys)"
     
     keynum.Clear
     For t = 0 To 50
@@ -170,35 +176,35 @@ Private Sub Form_Load()
     Next t
     li = keynum.ListIndex
     If li = -1 Then li = 0
-    a$ = UCase$(Chr$(mainMem.runTimeKeys(li)))
+    a$ = UCase$(chr$(mainMem.runTimeKeys(li)))
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
-    activationkey.text = a$
-    runtimep.text = mainMem.runTimePrg$(li)
+    activationkey.Text = a$
+    runtimep.Text = mainMem.runTimePrg$(li)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub keynum_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     li = keynum.ListIndex
     If li = -1 Then li = 0
-    a$ = UCase$(Chr$(mainMem.runTimeKeys(li)))
+    a$ = UCase$(chr$(mainMem.runTimeKeys(li)))
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
-    activationkey.text = a$
-    runtimep.text = mainMem.runTimePrg$(li)
+    activationkey.Text = a$
+    runtimep.Text = mainMem.runTimePrg$(li)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -209,6 +215,6 @@ Private Sub runtimep_Change()
     On Error Resume Next
     lp = keynum.ListIndex
     If lp = -1 Then lp = 0
-    mainMem.runTimePrg$(lp) = runtimep.text
+    mainMem.runTimePrg$(lp) = runtimep.Text
 End Sub
 

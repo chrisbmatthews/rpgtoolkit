@@ -9,6 +9,8 @@ Option Explicit
 
 #If isToolkit = 0 Then
     Public publicTile As Object
+    Public detail As Byte
+    Public tileMem(64, 32) As Long
 #End If
 
 '========================================================================
@@ -19,19 +21,6 @@ Public saveChanges As Boolean           'Used for the effects
 Public isoMaskBmp(64, 32) As Long       'Isomask loaded from frmMain
 Public xRange As Integer                '= 32 OR 64 depending on tiletype. This way we don't
                                         'need to make new tileMem.
-
-#If isToolkit = 1 Then
-
-    '========================================================================
-    'Toolkit MDI procedures
-    '========================================================================
-
-#Else
-
-    Public detail As Byte
-    Public tileMem(64, 32) As Long
-
-#End If
 
 Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc As Long, Optional ByVal quality As Integer = 0)
 '=====================================================================

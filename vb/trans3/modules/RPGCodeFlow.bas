@@ -66,14 +66,14 @@ End Property
 '=========================================================================
 ' Pops up the rpgcode debugger
 '=========================================================================
-Public Sub debugger(ByVal text As String)
+Public Sub debugger(ByVal Text As String)
 
     On Error Resume Next
 
     If Not checkErrorHandling() Then
         If debugYN = 1 Then
             Call debugwin.Show
-            debugwin.buglist.text = debugwin.buglist.text & text & vbCrLf
+            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
             DoEvents
         Else
             Call Unload(debugwin)
@@ -113,7 +113,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error GoTo errorhandler
 
@@ -124,7 +124,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If commandName$ = "" Then
-        mName = GetCommandName(text, theProgram)   'get command name without extra info
+        mName = GetCommandName(Text, theProgram)   'get command name without extra info
     Else
         mName = commandName
     End If
@@ -134,7 +134,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
 
     If Not InClass.DoNotCheckForClass Then
         If Not methodName = "" Then
-            If IsClassRPG(includeFile, methodName, text, theProgram, retval) Then
+            If IsClassRPG(includeFile, methodName, Text, theProgram, retval) Then
                 Exit Sub
             End If
         End If
@@ -165,11 +165,11 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     InClass.MethodWasFound = True
     If foundIt = -1 Then
         'didn't find it in prg code, but it may exist in a plugin...
-        canDoIt = QueryPlugins(mName$, text$, retval)
+        canDoIt = QueryPlugins(mName$, Text$, retval)
         If canDoIt = False Then
             'InClass.MethodWasFound = False
             If InClass.PopupMethodNotFound Then
-                Call debugger("Error: Method not found!-- " + text$)
+                Call debugger("Error: Method not found!-- " + Text$)
             End If
         Else
             Exit Sub
@@ -185,7 +185,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
         
         'Get parameters from calling line
-        dataUse$ = GetBrackets(text$)    'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
         For pList = 1 To number
             parameterList$(pList) = GetElement(dataUse$, pList)
@@ -559,7 +559,7 @@ End Sub
 ' Runs a block of code (or skips it if res = 0)
 '=========================================================================
 Public Function runBlock( _
-                            ByVal text As String, _
+                            ByVal Text As String, _
                             ByVal res As Long, _
                             ByRef prg As RPGCodeProgram _
                                                           ) As Long
@@ -835,7 +835,7 @@ Public Sub runProgram(ByVal file As String, Optional ByVal boardNum As Long = -1
                 errorsA = 0
                 theProgram.programPos = -1
             End If
-
+            DoEvents
         Loop
     Else
         theProgram.programPos = -1
@@ -926,7 +926,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
 
-    ElseIf Left(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
+    ElseIf left(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
         onError "#OnError(" & Right(checkIt, Len(checkIt) - InStr(1, _
             LCase(rpgcodeCommand), "goto", vbTextCompare) - 1) & ")", theProgram
         DoSingleCommand = increment(theProgram)
@@ -969,7 +969,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
         testText = getRedirect(testText)
     End If
 
-    If Left(testText, 1) = "." Then testText = UCase(GetWithPrefix() & testText)
+    If left(testText, 1) = "." Then testText = UCase(GetWithPrefix() & testText)
 
     If testText <> "MWIN" Then
         'if the command is not a MWin command, then

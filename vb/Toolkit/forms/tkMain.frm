@@ -96,13 +96,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   570
+      Height          =   360
       Left            =   0
       TabIndex        =   7
       Top             =   0
       Width           =   11880
       _ExtentX        =   20955
-      _ExtentY        =   1005
+      _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -858,12 +858,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3990
+      Height          =   4200
       Left            =   465
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   3510
       TabIndex        =   99
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -908,8 +908,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -1086,12 +1086,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   -1350
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   1815
       TabIndex        =   95
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   1815
       Begin VB.PictureBox newBar 
@@ -1131,12 +1131,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   3990
+      Height          =   4200
       Left            =   0
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   975
       TabIndex        =   50
-      Top             =   570
+      Top             =   360
       Width           =   975
       Begin VB.PictureBox leftbar 
          BorderStyle     =   0  'None
@@ -2047,12 +2047,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   11505
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   375
       TabIndex        =   22
-      Top             =   570
+      Top             =   360
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2251,12 +2251,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   3975
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   4800
       TabIndex        =   8
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2358,12 +2358,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   8775
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   2730
       TabIndex        =   1
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   2730
       Begin VB.CommandButton exitbutton 
@@ -2470,7 +2470,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "6:48 PM"
+            TextSave        =   "10:52 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2578,12 +2578,14 @@ Begin VB.MDIForm tkMainForm
       End
       Begin VB.Menu sub46 
          Caption         =   "-"
-         Visible         =   0   'False
       End
       Begin VB.Menu mnuShowSplashScreen 
          Caption         =   "Show Splash Screen"
          Checked         =   -1  'True
-         Visible         =   0   'False
+      End
+      Begin VB.Menu mnuTips 
+         Caption         =   "Show Tips?"
+         Checked         =   -1  'True
       End
    End
    Begin VB.Menu buildmnu 
@@ -3258,15 +3260,6 @@ Public Sub exitmnu_Click(): On Error Resume Next
     End
 End Sub
 
-Private Sub fileRefresh_Timer(): On Error Resume Next
-    
-    'KSNiloc says: BAD! BAD! BAD!
-    '              This leaks memory sometimes and other times just causes
-    '              crashing.
-
-    'Call tkMainForm.fillTree("", projectPath$)
-End Sub
-
 Public Sub historytxtmnu_Click(): On Error GoTo ErrorHandler
     'commandt$ = "start history.txt"
     'a = Shell(commandt$)
@@ -3307,7 +3300,7 @@ Private Sub Label15_DblClick(Index As Integer)
 
     'Undock this sucker... [KSNiloc]
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.W = True
+    uD.E = True: uD.w = True
 
     unDock tilesetContainer, "Current Tileset", uD
     tilesetBar.Visible = False
@@ -3321,7 +3314,7 @@ Private Sub Label2_DblClick()
 
     'Undock this sucker... [KSNiloc]
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.W = True
+    uD.E = True: uD.w = True
 
     unDock TreeView1, "Project List", uD
     rightbar.Visible = False
@@ -3344,14 +3337,13 @@ Private Sub mainToolbar_ButtonClick(ByVal button As MSComctlLib.button): On Erro
         Case "saveall":
             Call tkMainForm.saveallmnu_Click
         Case "bard":
-            LaunchBard
-            'Call Shell("bard3.exe")
+            Call LaunchBard
         Case "website":
             Call BrowseLocation("http://www.rpgtoolkit.com")
         Case "chat":
             Call BrowseLocation("http://rpgtoolkit.com/chat.html")
         Case "configTk":
-            config.Show
+            Call config.Show
         Case "tilesetedit":                 'Added.
             tilesetedit.Show vbModal
         Case "testrun":
@@ -3420,17 +3412,17 @@ Private Sub mnuShowSplashScreen_Click()
     End If
 End Sub
 
+Private Sub mnuTips_Click()
+    mnuTips.Checked = Not mnuTips.Checked
+    configfile.tipsOnOff = booleanToLong(mnuTips.Checked)
+End Sub
+
 Private Sub NewBarTop_mouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
-
- ' ! ADDED BY KSNiloc...
-
- Dim uD As TK_UNDOCK_DATA
- uD.E = True: uD.W = True
-
- unDock newBar, "New", uD
- newBarContainerContainer.Visible = False
- popButton(1).Enabled = False
- 
+    Dim uD As TK_UNDOCK_DATA
+    uD.E = True: uD.w = True
+    Call unDock(newBar, "New", uD)
+    newBarContainerContainer.Visible = False
+    popButton(1).Enabled = False
 End Sub
 
 Private Sub ProjectListSize_Timer()
@@ -3546,10 +3538,9 @@ End Sub
 Public Sub makeexemnu_Click(): On Error GoTo ErrorHandler
 
     Dim a As Boolean
-    a = PAKTestSystem()
-    If a = False Then Exit Sub
+    If Not PAKTestSystem() Then Exit Sub
 
-    makeexe.Show
+    Call makeexe.Show
     
     Exit Sub
 'Begin error handling code:
@@ -3563,6 +3554,7 @@ Private Sub MDIForm_Activate()
     Set NewBarTop.theForm = newBarContainerContainer
     tilesetContainer.height = Me.height - 50
     Call MDIForm_Resize
+    Call configForm
 End Sub
 
 Private Sub MDIForm_Load(): On Error Resume Next
@@ -3575,6 +3567,7 @@ Private Sub MDIForm_Load(): On Error Resume Next
     toolTop = 240
     
     mnuShowSplashScreen.Checked = integerToBoolean(GetSetting("RPGToolkit3", "Settings", "Splash", "1"))
+    mnuTips.Checked = integerToBoolean(configfile.tipsOnOff)
     
     Dim upgradeYN As Boolean
     'check if we have top upgrade...
@@ -3598,11 +3591,11 @@ Private Sub MDIForm_Load(): On Error Resume Next
     End If
     
     If configfile.lastProject <> "" And Command = "" Then
-        Call traceString("Opening project..." + gamPath$ + configfile.lastProject$)
+        Call traceString("Opening project..." + gamPath$ & configfile.lastProject$)
         
-        Call openMainFile(gamPath$ + configfile.lastProject$)
+        Call openMainFile(gamPath$ & configfile.lastProject$)
         
-        Call traceString("Done opening project..." + gamPath$ + configfile.lastProject$)
+        Call traceString("Done opening project..." + gamPath$ & configfile.lastProject$)
         mainfile$ = configfile.lastProject$
         loadedMainFile = mainfile
         tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" + configfile.lastProject$ + ")"
@@ -3614,9 +3607,32 @@ Private Sub MDIForm_Load(): On Error Resume Next
     
 End Sub
 
-Private Sub MDIForm_Unload(Cancel As Integer): On Error GoTo ErrorHandler
+'=====================================================
+' Config this form
+'=====================================================
+Public Sub configForm()
+    On Error Resume Next
+    If configfile.wallpaper <> "" Then
+        Call ShowPic(configfile.wallpaper)
+    End If
+    With mainToolbar.Buttons
+        Call .Remove(16)
+        Call .Remove(17)
+        Call .Remove(18)
+        Call .Remove(19)
+        Dim a As Long
+        For a = 0 To 4
+            If configfile.quickTarget(a) <> "" Then
+                Call .Add(, , "Quick Launch " & a, , LoadPicture(configfile.quickIcon(a)))
+                .Item(a).Enabled = integerToBoolean(configfile.quickEnabled(a))
+            End If
+        Next a
+    End With
+End Sub
+
+Private Sub MDIForm_Unload(ByRef Cancel As Integer): On Error GoTo ErrorHandler
     'Close the Bard if it's running... [KSNiloc]
-    exitTheBard
+    Call exitTheBard
     Call saveConfigAndEnd("toolkit.cfg")
     End
 
@@ -4196,7 +4212,7 @@ Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, X As Sing
  ' ! ADDED BY KSNiloc...
 
  Dim uD As TK_UNDOCK_DATA
- uD.E = True: uD.W = True
+ uD.E = True: uD.w = True
  
  unDock leftbar, "Tools", uD
  leftBarContainer.Visible = False
@@ -4230,31 +4246,15 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Sub refreshPic()
-
-    Dim hdc As Long, wnd As Long
-    
-    If (cnvBkgImage <> 0) Then
-        wnd = FindWindowEx(tkMainForm.hwnd, 0&, "MDIClient", vbNullChar)
-        
-        hdc = GetDC(wnd)
-        
-        Call CanvasBlt(cnvBkgImage, 0, 0, hdc)
-    Else
-        'Call ShowPic(configfile.wallpaper)
-    End If
-    
-End Sub
-
 Public Sub ShowPic(ByRef file As String): On Error Resume Next
     
-    Dim W As Long, h As Long
+    Dim w As Long, h As Long
     
-    W = tkMainForm.Width / Screen.TwipsPerPixelX
-    h = tkMainForm.height / Screen.TwipsPerPixelY
+    w = Me.Width / Screen.TwipsPerPixelX
+    h = Me.height / Screen.TwipsPerPixelY
     
     If cnvBkgImage = 0 Then
-        cnvBkgImage = CreateCanvas(W, h)
+        cnvBkgImage = CreateCanvas(w, h)
         Call CanvasFill(cnvBkgImage, 0)
     End If
     
@@ -4262,8 +4262,8 @@ Public Sub ShowPic(ByRef file As String): On Error Resume Next
         Call CanvasLoadSizedPicture(cnvBkgImage, file)
     End If
     
-    Call refreshPic
-    
+    Call CanvasBlt(cnvBkgImage, 0, 0, GetDC(hwnd))
+       
 End Sub
 
 Private Sub xsize_Change(): On Error Resume Next
@@ -4303,7 +4303,7 @@ Private Sub bTools_Title_DblClick()
 
     'Undock this sucker... [KSNiloc]
     Dim uD As TK_UNDOCK_DATA
-    uD.E = True: uD.W = True
+    uD.E = True: uD.w = True
  
     Dim oldTree As TreeView
     Dim of1 As String
@@ -4412,19 +4412,19 @@ End Sub
 '=========================================================================================
 '(EDIT for 3.0.4)
 Private Sub Command15_Click(): On Error Resume Next
-    Call activeTile.Scroll(4)
+    Call activeTile.scroll(4)
 End Sub
 '(EDIT for 3.0.4)
 Private Sub Command16_Click(): On Error Resume Next
-    Call activeTile.Scroll(2)
+    Call activeTile.scroll(2)
 End Sub
 '(EDIT for 3.0.4)
 Private Sub Command18_Click(): On Error Resume Next
-    Call activeTile.Scroll(3)
+    Call activeTile.scroll(3)
 End Sub
 '(EDIT for 3.0.4)
 Private Sub Command19_Click(): On Error Resume Next
-    Call activeTile.Scroll(1)
+    Call activeTile.scroll(1)
 End Sub
 '(NEW for 3.0.4)
 Private Sub cmdImport_Click()

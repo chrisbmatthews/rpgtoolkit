@@ -31,7 +31,7 @@ Option Explicit
 
     'Misc variables
     Public savPath As String                   'saved games
-    Public host As Form                        'host form object
+    Public host As New clsDirectXHost          'host form object
 
     'File type memories
     Public animationMem As TKAnimation         'animation file

@@ -1964,24 +1964,22 @@ Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testing
     
     If fullScreen = 0 Then
         inFullScreenMode = False
-        Set host = New frmWindowedHost
+        host.style = 1
     Else
         inFullScreenMode = True
-        Set host = New frmFullScreenHost
+        host.style = 0
     End If
 
-    Call host.Show
     With host
         .Width = Width * screen.TwipsPerPixelX
         .height = height * screen.TwipsPerPixelY
         .Top = (screen.height - .height) / 2
         .Left = (screen.Width - .Width) / 2
-        If Not usingFullScreen Then
+        If Not inFullScreenMode Then
             .Width = .Width + 6 * screen.TwipsPerPixelX
-            .height = .height + 22 * screen.TwipsPerPixelY
+            .height = .height + 24 * screen.TwipsPerPixelY
         End If
     End With
-    DoEvents
 
     Dim depth As Long
     Select Case mainMem.colordepth
@@ -1993,6 +1991,8 @@ Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testing
             depth = 32
     End Select
     
+    Call host.Show
+    
     Dim done As Boolean
     Do Until done
         'enter Graphics mode...
@@ -2002,8 +2002,8 @@ Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testing
             'try a different color depth...
             If depth = 16 And fullScreen = 0 Then
                 'tried everything...
-                Unload host
-                MsgBox "Error initializing graphics mode.  Make sure you have DirectX 8 or higher installed."
+                Call Unload(host)
+                Call MsgBox("Error initializing graphics mode.  Make sure you have DirectX 8 or higher installed.")
                 End
             End If
             If depth = 32 Then
@@ -2018,6 +2018,8 @@ Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testing
             done = True
         End If
     Loop
+    
+    Call DXClearScreen(0)
     
     'find transparent color...
     Call determineTransparentColor

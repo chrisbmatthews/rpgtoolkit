@@ -27,42 +27,6 @@ Public Enum TARGET_TYPE           'targetted type
 End Enum
 
 '=========================================================================
-' Event: occurs when the host form is resized
-'=========================================================================
-Public Sub hostFormResize()
-
-    On Error Resume Next
-
-    If gGameState <> GS_PAUSE Then
-        'minimizing...
-        gPrevGameState = gGameState
-        gGameState = GS_PAUSE
-    Else
-        'restoring...
-        gGameState = gPrevGameState
-    End If
-
-End Sub
-
-'=========================================================================
-' Event: occurs when the host form is unloaded
-'=========================================================================
-Public Sub hostFormUnload(ByRef Cancel As Integer)
-
-    On Error Resume Next
-
-    gGameState = GS_QUIT
-
-    If (Not (gShuttingDown)) Then
-        Call closeSystems
-        host.Visible = False
-        Call endform.Show(vbModal)
-        End
-    End If
-
-End Sub
-
-'=========================================================================
 ' Determine a player's special moves
 '=========================================================================
 Public Function determineSpecialMoves(ByVal handle As String, ByRef fileList() As String) As Long
