@@ -84,5 +84,5 @@ End Function
 ' Obtain the top value
 '=========================================================================
 Public Function Top() As Long
-    Top = m_queue(m_len)
+    Top = m_queue(m_len - 1)
 End Function
