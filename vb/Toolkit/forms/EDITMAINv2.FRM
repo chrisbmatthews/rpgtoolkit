@@ -53,6 +53,7 @@ Begin VB.Form editmainfile
       _Version        =   393216
       Style           =   1
       Tabs            =   7
+      Tab             =   1
       TabsPerRow      =   7
       TabHeight       =   520
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -66,7 +67,7 @@ Begin VB.Form editmainfile
       EndProperty
       TabCaption(0)   =   "Project Settings"
       TabPicture(0)   =   "EDITMAINv2.frx":0CCA
-      Tab(0).ControlEnabled=   -1  'True
+      Tab(0).ControlEnabled=   0   'False
       Tab(0).Control(0)=   "envframe"
       Tab(0).Control(0).Enabled=   0   'False
       Tab(0).Control(1)=   "prjframe"
@@ -74,9 +75,11 @@ Begin VB.Form editmainfile
       Tab(0).ControlCount=   2
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
-      Tab(1).ControlEnabled=   0   'False
+      Tab(1).ControlEnabled=   -1  'True
       Tab(1).Control(0)=   "startframe"
+      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).Control(1)=   "fraSettings"
+      Tab(1).Control(1).Enabled=   0   'False
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
@@ -119,12 +122,12 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   2535
-         Left            =   -74760
+         Left            =   240
          TabIndex        =   81
          Top             =   2520
          Width           =   6615
          Begin VB.CheckBox chkUsePixelPush 
-            Caption         =   "#Push in pixel increments (changable with #PixelMovement)."
+            Caption         =   "Push() in pixel increments (changable with PixelMovement())."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -557,7 +560,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1695
-         Left            =   -74760
+         Left            =   240
          TabIndex        =   55
          Tag             =   "1156"
          Top             =   600
@@ -1501,7 +1504,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1695
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   12
          Tag             =   "1182"
          Top             =   600
@@ -1622,7 +1625,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1815
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   2
          Top             =   2520
          Width           =   6495
