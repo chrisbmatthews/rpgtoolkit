@@ -99,7 +99,7 @@ End Sub
 ' renderings of this frame, if not found, it is rendered here and copied
 ' to the animation cache.
 '========================================================================
-Public Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal frame As Long, ByVal x As Long, ByVal y As Long)
+Public Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal frame As Long, ByVal X As Long, ByVal Y As Long)
     Dim anm As TKAnimation
     
     If file <> "" Then 'Only if it exists, we can open it
@@ -131,7 +131,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal f
             End If
             
             'blt contents over...
-            Call Canvas2CanvasBlt(anmCache(t).cnv, cnv, x, y, SRCCOPY)
+            Call Canvas2CanvasBlt(anmCache(t).cnv, cnv, X, Y, SRCCOPY)
             
             'all done!
             Exit Sub
@@ -182,7 +182,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal f
                 Dim c2 As Long
                 c2 = CreateCanvas(anm.animSizeX, anm.animSizeY)
                 Call CanvasLoadSizedPicture(c2, projectPath$ & bmpPath$ & frameFile)
-                Call Canvas2CanvasBltTransparent(c2, cnv, x, y, anm.animTransp(frame))
+                Call Canvas2CanvasBltTransparent(c2, cnv, X, Y, anm.animTransp(frame))
                 Call DestroyCanvas(c2)
             End If
 
@@ -448,7 +448,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal frameNum As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long, Optional ByVal playSound As Boolean = True)
+Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal frameNum As Long, ByVal X As Long, ByVal Y As Long, ByVal hdc As Long, Optional ByVal playSound As Boolean = True)
 
     'draw the frame referenced by framenum
     'loads a file into a picture box and resizes it.
@@ -463,12 +463,12 @@ Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal frameNum As Long, B
             #If isToolkit = 0 Then
                 If pakFileRunning Then
                     f$ = PakLocate(bmpPath & theAnim.animFrame(frameNum))
-                    Call DrawSizedImage(f$, x, y, theAnim.animSizeX, theAnim.animSizeY, hdc)
+                    Call DrawSizedImage(f$, X, Y, theAnim.animSizeX, theAnim.animSizeY, hdc)
             #Else
                 If 1 = 0 Then
             #End If
             Else
-                Call DrawSizedImage(projectPath$ & bmpPath$ & theAnim.animFrame(frameNum), x, y, theAnim.animSizeX, theAnim.animSizeY, hdc)
+                Call DrawSizedImage(projectPath$ & bmpPath$ & theAnim.animFrame(frameNum), X, Y, theAnim.animSizeX, theAnim.animSizeY, hdc)
             End If
         ElseIf Left(UCase(ex), 3) = "TST" Or UCase(ex) = "GPH" Then
             Dim tbm As TKTileBitmap
@@ -492,8 +492,8 @@ Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal frameNum As Long, B
             'Blt it on
             bufHDC = CanvasOpenHDC(backBuffer)
             Call TransparentBlt(hdc, _
-                                x, _
-                                y, _
+                                X, _
+                                Y, _
                                 theAnim.animSizeX - 1, _
                                 theAnim.animSizeY - 1, _
                                 bufHDC, _
@@ -523,7 +523,7 @@ Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal frameNum As Long, B
 
 End Sub
 
-Public Sub AnimDrawFrameCanvas(ByRef theAnim As TKAnimation, ByVal frameNum As Long, ByVal x As Long, ByVal y As Long, ByVal cnv As Long, Optional ByVal playSound As Boolean = True)
+Public Sub AnimDrawFrameCanvas(ByRef theAnim As TKAnimation, ByVal frameNum As Long, ByVal X As Long, ByVal Y As Long, ByVal cnv As Long, Optional ByVal playSound As Boolean = True)
     'draw the frame referenced by framenum
     'loads a file into a canvas and resizes it.
     On Error Resume Next
@@ -532,7 +532,7 @@ Public Sub AnimDrawFrameCanvas(ByRef theAnim As TKAnimation, ByVal frameNum As L
     cnvTemp = CreateCanvas(32, 32)
     
     Call renderAnimationFrame(cnvTemp, theAnim.animFile, frameNum, 0, 0)
-    Call Canvas2CanvasBltTransparent(cnvTemp, cnv, x, y, TRANSP_COLOR)
+    Call Canvas2CanvasBltTransparent(cnvTemp, cnv, X, Y, TRANSP_COLOR)
     Call DestroyCanvas(cnvTemp)
     
     If playSound And (theAnim.animSound(frameNum)) <> "" Then
@@ -563,7 +563,7 @@ Public Function animGetMaxFrame(ByRef theAnim As TKAnimation) As Long
     Next frameIdx
 End Function
 
-Public Sub DrawAnimationIndex(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long)
+Public Sub DrawAnimationIndex(ByVal idx As Long, ByVal X As Long, ByVal Y As Long, ByVal hdc As Long)
     'draw an animation from the anmList array
     'call this every 5ms and it'll draw it accroding to the animation speed
     'it will only advance the frame when required.  neato
@@ -586,11 +586,11 @@ Public Sub DrawAnimationIndex(ByVal idx As Long, ByVal x As Long, ByVal y As Lon
             'draw the current frame again...
             playSound = False
         End If
-        Call AnimDrawFrame(theAnm, theAnm.currentAnmFrame, x, y, hdc, playSound)
+        Call AnimDrawFrame(theAnm, theAnm.currentAnmFrame, X, Y, hdc, playSound)
     End If
 End Sub
 
-Public Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y As Long, ByVal cnv As Long, Optional ByVal forceDraw As Boolean = False, Optional ByVal forceTranspFill As Boolean = False)
+Public Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal X As Long, ByVal Y As Long, ByVal cnv As Long, Optional ByVal forceDraw As Boolean = False, Optional ByVal forceTranspFill As Boolean = False)
     'draw an animation from the anmList array to a canvas
     'call this every 5ms and it'll draw it accroding to the animation speed
     'it will only advance the frame when required.  neato
@@ -613,7 +613,7 @@ Public Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y 
             If forceTranspFill Then
                 Call CanvasFill(cnv, TRANSP_COLOR)
             End If
-            Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, x, y, cnv, playSound)
+            Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, X, Y, cnv, playSound)
         Else
             'draw the current frame again...
             playSound = False
@@ -621,13 +621,13 @@ Public Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y 
                 If forceTranspFill Then
                     Call CanvasFill(cnv, TRANSP_COLOR)
                 End If
-                Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, x, y, cnv, playSound)
+                Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, X, Y, cnv, playSound)
             End If
         End If
     End If
 End Sub
 
-Public Sub DrawAnimationIndexCanvasFrame(ByVal idx As Long, ByVal frame As Long, ByVal x As Long, ByVal y As Long, ByVal cnv As Long, Optional ByVal forceTranspFill As Boolean = False)
+Public Sub DrawAnimationIndexCanvasFrame(ByVal idx As Long, ByVal frame As Long, ByVal X As Long, ByVal Y As Long, ByVal cnv As Long, Optional ByVal forceTranspFill As Boolean = False)
     'draw an animation from the anmList array to a canvas
     'if forceTranspFill is true, we'll fill the cnavas with the transparent color before drawing the frame
     On Error Resume Next
@@ -643,7 +643,7 @@ Public Sub DrawAnimationIndexCanvasFrame(ByVal idx As Long, ByVal frame As Long,
         If forceTranspFill Then
             Call CanvasFill(cnv, TRANSP_COLOR)
         End If
-        Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, x, y, cnv, False)
+        Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, X, Y, cnv, False)
         
     End If
 End Sub
@@ -718,8 +718,8 @@ Public Sub saveAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
             Call BinWriteInt(num, 3)
             Call BinWriteLong(num, .animSizeX)
             Call BinWriteLong(num, .animSizeY)
-            Call BinWriteLong(num, .animFrames)
-            For frameIdx = 0 To (.animFrames - 1)
+            Call BinWriteLong(num, UBound(.animFrame))
+            For frameIdx = 0 To (UBound(.animFrame))
                 Call BinWriteString(num, .animFrame(frameIdx))
                 Call BinWriteLong(num, .animTransp(frameIdx))
                 Call BinWriteString(num, .animSound(frameIdx))

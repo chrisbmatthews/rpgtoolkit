@@ -3828,18 +3828,10 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If ax = 1 Or ay = 1 Or al = 1 Or ag = 0 Then
         Call debugger("Error: LayerPut data must be numeric, numeric, numeric, literal!-- " + Text$)
     Else
-        Call ambientEffect
         'internal engine drawing routines
         'first, get the shade color of the board...
-        Dim shadeR As Double, shadeG As Double, shadeB As Double, lightShade As Long
-        Call ambientRGB(shadeR, shadeG, shadeB)
-        'now check day and night info...
-        If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
-            lightShade = DetermineLightLevel()
-            shadeR = shadeR + lightShade
-            shadeG = shadeG + lightShade
-            shadeB = shadeB + lightShade
-        End If
+        Dim shadeR As Long, shadeG As Long, shadeB As Long, lightShade As Long
+        Call getAmbientLevel(shadeR, shadeB, shadeG)
         
         addOnR = addOnR + shadeR
         addOnG = addOnG + shadeG
@@ -5290,19 +5282,11 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If ax = 1 Or ay = 1 Or ag = 0 Then
         Call debugger("Error: Put data must be numeric, numeric, literal!-- " + Text$)
     Else
-        Call ambientEffect
         'internal engine drawing routines
         'first, get the shade color of the board...
-        Dim shadeR As Double, shadeG As Double, shadeB As Double, lightShade As Long
-        Call ambientRGB(shadeR, shadeG, shadeB)
-        'now check day and night info...
-        If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
-            lightShade = DetermineLightLevel()
-            shadeR = shadeR + lightShade
-            shadeG = shadeG + lightShade
-            shadeB = shadeB + lightShade
-        End If
-        
+        Dim shadeR As Long, shadeG As Long, shadeB As Long, lightShade As Long
+        Call getAmbientLevel(shadeR, shadeB, shadeG)
+
         addOnR = addOnR + shadeR
         addOnG = addOnG + shadeG
         addOnB = addOnB + shadeB

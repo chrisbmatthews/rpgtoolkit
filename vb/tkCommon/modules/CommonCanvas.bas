@@ -52,7 +52,7 @@ Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal so
 '=========================================================================
 Public Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
 Public Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
- 
+
 '=========================================================================
 ' Member variables
 '=========================================================================

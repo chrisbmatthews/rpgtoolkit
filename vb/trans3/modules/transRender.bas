@@ -194,21 +194,10 @@ Private Sub quickSortSwap(ByRef toSort() As Long, ByVal Left As Long, ByVal Righ
 End Sub
 
 '=========================================================================
-' Read the ambient RPGCode variables
-'=========================================================================
-Public Sub ambientRGB(ByRef shadeR As Double, ByRef shadeG As Double, ByRef shadeB As Double)
-    Dim lit As String   'dummy for literal variables
-    Call getIndependentVariable("AmbientRed!", lit, shadeR)
-    Call getIndependentVariable("AmbientGreen!", lit, shadeG)
-    Call getIndependentVariable("AmbientBlue!", lit, shadeB)
-End Sub
-
-'=========================================================================
 ' Redraw all layers at x, y *on the board*
 '=========================================================================
 Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer): On Error Resume Next
 
-    
     Dim shadeR As Long, shadeB As Long, shadeG As Long
     Call getAmbientLevel(shadeR, shadeB, shadeG)
     
@@ -268,30 +257,6 @@ Private Sub killResPictures()
     Call DeleteDC(handHDC)
     Call DeleteDC(handBackupHDC)
     'NOTE:  endFormBackgroundHDC is killed in ShowEndForm()
-End Sub
-
-'=========================================================================
-' Apply the board's ambient effect
-'=========================================================================
-Public Sub ambientEffect()
-    Select Case boardList(activeBoardIndex).theData.ambientEffect
-        Case 0
-            addOnR = 0
-            addOnG = 0
-            addOnB = 0
-        Case 1
-            addOnR = 75
-            addOnG = 75
-            addOnB = 75
-        Case 2
-            addOnR = -75
-            addOnG = -75
-            addOnB = -75
-        Case 3
-            addOnR = 0
-            addOnG = 0
-            addOnB = 75
-    End Select
 End Sub
 
 '=========================================================================
@@ -1105,7 +1070,7 @@ Private Function renderBoard() As Boolean
     '------------------------------------
     ' + Remove unused code
     ' + Now correctly returns if board needs rendering (previously always
-    '   returned ture!!!)
+    '   returned true!!!)
     '=========================================================================
     
     'Called by renderNow only.

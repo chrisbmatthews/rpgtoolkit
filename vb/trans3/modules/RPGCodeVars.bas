@@ -54,7 +54,7 @@ Public Declare Function RPGCCountRedirects Lib "actkrt3.dll" () As Long
 '=========================================================================
 ' Get the value of a variable - unattached to a program
 '=========================================================================
-Public Function getIndependentVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double) As Long
+Public Function getIndependentVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double) As RPGC_DT
     Dim aProgram As RPGCodeProgram
     aProgram.boardNum = -1
     Call InitRPGCodeProcess(aProgram)
@@ -430,7 +430,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
 End Function
 
 '=========================================================================
-' Determine is a literal variable exists
+' Determine if a literal variable exists
 '=========================================================================
 Public Function litVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
     On Error Resume Next

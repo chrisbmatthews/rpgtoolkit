@@ -37,9 +37,9 @@ Public topY As Double
 Private m_file As String
 Private m_tilesX As Long
 Private m_tilesY As Long
-Private m_shadeR As Double
-Private m_shadeG As Double
-Private m_shadeB As Double
+Private m_shadeR As Long
+Private m_shadeG As Long
+Private m_shadeB As Long
 Private m_isometric As Long
 
 '=========================================================================
@@ -66,21 +66,21 @@ End Property
 '=========================================================================
 ' Get red shade
 '=========================================================================
-Public Property Get shadeR() As Double
+Public Property Get shadeR() As Long
     shadeR = m_shadeR
 End Property
 
 '=========================================================================
 ' Get blue shade
 '=========================================================================
-Public Property Get shadeB() As Double
+Public Property Get shadeB() As Long
     shadeB = m_shadeB
 End Property
 
 '=========================================================================
 ' Get green shade
 '=========================================================================
-Public Property Get shadeG() As Double
+Public Property Get shadeG() As Long
     shadeG = m_shadeG
 End Property
 
@@ -98,28 +98,11 @@ Public Sub Render()
 
     On Error Resume Next
 
-    'Ambient effects
-    Call ambienteffect
-
     'first, get the shade color of the board
-    Call ambientRGB(m_shadeR, m_shadeG, m_shadeB)
+    Call getAmbientLevel(m_shadeR, m_shadeG, m_shadeB)
 
     'With the board to render
     With boardList(activeBoardIndex).theData
-
-        'now check day and night info
-        If (mainMem.mainUseDayNight = 1) And (.BoardDayNight = 1) Then
-            Dim lightShade As Long
-            lightShade = DetermineLightLevel()
-            m_shadeR = m_shadeR + lightShade
-            m_shadeG = m_shadeG + lightShade
-            m_shadeB = m_shadeB + lightShade
-        End If
-
-        'Final shade total
-        m_shadeR = m_shadeR + addOnR
-        m_shadeG = m_shadeG + addOnG
-        m_shadeB = m_shadeB + addOnB
 
         'Is the board isometric?
         m_isometric = CLng(.isIsometric)
@@ -161,9 +144,9 @@ Public Sub Render()
                                 topY, _
                                 m_tilesX, _
                                 m_tilesY, _
-                                .Bsizex, _
-                                .Bsizey, _
-                                .Bsizel, _
+                                .bSizeX, _
+                                .bSizeY, _
+                                .bSizeL, _
                                 m_shadeR, _
                                 m_shadeG, _
                                 m_shadeB, _
