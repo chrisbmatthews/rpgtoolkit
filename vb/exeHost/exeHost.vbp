@@ -1,10 +1,10 @@
 Type=Exe
-Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\..\..\..\WINDOWS\System32\stdole2.tlb#OLE Automation
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\..\..\WINDOWS\System32\stdole2.tlb#OLE Automation
 Module=modMain; Modules\modMain.bas
 Module=modSelfExtract; Modules\modSelfExtract.bas
 Module=CommonPaths; ..\tkCommon\modules\CommonPaths.bas
 Form=Forms\frmIconHost.frm
-Class=clsRC4; ..\Toolkit\classes\clsRC4.cls
+Class=clsRC4; ..\tkCommon\classes\clsRC4.cls
 IconForm="frmIconHost"
 Startup="Sub Main"
 HelpFile=""
