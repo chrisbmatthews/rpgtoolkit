@@ -324,7 +324,7 @@ Public Function getRedirect(ByVal originalMethod As String) As String
     On Error Resume Next
     Dim Length As Long
     
-    originalMethod = UCase$(removeChar(originalMethod, "#"))
+    originalMethod = UCase$(replace(originalMethod, "#", ""))
     If redirectExists(originalMethod) Then
         Dim getStr As String * 4048
         Length = RPGCGetRedirect(originalMethod, getStr)
@@ -364,7 +364,7 @@ End Function
 '=========================================================================
 Public Sub killRedirect(ByVal methodName As String)
     On Error Resume Next
-    methodName = UCase(removeChar(methodName, "#"))
+    methodName = UCase(replace(methodName, "#", ""))
     Call RPGCKillRedirect(methodName)
 End Sub
 
@@ -374,7 +374,7 @@ End Sub
 Public Function redirectExists(ByVal methodToCheck As String) As Boolean
     On Error Resume Next
     Dim a As Long
-    methodToCheck = removeChar(methodToCheck, "#")
+    methodToCheck = replace(methodToCheck, "#", "")
     a = RPGCRedirectExists(UCase$(methodToCheck))
     If a = 1 Then
         redirectExists = True
@@ -884,8 +884,8 @@ End Function
 Public Sub SetRedirect(ByVal originalMethod As String, ByVal targetMethod As String)
     'add to redirect list
     On Error Resume Next
-    originalMethod = removeChar(originalMethod, "#")
-    targetMethod = removeChar(targetMethod, "#")
+    originalMethod = replace(originalMethod, "#", "")
+    targetMethod = replace(targetMethod, "#", "")
     Call RPGCSetRedirect(UCase$(originalMethod), UCase$(targetMethod))
 End Sub
 

@@ -105,14 +105,6 @@ Public Function ValueNumber(ByVal text As String) As Long
 End Function
 
 '=========================================================================
-' Remove the character passed in from the text passed in
-'=========================================================================
-Public Function removeChar(ByVal text As String, ByVal char As String) As String
-    On Error Resume Next
-    removeChar = replace(text, char, "")
-End Function
-
-'=========================================================================
 ' Get the bracket element at eleeNum
 '=========================================================================
 Public Function GetElement(ByVal text As String, ByVal eleeNum As Long) As String
