@@ -91,13 +91,11 @@ Public Sub debugger(ByVal text As String)
 
     On Error Resume Next
 
-    If Not checkErrorHandling() Then
-        If debugYN = 1 Then
+    If (Not checkErrorHandling()) Then
+        If (debugYN = 1) Then
             Call debugwin.Show
             debugwin.buglist.text = debugwin.buglist.text & text & vbCrLf
             Call processEvent
-        Else
-            Call Unload(debugwin)
         End If
     End If
 

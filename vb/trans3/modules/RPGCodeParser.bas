@@ -1189,6 +1189,7 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
     Dim variableType As String
     'Grab the variable's type (! or $)
     variableType = Right(toParse, 1)
+    If (variableType <> "!" And variableType <> "$") Then variableType = ""
 
     Dim start As Long
     Dim tEnd As Long

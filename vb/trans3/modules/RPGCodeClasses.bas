@@ -136,6 +136,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     Dim opening As Boolean  'Looking for { bracket?
     Dim depth As Long       'Depth in class
     Dim classIdx As Long    'Current class
+    Dim inStruct As Boolean 'In a structure?
 
     'Make classIdx void
     classIdx = -1
@@ -161,10 +162,11 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             If (depth = 0) Then
                 'Out of the class
                 inClass = False
+                inStruct = False
                 scope = ""
             End If
 
-        ElseIf (cmd = "CLASS" And (Not inClass)) Then
+        ElseIf ((cmd = "CLASS" Or cmd = "STRUCT") And (Not inClass)) Then
             'Found a class
             inClass = True
             opening = True
@@ -175,32 +177,27 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             ReDim prg.classes.classes(classIdx).scopePublic.methods(0)
             ReDim prg.classes.classes(classIdx).scopePublic.strVars(0)
             prg.classes.classes(classIdx).strName = UCase(GetMethodName(prg.program(lineIdx)))
-
-        ElseIf (inClass And (scope = "")) Then
-            scope = LCase(Trim(prg.program(lineIdx)))
-            Select Case scope
-
-                Case "private:"
-                    'Found start of private scope
-                    scope = "private"
-
-                Case "public:"
-                    'Found start of public scope
-                    scope = "public"
-
-                Case Else
-                    'Not definition of scope
-                    scope = ""
-
-            End Select
+            If (cmd = "STRUCT") Then
+                'It's a structure, default to public visibility
+                scope = "public"
+                inStruct = True
+            Else
+                'Default to private in classes
+                scope = "private"
+                inStruct = False
+            End If
 
         ElseIf (inClass And (scope <> "") And (prg.program(lineIdx) <> "")) Then
             If (InStr(1, prg.program(lineIdx), "(")) Then
                 'Found a method
-                If (scope = "private") Then
-                    Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePrivate)
+                If (Not inStruct) Then
+                    If (scope = "private") Then
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePrivate)
+                    Else
+                        Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePublic)
+                    End If
                 Else
-                    Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePublic)
+                    Call debugger("Methods are not valid in structures-- " & prg.program(lineIdx))
                 End If
             Else
                 'Found a variable
@@ -223,8 +220,38 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
         End If
 
         If (inClass) Then
+
+            Select Case LCase(Trim(prg.program(lineIdx)))
+
+                Case "private:"
+                    'Found start of private scope
+                    scope = "public"
+                    If (inStruct) Then
+                        scope = "error"
+                    Else
+                        scope = "private"
+                    End If
+
+                Case "public:"
+                    'Found start of public scope
+                    scope = "public"
+                    If (inStruct) Then
+                        scope = "error"
+                    Else
+                        scope = "public"
+                    End If
+
+            End Select
+
+            If (scope = "error") Then
+                'No scope in structures
+                Call debugger("Scope is not valid in structures-- " & prg.program(lineIdx))
+                scope = "public"
+            End If
+
             'Make sure this line isn't run
             prg.program(lineIdx) = ""
+
         End If
 
     Next lineIdx
@@ -829,9 +856,6 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     Dim hClassDbl As Double         'Handle to a class (double)
     Dim hClass As Long              'Handle to a class
     Dim var As Boolean              'Variable?
-    Dim varLit As String            'Literal variable
-    Dim varNum As Double            'Numerical variable
-    Dim varType As RPGC_DT          'Type of var
     Dim outside As Boolean          'Calling from outside class?
     Dim cmdName As String           'Command's name
     Dim a As Long                   'Loop var
@@ -941,13 +965,14 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
         If (Right(object, 1) <> "!" And Right(object, 1) <> "$") Then object = object & "!"
         Call getVariable(object, object, hClassDbl, prg)
         hClass = CLng(hClassDbl)
+        'Check if we're calling from outside
+        outside = (topNestle(prg) <> hClass)
     Else
         'It's this object
         hClass = topNestle(prg)
+        'We're calling from inside
+        outside = False
     End If
-
-    'Check if we're calling from outside
-    outside = (topNestle(prg) <> hClass)
 
     If (Not var) Then
 
@@ -955,6 +980,9 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
         If (cmdName = "RELEASE") Then
             Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retVal)
             Call clearObject(classes(hClass), prg)
+            Call killHandle(hClass)
+            classes(hClass).hClass = 0
+            classes(hClass).strInstancedFrom = ""
         Else
 
             If (isMethodMember(cmdName, hClass, prg, outside)) Then
@@ -983,7 +1011,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
             'It's a member
             value = getObjectVarName(cLine, hClass)
         Else
-            Call debugger("Error: Could not set " & cLine & " -- " & text)
+            Call debugger("Error: Could not get/set " & cLine & " -- " & text)
         End If
     End If
 

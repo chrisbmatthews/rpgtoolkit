@@ -357,7 +357,7 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
         valueList(tokenIdx) = GetVarList(text, tokenIdx)
 
         'Remove spaces if it's not a literal variable (has quotes)
-        If (InStr(valueList(tokenIdx), Chr(34)) = 0) Then
+        If (Not InStr(valueList(tokenIdx), Chr(34))) Then
             'Remove those spaces
             valueList(tokenIdx) = replace(valueList(tokenIdx), " ", "")
         End If
