@@ -1925,7 +1925,7 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
     
     
     ' check minimum boundries (and set if needed)
-    W = activeBoard.Width
+    W = activeBoard.width
     h = activeBoard.height
     
     'minBoardSizeX,Y assigned in BoardIso.
@@ -1956,13 +1956,13 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
     ' update picture
     boardform.Left = 0
     boardform.Top = 0
-    boardform.Width = TwipsX(boardList(activeBoardIndex).tilesX)
+    boardform.width = TwipsX(boardList(activeBoardIndex).tilesX)
     boardform.height = TwipsY(boardList(activeBoardIndex).tilesY)
     
     'Added: Check we haven't exceeded the maximum size. Reduce the tiles until it's small enough.
-    If boardform.Width + VScroll1.Width > activeBoard.Width Then
-        boardList(activeBoardIndex).tilesX = tilesX(activeBoard.Width - VScroll1.Width)
-        boardform.Width = TwipsX(boardList(activeBoardIndex).tilesX)
+    If boardform.width + VScroll1.width > activeBoard.width Then
+        boardList(activeBoardIndex).tilesX = tilesX(activeBoard.width - VScroll1.width)
+        boardform.width = TwipsX(boardList(activeBoardIndex).tilesX)
     End If
     If boardform.height + HScroll1.height > activeBoard.height Then
         boardList(activeBoardIndex).tilesY = tilesY(activeBoard.height - HScroll1.height)
@@ -1973,16 +1973,16 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
     ignore = 1
     If boardList(activeBoardIndex).tilesY = boardList(activeBoardIndex).theData.bSizeY Then
         VScroll1.Visible = False
-        Me.Width = boardform.Width + 115
+        Me.width = boardform.width + 115
     Else
         VScroll1.Visible = True
         VScroll1.Top = 0
-        VScroll1.Left = boardform.Width
+        VScroll1.Left = boardform.width
     VScroll1.height = boardform.height
         VScroll1.value = boardList(activeBoardIndex).topY
     VScroll1.max = boardList(activeBoardIndex).theData.bSizeY - boardList(activeBoardIndex).tilesY + 1
         VScroll1.LargeChange = boardList(activeBoardIndex).tilesY - 1           'Added.
-        Me.Width = boardform.Width + VScroll1.Width + 115
+        Me.width = boardform.width + VScroll1.width + 115
     End If
     If boardList(activeBoardIndex).tilesX = boardList(activeBoardIndex).theData.bSizeX Then
         HScroll1.Visible = False
@@ -1991,7 +1991,7 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
         HScroll1.Visible = True
         HScroll1.Left = 0
         HScroll1.Top = boardform.height
-        HScroll1.Width = boardform.Width
+        HScroll1.width = boardform.width
         HScroll1.value = boardList(activeBoardIndex).topX
     HScroll1.max = boardList(activeBoardIndex).theData.bSizeX - boardList(activeBoardIndex).tilesX + 1
         HScroll1.LargeChange = boardList(activeBoardIndex).tilesX - 1           'Added.
@@ -2000,7 +2000,7 @@ Public Sub resizeForm(ByVal a As Long, ByVal b As Long): On Error Resume Next
     ignore = 0
     
     colstrip.height = boardform.height
-    rowstrip.Width = boardform.Width
+    rowstrip.width = boardform.width
     
     isomask.Top = boardform.Top
     isomask.Left = boardform.Left
@@ -2151,26 +2151,52 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
                 Else
                     eo = True
                 End If
-                
-                ' draw new tile
-                Call drawTile(vbPicHDC(boardform), _
-                                     tilePath$ + boardList(activeBoardIndex).selectedTile$, _
-                                     xx - boardList(activeBoardIndex).topX, _
-                                     yy - boardList(activeBoardIndex).topY, _
-                                     boardList(activeBoardIndex).ambientR, _
-                                     boardList(activeBoardIndex).ambientG, _
-                                     boardList(activeBoardIndex).ambientB, _
-                                     False, _
-                                     False, _
-                                     iso, _
-                                     eo)
-                                     
+
+                If (commonRoutines.extention(tilePath$ & boardList(activeBoardIndex).selectedTile$) <> "TBM") Then
+                    ' draw the tile
+                    Call drawTile(boardform.hdc, _
+                                         tilePath$ & boardList(activeBoardIndex).selectedTile$, _
+                                         xx - boardList(activeBoardIndex).topX, _
+                                         yy - boardList(activeBoardIndex).topY, _
+                                         boardList(activeBoardIndex).ambientR, _
+                                         boardList(activeBoardIndex).ambientG, _
+                                         boardList(activeBoardIndex).ambientB, _
+                                         False, _
+                                         False, _
+                                         iso, _
+                                         eo)
+                    ' set new tile details
+                    Call BoardSetTile(xx, yy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).selectedTile$, boardList(activeBoardIndex).theData)
+                Else
+                    'Tile bitmap!
+                    Dim a As Long, b As Long, theTile As TKTileBitmap
+                    Dim maxA As Long, maxB As Long
+                    maxA = UBound(theTile.tiles, 1)
+                    maxB = UBound(theTile.tiles, 2)
+                    If (boardList(activeBoardIndex).tilesX - 1) < maxA Then maxA = (boardList(activeBoardIndex).tilesX - 1)
+                    If (boardList(activeBoardIndex).tilesY - 1) < maxB Then maxB = (boardList(activeBoardIndex).tilesY - 1)
+                    Call OpenTileBitmap(tilePath$ & boardList(activeBoardIndex).selectedTile$, theTile)
+                    For a = 0 To maxA
+                        For b = 0 To maxB
+                        Call drawTile(boardform.hdc, _
+                                            theTile.tiles(a, b), _
+                                            xx - boardList(activeBoardIndex).topX + a, _
+                                            yy - boardList(activeBoardIndex).topY + b, _
+                                            boardList(activeBoardIndex).ambientR, _
+                                            boardList(activeBoardIndex).ambientG, _
+                                            boardList(activeBoardIndex).ambientB, _
+                                            False, _
+                                            False, _
+                                            iso, _
+                                            eo)
+                        Call BoardSetTile(xx + a, yy + a, boardList(activeBoardIndex).currentLayer, theTile.tiles(a, b), boardList(activeBoardIndex).theData)
+                        Next b
+                    Next a
+                End If
+
                 ' refresh picture box
-                Call vbPicRefresh(boardform)
-                
-                ' set new tile details
-                Call BoardSetTile(xx, yy, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).selectedTile$, boardList(activeBoardIndex).theData)
-                
+                Call boardform.Refresh
+
                 ' set ambient details
                 boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientR
                 boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientG

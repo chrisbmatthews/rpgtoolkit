@@ -17,7 +17,7 @@ Option Explicit
 Private Declare Function IMGBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long) As Long
 Private Declare Function IMGGetWidth Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGGetHeight Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
-Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal fileName As String) As Long
+Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal filename As String) As Long
 
 '=========================================================================
 ' Canvas manipulation
@@ -418,10 +418,10 @@ End Function
 '=========================================================================
 ' Load a picture onto a canvas
 '=========================================================================
-Public Function CanvasLoadPicture(ByVal canvasID As Long, ByVal fileName As String) As Long
+Public Function CanvasLoadPicture(ByVal canvasID As Long, ByVal filename As String) As Long
     On Error Resume Next
-    If CanvasOccupied(canvasID) And fileExists(fileName) Then
-        Call drawImageCNV(fileName, 0, 0, canvasID)
+    If CanvasOccupied(canvasID) And fileExists(filename) Then
+        Call drawImageCNV(filename, 0, 0, canvasID)
         CanvasLoadPicture = 0
     Else
         CanvasLoadPicture = -1
@@ -786,7 +786,7 @@ End Sub
 ' Draw an image onto a canvas
 '=========================================================================
 Public Sub drawImageCNV( _
-                           ByVal fileName As String, _
+                           ByVal filename As String, _
                            ByVal x As Long, _
                            ByVal y As Long, _
                            ByVal cnv As Long _
@@ -799,7 +799,7 @@ Public Sub drawImageCNV( _
     hdc = CanvasOpenHDC(cnv)
 
     'Draw the image onto the canvas
-    Call drawImage(fileName, x, y, hdc)
+    Call drawImage(filename, x, y, hdc)
 
     'Close the canvas' HDC
     Call CanvasCloseHDC(cnv, hdc)
@@ -811,7 +811,7 @@ End Sub
 '=========================================================================
 Public Property Get CanvasOccupied(ByVal handle As Long) As Boolean
     On Error Resume Next
-    If Not (CNVExists(handle) = 0) Then
+    If (CNVExists(handle) <> 0) Then
         CanvasOccupied = True
     End If
     #If isToolkit = 0 Then

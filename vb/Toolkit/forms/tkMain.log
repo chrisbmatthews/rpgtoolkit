@@ -1,3 +1,11 @@
-Line 2134: Property Picture in openWindowsScrollLeft had an invalid file reference.
-Line 2336: Property Picture in killTilesetBar had an invalid file reference.
-Line 2386: Property Picture in exitbutton had an invalid file reference.
+Line 19: Class MSComctlLib.ImageList of control ImageList1 was not a loaded control class.
+Line 101: Class MSComctlLib.Toolbar of control mainToolbar was not a loaded control class.
+Line 239: Class MSComctlLib.ImageList of control mainToolbarImages was not a loaded control class.
+Line 904: Class TabDlg.SSTab of control bTools_Tabs was not a loaded control class.
+Line 1028: Class MSComctlLib.TreeView of control bTools_Objects_Tree was not a loaded control class.
+Line 1129: Class Toolkit.ctlNewBar of control NewBarIn was not a loaded control class.
+Line 1139: Class Toolkit.TKTopBar_Tools of control NewBarTop was not a loaded control class.
+Line 1755: Class Toolkit.TKTopBar_Tools of control ToolsTopBar was not a loaded control class.
+Line 2316: Class Toolkit.ctlOpenButton of control changedSelectedTileset was not a loaded control class.
+Line 2461: Class MSComctlLib.TreeView of control TreeView1 was not a loaded control class.
+Line 2506: Class MSComctlLib.StatusBar of control StatusBar1 was not a loaded control class.

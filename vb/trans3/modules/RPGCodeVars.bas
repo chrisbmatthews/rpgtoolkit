@@ -24,20 +24,20 @@ Public Declare Function RPGCInit Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCShutdown Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCCreateHeap Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCDestroyHeap Lib "actkrt3.dll" (ByVal heapID As Long) As Long
-Public Declare Function RPGCSetNumVar Lib "actkrt3.dll" (ByVal varName As String, ByVal value As Double, ByVal heapID As Long) As Long
-Public Declare Function RPGCSetLitVar Lib "actkrt3.dll" (ByVal varName As String, ByVal value As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCGetNumVar Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Double
-Public Declare Function RPGCGetLitVar Lib "actkrt3.dll" (ByVal varName As String, ByVal inSpaceAllocated As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCGetLitVarLen Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCSetNumVar Lib "actkrt3.dll" (ByVal varname As String, ByVal value As Double, ByVal heapID As Long) As Long
+Public Declare Function RPGCSetLitVar Lib "actkrt3.dll" (ByVal varname As String, ByVal value As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCGetNumVar Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Double
+Public Declare Function RPGCGetLitVar Lib "actkrt3.dll" (ByVal varname As String, ByVal inSpaceAllocated As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCGetLitVarLen Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCCountNum Lib "actkrt3.dll" (ByVal heapID As Long) As Long
 Public Declare Function RPGCCountLit Lib "actkrt3.dll" (ByVal heapID As Long) As Long
 Public Declare Function RPGCGetNumName Lib "actkrt3.dll" (ByVal nItrOffset As Long, ByVal pstrToVal As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCGetLitName Lib "actkrt3.dll" (ByVal nItrOffset As Long, ByVal pstrToVal As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCClearAll Lib "actkrt3.dll" (ByVal heapID As Long) As Long
-Public Declare Function RPGCKillNum Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCKillLit Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCNumExists Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCLitExists Lib "actkrt3.dll" (ByVal varName As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCKillNum Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCKillLit Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCNumExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
+Public Declare Function RPGCLitExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCEvaluate Lib "actkrt3.dll" (ByVal equation As String) As Double
 
 '=========================================================================
@@ -54,11 +54,11 @@ Public Declare Function RPGCCountRedirects Lib "actkrt3.dll" () As Long
 '=========================================================================
 ' Get the value of a variable - unattached to a program
 '=========================================================================
-Public Function getIndependentVariable(ByVal varName As String, ByRef lit As String, ByRef num As Double) As RPGC_DT
+Public Function getIndependentVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double) As RPGC_DT
     Dim aProgram As RPGCodeProgram
     aProgram.boardNum = -1
     Call InitRPGCodeProcess(aProgram)
-    getIndependentVariable = getVariable(varName$, lit$, num, aProgram)
+    getIndependentVariable = getVariable(varname$, lit$, num, aProgram)
     Call ClearRPGCodeProcess(aProgram)
 End Function
 
@@ -74,7 +74,7 @@ End Sub
 ' Determines type of text passed in
 '=========================================================================
 Public Function dataType( _
-                            ByVal text As String, _
+                            ByVal Text As String, _
                             Optional ByRef equType As RPGC_DT = -1 _
                                                                      ) As RPGC_DT
 
@@ -87,12 +87,12 @@ Public Function dataType( _
     Dim ret As Double       'Return from CDbl()
     Dim errors As Boolean   'Was there an error?
 
-    Length = Len(text)      'Get the text's length
+    Length = Len(Text)      'Get the text's length
     dType = -1              'Flag we haven't got a type yet
 
     'Check right most character for type character (! or $)
     If dType = -1 Then
-        part = Right(Trim(replaceOutsideQuotes(text, vbTab, "")), 1)
+        part = Right(Trim(replaceOutsideQuotes(Text, vbTab, "")), 1)
         If part = "$" Then
             dType = DT_LIT
         ElseIf part = "!" Then
@@ -107,7 +107,7 @@ Public Function dataType( _
         On Error GoTo dataTypeErr
 
         'Try to change the text to a double
-        ret = CDbl(text)
+        ret = CDbl(Text)
 
         If (errors) Then
             'If we got here, it's an error so it must be a string
@@ -121,7 +121,7 @@ Public Function dataType( _
 
     'Before we leave, check if there is an equation
     Dim equResult As RPGC_DT
-    If isEquation(text, equResult) Then
+    If isEquation(Text, equResult) Then
         dType = DT_EQUATION
         If (equType = -1) Then
             dType = equResult
@@ -317,11 +317,11 @@ End Function
 '=========================================================================
 ' RPGCode interface with variables
 '=========================================================================
-Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
     On Error Resume Next
 
-    Dim destination As String   'RPGCode destination variable
+    Dim Destination As String   'RPGCode destination variable
     Dim tokenIdx As Long        'Token index
     Dim dType As RPGC_DT        'Type of data
     Dim equal As String         'The conjunction
@@ -330,19 +330,19 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
     Dim num As Double           'Numerical value
 
     'Get the destination variable and remove unwanted characters
-    destination = replace(replace(replace(GetVarList(text, 1), "#", ""), " ", ""), vbTab, "")
+    Destination = replace(replace(replace(GetVarList(Text, 1), "#", ""), " ", ""), vbTab, "")
 
     'Get the type of the destination
-    dType = dataType(destination)
+    dType = dataType(Destination)
 
     If (dType = DT_NUM) Then
         'If we have a numerical variable then add to
         'the string to evaluate (prevents some errors)
-        text = text & "+0+0"
+        Text = Text & " +0+0"
     End If
 
     'Get the number of tokens we have
-    number = ValueNumber(text)
+    number = ValueNumber(Text)
 
     'Create an array to hold the tokens
     ReDim valueList(number) As String
@@ -351,7 +351,7 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
     For tokenIdx = 2 To number
 
         'Get the token
-        valueList(tokenIdx) = GetVarList(text, tokenIdx)
+        valueList(tokenIdx) = GetVarList(Text, tokenIdx)
 
         'Remove spaces if it's not a literal variable (has quotes)
         If (InStr(valueList(tokenIdx), Chr(34)) = 0) Then
@@ -374,19 +374,19 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
             Next tokenIdx
 
             'Check what type of conjuction we have
-            equal = MathFunction(text, 1)
+            equal = MathFunction(Text, 1)
 
             'Switch on the sign
             Select Case equal
 
                 Case "++"                           'INCREMENTAION OPERATOR
                                                     '----------------------
-                    Call SetVariable(destination, CBGetNumerical(destination) + 1, theProgram)
+                    Call SetVariable(Destination, CBGetNumerical(Destination) + 1, theProgram)
                     Exit Sub
 
                 Case "--"                           'DECREMENTATION OPERATOR
                                                     '-----------------------
-                    Call SetVariable(destination, CBGetNumerical(destination) - 1, theProgram)
+                    Call SetVariable(Destination, CBGetNumerical(Destination) - 1, theProgram)
                     Exit Sub
 
                 Case "+=", "-=", "*=", "/=", "="    'OTHER VALID OPERATOR
@@ -402,7 +402,7 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
             'Build the equation into a string
             Dim build As String
             For tokenIdx = 2 To number
-                build = build & numberUse(tokenIdx) & MathFunction(text, tokenIdx)
+                build = build & numberUse(tokenIdx) & MathFunction(Text, tokenIdx)
             Next tokenIdx
             build = Mid(build, 1, Len(build) - 2)
 
@@ -414,23 +414,23 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
 
                 Case "-="       'RELATIVE SUBTRACTION OPERATOR
                                 '-----------------------------
-                    Call SetVariable(destination, CStr(CBGetNumerical(destination) - numberUse(number)), theProgram)
+                    Call SetVariable(Destination, CStr(CBGetNumerical(Destination) - numberUse(number)), theProgram)
 
                 Case "+="       'RELATIVE ADDITION OPERATOR
                                 '--------------------------
-                    Call SetVariable(destination, CStr(numberUse(number) + CBGetNumerical(destination)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number) + CBGetNumerical(Destination)), theProgram)
 
                 Case "*="       'RELATIVE MULTIPLICATION OPERATOR
                                 '--------------------------------
-                    Call SetVariable(destination, CStr(numberUse(number) * CBGetNumerical(destination)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number) * CBGetNumerical(Destination)), theProgram)
 
                 Case "/="       'RELATIVE DIVISION OPERATOR
                                 '--------------------------
-                    Call SetVariable(destination, CStr(CBGetNumerical(destination) / numberUse(number)), theProgram)
+                    Call SetVariable(Destination, CStr(CBGetNumerical(Destination) / numberUse(number)), theProgram)
 
                 Case "="        'NORMAL EQUAL OPERATOR
                                 '---------------------
-                    Call SetVariable(destination, CStr(numberUse(number)), theProgram)
+                    Call SetVariable(Destination, CStr(numberUse(number)), theProgram)
 
             End Select
 
@@ -444,7 +444,7 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
             Next tokenIdx
 
             'Get the equal sign
-            equal = MathFunction(text, 1)
+            equal = MathFunction(Text, 1)
 
             'Combine the tokens
             Dim res As String
@@ -454,15 +454,15 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
 
             If equal = "+=" Then
                 'Add result to existing value
-                Call SetVariable(destination, CBGetString(destination) & res, theProgram)
+                Call SetVariable(Destination, CBGetString(Destination) & res, theProgram)
             Else
                 'Set destination to result
-                Call SetVariable(destination, res, theProgram)
+                Call SetVariable(Destination, res, theProgram)
             End If
 
         Case Else       'INVALID DESTINATION VARIABLE
                         '----------------------------
-            Call debugger("Error: Value on left must be a valid variable-- " & text)
+            Call debugger("Error: Value on left must be a valid variable-- " & Text)
 
     End Select
 
@@ -471,7 +471,7 @@ End Sub
 '=========================================================================
 ' Gets the value of the text passed
 '=========================================================================
-Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
+Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
 
     On Error Resume Next
 
@@ -486,12 +486,12 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
     Dim equTyp As RPGC_DT   'Type of equation
 
     'Switch on the data type
-    Select Case dataType(text, equTyp)
+    Select Case dataType(Text, equTyp)
 
         Case DT_NUM         'NUMERICAL VARIABLE
                             '------------------
 
-            If getVariable(text, litA, numA, theProgram) = DT_NUM Then
+            If getVariable(Text, litA, numA, theProgram) = DT_NUM Then
                 'Found one!
                 num = numA
             End If
@@ -500,7 +500,7 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
         Case DT_LIT         'LITERAL VARIABLE
                             '----------------
 
-            If getVariable(text, litA, numA, theProgram) = DT_LIT Then
+            If getVariable(Text, litA, numA, theProgram) = DT_LIT Then
                 'Found one!
                 lit = litA
             End If
@@ -510,11 +510,11 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
                             '------
 
             'Get the length of the text
-            Length = Len(text)
+            Length = Len(Text)
 
             'Check if text is in quotes
             For p = 1 To Length
-                If Mid(text, p, 1) = Chr(34) Then
+                If Mid(Text, p, 1) = Chr(34) Then
                     checkIt = True
                     Exit For
                 End If
@@ -523,13 +523,13 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
             If (checkIt) Then
                 'It is!
                 For p = 1 To Length
-                    If Mid(text, p, 1) = Chr(34) Then
+                    If Mid(Text, p, 1) = Chr(34) Then
                         newPos = p
                         Exit For
                     End If
                 Next p
                 For p = (newPos + 1) To (Length)
-                    part = Mid(text, p, 1)
+                    part = Mid(Text, p, 1)
                     If (part = Chr(34)) Or (part = "") Then
                         lit = sendText
                         getValue = DT_LIT
@@ -540,21 +540,21 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
                 Next p
             Else
                 'It's not!
-                lit = text
+                lit = Text
                 getValue = DT_LIT
             End If
 
         Case DT_NUMBER      'NUMBER
                             '------
 
-            num = CDbl(text)
+            num = CDbl(Text)
             getValue = DT_NUM
 
         Case DT_EQUATION    'EQUATION
                             '--------
 
             Dim equVal As parameters
-            equVal = RPGCodeEquation(text, theProgram, equTyp)
+            equVal = RPGCodeEquation(Text, theProgram, equTyp)
             With equVal
                 Select Case .dataType
                     Case DT_NUM: num = .num
@@ -570,11 +570,11 @@ End Function
 '=========================================================================
 ' Determine if a literal variable exists
 '=========================================================================
-Public Function litVarExists(ByVal varName As String, ByVal heapID As Long) As Boolean
+Public Function litVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
     On Error Resume Next
     Dim r As Long
-    If varName <> "" Then
-        r = RPGCLitExists(UCase$(varName), heapID)
+    If varname <> "" Then
+        r = RPGCLitExists(UCase$(varname), heapID)
         If r = 1 Then
             litVarExists = True
         Else
@@ -588,9 +588,9 @@ End Function
 '=========================================================================
 ' Kill a literal variable
 '=========================================================================
-Public Sub KillLit(ByVal varName As String, ByVal heapID As Long)
+Public Sub KillLit(ByVal varname As String, ByVal heapID As Long)
     On Error Resume Next
-    Call RPGCKillLit(UCase$(varName), heapID)
+    Call RPGCKillLit(UCase$(varname), heapID)
 End Sub
 
 '=========================================================================
@@ -638,19 +638,19 @@ End Function
 '=========================================================================
 ' Kill the numerical variable passed in
 '=========================================================================
-Public Sub killNum(ByVal varName As String, ByVal heapID As Long)
+Public Sub killNum(ByVal varname As String, ByVal heapID As Long)
     On Error Resume Next
-    Call RPGCKillNum(UCase$(varName), heapID)
+    Call RPGCKillNum(UCase$(varname), heapID)
 End Sub
 
 '=========================================================================
 ' Determine if a numerical variable exists
 '=========================================================================
-Public Function numVarExists(ByVal varName As String, ByVal heapID As Long) As Boolean
+Public Function numVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
     On Error Resume Next
     Dim r As Long
-    If varName <> "" Then
-        r = RPGCNumExists(UCase$(varName), heapID)
+    If varname <> "" Then
+        r = RPGCNumExists(UCase$(varname), heapID)
         If r = 1 Then
             numVarExists = True
         Else
@@ -664,40 +664,40 @@ End Function
 '=========================================================================
 ' Return a numerical variable belonging to a program's value
 '=========================================================================
-Public Function SearchNumVar(ByVal varName As String, ByRef thePrg As RPGCodeProgram) As Double
+Public Function SearchNumVar(ByVal varname As String, ByRef thePrg As RPGCodeProgram) As Double
     On Error Resume Next
     'first search the local heap...
     If thePrg.currentHeapFrame >= 0 Then
-        If numVarExists(varName, thePrg.heapStack(thePrg.currentHeapFrame)) Then
+        If numVarExists(varname, thePrg.heapStack(thePrg.currentHeapFrame)) Then
             'try local heap...
-            SearchNumVar = GetNumVar(varName, thePrg.heapStack(thePrg.currentHeapFrame))
+            SearchNumVar = GetNumVar(varname, thePrg.heapStack(thePrg.currentHeapFrame))
         Else
             'try global heap...
-            SearchNumVar = GetNumVar(varName, globalHeap)
+            SearchNumVar = GetNumVar(varname, globalHeap)
         End If
     Else
         'obtain from global heap...
-        SearchNumVar = GetNumVar(varName, globalHeap)
+        SearchNumVar = GetNumVar(varname, globalHeap)
     End If
 End Function
 
 '=========================================================================
 ' Return a literal variable belonging to a program's value
 '=========================================================================
-Public Function SearchLitVar(ByVal varName As String, ByRef thePrg As RPGCodeProgram) As String
+Public Function SearchLitVar(ByVal varname As String, ByRef thePrg As RPGCodeProgram) As String
     On Error Resume Next
     'first search the local heap...
     If thePrg.currentHeapFrame >= 0 Then
-        If litVarExists(varName, thePrg.heapStack(thePrg.currentHeapFrame)) Then
+        If litVarExists(varname, thePrg.heapStack(thePrg.currentHeapFrame)) Then
             'try local heap...
-            SearchLitVar = GetLitVar(varName, thePrg.heapStack(thePrg.currentHeapFrame))
+            SearchLitVar = GetLitVar(varname, thePrg.heapStack(thePrg.currentHeapFrame))
         Else
             'try global heap...
-            SearchLitVar = GetLitVar(varName, globalHeap)
+            SearchLitVar = GetLitVar(varname, globalHeap)
         End If
     Else
         'obtain from global heap...
-        SearchLitVar = GetLitVar(varName, globalHeap)
+        SearchLitVar = GetLitVar(varname, globalHeap)
     End If
 End Function
 
@@ -748,25 +748,25 @@ End Function
 '=========================================================================
 ' Set a variable - unattached to a program
 '=========================================================================
-Public Sub setIndependentVariable(ByVal varName As String, ByVal value As String)
+Public Sub setIndependentVariable(ByVal varname As String, ByVal value As String)
     On Error Resume Next
     Dim aProgram As RPGCodeProgram
     aProgram.boardNum = -1
     Call InitRPGCodeProcess(aProgram)
-    Call SetVariable(varName$, value$, aProgram)
+    Call SetVariable(varname$, value$, aProgram)
     Call ClearRPGCodeProcess(aProgram)
 End Sub
 
 '=========================================================================
 ' Set a variable optionally forced to the global heap
 '=========================================================================
-Public Sub SetVariable(ByVal varName As String, ByVal value As String, ByRef theProgram As RPGCodeProgram, Optional ByVal bForceGlobal As Boolean = False)
+Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef theProgram As RPGCodeProgram, Optional ByVal bForceGlobal As Boolean = False)
 
     On Error Resume Next
 
     'Get the variable's name
     Dim theVar As String
-    theVar = parseArray(replace(varName, " ", ""), theProgram)
+    theVar = parseArray(replace(varname, " ", ""), theProgram)
 
     'Get its type
     Dim varType As RPGC_DT
@@ -826,12 +826,12 @@ End Sub
 '=========================================================================
 ' Get the value of a variable
 '=========================================================================
-Public Function getVariable(ByVal varName As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
+Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
 
     On Error Resume Next
 
     'Check for reserved dynamically updating variables
-    Select Case Trim(LCase(varName))
+    Select Case Trim(LCase(varname))
 
         Case "gametime!"            'LENGTH OF GAME IN SECONDS
                                     '-------------------------
@@ -850,7 +850,7 @@ Public Function getVariable(ByVal varName As String, ByRef lit As String, ByRef 
 
     'Get the variable
     Dim theVar As String
-    theVar = parseArray(replace(varName, " ", ""), theProgram)
+    theVar = parseArray(replace(varname, " ", ""), theProgram)
 
     'Create an rpgcode return value
     Dim rV As RPGCODE_RETURN
@@ -924,39 +924,39 @@ End Sub
 '=========================================================================
 ' Set a numerical variable
 '=========================================================================
-Public Function SetNumVar(ByVal varName As String, ByVal val As Double, ByVal heapID As Long) As Long
+Public Function SetNumVar(ByVal varname As String, ByVal val As Double, ByVal heapID As Long) As Long
     On Error Resume Next
-    SetNumVar = RPGCSetNumVar(UCase$(varName), val, heapID)
+    SetNumVar = RPGCSetNumVar(UCase$(varname), val, heapID)
 End Function
 
 '=========================================================================
 ' Set a literal variable
 '=========================================================================
-Public Function SetLitVar(ByVal varName As String, ByVal val As String, ByVal heapID As Long) As Long
+Public Function SetLitVar(ByVal varname As String, ByVal val As String, ByVal heapID As Long) As Long
     On Error Resume Next
-    SetLitVar = RPGCSetLitVar(UCase$(varName), val, heapID)
+    SetLitVar = RPGCSetLitVar(UCase$(varname), val, heapID)
 End Function
 
 '=========================================================================
 ' Get a numerical variable
 '=========================================================================
-Public Function GetNumVar(ByVal varName As String, ByVal heapID As Long) As Double
+Public Function GetNumVar(ByVal varname As String, ByVal heapID As Long) As Double
     On Error Resume Next
-    GetNumVar = RPGCGetNumVar(UCase$(varName), heapID)
+    GetNumVar = RPGCGetNumVar(UCase$(varname), heapID)
 End Function
 
 '=========================================================================
 ' Get a literal variable
 '=========================================================================
-Public Function GetLitVar(ByVal varName As String, ByVal heapID As Long) As String
+Public Function GetLitVar(ByVal varname As String, ByVal heapID As Long) As String
     On Error Resume Next
     Dim l As Long, Length As Long
     
-    l = RPGCGetLitVarLen(UCase$(varName), heapID)
+    l = RPGCGetLitVarLen(UCase$(varname), heapID)
     If l > 0 Then
         l = l + 1
         Dim getStr As String * 4048
-        Length = RPGCGetLitVar(UCase$(varName), getStr, heapID)
+        Length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
         GetLitVar = Mid$(getStr, 1, Length)
     Else
         GetLitVar = ""

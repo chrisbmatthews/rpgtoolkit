@@ -284,8 +284,8 @@ Public Sub gameLogic()
 
         Case GS_MOVEMENT
 
-            Call moveItems
-            Call movePlayers
+            Call moveItems          'move items
+            Call movePlayers        'move players
 
             'this should be called framesPerMove times
             movementCounter = movementCounter + 1
@@ -298,10 +298,8 @@ Public Sub gameLogic()
                 gGameState = GS_MOVEMENT
                 Dim timeNow As Double
                 timeNow = Timer()
-                Do
-                    If (Timer() - timeNow) >= (walkDelay / 1000) Then
-                        Exit Do
-                    End If
+                Do Until (Timer() - timeNow) >= (walkDelay)
+                    'Wait for the game speed delay
                 Loop
             Else
                 'We're done movement
@@ -314,48 +312,56 @@ Public Sub gameLogic()
             'clear pending item movements...
             Dim cnt As Long
             For cnt = 0 To UBound(pendingItemMovement)
-                pendingItemMovement(cnt).direction = MV_IDLE
-                pendingItemMovement(cnt).xOrig = itmPos(cnt).x
-                pendingItemMovement(cnt).yOrig = itmPos(cnt).y
+                With pendingItemMovement(cnt)
+                    .direction = MV_IDLE
+                    .xOrig = itmPos(cnt).x
+                    .yOrig = itmPos(cnt).y
+                End With
             Next cnt
 
             'The pending movements have to be cleared *before* any programs are run,
             'whereas the movement direction can only be cleared afterwards.
             For cnt = 0 To UBound(pendingPlayerMovement)
-                pendingPlayerMovement(cnt).xOrig = pPos(cnt).x
-                pendingPlayerMovement(cnt).yOrig = pPos(cnt).y
+                With pendingPlayerMovement(cnt)
+                    .xOrig = pPos(cnt).x
+                    .yOrig = pPos(cnt).y
+                End With
             Next cnt
 
-            'check if player moved...
-            If pendingPlayerMovement(selectedPlayer).direction <> MV_IDLE Then
-                'will create a temporary player position which is based on
-                'the target location for that players' movement.
-                'lets us test solid tiles, etc
-                Dim tempPos As PLAYER_POSITION
-                tempPos = pPos(selectedPlayer)
+            With pendingPlayerMovement(selectedPlayer)
 
-                tempPos.l = pendingPlayerMovement(selectedPlayer).lTarg
-                tempPos.x = pendingPlayerMovement(selectedPlayer).xTarg
-                tempPos.y = pendingPlayerMovement(selectedPlayer).yTarg
+                'check if player moved...
+                If (.direction <> MV_IDLE) Then
+                    'will create a temporary player position which is based on
+                    'the target location for that players' movement.
+                    'lets us test solid tiles, etc
+                    Dim tempPos As PLAYER_POSITION
+                    tempPos = pPos(selectedPlayer)
 
-                'Test for a program
-                Call programTest(tempPos)
+                    tempPos.l = .lTarg
+                    tempPos.x = .xTarg
+                    tempPos.y = .yTarg
+
+                    'Test for a program
+                    Call programTest(tempPos)
                 
-                'Flag player is no longer moving
-                pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
+                    'Flag player is no longer moving
+                    .direction = MV_IDLE
 
-                'Test for a fight
-                If usingPixelMovement() Then
-                    checkFight = checkFight + 1
-                    If checkFight = 4 Then
+                    'Test for a fight
+                    If usingPixelMovement() Then
+                        checkFight = checkFight + 1
+                        If checkFight = 4 Then
+                            Call fightTest
+                            checkFight = 0
+                        End If
+                    Else
                         Call fightTest
-                        checkFight = 0
                     End If
-                Else
-                    Call fightTest
+
                 End If
 
-            End If
+            End With
 
             'clear player movements
             For cnt = 0 To UBound(pendingPlayerMovement)
@@ -363,10 +369,12 @@ Public Sub gameLogic()
             Next cnt
 
             'Convert *STUPID* string positions to numerical
-            If UCase(pPos(selectedPlayer).stance) = "WALK_S" Then facing = South
-            If UCase(pPos(selectedPlayer).stance) = "WALK_W" Then facing = West
-            If UCase(pPos(selectedPlayer).stance) = "WALK_N" Then facing = North
-            If UCase(pPos(selectedPlayer).stance) = "WALK_E" Then facing = East
+            Select Case UCase(pPos(selectedPlayer).stance)
+                Case "WALK_S": facing = South
+                Case "WALK_W": facing = West
+                Case "WALK_N": facing = North
+                Case "WALK_E": facing = East
+            End Select
 
             'Back to idle state
             gGameState = GS_IDLE
