@@ -22,11 +22,59 @@ Option Explicit
 ' Declarations
 '=========================================================================
 
+' Initiate DirectX
+Public Declare Function DXInitGfxMode Lib "actkrt3.dll" (ByVal hwnd As Long, ByVal nScreenX As Long, ByVal nScreenY As Long, ByVal nUseDirectX As Long, ByVal nColorDepth As Long, ByVal nFullScreen As Long) As Long
+
+' Deinitiate DirectX
+Public Declare Function DXKillGfxMode Lib "actkrt3.dll" () As Long
+
+' Flip the back buffer onto the screen
+Public Declare Function DXFlip Lib "actkrt3.dll" Alias "DXRefresh" () As Long
+
+' Lock the screen, obtaining its HDC
+Public Declare Function DXLockScreen Lib "actkrt3.dll" () As Long
+
+' Unlock the screen, releasing its DC
+Public Declare Function DXUnlockScreen Lib "actkrt3.dll" () As Long
+
+' Plot a pixel on the screen
+Public Declare Function DXDrawPixel Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
+
+' Render a canvas to the screen
+Public Declare Function DXDrawCanvas Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+
+' Draw a canavs transparently onto the screen
+Public Declare Function DXDrawCanvasTransparent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
+
+' Draw a canavs translucently onto the screen
+Public Declare Function DXDrawCanvasTranslucent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+
+' Black out the screen
+Public Declare Function DXClearScreen Lib "actkrt3.dll" (ByVal crColor As Long) As Long
+
+' Draw text onto the screen
+Public Declare Function DXDrawText Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
+
+' Draw part of a canvas on the screen
+Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+
+' Draw part of a canvas onto the screen using transparency
+Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
+
+' Copy the screen to a canvas
+Public Declare Function DXCopyScreenToCanvas Lib "actkrt3.dll" (ByVal canvasID As Long) As Long
+
 ' Convert a client window's coords to the screen coords
-Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As Long, lpPoint As POINTAPI) As Long
+Private Declare Function ClientToScreen Lib "user32" (ByVal hwnd As Long, lpPoint As POINTAPI) As Long
+
+' Set a rect
+Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+
+' Offset a rect
+Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 
 ' Move memory around
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal length As Long)
 
 '=========================================================================
 ' Globals
@@ -154,12 +202,6 @@ Public renderRenderNowCanvasTranslucent As Boolean
 
 ' Canvas used for the mouse pointer
 Public cnvMousePointer As Long
-
-' The primary DirectX surface
-Public g_primarySurface As DirectDrawSurface7
-
-' The DirectX backbuffer
-Public g_backBuffer As DirectDrawSurface7
 
 '=========================================================================
 ' A player render
@@ -326,7 +368,7 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
     yy = y - scTopY
 
     For layer = 1 To boardList(activeBoardIndex).theData.bSizeL
-        If (LenB(BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData)) <> 0) Then
+        If BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData) <> "" Then
             'If there is a tile here.
 
             Call drawTileCNV(cnvScrollCache, _
@@ -386,7 +428,7 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
     'first things first- what prgs are on this layer?
     Dim prgNum As Long
     For prgNum = 0 To UBound(boardList(activeBoardIndex).theData.programName)
-        If (LenB(boardList(activeBoardIndex).theData.programName$(prgNum)) <> 0) And boardList(activeBoardIndex).theData.progGraphic$(prgNum) <> "None" And (LenB(boardList(activeBoardIndex).theData.progGraphic$(prgNum)) <> 0) Then
+        If boardList(activeBoardIndex).theData.programName$(prgNum) <> "" And boardList(activeBoardIndex).theData.progGraphic$(prgNum) <> "None" And boardList(activeBoardIndex).theData.progGraphic$(prgNum) <> "" Then
             'check if it's activated
             Dim runIt As Boolean, checkIt As Long
             Dim valueTest As Double, num As Double
@@ -451,7 +493,7 @@ Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
     
     On Error Resume Next
 
-    If (LenB(boardList(activeBoardIndex).theData.brdBack) <> 0) Then
+    If boardList(activeBoardIndex).theData.brdBack <> "" Then
         'If there is a background.
     
         Dim pixelTopX As Long, pixelTopY As Long
@@ -649,7 +691,7 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                 yy = boardList(activeBoardIndex).theData.animatedTile(t).y - scTopY
                 
                 For lll = 1 To boardList(activeBoardIndex).theData.bSizeL
-                    If (LenB(BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData)) <> 0) Then
+                    If BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData) <> "" Then
                         ext$ = GetExt(BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData))
                         If UCase$(ext$) <> "TAN" Then
                             'not the animated part
@@ -721,7 +763,7 @@ Private Function renderBackground() As Boolean
         ' Fill bkg will black
         Call CanvasFill(cnvBackground, 0)
         ' If there's an image set
-        If (LenB(boardList(activeBoardIndex).theData.brdBack) <> 0) Then
+        If (boardList(activeBoardIndex).theData.brdBack <> "") Then
             ' Load the image, stretching to fit the board
             Call CanvasLoadFullPicture(cnvBackground, projectPath & bmpPath & boardList(activeBoardIndex).theData.brdBack, resX, resY)
         End If
@@ -830,13 +872,13 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     'Will place the top left corner of the sprite frame at cornerX, cornerY:
     cornerX = centreX - (spriteWidth / 2)
     cornerY = centreY - spriteHeight
-
+       
     Dim offsetX As Long, offsetY As Long
     'Offset on the sprite's frame from the top left corner (cornerX, cornerY)
-
+    
     Dim renderWidth As Long, renderHeight As Long
     'Portion of frame to be drawn, after offset considerations.
-
+       
     If cornerX < 0 Or cornerY < 0 Or _
         (cornerX + spriteWidth > resX) Or (cornerY + spriteHeight > resY) Then
         'If sprite frame will lie outside the bounds of the screen resolution.
@@ -1262,12 +1304,6 @@ Public Sub destroyGraphics()
 
     ' Empty int
     Dim newValue As Long
-
-    ' Set pointer to primary surface to 0 so VB will not ->release()
-    Call CopyMemory(g_primarySurface, newValue, 4)
-
-    ' Set pointer to secondary surface to 0 so VB will not ->release()
-    Call CopyMemory(g_backBuffer, newValue, 4)
 
     ' Destroy global canvases
     Call destroyCanvases
@@ -1786,7 +1822,7 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
     Do
 
         ' Attempt to initiate DirectX
-        If (DXInitGfxMode(host.hWnd, width, height, useDX, depth, fullScreen, pPrimarySurface, pSecondarySurface) = 0) Then
+        If (DXInitGfxMode(host.hwnd, width, height, useDX, depth, fullScreen) = 0) Then
             If ((depth = 16) And (fullScreen = 0)) Then
                 ' Destroy the host window
                 Call Unload(host)
@@ -1806,10 +1842,6 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
                 inFullScreenMode = False
             End If
         Else
-            ' Get the primary surface from the pointer
-            Call CopyMemory(g_primarySurface, ByVal pPrimarySurface, 4)
-            ' Repeat for the secondary surface
-            Call CopyMemory(g_backBuffer, ByVal pSecondarySurface, 4)
             ' Exit the initiating loop
             Exit Do
         End If

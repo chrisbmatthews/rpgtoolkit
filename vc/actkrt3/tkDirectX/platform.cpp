@@ -29,24 +29,15 @@ CGDICanvas* g_pBackBuffer = NULL;	//Non-DirectX backbuffer
 //////////////////////////////////////////////////////////////////////////
 // Init DirectX
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen, int* primarySurface, int* secondarySurface)
+int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen)
 {
 	if (InitGraphicsMode((HWND)hostHwnd, nScreenX, nScreenY, (bool)nUseDirectX, nColorDepth, (bool)nFullScreen))
-	{
-		// Send out address of primary surface
-		*primarySurface = (int)&gDXInfo.lpddsPrime;
-		// Add a ref
-		gDXInfo.lpddsPrime->AddRef();
-		// Same with the secondary surface
-		*secondarySurface = (int)&gDXInfo.lpddsSecond;
-		// Add a ref
-		gDXInfo.lpddsSecond->AddRef();
 		// Success!
 		return 1;
-	}
+
 	else
 		// Failed!
-		return NULL;
+		return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -83,7 +74,8 @@ int APIENTRY DXRefresh()
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY DXLockScreen()
 {
-	return (int)LockScreen();
+	ghDCLocked = OpenDC();
+	return (int)ghDCLocked;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -793,15 +785,6 @@ inline void ClearScreen(long crColor)
 	DeleteObject(pen);
 
 	CloseDC(hdc);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Lock the screen
-//////////////////////////////////////////////////////////////////////////
-inline bool LockScreen()
-{
-	if (FAILED(ghDCLocked = OpenDC())) return false;
-	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////

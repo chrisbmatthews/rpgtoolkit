@@ -86,7 +86,7 @@ inline CGDICanvas* CreateCanvas(int nWidth, int nHeight, bool bUseDX = false);
 //////////////////////////////////////////////////////////////////////////
 // Exports
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen, int* primarySurface, int* secondarySurface);
+int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen);
 int APIENTRY DXKillGfxMode();
 int APIENTRY DXDrawPixel(int x, int y, long clr);
 int APIENTRY DXRefresh();
