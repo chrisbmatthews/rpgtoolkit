@@ -9198,7 +9198,7 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
     yHeight = getCanvasHeight(cnvMsgBox)
     xHeight = getCanvasWidth(cnvMsgBox)
-    totalLines = yHeight \ fontSize
+    ' totalLines = yHeight \ fontSize
     
     totalLines = 10
     
@@ -9206,16 +9206,6 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim leng As Long
     Dim tot As Long
-    
-    leng = Len(Text$)
-    leng = leng * fontSize
-    If leng / 2 > xHeight Then
-        tot = ((xHeight) \ fontSize)
-        If tot Then
-            oth$ = Mid$(Text$, tot + 1, Len(Text$) - tot)
-            Text$ = Mid$(Text$, 1, tot)
-        End If
-    End If
     
     Dim hdc As Long
     hdc = canvasOpenHDC(cnvMsgBox)

@@ -88,9 +88,9 @@ End Sub
 ' Style of window
 '=========================================================================
 Public Property Let style(ByVal newValue As STYLE_ENUM)
-    If newValue = FullScreenMode Then
+    If (newValue = FullScreenMode) Then
         m_createStyle = &H80000000
-    ElseIf newValue = windowed Then
+    ElseIf (newValue = windowed) Then
         m_createStyle = &H0& Or &HC00000 Or &H80000 Or &H20000
     ElseIf (newValue = nullStyle) Then
         m_createStyle = 0
@@ -101,7 +101,7 @@ End Property
 ' Window's caption
 '=========================================================================
 Public Property Let Caption(ByVal newValue As String)
-    If (Not m_created) Then
+    If Not (m_created) Then
         m_createCaption = newValue
     Else
         Call SetWindowText(hwnd, newValue)
@@ -114,7 +114,7 @@ End Property
 Public Property Let mousePointer(ByVal newValue As String)
     On Error Resume Next
     Dim hdc As Long, theFile As String
-    Call CanvasFill(cnvMousePointer, mainMem.transpcolor)
+    Call canvasFill(cnvMousePointer, mainMem.transpcolor)
     If (newValue = "TK DEFAULT") Then
         theFile = TempDir() & "pointer"
         Call Kill(theFile)
@@ -125,9 +125,9 @@ Public Property Let mousePointer(ByVal newValue As String)
     Else
         newValue = projectPath & bmpPath & newValue
     End If
-    hdc = CanvasOpenHDC(cnvMousePointer)
+    hdc = canvasOpenHDC(cnvMousePointer)
     Call DrawSizedImage(newValue, 0, 0, 32, 32, hdc)
-    Call CanvasCloseHDC(cnvMousePointer, hdc)
+    Call canvasCloseHDC(cnvMousePointer, hdc)
     If (LenB(theFile)) Then Call Kill(theFile)
 End Property
 
