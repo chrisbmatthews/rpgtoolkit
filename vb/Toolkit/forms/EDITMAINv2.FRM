@@ -77,17 +77,13 @@ Begin VB.Form editmainfile
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "fraSettings"
-      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).Control(1)=   "startframe"
-      Tab(1).Control(1).Enabled=   0   'False
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
       Tab(2).Control(0)=   "actionframe"
-      Tab(2).Control(0).Enabled=   0   'False
       Tab(2).Control(1)=   "prgframe"
-      Tab(2).Control(1).Enabled=   0   'False
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -122,17 +118,27 @@ Begin VB.Form editmainfile
             Italic          =   -1  'True
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   1575
+         Height          =   1695
          Left            =   -74760
          TabIndex        =   85
          Top             =   2520
          Width           =   6615
-         Begin VB.CheckBox chkMousePointer 
-            Height          =   255
-            Left            =   1680
-            TabIndex        =   92
-            Top             =   1080
-            Width           =   255
+         Begin VB.CommandButton cmdMouseCursor 
+            Caption         =   "Mouse Cursor"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   240
+            TabIndex        =   91
+            Top             =   1150
+            Width           =   1455
          End
          Begin VB.OptionButton optTileBased 
             Caption         =   "Tile Based"
@@ -180,23 +186,6 @@ Begin VB.Form editmainfile
             Max             =   3
             SelStart        =   1
             Value           =   1
-         End
-         Begin VB.Label Label26 
-            Caption         =   "Use mouse cursor"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   240
-            TabIndex        =   91
-            Top             =   1080
-            Width           =   1455
          End
          Begin VB.Label Label23 
             Caption         =   "Movement style:"
@@ -1968,10 +1957,10 @@ Private Sub closemnu_Click()
 End Sub
 
 '=========================================================================
-' Use mouse pointer?
+' Mouse cursor button
 '=========================================================================
-Private Sub chkMousePointer_Click()
-    mainMem.mouseCursor = chkMousePointer.value
+Private Sub cmdMouseCursor_Click()
+    Call frmMouseCursor.Show
 End Sub
 
 '=========================================================================
@@ -2557,7 +2546,6 @@ Private Sub infofill()
     End If
     
     sliGameSpeed.value = mainMem.gameSpeed
-    chkMousePointer.value = mainMem.mouseCursor
 
 End Sub
 

@@ -11315,9 +11315,7 @@ Public Sub mousePointer( _
     'MousePointer(0-15)
     'MousePointer(Default)
     'MousePointer(None)
-
-    #If oldCode = 1 Then
-    
+   
     On Error Resume Next
 
     Dim countDat As Long
@@ -11345,39 +11343,19 @@ Public Sub mousePointer( _
             'End If
 
             If LCase(paras(0).lit) = "default" Then
-                host.mousePointer = 0
+                host.mousePointer = "TK DEFAULT"
                 Exit Sub
             ElseIf LCase(paras(0).lit) = "none" Then
-                host.mousePointer = 99
-                'host.mouseIcon = image_host.noCursor.Picture
+                host.mousePointer = ""
                 Exit Sub
             End If
-            
-            Select Case LCase(Right(paras(0).lit, 4))
-            
-                Case ".ico"
-                Case ".cur"
-                
-                Case Else
-                    debugger "Error: Mouse pointers must be .ico or .cur-- " _
-                        & Text
-                    Exit Sub
 
-            End Select
-        
-            Dim fface As String
-            fface = paras(0).lit
-            fface = projectPath & bmpPath & fface
-            
-            host.mousePointer = 99
-            host.mouseIcon = LoadPicture(fface)
+            host.mousePointer = projectPath & bmpPath & paras(0).lit
 
         Case Else
             debugger "MousePointer() can have either zero or one data elements--" & Text
 
     End Select
-    
-    #End If
 
 End Sub
 

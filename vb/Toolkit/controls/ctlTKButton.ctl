@@ -4,9 +4,9 @@ Begin VB.UserControl TKButton
    ClientHeight    =   645
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   1845
+   ClientWidth     =   4005
    ScaleHeight     =   645
-   ScaleWidth      =   1845
+   ScaleWidth      =   4005
    ToolboxBitmap   =   "ctlTKButton.ctx":0000
    Begin VB.Label lblCaption 
       BackStyle       =   0  'Transparent
@@ -25,7 +25,7 @@ Begin VB.UserControl TKButton
       MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   120
-      Width           =   1335
+      Width           =   3375
    End
    Begin VB.Image cmdButton 
       Height          =   495
@@ -66,13 +66,13 @@ Public Event MouseUp(cmdButton As Integer, Shift As Integer, X As Single, Y As S
 'Properties'
 ''''''''''''
 
-Public Property Get Width() As Long
-    Width = cmdButton.Width
+Public Property Get width() As Long
+    width = cmdButton.width
 End Property
 
-Public Property Let Width(ByVal new_width As Long)
-    cmdButton.Width = new_width
-    UserControl.Width = new_width + 20
+Public Property Let width(ByVal new_width As Long)
+    cmdButton.width = new_width
+    UserControl.width = new_width + 20
 End Property
 
 Public Property Get Caption() As String
@@ -107,7 +107,7 @@ Private Sub lblCaption_MouseDown(cmdButton As Integer, Shift As Integer, X As Si
  RaiseEvent mouseDown(cmdButton, Shift, X, Y)
 End Sub
 
-Private Sub lblCaption_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblCaption_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
  swapState True
 End Sub
 
@@ -134,7 +134,7 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
  On Error Resume Next
  With PropBag
-  Width = .ReadProperty("Width")
+  width = .ReadProperty("Width")
   Caption = .ReadProperty("Caption")
  End With
 End Sub
@@ -142,7 +142,7 @@ End Sub
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
  On Error Resume Next
  With PropBag
-  .WriteProperty "Width", Width
+  .WriteProperty "Width", width
   .WriteProperty "Caption", Caption
  End With
 End Sub

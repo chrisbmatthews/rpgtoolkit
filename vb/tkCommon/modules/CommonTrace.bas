@@ -15,9 +15,9 @@ Option Explicit
 ' Integral variables
 '=========================================================================
 
-#Const enableTracer = 0             'tracer is enabled?
+#Const enableTracer = False         'tracer is enabled?
 
-#If enableTracer = 1 Then
+#If (enableTracer) Then
     Private traceFile As String     'file to save to
     Private isTracing As Boolean    'are we tracing?
 #End If
@@ -29,7 +29,7 @@ Public Sub StartTracing(ByVal file As String)
 
     On Error Resume Next
     
-    #If enableTracer = 1 Then
+    #If (enableTracer) Then
         traceFile = file
         isTracing = True
         Call Kill(traceFile)
@@ -47,7 +47,7 @@ End Sub
 '=========================================================================
 Public Sub StopTracing()
     On Error Resume Next
-    #If enableTracer = 1 Then
+    #If (enableTracer) Then
         If isTracing Then
             isTracing = False
         End If
@@ -59,7 +59,7 @@ End Sub
 '=========================================================================
 Public Sub traceString(ByVal Text As String)
     On Error Resume Next
-    #If enableTracer = 1 Then
+    #If (enableTracer) Then
         If isTracing Then
             Dim tf As Long
             tf = FreeFile()
@@ -73,7 +73,7 @@ End Sub
 '=========================================================================
 ' Save data in prg for analizing
 '=========================================================================
-#If isToolkit = 0 And enableTracer = 1 Then
+#If (isToolkit = 0) And (enableTracer) Then
     Public Sub traceProgram(ByRef prg As RPGCodeProgram, ByVal file As String, ByVal silent As Boolean)
 
         Dim line As String

@@ -129,6 +129,20 @@ Public useNumberPad As Boolean       'Use number pad?
 Public useJoystick As Boolean        'Use joystick?
 
 '=========================================================================
+' Get mouse x coord
+'=========================================================================
+Public Property Get getMouseX() As Long
+    getMouseX = mouseMoveX
+End Property
+
+'=========================================================================
+' Get mouse y coord
+'=========================================================================
+Public Property Get getMouseY() As Long
+    getMouseY = mouseMoveY
+End Property
+
+'=========================================================================
 ' Get the last key pressed
 '=========================================================================
 Public Property Get lastKeyPressed() As String
@@ -670,16 +684,16 @@ End Sub
 '=========================================================================
 Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Integer, ByVal button As Integer)
 
-    On Error Resume Next
-    
+    On Error GoTo fin
+
     'Returned values from the form.
     mouseX = x
     mouseY = y
-    
+
     'Inform plugins...
     Dim Index As Integer
     Dim plugName As String
-    
+
     'Check custom plugins to see if they request an input.
     For Index = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(Index) <> "" Then
@@ -692,7 +706,7 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
             End If
         End If
     Next Index
-    
+
     'Check the menu plugin.
     If mainMem.menuPlugin <> "" Then
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
@@ -701,7 +715,7 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
             Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
         End If
     End If
-    
+
     'Check the fight plugin.
     If mainMem.fightPlugin <> "" Then
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -710,7 +724,8 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
             Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
         End If
     End If
-    
+
+fin:
 End Sub
 
 '=========================================================================
@@ -720,6 +735,7 @@ Public Sub mouseMoveEvent(ByVal x As Integer, ByVal y As Integer)
     On Error Resume Next
     mouseMoveX = x
     mouseMoveY = y
+    Call DXRefresh
 End Sub
 
 '=========================================================================

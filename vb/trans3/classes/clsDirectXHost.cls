@@ -41,9 +41,15 @@ Private m_createX As Long           'x position window should start at
 Private m_createY As Long           'y position window should start at
 
 '=========================================================================
+' Public variables
+'=========================================================================
+Public cursorHotSpotX As Long       'x hot spot of cursor
+Public cursorHotSpotY As Long       'y hot spot of cursor
+
+'=========================================================================
 ' Member declarations
 '=========================================================================
-Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal X As Long, ByVal Y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal className As String, ByVal hCursor As Long) As Long
+Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal className As String, ByVal hCursor As Long) As Long
 Private Declare Sub killHostWindow Lib "actkrt3.dll" (ByVal className As String, ByVal hInstance As Long)
 Private Declare Sub changeHostWindowCaption Lib "actkrt3.dll" (ByVal newCaption As String)
 
@@ -77,6 +83,7 @@ End Property
 ' Destroy the window
 '=========================================================================
 Public Sub Destroy()
+    On Error Resume Next
     Call killHostWindow(WINDOWS_CLASS, App.hInstance)
 End Sub
 
@@ -103,17 +110,26 @@ Public Property Let Caption(ByVal newValue As String)
 End Property
 
 '=========================================================================
-' Window's mouse pointer (TBD)
+' Window's mouse pointer
 '=========================================================================
-Public Property Let mousePointer(ByVal newValue As Long)
-    'TBD
-End Property
-
-'=========================================================================
-' Window's mouse icon (TBD)
-'=========================================================================
-Public Property Let mouseIcon(ByVal newValue As Long)
-    'TBD
+Public Property Let mousePointer(ByVal newValue As String)
+    On Error Resume Next
+    Dim hdc As Long, theFile As String
+    Call CanvasFill(cnvMousePointer, mainMem.transpColor)
+    If (newValue = "TK DEFAULT") Then
+        theFile = TempDir() & "pointer"
+        Call Kill(theFile)
+        Call SavePicture(LoadResPicture(103, vbResBitmap), theFile)
+        newValue = theFile
+    ElseIf (newValue = "") Then
+        Exit Property
+    Else
+        newValue = projectPath & bmpPath & newValue
+    End If
+    hdc = CanvasOpenHDC(cnvMousePointer)
+    Call DrawSizedImage(newValue, 0, 0, 32, 32, hdc)
+    Call CanvasCloseHDC(cnvMousePointer, hdc)
+    If (theFile <> "") Then Call Kill(theFile)
 End Property
 
 '=========================================================================
@@ -177,15 +193,6 @@ Public Sub Create()
 
     On Error Resume Next
 
-    Dim cursor As Long
-    If (mainMem.mouseCursor = 1) Then
-        'Show the cursor
-        cursor = 0
-    Else
-        'Don't show the cursor!
-        cursor = LoadResPicture(101, vbResCursor).handle
-    End If
-
     hwnd = createHostWindow( _
                                m_createX / Screen.TwipsPerPixelX, _
                                m_createY / Screen.TwipsPerPixelY, _
@@ -195,8 +202,8 @@ Public Sub Create()
                                m_createCaption, _
                                App.hInstance, _
                                WINDOWS_CLASS, _
-                               cursor _
-                                        )
+                               LoadResPicture(101, vbResCursor).handle _
+                                                                         )
 
     'Flag the window has been created
     m_created = True

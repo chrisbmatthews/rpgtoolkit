@@ -152,6 +152,7 @@ Module=modToolkitMDI; modules\modToolkitMDI.bas
 Module=toolkitTKZip; modules\toolkitTKZip.bas
 Form=forms\LAYERTIL.FRM
 Form=forms\frmTutorial.frm
+Form=forms\frmMouseCursor.frm
 ResFile32="toolkit3.RES"
 IconForm="frmMain"
 Startup="Sub Main"

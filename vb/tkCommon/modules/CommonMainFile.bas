@@ -64,7 +64,10 @@ Public Type TKMain
     colordepth As Byte                'color depth
     gameSpeed As Byte                 'speed which game runs at
     pixelMovement As Byte             'pixel movement (1 / 0)
-    mouseCursor As Byte               'show mouse cursor?
+    mouseCursor As String             'mouse cursor to use
+    hotSpotX As Byte                  'x hot spot on mouse
+    hotSpotY As Byte                  'y hot spot on mouse
+    transpColor As Long               'transparent color on cursor
 End Type
 
 '=========================================================================
@@ -183,7 +186,7 @@ Private Sub upgradeBattleSystem()
 
                     'It's trans3 and the DLL is supposed to already be registered
                     'but it's not-- make it happen
-                    Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
+                    Call ExecCmd("regsvr32 /s " & chr(34) & fullPath & chr(34))
 
                     'Now setup the plugin for usage
                     Call setupVBPlugin(fullPath)
@@ -360,21 +363,38 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                 .colordepth = BinReadByte(num)
             End If
 
-            If minorVer >= 4 Then
+            If (minorVer >= 4) Then
                 .gameSpeed = BinReadByte(num)
                 .pixelMovement = BinReadByte(num)
             Else
                 .gameSpeed = 2
             End If
-            
-            If minorVer >= 5 Then
-                .mouseCursor = BinReadByte(num)
+
+            If (minorVer < 6) Then
+                If (minorVer = 5) Then
+                    If (BinReadByte(num) = 1) Then
+                        .mouseCursor = "TK DEFAULT"
+                    Else
+                        .mouseCursor = ""
+                    End If
+                Else
+                    .mouseCursor = "TK DEFAULT"
+                End If
+                .hotSpotX = 0
+                .hotSpotY = 0
             Else
-                .mouseCursor = 1
+                .mouseCursor = BinReadString(num)
+                .hotSpotX = BinReadByte(num)
+                .hotSpotY = BinReadByte(num)
+                .transpColor = BinReadLong(num)
+            End If
+
+            If (.mouseCursor = "TK DEFAULT") Then
+                .transpColor = RGB(255, 0, 0)
             End If
 
         Close num
-    
+
         If minorVer <= 2 Then
             'old version 2 mainfile
             'move plugins into the project folder...
@@ -531,7 +551,7 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT MAIN")    'Filetype
         Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 5)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
+        Call BinWriteInt(num, 6)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
         Call BinWriteInt(num, 1)    'registered
         Call BinWriteString(num, "NOCODE")            'No reg code
     
@@ -595,7 +615,10 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         
         Call BinWriteByte(num, theMain.gameSpeed)
         Call BinWriteByte(num, theMain.pixelMovement)
-        Call BinWriteByte(num, theMain.mouseCursor)
+        Call BinWriteString(num, theMain.mouseCursor)
+        Call BinWriteByte(num, theMain.hotSpotX)
+        Call BinWriteByte(num, theMain.hotSpotY)
+        Call BinWriteLong(num, theMain.transpColor)
         
     Close num
 
@@ -649,8 +672,11 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .cursorSelectSound = ""
         .cursorCancelSound = ""
         .useJoystick = 1
-        .mouseCursor = 0
+        .mouseCursor = "TK DEFAULT"
         .pixelMovement = 0
         .gameSpeed = 2
+        .hotSpotX = 0
+        .hotSpotY = 0
+        .transpColor = RGB(255, 0, 0)
     End With
 End Sub

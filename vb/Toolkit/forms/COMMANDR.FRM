@@ -33,10 +33,10 @@ Begin VB.Form commandRef
       TabIndex        =   3
       Top             =   480
       Width           =   855
-      _extentx        =   1508
-      _extenty        =   661
-      Object.width           =   360
-      caption         =   "OK"
+      _ExtentX        =   661
+      _ExtentY        =   661
+      Object.Width           =   360
+      Caption         =   "OK"
    End
    Begin Toolkit.TKTopBar topBar 
       Height          =   480
@@ -44,10 +44,10 @@ Begin VB.Form commandRef
       TabIndex        =   2
       Top             =   0
       Width           =   4335
-      _extentx        =   7646
-      _extenty        =   847
-      Object.width           =   4335
-      caption         =   "Command Reference"
+      _ExtentX        =   7646
+      _ExtentY        =   847
+      Object.Width           =   4335
+      Caption         =   "Command Reference"
    End
    Begin VB.TextBox description 
       BeginProperty Font 
@@ -132,6 +132,7 @@ Private Sub Form_Load()
     Call LocalizeForm(Me)
     Dim num As Long
     num = FreeFile()
+    Set TopBar.theForm = Me
     Open helpPath$ + ObtainCaptionFromTag(DB_QuickRefFile, resourcePath$ + m_LangFile) For Input As #num
         Do Until EOF(num)
             If UCase$(fread(num)) = ":COMMAND" Then
