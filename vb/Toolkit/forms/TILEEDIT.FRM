@@ -411,7 +411,7 @@ Public ignoreDeactivate As Boolean
 '!NEW! For the changecolor function
 Private bchangecolor As Integer
 
-Dim fromActivate As Boolean
+Private fromActivate As Boolean
 '========================================================================
 ' Identify type of form
 '========================================================================
