@@ -947,6 +947,9 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     'Make sure start has a value
     start = 1
 
+    'Set array depth at 0
+    arrayDepth = 0
+
     'Loop over each charater, backwards
     For a = (begin - 1) To 1 Step -1
         'Get a character
@@ -961,7 +964,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
             Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "(", ")"
                 'It's a divider
-                If (Not ignore) Then
+                If ((Not ignore) And (arrayDepth = 0)) Then
                     start = a + 1
                     Exit For
                 End If
@@ -970,6 +973,14 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                 'Found a quote
                 ignore = (Not ignore)
                 spacesOK = False
+
+            Case "["
+                'Entering array
+                arrayDepth = arrayDepth + 1
+
+            Case "]"
+                'Leaving array
+                arrayDepth = arrayDepth - 1
 
             Case Else
                 'Not a space, so they aren't okay anymore
