@@ -365,9 +365,11 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
     'First, test for programs:
     For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
         If boardList(activeBoardIndex).theData.programName$(t) <> "" Then
+        
             runIt = 1
             'OK, how is it activated?
             If boardList(activeBoardIndex).theData.activationType(t) = 0 Then
+            
                 'we step on it.
                 If val(boardList(activeBoardIndex).theData.progX(t)) = pos.x And _
                     val(boardList(activeBoardIndex).theData.progY(t)) = pos.y And _
@@ -375,29 +377,60 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                     'all right! we stepped on it!
                     toRet = runprgYN(t)
                 End If
+                
             ElseIf boardList(activeBoardIndex).theData.activationType(t) = 1 Then
-                'ah! we press the actiavtion key!
+            
+                'ah! we press the activation key!
                 xx = pos.x
                 yy = pos.y
+                
+                'Check if we're facing in the right direction, and we're one step
+                'away from the tile. For pixel movement, this corresponds to standing
+                'the minimum fraction away, or on.
+                'No cases for diagonals, or isometrics! Use pending.direction?
+                
+                'Edit: now using passPos rather than the pos from RoundCoords()
                 Select Case UCase(pos.stance)
-                    Case "WALK_S"
-                        yy = pos.y + 1
-                    Case "WALK_W"
-                        xx = pos.x - 1
                     Case "WALK_N"
-                        yy = pos.y - 1
+                        xx = pos.x
+                        If usingPixelMovement Then
+                            yy = Round(passPos.y)
+                        Else
+                            yy = passPos.y - 1
+                        End If
+                        
+                    Case "WALK_S"
+                        xx = pos.x
+                        yy = Int(passPos.y) + 1
+                        
                     Case "WALK_E"
-                        xx = pos.x + 1
+                        xx = Int(passPos.x) + 1
+                        yy = -Int(-passPos.y)
+                        
+                    Case "WALK_W"
+                        xx = -Int(-passPos.x) - 1
+                        yy = -Int(-passPos.y)
                 End Select
-                If (boardList(activeBoardIndex).theData.progX(t) = xx And boardList(activeBoardIndex).theData.progY(t) = yy And boardList(activeBoardIndex).theData.progLayer(t) = pos.l) _
-                   Or (boardList(activeBoardIndex).theData.progX(t) = pos.x And boardList(activeBoardIndex).theData.progY(t) = pos.y) Then
+                
+                If ( _
+                        boardList(activeBoardIndex).theData.progX(t) = xx _
+                    And boardList(activeBoardIndex).theData.progY(t) = yy _
+                    And boardList(activeBoardIndex).theData.progLayer(t) = pos.l) _
+                Or ( _
+                        boardList(activeBoardIndex).theData.progX(t) = pos.x _
+                    And boardList(activeBoardIndex).theData.progY(t) = pos.y _
+                    ) Then
+                    
+                    'If [Next to] Or [On] tile.
+                        
                     If keyWaitState = mainMem.Key Then
                         'yes, we pressed the right key
                         toRet = runprgYN(t)
                     End If
                 End If
-            End If
-        End If
+                
+            End If '(.activationType(t) = 0)
+        End If '(.programName$(t) <> "")
     Next t
 
     If usingPixelMovement() Then
@@ -418,35 +451,57 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 'OK, how is it activated?
                 If boardList(activeBoardIndex).theData.itmActivationType(t) = 0 Then
                     'we step on it.
-                    If itmPos(t).x = pos.x _
-                        And itmPos(t).y = pos.y And _
-                        itmPos(t).l = pos.l Then
+                    If _
+                            itmPos(t).x = pos.x _
+                        And itmPos(t).y = pos.y _
+                        And itmPos(t).l = pos.l Then
+                        
                         'all right! we stepped on it!
                         toRet = runItmYN(t)
+                        
                     End If
+                    
                 ElseIf boardList(activeBoardIndex).theData.itmActivationType(t) = 1 Then
+                
                     'ah! we press the actiavtion key!
                     xx = pos.x: yy = pos.y
-                    Select Case UCase$(pos.stance)
-                        Case "WALK_S":
-                            yy = pos.y + 1
-                        Case "WALK_W":
-                            xx = pos.x - 1
-                        Case "WALK_N":
-                            yy = pos.y - 1
-                        Case "WALK_E":
-                            xx = pos.x + 1
-                    End Select
+                    
+                    'Edit: now using passPos rather than the pos from RoundCoords()
+                    Select Case UCase(pos.stance)
+                        Case "WALK_N"
+                            xx = pos.x
+                            If usingPixelMovement Then
+                                yy = Round(passPos.y)
+                            Else
+                                yy = passPos.y - 1
+                            End If
+                            
+                        Case "WALK_S"
+                            xx = pos.x
+                            yy = Int(passPos.y) + 1
+                            
+                        Case "WALK_E"
+                            xx = Int(passPos.x) + 1
+                            yy = -Int(-passPos.y)
+                            
+                        Case "WALK_W"
+                            xx = -Int(-passPos.x) - 1
+                            yy = -Int(-passPos.y)
+                            
+                        End Select
+                    
                     If itmPos(t).x = xx And itmPos(t).y = yy And itmPos(t).l = pos.l Then
                         If keyWaitState = mainMem.Key Then
                             'yes, we pressed the right key
                             toRet = runItmYN(t)
                         End If
                     End If
-                End If
-            End If
-        End If
+                    
+                End If '(.itmActivationType(t) = 0)
+            End If '(.itmName$(t) <> "")
+        End If '(.BoardYN = 1)
     Next t
+
 
     If usingPixelMovement() Then
         'If we're using pixel movement then restore the old item positions

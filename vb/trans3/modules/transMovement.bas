@@ -1953,51 +1953,88 @@ Public Function roundCoords( _
                                                                           ) As PLAYER_POSITION
 
     '=============================================
-    'Rounds player coordinates [KSNiloc]
+    'Rounds player coordinates [KSNiloc/Delano]
     '=============================================
     
     'Called by programTest, passing in the target co-ordinates after (pixel) movement.
     
+    'We want programs to trigger when it *appears* that the sprite is in far enough onto the
+    'tile to trigger it.
+    'Sprite size will vary widely, but we assume 32px wide, with "feet" at the very base of
+    'the sprite.
+    'Triggering will act differently for horizontal and vertical movement.
+    '   Horizontally, the position of the base is well-defined, and it can be clearly seen
+    '   when a player is aligned with the tile (y = 0.25 -> 1.00 == 4 quarters.)
+    '   Vertically, it depends on the width of the player. Assuming 32px, the player will
+    '   straddle the trigger tile from x = -0.25 -> 0.75 == 7 quarters, but if we disregard
+    '   the first on either side, that leaves x = -0.75 -> 0.5 == 4 quarters which is better.
+    '
+    '   This does however lead to inconsistencies when walking onto tiles from different
+    '   directions: walking up the side of a tile @ x = -0.25 or x = 0.75 won't trigger,
+    '   whilst walking on the same spots horizontally will trigger.
+    '
+    '   There are also problems with diagonals: the corner sectors won't trigger because
+    '   their co-ords correspond to other trigger spots.
+    '
+    '   Trigger programs run only once per tile by only running when first entering the tile.
+    '   Decimal checks on the co-ords ensure this.
+    
     Dim pos As PLAYER_POSITION
     pos = passPos
     
-
+    Dim dx As Double, dy As Double
+    dx = 0      'Set zeros in case we don't find anything.
+    dy = 0
+    
     If boardIso() Then
     
     Else
-        'Non-isometric.
+        'Standard.
         Select Case linkDirection
-
-            Case LINK_NORTH
-                pos.x = Round(pos.x)
-                pos.y = Int(pos.y)
-
-            Case LINK_SOUTH
-                pos.x = Round(pos.x)
-                pos.y = -Int(-pos.y)
-
-            Case LINK_EAST
-                pos.x = -Int(-pos.x)
-                pos.y = Round(pos.y)
-
-            Case LINK_WEST
-                pos.x = Int(pos.x)
-                pos.y = Round(pos.y)
-
-            'Case LINK_NE
+        
+            'First, check East-West.
+            Case MV_EAST, MV_NE, MV_SE
             
-            'Case LINK_NW
+                If onlyDecimal(pos.x) = movementSize Then
+                    dx = -Int(-pos.x)
+                End If
+                
+            Case MV_WEST, MV_NW, MV_SW
             
-            'Case LINK_SE
-            
-            'Case LINK_SW
-
-            Case Else
-                pos.x = Round(pos.x)
-                pos.y = Round(pos.y)
-
+                If onlyDecimal(pos.x) = 1 - movementSize Then
+                    dx = Int(pos.x)
+                End If
+                
         End Select
-
+        Select Case linkDirection
+                
+            'Now check North-South. Overwrite dx for diagonals if found.
+            Case MV_NORTH, MV_NE, MV_NW
+            
+                If Int(pos.y) = pos.y Then
+                    dx = Round(pos.x)
+                End If
+                
+            Case MV_SOUTH, MV_SE, MV_SW
+            
+                If onlyDecimal(pos.y) = movementSize Then
+                    dx = Round(pos.x)
+                End If
+                
+            Case MV_EAST, MV_WEST
+                'None, but to prevent them in Case Else.
+                
+            Case Else
+            
+                dx = Round(pos.x)
+                pos.y = Round(pos.y)
+                
+        End Select
+        
+        'All cases, assign what we've calculated.
+        pos.x = dx
+        pos.y = -Int(-pos.y)
+    
     End If
 
     roundCoords = pos
@@ -2035,24 +2072,32 @@ Public Function ObtainTileType( _
     'typetile = boardList(activeBoardIndex).theData.tiletype(testX, testY, testLayer)
     
     Dim first As Byte, second As Byte
+    first = NORMAL: second = NORMAL
+
     With boardList(activeBoardIndex).theData
         Select Case theLink
             Case LINK_NORTH:
-                first = .tiletype(Int(testX), Int(testY), testLayer)
-                second = .tiletype(-Int(-testX), Int(testY), testLayer)
+                'first = .tiletype(Int(testX), Int(testY), testLayer)  'To stay away!
+                'second = .tiletype(-Int(-testX), Int(testY), testLayer)
+                first = .tiletype(Int(testX), -Int(-testY), testLayer) 'To approach walls.
+                second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
             Case LINK_SOUTH:
                 first = .tiletype(Int(testX), -Int(-testY), testLayer)
                 second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
             Case LINK_EAST:
                 first = .tiletype(-Int(-testX), -Int(-testY), testLayer)
-                second = .tiletype(-Int(-testX), Int(testY), testLayer)
+                'second = .tiletype(-Int(-testX), Int(testY), testLayer)    'To stay away!
             Case LINK_WEST:
                 first = .tiletype(Int(testX), -Int(-testY), testLayer)
-                second = .tiletype(Int(testX), Int(testY), testLayer)
+                'second = .tiletype(Int(testX), Int(testY), testLayer)      'To stay away!
+                
+            'Problems if approaching walls.
             Case LINK_NE:
-                typetile = .tiletype(-Int(-testX), Int(testY), testLayer)
+                typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
+                'second = .tiletype(-Int(-testX), -Int(-testY), testLayer)
             Case LINK_NW:
-                typetile = .tiletype(Int(testX), Int(testY), testLayer)
+                typetile = .tiletype(Int(testX), -Int(-testY), testLayer)
+                'second = .tiletype(-Int(-testX), Int(testY), testLayer)
             Case LINK_SE:
                 typetile = .tiletype(-Int(-testX), -Int(-testY), testLayer)
             Case LINK_SW:
@@ -2061,7 +2106,7 @@ Public Function ObtainTileType( _
     End With
     
     Dim a As Byte
-    For a = 1 To 18
+    For a = SOLID To STAIRS8
         If first = a Or second = a Then
             typetile = a
             Exit For
@@ -2118,49 +2163,50 @@ Public Function ObtainTileType( _
     If boardIso() Then
         'Check if the tiles above and below the movement are solid.
         'We get the location with respect to the *test* (target) co-ordinates.
-        Select Case theLink
-            Case LINK_NORTH:
-                If testY Mod 2 = 0 Then
-                    'Even y
-                    leftTile = boardList(activeBoardIndex).theData.tiletype(testX - 1, testY + 1, testLayer)
-                    rightTile = boardList(activeBoardIndex).theData.tiletype(testX, testY + 1, testLayer)
-                Else
-                    'Odd y
-                    leftTile = boardList(activeBoardIndex).theData.tiletype(testX, testY + 1, testLayer)
-                    rightTile = boardList(activeBoardIndex).theData.tiletype(testX + 1, testY + 1, testLayer)
-                End If
-            Case LINK_SOUTH:
-                If testY Mod 2 = 0 Then
-                    'Even y
-                    leftTile = boardList(activeBoardIndex).theData.tiletype(testX - 1, testY - 1, testLayer)
-                    rightTile = boardList(activeBoardIndex).theData.tiletype(testX, testY - 1, testLayer)
-                Else
-                    'Odd y
-                    leftTile = boardList(activeBoardIndex).theData.tiletype(testX, testY - 1, testLayer)
-                    rightTile = boardList(activeBoardIndex).theData.tiletype(testX + 1, testY - 1, testLayer)
-                End If
-            Case LINK_EAST:
-                If testY Mod 2 = 0 Then
-                    'Even y
-                    aboveTile = boardList(activeBoardIndex).theData.tiletype(testX - 1, testY - 1, testLayer)
-                    belowTile = boardList(activeBoardIndex).theData.tiletype(testX - 1, testY + 1, testLayer)
-                Else
-                    'Odd y
-                    aboveTile = boardList(activeBoardIndex).theData.tiletype(testX, testY - 1, testLayer)
-                    belowTile = boardList(activeBoardIndex).theData.tiletype(testX, testY + 1, testLayer)
-                End If
-             Case LINK_WEST:
-                If testY Mod 2 = 0 Then
-                    'Even y
-                    aboveTile = boardList(activeBoardIndex).theData.tiletype(testX, testY - 1, testLayer)
-                    belowTile = boardList(activeBoardIndex).theData.tiletype(testX, testY + 1, testLayer)
-                Else
-                    'Odd y
-                    aboveTile = boardList(activeBoardIndex).theData.tiletype(testX + 1, testY - 1, testLayer)
-                    belowTile = boardList(activeBoardIndex).theData.tiletype(testX + 1, testY + 1, testLayer)
-                End If
-        End Select
-
+        With boardList(activeBoardIndex).theData
+            Select Case theLink
+                Case LINK_NORTH:
+                    If testY Mod 2 = 0 Then
+                        'Even y
+                        leftTile = .tiletype(testX - 1, testY + 1, testLayer)
+                        rightTile = .tiletype(testX, testY + 1, testLayer)
+                    Else
+                        'Odd y
+                        leftTile = .tiletype(testX, testY + 1, testLayer)
+                        rightTile = .tiletype(testX + 1, testY + 1, testLayer)
+                    End If
+                Case LINK_SOUTH:
+                    If testY Mod 2 = 0 Then
+                        'Even y
+                        leftTile = .tiletype(testX - 1, testY - 1, testLayer)
+                        rightTile = .tiletype(testX, testY - 1, testLayer)
+                    Else
+                        'Odd y
+                        leftTile = .tiletype(testX, testY - 1, testLayer)
+                        rightTile = .tiletype(testX + 1, testY - 1, testLayer)
+                    End If
+                Case LINK_EAST:
+                    If testY Mod 2 = 0 Then
+                        'Even y
+                        aboveTile = .tiletype(testX - 1, testY - 1, testLayer)
+                        belowTile = .tiletype(testX - 1, testY + 1, testLayer)
+                    Else
+                        'Odd y
+                        aboveTile = .tiletype(testX, testY - 1, testLayer)
+                        belowTile = .tiletype(testX, testY + 1, testLayer)
+                    End If
+                 Case LINK_WEST:
+                    If testY Mod 2 = 0 Then
+                        'Even y
+                        aboveTile = .tiletype(testX, testY - 1, testLayer)
+                        belowTile = .tiletype(testX, testY + 1, testLayer)
+                    Else
+                        'Odd y
+                        aboveTile = .tiletype(testX + 1, testY - 1, testLayer)
+                        belowTile = .tiletype(testX + 1, testY + 1, testLayer)
+                    End If
+            End Select
+        End With
         If (leftTile = SOLID Xor rightTile = SOLID) Or (aboveTile = SOLID Xor belowTile = SOLID) Then
             'Block the movement if one adajecent tile is solid, but not both (Xor).
             'Two solid tiles suggests the player should be able to pass between the tiles.
