@@ -114,7 +114,10 @@ int APIENTRY RPGCGetLitVarByteLen(const char *pStrVarName, const HEAP_HANDLE hea
 	if (pStrVarName == NULL || p == NULL) 
 		return 0;
 
-	return p->litVars[pStrVarName].theByteLen;
+	if (p->numVars.count(strVarName) > 0)
+		return p->litVars[pStrVarName].theByteLen;
+	else
+		return 0;
 
 }
 
