@@ -426,17 +426,21 @@ int APIENTRY RPGCInStrOutsideQuotes(int start, VB_STRING pText, VB_STRING pFind)
 
 	inlineString text = initVbString(pText);	//text to look in
 	inlineString find = initVbString(pFind);	//sub-string to find
-	inlineString chr(1);						//a character
+	inlineString chr(find.len());				//a character
+	inlineString part(1);						//another character
 	bool ignore = false;						//within quotes?
 
 	//loop over each character
     for (int chrIdx = start; chrIdx <= text.len(); chrIdx++)
 	{
 
-		//grab a character
+		//grab some characters
 		chr = text.mid(chrIdx, find.len());
 
-		if (chr.left(1) == QUOTE)
+		//grab its first character
+		part = chr.left(1);
+
+		if (part == QUOTE)
 			//found a quote
 			ignore = (!ignore);
 
