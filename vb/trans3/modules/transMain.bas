@@ -42,8 +42,7 @@ Public host As CDirectXHost             ' DirectX host window
 '=======================================================================
 Private m_renderCount As Long           ' Count of GS_MOVEMENT state loops
 Private m_renderTime As Double          ' Cumulative GS_MOVEMENT state loop time
-
-Private m_testingPRG As Boolean         'Are we testing a program?
+Private m_testingPRG As Boolean         ' Are we testing a program?
 
 '=======================================================================
 ' Average time for one loop in the GS_MOVEMENT gamestate
@@ -406,9 +405,9 @@ Private Sub gameLogic()
     End Select
 
     ' Time a render
-    If renderOccured Then
+    If (renderOccured) Then
         loopTime = Timer() - loopTime
-        If loopTime < 1 / 4 Then
+        If (loopTime < 1 / 4) Then
             ' No machine should render slower than this, so > 1/4 would be anomalous, and
             ' would unbalance the average (at least early on).
             m_renderTime = m_renderTime + loopTime
@@ -509,11 +508,11 @@ Public Sub setupMain(): On Error Resume Next
     ' Set initial game speed
     Call gameSpeed(getGameSpeed(mainMem.gameSpeed))
 
-    'Get the last gAvgTime from the registry.
+    ' Get the last gAvgTime from the registry
     m_renderCount = 10
     m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime", -1)) * m_renderCount
 
-    If m_renderTime <= 0 Then
+    If (m_renderTime <= 0) Then
         ' Do a bad estimate of the fps.
         m_renderTime = Timer()
         Dim i As Long
@@ -539,8 +538,8 @@ Public Sub setupMain(): On Error Resume Next
 
     ' Set up these before the start program runs, in case movement occurs before the
     ' start board loads
-    selectedPlayer = 0          'Set to use player 0 as walking graphics
-    facing = SOUTH              'Start him facing south
+    selectedPlayer = 0          ' Set to use player 0 as walking graphics
+    facing = SOUTH              ' Start him facing south
 
     ' Hide all players except the walking graphic one
     For i = 0 To UBound(showPlayer)
@@ -598,8 +597,8 @@ End Sub
 '=======================================================================
 Private Sub saveSettings(): On Error Resume Next
 
-    'The average GS_MOVEMENT gamestate loop time.
-    If (Not m_testingPRG) And (gAvgTime > 0) Then
+    ' The average GS_MOVEMENT gamestate loop time
+    If ((Not (m_testingPRG)) And (gAvgTime > 0)) Then
         Call SaveSetting("RPGToolkit3", "Trans3", "gAvgTime", CStr(Round(gAvgTime, 5)))
     End If
 
