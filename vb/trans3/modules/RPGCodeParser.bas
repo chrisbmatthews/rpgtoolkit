@@ -199,7 +199,7 @@ Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional B
     signs(19) = "`="  '[Faero] Binary exclusive or
     signs(20) = "%="  '[Faero] Modulus
     If (comparison) Then
-        ReDim Preserve signs(21)
+        ReDim Preserve signs(23)
         signs(21) = "<"
         signs(22) = ">"
         signs(23) = "~"
@@ -321,11 +321,11 @@ Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
          part$ = Mid$(use$, p, 1)
         If part$ <> " " Then val2$ = val2 & part$
     Next p
-    
+
     If (Right(val1, 1) <> "!" And Right(val1, 1) <> "$") Then
         val1 = val1 & "!"
     End If
-    
+
     If equ = "" Then
         'If only one value was passed, check if it equals 1
         equ = ">="
