@@ -315,6 +315,21 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             If (InStr(1, prg.program(lineIdx), "(")) Then
                 ' Found a method
                 If (Not inStruct) Then
+                    ' Check if the method is right here
+                    Dim methodCheckIdx As Long
+                    methodCheckIdx = lineIdx
+                    Do
+                        methodCheckIdx = methodCheckIdx + 1
+                        If (prg.program(methodCheckIdx) <> "") Then
+                            If (prg.program(methodCheckIdx) = "{") Then
+                                ' The method's body is right here
+                                Call addMethodToPrg(prg.classes.classes(classIdx).strName & "::" & GetMethodName(prg.program(methodCheckIdx)), methodCheckIdx, prg)
+                            Else
+                                ' Leave this loop
+                                Exit Do
+                            End If
+                        End If
+                    Loop
                     If (scope = "private") Then
                         Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePrivate)
                     Else
