@@ -5794,7 +5794,7 @@ Sub ReturnMethodRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'Call debugger("Error: ReturnMethod variable not found!--" + text$)
         
         aa = getValue(dataUse$, lit$, num, theProgram)
-        If aa = 0 Then
+        If aa = DT_NUM Then
             methodReturn.dataType = DT_NUM
             methodReturn.num = num
         Else

@@ -130,21 +130,22 @@ Option Explicit
 
 Private iconPath As String
 
-Public Sub CreateEXE(ByVal file As String)
+'==========================================================================
+'Compiles the currently loaded project [KSNiloc]
+'==========================================================================
+Private Sub CreateEXE(ByVal file As String)
 
     On Error Resume Next
 
-    '==========================================================================
-    'Compiles the currently loaded project [KSNiloc]
-    '==========================================================================
+    Call SaveSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, file)
 
-    CreatePakFile TempDir & "temp2.tpk"
+    Call CreatePakFile(TempDir & "temp2.tpk")
 
     Dim RC4 As New clsRC4
     RC4.Key = "TK3 EXE HOST"
     RC4.EncryptFile TempDir & "temp2.tpk", TempDir & "temp.tpk", True
 
-    FileCopy App.path & "\exeHost.dll", TempDir & "tkTempExe2"
+    Call FileCopy(App.path & "\exeHost.dll", TempDir & "tkTempExe2")
 
     Dim files(1 To 5) As String
 
@@ -154,38 +155,36 @@ Public Sub CreateEXE(ByVal file As String)
     files(4) = TempDir & "temp.tpk"
     files(5) = App.path & "\audiere.dll"
 
-    addToSelfExtract TempDir & "tkTempExe2", _
-                     files(5), _
-                     TempDir & "tkTempExe5"
+    Call addToSelfExtract(TempDir & "tkTempExe2", _
+                          files(5), _
+                          TempDir & "tkTempExe5")
 
-    addToSelfExtract TempDir & "tkTempExe5", _
-                     files(4), _
-                     TempDir & "tkTempExe4"
+    Call addToSelfExtract(TempDir & "tkTempExe5", _
+                          files(4), _
+                          TempDir & "tkTempExe4")
 
-    addToSelfExtract TempDir & "tkTempExe4", _
-                     files(3), _
-                     TempDir & "tkTempExe3"
-                     
-    addToSelfExtract TempDir & "tkTempExe3", _
-                     files(2), _
-                     TempDir & "tkTempExe6"
-                     
-    addToSelfExtract TempDir & "tkTempExe6", _
-                     files(1), _
-                     file
+    Call addToSelfExtract(TempDir & "tkTempExe4", _
+                           files(3), _
+                           TempDir & "tkTempExe3")
 
-    Kill TempDir & "temp.tpk"
-    Kill TempDir & "temp2.tpk"
-    Kill TempDir & "tkTempExe"
-    Kill TempDir & "tkTempExe2"
-    Kill TempDir & "tkTempExe3"
-    Kill TempDir & "tkTempExe4"
-    Kill TempDir & "tkTempExe5"
-    Kill TempDir & "tkTempExe6"
+    Call addToSelfExtract(TempDir & "tkTempExe3", _
+                          files(2), _
+                          TempDir & "tkTempExe6")
+
+    Call addToSelfExtract(TempDir & "tkTempExe6", _
+                          files(1), _
+                          file)
+
+    Call Kill(TempDir & "temp.tpk")
+    Call Kill(TempDir & "temp2.tpk")
+    Call Kill(TempDir & "tkTempExe")
+    Call Kill(TempDir & "tkTempExe2")
+    Call Kill(TempDir & "tkTempExe3")
+    Call Kill(TempDir & "tkTempExe4")
+    Call Kill(TempDir & "tkTempExe5")
+    Call Kill(TempDir & "tkTempExe6")
 
 End Sub
-
-
 
 Private Sub cmdChange_Click()
 
@@ -294,6 +293,7 @@ Private Sub Form_Load()
     Command2.MouseIcon = Images.MouseLink
     Set TopBar.theForm = Me
     Call LocalizeForm(Me)
+    Text1.Text = GetSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, "")
 End Sub
 
 

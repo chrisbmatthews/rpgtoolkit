@@ -12,6 +12,7 @@ Public mainNeedUpdate As Boolean
 
 Public Const MAX_GAMESPEED = 4
 
+
 ''''''''''''''''''''''project data'''''''''''''''''''''''''
 
 Public loadedMainFile As String

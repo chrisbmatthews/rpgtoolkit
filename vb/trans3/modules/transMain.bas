@@ -189,12 +189,27 @@ Private Function getMainFilename() As String
 
     End If
 
-    'If we're running from a single file, the project is in this directory
-    If runningAsEXE Or pakFileRunning Then
-        projectPath = ""
-    End If
+    Call correctPaths
 
 End Function
+
+'=========================================================================
+' Correct game paths
+'=========================================================================
+Private Sub correctPaths()
+
+    On Error Resume Next
+
+    'If we're running from a single file, the project is in this directory
+    If (runningAsEXE) Or (pakFileRunning) Then
+        projectPath = ""
+        currentDir = TempDir() & "TKCache\"
+    End If
+
+    'Make sure we're still in the right directory
+    Call ChDir(currentDir)
+
+End Sub
 
 '=======================================================================
 ' Init some common stuff
@@ -372,6 +387,7 @@ Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call initGraphics(testingPRG)
     Call DXClearScreen(0)
     Call DXRefresh
+    Call correctPaths
     Call InitPlugins
     Call BeginPlugins
     Call startMenuPlugin

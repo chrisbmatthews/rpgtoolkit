@@ -39,11 +39,11 @@ End Function
 Public Function PakLocate(ByVal file As String) As String
 
     On Error Resume Next
-    
+
     #If isToolkit = 1 Then
         Dim pakFileRunning As Boolean
     #End If
-    
+
     If Not (pakFileRunning) Then
         'hup! We're not even mounted onto a pakfile!
         '(we're running straight off the disk)
@@ -55,16 +55,9 @@ Public Function PakLocate(ByVal file As String) As String
     'if it's found in the cache, return it's location.
     'else, obtain it from the pakfile, put it in the cache and
     'return its location
-    
+
     #If isToolkit = 0 Then
-    
-        If fileExists(PakTempPath & file) Then
-            PakLocate = PakTempPath & file
-        Else
-            Call ZIPExtract(file, PakTempPath & file)
-            PakLocate = PakTempPath & file
-        End If
-        
+        PakLocate = PakTempPath & file
     #End If
 
 End Function

@@ -260,10 +260,10 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         errorBranch = oldErrorHandler
 
         theProgram.programPos = oldPos
-    
+
         'set up return value...
         retval = methodReturn
-    
+
         'Clear our variables from pointer list
         For t = 1 To number
             For se = theOne To topList

@@ -100,7 +100,6 @@ Public Sub DeletePakTemp()
     'Get the location of the temp directory
     If PakTempPath = "" Then
         PakTempPath = TempDir() & "TKCache\"
-        projectPath = PakTempPath
     End If
 
     'Kill it all!!! (:P)
@@ -154,23 +153,20 @@ End Sub
 Public Sub setupPakSystem(ByVal thePakFile As String)
 
     On Error Resume Next
-    
+
     If Not PAKTestSystem() Then
         gGameState = GS_QUIT
         Exit Sub
     End If
-    
+
     'setup the pakfile system using the pakfile
     PakFileMounted = thePakFile
     pakFileRunning = True
     Call DeletePakTemp
     Call CreatePakTemp
-    
+
     'Let's make this a lot less 'painful'... extract the files now...
     Call extractDir(thePakFile, TempDir & "tkcache\")
-
-    'Now open it 'normally'...
-    Call ZIPOpen(thePakFile)
 
 End Sub
 

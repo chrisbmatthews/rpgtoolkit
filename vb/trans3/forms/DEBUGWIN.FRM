@@ -74,7 +74,8 @@ Private Sub Form_Load()
     Else
         With Me
             .Top = Screen.height - .height
-            .Left = Screen.Width - .Width
+            .Left = Screen.width - .width
         End With
     End If
+    DoEvents
 End Sub
