@@ -225,6 +225,14 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     End If
 
+    ' If this is *not* a __thiscall
+    If (hObject = 0) Then
+
+        ' Push a null onto the stack
+        Call increaseNestle(0, theProgram)
+
+    End If
+
     ' Get the 'whole' method
     theMethod = theProgram.methods(i)
 
@@ -381,6 +389,14 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     ' Kill the local scope
     Call RemoveHeapFromStack(theProgram)
+
+    ' If this was not a __thiscall
+    If (hObject = 0) Then
+
+        ' Remove the null from the stack
+        Call decreaseNestle(theProgram)
+
+    End If
 
 End Sub
 
@@ -2459,7 +2475,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
 
         Case "SETMWINTRANSLUCENCY"
-            Call setMwinTranslucencyrpg(splice, theProgram)
+            Call setMwinTranslucencyRpg(splice, theProgram)
             DoSingleCommand = increment(theProgram)
             Exit Function
 

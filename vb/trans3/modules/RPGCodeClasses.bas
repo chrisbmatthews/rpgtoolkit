@@ -197,6 +197,8 @@ End Function
 '=========================================================================
 Public Function checkOverrideName(ByRef theClass As RPGCODE_CLASS, ByRef theMethod As RPGCodeMethod, ByRef prg As RPGCodeProgram) As String
 
+    On Error Resume Next
+
     ' Loop variables
     Dim scopeIdx As Long, idx As Long
 
@@ -296,6 +298,8 @@ End Function
 '=========================================================================
 Public Function classFromName(ByVal strClass As String, ByRef prg As RPGCodeProgram) As RPGCODE_CLASS
 
+    On Error Resume Next
+
     ' Capitalize strClass
     strClass = UCase$(strClass)
 
@@ -315,6 +319,8 @@ End Function
 ' Determine if one class is a type of another
 '=========================================================================
 Public Function classIsKindOf(ByRef theClass As RPGCODE_CLASS, ByVal strClass As String, ByRef prg As RPGCodeProgram, ByRef lngPrecison As Long) As Boolean
+
+    On Error Resume Next
 
     ' Capitalize strClass
     strClass = UCase$(strClass)
@@ -358,6 +364,8 @@ End Function
 ' Cause one class to inherit another
 '=========================================================================
 Private Sub deriveClass(ByVal classIdx As Long, ByVal toInherit As String, ByRef prg As RPGCodeProgram)
+
+    On Error Resume Next
 
     Const SCOPE_PUBLIC = 0      ' Public scope
     Const SCOPE_PRIVATE = 1     ' Private scope
@@ -473,6 +481,8 @@ End Sub
 ' Read all data on classes from a program
 '=========================================================================
 Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
+
+    On Error Resume Next
 
     Const SCOPE_PUBLIC = 0      ' Public scope
     Const SCOPE_PRIVATE = 1     ' Private scope
@@ -1458,6 +1468,8 @@ End Sub
 ' Free an object
 '=========================================================================
 Public Sub freeObject(ByVal hObject As Long)
+
+    On Error Resume Next
 
     ' Make sure it's a real object
     If Not (isObject(hObject)) Then
