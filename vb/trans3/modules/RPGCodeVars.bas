@@ -78,7 +78,7 @@ End Function
 '=========================================================================
 ' Evaluate an equation (Asimir & KSNiloc)
 '=========================================================================
-Private Function equEvaluate(ByVal text As String) As Double
+Private Function equEvaluate(ByVal Text As String) As Double
 
     On Error Resume Next
 
@@ -114,14 +114,14 @@ Private Function equEvaluate(ByVal text As String) As Double
     operatorIdx = -1
 
     ' Eat spaces, replace "(-" with "(-1*", and encase string in ()s
-    text = replace(replace(replace("(" & text & ")", vbTab, vbNullString), " ", vbNullString), "(-", "(-1*")
+    Text = replace(replace(replace("(" & Text & ")", vbTab, vbNullString), " ", vbNullString), "(-", "(-1*")
 
     ' Loop over each character
-    For idx = 1 To Len(text)
+    For idx = 1 To Len(Text)
 
         ' Grab two characters
-        char = Mid$(text, idx, 1)
-        char2 = Mid$(text, idx + 1, 1)
+        char = Mid$(Text, idx, 1)
+        char2 = Mid$(Text, idx + 1, 1)
 
         ' Set valid flag to false
         isValid = False
@@ -136,8 +136,8 @@ Private Function equEvaluate(ByVal text As String) As Double
             ' See if adding it to the next character will make
             ' a valid number
             isValid = ( _
-                          isNumber(char & Mid$(text, idx + 1, 1)) And _
-                          (Mid$(text, idx - 1, 1) <> ")") _
+                          isNumber(char & Mid$(Text, idx + 1, 1)) And _
+                          (Mid$(Text, idx - 1, 1) <> ")") _
                                                            )
         Else
             ' Else, check if adding this character to the current
@@ -152,7 +152,7 @@ Private Function equEvaluate(ByVal text As String) As Double
             num = num & char
             If (char = "-") Then
                 ' If it was a negative sign, then remove it
-                text = Mid$(text, 1, idx - 1) & "0" & Mid$(text, idx + 1)
+                Text = Mid$(Text, 1, idx - 1) & "0" & Mid$(Text, idx + 1)
             End If
         Else
             ' If we have a number, then we've reached its end
@@ -286,7 +286,7 @@ End Sub
 '=========================================================================
 ' Determines type of text passed in
 '=========================================================================
-Public Function dataType(ByVal text As String, ByRef prg As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True, Optional ByRef isEquation As Boolean) As RPGC_DT
+Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True, Optional ByRef isEquation As Boolean) As RPGC_DT
 
     On Error Resume Next
 
@@ -310,14 +310,14 @@ Public Function dataType(ByVal text As String, ByRef prg As RPGCodeProgram, Opti
         signs(13) = ">>"
 
         ' Replace "-x" with "0 - x"
-        text = replace(text, "-", "0-")
+        Text = replace(Text, "-", "0-")
 
         ' Remove brackets from the text for this test
-        text = replace(replace(text, ")", vbNullString), "(", vbNullString)
+        Text = replace(replace(Text, ")", vbNullString), "(", vbNullString)
 
         ' Split up the text
         Dim parts() As String, delimiters() As String
-        parts = multiSplit(text, signs, delimiters, True)
+        parts = multiSplit(Text, signs, delimiters, True)
 
         ' Check if it's an equation
         isEquation = (UBound(parts))
@@ -345,10 +345,10 @@ Public Function dataType(ByVal text As String, ByRef prg As RPGCodeProgram, Opti
     Dim lit As String, num As Double, hClass As Long
 
     ' Trim up text
-    text = Trim$(replace(text, vbTab, vbNullString))
+    Text = Trim$(replace(Text, vbTab, vbNullString))
 
     ' Try to change the text to a double
-    ret = CDbl(text)
+    ret = CDbl(Text)
 
     If Not (errors) Then
         ' If we lived through that then it's a number, hands down!
@@ -360,7 +360,7 @@ Public Function dataType(ByVal text As String, ByRef prg As RPGCodeProgram, Opti
     On Error Resume Next
 
     ' Check the TDC
-    Select Case Right$(text, 1)
+    Select Case Right$(Text, 1)
 
         Case "$"
             ' Literal type declaration character
@@ -378,9 +378,9 @@ Public Function dataType(ByVal text As String, ByRef prg As RPGCodeProgram, Opti
 
     ' Check for quotes in the text
     Dim idx As Long, depth As Long
-    For idx = 1 To Len(text)
+    For idx = 1 To Len(Text)
 
-        Select Case Mid$(text, idx, 1)
+        Select Case Mid$(Text, idx, 1)
 
             Case """"
                 If (depth = 0) Then
@@ -403,7 +403,7 @@ Public Function dataType(ByVal text As String, ByRef prg As RPGCodeProgram, Opti
     Next idx
 
     ' At this point I'm going to check for user defined casts
-    If (getVariable(text & "!", lit, num, prg) = DT_NUM) Then
+    If (getVariable(Text & "!", lit, num, prg) = DT_NUM) Then
         ' It turned out numerical... that's good :)
         If (num) Then
             ' We got a number, to boot
@@ -430,8 +430,8 @@ Public Function dataType(ByVal text As String, ByRef prg As RPGCodeProgram, Opti
     End If
 
     ' Check for numerical var without its sign
-    If (numVarExists(text, prg.heapStack(prg.currentHeapFrame)) Or _
-        numVarExists(text, globalHeap)) Then
+    If (numVarExists(Text, prg.heapStack(prg.currentHeapFrame)) Or _
+        numVarExists(Text, globalHeap)) Then
 
         ' It's a numerical var
         dataType = DT_NUM
@@ -515,7 +515,7 @@ End Function
 '=========================================================================
 ' RPGCode interface with variables
 '=========================================================================
-Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgram, Optional ByRef pLit As String, Optional ByRef pNum As Double, Optional ByVal solveType As RPGC_DT = DT_VOID)
+Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgram, Optional ByRef pLit As String, Optional ByRef pNum As Double, Optional ByVal solveType As RPGC_DT = DT_VOID)
 
     On Error Resume Next
 
@@ -537,14 +537,14 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
     If (solveType <> DT_VOID) Then
         ' We'll pass the value out in a param
         noVar = True
-        text = "x=" & text
+        Text = "x=" & Text
         dType = solveType
     End If
 
     If Not (noVar) Then ' If there's a var
 
         ' Get the destination variable and remove unwanted characters
-        Destination = parseArray(replace(replace(replace(GetVarList(text, 1), "#", vbNullString), " ", vbNullString), vbTab, vbNullString), theProgram)
+        Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", vbNullString), " ", vbNullString), vbTab, vbNullString), theProgram)
         Dim rdtdc As String
         rdtdc = RightB$(Destination, 2)
         If ((rdtdc <> "!") And (rdtdc <> "$")) Then
@@ -573,22 +573,22 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
     End If
 
     Dim oldText As String
-    oldText = text
+    oldText = Text
 
     If ((dType = DT_NUM) Or (dType = DT_VOID)) Then
         ' If we have a numerical variable then add to
         ' the string to evaluate (prevents some errors)
-       text = text & " +0+0"
+       Text = Text & " +0+0"
     End If
 
     ' Check what type of conjuction we have
-    equal = MathFunction(text, 1)
+    equal = MathFunction(Text, 1)
 
     ' Remove the conjuction from the text
-    text = replace(text, equal, "=")
+    Text = replace(Text, equal, "=")
 
     ' Get the number of tokens we have
-    number = ValueNumber(text)
+    number = ValueNumber(Text)
 
     ' Create an array to hold the tokens
     ReDim valueList(number) As String
@@ -597,7 +597,7 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
     For tokenIdx = 2 To number
 
         ' Get the token
-        valueList(tokenIdx) = Trim$(GetVarList(text, tokenIdx))
+        valueList(tokenIdx) = Trim$(GetVarList(Text, tokenIdx))
 
         ' We need to get the data type
         If ((dType = DT_VOID) And (tokenIdx = 2)) Then
@@ -647,10 +647,10 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
                     Call SetVariable(Destination, destNum - 1, theProgram)
                     Exit Sub
 
-                Case "+=", "-=", "*=", "/=", "=", "|=", "&=", "`=", "%="
+                Case "+=", "-=", "*=", "/=", "=", "|=", "&=", "`=", "%=", "<<=", ">>="
 
                 Case Else
-                    Call debugger("Error: Invalid conjunction-- " & equal & " -- " & text)
+                    Call debugger("Error: Invalid conjunction-- " & equal & " -- " & Text)
                     Exit Sub
 
             End Select
@@ -667,7 +667,7 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
                 ReDim nulled(number) As Boolean, bIsVar(number) As Boolean
                 For tokenIdx = 2 To number
                     ' Get the conjuction here
-                    conjunctions(tokenIdx) = MathFunction(text, tokenIdx)
+                    conjunctions(tokenIdx) = MathFunction(Text, tokenIdx)
                     ' Get the value of the token
                     Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram, , bIsVar(tokenIdx))
                     ' If this isn't the first token
@@ -839,7 +839,7 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
 
         Case Else       'INVALID DESTINATION VARIABLE
                         '----------------------------
-            Call debugger("Error: Value on left must be a valid variable-- " & text)
+            Call debugger("Error: Value on left must be a valid variable-- " & Text)
 
     End Select
 
@@ -848,7 +848,7 @@ End Sub
 '=========================================================================
 ' Gets the value of the text passed
 '=========================================================================
-Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True, Optional ByRef bWasVar As Boolean) As RPGC_DT
+Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram, Optional ByVal allowEquations As Boolean = True, Optional ByRef bWasVar As Boolean) As RPGC_DT
 
     On Error Resume Next
 
@@ -866,7 +866,7 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
 
         ' Get type of the equation
         Dim isEquation As Boolean
-        equType = dataType(text, theProgram, True, isEquation)
+        equType = dataType(Text, theProgram, True, isEquation)
 
         ' Make sure it's an equation
         If (isEquation) Then
@@ -874,11 +874,11 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
             ' Evaluate the equation
             If ((equType = DT_LIT) Or (equType = DT_STRING)) Then
                 ' Literal equation
-                Call variableManip(text, theProgram, lit, , DT_LIT)
+                Call variableManip(Text, theProgram, lit, , DT_LIT)
                 getValue = DT_LIT
             Else
                 ' Numerical equation
-                Call variableManip(text, theProgram, , num, DT_NUM)
+                Call variableManip(Text, theProgram, , num, DT_NUM)
                 getValue = DT_NUM
             End If
 
@@ -890,7 +890,7 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
     Else
 
         ' Get the data type
-        equType = dataType(text, theProgram, False)
+        equType = dataType(Text, theProgram, False)
 
     End If
 
@@ -900,7 +900,7 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
         Case DT_NUM         'NUMERICAL VARIABLE
                             '------------------
 
-            If getVariable(text, litA, numA, theProgram) = DT_NUM Then
+            If getVariable(Text, litA, numA, theProgram) = DT_NUM Then
                 ' Found one!
                 num = numA
             End If
@@ -910,7 +910,7 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
         Case DT_LIT         'LITERAL VARIABLE
                             '----------------
 
-            If getVariable(text, litA, numA, theProgram) = DT_LIT Then
+            If getVariable(Text, litA, numA, theProgram) = DT_LIT Then
                 ' Found one!
                 lit = litA
             End If
@@ -921,11 +921,11 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
                             '------
 
             ' Get the length of the text
-            Length = Len(text)
+            Length = Len(Text)
 
             ' Check if text is in quotes
             For p = 1 To Length
-                If Mid$(text, p, 1) = ("""") Then
+                If Mid$(Text, p, 1) = ("""") Then
                     checkIt = True
                     Exit For
                 End If
@@ -934,13 +934,13 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
             If (checkIt) Then
                 ' It is!
                 For p = 1 To Length
-                    If Mid$(text, p, 1) = ("""") Then
+                    If Mid$(Text, p, 1) = ("""") Then
                         newPos = p
                         Exit For
                     End If
                 Next p
                 For p = (newPos + 1) To (Length)
-                    part = Mid$(text, p, 1)
+                    part = Mid$(Text, p, 1)
                     If ((part = ("""")) Or (LenB(part) = 0)) Then
                         lit = sendText
                         getValue = DT_LIT
@@ -952,18 +952,18 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
             Else
                 ' Try for an object
                 Dim noArray As String
-                noArray = Mid$(text, 1, InStr(1, text, "[") - 1)
+                noArray = Mid$(Text, 1, InStr(1, Text, "[") - 1)
                 If (LenB(noArray)) Then
                     ' Use stuff before "["
                     Call getVariable(noArray & "!", litA, numA, theProgram)
                 Else
                     ' Use the text in its entirety
-                    Call getVariable(text & "!", litA, numA, theProgram)
+                    Call getVariable(Text & "!", litA, numA, theProgram)
                 End If
                 If (numA) Then
                     If (isObject(CLng(numA), theProgram)) Then
                         bWasVar = True
-                        If (getVariable(text, litA, numA, theProgram) = DT_NUM) Then
+                        If (getVariable(Text, litA, numA, theProgram) = DT_NUM) Then
                             num = numA
                             getValue = DT_NUM
                         Else
@@ -971,11 +971,11 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
                             getValue = DT_LIT
                         End If
                     Else
-                        lit = text
+                        lit = Text
                         getValue = DT_LIT
                     End If
                 Else
-                    lit = text
+                    lit = Text
                     getValue = DT_LIT
                 End If
             End If
@@ -983,7 +983,7 @@ Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As
         Case DT_NUMBER      'NUMBER
                             '------
 
-            num = CDbl(text)
+            num = CDbl(Text)
             getValue = DT_NUM
 
     End Select
