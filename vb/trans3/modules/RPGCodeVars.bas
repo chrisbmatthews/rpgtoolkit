@@ -739,24 +739,24 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
 
     On Error Resume Next
 
-    Dim numA As Double      'Numerical value
-    Dim litA As String      'Literal value
-    Dim p As Long           'For loop control variable
-    Dim Length As Long      'Length of text
-    Dim part As String      'A character
-    Dim checkIt As Boolean  'In quotes?
-    Dim newPos As Long      'New position
-    Dim sendText As String  'Text to return
-    Dim equTyp As RPGC_DT   'Type of equation
+    Dim numA As Double      ' Numerical value
+    Dim litA As String      ' Literal value
+    Dim p As Long           ' For loop control variable
+    Dim Length As Long      ' Length of text
+    Dim part As String      ' A character
+    Dim checkIt As Boolean  ' In quotes?
+    Dim newPos As Long      ' New position
+    Dim sendText As String  ' Text to return
+    Dim equTyp As RPGC_DT   ' Type of equation
 
-    'Switch on the data type
+    ' Switch on the data type
     Select Case dataType(Text, equTyp)
 
         Case DT_NUM         'NUMERICAL VARIABLE
                             '------------------
 
             If getVariable(Text, litA, numA, theProgram) = DT_NUM Then
-                'Found one!
+                ' Found one!
                 num = numA
             End If
             getValue = DT_NUM
@@ -765,7 +765,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                             '----------------
 
             If getVariable(Text, litA, numA, theProgram) = DT_LIT Then
-                'Found one!
+                ' Found one!
                 lit = litA
             End If
             getValue = DT_LIT
@@ -773,10 +773,10 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
         Case DT_STRING      'STRING
                             '------
 
-            'Get the length of the text
+            ' Get the length of the text
             Length = Len(Text)
 
-            'Check if text is in quotes
+            ' Check if text is in quotes
             For p = 1 To Length
                 If Mid(Text, p, 1) = Chr(34) Then
                     checkIt = True
@@ -785,7 +785,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
             Next p
 
             If (checkIt) Then
-                'It is!
+                ' It is!
                 For p = 1 To Length
                     If Mid(Text, p, 1) = Chr(34) Then
                         newPos = p
@@ -806,7 +806,13 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                 ' Try for an object
                 Dim noArray As String
                 noArray = Mid(Text, 1, InStr(1, Text, "[") - 1)
-                Call getVariable(noArray & "!", litA, numA, theProgram)
+                If (noArray <> "") Then
+                    ' Use stuff before "["
+                    Call getVariable(noArray & "!", litA, numA, theProgram)
+                Else
+                    ' Use the text in its entirety
+                    Call getVariable(Text & "!", litA, numA, theProgram)
+                End If
                 If (numA <> 0) Then
                     If (isObject(CLng(numA), theProgram)) Then
                         If (getVariable(Text, litA, numA, theProgram) = DT_NUM) Then

@@ -5586,12 +5586,14 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ReturnMethodRPG(ByVal Text$, ByRef theProgram As RPGCodeProgram)
-    '#ReturnMethod(var!)
-    'Returns value from method.
-    'if var! is not referenced in the argument list
-    'then the value becomes the return value for the current
-    'method
+Public Sub ReturnMethodRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+
+    ' ReturnMethod(var!)
+
+    ' Returns value from method.
+    ' if var! is not referenced in the argument list
+    ' then the value becomes the return value for the current
+    ' method
 
     On Error Resume Next
 

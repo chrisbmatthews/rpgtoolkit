@@ -14,8 +14,8 @@ Option Explicit
 '=========================================================================
 ' Integral variables
 '=========================================================================
-Public errorBranch As String         'label to branch to on error
-Public errorKeep As RPGCodeProgram   'program kept as a backup for error handling
+Public errorBranch As String         ' label to branch to on error
+Public errorKeep As RPGCodeProgram   ' program kept as a backup for error handling
 
 '=========================================================================
 ' Get the line a method begins on
@@ -24,19 +24,19 @@ Public Function getMethodLine(ByVal name As String, ByRef prg As RPGCodeProgram)
 
     On Error Resume Next
 
-    Dim idx As Long                 'For for loops
+    Dim idx As Long                 ' For for loops
 
-    'Make name all caps
+    ' Make name all caps
     name = Trim(UCase(name))
 
-    'Cycle through all methods in the program
+    ' Cycle through all methods in the program
     For idx = 0 To UBound(prg.methods)
         If (prg.methods(idx).name = name) Then
-            'Found it!
+            ' Found it!
             getMethodLine = prg.methods(idx).line
             Exit Function
         ElseIf (idx = UBound(prg.methods)) Then
-            'Method not in program
+            ' Method not in program
             getMethodLine = -1
             Exit Function
         End If
@@ -51,36 +51,36 @@ Public Sub addMethodToPrg(ByVal name As String, ByVal line As Long, ByRef prg As
 
     On Error Resume Next
 
-    Dim idx As Long                 'For for loops
-    Dim space As Long               'Space for entry
+    Dim idx As Long                 ' For for loops
+    Dim space As Long               ' Space for entry
 
-    'Make name all caps
+    ' Make name all caps
     name = Trim(UCase(name))
 
-    'Make space invalid
+    ' Make space invalid
     space = -1
 
-    'Cycle through all methods already in the program
+    ' Cycle through all methods already in the program
     For idx = 0 To UBound(prg.methods)
         If (prg.methods(idx).name = name) Then
-            'Already in program
+            ' Already in program
             Exit Sub
         ElseIf (prg.methods(idx).name = "") Then
-            'If we haven't found a space
+            ' If we haven't found a space
             If (space = -1) Then
-                'This is an empty space
+                ' This is an empty space
                 space = idx
             End If
         End If
     Next idx
 
     If (space = -1) Then
-        'If we get here, then there wasn't an empty space
+        ' If we get here, then there wasn't an empty space
         ReDim Preserve prg.methods(UBound(prg.methods) + 1)
         space = UBound(prg.methods)
     End If
 
-    'Now record the method
+    ' Now record the method
     prg.methods(space).name = name
     prg.methods(space).line = line
 
@@ -93,7 +93,7 @@ Public Sub AddHeapToStack(ByRef thePrg As RPGCodeProgram)
     On Error Resume Next
     thePrg.currentHeapFrame = thePrg.currentHeapFrame + 1
     If (thePrg.currentHeapFrame + 1 > UBound(thePrg.heapStack)) Then
-        'resize heap stack
+        ' Resize heap stack
         ReDim Preserve thePrg.heapStack(thePrg.currentHeapFrame * 2)
     End If
     thePrg.heapStack(thePrg.currentHeapFrame) = RPGCCreateHeap()
@@ -106,7 +106,7 @@ Public Sub PushCompileStack(ByRef thePrg As RPGCodeProgram, ByVal value As Strin
     On Error Resume Next
     thePrg.currentCompileStackIdx = thePrg.currentCompileStackIdx + 1
     If (thePrg.currentCompileStackIdx + 1 > UBound(thePrg.compilerStack)) Then
-        'resize stack
+        ' Resize stack
         ReDim Preserve thePrg.compilerStack(thePrg.currentCompileStackIdx * 2)
     End If
     thePrg.compilerStack(thePrg.currentCompileStackIdx) = value
@@ -136,11 +136,11 @@ Public Sub InitRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
     thePrg.currentHeapFrame = -1
     preErrorPos = 0
     ReDim thePrg.heapStack(1)
-    'create local heap...
+    ' Create local heap...
     Call AddHeapToStack(thePrg)
     ReDim thePrg.compilerStack(1)
     thePrg.currentCompileStackIdx = -1
-    'Init the classes array
+    ' Init the classes array
     ReDim thePrg.classes.classes(0)
     ReDim thePrg.classes.nestle(0)
 End Sub
@@ -150,7 +150,7 @@ End Sub
 '=========================================================================
 Public Sub ClearRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
     On Error GoTo skipheap
-    'clear the stack...
+    ' Clear the stack
     ReDim thePrg.methods(0)
     Dim t As Long
     For t = 0 To UBound(thePrg.heapStack)
@@ -170,63 +170,63 @@ End Sub
 '=========================================================================
 Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
-    'This sub-routine processes the file passed in and makes it readable. It returns
-    'the compiled PRG.
+    ' This sub-routine processes the file passed in and makes it readable. It returns
+    ' the compiled PRG.
 
     On Error Resume Next
 
-    If Not fileExists(file) Then
-        'File doesn't exist-- bail!
+    If (Not fileExists(file)) Then
+        ' File doesn't exist-- bail!
         Exit Function
     End If
 
-    Dim p As Long                   'Ongoing length of program
-    Dim num As Long                 'File number
-    Dim theLine As String           'Line read from file
-    Dim thePrg As RPGCodeProgram    'Return value
-    Dim c(2) As String              'Delimiter array
-    Dim lines() As String           'Array of lines
-    Dim uD() As String              'Delimters used
-    Dim a As Long                   'Loop control variables
-    Dim buildLine As String         'Whole line we're building
-    Dim buildTemp As String         'To add to the whole line
-    Dim done As Boolean             'Done?
+    Dim p As Long                   ' Ongoing length of program
+    Dim num As Long                 ' File number
+    Dim theLine As String           ' Line read from file
+    Dim thePrg As RPGCodeProgram    ' Return value
+    Dim c(2) As String              ' Delimiter array
+    Dim lines() As String           ' Array of lines
+    Dim uD() As String              ' Delimters used
+    Dim a As Long                   ' Loop control variables
+    Dim buildLine As String         ' Whole line we're building
+    Dim buildTemp As String         ' To add to the whole line
+    Dim done As Boolean             ' Done?
 
-    'Init the PRG
+    ' Init the PRG
     Call InitRPGCodeProcess(thePrg)
 
-    'Get the location in the PAK file
+    ' Get the location in the PAK file
     file = PakLocate(file)
 
-    'Get a free file number
+    ' Get a free file number
     num = FreeFile()
 
-    'Fix the problem with commands on the same line as an if(),
-    'method(), etc
+    ' Fix the problem with commands on the same line as an if(),
+    ' method(), etc
     c(0) = "{"
     c(1) = "}"
 
-    'Allow multiple commands on one line:
-    'MWin("TEST") # System.Pause()
+    ' Allow multiple commands on one line:
+    ' MWin("TEST") # System.Pause()
     c(2) = "#"
 
-    'Open the file
+    ' Open the file
     Open file For Input Access Read As num
 
-        'Dimension the .program() array...
+        ' Dimension the .program() array...
         ReDim thePrg.program(0)
 
         Do Until EOF(num)
 
-            'Read a line
+            ' Read a line
             theLine = stripComments(fread(num))
 
-            'Trim up that line...
+            ' Trim up that line...
             theLine = replaceOutsideQuotes(Trim(theLine), vbTab, "")
 
-            If Right(theLine, 1) = "_" Then
-                'This line is actually only part of a line, let's get the
-                'whole line...
+            If (Right(theLine, 1) = "_") Then
+                ' This line is actually only part of a line, let's get the
+                ' whole line...
 
                 buildLine = Trim(Mid(theLine, 1, Len(theLine) - 1))
 
@@ -250,20 +250,20 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
             End If
 
-            'Remove prefixed #
+            ' Remove prefixed #
             If (Left(theLine, 1) = "#") Then theLine = Right(theLine, Len(theLine) - 1)
 
-            'Read line if not comment
+            ' Read line if not comment
             If (Not Left(theLine, 1) = "*") And (Not Left(theLine, 2) = "//") Then
 
-                'Split that sucker like it has NEVER been split before!
+                ' Split that sucker like it has NEVER been split before!
                 lines() = multiSplit(theLine, c, uD, True)
 
-                'Now we're going to have some fun with the .program() array so
-                'make sure it'll enlarge itself...
+                ' Now we're going to have some fun with the .program() array so
+                ' make sure it'll enlarge itself...
                 On Error GoTo enlargeProgram
 
-                'Add each line to the program...
+                ' Add each line to the program...
                 For a = 0 To (UBound(lines) + 1)
 
                     If (a = UBound(lines) + 1) Then
@@ -300,37 +300,37 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
                 Next a
 
-                'Update p
+                ' Update p
                 p = UBound(thePrg.program) + 1
 
             End If
 
-            'Update length of program
+            ' Update length of program
             thePrg.Length = p
 
-        Loop '(until end of file)
+        Loop ' (until end of file)
 
     Close num
 
-    'Now cycle over each line
+    ' Now cycle over each line
     For a = 0 To UBound(thePrg.program)
         thePrg.program(a) = Trim(replaceOutsideQuotes(thePrg.program(a), "#", ""))
         If (Left(UCase(Trim(thePrg.program(a))), 6) = "METHOD") Then
-            'It's a method
+            ' It's a method
             Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
         End If
     Next a
 
-    'Splice up the classes
+    ' Splice up the classes
     Call spliceUpClasses(thePrg)
 
-    'Return the result
+    ' Return the result
     openProgram = thePrg
 
     Exit Function
 
 enlargeProgram:
-    'Uh-oh! The array is too small. We can fix that...
+    ' Uh-oh! The array is too small. We can fix that...
     ReDim Preserve thePrg.program(UBound(thePrg.program) + 1)
     Resume
 

@@ -36,6 +36,8 @@ Private Type RPGCodeMethod
     name As String                          ' Name of the method
     line As Long                            ' Line method is defined on
     override As String                      ' Name used in inheritance situations
+    isVirtual As Boolean                    ' Virtual method?
+    isPure As Boolean                       ' Pure specifier?
 End Type
 
 '=========================================================================
@@ -495,10 +497,19 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
     Dim origName As String      ' Name of method in orig case
     Dim idx As Long             ' Loop variable
     Dim pos As Long             ' Pos we're using
+    Dim isVirtual As Boolean    ' Is the method virtual?
+    Dim isPure As Boolean       ' Pure specifier?
 
     If (Text = "") Then
         ' No text, no method, no wasted time
         Exit Sub
+    End If
+
+    ' Check for 'virtual' key word
+    Dim iStrVirtual As Long
+    iStrVirtual = InStr(1, Text, "virtual", vbTextCompare)
+    If (iStrVirtual > 0) Then
+        
     End If
 
     ' Get the method's name
@@ -900,7 +911,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
     On Error Resume Next
 
     Dim hClass As Long              ' Handle to use
-    Dim retval As RPGCODE_RETURN    ' Return value
+    Dim retVal As RPGCODE_RETURN    ' Return value
 
     ' Return -1 on error
     hClass = -1
@@ -918,7 +929,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         classes(hClass).strInstancedFrom = UCase(theClass)
         classes(hClass).hClass = hClass
         Call clearObject(classes(hClass), prg)
-        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
+        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retVal, theClass)
     End If
 
     ' Return a handle to the class
@@ -984,7 +995,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
     Dim arrayDepth As Long          ' Depth in arrays
     Dim value As String             ' Value of function
-    Dim retval As RPGCODE_RETURN    ' Return value
+    Dim retVal As RPGCODE_RETURN    ' Return value
     Dim begin As Long               ' Char to begin at
     Dim char As String              ' Character(s)
     Dim spacesOK As Boolean         ' Spaces are okay?
@@ -1144,7 +1155,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
         ' Check if we're to release
         If (cmdName = "RELEASE") Then
-            Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retval, "~" & classes(hClass).strInstancedFrom)
+            Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retVal, "~" & classes(hClass).strInstancedFrom)
             Call clearObject(classes(hClass), prg)
             Call killHandle(hClass)
             classes(hClass).hClass = 0
@@ -1154,13 +1165,13 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             If (isMethodMember(cmdName, hClass, prg, outside)) Then
 
                 ' Execute the method
-                Call callObjectMethod(hClass, cLine, prg, retval, GetCommandName(cLine))
+                Call callObjectMethod(hClass, cLine, prg, retVal, GetCommandName(cLine))
 
                 ' Replace text with value the method returned
-                If (retval.dataType = DT_NUM) Then
-                    value = " " & CStr(retval.num)
-                ElseIf (retval.dataType = DT_LIT) Then
-                    value = " " & Chr(34) & retval.lit & Chr(34)
+                If (retVal.dataType = DT_NUM) Then
+                    value = " " & CStr(retVal.num)
+                ElseIf (retVal.dataType = DT_LIT) Then
+                    value = " " & Chr(34) & retVal.lit & Chr(34)
                 End If
 
             Else
@@ -1181,7 +1192,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         End If
     End If
 
-    'Internationalize
+    ' Internationalize
     value = replace(value, ",", ".")
 
     ' Complete the return string
