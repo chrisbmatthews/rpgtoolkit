@@ -127,11 +127,12 @@ void APIENTRY RPGCParseWithin(VB_STRING pText, VB_STRING startSymbol, VB_STRING 
 			//Found starting symbol, now get end symbol
 			for (l = t + 1; l <= length; l++)
 			{
+
 				part = text.mid(l, 1);
+
 				if (part == symbolStart)
-				{
 					ignoreDepth++;
-				}
+
 				else if (part == symbolEnd)
 				{
 					if (ignoreDepth == 0)
@@ -142,10 +143,10 @@ void APIENTRY RPGCParseWithin(VB_STRING pText, VB_STRING startSymbol, VB_STRING 
 					}
 					ignoreDepth--;
 				}
+
 				else
-				{
 					toRet += part;
-				}
+
 			}
 		}
 	}
