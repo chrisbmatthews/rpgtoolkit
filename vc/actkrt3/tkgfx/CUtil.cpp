@@ -41,6 +41,34 @@ inline std::string util::getExt(std::string strFile)
 	return strToRet;
 }
 
+//
+// Read a binary string
+//
+std::string util::binReadString(CONST HFILE hFile, LPOVERLAPPED ptr)
+{
+	bool bDone = false;		// Done?
+	std::string toRet;		// String to return
+	while (!bDone)
+	{
+		// Read a character
+		char chr;
+		DWORD read;
+		ReadFile(HANDLE(hFile), &chr, 1, &read, ptr);
+		ptr->Offset++;
+		if (chr == '\0')
+		{
+			// All done
+			bDone = true;
+		}
+		else
+		{
+			// Append to return string
+			toRet += chr;
+		}
+	}
+	// Return the result
+	return toRet;
+}
 
 /////////////////////////////////////////////////
 // util::upperCase (static)

@@ -14,6 +14,7 @@
 #include "CBoard.h"			// Stuff for this file
 #include "tkgfx.h"			// Main gfx routines
 #include "CUtil.h"			// Utility functions
+#include "CTileAnim.h"		// Animated tiles
 
 //--------------------------------------------------------------------------
 // Get ambient red of a tile
@@ -106,6 +107,16 @@ INLINE std::string CBoard::tile(
 
 	// Clean up
 	delete [] toRet;
+
+	// Get the file's extension
+	CONST std::string strExt = util::upperCase(util::getExt(toRetStr));
+
+	// If it's an animated tile
+	if (strExt.compare("TAN") == 0)
+	{
+		// Use the first frame
+		return CTileAnim("tiles\\" + toRetStr).frame(1);
+	}
 
 	// Return the result
 	return toRetStr;

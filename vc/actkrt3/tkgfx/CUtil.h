@@ -14,6 +14,9 @@
 
 #include <string>
 
+#define WIN32_MEAN_AND_LEAN
+#include <windows.h>
+
 namespace util
 {
 	std::string getExt(std::string strFile);
@@ -25,6 +28,7 @@ namespace util
 	int red(long rgb);
 	int green(long rgb);
 	int blue(long rgb);
+	std::string binReadString(CONST HFILE hFile, LPOVERLAPPED ptr);
 };
 
 #endif
