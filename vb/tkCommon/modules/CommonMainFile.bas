@@ -375,7 +375,11 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                 .gameSpeed = BinReadByte(num)
                 .pixelMovement = BinReadByte(num)
             Else
-                .gameSpeed = 2
+                .gameSpeed = 0
+            End If
+            
+            If (minorVer < 8) Then
+                Call setGameSpeed(.gameSpeed, CLng(.gameSpeed))
             End If
 
             If (minorVer < 6) Then
@@ -697,7 +701,7 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .useJoystick = 1
         .mouseCursor = "TK DEFAULT"
         .pixelMovement = 0
-        .gameSpeed = 2
+        .gameSpeed = 0
         .hotSpotX = 0
         .hotSpotY = 0
         .transpcolor = RGB(255, 0, 0)
