@@ -828,12 +828,12 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 				LPDWORD CONST pSurfSrc = reinterpret_cast<LPDWORD>(srcSurface.lpSurface);
 
 				// For the y axis
-				for (INT yy = ySrc; yy < height; yy++)
+				for (INT yy = 0; yy < height; yy++)
 				{
 
 					// Calculate index into destination and source, respectively
 					INT idxd = (yy + y) * nPixelsPerRow + x;
-					INT idx = yy * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
+					INT idx = (yy + ySrc) * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
 
 					// For the x axis
 					for (INT xx = xSrc; xx < width; xx++)
@@ -897,15 +897,15 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 				SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTemp);
 
 				// For the y axis
-				for (INT yy = ySrc; yy < height; yy++)
+				for (INT yy = 0; yy < height; yy++)
 				{
 
 					// For the x axis
-					for (INT xx = xSrc; xx < width; xx++)
+					for (INT xx = 0; xx < width; xx++)
 					{
 
 						// Get pixel on source surface
-						CONST LONG srcRGB = GetRGBPixel(&srcSurface, &ddpfDest, xx, yy);
+						CONST LONG srcRGB = GetRGBPixel(&srcSurface, &ddpfDest, xSrc + xx, ySrc + yy);
 
 						// Check for unaffected color
 						if (srcRGB == rgbUnaffectedColor)
@@ -947,12 +947,12 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 				LPWORD CONST pSurfSrc = reinterpret_cast<LPWORD>(srcSurface.lpSurface);
 
 				// For the y axis
-				for (INT yy = ySrc; yy < height; yy++)
+				for (INT yy = 0; yy < height; yy++)
 				{
 
 					// Calculate index into destination and source, respectively
 					INT idxd = (yy + y) * nPixelsPerRow + x;
-					INT idx = yy * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
+					INT idx = (yy + ySrc) * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
 
 					// For the x axis
 					for (INT xx = xSrc; xx < width; xx++)
