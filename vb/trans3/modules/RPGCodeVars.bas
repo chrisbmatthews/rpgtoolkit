@@ -291,11 +291,17 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
         Dim parts() As String, delimiters() As String
         parts = multiSplit(Text, signs, delimiters, True)
 
-        ' Assume all parts will be the same type
-        dataType = dataType(parts(0), prg, False)
-
         ' Check if it's an equation
         isEquation = (UBound(parts) <> 0)
+
+        ' Get the data type
+        Dim anotre As Boolean, dataIdx As Long
+        Do
+            ' Do the loop :P
+            anotre = True
+            dataType = dataType(parts(dataIdx), prg, False, anotre)
+            dataIdx = dataIdx + 1
+        Loop Until ((anotre) And (dataIdx >= UBound(parts)))
 
         ' Bail
         Exit Function
@@ -385,6 +391,10 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
                 ElseIf (isMethodMember("operator$", hClass, prg, outside)) Then
                     ' It's literal
                     dataType = DT_LIT
+                    Exit Function
+                ElseIf (isEquation) Then
+                    ' Flag we can't decide on this
+                    isEquation = False
                     Exit Function
                 End If
             End If
@@ -584,15 +594,68 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             End Select
 
             ' Put all the tokens into an array
-            ReDim numberUse(number) As Double
+            ReDim numberUse(number) As Double, conjunctions(number) As String
             For tokenIdx = 2 To number
+                ' Get the conjuction here
+                conjunctions(tokenIdx) = MathFunction(Text, tokenIdx)
+                ' Get the value of the token
                 Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram)
+                ' If this isn't the first token
+                If (tokenIdx <> 2) Then
+                    Call traceString(" (tokenIdx <> 2) ")
+                    ' Check for operator overloading on previous token
+                    Dim tdc As String, prevToken As String
+                    prevToken = valueList(tokenIdx - 1)
+                    tdc = Right$(prevToken, 1)
+                    If ((tdc <> "$") And (tdc <> "!")) Then
+                        ' Append a "!"
+                        prevToken = prevToken & "!"
+                        ' Get its value
+                        If (getVariable(prevToken, lit, num, theProgram) = DT_NUM) Then
+                            ' If it's not NULL
+                            If (num <> 0) Then
+                                ' See if it's an object
+                                Dim hTokenClass As Long
+                                hTokenClass = CLng(num)
+                                If (isObject(hTokenClass, theProgram)) Then
+                                    ' See if it handles said conjuction
+                                    Dim cnj As String
+                                    cnj = "operator" & conjunctions(tokenIdx - 1)
+                                    If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
+                                        ' Call the method
+                                        Call callObjectMethod(hTokenClass, cnj & "(" & CStr(numberUse(tokenIdx)) & ")", theProgram, retval, cnj)
+                                        ' Switch on returned type
+                                        Dim theVal As String
+                                        Select Case retval.dataType
+                                            Case DT_LIT: theVal = retval.lit
+                                            Case DT_NUM: theVal = CStr(retval.num)
+                                            Case DT_REFERENCE: theVal = retval.ref
+                                        End Select
+                                        ' Fill in new data
+                                        Call getValue(theVal, lit, numberUse(tokenIdx - 1), theProgram)
+                                        ' Switch on the conjuction we used
+                                        Select Case conjunctions(tokenIdx - 1)
+                                            Case "+", "-"
+                                                ' Additive identity is 0
+                                                numberUse(tokenIdx) = 0
+                                            Case "/", "*", "^", "%"
+                                                ' Multiplicative identity is 1
+                                                numberUse(tokenIdx) = 1
+                                            Case "`", "&", "|"
+                                                ' Logic identity is... ??
+                                        End Select
+                                    End If
+                                End If
+                            End If
+                        End If
+                    End If
+                End If
             Next tokenIdx
 
             ' Build the equation into a string
             Dim build As String
             For tokenIdx = 2 To number
-                build = build & numberUse(tokenIdx) & MathFunction(Text, tokenIdx)
+                build = build & numberUse(tokenIdx) & conjunctions(tokenIdx)
             Next tokenIdx
             build = Mid$(build, 1, Len(build) - 2)
 
