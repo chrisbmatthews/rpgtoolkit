@@ -505,8 +505,6 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte): On Err
     
     'Maximum number of tiles we could grab - some might be empty though.
     tileMax = tileWidth * tileHeight
-    tileNumber = 0              'Start the count.
-    tileCount = 0               'Count for the progress bar.
     
     'Assign the *Global* detail level for saving:
     detail = level
@@ -631,21 +629,20 @@ Private Sub BatchIsometric(ByVal filename As String): On Error Resume Next
         selection.Bottom = openImage.pxHeight
         
         'Increase the size of the form
-        grabForm.Width = openImage.twipWidth
-        grabForm.Height = openImage.twipHeight
-        Call Form_Resize
+        'grabForm.width = openImage.twipWidth
+        'grabForm.Height = openImage.twipHeight
+        'Call Form_Resize
         
         grabStatus.Panels(2).Text = "Selection: Whole image: "
         
         grabImage = True
+        
+        rowOffset = Abs(chkOffset.value - 1)
        
     End If
     
     'Use these later:
     edges = selection
-    
-    rowOffset = 0
-    If grabImage Then rowOffset = Abs(chkOffset.value - 1)
     
     If chkIgnore.value = 0 Then
         'Take edges into account: Add two extra tiles in each direction.
@@ -661,8 +658,6 @@ Private Sub BatchIsometric(ByVal filename As String): On Error Resume Next
     
     'Maximum number of tiles we could grab - some might be empty though.
     tileMax = 0 - Int((tileWidth * tileHeight) / -2)    'For isometrics.
-    tileNumber = 0                                      'Start the count.
-    tileCount = 0                                       'Count for the progress bar.
  
     'shortRow will either equal longRow or longRow - 1
     longRow = Int((selection.Right - selection.Left) / 64)
@@ -670,7 +665,6 @@ Private Sub BatchIsometric(ByVal filename As String): On Error Resume Next
     
     'If we can't make a tile from what we've got, exit.
     If tileWidth < 1 Or tileHeight < 1 Then Exit Sub
-    
     
     grabStatus.Panels(2).Text = grabStatus.Panels(2).Text & tileWidth & " x " & tileHeight & " = " & tileMax & " Tiles"
     
@@ -729,8 +723,8 @@ Private Sub BatchIsometric(ByVal filename As String): On Error Resume Next
             'If we're saving blank tiles.
             If chkIgnoreBlanks.value = 0 Then foundPixel = True
             
-            'If this is a mismatched row, it will not be saved.
-            If yTile Mod 2 = 0 And (xTile > shortRow) Then foundPixel = False
+            'If we're at the end of a short row, we're out of the selection, so miss the tile.
+            If (yTile Mod 2 = rowOffset) And (xTile > shortRow) Then foundPixel = False
             
             If foundPixel Then
                 'This tile isn't empty.
@@ -761,7 +755,6 @@ Private Sub BatchIsometric(ByVal filename As String): On Error Resume Next
                                      
             End If 'foundPixel.
             
-            'batchProgress.value = (tileNumber / tileMax) * 100
             batchProgress.value = (tileCount / (tileHeight * longRow)) * 100
             
         Next xTile
@@ -795,10 +788,10 @@ Private Sub chkIso_Click(): On Error Resume Next
     
     If chkIso.value = 1 Then
         cmdBatch32.Caption = "Batch Isometric"
-        picGrabbed.Width = 66 * Screen.TwipsPerPixelX       'Tile preview window.
+        picGrabbed.width = 66 * Screen.TwipsPerPixelX       'Tile preview window.
     Else
         cmdBatch32.Caption = "Batch Grab 32x32"
-        picGrabbed.Width = 33 * Screen.TwipsPerPixelX
+        picGrabbed.width = 33 * Screen.TwipsPerPixelX
     End If
     
 End Sub
@@ -980,7 +973,7 @@ Private Sub cmdReset_Click(): On Error Resume Next
     Call grabRedraw
     
     'Clear the preview box:
-    picGrabbed.Picture = LoadPicture("")
+    picGrabbed.picture = LoadPicture("")
 
 End Sub
 
@@ -1138,7 +1131,7 @@ Private Sub Form_Load(): On Error Resume Next
     picGridColor.BackColor = gridColor
     picSelectColor.BackColor = selectionColor
     
-    grab.Left = (Screen.Width - grab.Width) / 2
+    grab.Left = (Screen.width - grab.width) / 2
     grab.Top = (Screen.Height - grab.Height) / 2
     
     openImage.loaded = 0              'Set the background image to unloaded.
@@ -1152,8 +1145,8 @@ Private Sub Form_Load(): On Error Resume Next
     openTileEditorDocs(activeTile.indice).grabx1 = -1: openTileEditorDocs(activeTile.indice).grabx2 = -1
     openTileEditorDocs(activeTile.indice).graby1 = -1: openTileEditorDocs(activeTile.indice).graby2 = -1
     
-    grabStatus.Panels(1).Width = grabStatus.Width / 2
-    grabStatus.Panels(2).Width = grabStatus.Width / 2
+    grabStatus.Panels(1).width = grabStatus.width / 2
+    grabStatus.Panels(2).width = grabStatus.width / 2
     
     'Welcome message.
     
@@ -1191,22 +1184,22 @@ Private Sub Form_Resize(): On Error Resume Next
     grab.AutoRedraw = False
     
     'Set the minimum window size.
-    If grab.Width < 9000 Then grab.Width = 9000
+    If grab.width < 9000 Then grab.width = 9000
     If grab.Height < 6400 Then grab.Height = 6400
     
     'Size the grabForm picture box.
     'The vertical edges of the grabber are 120 twips. The horizontal edges total 510 twips.
     grabForm.Top = 120         'Aligned to top-left corner always.
     grabForm.Left = 120
-    grabForm.Width = grab.Width - (3 * 120)
+    grabForm.width = grab.width - (3 * 120)
     grabForm.Height = grab.Height - grabFrame.Height - 510 - 120
     
-    maxWidth = grabForm.Width - scrVertical.Width
+    maxWidth = grabForm.width - scrVertical.width
     maxHeight = grabForm.Height - scrHorizontal.Height
     
     'Centre the toolFrame, align to the bottom:
     grabFrame.Top = grabForm.Height + grabForm.Top
-    grabFrame.Left = (grab.Width - grabFrame.Width) / 2
+    grabFrame.Left = (grab.width - grabFrame.width) / 2
     
     scrVertical.Visible = False
     scrHorizontal.Visible = False
@@ -1215,7 +1208,7 @@ Private Sub Form_Resize(): On Error Resume Next
         'If an image has been loaded and successfully unloaded (will equal 1).
         
         If openImage.twipWidth <= maxWidth Then
-            grabForm.Width = openImage.twipWidth
+            grabForm.width = openImage.twipWidth
         Else
             'Image is wider than grabform.
             'Enable the horziontal scroll.
@@ -1244,23 +1237,23 @@ Private Sub Form_Resize(): On Error Resume Next
         End If
         
         grabForm.Height = (Int(grabForm.Height / (Screen.TwipsPerPixelY * 32))) * 32 * Screen.TwipsPerPixelY
-        grabForm.Width = (Int(grabForm.Width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
+        grabForm.width = (Int(grabForm.width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
         
-        grabForm.Left = (grab.Width - grabForm.Width - scrVertical.Width) / 2
+        grabForm.Left = (grab.width - grabForm.width - scrVertical.width) / 2
     End If
               
     'Align the scroll bars:
     scrVertical.Top = grabForm.Top
-    scrVertical.Left = grabForm.Width + grabForm.Left
+    scrVertical.Left = grabForm.width + grabForm.Left
     scrVertical.Height = grabForm.Height
     scrHorizontal.Top = grabForm.Height + grabForm.Top
     scrHorizontal.Left = grabForm.Left
-    scrHorizontal.Width = grabForm.Width
+    scrHorizontal.width = grabForm.width
     
     'This will scroll in tile units (32x32).
-    scrHorizontal.max = (openImage.twipWidth - grabForm.Width) / (Screen.TwipsPerPixelX * 32)
+    scrHorizontal.max = (openImage.twipWidth - grabForm.width) / (Screen.TwipsPerPixelX * 32)
     scrVertical.max = (openImage.twipHeight - grabForm.Height) / (Screen.TwipsPerPixelY * 32)
-    scrHorizontal.LargeChange = grabForm.Width / (Screen.TwipsPerPixelX * 32) - 1
+    scrHorizontal.LargeChange = grabForm.width / (Screen.TwipsPerPixelX * 32) - 1
     scrVertical.LargeChange = grabForm.Height / (Screen.TwipsPerPixelY * 32) - 1
     'scrHorizontal.value = 0
     'scrVertical.value = 0
@@ -1565,7 +1558,7 @@ Private Sub grabRedraw(): On Error Resume Next
     
     If openImage.loaded <> 1 Then
         'Clear the background.
-        grabForm.cls
+        grabForm.Cls
         Call drawGrid
         Exit Sub
     End If
@@ -1648,7 +1641,7 @@ Private Sub drawGrid(): On Error Resume Next
         ' if isometric
         If chkIso.value = 1 Then
         
-            tilesX = Int((grabForm.Width / Screen.TwipsPerPixelX) / 64)
+            tilesX = Int((grabForm.width / Screen.TwipsPerPixelX) / 64)
             tilesY = Int((grabForm.Height / Screen.TwipsPerPixelY) / 16)
             
             'Draw lines: bottom left to top right.
@@ -1670,7 +1663,7 @@ Private Sub drawGrid(): On Error Resume Next
         ' if 2d
         Else
         
-            tilesX = Int((grab.Width / Screen.TwipsPerPixelX) / 32)
+            tilesX = Int((grab.width / Screen.TwipsPerPixelX) / 32)
             tilesY = Int((grab.Height / Screen.TwipsPerPixelY) / 32)
         
             ' draw 2D grid lines
@@ -1699,7 +1692,7 @@ Private Sub drawTile(): On Error Resume Next
 
     Dim x As Integer, y As Integer, pixel As Long
     
-    picGrabbed.cls
+    picGrabbed.Cls
     picGrabbed.AutoRedraw = True
 
     If chkIso.value = 0 Then
