@@ -167,8 +167,7 @@ Public Sub upgradeBattleSystem()
 
             'Initial version 3 battle system-- needs updating
 
-            Dim newDLL As String
-            newDLL = "Game\Basic\Plugin\tk3fight.dll"
+            Const newDLL As String = "Game\Basic\Plugin\tk3fight.dll"
             If fileExists(newDLL) Then
 
                 'Backup old fight DLL

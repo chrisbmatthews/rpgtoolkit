@@ -134,7 +134,7 @@ tabErr:
         'Replaces spaces with underscores
         '=======================================================
         On Error Resume Next
-        addUnderscore = Replace(Text, " ", "_")
+        addUnderscore = replace(Text, " ", "_")
     End Function
 
     Public Function all(ByVal longColor As Long, ByVal requestedColor As Integer) As Long
@@ -445,7 +445,7 @@ tabErr:
         If file = "" Then Exit Sub
         Call openMain(file, mainMem)
         oldpath = currentDir & "\" & projectPath
-        Call tkMainForm.fillTree("", projectPath)
+        'Call tkMainForm.fillTree("", projectPath)
     End Sub
 
     Private Sub doOpenTile(ByVal file As String, ByVal doWinColor As Boolean)
@@ -1029,7 +1029,7 @@ Public Function noSpaces(ByVal Text As String) As String
     'Remove spaces from the text passed in
     '=======================================================
     On Error Resume Next
-    noSpaces = Replace(Text, " ", "")
+    noSpaces = replace(Text, " ", "")
 End Function
 
 Public Function blue(ByVal longColor As Long) As Long

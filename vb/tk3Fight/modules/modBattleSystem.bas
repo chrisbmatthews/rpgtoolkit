@@ -820,7 +820,7 @@ Public Function fightInform( _
             End If
             noNewDeaths = False
             Call renderScene
-                
+
         Case INFORM_SOURCE_ITEM     'USING ITEM
             noNewDeaths = True
             oldCnv = CBCreateCanvas(resX, resY)
