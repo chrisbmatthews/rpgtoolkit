@@ -464,11 +464,11 @@ Private Function getTransparentColor(ByVal crColor As Long) As Long: On Error Re
     
     found = True
 
-    Do Until found = False
+    Do Until (Not found)
     
         found = False
         
-        trColor = RGB(CLng(Int(256 * Rnd)), CLng(Int(256 * Rnd)), CLng(Int(256 * Rnd)))
+        trColor = RGB(CInt(256 * Rnd), CInt(256 * Rnd), CInt(256 * Rnd))
         
         For a = 0 To xRange
             For b = 0 To 32
@@ -484,7 +484,6 @@ Private Function getTransparentColor(ByVal crColor As Long) As Long: On Error Re
         
     Loop
 
-    
     'We have a colour code that isn't on the tile.
     getTransparentColor = trColor
 
@@ -942,7 +941,7 @@ Private Sub fillTile( _
     Call setUndo
     
     'ExtFloodFill doesn't like -1 for a colour, so alter the transparent colour.
-    Dim transparentColor As Long, isoColor As Long, floodTrans As Boolean
+    Dim transparentColor As Long, isoColor As Long
     transparentColor = getTransparentColor(crColor)
     Do
         isoColor = getTransparentColor(crColor)
@@ -951,12 +950,10 @@ Private Sub fillTile( _
     If crColor = -1 Then
         'Flooding transparently.
         crColor = transparentColor
-        floodTrans = True
     End If
     If clickColor = -1 Then
         'Flooding a transparent region.
         clickColor = transparentColor
-        floodTrans = True
     End If
 
     'Create a canvas
@@ -1009,9 +1006,7 @@ Private Sub fillTile( _
             tileMem(a, b) = CanvasGetPixel(cnv, a, b)
             
             'Restore the transparent colour.
-            If floodTrans Then
-                If tileMem(a, b) = transparentColor Then tileMem(a, b) = -1
-            End If
+            If tileMem(a, b) = transparentColor Then tileMem(a, b) = -1
             
         Next b
     Next a
