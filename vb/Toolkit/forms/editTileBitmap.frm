@@ -5,7 +5,6 @@ Begin VB.Form editTileBitmap
    ClientLeft      =   60
    ClientTop       =   630
    ClientWidth     =   6585
-   ControlBox      =   0   'False
    Icon            =   "editTileBitmap.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
@@ -13,7 +12,6 @@ Begin VB.Form editTileBitmap
    ScaleHeight     =   4515
    ScaleWidth      =   6585
    Tag             =   "10"
-   WindowState     =   2  'Maximized
    Begin VB.PictureBox arena 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True

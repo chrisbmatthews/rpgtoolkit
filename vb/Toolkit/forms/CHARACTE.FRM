@@ -7,7 +7,6 @@ Begin VB.Form characteredit
    ClientLeft      =   150
    ClientTop       =   435
    ClientWidth     =   7995
-   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -26,7 +25,6 @@ Begin VB.Form characteredit
    ScaleHeight     =   5295
    ScaleWidth      =   7995
    Tag             =   "3"
-   WindowState     =   2  'Maximized
    Begin VB.Frame mainFrame 
       Height          =   4935
       Left            =   120

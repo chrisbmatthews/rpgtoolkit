@@ -5,7 +5,6 @@ Begin VB.Form tileedit
    ClientLeft      =   1170
    ClientTop       =   1155
    ClientWidth     =   6555
-   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -25,7 +24,6 @@ Begin VB.Form tileedit
    ScaleHeight     =   5520
    ScaleWidth      =   6555
    Tag             =   "1636"
-   WindowState     =   2  'Maximized
    Begin VB.PictureBox tileform 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True

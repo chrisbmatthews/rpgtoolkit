@@ -6,7 +6,6 @@ Begin VB.Form grab
    ClientLeft      =   405
    ClientTop       =   435
    ClientWidth     =   9105
-   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -25,7 +24,6 @@ Begin VB.Form grab
    ScaleHeight     =   6960
    ScaleWidth      =   9105
    Tag             =   "11"
-   WindowState     =   2  'Maximized
    Begin VB.HScrollBar scrHorizontal 
       Height          =   255
       Left            =   120

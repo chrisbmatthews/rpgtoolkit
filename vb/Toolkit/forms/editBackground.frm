@@ -25,7 +25,6 @@ Begin VB.Form editBackground
    ScaleHeight     =   4890
    ScaleWidth      =   6435
    Tag             =   "4"
-   WindowState     =   2  'Maximized
    Begin VB.Frame Frame3 
       Caption         =   "Image"
       BeginProperty Font 

@@ -6,7 +6,6 @@ Begin VB.Form boardedit
    ClientLeft      =   -465
    ClientTop       =   750
    ClientWidth     =   8880
-   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "Courier New"
       Size            =   6
@@ -25,7 +24,6 @@ Begin VB.Form boardedit
    ScaleHeight     =   5715
    ScaleWidth      =   8880
    Tag             =   "2"
-   WindowState     =   2  'Maximized
    Begin VB.HScrollBar HScroll1 
       Height          =   255
       Left            =   120

@@ -6,7 +6,6 @@ Begin VB.Form config
    ClientLeft      =   45
    ClientTop       =   330
    ClientWidth     =   6540
-   ControlBox      =   0   'False
    Icon            =   "config.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
@@ -15,7 +14,6 @@ Begin VB.Form config
    ScaleHeight     =   5250
    ScaleWidth      =   6540
    Tag             =   "1823"
-   WindowState     =   2  'Maximized
    Begin VB.PictureBox Picture2 
       BorderStyle     =   0  'None
       Height          =   2775
@@ -145,9 +143,9 @@ Private Sub fillQuick(ByVal num As Long)
     qltarget.Text = configfile.quickTarget(num)
     qlenabled.value = configfile.quickEnabled(num)
     If fileExists(configfile.quickIcon$(num)) Then
-        qlicon.Picture = LoadPicture(configfile.quickIcon$(num))
+        qlicon.picture = LoadPicture(configfile.quickIcon$(num))
     Else
-        qlicon.Picture = LoadPicture("")
+        qlicon.picture = LoadPicture("")
     End If
 End Sub
 
@@ -165,7 +163,7 @@ Private Sub ShowPic()
         End If
     End If
     If f$ <> "" Then
-        Call DrawSizedImage(f$, 0, 0, wallpaperthumb.Width / Screen.TwipsPerPixelX, wallpaperthumb.Height / Screen.TwipsPerPixelY, vbPicHDC(wallpaperthumb))
+        Call DrawSizedImage(f$, 0, 0, wallpaperthumb.width / Screen.TwipsPerPixelX, wallpaperthumb.Height / Screen.TwipsPerPixelY, vbPicHDC(wallpaperthumb))
         Call vbPicRefresh(wallpaperthumb)
     End If
 End Sub
@@ -300,7 +298,7 @@ Private Sub qlicon_Click()
     i = Combo1.ListIndex
     If i = -1 Then i = 0
     configfile.quickIcon$(i) = filename$(1)
-    qlicon.Picture = LoadPicture(configfile.quickIcon$(i))
+    qlicon.picture = LoadPicture(configfile.quickIcon$(i))
     Call mainoption.fillQuick
 End Sub
 

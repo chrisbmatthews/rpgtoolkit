@@ -6,7 +6,6 @@ Begin VB.Form edititem
    ClientLeft      =   2490
    ClientTop       =   1875
    ClientWidth     =   8385
-   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -25,7 +24,6 @@ Begin VB.Form edititem
    ScaleHeight     =   5040
    ScaleWidth      =   8385
    Tag             =   "6"
-   WindowState     =   2  'Maximized
    Begin VB.Frame mainFrame 
       Height          =   4695
       Left            =   120

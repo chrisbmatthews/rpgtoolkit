@@ -6,7 +6,6 @@ Begin VB.Form tileanim
    ClientLeft      =   45
    ClientTop       =   615
    ClientWidth     =   4815
-   ControlBox      =   0   'False
    Icon            =   "tileanim.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form2"
@@ -15,7 +14,6 @@ Begin VB.Form tileanim
    ScaleHeight     =   2520
    ScaleWidth      =   4815
    Tag             =   "13"
-   WindowState     =   2  'Maximized
    Begin VB.Frame mainFrame 
       Height          =   2175
       Left            =   120

@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form editmainfile 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Project Properties (Untitled)"
@@ -8,7 +8,6 @@ Begin VB.Form editmainfile
    ClientLeft      =   90
    ClientTop       =   480
    ClientWidth     =   7515
-   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -27,7 +26,6 @@ Begin VB.Form editmainfile
    ScaleHeight     =   6030
    ScaleWidth      =   7515
    Tag             =   "7"
-   WindowState     =   2  'Maximized
    Begin VB.TextBox gametitlebox 
       BeginProperty Font 
          Name            =   "MS Sans Serif"

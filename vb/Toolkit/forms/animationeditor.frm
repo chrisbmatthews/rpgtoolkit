@@ -5,7 +5,6 @@ Begin VB.Form animationeditor
    ClientLeft      =   165
    ClientTop       =   450
    ClientWidth     =   6735
-   ControlBox      =   0   'False
    Icon            =   "animationeditor.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form2"
@@ -14,7 +13,6 @@ Begin VB.Form animationeditor
    ScaleHeight     =   5925
    ScaleWidth      =   6735
    Tag             =   "1"
-   WindowState     =   2  'Maximized
    Begin VB.PictureBox arena 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
