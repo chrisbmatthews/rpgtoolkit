@@ -7,12 +7,12 @@ Begin VB.Form characterGraphics
    ClientHeight    =   5055
    ClientLeft      =   435
    ClientTop       =   840
-   ClientWidth     =   8190
+   ClientWidth     =   8175
    Icon            =   "characterGraphics.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    ScaleHeight     =   5055
-   ScaleWidth      =   8190
+   ScaleWidth      =   8175
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1236"
@@ -227,7 +227,7 @@ Private Sub Command14_Click()
     End If
 End Sub
 
-Private Sub command2_Click()
+Private Sub Command2_Click()
     On Error Resume Next
     
     Dim idx As Long, dx As Long

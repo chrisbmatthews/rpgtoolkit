@@ -27,7 +27,7 @@ Begin VB.UserControl ctlNewBar
          TabIndex        =   13
          TabStop         =   0   'False
          Tag             =   "1403"
-         ToolTipText     =   "Create animations for battles"
+         ToolTipText     =   "Organize and prune your tilesets"
          Top             =   4560
          UseMaskColor    =   -1  'True
          Width           =   1815
@@ -244,6 +244,6 @@ Private Sub CommandDock_Click(Index As Integer)
     
 End Sub
 
-Private Sub CommandDock_MouseMove(Index As Integer, button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub CommandDock_MouseMove(Index As Integer, button As Integer, Shift As Integer, X As Single, Y As Single)
     'tkMainForm.ignoreFocus = True
 End Sub
