@@ -837,7 +837,7 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     '====================================================================
     '#ItemStep(itemNum!, x!, y!)
     'Causes itemNum! to take one step in the direction of x!,y! following
@@ -847,7 +847,7 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
     On Error Resume Next
 
-    Dim itemNum As Long, paras() As parameters, path As String
+    Dim paras() As parameters, path As String
 
     paras() = getParameters(Text, theProgram)
 
@@ -862,17 +862,17 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     End If
 
     If paras(0).dataType = DT_LIT Then
-        If (UCase$(paras(0).lit) = "TARGET" And targetType = TYPE_ITEM) Then itemNum = target
-        If (UCase$(paras(0).lit) = "SOURCE" And sourceType = TYPE_ITEM) Then itemNum = Source
+        If (UCase$(paras(0).lit) = "TARGET" And targetType = TYPE_ITEM) Then paras(0).num = target
+        If (UCase$(paras(0).lit) = "SOURCE" And sourceType = TYPE_ITEM) Then paras(0).num = Source
     End If
 
     ' Use pathFind to determine the route towards the destination
     ' Return a string and move the first tile
-    path = PathFind(itmPos(itemNum).x, _
-                    itmPos(itemNum).y, _
+    path = PathFind(itmPos(paras(0).num).x, _
+                    itmPos(paras(0).num).y, _
                     paras(1).num, _
                     paras(2).num, _
-                    itmPos(itemNum).l, _
+                    itmPos(paras(0).num).l, _
                     False, _
                     True)
 
@@ -882,7 +882,7 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     ' Take the first direction off the path
     path = Left$(path, InStr(path, ",") - 1)
 
-    Call setQueuedMovements(pendingItemMovement(itemNum).queue, path)
+    Call setQueuedMovements(pendingItemMovement(paras(0).num).queue, path)
 
     ' For ALL cases we've set up queuing.
 
@@ -896,10 +896,9 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         multiRunStatus = MR_RUNNING_MOVEMENT
 
     Else
-
         ' If not running concurrently, run the queued movements now
 
-        Do While moveItems(itemNum)
+        Do While moveItems(paras(0).num)
             Call renderNow(cnvRPGCodeScreen)
             Call renderRPGCodeScreen
             Call processEvent
@@ -4660,7 +4659,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     '====================================================================
     '#PushItem(itemNum!, path!)
     'Pushes item itemNum! along the route described by path$
@@ -4678,7 +4677,7 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     On Error Resume Next
     
-    Dim itemNum As Long, paras() As parameters
+    Dim paras() As parameters
     
     paras() = getParameters(Text, theProgram)
     
@@ -4694,8 +4693,8 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     If paras(0).dataType = DT_LIT Then
         Select Case UCase$(paras(0).lit)
-            Case "TARGET": If targetType = 1 Then itemNum = target
-            Case "SOURCE": If sourceType = 1 Then itemNum = Source
+            Case "TARGET": If targetType = 1 Then paras(0).num = target
+            Case "SOURCE": If sourceType = 1 Then paras(0).num = Source
             Case Else
                 Call debugger("PushItem() requires num! , lit$-- " & Text)
                 Exit Sub
@@ -4713,10 +4712,10 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 'Call traceString("PUSHITEM: path=" & paras(1).lit & " Len=" & Len(pendingItemMovement(itemNum).queue))
     
     'Make sure the queue isn't too long.
-    If pendingItemMovement(itemNum).queue.lngSize > 16 Then Exit Sub
+    If pendingItemMovement(paras(0).num).queue.lngSize > 16 Then Exit Sub
         'We have more than 16 movements queued up.
     
-    Call setQueuedMovements(pendingItemMovement(itemNum).queue, paras(1).lit)
+    Call setQueuedMovements(pendingItemMovement(paras(0).num).queue, paras(1).lit)
     
     'For ALL cases we've set up queuing.
     
@@ -4732,7 +4731,7 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     Else
         'If not running concurrently, run the queued movements now.
 
-        Do While moveItems(itemNum)
+        Do While moveItems(paras(0).num)
             Call renderNow(cnvRPGCodeScreen)
             Call renderRPGCodeScreen
             Call processEvent
@@ -4742,7 +4741,7 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     '================================================================
     '#Push(path! [, handle$])
     'Pushes player handle$ along the route described by path$
@@ -5732,17 +5731,17 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         Call debugger("Error: Thread data type must be literal, num!-- " + Text$)
     Else
         
-        Dim tID As Long
+        Dim tid As Long
         lit1$ = addExt(lit1$, ".prg")
-        tID = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
+        tid = createThread(projectPath & prgPath & lit1$, (num2 <> 0))
         
         If number = 3 Then
             'save value in destination var...
-            Call SetVariable(useIt3$, CStr(tID), theProgram)
+            Call SetVariable(useIt3$, CStr(tid), theProgram)
         End If
         
         retval.dataType = DT_NUM
-        retval.num = tID
+        retval.num = tid
         Exit Sub
     End If
 End Sub
@@ -7780,7 +7779,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     '==================================================================
     '#Wander(itemNum! [, restrict!])
     'Causes the item to take a step in a random (restricted) direction.
@@ -7789,7 +7788,7 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     On Error Resume Next
     
-    Dim count As Long, itemNum As Long, paras() As parameters
+    Dim count As Long, paras() As parameters
     Dim low As Long, high As Long, direction As Long, restrict As Long
 
     paras = getParameters(Text, theProgram, count)
@@ -7800,16 +7799,16 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
     If paras(0).dataType = DT_LIT Then
         Select Case UCase$(paras(0).lit)
-            Case "TARGET": If targetType = 1 Then itemNum = target
-            Case "SOURCE": If sourceType = 1 Then itemNum = Source
+            Case "TARGET": If targetType = 1 Then paras(0).num = target
+            Case "SOURCE": If sourceType = 1 Then paras(0).num = Source
             Case Else
-                Call debugger("Error: Wander data type must be num! [, num!]-- " + Text$)
+                Call debugger("Error: Wander data type must be num! [, num!]-- " & Text)
                 Exit Sub
         End Select
     End If
     If count = 2 Then
         If paras(1).dataType <> DT_NUM Then
-            Call debugger("Error: Wander data type must be num! [, num!]-- " + Text$)
+            Call debugger("Error: Wander data type must be num! [, num!]-- " & Text)
             Exit Sub
         Else
             restrict = paras(1).num
@@ -7819,7 +7818,7 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     End If
     
     'Make sure there's no more than one move stored up.
-    If pendingItemMovement(itemNum).queue.lngSize > 1 Then Exit Sub
+    If pendingItemMovement(paras(0).num).queue.lngSize > 1 Then Exit Sub
 
     restrict = inBounds(restrict, 0, 3)
        
@@ -7841,7 +7840,7 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
     'Queue system for 3.0.5
     '======================
-    Call setQueuedMovements(pendingItemMovement(itemNum).queue, CStr(direction))
+    Call setQueuedMovements(pendingItemMovement(paras(0).num).queue, CStr(direction))
     
     'For ALL cases we've set up queuing.
     
@@ -7857,7 +7856,7 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     Else
         'If not running concurrently, run the queued movements now.
 
-        Do While moveItems(itemNum)
+        Do While moveItems(paras(0).num)
             Call renderNow(cnvRPGCodeScreen)
             Call renderRPGCodeScreen
             Call processEvent
