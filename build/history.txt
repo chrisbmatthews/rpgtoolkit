@@ -1,5 +1,198 @@
 RPG TOOLKIT DEVELOPMENT SYSTEM, 3.0 HISTORY
 
+RPG Toolkit Development System 3.0.5
+Instructions and What's New
+December 24, 2004 
+Copyright 2004 by 
+Christopher Matthews and Contributors (Vampz, KSNiloc, John@aljo, Delano, Euix, Geoff, Woozy, Occasionally_Correct, faero, Shao (With their respective copyrights, released as open source))
+
+
+Toolkit Game Engine - trans3.exe
+--------------------------------
+
+Bug Fixes
+--------- 
+
++ #Push/#PushItem moved objects too fast with no control of speed. 
++ #ItemLocation sometimes returned wrong co-ordinates. 
++ Boards smaller than the screen began centred, but jumped to the top/left of the screen when scrolling started. 
++ Black boxes sometimes appeared for players/items when entering a new board. 
++ 'Under' tile transluscency problems in pixel movement fixed. 
++ Walking against a solid tile, the player didn't change direction (if he was facing a different direction to the wall). 
++ #Bold/#Italics/#Underline fixed. 
++ The message window could not always be successfully hidden with mwincls().
++ The RPGCode debugger was buggy.
++ MIDIs and WAVs didn’t work in Windows9x.
++ Literal variables could not contain the NULL character.
++ Modular music (*.it and company) would not play anywhere. 
++ Plugins could not be sent variables enables the multiplayer plugin to work). 
++ Maths that mixed variables with constants did not work. 
++ Players/items without graphics displayed as black boxes / random bitmaps. 
++ Memory leak in board background image drawing.
++ Loose code in #included programs ran sometimes. 
++ end() within ifs and the like ran regardless of the construct's outcome. 
++ Nestled if/else statements messed up. 
++ true/false could be killed. 
++ '<' and '>' didn't work in equations.
+
+New Features 
+-------------
+
+++ Rewritten movement system [by Delano]
+
++ #MultiRun can now be used to make multiple items and players move at the same time. 
+Movement begins after the closing bracket of #MultiRun. 
+e.g. 
+rpgcode: 
+
+MultiRun() 
+{ 
+     Push("n,n,ne,e,e,se,sw,w") 
+     PushItem(0, "w,w,w,sw,nw,n") 
+     PushItem(1, "s") 
+} 
+
+All movement begins at the same time, and the program waits until the last item/player finishes moving to run the next line of the program after #MultiRun. 
+
++ #Push/#PushItem in a thread no longer prevents other items/programs/players moving. 
+For instance, you can program an npc to continuously walk a set path without interrupting player movement: 
+rpgcode: 
+
+Until(forever!) 
+{ 
+     PushItem(0, "n,ne,e,se,s,sw,w,nw") 
+} 
+ 
+Such a program ran as a thread or as the "program to run whilst item is on board" will push item 0 round in circles, as if it were a wandering item. 
+-Link: http://www.toolkitzone.com/forums/viewtopic.php?t=11345 
+
++ Individual character speeds 
+Each player and item can be assigned a separate speed in the editor and through rpgcode. The speed setting is given in fractions of seconds to normalise the speed on all machines; slow machines will attempt to get as close to these times as possible, although this may result in no apparent difference in speed (between objects of different speeds) in some cases. 
+
+PlayerSpeed(player!, speed!) / ItemSpeed(item!, speed!) 
+
+#GameSpeed has not been removed. It still allows you to control the overall speed of the game, for instance: if you want characters to move faster than they have been programmed to (since all characters are now synced). 
+#GameSpeed(1 to 4) increase the overall speed, whilst #Gamespeed(-1 to -4) decrease the speed (may change). 
+-Link: http://www.toolkitzone.com/forums/viewtopic.php?t=9015 
+
++ Isometric pixel movement now works.
+
++ #Push/#PushItem can move in pixel or tile increments through #PixelMovement (also main file option):
+
+PixelMovement(usePixelMovement$ [, usePixelPush$])
+
+    - usePixelMovement$ must be either "on" or "off" (as before).
+    - usePixelPush$ must be either "on" or "off" (defaults to "off" and is ineffective in tile movement). 
+
++ Custom resolutions
+In the main file, you can specify the dimensions you want the game to run at.
+Note that some graphics cards may not be able to handle all resolutions!
+
++ Custom cursors [by Colin]
+Every game can have a custom cursor, changeable at runtime.
+The cursor can be any image type, including tiles.
+The cursor can be altered through RPGCode using the new command:
+
+MouseCursor(file$, x!, y!, r!, g!, b!)
+ 
+    -Changes the mouse cursor to an image or tile.
+    -file$: image to draw, "" will remove the cursor, "TK DEFAULT" will restore the default.
+    - x!, y!: location of the hotspot on the tile.
+    - r!, g!, b!: define the transparent colour on the image.
+
++ Object orientated programming (OOP) in RPGCode. [by Colin]
+The entire OOP system has been rewritten with full object-orientated functionality.
+For a full overview, see "RPGCode OOP Overview" in the tkz library: http://www.toolkitzone.com/library.php?mode=read&doc=64
+
++ New RPGCode commands / operators
+
+GetTextWidth(text$) / GetTextHeight(text$)
+
+    - Return the pixel width or height, respectively, of the indicated string as rendered with the current font style. [by Shao]
+
+DrawCanvasTransparent(cnv!, x!, y!, r!, g!, b!, [, width!, height! [, destCnv!]]) 
+
+    - Draws a canvas using transparency.
+    - cnv!: canvas to draw.
+    - x!, y!: location to draw to.
+    - r!, g!, b!: define the transparent colour on the canvas.
+    - width!, height!: stretch the canvas to a certain size when drawing.
+    - destCnv!: canvas to draw to, if omitted, canvas is drawn to the screen.
+
+PlayerSpeed(num!, speed!) / ItemSpeed(num!, speed!) 
+
+    - Changes the speed of an item or player num!.
+    - speed!: Walk speed, set in seconds (recommended 0.05 to 0.20).
+
+PlayerStance(num!, stance$) / #ItemStance(num!, stance$) 
+
+    - Changes the stance of an item or player (note: does not render, you must call forceRedraw()). 
+
+iif(condition, true, false) [by faero]
+
+    - Evaluates a condition and returns either the true or the false part (which must be the same type).
+
+setVolume(percent!)
+
+    - Can now set the volume of music!
+
+
++Operators
+Some new operators have been added, check this post for a list of all current RPGCode operators:
+http://www.toolkitzone.com/forums/viewtopic.php?p=137167#137167
+
+
+Toolkit Editor - toolkit3.exe
+----------------------------- 
+
+Bug Fixes 
+---------
+
++ Open editors close when opening a new project. 
++ File tree really lists alphabetically, new files appear in the tree. 
++ Advanced tileset editor no longer crashes when trying to drag the last tile in a set around its' window. 
++ "Select Color" dialog box in tile editor fixed. 
+
++ Various windows (like the RPGCode quick reference) crashed when you attempted to move them. 
++ RPGCode capitalizer removed. 
++ Faster color coding in the RPGCode editor. 
++ Tile editor sometimes opened multiple windows. 
++ RPGCode program file association didn’t work.
+
++ Open Editor right toolbar auto-collapses and button unsets. 
++ Tile Editor Undo for paintbrush tool. 
+
+New Features 
+-------------
+
++ Autotiling [by Shao] 
+aka terraforming, implemented in the board editor. Supports both 2d and iso boards, draw and eraser tools (no fill support). 
+-Link: Click here to get a head start creating autotilesets.
+
++ Overhauled graphics forms in Character / Item Editors
+Can set idle graphics for each direction and an idling delay (time before idle graphics start).
+Individual speeds for all players/items (see trans3), given in fractions of a second (recommended 0.05 to 0.20, but no requirement).
+
++ XP Styles [by Colin]
+All editors now carry the XP style, there is a new tab bar, and the old skins have been removed. Note that the toolbar buttons haven't been altered yet.
+
++ Main File Editor
+- Option to display the fps (frames per second) in the game's title bar in windowed mode.
+- Option to make #Push/#PushItem etc. move in pixel or tile increments.
+- You can leave the "Start board" field empty if you do not want to specify one.
+- Option to specify custom resolution dimensions.
+
++ In Board Information you can set a "program to run when entering board".
++ Tile shading added when using the Flood tool.
++ The Tile Grabber has an option to "ignore blank tiles".
++ Editors prompt to save unsaved work on closing.
++ Mouse cursor editor in the Main File editor (see trans3).
++ "Insert Blank Tile" tool in Advanced Tileset Editor / wider tileset windows.
++ Tileset browser on right toolbar has a grid toggle.
+
+End 3.0.5
+-------------------------------------------------------------------------------------------------
+
 RPG Toolkit Development System 3.0.4
 Instructions and What's New
 Sept 7, 2004 
