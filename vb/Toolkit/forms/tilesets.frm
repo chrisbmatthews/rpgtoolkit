@@ -127,7 +127,7 @@ Sub drawTstGrid(Optional ByVal autoRefresh As Boolean = False)
     Call vbPicAutoRedraw(tiles, autoRefresh)
     
     tilesHigh = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
-    tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
+    tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
     
     'Draw vertical lines.
     If iso.value = 0 Then
@@ -178,9 +178,9 @@ Sub redraw(Optional ByVal autoRefresh As Boolean = False)
     
     'Calculate the number of visible tiles.
     If iso.value = 0 Then
-        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
+        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
     Else
-        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 64)
+        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 64)
     End If
     tilesHigh = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
     
@@ -227,8 +227,8 @@ Private Sub Form_Load()
     On Error GoTo ErrorHandler
     
     Dim X As Integer, Y As Integer, setType As Integer
-
-    Call redrawAllTiles
+    
+    'Call redrawAllTiles
     Call LocalizeForm(Me)
     
     setFilename$ = ""
@@ -261,9 +261,9 @@ Private Sub Form_Load()
         
         'Set the scroller depending on the tileset type.
         If setType = ISOTYPE Then
-            tilesWide = (tiles.Width / Screen.TwipsPerPixelY) / 64
+            tilesWide = (tiles.width / Screen.TwipsPerPixelY) / 64
         Else
-            tilesWide = (tiles.Width / Screen.TwipsPerPixelY) / 32
+            tilesWide = (tiles.width / Screen.TwipsPerPixelY) / 32
         End If
         tilesHigh = (tiles.height / Screen.TwipsPerPixelY) / 32
         
@@ -309,7 +309,7 @@ Private Sub Form_Resize(): On Error Resume Next
     Dim tilesWide As Integer, tilesHigh As Integer
     
     'New form width in pixels
-    pixelWidth = Me.Width / Screen.TwipsPerPixelX
+    pixelWidth = Me.width / Screen.TwipsPerPixelX
     pixelHeight = Me.height / Screen.TwipsPerPixelY
     
     'Size the tile picture box can be. Take off border allowances (32px x, 64px y).
@@ -327,14 +327,14 @@ Private Sub Form_Resize(): On Error Resume Next
 
     'Set the size of the tiles picture box.
     If iso.value = 1 Then
-        tiles.Width = tilesWide * 64 * Screen.TwipsPerPixelX
+        tiles.width = tilesWide * 64 * Screen.TwipsPerPixelX
     Else
-        tiles.Width = tilesWide * 32 * Screen.TwipsPerPixelX
+        tiles.width = tilesWide * 32 * Screen.TwipsPerPixelX
     End If
     tiles.height = tilesHigh * 32 * Screen.TwipsPerPixelY
     
     'Align the scroller to the tile window.
-    tilesetBrowserScroll.Left = tiles.Left + tiles.Width
+    tilesetBrowserScroll.Left = tiles.Left + tiles.width
     tilesetBrowserScroll.height = tiles.height
     
     'Align the tools frame (under the tile box).
@@ -409,7 +409,7 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub tiles_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub tiles_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 '=========================================================
 'Mouse down on the tile area. Sets the global SetFilename$
 'which is used for opening tiles in the tile editor.
@@ -422,9 +422,9 @@ Private Sub tiles_MouseDown(button As Integer, Shift As Integer, X As Single, Y 
     
     'Calculate the number of tiles that will fit on the form.
     If iso.value = 0 Then
-        tX = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
+        tX = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
     Else
-        tX = Int((tiles.Width / Screen.TwipsPerPixelX) / 64)
+        tX = Int((tiles.width / Screen.TwipsPerPixelX) / 64)
     End If
     tY = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
     
@@ -482,9 +482,9 @@ Private Sub tilesetBrowserScroll_Change(): On Error GoTo ErrorHandler
     
     If iso.value = 0 Then
         'Not isometric.
-        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 32)
+        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 32)
     Else
-        tilesWide = Int((tiles.Width / Screen.TwipsPerPixelX) / 64)
+        tilesWide = Int((tiles.width / Screen.TwipsPerPixelX) / 64)
     End If
     tilesHigh = Int((tiles.height / Screen.TwipsPerPixelY) / 32)
     
