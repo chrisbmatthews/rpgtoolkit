@@ -1156,7 +1156,7 @@ Public Sub CallPlayerSwapRPG(ByVal Text As String, ByRef theProgram As RPGCodePr
     Call debugger("Warning: CallPlayerSwap() is temporarily unavaliable; use AddPlayer() and RemovePlayer() player!")
 End Sub
 
-Sub CharacterSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub characterSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '#CharacterSpeed(speed!)
     'changes char speed, like in the customize menu
     'speed! is 0-3
@@ -12027,4 +12027,40 @@ Public Sub shopColorsRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         End If
     Next idx
     shopColors(paras(0).num) = RGB(paras(1).num, paras(2).num, paras(3).num)
+End Sub
+
+'=========================================================================
+' ItemSpeed(num!,seconds!)
+'=========================================================================
+Public Sub itemSpeedRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+    On Error Resume Next
+    If CountData(Text) <> 2 Then
+        Call debugger("ItemSpeed() requires two parameters-- " & Text)
+        Exit Sub
+    End If
+    Dim paras() As parameters
+    paras() = GetParameters(Text, prg)
+    If (paras(0).dataType <> DT_NUM) Or (paras(1).dataType <> DT_NUM) Then
+        Call debugger("ItemSpeed() requires two numerical data elements-- " & Text)
+        Exit Sub
+    End If
+    itemMem(inBounds(paras(0).num, 0, maxItem)).speed = paras(1).num
+End Sub
+
+'=========================================================================
+' PlayerSpeed(num!,seconds!)
+'=========================================================================
+Public Sub playerSpeedRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+    On Error Resume Next
+    If CountData(Text) <> 2 Then
+        Call debugger("PlayerSpeed() requires two parameters-- " & Text)
+        Exit Sub
+    End If
+    Dim paras() As parameters
+    paras() = GetParameters(Text, prg)
+    If (paras(0).dataType <> DT_NUM) Or (paras(1).dataType <> DT_NUM) Then
+        Call debugger("PlayerSpeed() requires two numerical data elements-- " & Text)
+        Exit Sub
+    End If
+    playerMem(inBounds(paras(0).num, 0, 4)).speed = paras(1).num
 End Sub
