@@ -231,11 +231,14 @@ End Sub
 '=======================================================================
 Public Sub gameLogic()
 
-    'NOTE: This is no longer the main loop. The main
-    '      loop is now in clsDirectXHost and is called
-    '      mainEventLoop().
-
     On Error Resume Next
+
+    'This is main game logic prodeure, we want this procedure to run
+    'consistently at the same speed. We are going to acomplish this
+    'with a clock sync.
+
+    'Start the sync clock
+    Call clockStart
 
     Static checkFight As Long   'Used to track number of times fighting
                                 '*would* have been checked for if not
@@ -344,6 +347,9 @@ Public Sub gameLogic()
             Call PostQuitMessage(0)
 
     End Select
+
+    'Sync the clock
+    Call clockSync
 
 End Sub
 

@@ -16,6 +16,9 @@ Option Explicit
 ' Declarations
 '=========================================================================
 
+Public Const RENDER_FPS = 30    'Super-duper important constant; frames per
+                                'second to render
+
 Public screenWidth As Integer   'width, in twips
 Public screenHeight As Integer  'height, in twips
 Public resX As Long

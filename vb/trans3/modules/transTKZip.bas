@@ -45,7 +45,7 @@ Public Sub extractDir( _
     For fileIdx = 0 To (cnt - 1)
         perc = Int(((fileIdx + 1) / cnt) * 100)
         Call statusbar.setStatus(perc, "")
-        Call ZIPExtract(GetZipFilename(fileIdx), "")
+        Call ZIPExtract(GetZipFilename(fileIdx), extractInto & GetZipFilename(fileIdx))
     Next fileIdx
     Call ZIPClose
     Call Unload(statusbar)

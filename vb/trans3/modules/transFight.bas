@@ -479,17 +479,17 @@ Public Sub runFight( _
                                              )
 
     On Error Resume Next
-       
+
     If fightInProgress Then Exit Sub
-    
+
     'flush out the keyboard movement buffer
     Call FlushKB
-    
+
     fightInProgress = True
-    
+
     'load enemies
     Call loadEnemies(eneList, num)
-    
+
     canrun = 1
     Dim t As Long, cnt As Long
     'create enemy party...
@@ -509,7 +509,7 @@ Public Sub runFight( _
         End If
     Next t
     Call CreateEnemyParty(parties(0), eParty)
-    
+
     'create player party...
     cnt = 0
     For t = 0 To UBound(playerMem)
@@ -526,7 +526,7 @@ Public Sub runFight( _
         End If
     Next t
     Call CreatePlayerParty(parties(1), pParty, 0)
-    
+
     'play fight music
     Dim back As TKBackground
     Call openBackground(projectPath & bkgPath & bkg, back)
@@ -534,9 +534,9 @@ Public Sub runFight( _
     oldSong = musicPlaying
     boardList(activeBoardIndex).theData.boardMusic = back.bkgMusic
     Call checkMusic(True)
-           
+
     If mainMem.fightPlugin <> "" Then
-    
+
         Dim isFightPlugin As Long
         Dim plugName As String
 
