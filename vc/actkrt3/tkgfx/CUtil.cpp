@@ -3,7 +3,7 @@
 //Read LICENSE.txt for licensing info
 
 /////////////////////////////////////////////////
-// CUtil.h
+// util.h
 // Implementation for filename and path functions
 // Developed for v2.19b (Dec 2001 - Jan 2002)
 // Copyright 2002 by Christopher B. Matthews
@@ -13,8 +13,8 @@
 // Alterations Delano for 3.0.4 
 // For new isometric tile system
 //
-// CUtil::tilesetFilename
-// CUtil::tileExists
+// util::tilesetFilename
+// util::tileExists
 //===============================================
 
 
@@ -22,7 +22,7 @@
 #include "CUtil.h"
 
 /////////////////////////////////////////////////
-// CUtil::getExt (static)
+// util::getExt (static)
 //
 // Action: return the extension of a filename (without the .)
 //
@@ -30,7 +30,7 @@
 //
 // Returns: 3 character extension.
 ////////////////////////////////////////////////
-std::string CUtil::getExt(std::string strFile)
+inline std::string util::getExt(std::string strFile)
 {
 	std::string strToRet = "";
 
@@ -43,7 +43,7 @@ std::string CUtil::getExt(std::string strFile)
 
 
 /////////////////////////////////////////////////
-// CUtil::upperCase (static)
+// util::upperCase (static)
 //
 // Action: convert a string to upper case
 //
@@ -51,7 +51,7 @@ std::string CUtil::getExt(std::string strFile)
 //
 // Returns: upper case string
 ////////////////////////////////////////////////
-std::string CUtil::upperCase(std::string strString)
+inline std::string util::upperCase(std::string strString)
 {
 	std::string strToRet = "";
 
@@ -66,7 +66,7 @@ std::string CUtil::upperCase(std::string strString)
 
 ///////////////////////////////////////////////////////
 //
-// CUtil::getTileNum (static)
+// util::getTileNum (static)
 //
 // Parameters: strFilename - the filename
 //
@@ -75,7 +75,7 @@ std::string CUtil::upperCase(std::string strString)
 // Returns: the number
 //
 ///////////////////////////////////////////////////////
-int CUtil::getTileNum (std::string strFilename) 
+inline int util::getTileNum (std::string strFilename) 
 {
 	//determine tile number from tst filename
 	//ie. tileset.tst48 returns 48
@@ -104,7 +104,7 @@ int CUtil::getTileNum (std::string strFilename)
 
 ///////////////////////////////////////////////////////
 //
-// CUtil::tilesetFilename (static)
+// util::tilesetFilename (static)
 //
 // Parameters: strFilename- the filename
 //
@@ -118,7 +118,7 @@ int CUtil::getTileNum (std::string strFilename)
 //=====================================================
 ///////////////////////////////////////////////////////
 
-std::string CUtil::tilesetFilename(std::string strFilename) 
+inline std::string util::tilesetFilename(std::string strFilename) 
 {
 	//returns filename w/out the number after ext
 	std::string strToRet = "";
@@ -139,7 +139,7 @@ std::string CUtil::tilesetFilename(std::string strFilename)
 
 ///////////////////////////////////////////////////////
 //
-// CUtil::tileExists (static)
+// util::tileExists (static)
 //
 // Parameters: strFilename- the filename
 //
@@ -153,7 +153,7 @@ std::string CUtil::tilesetFilename(std::string strFilename)
 //=====================================================
 ///////////////////////////////////////////////////////
 
-bool CUtil::tileExists(std::string strFilename)
+inline bool util::tileExists(std::string strFilename)
 {
 	std::string ext = upperCase(getExt(strFilename));
 
@@ -179,7 +179,7 @@ bool CUtil::tileExists(std::string strFilename)
 
 ///////////////////////////////////////////////////////
 //
-// CUtil::rgb (static)
+// util::rgb (static)
 //
 // Parameters: red, green, blue- color
 //
@@ -188,7 +188,7 @@ bool CUtil::tileExists(std::string strFilename)
 // Returns: rgb color
 //
 ///////////////////////////////////////////////////////
-long CUtil::rgb ( int red, 
+inline long util::rgb ( int red, 
 					 int green, 
 					 int blue ) 
 {
@@ -213,7 +213,7 @@ long CUtil::rgb ( int red,
 // Returns: component
 //
 ///////////////////////////////////////////////////////
-int CUtil::red ( long rgb ) 
+inline int util::red ( long rgb ) 
 {
 	//returns red component of rgb value.
 	/*int bluecomp=(int)(rgb/65536);
@@ -227,7 +227,7 @@ int CUtil::red ( long rgb )
 	return redcomp;*/
 	return GetRValue(rgb);
 }
-int CUtil::green ( long rgb ) 
+inline int util::green ( long rgb ) 
 {
 	//returns green component of rgb value.
 	/*int bluecomp=(int)(rgb/65536);
@@ -238,7 +238,7 @@ int CUtil::green ( long rgb )
 	return greencomp;*/
 	return GetGValue(rgb);
 }
-int CUtil::blue ( long rgb ) 
+inline int util::blue ( long rgb ) 
 {
 	//returns blue component of rgb value.
 	/*int bluecomp=(int)(rgb/65536);

@@ -619,10 +619,10 @@ VOID CTile::createShading(CONST INT hdc, CONST RGBSHADE rgb, CONST INT nShadeTyp
 					if (m_pnAlphaChannel[x][y] != 0)
 					{
 						//If not transparent pixel.
-						INT r = CUtil::red(m_pnTile[x][y]) + rgb.r;
-						INT g = CUtil::green(m_pnTile[x][y]) + rgb.g;
-						INT b = CUtil::blue(m_pnTile[x][y]) + rgb.b;
-						pnTile[x][y] = CUtil::rgb(r, g, b);
+						INT r = util::red(m_pnTile[x][y]) + rgb.r;
+						INT g = util::green(m_pnTile[x][y]) + rgb.g;
+						INT b = util::blue(m_pnTile[x][y]) + rgb.b;
+						pnTile[x][y] = util::rgb(r, g, b);
 					}
 					else
 					{
@@ -755,13 +755,13 @@ VOID CTile::createShading(CONST INT hdc, CONST RGBSHADE rgb, CONST INT nShadeTyp
 						INT crColor2 = pnTile[tx+1][ty];
 						if ((m_pnAlphaChannel[tx][ty] != -1) && (m_pnAlphaChannel[tx+1][ty] != -1) && (nQuality == 1 || nQuality == 2))
 						{
-							INT r1 = CUtil::red(crColor);
-							INT g1 = CUtil::green(crColor);
-							INT b1 = CUtil::blue(crColor);
+							INT r1 = util::red(crColor);
+							INT g1 = util::green(crColor);
+							INT b1 = util::blue(crColor);
 
-							INT r2 = CUtil::red(crColor2);
-							INT g2 = CUtil::green(crColor2);
-							INT b2 = CUtil::blue(crColor2);
+							INT r2 = util::red(crColor2);
+							INT g2 = util::green(crColor2);
+							INT b2 = util::blue(crColor2);
 
 							INT ra = (r2 - r1) / 4;
 							INT ga = (g2 - g1) / 4;
@@ -769,7 +769,7 @@ VOID CTile::createShading(CONST INT hdc, CONST RGBSHADE rgb, CONST INT nShadeTyp
 
 							for (INT tempX = x; tempX < x + 4; tempX++)
 							{
-								INT col = CUtil::rgb(r1, g1, b1);
+								INT col = util::rgb(r1, g1, b1);
 								isotile[tempX][y] = col;
 
 								r1 += ra;
@@ -803,18 +803,18 @@ VOID CTile::createShading(CONST INT hdc, CONST RGBSHADE rgb, CONST INT nShadeTyp
 
 						if (c1 != -1 && c2 != -1)
 						{
-							INT r1 = CUtil::red(c1);
-							INT g1 = CUtil::green(c1);
-							INT b1 = CUtil::blue(c1);
+							INT r1 = util::red(c1);
+							INT g1 = util::green(c1);
+							INT b1 = util::blue(c1);
 
-							INT r2 = CUtil::red(c2);
-							INT g2 = CUtil::green(c2);
-							INT b2 = CUtil::blue(c2);
+							INT r2 = util::red(c2);
+							INT g2 = util::green(c2);
+							INT b2 = util::blue(c2);
 
 							INT rr = (r1 + r2) / 2;
 							INT gg = (g1 + g2) / 2;
 							INT bb = (b1 + b2) / 2;
-							medTile[xx][yy] = CUtil::rgb(rr, gg, bb);
+							medTile[xx][yy] = util::rgb(rr, gg, bb);
 						}
 						else
 						{
@@ -837,18 +837,18 @@ VOID CTile::createShading(CONST INT hdc, CONST RGBSHADE rgb, CONST INT nShadeTyp
           
 						if(c1 != -1 && c2 != -1)
 						{
-							INT r1 = CUtil::red(c1);
-							INT g1 = CUtil::green(c1);
-							INT b1 = CUtil::blue(c1);
+							INT r1 = util::red(c1);
+							INT g1 = util::green(c1);
+							INT b1 = util::blue(c1);
 
-							INT r2 = CUtil::red(c2);
-							INT g2 = CUtil::green(c2);
-							INT b2 = CUtil::blue(c2);
+							INT r2 = util::red(c2);
+							INT g2 = util::green(c2);
+							INT b2 = util::blue(c2);
 
 							INT rr = (r1 + r2) / 2;
 							INT gg = (g1 + g2) / 2;
 							INT bb = (b1 + b2) / 2;
-							smalltile[xx][yy] = CUtil::rgb(rr, gg, bb);
+							smalltile[xx][yy] = util::rgb(rr, gg, bb);
 						}
 						else
 						{
@@ -874,18 +874,18 @@ VOID CTile::createShading(CONST INT hdc, CONST RGBSHADE rgb, CONST INT nShadeTyp
 						INT c2 = isotile[x+1][y];
 						if (c1 != -1 && c2 != -1 && nQuality == 2)
 						{
-							INT r1 = CUtil::red(c1);
-							INT g1 = CUtil::green(c1);
-							INT b1 = CUtil::blue(c1);
+							INT r1 = util::red(c1);
+							INT g1 = util::green(c1);
+							INT b1 = util::blue(c1);
 
-							INT r2 = CUtil::red(c2);
-							INT g2 = CUtil::green(c2);
-							INT b2 = CUtil::blue(c2);
+							INT r2 = util::red(c2);
+							INT g2 = util::green(c2);
+							INT b2 = util::blue(c2);
 
 							INT rr = (r1 + r2) / 2;
 							INT gg = (g1 + g2) / 2;
 							INT bb = (b1 + b2) / 2;
-							smalltile[xx][yy] = CUtil::rgb(rr, gg, bb);
+							smalltile[xx][yy] = util::rgb(rr, gg, bb);
 						}
 						else
 						{
@@ -1186,15 +1186,15 @@ INT CTile::openTile(CONST std::string strFilename)
 
 	std::string strExt;
 
-	strExt = CUtil::getExt(strFilename);
-	strExt = CUtil::upperCase(strExt);
+	strExt = util::getExt(strFilename);
+	strExt = util::upperCase(strExt);
 
 	INT nSetType = 1;		//New!
 
 	if((strExt.compare("TST") == 0) || (strExt.compare("ISO") == 0))
 	{
-		INT number = CUtil::getTileNum(strFilename);
-		std::string strTstFilename = CUtil::tilesetFilename(strFilename);
+		INT number = util::getTileNum(strFilename);
+		std::string strTstFilename = util::tilesetFilename(strFilename);
 
 		m_nDetail = openFromTileSet(strTstFilename,number);
 
@@ -1464,7 +1464,7 @@ INT CTile::openFromTileSet(CONST std::string strFilename, CONST INT number)
 						else 
 						{
 							//tile[xx][yy]=rgb((INT)bbb,(INT)rrr,(INT)ggg);
-							m_pnTile[xx][yy]=CUtil::rgb((INT)rrr,(INT)ggg,(INT)bbb);
+							m_pnTile[xx][yy]=util::rgb((INT)rrr,(INT)ggg,(INT)bbb);
 							m_pnAlphaChannel[xx][yy] = 255;
 						}
 					}
@@ -1488,7 +1488,7 @@ INT CTile::openFromTileSet(CONST std::string strFilename, CONST INT number)
 						}
 						else 
 						{
-							m_pnTile[xx][yy]=CUtil::rgb((INT)rrr,(INT)ggg,(INT)bbb);
+							m_pnTile[xx][yy]=util::rgb((INT)rrr,(INT)ggg,(INT)bbb);
 							m_pnAlphaChannel[xx][yy] = 255;
 						}
 					}

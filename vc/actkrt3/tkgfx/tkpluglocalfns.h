@@ -58,8 +58,6 @@ bool bGfxCreateIsoMaskOnce = false;
 #include "callbacks.h"
 #include <stdlib.h>
 
-#define CNV_HANDLE long
-
 
 ///////////////////////////////////////////////////////
 //
@@ -1232,13 +1230,13 @@ void drawIsoTile(int hdc, int xLoc, int yLoc, int nSetType)
 				int crColor2 = tile[tx+1][ty];
 				if ((tile[tx][ty] != -1) && (tile[tx+1][ty] != -1) && (nQuality == 1 || nQuality == 2))
 				{
-					int r1 = CUtil::red(crColor);
-					int g1 = CUtil::green(crColor);
-					int b1 = CUtil::blue(crColor);
+					int r1 = util::red(crColor);
+					int g1 = util::green(crColor);
+					int b1 = util::blue(crColor);
 
-					int r2 = CUtil::red(crColor2);
-					int g2 = CUtil::green(crColor2);
-					int b2 = CUtil::blue(crColor2);
+					int r2 = util::red(crColor2);
+					int g2 = util::green(crColor2);
+					int b2 = util::blue(crColor2);
 
 					int ra = (r2 - r1) / 4;
 					int ga = (g2 - g1) / 4;
@@ -1246,7 +1244,7 @@ void drawIsoTile(int hdc, int xLoc, int yLoc, int nSetType)
 
 					for (int tempX = x; tempX < x + 4; tempX++)
 					{
-						int col = CUtil::rgb(r1, g1, b1);
+						int col = util::rgb(r1, g1, b1);
 						isotile[tempX][y] = col;
 
 						r1 += ra;
@@ -1282,18 +1280,18 @@ void drawIsoTile(int hdc, int xLoc, int yLoc, int nSetType)
 
 				if (c1 != -1 && c2 != -1)
 				{
-					int r1 = CUtil::red(c1);
-					int g1 = CUtil::green(c1);
-					int b1 = CUtil::blue(c1);
+					int r1 = util::red(c1);
+					int g1 = util::green(c1);
+					int b1 = util::blue(c1);
 
-					int r2 = CUtil::red(c2);
-					int g2 = CUtil::green(c2);
-					int b2 = CUtil::blue(c2);
+					int r2 = util::red(c2);
+					int g2 = util::green(c2);
+					int b2 = util::blue(c2);
 
 					int rr = (r1 + r2) / 2;
 					int gg = (g1 + g2) / 2;
 					int bb = (b1 + b2) / 2;
-					medTile[xx][yy] = CUtil::rgb(rr, gg, bb);
+					medTile[xx][yy] = util::rgb(rr, gg, bb);
 				}
 				else
 				{
@@ -1316,18 +1314,18 @@ void drawIsoTile(int hdc, int xLoc, int yLoc, int nSetType)
         
         if(c1 != -1 && c2 != -1)
 				{
-					int r1 = CUtil::red(c1);
-					int g1 = CUtil::green(c1);
-					int b1 = CUtil::blue(c1);
+					int r1 = util::red(c1);
+					int g1 = util::green(c1);
+					int b1 = util::blue(c1);
 
-					int r2 = CUtil::red(c2);
-					int g2 = CUtil::green(c2);
-					int b2 = CUtil::blue(c2);
+					int r2 = util::red(c2);
+					int g2 = util::green(c2);
+					int b2 = util::blue(c2);
 
 					int rr = (r1 + r2) / 2;
 					int gg = (g1 + g2) / 2;
 					int bb = (b1 + b2) / 2;
-					smalltile[xx][yy] = CUtil::rgb(rr, gg, bb);
+					smalltile[xx][yy] = util::rgb(rr, gg, bb);
 				}
 				else
 				{
@@ -1351,18 +1349,18 @@ void drawIsoTile(int hdc, int xLoc, int yLoc, int nSetType)
 				int c2 = isotile[x+1][y];
 				if (c1 != -1 && c2 != -1 && nQuality == 2)
 				{
-					int r1 = CUtil::red(c1);
-					int g1 = CUtil::green(c1);
-					int b1 = CUtil::blue(c1);
+					int r1 = util::red(c1);
+					int g1 = util::green(c1);
+					int b1 = util::blue(c1);
 
-					int r2 = CUtil::red(c2);
-					int g2 = CUtil::green(c2);
-					int b2 = CUtil::blue(c2);
+					int r2 = util::red(c2);
+					int g2 = util::green(c2);
+					int b2 = util::blue(c2);
 
 					int rr = (r1 + r2) / 2;
 					int gg = (g1 + g2) / 2;
 					int bb = (b1 + b2) / 2;
-					smalltile[xx][yy] = CUtil::rgb(rr, gg, bb);
+					smalltile[xx][yy] = util::rgb(rr, gg, bb);
 				}
 				else
 				{

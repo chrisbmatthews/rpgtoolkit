@@ -29,8 +29,6 @@
 #include <string>
 #include "CTile.h"
 
-#define CNV_HANDLE long
-
 #ifndef TKGFX_H
 #define TKGFX_H
 

@@ -14,19 +14,17 @@
 
 #include <string>
 
-
-class CUtil
+namespace util
 {
-	public:
-		static std::string getExt(std::string strFile);
-		static std::string upperCase(std::string strString);
-		static int getTileNum(std::string strFilename);
-		static std::string tilesetFilename(std::string strFilename);
-		static bool tileExists(std::string strFilename);
-		static long rgb ( int red, int green, int blue );
-		static int red ( long rgb );
-		static int green ( long rgb );
-		static int blue ( long rgb );
+	std::string getExt(std::string strFile);
+	std::string upperCase(std::string strString);
+	int getTileNum(std::string strFilename);
+	std::string tilesetFilename(std::string strFilename);
+	bool tileExists(std::string strFilename);
+	long rgb(int red, int green, int blue);
+	int red(long rgb);
+	int green(long rgb);
+	int blue(long rgb);
 };
 
 #endif

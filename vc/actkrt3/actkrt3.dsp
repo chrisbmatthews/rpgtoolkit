@@ -262,6 +262,10 @@ SOURCE=.\tkCanvas\CCanvasPool.h
 
 SOURCE=.\tkCanvas\GDICanvas.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\tkCanvas\tkCanvas.h
+# End Source File
 # End Group
 # Begin Group "tkCanvas - source"
 
@@ -273,6 +277,10 @@ SOURCE=.\tkCanvas\CCanvasPool.cpp
 # Begin Source File
 
 SOURCE=.\tkCanvas\GDICanvas.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\tkCanvas\tkCanvas.cpp
 # End Source File
 # End Group
 # End Group
@@ -386,14 +394,6 @@ SOURCE=.\audiere\TKAudiere.cpp
 # Begin Source File
 
 SOURCE=.\audiere\audiere.lib
-# End Source File
-# End Group
-# Begin Group "transClock"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\transClock.cpp
 # End Source File
 # End Group
 # Begin Group "transHost"

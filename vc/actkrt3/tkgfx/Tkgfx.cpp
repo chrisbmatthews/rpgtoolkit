@@ -31,8 +31,6 @@
 #include <iostream.h>
 #include <vector>
 
-#define CNV_HANDLE long
-
 
 //the tiles in memory...
 //std::vector<CTile> gvTiles;
@@ -479,7 +477,7 @@ int APIENTRY GFXdrawtile ( const char* fname,
 	//wasn't found.
 	//we have to load it...
 	//check if file exists
-	if (!(CUtil::tileExists(strFilename)))
+	if (!(util::tileExists(strFilename)))
 		return 1;
 
 	CTile* t = new CTile(hdc, strFilename, rgb, SHADE_UNIFORM, (bool)nIsometric);
@@ -525,7 +523,7 @@ int APIENTRY GFXDrawTileCNV ( const char* fname,
 	std::string strPath = "tiles\\";
 	strFilename = strPath + strFilename;
 
-	CGDICanvas* canvas = (CGDICanvas*)cnv;
+	CGDICanvas *canvas = reinterpret_cast<CGDICanvas *>(cnv);
 
 	int xx, yy;
 
@@ -612,7 +610,7 @@ int APIENTRY GFXDrawTileCNV ( const char* fname,
 	//wasn't found.
 	//we have to load it...
 	//check if file exists
-	if (!(CUtil::tileExists(strFilename)))
+	if (!(util::tileExists(strFilename)))
 		return 1;
 
 	HDC hdc = canvas->OpenDC();
@@ -755,7 +753,7 @@ int APIENTRY GFXdrawtilemask ( char fname[],
 	//wasn't found.
 	//we have to load it...
 	//check if file exists
-	if (!(CUtil::tileExists(strFilename)))
+	if (!(util::tileExists(strFilename)))
 		return 1;
 
 	CTile* t = new CTile(hdc, strFilename, rgb, SHADE_UNIFORM, (bool)nIsometric);
@@ -904,7 +902,7 @@ int APIENTRY GFXDrawTileMaskCNV ( char fname[],
 	//wasn't found.
 	//we have to load it...
 	//check if file exists
-	if (!(CUtil::tileExists(strFilename)))
+	if (!(util::tileExists(strFilename)))
 		return 1;
 
 	HDC hdc = canvas->OpenDC();

@@ -25,7 +25,11 @@
 //------------------------------------------------------------------------
 // Definitions
 //------------------------------------------------------------------------
-#define CNV_HANDLE long					// Handle to a canvas
+
+// Initialize a DirectDraw struct
+#define INIT_DD_STRUCT(x) \
+	memset(&x, 0, sizeof(x)); \
+	x.dwSize = sizeof(x)
 
 //------------------------------------------------------------------------
 // DirectX info structure
@@ -52,6 +56,9 @@ typedef struct dxInfoTag
 // Canvas class
 //------------------------------------------------------------------------
 class CGDICanvas;
+#ifndef CNV_HANDLE
+#define CNV_HANDLE int
+#endif
 
 //------------------------------------------------------------------------
 // Prototypes

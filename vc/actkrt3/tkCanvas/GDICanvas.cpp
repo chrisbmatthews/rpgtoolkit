@@ -1,382 +1,22 @@
-//////////////////////////////////////////////////////////////////////////
-//All contents copyright 2003, 2004, Christopher Matthews or Contributors
-//All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-//Read LICENSE.txt for licensing info
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
+// All contents copyright 2003, 2004, Christopher Matthews or Contributors
+// All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
+// Read LICENSE.txt for licensing info
+//--------------------------------------------------------------------------
 
-//////////////////////////////////////////////////////////////////////////
-// GDICanvas.cpp: implementation of the CGDICanvas class.
-// Portions based on Isometric Game Programming With DirtectX 7.0 (Pazera)
-//////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
 // Inclusions
-//////////////////////////////////////////////////////////////////////////
-#include "GDICanvas.h"		//Contains stuff for this file
-#include <list>				//list class
+//--------------------------------------------------------------------------
+#include "GDICanvas.h"		// Contains stuff for this file
 
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
 // Externs
-//////////////////////////////////////////////////////////////////////////
-extern DXINFO gDXInfo;		//DirectX info structure.
+//--------------------------------------------------------------------------
+extern DXINFO gDXInfo;		// DirectX info structure.
 
-//////////////////////////////////////////////////////////////////////////
-// Definitions
-//////////////////////////////////////////////////////////////////////////
-#define CNV_HANDLE long		//handle to a canvas
-
-//////////////////////////////////////////////////////////////////////////
-// Globals
-//////////////////////////////////////////////////////////////////////////
-int canvasHostHwnd = 0;					//HWND of canvas host
-std::list<CGDICanvas*> g_canvasList;	//List of canvases
-
-//////////////////////////////////////////////////////////////////////////
-// Exports
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVCreateCanvasHost(int hInstance);
-void APIENTRY CNVKillCanvasHost(int hInstance, int hCanvasHostDC);
-int APIENTRY CNVInit();
-int APIENTRY CNVShutdown();
-CNV_HANDLE APIENTRY CNVCreate(long hdcCompatable, int nWidth, int nHeight, int nUseDX=1);
-int APIENTRY CNVDestroy(CNV_HANDLE cnv);
-long APIENTRY CNVOpenHDC(CNV_HANDLE cnv);
-long APIENTRY CNVCloseHDC(CNV_HANDLE cnv, long hdc);
-int APIENTRY CNVLock(CNV_HANDLE cnv);
-int APIENTRY CNVUnlock(CNV_HANDLE cnv);
-int APIENTRY CNVGetWidth(CNV_HANDLE cnv);
-int APIENTRY CNVGetHeight(CNV_HANDLE cnv);
-long APIENTRY CNVGetPixel(CNV_HANDLE cnv, int x, int y);
-int APIENTRY CNVSetPixel(CNV_HANDLE cnv, int x, int y, long crColor);
-int APIENTRY CNVExists(CNV_HANDLE cnv);
-int APIENTRY CNVBltCanvas(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, long lRasterOp = SRCCOPY);
-int APIENTRY CNVBltCanvasTransparent(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, long crColor);
-int APIENTRY CNVBltCanvasTranslucent(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor);
-long APIENTRY CNVGetRGBColor(CNV_HANDLE cnv, long crColor);
-int APIENTRY CNVResize(CNV_HANDLE cnv, long hdcCompatible, int nWidth, int nHeight);
-int APIENTRY CNVShiftLeft(CNV_HANDLE cnv, long nPixels);
-int APIENTRY CNVShiftRight(CNV_HANDLE cnv, long nPixels);
-int APIENTRY CNVShiftUp(CNV_HANDLE cnv, long nPixels);
-int APIENTRY CNVShiftDown(CNV_HANDLE cnv, long nPixels);
-int APIENTRY CNVBltPartCanvas(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, int xSrc, int ySrc, int nWidth, int nHeight, long lRasterOp = SRCCOPY);
-int APIENTRY CNVBltTransparentPartCanvas(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, int xSrc, int ySrc, int nWidth, int nHeight, long crTransparentColor);
-
-//////////////////////////////////////////////////////////////////////////
-// Init the canvas system
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVInit()
-{
-	g_canvasList.clear();
-	return 1;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Kill the canvas system
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVShutdown()
-{
-	std::list<CGDICanvas*>::iterator itr = g_canvasList.begin();
-	for (; itr != g_canvasList.end(); itr++)
-	{
-		delete (*itr);
-	}
-
-	g_canvasList.clear();
-	return 0;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Return a handle to a DC to base canvases on
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVCreateCanvasHost(int hInstance)
-{
-    //Create a windows class and fill it in
-    WNDCLASSEX wnd;
-	wnd.cbClsExtra = NULL; //Not applicable
-	wnd.cbSize = sizeof(wnd); //callback size == length of the structure
-	wnd.cbWndExtra = NULL; //Not applicable
-	wnd.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	wnd.hCursor = NULL; //Not applicable
-	wnd.hIcon = NULL; //Not applicable
-	wnd.hIconSm = NULL; //Not applicable
-	wnd.hInstance = (HINSTANCE)hInstance; //instance of owning application
-	wnd.lpfnWndProc = DefWindowProc; //Let windows manage this window
-	wnd.lpszClassName = "canvasHost"; //name of this class
-	wnd.lpszMenuName = NULL; //Not applicable
-	wnd.style = CS_OWNDC; //ask for a DC
-
-    //Register the class so windows knows of its existence
-    RegisterClassEx(&wnd);
-
-	//Create the window
-	canvasHostHwnd = (int)CreateWindowEx(
-                                          NULL,
-                                          "canvasHost",
-                                          NULL,NULL,
-                                          NULL,NULL,
-										  NULL,NULL,
-                                          NULL,NULL,
-                                          (HINSTANCE)hInstance,
-                                          NULL
-                                               );
-	//Return its hdc
-	return (int)GetDC((HWND)canvasHostHwnd);
-
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Kill the canvas host
-//////////////////////////////////////////////////////////////////////////
-void APIENTRY CNVKillCanvasHost(int hInstance, int hCanvasHostDC)
-{
-	ReleaseDC((HWND)canvasHostHwnd,(HDC)hCanvasHostDC);
-	DestroyWindow((HWND)canvasHostHwnd);
-	UnregisterClass("canvasHost",(HINSTANCE)hInstance);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Create a canvas
-//////////////////////////////////////////////////////////////////////////
-CNV_HANDLE APIENTRY CNVCreate(long hdcCompatable, int nWidth, int nHeight, int nUseDX)
-{
-	int nRet = 0;
-
-	CGDICanvas* cnv = new CGDICanvas();
-	//by default, we will attempt to create the canvas as a DirectX surface.
-	//if DX is not initialised, this will default to a GDI canvas
-	bool bUseDX = true;
-	if (nUseDX == 0)
-	{
-		bUseDX = false;
-	}
-	cnv->CreateBlank((HDC)hdcCompatable, nWidth, nHeight, bUseDX);
-
-	g_canvasList.push_back(cnv);
-
-	return (CNV_HANDLE)cnv;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Destroy a canvas
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVDestroy(CNV_HANDLE cnv)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	g_canvasList.remove(p);
-	delete p;
-	return 1;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Open a canvas' DC
-//////////////////////////////////////////////////////////////////////////
-long APIENTRY CNVOpenHDC(CNV_HANDLE cnv)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	return (long)p->OpenDC();
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Close a canvas' DC
-//////////////////////////////////////////////////////////////////////////
-long APIENTRY CNVCloseHDC(CNV_HANDLE cnv, long hdc)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	p->CloseDC((HDC)hdc);
-	return 1;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Lock a canvas
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVLock(CNV_HANDLE cnv)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	p->Lock();
-	return 1;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Unlock a canvas
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVUnlock(CNV_HANDLE cnv)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	p->Unlock();
-	return 1;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Get width of a canvas
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVGetWidth(CNV_HANDLE cnv)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	return p->GetWidth();
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Get height of a canvas
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVGetHeight(CNV_HANDLE cnv)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	return p->GetHeight();
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Get a pixel on a canvas
-//////////////////////////////////////////////////////////////////////////
-long APIENTRY CNVGetPixel(CNV_HANDLE cnv, int x, int y)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	return p->GetPixel(x, y);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Set a pixel on a canvas
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVSetPixel(CNV_HANDLE cnv, int x, int y, long crColor)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	HDC hdc = p->OpenDC();
-	int nToRet = SetPixelV(hdc, x, y, crColor);
-	p->CloseDC(hdc);
-	return nToRet;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Check if a canvas exists
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVExists(CNV_HANDLE cnv)
-{
-	int nToRet = 0;
-
-	std::list<CGDICanvas*>::iterator itr = g_canvasList.begin();
-	for (; itr != g_canvasList.end(); itr++)
-	{
-		if ((CNV_HANDLE)(*itr) == cnv)
-		{
-			nToRet = 1;
-			break;
-		}
-	}
-	return nToRet;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Blt on canvas to another
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVBltCanvas(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, long lRasterOp)
-{
-	CGDICanvas* src = (CGDICanvas*)cnvSource;
-	CGDICanvas* targ = (CGDICanvas*)cnvTarget;
-	int nToRet = src->Blt(targ, x, y, lRasterOp);
-	return nToRet;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Blt on canvas onto another using transparency
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVBltCanvasTransparent(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, long crColor)
-{
-	CGDICanvas* src = (CGDICanvas*)cnvSource;
-	CGDICanvas* targ = (CGDICanvas*)cnvTarget;
-	int nToRet = src->BltTransparent(targ, x, y, crColor);
-	return nToRet;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Blt on canvas onto another using translucency
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVBltCanvasTranslucent(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor)
-{
-	CGDICanvas* src = (CGDICanvas*)cnvSource;
-	CGDICanvas* targ = (CGDICanvas*)cnvTarget;
-	int nToRet = src->BltTranslucent(targ, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
-	return nToRet;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Get a color in canvas' current color depth
-//////////////////////////////////////////////////////////////////////////
-long APIENTRY CNVGetRGBColor(CNV_HANDLE cnv, long crColor)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	return p->GetRGBColor(crColor);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Resize a canvas
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVResize(CNV_HANDLE cnv, long hdcCompatible, int nWidth, int nHeight)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	p->Resize((HDC)hdcCompatible, nWidth, nHeight);
-	return 1;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Shift a canvas left
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVShiftLeft(CNV_HANDLE cnv, long nPixels)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	return p->ShiftLeft(nPixels);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Shift a canvas right
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVShiftRight(CNV_HANDLE cnv, long nPixels)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	return p->ShiftRight(nPixels);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Shift a canvas up
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVShiftUp(CNV_HANDLE cnv, long nPixels)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	return p->ShiftUp(nPixels);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Shift a canvas down
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVShiftDown(CNV_HANDLE cnv, long nPixels)
-{
-	CGDICanvas* p = (CGDICanvas*)cnv;
-	return p->ShiftDown(nPixels);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Blt part of one canvas onto another
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVBltPartCanvas(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, int xSrc, int ySrc, int nWidth, int nHeight, long lRasterOp)
-{
-	CGDICanvas* src = (CGDICanvas*)cnvSource;
-	CGDICanvas* targ = (CGDICanvas*)cnvTarget;
-	int nToRet = src->BltPart(targ, x, y, xSrc, ySrc, nWidth, nHeight, lRasterOp);
-	return nToRet;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Blt part of a canvas onto another using transparency
-//////////////////////////////////////////////////////////////////////////
-int APIENTRY CNVBltTransparentPartCanvas(CNV_HANDLE cnvSource, CNV_HANDLE cnvTarget, int x, int y, int xSrc, int ySrc, int nWidth, int nHeight, long crTransparentColor)
-{
-	CGDICanvas* src = (CGDICanvas*)cnvSource;
-	CGDICanvas* targ = (CGDICanvas*)cnvTarget;
-	int nToRet = src->BltTransparentPart(targ, x, y, xSrc, ySrc, nWidth, nHeight, crTransparentColor);
-	return nToRet;
-}
-
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
 // Construction/Destruction
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
 
 CGDICanvas::CGDICanvas()
 {
@@ -473,9 +113,9 @@ CGDICanvas::~CGDICanvas()
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-//Creation/Loading
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
+// Creation/Loading
+//--------------------------------------------------------------------------
 
 //creates a blank bitmap
 void CGDICanvas::CreateBlank(HDC hdcCompatible, int width, int height, bool bDX)
@@ -554,9 +194,9 @@ void CGDICanvas::Resize(HDC hdcCompatible, int width, int height)
 }
 
 
-//////////////////////////////////////////////////////////////////////
-//Clean-up
-//////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
+// Clean-up
+//--------------------------------------------------------------------------
 
 //destroys bitmap and dc
 void CGDICanvas::Destroy()
@@ -590,9 +230,9 @@ void CGDICanvas::Destroy()
 	m_nHeight=0;
 }
 
-//////////////////////////////////////////////////////////////////////////
-//Drawing
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
+// Drawing
+//--------------------------------------------------------------------------
 
 void CGDICanvas::SetPixel(int x, int y, int crColor)
 {
@@ -1098,7 +738,7 @@ int CGDICanvas::BltTranslucent(const LPDIRECTDRAWSURFACE7 lpddsSurface, const in
 				// If a transp color is not set
 				if (crTransparentColor == -1)
 				{
-					// Just no direct blt
+					// Just do direct blt
 					return Blt(lpddsSurface, x, y);
 				}
 				else
