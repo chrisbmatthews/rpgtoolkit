@@ -148,7 +148,7 @@ Public cnvRPGCodeScreen As Long
 ' Canvas for message box
 Public cnvMsgBox As Long
 
-' Show the message box>
+' Show the message box?
 Private bShowMsgBox As Boolean
 
 ' Canvases for Mem() / Scan()
@@ -160,10 +160,10 @@ Public cnvRPGCodeAccess As Long
 ' Canvases for the said purpose in version 3
 Public cnvRPGCode() As Long
 
-' Transparent color (white)
+' Transparent color
 Public Const TRANSP_COLOR = 16777215
 
-' Alternate transparent color (black)
+' Alternate transparent color
 Public Const TRANSP_COLOR_ALT = 0
 
 ' In DirectX mode? (yes, always :P)
@@ -1291,9 +1291,9 @@ Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     Next t
     cnvRPGCodeAccess = CreateCanvas(width, height)
     cnvRenderNow = CreateCanvas(width, height)
-    Call CanvasFill(cnvRenderNow, 0)
+    Call CanvasFill(cnvRenderNow, TRANSP_COLOR)
     cnvMousePointer = CreateCanvas(32, 32)
-    Call CanvasFill(cnvMousePointer, 0)
+    Call CanvasFill(cnvMousePointer, TRANSP_COLOR)
     globalCanvasHeight = height
     globalCanvasWidth = width
 End Sub
@@ -1477,14 +1477,14 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
             If (cnvTarget = -1) Then
                 ' To the screen
                 If (Not renderRenderNowCanvasTranslucent) Then
-                    Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, 0)
+                    Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, TRANSP_COLOR)
                 Else
                     Call DXDrawCanvasTranslucent(cnvRenderNow, 0, 0)
                 End If
             Else
                 ' To a canvas
                 If (Not renderRenderNowCanvasTranslucent) Then
-                    Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, 0)
+                    Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, TRANSP_COLOR)
                 Else
                     Call Canvas2CanvasBltTranslucent(cnvRenderNow, cnvTarget, 0, 0)
                 End If

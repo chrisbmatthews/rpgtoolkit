@@ -475,60 +475,7 @@ Public Sub runFight( _
 
     On Error Resume Next
 
-    If fightInProgress Then Exit Sub
-
-    'flush out the keyboard movement buffer
-    Call FlushKB
-
-    fightInProgress = True
-
-    'load enemies
-    Call loadEnemies(eneList, num)
-
-    canrun = 1
-    Dim t As Long, cnt As Long
-    'create enemy party...
-    Dim strRunProgram As String
-    Dim strRewardProgram As String
-    ReDim eParty(num) As TKEnemy
-    For t = 0 To num - 1
-        eParty(t) = enemyMem(t)
-        If LenB(enemyMem(t).eneRunPrg) <> 0 Then
-            strRunProgram = enemyMem(t).eneRunPrg
-        End If
-        If enemyMem(t).eneRun = 0 Then
-            canrun = 0
-        End If
-        If LenB(enemyMem(t).eneWinPrg) <> 0 Then
-            strRewardProgram = enemyMem(t).eneWinPrg
-        End If
-    Next t
-    Call CreateEnemyParty(parties(0), eParty)
-
-    'create player party...
-    cnt = 0
-    For t = 0 To UBound(playerMem)
-        If LenB(playerFile(t)) <> 0 Then
-            cnt = cnt + 1
-        End If
-    Next t
-    ReDim pParty(cnt) As TKPlayer
-    cnt = 0
-    For t = 0 To UBound(playerMem)
-        If LenB(playerFile(t)) <> 0 Then
-            pParty(cnt) = playerMem(t)
-            cnt = cnt + 1
-        End If
-    Next t
-    Call CreatePlayerParty(parties(1), pParty, 0)
-
-    'play fight music
-    Dim back As TKBackground
-    Call openBackground(projectPath & bkgPath & bkg, back)
-    Dim oldSong As String
-    oldSong = musicPlaying
-    boardList(activeBoardIndex).theData.boardMusic = back.bkgMusic
-    Call checkMusic(True)
+    If (fightInProgress) Then Exit Sub
 
     If (LenB(mainMem.fightPlugin) <> 0) Then
 
@@ -543,10 +490,63 @@ Public Sub runFight( _
             isFightPlugin = plugType(plugName, PT_FIGHT)
         End If
 
-        'Respond to the outcome of the fight
+        ' Respond to the outcome of the fight
         If isFightPlugin = 1 Then
 
-            'Tell fight plugin to run the fight
+            ' Flush out the keyboard movement buffer
+            Call FlushKB
+
+            fightInProgress = True
+
+            'Load enemies
+            Call loadEnemies(eneList, num)
+
+            canrun = 1
+            Dim t As Long, cnt As Long
+            ' Create enemy party
+            Dim strRunProgram As String
+            Dim strRewardProgram As String
+            ReDim eParty(num) As TKEnemy
+            For t = 0 To num - 1
+                eParty(t) = enemyMem(t)
+                If LenB(enemyMem(t).eneRunPrg) <> 0 Then
+                    strRunProgram = enemyMem(t).eneRunPrg
+                End If
+                If enemyMem(t).eneRun = 0 Then
+                    canrun = 0
+                End If
+                If LenB(enemyMem(t).eneWinPrg) <> 0 Then
+                    strRewardProgram = enemyMem(t).eneWinPrg
+                End If
+            Next t
+            Call CreateEnemyParty(parties(0), eParty)
+
+            ' Create player party
+            cnt = 0
+            For t = 0 To UBound(playerMem)
+                If LenB(playerFile(t)) <> 0 Then
+                    cnt = cnt + 1
+                End If
+            Next t
+            ReDim pParty(cnt) As TKPlayer
+            cnt = 0
+            For t = 0 To UBound(playerMem)
+                If LenB(playerFile(t)) <> 0 Then
+                    pParty(cnt) = playerMem(t)
+                    cnt = cnt + 1
+                End If
+            Next t
+            Call CreatePlayerParty(parties(1), pParty, 0)
+
+            ' Play fight music
+            Dim back As TKBackground
+            Call openBackground(projectPath & bkgPath & bkg, back)
+            Dim oldSong As String
+            oldSong = musicPlaying
+            boardList(activeBoardIndex).theData.boardMusic = back.bkgMusic
+            Call checkMusic(True)
+
+            ' Tell fight plugin to run the fight
             Dim fightOutcome As Long
             If isComPlugin(plugName) Then
                 fightOutcome = comPlugin(plugName).fight(num, -1, bkg, canrun)
@@ -556,25 +556,27 @@ Public Sub runFight( _
             
             Select Case fightOutcome
 
-                Case FIGHT_RUN_AUTO     'Ran away
+                Case FIGHT_RUN_AUTO     'R an away
                     Call runProgram(projectPath & prgPath & strRunProgram)
 
-                Case FIGHT_WON_AUTO     'Players won
+                Case FIGHT_WON_AUTO     ' Players won
                     Call rewardPlayers(num, strRewardProgram)
 
-                Case FIGHT_LOST         'Players lost
+                Case FIGHT_LOST         ' Players lost
                     Call gameOver
 
             End Select
+
+            ' Play old music
+            boardList(activeBoardIndex).theData.boardMusic = "..\..\..\" & oldSong
+            Call checkMusic(True)
+
+            ' Flag the fight has ended
+            fightInProgress = False
+
         End If
+
     End If
-
-    'Play old music
-    boardList(activeBoardIndex).theData.boardMusic = oldSong
-    Call checkMusic(True)
-
-    'Flag the fight has ended
-    fightInProgress = False
 
 End Sub
 

@@ -5510,7 +5510,7 @@ Sub RestoreScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Exit Sub
     End If
         
-    Call Canvas2CanvasBltPartial(cnvRPGCodeAccess, cnvRPGCodeScreen, _
+    Call DXDrawCanvasPartial(cnvRPGCodeAccess, _
                                 xd, yd, _
                                 x1, y1, _
                                 (x2 - x1), (y2 - y1))
@@ -5824,7 +5824,8 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Select Case countDat
     
         Case 0
-            Canvas2CanvasBlt cnvRPGCodeScreen, cnvRPGCodeAccess, 0, 0
+            Call CanvasGetScreen(cnvRPGCodeAccess)
+            ' Canvas2CanvasBlt cnvRPGCodeScreen, cnvRPGCodeAccess, 0, 0
             
         Case 1
             Dim paras() As parameters
@@ -5842,8 +5843,8 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 testArray = cnvRPGCode(paras(0).num)
                 
                 'Save the screen!
-                Canvas2CanvasBlt _
-                    cnvRPGCodeScreen, cnvRPGCode(paras(0).num), 0, 0
+                CanvasGetScreen _
+                    cnvRPGCode(paras(0).num)
 
             Else
                 debugger "SaveScreen() requires either no data elements or" _

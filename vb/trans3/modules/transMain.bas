@@ -61,7 +61,7 @@ Public gShuttingDown As Boolean
 Public host As CDirectXHost
 
 '=======================================================================
-' Average time for one loop in the GS_MOVEMENT gamestate.
+' Average time for one loop in the GS_MOVEMENT gamestate
 '=======================================================================
 Public Property Get gAvgTime() As Double
     gAvgTime = m_renderTime / m_renderCount
@@ -416,8 +416,8 @@ Public Sub gameLogic()
     If renderOccured Then
         loopTime = Timer() - loopTime
         If loopTime < 1 / 4 Then
-            'No machine should render slower than this, so > 1/4 would be anomalous, and
-            'would unbalance the average (at least early on).
+            ' No machine should render slower than this, so > 1/4 would be anomalous, and
+            ' would unbalance the average (at least early on).
             m_renderTime = m_renderTime + loopTime
             m_renderCount = m_renderCount + 1
         End If
