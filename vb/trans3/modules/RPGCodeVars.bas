@@ -599,37 +599,30 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         Case DT_NUM             'NUMERICAL
                                 '---------
 
+            ' Switch on the sign
+            Select Case equal
+
+                Case "++"
+                    Call SetVariable(Destination, destNum + 1, theProgram)
+                    Exit Sub
+
+                Case "--"
+                    Call SetVariable(Destination, destNum - 1, theProgram)
+                    Exit Sub
+
+                Case "+=", "-=", "*=", "/=", "=", "|=", "&=", "`=", "%="
+
+                Case Else
+                    Call debugger("Error: Invalid conjunction-- " & equal & " -- " & Text)
+                    Exit Sub
+
+            End Select
+
             ' Put all the tokens into an array
             ReDim numberUse(number) As Double
             For tokenIdx = 2 To number
                 Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram)
             Next tokenIdx
-
-            ' Switch on the sign
-            Select Case equal
-
-                Case "++"                           'INCREMENTAION OPERATOR
-                                                    '----------------------
-                    Call SetVariable(Destination, destNum + 1, theProgram)
-                    Exit Sub
-
-                Case "--"                           'DECREMENTATION OPERATOR
-                                                    '-----------------------
-                    Call SetVariable(Destination, destNum - 1, theProgram)
-                    Exit Sub
-
-                Case "+=", "-=", "*=", "/=", "="    'OTHER VALID OPERATOR
-                                                    '--------------------
-
-                Case "|=", "&=", "`=", "%=" ' [Faero] Other valid ops :)
-
-
-                Case Else                           'INVALID OPERATOR
-                                                    '----------------
-                    Call debugger("Error: Invalid conjunction-- " & equal & " -- " & Text)
-                    Exit Sub
-
-            End Select
 
             ' Build the equation into a string
             Dim build As String
