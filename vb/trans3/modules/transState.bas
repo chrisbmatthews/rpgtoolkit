@@ -60,12 +60,15 @@ Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal re
     playerListAr$(number) = playerMem(number).charname$
     playerFile$(number) = file$
     
+    'Make this player visible!
+    showPlayer(number) = True
+    
     'change player graphics...
     Dim aProgram As RPGCodeProgram
     ReDim aProgram.program(10)
     aProgram.boardNum = -1
     If number = selectedPlayer And newPlyrName$ <> "" Then
-        Call NewPlyr("#newplyr(" + Chr$(34) + newPlyrName & Chr$(34) + ")", aProgram)
+        Call NewPlyr("#newplyr(" & Chr$(34) & newPlyrName & Chr$(34) & ")", aProgram)
     End If
     
     'now calculate level up stuff:
@@ -123,6 +126,12 @@ Public Sub LoadState(ByVal file As String)
     Dim nCount As Long
     Dim t As Long, z As Long
     Dim fn As String
+    
+    'Clear some aesthetic settings:
+    facing = South
+    For t = 0 To 4
+        showPlayer(t) = False           'Hide the players. Individually shown in restorePlayer
+    Next t
 
     Open file For Input Access Read As #num
         If fread(num) = "RPGTLKIT SAVE" Then
