@@ -34,11 +34,11 @@ typedef VOID (__stdcall *CBFourParams) (INT, INT, INT, INT);
 //-------------------------------------------------------------------
 // Game states
 //-------------------------------------------------------------------
-const int GS_IDLE = 0;				// Just re-renders the screen
-const int GS_QUIT = 1;				// Shutdown sequence
-const int GS_MOVEMENT = 2;			// Movement is occurring (players or items)
-const int GS_DONEMOVE = 3;			// Movement is finished
-const int GS_PAUSE = 4;				// Pause game (do nothing)
+CONST INT GS_IDLE = 0;				// Just re-renders the screen
+CONST INT GS_QUIT = 1;				// Shutdown sequence
+CONST INT GS_MOVEMENT = 2;			// Movement is occurring (players or items)
+CONST INT GS_DONEMOVE = 3;			// Movement is finished
+CONST INT GS_PAUSE = 4;				// Pause game (do nothing)
 
 //-------------------------------------------------------------------
 // Prototypes

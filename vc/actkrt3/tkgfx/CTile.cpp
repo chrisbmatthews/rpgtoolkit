@@ -299,7 +299,7 @@ UINT CTile::g_pnDosPalette[] =
 //-------------------------------------------------------------------
 // CTile::CTile()
 //
-// Action: construct CTile object
+// Action: Construct CTile object
 //
 // Params: nCompatibleDC - the hdc of a compatible drawing device (like what we're going to draw to)
 //				 strFilename - filename to load.  You can include a number at the end of a tst to indicate the exact tile.
@@ -425,7 +425,7 @@ CTile::CTile(INT nCompatibleDC, BOOL bIsometric):
 }
 
 //-------------------------------------------------------------------
-// Deconstructor
+// DeConstructor
 //-------------------------------------------------------------------
 CTile::~CTile()
 {
@@ -445,9 +445,9 @@ CTile::~CTile()
 }
 
 //-------------------------------------------------------------------
-// Copy constructor
+// Copy Constructor
 //-------------------------------------------------------------------
-CTile::CTile(const CTile &rhs):
+CTile::CTile(CONST CTile &rhs):
 
 // Member initialization list
  m_strFilename(rhs.m_strFilename),
@@ -482,7 +482,7 @@ CTile::CTile(const CTile &rhs):
 //-------------------------------------------------------------------
 // Assignment operator
 //-------------------------------------------------------------------
-CTile &CTile::operator = (const CTile &rhs)
+CTile &CTile::operator = (CONST CTile &rhs)
 {
 
 	// Colin: There has got to be a better way to
@@ -530,7 +530,7 @@ CTile &CTile::operator = (const CTile &rhs)
 //
 // Returns: VOID
 //
-// Called by: CTile::constructor only
+// Called by: CTile::Constructor only
 //
 //==============================================
 // Edited by Delano for 3.0.4
@@ -1382,7 +1382,7 @@ INT CTile::openTile(std::string strFilename)
 //
 // Action: opens a tile from a tileset
 //
-// Returns: detail level constant
+// Returns: detail level CONSTant
 //
 // Called by: CTile::opentile only.
 //

@@ -48,20 +48,20 @@ class CTile
 	// Public visibility
 	public:
 
-		// Construct with little information
+		// CONSTruct with little information
 		CTile(INT nCompatibleDC, BOOL bIsometric = FALSE);
 
-		// Construct with full set of information
+		// CONSTruct with full set of information
 		CTile(INT nCompatibleDC, std::string strFilename, RGBSHADE rgb, INT nShadeType, BOOL bIsometric = FALSE);
 
-		// Deconstruct
+		// DeCONSTruct
 		~CTile();
 
-		// Copy constructor
-		CTile(const CTile &rhs);
+		// Copy CONSTructor
+		CTile(CONST CTile &rhs);
 
 		// Assignment operator
-		CTile& operator = (const CTile &rhs);
+		CTile& operator = (CONST CTile &rhs);
 
 		// Open a tile
 		VOID open(std::string strFilename, RGBSHADE rgb, INT nShadeType);

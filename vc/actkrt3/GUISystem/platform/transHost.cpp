@@ -11,39 +11,39 @@
 //-------------------------------------------------------------------
 // Include the header file
 //-------------------------------------------------------------------
-#include "transHost.h"				// Contains types, constants,
-									// and prototypes for this file
+#include "transHost.h"					// Contains types, constants,
+										// and prototypes for this file
 
 //-------------------------------------------------------------------
 // Globals
 //-------------------------------------------------------------------
-HWND hostHwnd = NULL;				// Handle of host window
-INT endFormBackgroundHDC = 0;		// HDC to a background picture for end form
-BOOL m_isActive = FALSE;			// We have the focus?
-BOOL m_exitDo = FALSE;				// End form closed?
+static HWND hostHwnd = NULL;			// Handle of host window
+static INT endFormBackgroundHDC = 0;	// HDC to a background picture for end form
+static BOOL m_isActive = FALSE;			// We have the focus?
+static BOOL m_exitDo = FALSE;			// End form closed?
 
 //-------------------------------------------------------------------
 // Callbacks
 //-------------------------------------------------------------------
 
 // No parameters
-CBNoParams closeSystems;			// Shuts down trans3
-CBNoParams forceRender;				// Forces render of screen
+CBNoParams closeSystems;				// Shuts down trans3
+CBNoParams forceRender;					// Forces render of screen
 
 // No parameters, but returns a value
-CBNoParamsRet isShuttingDown;		// Check if trans3 is shutting down
-CBNoParamsRet getGameState;			// Get current state of logic (returns GS_ constant)
+CBNoParamsRet isShuttingDown;			// Check if trans3 is shutting down
+CBNoParamsRet getGameState;				// Get current state of logic (returns GS_ constant)
 
 // One parameter
-CBOneParam setAsciiKeyState;		// Sets the last ASCII value pressed
-CBOneParam setGameState;			// Sets the current gameState (use GS_ constant)
+CBOneParam setAsciiKeyState;			// Sets the last ASCII value pressed
+CBOneParam setGameState;				// Sets the current gameState (use GS_ constant)
 
 // Two parameters
-CBTwoParams keyDownEvent;			// Event on key down
-CBTwoParams mouseMoveEvent;			// Event on mouse move
+CBTwoParams keyDownEvent;				// Event on key down
+CBTwoParams mouseMoveEvent;				// Event on mouse move
 
 // Four params
-CBFourParams mouseDownEvent;		// Event on mouse down
+CBFourParams mouseDownEvent;			// Event on mouse down
 
 //-------------------------------------------------------------------
 // Create the DirectX host window
