@@ -7,6 +7,7 @@ Attribute VB_Name = "RPGCodeFlow"
 
 '=========================================================================
 ' Procedures that control the flow of rpgcode
+' Status: B-
 '=========================================================================
 
 Option Explicit
@@ -158,7 +159,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             itis$ = GetMethodName(theProgram.program$(t), theProgram)
             If UCase$(itis$) = UCase$(mName$) Then
                 foundIt = t
-                'Exit For
+                Exit For
             End If
         End If
     Next t
@@ -300,7 +301,7 @@ Public Sub multiTaskNow()
 
     'Flag we're multitasking
     gbMultiTasking = True
-    
+
     Call openMulti
     Call ExecuteAllThreads
 
@@ -438,12 +439,12 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
     If usingPixelMovement() Then
         'If we're using pixel movement then round item
         'coordinates and backup the old ones
-        ReDim tempitems(maxItem) As PLAYER_POSITION
+        ReDim tempItems(maxItem) As PLAYER_POSITION
         For t = 0 To maxItem
-            tempitems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
+            tempItems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
         Next t
     End If
-    
+
     'Ouch.  Now test for items:
     For t = 0 To maxItem
         If itemMem(t).BoardYN = 1 Then  'yeah, it's a board item
@@ -510,7 +511,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                             
                         End Select
                     
-                    If tempitems(t).x = xx And tempitems(t).y = yy And tempitems(t).l = pos.l Then
+                    If tempItems(t).x = xx And tempItems(t).y = yy And tempItems(t).l = pos.l Then
                         If keyWaitState = mainMem.Key Then
                             'yes, we pressed the right key
                             toRet = runItmYN(t)
@@ -595,7 +596,7 @@ Public Function runBlock( _
             Case Else
            
                 If res = 1 Then
-                    DoCommand prg, retval
+                    Call DoCommand(prg, retval)
                 Else
                     prg.programPos = increment(prg)
                 End If
@@ -792,14 +793,12 @@ Public Sub runProgram( _
     If Trim(Right(file, 1)) = "\" Then Exit Sub
     
     runningProgram = True
-    'set call depth to zero
     DBCallDepth = 0
     DBWinFilled = False
     DBWinLength = 0
     
-    'hide mwin
     Call hideMsgBox
-    Call setconstants   'set variable constants
+    Call setconstants
     Call clearButtons
 
     If setSourceAndTarget Then
@@ -857,27 +856,15 @@ Public Sub runProgram( _
     Call hideMsgBox
     
     If theProgram.programPos = -1 Then
-        'program ended with #end
-        'restore previous view...
         Call renderNow
-    Else
-        'program ended with #done
-        'leave junk on the screen...
     End If
     
-    Dim t As Long
-    For t = 0 To 50
-        theProgram.included$(t) = ""
-    Next t
     Call hideMsgBox
+    Call FlushKB
+    Call ClearRPGCodeProcess(theProgram)
     runningProgram = False
     bWaitingForInput = False
 
-    Call FlushKB
-
-    'clear the program
-    Call ClearRPGCodeProcess(theProgram)
-    
     If nextProgram <> "" Then
         Dim oldNextProgram As String
         oldNextProgram = nextProgram
@@ -890,6 +877,7 @@ Public Sub runProgram( _
 runPrgErr:
     errorsA = 1
     Resume Next
+
 End Sub
 
 '=========================================================================

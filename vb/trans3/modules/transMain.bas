@@ -113,7 +113,7 @@ Private Function getMainFilename() As String
                 projectPath = ""
                 errorBranch = "Resume Next"
                 savPath = GetSetting("TK3 EXE HOST", "Settings", "Save Path", "")
-                Call SaveSetting("TK3 EXE HOST", "Settings", "Save Path", "")
+                Call DeleteSetting("TK3 EXE HOST", "Settings", "Save Path")
                 If savPath = "" Then
                     savPath = "Saved\"
                 Else
@@ -134,6 +134,7 @@ Private Function getMainFilename() As String
             Call openSystems(True)
             Call runProgram(projectPath & prgPath & args(1))
             Call closeSystems
+            End
 
         End If
 

@@ -101,6 +101,9 @@ Public Sub ClearRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
         Call RPGCDestroyHeap(thePrg.heapStack(t))
         thePrg.heapStack(t) = 0
     Next t
+    For t = 0 To UBound(thePrg.included)
+        thePrg.included(t) = ""
+    Next t
 skipheap:
     thePrg.currentHeapFrame = -1
     thePrg.currentCompileStackIdx = -1
