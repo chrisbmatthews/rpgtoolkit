@@ -112,6 +112,7 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
             lastTileset = BinReadString(num)
             grabTips = BinReadInt(num)
             advTilesetTips = BinReadInt(num)
+            tkMainForm.boardToolbar.Display.Update(0) = BinReadInt(num)
         Else
             Close num
             Open file For Input Access Read As num
@@ -182,6 +183,7 @@ Public Sub saveConfig(Optional ByVal file As String = CONFIG_FILE)
         Call BinWriteString(num, lastTileset)
         Call BinWriteInt(num, grabTips)
         Call BinWriteInt(num, advTilesetTips)
+        Call BinWriteInt(num, tkMainForm.boardToolbar.Display.Setting(eRedrawAll))
     Close num
 
 End Sub

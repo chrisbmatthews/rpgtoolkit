@@ -110,7 +110,6 @@ Form=forms\editBackground.frm
 Form=forms\enemyGfx.frm
 Form=forms\config.frm
 Module=CommonStrings; ..\tkCommon\modules\CommonStrings.bas
-Module=CommonTKAudiere; ..\tkCommon\modules\CommonTKAudiere.bas
 Module=modSyntax; modules\modSyntax.bas
 Class=cBoardToolbar; classes\cBoardToolBar.cls
 Class=cBoardToolbar_Display; classes\cBoardToolbar_Display.cls
