@@ -460,7 +460,8 @@ Public Sub gameOver()
     Else
         Call runProgram(projectPath & prgPath & mainMem.gameOverPrg)
     End If
-    Call ResetRPG(theProgram)
+    ' Colin, 3.0.6: Do not reset the game
+    ' Call ResetRPG(theProgram)
 End Sub
 
 '=========================================================================
