@@ -20,7 +20,7 @@
 #include <windows.h>					//for windows
 #include <string>						//for strings
 #include "ddraw.h"						//for DirectX
-#include "..\tkCanvas\GDICanvas.h"	//for gdi canvas objects
+#include "..\tkCanvas\GDICanvas.h"		//for gdi canvas objects
 
 //////////////////////////////////////////////////////////////////////////
 // Definitions
