@@ -52,8 +52,8 @@ class inlineString
 		//construction
 		inlineString(int length = 4048);					// empty string
 		inlineString(char* defaultVal, int length = 4048);	// construct from a pointer to a string
-		inlineString(std::string cFrom , int length = 4048);// construct from an STL string
-		inlineString(char defaultVal , int length = 4048);	// construct from a character
+		inlineString(std::string cFrom, int length = 4048);// construct from an STL string
+		inlineString(char defaultVal, int length = 4048);	// construct from a character
 
 		//deconstruction
 		~inlineString();									// free up memory
