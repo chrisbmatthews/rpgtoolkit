@@ -437,8 +437,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -1722,6 +1722,233 @@ Begin VB.MDIForm tkMainForm
             Width           =   3915
          End
       End
+      Begin VB.Frame tileExtras 
+         BorderStyle     =   0  'None
+         Height          =   1455
+         Left            =   960
+         TabIndex        =   120
+         Top             =   120
+         Width           =   10200
+         Begin VB.Frame Frame3 
+            Caption         =   "Scroll              "
+            Height          =   1215
+            Left            =   8880
+            TabIndex        =   133
+            Tag             =   "1649"
+            Top             =   240
+            Width           =   1215
+            Begin VB.PictureBox Picture6 
+               BorderStyle     =   0  'None
+               Height          =   615
+               Left            =   120
+               ScaleHeight     =   615
+               ScaleWidth      =   975
+               TabIndex        =   134
+               Top             =   360
+               Width           =   975
+               Begin VB.CommandButton Command19 
+                  Caption         =   "N"
+                  Height          =   195
+                  Left            =   360
+                  TabIndex        =   138
+                  TabStop         =   0   'False
+                  Tag             =   "1653"
+                  Top             =   0
+                  Width           =   255
+               End
+               Begin VB.CommandButton Command18 
+                  Caption         =   "S"
+                  Height          =   195
+                  Left            =   360
+                  TabIndex        =   137
+                  TabStop         =   0   'False
+                  Tag             =   "1652"
+                  Top             =   240
+                  Width           =   255
+               End
+               Begin VB.CommandButton Command16 
+                  Caption         =   "E"
+                  Height          =   195
+                  Left            =   720
+                  TabIndex        =   136
+                  TabStop         =   0   'False
+                  Tag             =   "1651"
+                  Top             =   120
+                  Width           =   255
+               End
+               Begin VB.CommandButton Command15 
+                  Caption         =   "W"
+                  Height          =   195
+                  Left            =   0
+                  TabIndex        =   135
+                  TabStop         =   0   'False
+                  Tag             =   "1650"
+                  Top             =   120
+                  Width           =   255
+               End
+            End
+         End
+         Begin VB.Frame Frame6 
+            Caption         =   "Current Color/Tile                                "
+            Height          =   1215
+            Left            =   6360
+            TabIndex        =   127
+            Top             =   240
+            Width           =   2415
+            Begin VB.PictureBox Picture8 
+               BorderStyle     =   0  'None
+               Height          =   255
+               Left            =   120
+               ScaleHeight     =   255
+               ScaleWidth      =   1215
+               TabIndex        =   131
+               Top             =   840
+               Width           =   1215
+               Begin VB.CommandButton cmdImport 
+                  Caption         =   "Import"
+                  Height          =   255
+                  Left            =   0
+                  TabIndex        =   132
+                  Top             =   0
+                  Width           =   1095
+               End
+            End
+            Begin VB.PictureBox selectedcolor 
+               Appearance      =   0  'Flat
+               AutoRedraw      =   -1  'True
+               BackColor       =   &H80000005&
+               ForeColor       =   &H80000008&
+               Height          =   495
+               Left            =   120
+               ScaleHeight     =   31
+               ScaleMode       =   3  'Pixel
+               ScaleWidth      =   31
+               TabIndex        =   130
+               ToolTipText     =   "Current color"
+               Top             =   240
+               Width           =   495
+            End
+            Begin VB.PictureBox mirror 
+               Appearance      =   0  'Flat
+               AutoRedraw      =   -1  'True
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   480
+               Left            =   720
+               ScaleHeight     =   32
+               ScaleMode       =   3  'Pixel
+               ScaleWidth      =   32
+               TabIndex        =   129
+               ToolTipText     =   "2D thumbnail (n/a in isometric)"
+               Top             =   240
+               Width           =   480
+            End
+            Begin VB.PictureBox isoMirror 
+               Appearance      =   0  'Flat
+               AutoRedraw      =   -1  'True
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   480
+               Left            =   1320
+               ScaleHeight     =   32
+               ScaleMode       =   3  'Pixel
+               ScaleWidth      =   64
+               TabIndex        =   128
+               ToolTipText     =   "Isometric thumbnail"
+               Top             =   240
+               Width           =   960
+            End
+         End
+         Begin VB.Frame Frame7 
+            Caption         =   "Color      "
+            Height          =   1215
+            Left            =   0
+            TabIndex        =   121
+            Top             =   240
+            Width           =   6255
+            Begin VB.PictureBox Picture11 
+               BorderStyle     =   0  'None
+               Height          =   495
+               Left            =   105
+               ScaleHeight     =   495
+               ScaleWidth      =   6045
+               TabIndex        =   139
+               Top             =   240
+               Width           =   6045
+               Begin VB.CommandButton Command1 
+                  Height          =   495
+                  Left            =   5880
+                  TabIndex        =   141
+                  Tag             =   "1662"
+                  ToolTipText     =   "Select Transparent Color"
+                  Top             =   0
+                  Width           =   180
+               End
+               Begin VB.PictureBox palettebox 
+                  Appearance      =   0  'Flat
+                  BackColor       =   &H80000005&
+                  ForeColor       =   &H80000008&
+                  Height          =   495
+                  Left            =   0
+                  Picture         =   "tkMain.frx":270FD
+                  ScaleHeight     =   465
+                  ScaleWidth      =   5865
+                  TabIndex        =   140
+                  Tag             =   "1661"
+                  ToolTipText     =   "Click to select a color"
+                  Top             =   0
+                  Width           =   5895
+               End
+            End
+            Begin VB.PictureBox Picture7 
+               BorderStyle     =   0  'None
+               Height          =   255
+               Left            =   120
+               ScaleHeight     =   255
+               ScaleWidth      =   4335
+               TabIndex        =   122
+               Top             =   840
+               Width           =   4335
+               Begin VB.CommandButton cmdShadeTile 
+                  Caption         =   "Shade Tile"
+                  Height          =   255
+                  Left            =   2880
+                  TabIndex        =   125
+                  Top             =   0
+                  Width           =   1335
+               End
+               Begin VB.CommandButton cmdSelColor 
+                  Caption         =   "Select Color"
+                  Height          =   255
+                  Left            =   0
+                  TabIndex        =   124
+                  Top             =   0
+                  Width           =   1335
+               End
+               Begin VB.CommandButton cmdDOS 
+                  Caption         =   "DOS Pallete"
+                  Height          =   255
+                  Left            =   1440
+                  TabIndex        =   123
+                  Top             =   0
+                  Width           =   1335
+               End
+            End
+            Begin VB.Label coords 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BackStyle       =   0  'Transparent
+               ForeColor       =   &H80000008&
+               Height          =   255
+               Left            =   5520
+               TabIndex        =   126
+               Top             =   840
+               Width           =   735
+            End
+         End
+      End
       Begin VB.Frame tileBmpExtras 
          BorderStyle     =   0  'None
          BeginProperty Font 
@@ -1935,228 +2162,6 @@ Begin VB.MDIForm tkMainForm
                Tag             =   "1228"
                Top             =   240
                Width           =   495
-            End
-         End
-      End
-      Begin VB.Frame tileExtras 
-         BorderStyle     =   0  'None
-         Height          =   1455
-         Left            =   960
-         TabIndex        =   120
-         Top             =   120
-         Width           =   10200
-         Begin VB.Frame Frame3 
-            Caption         =   "Scroll              "
-            Height          =   1215
-            Left            =   8880
-            TabIndex        =   133
-            Tag             =   "1649"
-            Top             =   240
-            Width           =   1215
-            Begin VB.PictureBox Picture6 
-               BorderStyle     =   0  'None
-               Height          =   615
-               Left            =   120
-               ScaleHeight     =   615
-               ScaleWidth      =   975
-               TabIndex        =   134
-               Top             =   360
-               Width           =   975
-               Begin VB.CommandButton Command19 
-                  Caption         =   "N"
-                  Height          =   195
-                  Left            =   360
-                  TabIndex        =   138
-                  TabStop         =   0   'False
-                  Tag             =   "1653"
-                  Top             =   0
-                  Width           =   255
-               End
-               Begin VB.CommandButton Command18 
-                  Caption         =   "S"
-                  Height          =   195
-                  Left            =   360
-                  TabIndex        =   137
-                  TabStop         =   0   'False
-                  Tag             =   "1652"
-                  Top             =   240
-                  Width           =   255
-               End
-               Begin VB.CommandButton Command16 
-                  Caption         =   "E"
-                  Height          =   195
-                  Left            =   720
-                  TabIndex        =   136
-                  TabStop         =   0   'False
-                  Tag             =   "1651"
-                  Top             =   120
-                  Width           =   255
-               End
-               Begin VB.CommandButton Command15 
-                  Caption         =   "W"
-                  Height          =   195
-                  Left            =   0
-                  TabIndex        =   135
-                  TabStop         =   0   'False
-                  Tag             =   "1650"
-                  Top             =   120
-                  Width           =   255
-               End
-            End
-         End
-         Begin VB.Frame Frame6 
-            Caption         =   "Current Color/Tile                                "
-            Height          =   1215
-            Left            =   6360
-            TabIndex        =   127
-            Top             =   240
-            Width           =   2415
-            Begin VB.PictureBox Picture8 
-               BorderStyle     =   0  'None
-               Height          =   255
-               Left            =   120
-               ScaleHeight     =   255
-               ScaleWidth      =   1215
-               TabIndex        =   131
-               Top             =   840
-               Width           =   1215
-               Begin VB.CommandButton cmdImport 
-                  Caption         =   "Import"
-                  Height          =   255
-                  Left            =   0
-                  TabIndex        =   132
-                  Top             =   0
-                  Width           =   1095
-               End
-            End
-            Begin VB.PictureBox selectedcolor 
-               Appearance      =   0  'Flat
-               AutoRedraw      =   -1  'True
-               BackColor       =   &H80000005&
-               ForeColor       =   &H80000008&
-               Height          =   495
-               Left            =   120
-               ScaleHeight     =   31
-               ScaleMode       =   3  'Pixel
-               ScaleWidth      =   31
-               TabIndex        =   130
-               Top             =   240
-               Width           =   495
-            End
-            Begin VB.PictureBox mirror 
-               Appearance      =   0  'Flat
-               AutoRedraw      =   -1  'True
-               BackColor       =   &H80000005&
-               ForeColor       =   &H80000008&
-               Height          =   480
-               Left            =   720
-               ScaleHeight     =   30
-               ScaleMode       =   3  'Pixel
-               ScaleWidth      =   30
-               TabIndex        =   129
-               Top             =   240
-               Width           =   480
-            End
-            Begin VB.PictureBox isoMirror 
-               Appearance      =   0  'Flat
-               AutoRedraw      =   -1  'True
-               BackColor       =   &H80000005&
-               ForeColor       =   &H80000008&
-               Height          =   480
-               Left            =   1320
-               ScaleHeight     =   30
-               ScaleMode       =   3  'Pixel
-               ScaleWidth      =   62
-               TabIndex        =   128
-               Top             =   240
-               Width           =   960
-            End
-         End
-         Begin VB.Frame Frame7 
-            Caption         =   "Color      "
-            Height          =   1215
-            Left            =   0
-            TabIndex        =   121
-            Top             =   240
-            Width           =   6255
-            Begin VB.PictureBox Picture11 
-               BorderStyle     =   0  'None
-               Height          =   495
-               Left            =   105
-               ScaleHeight     =   495
-               ScaleWidth      =   6045
-               TabIndex        =   139
-               Top             =   240
-               Width           =   6045
-               Begin VB.CommandButton Command1 
-                  Height          =   495
-                  Left            =   5880
-                  TabIndex        =   141
-                  Tag             =   "1662"
-                  ToolTipText     =   "Select Transparent Color"
-                  Top             =   0
-                  Width           =   135
-               End
-               Begin VB.PictureBox palettebox 
-                  Appearance      =   0  'Flat
-                  BackColor       =   &H80000005&
-                  ForeColor       =   &H80000008&
-                  Height          =   495
-                  Left            =   0
-                  Picture         =   "tkMain.frx":270FD
-                  ScaleHeight     =   465
-                  ScaleWidth      =   5865
-                  TabIndex        =   140
-                  Tag             =   "1661"
-                  ToolTipText     =   "Click to select a color"
-                  Top             =   0
-                  Width           =   5895
-               End
-            End
-            Begin VB.PictureBox Picture7 
-               BorderStyle     =   0  'None
-               Height          =   255
-               Left            =   120
-               ScaleHeight     =   255
-               ScaleWidth      =   4335
-               TabIndex        =   122
-               Top             =   840
-               Width           =   4335
-               Begin VB.CommandButton cmdShadeTile 
-                  Caption         =   "Shade Tile"
-                  Height          =   255
-                  Left            =   2880
-                  TabIndex        =   125
-                  Top             =   0
-                  Width           =   1335
-               End
-               Begin VB.CommandButton cmdSelColor 
-                  Caption         =   "Select Color"
-                  Height          =   255
-                  Left            =   0
-                  TabIndex        =   124
-                  Top             =   0
-                  Width           =   1335
-               End
-               Begin VB.CommandButton cmdDOS 
-                  Caption         =   "DOS Pallete"
-                  Height          =   255
-                  Left            =   1440
-                  TabIndex        =   123
-                  Top             =   0
-                  Width           =   1335
-               End
-            End
-            Begin VB.Label coords 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
-               BackStyle       =   0  'Transparent
-               ForeColor       =   &H80000008&
-               Height          =   255
-               Left            =   5520
-               TabIndex        =   126
-               Top             =   840
-               Width           =   735
             End
          End
       End
@@ -2599,13 +2604,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "23/12/2004"
+            TextSave        =   "05/02/2005"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "21:23"
+            TextSave        =   "17:35"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3319,30 +3324,21 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x 
 '===========================================================
 'MouseDown event on the flyout tileset viewer.
 '===========================================================
-'Edited by Delano for 3.0.4 new isometric tilesets.
-'Added code for selection of isometric tiles.
-'Fixed problem where higher tile numbers could be selected.
 
-    Dim iMetric As Integer, tileNumber As Integer
+    Dim tileNumber As Integer, formType As Long
     Dim tilesWide As Integer, tilesHigh As Integer, tileX As Integer, tileY As Integer
     
     If configfile.lastTileset$ = "" Then Exit Sub
     
-    'Added:If the current tilset (configfile.lastTileset$) is isometric.
-    'Same return as for getTileInfo on a .iso.
-    If UCase$(GetExt(configfile.lastTileset$)) = "ISO" Then iMetric = 2
-    
-    'Determine the tile that has been clicked on by considering the
-    'size of the form, the position of the scroller, and the type of
-    'tileset.
-    
-    If iMetric = 0 Then
+    'Determine the tile that has been clicked on by considering the size of the form,
+    'the position of the scroller, and the type of tileset.
+    If UCase$(GetExt(configfile.lastTileset$)) = "ISO" Then
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
+        tileX = Int(x / 64)
+    Else
         'Not isometric.
         tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)   'width of window.
         tileX = Int(x / 32)                                                        'x-tile clicked.
-    Else
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(x / 64)
     End If
     
     tilesHigh = Int((currentTilesetForm.Height / Screen.TwipsPerPixelY) / 32)
@@ -3352,12 +3348,25 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x 
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
     tileNumber = tileNumber + (tilesetScroller.value * tilesWide)       'Add the rows that have been scrolled.
     
-    'Fix:Check we've not selected a tile that isn't in the set.
+    'Check we've not selected a tile that isn't in the set.
     If tileNumber > tileset.tilesInSet Then Exit Sub
     
     setFilename = configfile.lastTileset & CStr(tileNumber)
-    'inform the system that the set filename has changed. For loading into whichever editor is active.
-    Call activeForm.changeSelectedTile(setFilename$)
+    
+    'Inform the system that the set filename has changed. For loading into whichever editor is active.
+    formType = activeForm.formType
+    Select Case formType
+        Case FT_BOARD, FT_ANIMATION, FT_TILEBITMAP, FT_TILEANIM
+            'These editors have specific uses for the tileset browser.
+            Call activeForm.changeSelectedTile(setFilename)
+        Case Else
+            'It's not a form that uses the tile browser, so load it in the tile editor.
+            Dim newTile As Form
+            Set newTile = New tileedit
+            Set activeTile = newTile
+            activeTile.Show
+            Call activeTile.openFile(projectPath & tilePath & setFilename)
+    End Select
 
 End Sub
 
@@ -3901,7 +3910,6 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
                 popButton(3).value = 0
                 rightbar.Visible = True
                 rightbar.SetFocus
-                Call fillTree("", projectPath)      'Refill the tree every time.
             Else
                 rightbar.Visible = False
             End If
