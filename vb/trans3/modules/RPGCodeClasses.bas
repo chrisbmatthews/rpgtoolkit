@@ -1,7 +1,7 @@
 Attribute VB_Name = "RPGCodeClasses"
 '=========================================================================
 'All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+'All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '=========================================================================
 
@@ -902,7 +902,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
     On Error Resume Next
 
     Dim hClass As Long              ' Handle to use
-    Dim retVal As RPGCODE_RETURN    ' Return value
+    Dim retval As RPGCODE_RETURN    ' Return value
 
     ' Return -1 on error
     hClass = -1
@@ -920,7 +920,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         classes(hClass).strInstancedFrom = UCase(theClass)
         classes(hClass).hClass = hClass
         Call clearObject(classes(hClass), prg)
-        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retVal, theClass)
+        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
     End If
 
     ' Return a handle to the class
@@ -986,7 +986,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
     Dim arrayDepth As Long          ' Depth in arrays
     Dim value As String             ' Value of function
-    Dim retVal As RPGCODE_RETURN    ' Return value
+    Dim retval As RPGCODE_RETURN    ' Return value
     Dim begin As Long               ' Char to begin at
     Dim char As String              ' Character(s)
     Dim spacesOK As Boolean         ' Spaces are okay?
@@ -1149,7 +1149,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
         ' Check if we're to release
         If (cmdName = "RELEASE") Then
-            Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retVal, "~" & classes(hClass).strInstancedFrom)
+            Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retval, "~" & classes(hClass).strInstancedFrom)
             Call clearObject(classes(hClass), prg)
             Call killHandle(hClass)
             classes(hClass).hClass = 0
@@ -1159,15 +1159,15 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             If (isMethodMember(cmdName, hClass, prg, outside)) Then
 
                 ' Execute the method
-                Call callObjectMethod(hClass, cLine, prg, retVal, cmdName)
+                Call callObjectMethod(hClass, cLine, prg, retval, cmdName)
 
                 ' Replace text with value the method returned
-                If (retVal.dataType = DT_NUM) Then
-                    value = " " & CStr(retVal.num)
-                ElseIf (retVal.dataType = DT_LIT) Then
-                    value = " " & Chr(34) & retVal.lit & Chr(34)
-                ElseIf (retVal.dataType = DT_REFERENCE) Then
-                    value = " " & retVal.ref
+                If (retval.dataType = DT_NUM) Then
+                    value = " " & CStr(retval.num)
+                ElseIf (retval.dataType = DT_LIT) Then
+                    value = " " & Chr(34) & retval.lit & Chr(34)
+                ElseIf (retval.dataType = DT_REFERENCE) Then
+                    value = " " & retval.ref
                 End If
 
             Else

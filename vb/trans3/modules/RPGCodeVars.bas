@@ -1167,7 +1167,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
                     ' Call it
                     Call callObjectMethod(hClass, "operator!()", theProgram, rV, "operator!")
                     ' Return and leave
-                    If (rV.dataType = DT_REFERNCE) Then
+                    If (rV.dataType = DT_REFERENCE) Then
                         ' Recurse
                         getVariable = getVariable(rV.ref, lit, num, theProgram)
                         Exit Function
@@ -1179,7 +1179,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
                     ' Call it
                     Call callObjectMethod(hClass, "operator$()", theProgram, rV, "operator$")
                     ' Return and leave
-                    If (rV.dataType = DT_REFERNCE) Then
+                    If (rV.dataType = DT_REFERENCE) Then
                         ' Recurse
                         getVariable = getVariable(rV.ref, lit, num, theProgram)
                         Exit Function

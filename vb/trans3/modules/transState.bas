@@ -19,7 +19,7 @@ Public playerListAr(4) As String          '"Handles" of 5 (0-4) characters on te
 Public playerFile(4) As String            'Filenames of 5 chars
 Public otherPlayers(25) As String         'filenames of 25 other players that used to be equipped (0-25)
 Public otherPlayersHandle(25) As String   'handles of 25 other players that used to be equipped (0-25)
-Public inv As New CInventory            'global inventory
+Public inv As New CInventory              'global inventory
 Public playerEquip(16, 4) As String       'What is equipped on each player (filename)
 Public equipList(16, 4) As String         'What is equipped on each player (handle)
 Public equipHPadd(4) As Long              'amount of HP added because of equipment.

@@ -843,7 +843,7 @@ Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeP
 
     On Error Resume Next
 
-    'Declarations...
+    ' Declarations...
     Dim ret() As parameters
     Dim count As Long
     Dim brackets As String
@@ -852,11 +852,13 @@ Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeP
     Dim num As Double
     Dim dataType As RPGC_DT
 
-    'Get the parameters...
+    ' Get the parameters...
     count = CountData(Text)
     brackets = GetBrackets(Text)
     For a = 1 To count
-        dataType = getValue(Trim(GetElement(brackets, a)), lit, num, theProgram)
+        Dim theElem As String
+        theElem = Trim(GetElement(brackets, a))
+        dataType = getValue(theElem, lit, num, theProgram)
         ReDim Preserve ret(a - 1)
         Select Case dataType
             Case DT_LIT
@@ -866,10 +868,10 @@ Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeP
                 ret(a - 1).dataType = DT_NUM
                 ret(a - 1).num = num
         End Select
-        ret(a - 1).dat = GetElement(brackets, a)
+        ret(a - 1).dat = theElem
     Next a
 
-    'Pass back the data...
+    ' Pass back the data...
     GetParameters = ret()
 
 End Function
@@ -1245,22 +1247,22 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
     ' Splice out the object's overloaded [] operator, if existent
     If (hClass <> 0) Then
         ' Create a return value
-        Dim retVal As RPGCODE_RETURN
+        Dim retval As RPGCODE_RETURN
         ' Call the method
         If (arrayElements(0).dataType = DT_LIT) Then
-            Call callObjectMethod(hClass, "operator[](" & Chr(34) & arrayElements(0).lit & Chr(34) & ")", prg, retVal, "operator[]")
+            Call callObjectMethod(hClass, "operator[](" & Chr(34) & arrayElements(0).lit & Chr(34) & ")", prg, retval, "operator[]")
         Else
-            Call callObjectMethod(hClass, "operator[](" & CStr(arrayElements(0).num) & ")", prg, retVal, "operator[]")
+            Call callObjectMethod(hClass, "operator[](" & CStr(arrayElements(0).num) & ")", prg, retval, "operator[]")
         End If
         ' Make sure we got a reference
-        If (retVal.dataType <> DT_REFERENCE) Then
+        If (retval.dataType <> DT_REFERENCE) Then
             Call debugger("Overloaded [] operator must return a reference to a variable-- " & variable)
             Exit Function
         End If
         ' Vold the data in between the []s
         arrayElements(0).dataType = DT_VOID
         ' Set in the new variable name
-        variableName = retVal.ref
+        variableName = retval.ref
         ' Check for postfixed sign
         Dim postFix As String
         postFix = Right(variableName, 1)
