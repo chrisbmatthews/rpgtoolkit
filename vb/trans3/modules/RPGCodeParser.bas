@@ -14,7 +14,6 @@ Option Explicit
 '=========================================================================
 ' Integral variables
 '=========================================================================
-
 Public Type parameters          'rpgcode parmater structure
     num As Double               '  numerical
     lit As String               '  literal
@@ -25,9 +24,9 @@ End Type
 '=========================================================================
 ' Returns the name of the method from a method delcaration
 '=========================================================================
-Public Function GetMethodName(ByVal Text As String, ByRef thePrg As RPGCodeProgram) As String
+Public Function GetMethodName(ByVal Text As String) As String
 
-    On Error GoTo errorhandler
+    On Error Resume Next
     
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     Dim Length As Long
@@ -42,11 +41,9 @@ Public Function GetMethodName(ByVal Text As String, ByRef thePrg As RPGCodeProgr
         'Find #
         part$ = Mid$(dataUse$, t, 1)
         If part$ <> " " And part$ <> Chr$(9) And part$ <> "#" Then
-            If thePrg.autoCommand Then
-                startHere = t - 1
-                If startHere = 0 Then startHere = 1
-                Exit For
-            End If
+            startHere = t - 1
+            If startHere = 0 Then startHere = 1
+            Exit For
         End If
         If part$ = "#" Then
             startHere = t
@@ -79,12 +76,6 @@ Public Function GetMethodName(ByVal Text As String, ByRef thePrg As RPGCodeProgr
     Next t
     GetMethodName = mName$
 
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 '=========================================================================

@@ -21,7 +21,7 @@ Public Sub Main()
     Call BoardInit(boardList(activeBoardIndex).theData)
     Call TileAnmClear(tileAnmList(activeTileAnmIndex).theData)
     Call InitTkGfx
-    Call InitCanvasEngine
+    Call initCanvasEngine
     Call initDirectories
     Call initBoardAndTileEditor
     Call initPlayers
@@ -111,8 +111,8 @@ Private Sub initBoardAndTileEditor()
         Next Y
     Next X
     boardList(activeBoardIndex).theData.brdColor = vbQBColor(15)
-    boardList(activeBoardIndex).theData.Bsizex = 19
-    boardList(activeBoardIndex).theData.Bsizey = 11
+    boardList(activeBoardIndex).theData.bSizeX = 19
+    boardList(activeBoardIndex).theData.bSizeY = 11
 End Sub
 
 Private Sub initLocalization()

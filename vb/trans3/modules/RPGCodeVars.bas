@@ -74,25 +74,25 @@ End Sub
 ' Determines type of text passed in
 '=========================================================================
 Public Function dataType( _
-                            ByVal Text As String, _
+                            ByVal text As String, _
                             Optional ByRef equType As RPGC_DT = -1 _
                                                                      ) As RPGC_DT
 
     On Error Resume Next
 
-    Dim Length As Long      'Length of text
+    Dim length As Long      'Length of text
     Dim dType As RPGC_DT    'Data type
     Dim p As Long           'Position
     Dim part As String      'Part of string
     Dim ret As Double       'Return from CDbl()
     Dim errors As Boolean   'Was there an error?
 
-    Length = Len(Text)      'Get the text's length
+    length = Len(text)      'Get the text's length
     dType = -1              'Flag we haven't got a type yet
 
     'Check if we have a command
-    For p = 1 To Length
-        part = Mid(Text, p, 1)
+    For p = 1 To length
+        part = Mid(text, p, 1)
         If part = Chr(34) Then
             Exit For
         ElseIf (part = "(") Or (part = "#") Then
@@ -103,7 +103,7 @@ Public Function dataType( _
 
     'Haven't got it yet; check right most character for type character (! or $)
     If dType = -1 Then
-        part = Right(Trim(replaceOutsideQuotes(Text, vbTab, "")), 1)
+        part = Right(Trim(replaceOutsideQuotes(text, vbTab, "")), 1)
         If part = "$" Then
             dType = DT_LIT
         ElseIf part = "!" Then
@@ -118,7 +118,7 @@ Public Function dataType( _
         On Error GoTo dataTypeErr
 
         'Try to change the text to a double
-        ret = CDbl(Text)
+        ret = CDbl(text)
 
         If (errors) Then
             'If we got here, it's an error so it must be a string
@@ -132,7 +132,7 @@ Public Function dataType( _
 
     'Before we leave, check if there is an equation
     Dim equResult As RPGC_DT
-    If isEquation(Text, equResult) Then
+    If isEquation(text, equResult) Then
         dType = DT_EQUATION
         If equType = -1 Then
             dType = equResult
@@ -159,17 +159,17 @@ End Function
 Public Function getRedirect(ByVal originalMethod As String) As String
 
     On Error Resume Next
-    Dim Length As Long
+    Dim length As Long
     
     originalMethod = UCase$(removeChar(originalMethod, "#"))
     If redirectExists(originalMethod) Then
         Dim getStr As String * 4048
-        Length = RPGCGetRedirect(originalMethod, getStr)
-        If Length = 0 Then
+        length = RPGCGetRedirect(originalMethod, getStr)
+        If length = 0 Then
             getRedirect = originalMethod
             Exit Function
         End If
-        getRedirect = Mid$(getStr, 1, Length)
+        getRedirect = Mid$(getStr, 1, length)
     Else
         getRedirect = ""
     End If
@@ -184,14 +184,14 @@ Public Function getRedirectName(ByVal Index As Long) As String
     On Error Resume Next
     
     Dim max As Long
-    Dim Length As Long
+    Dim length As Long
     max = RPGCCountRedirects()
     If Index > max - 1 Or Index < 0 Then
         getRedirectName = ""
     Else
         Dim inBuf As String * 4024
-        Length = RPGCGetRedirectName(Index, inBuf)
-        getRedirectName = Mid$(inBuf, 1, Length)
+        length = RPGCGetRedirectName(Index, inBuf)
+        getRedirectName = Mid$(inBuf, 1, length)
     End If
 
 End Function
@@ -333,14 +333,14 @@ End Function
 '=========================================================================
 ' Gets the value of the text passed
 '=========================================================================
-Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
+Public Function getValue(ByVal text As String, ByRef lit As String, ByRef num As Double, ByRef theProgram As RPGCodeProgram) As RPGC_DT
 
     On Error Resume Next
 
     Dim numA As Double      'Numerical value
     Dim litA As String      'Literal value
     Dim p As Long           'For loop control variable
-    Dim Length As Long      'Length of text
+    Dim length As Long      'Length of text
     Dim part As String      'A character
     Dim checkIt As Boolean  'In quotes?
     Dim newPos As Long      'New position
@@ -348,12 +348,12 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
     Dim equTyp As RPGC_DT   'Type of equation
 
     'Switch on the data type
-    Select Case dataType(Text, equTyp)
+    Select Case dataType(text, equTyp)
 
         Case DT_NUM         'NUMERICAL VARIABLE
                             '------------------
 
-            If getVariable(Text, litA, numA, theProgram) = DT_NUM Then
+            If getVariable(text, litA, numA, theProgram) = DT_NUM Then
                 'Found one!
                 num = numA
             End If
@@ -362,7 +362,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
         Case DT_LIT         'LITERAL VARIABLE
                             '----------------
 
-            If getVariable(Text, litA, numA, theProgram) = DT_LIT Then
+            If getVariable(text, litA, numA, theProgram) = DT_LIT Then
                 'Found one!
                 lit = litA
             End If
@@ -372,11 +372,11 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                             '------
 
             'Get the length of the text
-            Length = Len(Text)
+            length = Len(text)
 
             'Check if text is in quotes
-            For p = 1 To Length
-                If Mid(Text, p, 1) = Chr(34) Then
+            For p = 1 To length
+                If Mid(text, p, 1) = Chr(34) Then
                     checkIt = True
                     Exit For
                 End If
@@ -384,14 +384,14 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
 
             If (checkIt) Then
                 'It is!
-                For p = 1 To Length
-                    If Mid(Text, p, 1) = Chr(34) Then
+                For p = 1 To length
+                    If Mid(text, p, 1) = Chr(34) Then
                         newPos = p
                         Exit For
                     End If
                 Next p
-                For p = (newPos + 1) To (Length)
-                    part = Mid(Text, p, 1)
+                For p = (newPos + 1) To (length)
+                    part = Mid(text, p, 1)
                     If (part = Chr(34)) Or (part = "") Then
                         lit = sendText
                         getValue = DT_LIT
@@ -402,21 +402,21 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                 Next p
             Else
                 'It's not!
-                lit = Text
+                lit = text
                 getValue = DT_LIT
             End If
 
         Case DT_NUMBER      'NUMBER
                             '------
 
-            num = CDbl(Text)
+            num = CDbl(text)
             getValue = DT_NUM
 
         Case DT_EQUATION    'EQUATION
                             '--------
 
             Dim equVal As parameters
-            equVal = RPGCodeEquation(Text, theProgram, equTyp)
+            equVal = RPGCodeEquation(text, theProgram, equTyp)
             With equVal
                 Select Case .dataType
                     Case DT_NUM: num = .num
@@ -469,14 +469,14 @@ End Sub
 Public Function GetNumName(ByVal Index As Integer, ByVal heapID As Long) As String
     On Error Resume Next
     
-    Dim max As Long, Length As Long
+    Dim max As Long, length As Long
     max = RPGCCountNum(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetNumName = ""
     Else
         Dim inBuf As String * 4024
-        Length = RPGCGetNumName(Index, inBuf, heapID)
-        GetNumName = Mid$(inBuf, 1, Length)
+        length = RPGCGetNumName(Index, inBuf, heapID)
+        GetNumName = Mid$(inBuf, 1, length)
     End If
 End Function
 
@@ -486,14 +486,14 @@ End Function
 Public Function GetLitName(ByVal Index As Integer, ByVal heapID As Long) As String
     On Error Resume Next
     
-    Dim max As Long, Length As Long
+    Dim max As Long, length As Long
     max = RPGCCountLit(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetLitName = ""
     Else
         Dim inBuf As String * 4024
-        Length = RPGCGetLitName(Index, inBuf, heapID)
-        GetLitName = Mid$(inBuf, 1, Length)
+        length = RPGCGetLitName(Index, inBuf, heapID)
+        GetLitName = Mid$(inBuf, 1, length)
     End If
 End Function
 
@@ -581,10 +581,10 @@ Public Function variType(ByVal var As String, ByVal heapID As Long) As Long
 
     On Error GoTo errorhandler
     
-    Dim a As String, Length As Long, pos As Long, typeIt As Long, part As String
+    Dim a As String, length As Long, pos As Long, typeIt As Long, part As String
     a$ = var$
-    Length = Len(a$)
-    For pos = 1 To Length
+    length = Len(a$)
+    For pos = 1 To length
         part$ = Mid$(a$, pos, 1)
         If part$ = "$" Then typeIt = 1
         If part$ = "!" Then typeIt = 2
@@ -795,6 +795,7 @@ Public Function initVarSystem() As Boolean
     On Error GoTo anErr
     
     Call RPGCInit
+
     bRPGCStarted = True
     initVarSystem = bRPGCStarted
     globalHeap = RPGCCreateHeap()
@@ -845,14 +846,14 @@ End Function
 '=========================================================================
 Public Function GetLitVar(ByVal varname As String, ByVal heapID As Long) As String
     On Error Resume Next
-    Dim l As Long, Length As Long
+    Dim l As Long, length As Long
     
     l = RPGCGetLitVarLen(UCase$(varname), heapID)
     If l > 0 Then
         l = l + 1
         Dim getStr As String * 4048
-        Length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
-        GetLitVar = Mid$(getStr, 1, Length)
+        length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
+        GetLitVar = Mid$(getStr, 1, length)
     Else
         GetLitVar = ""
     End If

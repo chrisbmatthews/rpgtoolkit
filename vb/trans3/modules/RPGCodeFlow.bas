@@ -69,14 +69,14 @@ End Property
 '=========================================================================
 ' Pops up the rpgcode debugger
 '=========================================================================
-Public Sub debugger(ByVal Text As String)
+Public Sub debugger(ByVal text As String)
 
     On Error Resume Next
 
     If Not checkErrorHandling() Then
         If debugYN = 1 Then
             Call debugwin.Show
-            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
+            debugwin.buglist.text = debugwin.buglist.text & text & vbCrLf
             Call processEvent
         Else
             Call Unload(debugwin)
@@ -116,7 +116,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
+Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
 
     On Error GoTo errorhandler
 
@@ -127,12 +127,12 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If commandName$ = "" Then
-        mName = GetCommandName(Text, theProgram)   'get command name without extra info
+        mName = GetCommandName(text, theProgram)   'get command name without extra info
     Else
         mName = commandName
     End If
 
-    If QueryPlugins(mName, Text, retval) Then
+    If QueryPlugins(mName, text, retval) Then
         'Found the command in a plugin, don't waste time checking for a method!
         Exit Sub
     End If
@@ -150,10 +150,10 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     oldPos = theProgram.programPos
     'Now to find that method name
     foundIt = -1
-    For t = 0 To theProgram.Length
+    For t = 0 To theProgram.length
         test$ = GetCommandName$(theProgram.program$(t), theProgram)  'get command name without extra info
         If UCase$(test$) = "METHOD" Then
-            itis$ = GetMethodName(theProgram.program$(t), theProgram)
+            itis$ = GetMethodName(theProgram.program$(t))
             If UCase$(itis$) = UCase$(mName$) Then
                 foundIt = t
                 Exit For
@@ -163,7 +163,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     If foundIt = -1 Then
         'Method doesn't exist!
         If (Not noMethodNotFound) Then
-            Call debugger("Error: Method not found!-- " & Text$)
+            Call debugger("Error: Method not found!-- " & text$)
         End If
         Exit Sub
     Else
@@ -177,7 +177,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
         
         'Get parameters from calling line
-        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
         For pList = 1 To number
             parameterList$(pList) = GetElement(dataUse$, pList)
@@ -559,7 +559,7 @@ End Sub
 ' Runs a block of code (or skips it if res = 0)
 '=========================================================================
 Public Function runBlock( _
-                            ByVal Text As String, _
+                            ByVal text As String, _
                             ByVal res As Long, _
                             ByRef prg As RPGCodeProgram _
                                                           ) As Long
@@ -830,7 +830,7 @@ Public Sub runProgram( _
         theProgram.programPos = 0
         Do While _
                    ((theProgram.programPos >= 0) _
-                   And (theProgram.programPos <= theProgram.Length) _
+                   And (theProgram.programPos <= theProgram.length) _
                    And (runningProgram))
 
             prgPos = theProgram.programPos
