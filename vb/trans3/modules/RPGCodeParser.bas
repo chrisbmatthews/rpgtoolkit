@@ -25,7 +25,7 @@ End Type
 ' Commonly used operators
 '=========================================================================
 Private m_mathSigns(26) As String
-Private m_compSigns(9) As String
+Private m_compSigns(19) As String
 
 '=========================================================================
 ' Build the sign arrays
@@ -63,15 +63,25 @@ Public Sub buildSignArrays()
 
     ' Build m_compSigns
     m_compSigns(0) = vbNullChar ' Prefixed NULL
-    m_compSigns(1) = "~="
-    m_compSigns(2) = "=="
-    m_compSigns(3) = "<="
-    m_compSigns(4) = "=<"
-    m_compSigns(5) = ">="
-    m_compSigns(6) = "=>"
-    m_compSigns(7) = ">"
-    m_compSigns(8) = "<"
-    m_compSigns(9) = "="
+    m_compSigns(1) = "|="
+    m_compSigns(2) = "&="
+    m_compSigns(3) = "`="
+    m_compSigns(4) = "%="
+    m_compSigns(5) = "+="
+    m_compSigns(6) = "-="
+    m_compSigns(7) = "++"
+    m_compSigns(8) = "--"
+    m_compSigns(9) = "*="
+    m_compSigns(10) = "/="
+    m_compSigns(11) = "~="
+    m_compSigns(12) = "=="
+    m_compSigns(13) = "<="
+    m_compSigns(14) = "=<"
+    m_compSigns(15) = ">="
+    m_compSigns(16) = "=>"
+    m_compSigns(17) = ">"
+    m_compSigns(18) = "<"
+    m_compSigns(19) = "="
 
 End Sub
 
@@ -504,10 +514,42 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
         For idx = 0 To valueUb - 1
 
-            If (signs(idx) = "=") Then
+            Dim bAssigned As Boolean, dblNewVal As Double
+            bAssigned = True
+
+            Select Case signs(idx)
+
+                Case "=": dblNewVal = numVal(idx + 1)
+                Case "+=": dblNewVal = numVal(idx) + numVal(idx + 1)
+                Case "-=": dblNewVal = numVal(idx) - numVal(idx + 1)
+                Case "*=": dblNewVal = numVal(idx) * numVal(idx + 1)
+                Case "/=": dblNewVal = numVal(idx) / numVal(idx + 1)
+                Case "|=": dblNewVal = numVal(idx) Or numVal(idx + 1)
+                Case "&=": dblNewVal = numVal(idx) And numVal(idx + 1)
+                Case "`=": dblNewVal = numVal(idx) Xor numVal(idx + 1)
+                Case "%=": dblNewVal = numVal(idx) Mod numVal(idx + 1)
+                Case "<<=": dblNewVal = numVal(idx) * 2 ^ numVal(idx + 1)
+                Case ">>=": dblNewVal = numVal(idx) / 2 ^ numVal(idx + 1)
+                Case "++"
+                    ' Increment!
+                    numVal(idx) = numVal(idx) + 1
+                    Call SetVariable(values(idx), CStr(numVal(idx)), prg)
+                    bAssigned = False
+                Case "--"
+                    ' Decrement!
+                    numVal(idx) = numVal(idx) - 1
+                    Call SetVariable(values(idx), CStr(numVal(idx)), prg)
+                    bAssigned = False
+                Case Else
+                    ' No assignment
+                    bAssigned = False
+
+            End Select
+
+            If (bAssigned) Then
 
                 ' Assignment operator
-                Call SetVariable(values(idx), CStr(numVal(idx + 1)), prg)
+                Call SetVariable(values(idx), CStr(dblNewVal), prg)
                 idx = idx + 1
                 Dim x As Long
                 For x = idx To valueUb
@@ -561,6 +603,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                     Case "<=", "=<": numVal(idx + 1) = -(numVal(idx) <= numVal(idx + 1))
                     Case ">": numVal(idx + 1) = -(numVal(idx) > numVal(idx + 1))
                     Case "<": numVal(idx + 1) = -(numVal(idx) < numVal(idx + 1))
+                    Case Else: numVal(idx + 1) = numVal(idx)
                 End Select
             End If
 
@@ -578,10 +621,16 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
         For idx = 0 To valueUb - 1
 
-            If (signs(idx) = "=") Then
+            If ((signs(idx) = "=") Or (signs(idx) = "+=")) Then
 
                 ' Assignment operator
-                Call SetVariable(values(idx), strVal(idx + 1), prg)
+                Dim strNewValue As String
+                If (signs(idx) = "+=") Then
+                    strNewValue = strVal(idx) & strVal(idx + 1)
+                Else
+                    strNewValue = strVal(idx + 1)
+                End If
+                Call SetVariable(values(idx), strNewValue, prg)
                 idx = idx + 1
                 Dim y As Long
                 For y = idx To valueUb
