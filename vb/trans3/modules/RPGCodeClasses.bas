@@ -396,7 +396,7 @@ End Function
 '=========================================================================
 ' Determine if a variable is a member of a class
 '=========================================================================
-Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg As RPGCodeProgram) As Boolean
+Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg As RPGCodeProgram, Optional ByVal outside As Boolean) As Boolean
 
     On Error Resume Next
 
@@ -418,7 +418,7 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
     'For each scope
     For scopeIdx = 0 To 1
         'Get the scope
-        If (scopeIdx = 0) Then
+        If (scopeIdx = 1) Then
             'Private scope
             scope = theClass.scopePrivate
         Else
@@ -433,6 +433,10 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
                 Exit Function
             End If
         Next idx
+        If (outside) Then
+            'Don't check private scope
+            Exit Function
+        End If
     Next scopeIdx
 
     'It we get here, then this variable is not a member of the class
@@ -442,7 +446,7 @@ End Function
 '=========================================================================
 ' Determine if a method is a member of a class
 '=========================================================================
-Public Function isMethodMember(ByVal methodName As String, ByVal hClass As Long, ByRef prg As RPGCodeProgram) As Boolean
+Public Function isMethodMember(ByVal methodName As String, ByVal hClass As Long, ByRef prg As RPGCodeProgram, Optional ByVal outside As Boolean) As Boolean
 
     On Error Resume Next
 
@@ -464,7 +468,7 @@ Public Function isMethodMember(ByVal methodName As String, ByVal hClass As Long,
     'For each scope
     For scopeIdx = 0 To 1
         'Get the scope
-        If (scopeIdx = 0) Then
+        If (scopeIdx = 1) Then
             'Private scope
             scope = theClass.scopePrivate
         Else
@@ -479,6 +483,10 @@ Public Function isMethodMember(ByVal methodName As String, ByVal hClass As Long,
                 Exit Function
             End If
         Next idx
+        If (outside) Then
+            'Don't check private scope
+            Exit Function
+        End If
     Next scopeIdx
 
     'It we get here, then this method is not a member of the class
@@ -705,6 +713,8 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     Dim varLit As String            'Literal variable
     Dim varNum As Double            'Numerical variable
     Dim varType As RPGC_DT          'Type of var
+    Dim outside As Boolean          'Calling from outside class?
+    Dim cmdName As String           'Command's name
     Dim a As Long                   'Loop var
 
     'Get location of first ->
@@ -755,6 +765,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
 
     'Record the method's command line
     cLine = ParseRPGCodeCommand(Trim(Mid(text, begin + 2, lngEnd - begin - 1)), prg)
+    If (Not var) Then cmdName = UCase(GetCommandName(cLine))
 
     'Flag we're not in quotes
     ignore = False
@@ -797,36 +808,57 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     Next a
 
     'Record the object
-    object = Trim(Mid(text, start, begin - start))
+    object = UCase(Trim(Mid(text, start, begin - start)))
 
     'Get its handle
-    If (Right(object, 1) <> "!") Then object = object & "!"
-    Call getVariable(object, object, hClassDbl, prg)
-    hClass = CLng(hClassDbl)
+    If (object <> "THIS") Then
+        If (Right(object, 1) <> "!") Then object = object & "!"
+        Call getVariable(object, object, hClassDbl, prg)
+        hClass = CLng(hClassDbl)
+    Else
+        'It's this object
+        hClass = topNestle(prg)
+    End If
+
+    'Check if we're calling from outside
+    outside = (topNestle(prg) <> hClass)
 
     If (Not var) Then
 
         'Check if we're to release
-        If (Trim(UCase((replace(replace(cLine, ")", ""), "(", "")))) = "RELEASE") Then
+        If (cmdName = "RELEASE") Then
             Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retVal)
             Call clearObject(classes(hClass), prg)
         Else
 
-            'Execute the method
-            Call callObjectMethod(hClass, cLine, prg, retVal)
+            If (isMethodMember(cmdName, hClass, prg, outside)) Then
 
-            'Replace text with value the method returned
-            If (retVal.dataType = DT_NUM) Then
-                value = " " & CStr(retVal.num)
-            ElseIf (retVal.dataType = DT_LIT) Then
-                value = " " & Chr(34) & retVal.lit & Chr(34)
+                'Execute the method
+                Call callObjectMethod(hClass, cLine, prg, retVal)
+
+                'Replace text with value the method returned
+                If (retVal.dataType = DT_NUM) Then
+                    value = " " & CStr(retVal.num)
+                ElseIf (retVal.dataType = DT_LIT) Then
+                    value = " " & Chr(34) & retVal.lit & Chr(34)
+                End If
+
+            Else
+
+                Call debugger("Error: Could not call method-- " & cLine)
+
             End If
 
         End If
 
     Else
         'It's a variable
-        value = getObjectVarName(cLine, hClass)
+        If (isVarMember(cLine, hClass, prg, outside)) Then
+            'It's a member
+            value = getObjectVarName(cLine, hClass)
+        Else
+            Call debugger("Error: Could not set " & cLine & " -- " & text)
+        End If
     End If
 
     'Complete the return string
