@@ -5,6 +5,10 @@
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
+// DirectX interface
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
 // Inclusions
 //////////////////////////////////////////////////////////////////////////
 #include "platform.h"				//Contains globals, structures,
@@ -25,14 +29,24 @@ CGDICanvas* g_pBackBuffer = NULL;	//Non-DirectX backbuffer
 //////////////////////////////////////////////////////////////////////////
 // Init DirectX
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY DXInitGfxMode( int hostHwnd, long nScreenX, long nScreenY, long nUseDirectX, long nColorDepth, long nFullScreen  )
+int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen, int* primarySurface, int* secondarySurface)
 {
 	if (InitGraphicsMode((HWND)hostHwnd, nScreenX, nScreenY, (bool)nUseDirectX, nColorDepth, (bool)nFullScreen))
-		//Success!
+	{
+		// Send out address of primary surface
+		*primarySurface = (int)&gDXInfo.lpddsPrime;
+		// Add a ref
+		gDXInfo.lpddsPrime->AddRef();
+		// Same with the secondary surface
+		*secondarySurface = (int)&gDXInfo.lpddsSecond;
+		// Add a ref
+		gDXInfo.lpddsSecond->AddRef();
+		// Success!
 		return 1;
+	}
 	else
-		//Failed!
-		return 0;
+		// Failed!
+		return NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////
