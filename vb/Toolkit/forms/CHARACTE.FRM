@@ -1485,10 +1485,10 @@ Private Sub Command6_Click()
     advancedOn = Not (advancedOn)
     If advancedOn Then
         Command6.Caption = LoadStringLoc(911, "Advanced <<")
-        activePlayer.Width = 9600
+        activePlayer.width = 9600
     Else
         Command6.Caption = LoadStringLoc(912, "Advanced >>")
-        activePlayer.Width = 4440
+        activePlayer.width = 4440
     End If
 End Sub
 
@@ -1630,35 +1630,11 @@ ErrorHandler:
 End Sub
 
 Private Sub Form_Activate()
-    On Error GoTo ErrorHandler
-    
+    On Error Resume Next
     Set activePlayer = Me
     Set activeForm = Me
     activePlayerIndex = dataIndex
-    
-    'extras
-    tkMainForm.animationExtras.Visible = False
-    tkMainForm.bottomFrame.Visible = False
-    tkMainForm.tileExtras.Visible = False
-    tkMainForm.tileBmpExtras.Visible = False
-    
-    'tools
-    tkMainForm.tilebmpTools.Visible = False
-    tkMainForm.animationTools.Visible = False
-    tkMainForm.rpgcodeTools.Visible = False
-    tkMainForm.tileTools.Visible = False
-    tkMainForm.tileTools.Top = tkMainForm.toolTop
-    tkMainForm.boardTools.Visible = False
-    
-    filename$(2) = ""
-    
-    Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call hideAllTools
 End Sub
 
 Private Sub Form_Load()
@@ -1673,7 +1649,7 @@ Private Sub Form_Load()
        
     Y = Screen.height
     X = Screen.height * (1 / 0.75)
-    mainX = activePlayer.Width
+    mainX = activePlayer.width
     mainY = activePlayer.height
     dx = (X - mainX) / 2
     dy = (Y - mainY) / 2
