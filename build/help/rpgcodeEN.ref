@@ -3,9 +3,9 @@ Version 2.1
 Copyright 1999 - 2002 By Christopher B. Matthews
 
 :COMMAND
-This list was last updated 4/30/04
+This list was last updated 12/23/04
 :DESCR
-This list was last updated for version 3.0.2
+This list was last updated for version 3.0.5
 
 :COMMAND
 @
@@ -20,37 +20,67 @@ This list was last updated for version 3.0.2
 - Anything following this is ignored by the computer.
 
 :COMMAND
-AddPlayer( filename$ )
+#autolocal
+:DESCR
+#autolocal
+- Force all implicitly declared variables to be local.
+
+:COMMAND
+#global handle value
+:DESCR
+#global var! 9
+- Creates a global variable or object as defined by handle with the specified value.
+
+:COMMAND
+#include filename$
+:DESCR
+#include "system.prg"
+- Include a file intro the currently running program as defined by filename$
+
+:COMMAND
+AddPlayer(filename$)
 :DESCR
 AddPlayer("ralar.tem")
 - Add a player to the party as defined by filename$.
 
 :COMMAND
-AI( level! )
+AI(level!)
 :DESCR
 AI(3)
 - In a fight, causes an enemy to use a move based upon a specific AI level.
 
 :COMMAND
-Animation( file$, x!, y! )
+Animation(file$, x!, y!)
 :DESCR
 Animation("explosion.anm", 100, 100)
 - Run an animation file at a specified x, y position.
 
 :COMMAND
-ApplyStatus( handle$, file$ )
+ApplyStatus(handle$, file$)
 :DESCR
 ApplyStatus("Frap", "Poison.ste")
 - Apply a status effect to a player or enemy.
 
 :COMMAND
-AttackAll( fp! )
+dest$ = AppPath()
+:DESCR
+path$ = AppPath()
+- Returns the full path to the RPGToolkit.
+
+:COMMAND
+AttackAll(fp!)
 :DESCR
 AttackAll(100)
 - Attacks all targeted entities with a speciaifed FP.
 
 :COMMAND
-Bitmap( filename$ )
+AutoLocal()
+:DESCR
+AutoLocal()
+- Forces all implicitly declared variables to be local.
+
+:COMMAND
+Bitmap(filename$)
 :DESCR
 Bitmap("pic.bmp")
 - Display bitmap.
@@ -62,16 +92,10 @@ Bold("on")
 - Turns text bold on or off.
 
 :COMMAND
-Branch( :label name )
+Branch(:label name)
 :DESCR
 Branch(:this label)
 - Branches program to new location defined by :label name.
-
-:COMMAND
-Break( )
-:DESCR
-Break( )
-- Pop up RPGCode debugger (breakpoint).  Powerhouse Edition only.
 
 :COMMAND
 CallPlayerSwap()
@@ -80,46 +104,52 @@ CallPlayerSwap()
 - Calls player swap menu.
 
 :COMMAND
-CallShop( item1$, item2$, ... )
+CallShop(item1$, item2$, ...)
 :DESCR
 CallShop("sword.itm", "helmet.itm")
 - Opens a shop.
 
 :COMMAND
-Change( program$ )
+Change(program$)
 :DESCR
 Change("another.prg")
 - Change the filename of the currently running program to program$.
 
 :COMMAND
-CharAt( text$,position!,dest$ )
+CharAt(text$,position!,dest$)
 :DESCR
 CharAt("hello",3,dest$)
 - Puts the position!th character of text$ in dest$
 
 :COMMAND
-CastInt( source!, dest! )
+CastInt(source!, dest!)
 :DESCR
 CastInt(1.22,dest!)
 - Casts any numerical value to an integer.
 
 :COMMAND
-CastLit( source!, dest$ )
+CastLit(source!, dest$)
 :DESCR
 CastLit(12,dest$)
 - Casts any numerical value to a literal.
 
 :COMMAND
-CastNum( source$, dest! )
+CastNum(source$, dest!)
 :DESCR
 CastNum("123",dest!)
 - Casts any literal value to a numerical.
 
 :COMMAND
-CheckButton( x!, y!, buttonNum! )
+CheckButton(x!, y!, buttonNum!)
 :DESCR
-CheckButton( 20, 20, buttonNum! )
+CheckButton(20, 20, buttonNum!)
 - Checks if a button was pressed in an x,y location.  Returns the number pressed.
+
+:COMMAND
+dest$ = Chr(char!)
+:DESCR
+show(chr(3))
+- Returns the character equivalent to the supplied number.
 
 :COMMAND
 Clear()
@@ -146,7 +176,7 @@ CloseFile("start.brd")
 - Closes an open file. Added by KSNiloc.
 
 :COMMAND
-Color( color_code! )
+Color(color_code!)
 :DESCR
 Color(12)
 - Changes the text color to a color defined by color_code!, a DOS palette number.
@@ -158,37 +188,73 @@ Color(255,0,0)
 - Changes the text color an RGB defined color.
 
 :COMMAND
-Cos( deg!, dest!)
+Cos(deg!, dest!)
 :DESCR
-Cos( 90, dest! )
+Cos(90, dest!)
 - Calculate cosine of an angle.
 
 :COMMAND
-CreateItem( filename$, mem_pos! )
+cnvID! = CreateCanvas(width!, height!)
 :DESCR
-CreateItem("soldier.itm", mem_loc! )
+cnv! = CreateCanvas(100, 100)
+- Creates a new canvas, which you can draw to using the returned ID.
+
+:COMMAND
+mapID! = CreateCursorMap()
+:DESCR
+cMap! = CreateCursorMap()
+- Creates a new cursor map, which can be used with the returned ID.
+
+:COMMAND
+CreateItem(filename$, mem_pos!)
+:DESCR
+CreateItem("soldier.itm", mem_loc!)
 - Loads an item and returns the slot number it was placed in.
 
 :COMMAND
-Debug( on/off )
+CursorMapAdd(x!, y!, mapID!)
+:DESCR
+CursorMapAdd(30, 100, cMap!)
+- Adds a map position to cMap! at the specified x! and y! positions.
+
+:COMMAND
+CursorMapHand(image$[, stretchNY!])
+:DESCR
+CursorMapHand("hand.gif", 0)
+- Changes the hand image used in cursor maps to the specified image$.
+
+:COMMAND
+dest! = CursorMapRun(mapID!)
+:DESCR
+res! = CursorMapRun(cMap!)
+- Returns the result of mapID! to dest!.
+
+:COMMAND
+Debug(on/off)
 :DESCR
 Debug("on")
 - Turns the RPGCode debug window on or off.
 
 :COMMAND
-Delay( seconds! )
+Debugger(message$)
+:DESCR
+Debugger("Error: You made a mistake!")
+- Pops up the debug window with a message in it.
+
+:COMMAND
+Delay(seconds!)
 :DESCR
 Delay(1)
 - Pauses the program for a defined number of seconds.
 
 :COMMAND
-DestroyItem( mem_pos! )
+DestroyItem(mem_pos!)
 :DESCR
 DestroyItem(5)
 - Destroys the item at a memory slot.
 
 :COMMAND
-DestroyPlayer( handle_or_filename$ )
+DestroyPlayer(handle_or_filename$)
 :DESCR
 DestoryPlayer("Frap")
 - Completely removes a player from memory (cannot be restored)
@@ -206,46 +272,58 @@ Done()
 - Ends program without refreshing screen.
 
 :COMMAND
-Dos()
-:DESCR
-Dos()
-- Exits to operating system (Dos or Windows)
-
-:COMMAND
-DrainAll( smp! )
+DrainAll(smp!)
 :DESCR
 DrainAll(100)
 - Drains SMP from all targeted entities.
 
 :COMMAND
-DrawCircle( x!, y!, radius! [, startangle!, endangle!])
+DrawCanvas(cnvID!, x!, y![, width!, height, destCnv!])
+:DESCR
+DrawCanvas(cnv!, 100, 100)
+- Draws a canvas to the screen as defined by cnvID! at the specified x! and y! coordinates.
+
+:COMMAND
+DrawCanvasTransparent(cnvID!, x!, y!, r!, g!, b![, width!, height!, destCnv!])
+:DESCR
+DrawCanvasTransparent(cMap!, 100, 100, 0, 0, 0)
+- Draws a canvas to the screen treating r!,g!,b! as the transparent color.
+
+:COMMAND
+DrawCircle(x!, y!, radius! [, startangle!, endangle!])
 :DESCR
 DrawCircle(200, 200, 30)
 - Draws a circle with a specified radius and centre point. Optionally specify start and end angles to create an arc.
 
 :COMMAND
-DrawEnemy( file$, x!, y! )
-:DESCR
-DrawEnemy("mole.ene", 10, 10)
-- Draws an enemy.
-
-:COMMAND
-DrawLine( x1!, y1!, x2!, y2! )
+DrawLine(x1!, y1!, x2!, y2!)
 :DESCR
 DrawLine(10,10,100,100)
 - Draws a line from (x1!,y1!) to (x2!,y2!) using the current color.
 
 :COMMAND
-DrawRect( x1!, y1!, x2!, y2! )
+DrawRect(x1!, y1!, x2!, y2!)
 :DESCR
 DrawRect(10,10,100,100)
 - Draws a rectangle from (x1!,y1!) to (x2!,y2!) using the current color.
 
 :COMMAND
-Earthquake( intensity! )
+Earthquake(intensity!)
 :DESCR
-EarthQuake( 10 )
+EarthQuake(10)
 - Causes an earthquake.
+
+:COMMAND
+Else { code }
+:DESCR
+Else { mwin("Hello!") }
+- Runs the block of code inside it's braces if the preceeding if statement is false.
+
+:COMMAND
+ElseIf (condition) { code }
+:DESCR
+ElseIf (i! == 5) { mwin("i! is 5") }
+- Runs the block of code inside it's braces if the preceeding if statement is false.
 
 :COMMAND
 Empty()
@@ -260,13 +338,19 @@ End()
 - End program or function block.
 
 :COMMAND
-Equip( handle$, body_location!, filename$ )
+EndAnimation(animID!)
+:DESCR
+EndAnimation(anm!)
+- End an animation as defined by the ID of the animation.
+
+:COMMAND
+Equip(handle$, body_location!, filename$)
 :DESCR
 Equip("Frap",4,"sword.itm")
 - Equips an item on the player defined by handle$, at the specified body location.
 
 :COMMAND
-EraseItem( itemnum! )
+EraseItem(itemnum!)
 :DESCR
 EraseItem(5)
 - Erases an item from the screen.
@@ -278,76 +362,70 @@ ErasePlayer("Tano")
 - Erases a player from the screen.
 
 :COMMAND
-Fade( type! )
+Fade(type!)
 :DESCR
 Fade(1)
 - "Fades" the screen using a fadetype number.  If not included, type! is assumed to be 1.
 
 :COMMAND
-Fbranch( :label name )
-:DESCR
-Fbranch(:function)
-- Function branch to a specified label.
-
-:COMMAND
-Fight( skill!, background$ )
+Fight(skill!, background$)
 :DESCR
 Fight(12,"back.bkg")
 - Fight an enemy of skill! on a background graphic defined by background$
 
 :COMMAND
-FightEnemy( enemy$, background$ )
+FightEnemy(enemy$, background$)
 :DESCR
 FightEnemy("badguy.ene","back.bkg")
 - Fight the enemy saved in the enemy$ filename, using the specified background.
 
 :COMMAND
-FightMenuGraphic( file$ )
+FightMenuGraphic(file$)
 :DESCR
 FightMenuGraphic("bkg.jpg")
 - Set a background image on the fight menu.
 
 :COMMAND
-FileInput( file$ )
+FileInput(file$)
 :DESCR
 FileInput("start.brd")
 - Returns data from a file. Added by KSNiloc.
 
 :COMMAND
-FilePrint( file$, data$ )
+FilePrint(file$, data$)
 :DESCR
 FilePrint("start.brd")
 - Prints data to a file. Added by KSNiloc.
 
 FilePrint(file$,data$)
 :COMMAND
-FillCircle( x!, y!, radius!)
+FillCircle(x!, y!, radius!)
 :DESCR
 FillCircle(200, 200, 30)
 - Draws a filled circle with a specified radius and centre point.
 
 :COMMAND
-FillRect( x1!, y1!, x2!, y2! )
+FillRect(x1!, y1!, x2!, y2!)
 :DESCR
 FillRect(10,10,100,100)
 - Draws a filled rectangle from (x1!,y1!) to (x2!,y2!) using the current color.
 
 :COMMAND
-Font( filename$ )
+Font(filename$)
 :DESCR
 Font("cursive.fnt")
 - Loads a font.
 
 :COMMAND
-FontSize( size! )
+FontSize(size!)
 :DESCR
 FontSize(12)
 - Sets the size (in pixels) of the font.
 
 :COMMAND
-For (initial; condition; increment)
+for (initial; condition; increment)
 :DESCR
-For (x!=0; x!<=3; x!=x!+1) { commands }
+for (x! = 0; x! <= 3; x!++) { commands }
 - Runs a for loop.
 
 :COMMAND
@@ -357,136 +435,190 @@ ForceRedraw()
 - Forces the board to be redrawn.
 
 :COMMAND
-GiveEXP( handle$, amount! )
+GameSpeed(speed!)
+:DESCR
+GameSpeed(3)
+- Changes the general speed of the game.
+
+:COMMAND
+GiveEXP(handle$, amount!)
 :DESCR
 GiveEXP("Frap",100)
 - Gives a certain amount of experience to the player defined by handle$.
 
 :COMMAND
-GiveGP( amount! )
+GiveGP(amount!)
 :DESCR
 GiveGP(100)
 - Gives the player the specified amount of gold.
 
 :COMMAND
-GiveHP( handle$, amount! )
+GiveHP(handle$, amount!)
 :DESCR
 GiveHP("Frap",100)
 - Gives a certain amount of health to the player defined by handle$.
 
 :COMMAND
-GiveItem( filename$ )
+GiveItem(filename$)
 :DESCR
 GiveItem("sword.itm")
 - Gives an item to the player.
 
 :COMMAND
-GiveSMP( handle$, amount! )
+GiveSMP(handle$, amount!)
 :DESCR
 GiveSMP("Frap",100)
 - Gives a certain amount of special move power to the player defined by handle$.
 
 :COMMAND
-Get( target$ )
+Get(target$)
 :DESCR
 Get(target$)
 - Get key from the keyboardbuffer and put it in target$
 
 :COMMAND
-GetBoardTile( x!, y!, layer!, dest$ )
+dest$ = GetBoardName()
 :DESCR
-GetBoardTile( 5, 5, 2, d$ )
+brd$ = GetBoardName()
+- Return the current boards name to dest$.
+
+:COMMAND
+GetBoardTile(x!, y!, layer!, dest$)
+:DESCR
+GetBoardTile(5, 5, 2, d$)
 - Get the filename of the tile at a board position.
 
 :COMMAND
-GetBoardTileType( x!, y!, layer!, dest$ )
+GetBoardTileType(x!, y!, layer!, dest$)
 :DESCR
-GetBoardTileType( 5, 5, 2, d$ )
+GetBoardTileType(5, 5, 2, d$)
 - Get the tiletype of the tile at a board position.
 
 :COMMAND
-GetColor( r!, g!, b! )
+GetColor(r!, g!, b!)
 :DESCR
-GetColor( r!, g!, b! )
+GetColor(r!, g!, b!)
 - Gets the currently set color (Set by ColorRGB).
 
 :COMMAND
-GetCorner( x!, y! )
+GetCorner(x!, y!)
 :DESCR
-GetCorner( x!, y! )
+GetCorner(x!, y!)
 - Gets the x and y coords of the top corner of a scrolling board.
 
 :COMMAND
-GetDP( handle$, dest! )
+GetDP(handle$, dest!)
 :DESCR
 GetDP("Frap",dest!)
 - Puts the current DP level of the player defined by handle$ into dest!.
 
 :COMMAND
-GetFontSize( dest!)
+GetFontSize(dest!)
 :DESCR
-GetFontSize( dest! )
+GetFontSize(dest!)
 - Gets current font size.
 
 :COMMAND
-GetFP( handle$, dest! )
+GetFP(handle$, dest!)
 :DESCR
 GetFP("Frap",dest!)
 - Puts the current FP level of the player defined by handle$ into dest!.
 
 :COMMAND
-GetGP( dest! )
+GetGP(dest!)
 :DESCR
 GetGP(dest!)
 - Returns the current GP level.
 
 :COMMAND
-GetHP( handle$, dest! )
+GetHP(handle$, dest!)
 :DESCR
 GetHP("Frap",dest!)
 - Puts the current HP level of the player defined by handle$ into dest!.
 
 :COMMAND
-GetRes( x!, y!)
+dest! = GetItemCost(item$)
 :DESCR
-GetRes( x!, y!)
+cost! = GetItemCost("sword.itm")
+- Return the cost of item$ to dest!.
+
+:COMMAND
+dest$ = GetItemDesc(item$)
+:DESCR
+desc$ = GetItemDesc("sword.itm")
+- Return the item description to dest$.
+
+:COMMAND
+dest$ = GetItemName(item$)
+:DESCR
+name$ = GetItemName("sword.itm")
+- Return the handle (name) of the item to dest$.
+
+:COMMAND
+dest! = GetItemSellPrice(item$)
+:DESCR
+price! = GetItemSellPrice("sword.itm")
+- Return the item selling price to dest!.
+
+:COMMAND
+GetRes(x!, y!)
+:DESCR
+GetRes(x!, y!)
 - This command determines the current game resolution (screen resolution).  It places the results into x! and y!.
 
 :COMMAND
-GetSMP( handle$, dest! )
+GetSMP(handle$, dest!)
 :DESCR
 GetSMP("Frap",dest!)
 - Puts the current SMP level of the player defined by handle$ into dest!.
 
 :COMMAND
-GetLevel( handle$, dest! )
+GetLevel(handle$, dest!)
 :DESCR
 GetLevel("Frao", dest!)
 - Get the level of a player.
 
 :COMMAND
-GetMaxHP( handle$, dest! )
+GetMaxHP(handle$, dest!)
 :DESCR
 GetMaxHP("Frap",dest!)
 - Puts the maximum HP level of the player defined by handle$ into dest!.
 
 :COMMAND
-GetMaxSMP( handle$, dest! )
+GetMaxSMP(handle$, dest!)
 :DESCR
 GetMaxSMP("Frap",dest!)
 - Puts the maximum SMP level of the player defined by handle$ into dest!.
 
 :COMMAND
-GetPixel( x!, y!, r!, g!, b! )
+GetPixel(x!, y!, r!, g!, b!)
 :DESCR
-GetPixel(10, 10, r!, g!, b! )
+GetPixel(10, 10, r!, g!, b!)
 - Get pixel color at specified coords.
 
 :COMMAND
-GoDos( command$ )
+dest! = GetTextHeight(text$)
 :DESCR
-GoDos("cd\rpg")
-- Performs a DOS command.
+height! = GetTextHeight("t")
+- Returns the height of the text in pixels to dest!.
+
+:COMMAND
+dest! = GetTextWidth(text$)
+:DESCR
+width! = GetTextWidth("hello!")
+- Returns the width of the text in pixels to dest!.
+
+:COMMAND
+destID! = GetThreadID()
+:DESCR
+thrID! = GetThreadID()
+- Returns the ID of the current thread to destID!.
+
+:COMMAND
+Global(var)
+:DESCR
+Global(x$)
+- Creates a global variable which can be either numeric or literal.
 
 :COMMAND
 Gone()
@@ -495,19 +627,25 @@ Gone()
 - Remove this program from the board.
 
 :COMMAND
-HP( playerhandle$, HpToAdd! )
+HP(playerhandle$, HpToAdd!)
 :DESCR
 HP("Player1",10)
 - Adds health to player defined by playerhandle$.
 
 :COMMAND
-If (condition) [Then] { command(s) }
+If (condition) { command(s) }
 :DESCR
 If
 - Evaluates the condition.  If it is true, the statements between the { and } are executed.
 
 :COMMAND
-Include( filename$ )
+dest = Iif(condition, true, false)
+:DESCR
+x! = Iif(i! == 3, 72989, 0)
+- Evaluates the condition, then returns true or false to dest.
+
+:COMMAND
+Include(filename$)
 :DESCR
 Include("system.prg")
 - Appends a program to the currently running program.  Used to load command libraries.
@@ -519,21 +657,21 @@ Inn()
 - Restores all players to perfect health.
 
 :COMMAND
-InternalMenu( menuNum! )
+InternalMenu(menuNum!)
 :DESCR
-InternalMenu( 0 )
+InternalMenu(0)
 - Pops up an internal menu (0- main, 1-item, 2-equip, 3-details, 4-abilities)
 
 :COMMAND
-Italics( on/off )
+Italics(on/off)
 :DESCR
 Italics("on")
 - Turns italics on or off.
 
 :COMMAND
-ItemCount( handle_or_filename$, dest! )
+ItemCount(handle_or_filename$, dest!)
 :DESCR
-ItemCount( "sword.itm", dest! )
+ItemCount("sword.itm", dest!)
 - Tells you how many of any item you are carrying.
 
 :COMMAND
@@ -543,13 +681,19 @@ ItemLocation("Item 1", x!, y!, layer!)
 - Saves item number's current location into x!, y!, layer!.
 
 :COMMAND
+ItemSpeed(itemNum!, speed!)
+:DESCR
+ItemSpeed(0, 1)
+- Sets the walk speed of a certain item.
+
+:COMMAND
 ItemStep(itemnum!, x!, y!)
 :DESCR
 ItemStep(0, 5, 6)
 - Causes item number itemnum! to take one step towards x!, y! Automatically calculates the shortest path and walks in the most intelligent direction.
 
 :COMMAND
-Kill( var!/var$ )
+Kill(var!/var$)
 :DESCR
 Kill(myvar$)
 - Destroys a variable and frees its memory.
@@ -561,55 +705,91 @@ KillAllRedirects()
 - Kill all redirects currently in effect.
 
 :COMMAND
+KillCanvas(cnvID!)
+:DESCR
+KillCanvas(cnv!)
+- Kill a canvas as defined by cnvID!.
+
+:COMMAND
+KillCursorMap(mapID!)
+:DESCR
+KillCursorMap(cMap!)
+- Kill a cursor map as defined by mapID!.
+
+:COMMAND
 KillRedirect(methodName$)
 :DESCR
 KillRedirect("MWin")
 - Kill the redirect of $methodName.  In this case, restores all calls to Mwin to be handled by the real Mwin
 
 :COMMAND
-LayerPut( x!, y!, layer!, "filename.gph" )
+LayerPut(x!, y!, layer!, "filename.gph")
 :DESCR
 LayerPut(5, 5, 2, "test.gph")
 - Put a graphic on the screen, layer-specific.
 
 :COMMAND
-Load( filename$ )
+dest$ = LCase(string$)
+:DESCR
+str$ = LCase("HELLO!")
+- Returns the string$ in all lower-case characters.
+
+:COMMAND
+dest$ = Left(string$, pos!)
+:DESCR
+str$ = Left("Hello", 2)
+- Returns a specific amount of characters in a string from the left.
+
+:COMMAND
+dest! = Length(string$)
+:DESCR
+len! = Length("Hello")
+- Returns the length of a string to dest!.
+
+:COMMAND
+Load(filename$)
 :DESCR
 Load("savedgame.sav")
 - Load a saved game.
 
 :COMMAND
-MainFile( filename$ )
+Local(var)
+:DESCR
+Local(x!)
+- Creates a local variable which can be either numeric or literal.
+
+:COMMAND
+MainFile(filename$)
 :DESCR
 MainFile("another.gam")
 - Starts a game defined by a main file.
 
 :COMMAND
-MaxHP( handle$, level! )
+MaxHP(handle$, level!)
 :DESCR
 MaxHP("Frap",200)
 - Sets the maximum HP level for a player.
 
 :COMMAND
-MaxSMP( handle$, level! )
+MaxSMP(handle$, level!)
 :DESCR
 MaxSMP("Frap",200)
 - Sets the maximum SMP level for a player.
 
 :COMMAND
-Mem( x!, y!, mem_location!)
+Mem(x!, y!, mem_location!)
 :DESCR
 Mem(1,1,5,1)
 - Places the tile saved in mem_location! at x!, y! on the board.  If not included, layer! is assumed to be 1.
 
 :COMMAND
-MenuGraphic( file$ )
+MenuGraphic(file$)
 :DESCR
 MenuGraphic("bkg.jpg")
 - Set a background image on the internal menu.
 
 :COMMAND
-MediaPlay( filename$ )
+MediaPlay(filename$)
 :DESCR
 MediaPlay("music.mid")
 - Plays a media file.
@@ -627,7 +807,13 @@ Method mymethod (x!, y!) { commands }
 - Defines a method.
 
 :COMMAND
-MidiPlay( filename$ )
+dest$ = Mid(string$, start!, end!)
+:DESCR
+str$ = Mid("Hello", 2, 5)
+- Returns the characters in a string between start! and end! to dest!.
+
+:COMMAND
+MidiPlay(filename$)
 :DESCR
 MidiPlay("music.mid")
 - Plays a midi file.
@@ -639,37 +825,31 @@ MidiRest()
 - Stops the currently playing music.
 
 :COMMAND
-MouseClick( x!, y! )
+MouseClick(x!, y!)
 :DESCR
-MouseClick( x!, y! )
+MouseClick(x!, y!)
 - Waits for user to click the mouse; places location in x!, y!
 
 :COMMAND
-MouseMove( x!, y! )
+MouseCursor(file$, x!, y!, r!, g!, b!)
 :DESCR
-MouseMove( x!, y! )
+MouseCursor("hand.gif", 1, 1, 255, 0, 0)
+- Changes the mouse cursor to file$, setting the hot spot at x!,y! and treating r!,g!,b! as the transparent color.
+
+:COMMAND
+MouseMove(x!, y!)
+:DESCR
+MouseMove(x!, y!)
 - Waits for user to move the mouse; places location in x!, y!
 
 :COMMAND
-Move( x!, y![, layer!] )
+Move(x!, y![, layer!])
 :DESCR
 Move(5,8,7)
 - Move the program to a new location defined by x!, y!.  If not included, layer! is assumed to be 1.
 
 :COMMAND
-MP3( filename$ )
-:DESCR
-MP3("stop.mp3[wav]")
-- Plays an mp3 or wav file.
-
-:COMMAND
-MP3Pause( filename$ )
-:DESCR
-MP3Pause("stop.mp3[wav]")
-- Plays an mp3 file, whilst pausing the game.
-
-:COMMAND
-MWin( text$ )
+MWin(text$)
 :DESCR
 MWin("Hello, <var$>")
 - Puts text in the message window.
@@ -681,37 +861,49 @@ MWinCls()
 - Clears the message window.
 
 :COMMAND
-MWinSize( percentage! )
+MWinSize(percentage!)
 :DESCR
 MWinSize(50)
 - Sets size of Message Window, in percentage of screen width.
 
 :COMMAND
-Newplyr( filename$ )
+Newplyr(filename$)
 :DESCR
 Newplyr("player.tem")
 - Changes the player graphic to filename$.  Valid filetypes: GPH, CHA, TEM.
 
 :COMMAND
-OpenFileAppend( file$, folder$ )
+On Error Goto :label
+:DESCR
+On Error Goto :error
+- Goes to the specified :label if the program produces an error.
+
+:COMMAND
+On Error Resume Next
+:DESCR
+On Error Resume Next
+- Resumes the program normally if an error is reached.
+
+:COMMAND
+OpenFileAppend(file$, folder$)
 :DESCR
 OpenFileAppend("start.brd","Boards") 
 - Opens a file in append mode. Added by KSNiloc.
 
 :COMMAND
-OpenFileBinary( file$, folder$ )
+OpenFileBinary(file$, folder$)
 :DESCR
 OpenFileBinary("start.brd","Boards") 
 - Opens a file in binary mode. Added by KSNiloc.
 
 :COMMAND
-OpenFileInput( file$, folder$ )
+OpenFileInput(file$, folder$)
 :DESCR
 OpenFileInput("start.brd","Boards") 
 - Opens a file in Input mode. Folder$ is the name of the game folder. Added by KSNiloc.
 
 :COMMAND
-OpenFileOutput( file$, folder$ )
+OpenFileOutput(file$, folder$)
 :DESCR
 OpenFileOutput("start.brd","Boards") 
 - Opens a file in output mode. Added by KSNiloc.
@@ -729,16 +921,40 @@ PathFind(startx!, starty!, endx!, endy!, dest$ [, layer!])
 - Finds the shortest path from startx!, starty!, layer!(optional) to endx!, endy!, layer!(optional) on the current board.
 
 :COMMAND
-PlayAvi( file$ )
+PixelMovement(on/off)
+:DESCR
+PixelMovement("on")
+- Turns pixel movement on or off.
+
+:COMMAND
+PixelText(x!, y!, text$)
+:DESCR
+PixelText(100, 100, "Hello, world!")
+- Draws text$ on the screen at the specified x! and y! coordinates.
+
+:COMMAND
+PlayAvi(file$)
 :DESCR
 PlayAvi("movie.avi")
 - Plays an avi file, fullscreen.
 
 :COMMAND
-PlayAviSmall( file$ )
+PlayAviSmall(file$)
 :DESCR
 PlayAviSmall("movie.avi")
 - Plays an avi file, windowed.
+
+:COMMAND
+PlayerSpeed(playerNum!, speed!)
+:DESCR
+PlayerSpeed(0, 1)
+- Sets an individual speed for each player.
+
+:COMMAND
+PlayerStance(playerNum!, stance$)
+:DESCR
+PlayerStance(0, "sleep")
+- Shows the players custom stance.
 
 :COMMAND
 PlayerStep(handle$, x!, y!)
@@ -747,61 +963,55 @@ PlayerStep("Frap", 8, 5)
 - Causes the player with handle$ to take one step towards x!, y! Automatically calculates the shortest path and walks in the most intelligent direction.
 
 :COMMAND
-Posture( slot!, handle$ )
+Posture(slot!, handle$)
 :DESCR
 Posture(2, "Frap")
 - Show player posture graphic (slots 0-9).
 
 :COMMAND
-Prg( prgnum!, x!, y![, layer!] )
+Prg(prgnum!, x!, y![, layer!])
 :DESCR
 Prg(0,1,1,2)
 - Move program number prgnum! to x!, y!, layer!.  If not included, layer! is assumed to be 1.
 
 :COMMAND
-Print( text$ )
+Print(text$)
 :DESCR
 Print("hello")
 - Puts text at the current text position.
 
 :COMMAND
-Prompt( question$, target$! )
+Prompt(question$, target$!)
 :DESCR
 Prompt("What is your name? ",name$)
 - Prompt the player with question question$, and puts the response in target$!.
 
 :COMMAND
-Push( direction$ [, handle$] )
+Push(direction$ [, handle$])
 :DESCR
 Push("n","Frap")
 - Pushes a player in any direction.  If handle$ is not included, it is assumed to be the active player.
 
 :COMMAND
-PushItem( itemnum!, direction$ )
+PushItem(itemnum!, direction$)
 :DESCR
 PushItem(1,"n")
 - Pushes an item in any direction.
 
 :COMMAND
-Put( x!, y!, graphic$[, layer!] )
-:DESCR
-Put(1,6,"tile.gph",1)
-- Puts tile (in graphic$) at x!, y!, layer!.  If not included, layer! is assumed to be 1.
-
-:COMMAND
-PutItem( itemNum!, x!, y!, layer! )
+PutItem(itemNum!, x!, y!, layer!)
 :DESCR
 PutItem(5, 1, 1, 1)
 - Put a loaded item onto the screen.
 
 :COMMAND
-PutPlayer( handle$, x!, y!, layer! )
+PutPlayer(handle$, x!, y!, layer!)
 :DESCR
 PutPlayer("Frap",10,10,1)
 - Puts the player graphic at the specified coordinates on the board.
 
 :COMMAND
-Random( range!, dest! )
+Random(range!, dest!)
 :DESCR
 Random(100,dest!)
 - Puts a random number between 1 and range! into dest!
@@ -813,22 +1023,34 @@ Redirect("Mwin", "MyCustomMwin")
 - Allows you to redirect all calls to one method with another.  All calls to the method oldMethodName$ will actually be handled by the method newMethodName$
 
 :COMMAND
-Remove( handle$, body_location! )
+Remove(handle$, body_location!)
 :DESCR
 Remove("Frap",4)
 - Removes equipment from a player's body location.
 
 :COMMAND
-RemovePlayer( filename$ )
+RemovePlayer(filename$)
 :DESCR
 RemovePlayer("ralar.tem")
 - Remove a player from the party as defined by filename$.
 
 :COMMAND
-RemoveStatus( handle$, file$ )
+RemoveStatus(handle$, file$)
 :DESCR
 RemoveStatus("Frap", "Poison.ste")
 - Remove a status effect to a player or enemy.
+
+:COMMAND
+RenderNow(on/off)
+:DESCR
+RenderNow("on")
+- Constantly renders the cnvRenderNow! canvas to the screen.
+
+:COMMAND
+dest$ = Replace(string$, find$, replace$)
+:DESCR
+str$ = Replace("Hello!", "ello", "i")
+- Replaces find$ with replace$ in string$ and returns that to dest$.
 
 :COMMAND
 Reset()
@@ -837,7 +1059,7 @@ Reset()
 - Resets the game.
 
 :COMMAND
-RestorePlayer( filename$ )
+RestorePlayer(filename$)
 :DESCR
 RestorePlayer("frap.tem")
 - Restores a previous player to your party.
@@ -849,217 +1071,301 @@ RestoreScreen(10,10, 100, 100, 200, 200)
 - Restore all or part of the screen in the screen buffer.
 
 :COMMAND
+RestoreScreenArray(pos![,x1!, y1!, x2!, y2!, xdest!, ydest!])
+:DESCR
+RestoreScreenArray(0)
+- Restore all or part of the screen.
+
+:COMMAND
+Resume Next
+:DESCR
+Resume Next
+- Resumes the program from the erroneous line, assuming On Error Goto :label was used.
+
+:COMMAND
 Return()
 :DESCR
 Return()
 - Refreshes the screen.
 
 :COMMAND
-ReturnMethod( var!/var$ )
+ReturnMethod(var!/var$)
 :DESCR
 ReturnMethod(myvar$)
 - Returns the value of any variable to the caling command from a method.
 
 :COMMAND
-RPGCode( command$ )
+RPGCode(command$)
 :DESCR
 RPGCode("MWinCls()")
 - Performs any RPGCode command.
 
 :COMMAND
-Run( program$ )
+Run(program$)
 :DESCR
 Run("another.prg")
 - Runs a program in the file program$.
 
 :COMMAND
-Save( filename$ )
+Save(filename$)
 :DESCR
 Save("savedgame.sav")
 - Save the game in filename$.
 
 :COMMAND
-SaveScreen()
+SaveScreen([pos!])
 :DESCR
 SaveScreen()
 - Copy current screen into screen buffer.
 
 :COMMAND
-Scan( x!, y!, mem_location![, layer!] )
+Scan(x!, y!, mem_location![, layer!])
 :DESCR
 Scan(1,4,8,1)
 - Puts a tile at x!,y!,layer! in mem_location!.  If not included, layer! is assumed to be 1.
 
 :COMMAND
-Send ( boardname$, x!, y! [,layer!] )
+Send (boardname$, x!, y! [,layer!])
 :DESCR
 Send("another.brd",5,5,1)
 - Sends player to board defined by boardname$ at x!, y! and layer! (if not included, layer is assumed to be 1).
 
 :COMMAND
-SetButton( filename$, buttonNum!, x!, y!, width!, height! )
+SetButton(filename$, buttonNum!, x!, y!, width!, height!)
 :DESCR
 SetButton("face.jpg", 0, 10, 10, 100, 75)
 - Sets a clickable button on the screen.
 
 :COMMAND
-SetImage( file$, x!, y!, width!, height! )
+SetConstants()
 :DESCR
-SetImage( "img.jpg", 10, 10, 100, 75 )
+SetConstants()
+- Updates all of the RPGCode constants.
+
+:COMMAND
+SetImage(file$, x!, y!, width!, height!)
+:DESCR
+SetImage("img.jpg", 10, 10, 100, 75)
 - Draw an image onto the screen.
 
 :COMMAND
-SetImageAdditive( file$, x!, y!, width!, height!, percent! )
+SetImageAdditive(file$, x!, y!, width!, height!, percent!)
 :DESCR
-SetImageAdditive( "img.jpg", 10, 10, 100, 75, 50 )
+SetImageAdditive("img.jpg", 10, 10, 100, 75, 50)
 - Draw an image onto the screen using additive translucency.
 
 :COMMAND
-SetImageTranslucent( file$, x!, y!, width!, height! )
+SetImageTranslucent(file$, x!, y!, width!, height!)
 :DESCR
-SetImageTranslucent( "img.jpg", 10, 10, 100, 75 )
+SetImageTranslucent("img.jpg", 10, 10, 100, 75)
 - Draw an image onto the screen, translucently.
 
 :COMMAND
-SetImageTransparent( file$, x!, y!, width!, height!, r!, g!, b! )
+SetImageTransparent(file$, x!, y!, width!, height!, r!, g!, b!)
 :DESCR
-SetImageTransparent( "img.jpg", 10, 10, 100, 75, 0, 0, 0 )
+SetImageTransparent("img.jpg", 10, 10, 100, 75, 0, 0, 0)
 - Draw an image onto the screen, treating r!, g!, b! as a transparent color.
 
 :COMMAND
-SetPixel( x!, y! )
+SetPixel(x!, y!)
 :DESCR
 SetPixel(10,10)
 - Draws a pixel on the screen of the current color.
 
 :COMMAND
-Show( variable!$ )
+ShopColors(pos!, r!, g!, b!)
+:DESCR
+ShopColors(1, 0, 0, 0)
+- Changes the background or foreground of the shop as defined by pos! to the r!,g!,b! color.
+
+:COMMAND
+Show(variable!$)
 :DESCR
 Show(name$)
 - Shows a variable of any type in the message window.
 
 :COMMAND
-Sin( deg!, dest!)
+Sin(deg!, dest!)
 :DESCR
-Sin( 90, dest! )
+Sin(90, dest!)
 - Calculate sine of an angle.
 
 :COMMAND
-SizedAnimation( file$, x!, y!, xsize!, ysize! )
+SizedAnimation(file$, x!, y!, xsize!, ysize!)
 :DESCR
 SizedAnimation("explosion.anm", 100, 100, 50, 50)
 - Run an animation file at a specified x, y position and scale it to a specified size.
 
 :COMMAND
-SMP( handle$, smp! ) 
+SMP(handle$, smp!) 
 :DESCR
 SMP("Frap",100)
 - Sets the SMP level of the current player to a value.
 
 :COMMAND
-SourceHandle( dest$ )
+SourceHandle(dest$)
 :DESCR
-SourceHandle( dest$ )
+SourceHandle(dest$)
 - Obtains handle of SOURCE entity.
 
 :COMMAND
-SourceLocation( x!, y! )
+SourceLocation(x!, y!)
 :DESCR
 SourceLocation(x!, y!)
 - Obtains coordinates of SOURCE entity.
 
 :COMMAND
-Sqrt( source!, dest! )
+Split(string$, delimiter$, array$)
 :DESCR
-Sqrt( 9, d! )
+Split("1.2.3.4", ".", "test[]$")
+- Splits parts of a string into an array when it reaches delimiter$.
+
+:COMMAND
+Sqrt(source!, dest!)
+:DESCR
+Sqrt(9, d!)
 - Calculates squareroot and places the answer in dest!
 
 :COMMAND
-Stance( pos!, handle$ )
+Stance(pos!, handle$)
 :DESCR
 Stance(12, "Frap")
 - Draw player stance graphic (0-43).
 
 :COMMAND
-Start( filename$ )
+Start(filename$)
 :DESCR
 Start("music.mp3")
 - Starts a filename using the Windows shell.
 
 :COMMAND
-TakeGP( amount! )
+Stop()
+:DESCR
+Stop()
+- Stops a program.
+
+:COMMAND
+Switch(var) {}
+:DESCR
+Switch(x!) {}
+- Takes var and compares that to a value given in a case().
+
+:COMMAND
+TakeGP(amount!)
 :DESCR
 TakeGP(100)
 - Takes the specified amount of gold from the player.
 
 :COMMAND
-TakeItem( itemfilename$ )
+TakeItem(itemfilename$)
 :DESCR
 Takeitem("sword.itm")
 - Take an item away from the player, as defined by the item filename.
 
 :COMMAND
-Tan( deg!, dest!)
+Tan(deg!, dest!)
 :DESCR
-Tan( 90, dest! )
+Tan(90, dest!)
 - Calculate tangent of an angle.
 
 :COMMAND
-TargetHandle( dest$ )
+TargetHandle(dest$)
 :DESCR
-TargetHandle( dest$ )
+TargetHandle(dest$)
 - Obtains handle of TARGET entity.
 
 :COMMAND
-TargetLocation( x!, y! )
+TargetLocation(x!, y!)
 :DESCR
 TargetLocation(x!, y!)
 - Obtains coordinates of TARGET entity.
 
 :COMMAND
-TileType( x!, y!, type$ [, layer!] )
+dest = TellThread(ID!, command$)
+:DESCR
+a$ = TellThread(thrID!, "Wait()")
+- Runs a command inside a thread and (optionally) returns the value that the command (or method) is supposed to return.
+
+:COMMAND
+TileType(x!, y!, type$ [, layer!])
 :DESCR
 TileType(10,10,"Solid",1)
 - Sets the tile type at the specified board location.
 
 :COMMAND
-Text( x!, y!, text$ )
+Text(x!, y!, text$)
 :DESCR
 Text(1,1,"Hello")
 - Display text$ at x!, y! on the screen.
 
 :COMMAND
-Underline( on/off )
+dest! = Thread(program$, persist!)
+:DESCR
+thrID! = Thread("Wander.prg", 0)
+- Runs a threaded program, returning it's ID to dest!.
+
+:COMMAND
+ThreadSleep(ID!, duration!)
+:DESCR
+ThreadSleep(thrID!, 60)
+- Makes a threaded program 'sleep' for duration! seconds.
+
+:COMMAND
+dest! = ThreadSleepRemaining(ID!)
+:DESCR
+time! = ThreadSleepRemaining(thrID!)
+- Returns the time remaining until the thread wakes up.
+
+:COMMAND
+ThreadWake(ID!)
+:DESCR
+ThreadWake(thrID!)
+- Forces a thread to wake up.
+
+:COMMAND
+dest$ = Trim(string$)
+:DESCR
+str$ = Trim("   Hello! ")
+- Trims the spaces off the sides of a string and returns it to dest$.
+
+:COMMAND
+dest$ = UCase(string$)
+:DESCR
+str$ = UCase("hello!")
+- Returns string$ to dest$ in all UPPER-CASE characters.
+
+:COMMAND
+Underline(on/off)
 :DESCR
 Underline("on")
 - Turns text underlining on or off.
 
 :COMMAND
-Viewbrd( filename$ )
+Viewbrd(filename$)
 :DESCR
 Viewbrd("another.brd")
 - Display the board saved in filename$.
 
 :COMMAND
-Wait( dest$ )
+Wait(dest$)
 :DESCR
 Wait(dest$)
 - Waits for a key to be pressed and puts the result in dest$.
 
 :COMMAND
-WalkSpeed( "fast/slow" )
+WalkSpeed("fast/slow")
 :DESCR
 WalkSpeed("fast")
 - Change player walk speed.
 
 :COMMAND
-Wander( itemum! )
+Wander(itemum!)
 :DESCR
 Wander(1)
 - Causes an item to take a step in a random direction.
 
 :COMMAND
-Wav( filename$ )
+Wav(filename$)
 :DESCR
 Wav("stop.wav[mp3]")
 - Plays a wav or mp3 file.
@@ -1071,9 +1377,9 @@ WavStop()
 - Stops the playing wav file
 
 :COMMAND
-While(condition) 
+While (condition) 
 :DESCR
-While(done!==1) { commands }
+While (done! == 1) { commands }
 - Performs a while loop.
 
 :COMMAND
@@ -1083,33 +1389,33 @@ Win()
 - Causes the player to win the game.
 
 :COMMAND
-WinColor( color_code! )
+WinColor(color_code!)
 :DESCR
 WinColor(12)
 - Sets the message window color to a DOS palette defined color code.
 
 :COMMAND
-WinColorRGB( red!, green!, blue! )
+WinColorRGB(red!, green!, blue!)
 :DESCR
 WinColorRGB(100,100,100)
 - Sets the message window color to an RGB defined color.
 
 :COMMAND
-WinGraphic( filename$ )
+WinGraphic(filename$)
 :DESCR
 WinGraphic("mwin.bmp")
 - Puts a graphic in the message window.
 
 :COMMAND
-Wipe( filename$, type![, speed!] )
+Wipe(filename$, type![, speed!])
 :DESCR
 Wipe("image.bmp", 4)
 - Loads an images and performs a screen wipe to the image of the specified type (1-12).  You can optionally set the speed.
 
 :COMMAND
-Zoom( percentage! )
+Zoom(percentage!)
 :DESCR
-Zoom( 50 )
+Zoom(50)
 - Zooms the screen in by a certain percentage.
 
 
