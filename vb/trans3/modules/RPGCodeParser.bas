@@ -520,18 +520,22 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
             If (signSwitch) Then
                 ' Switch on the sign
                 Select Case signs(idx)
-                    Case "==": numVal(idx + 1) = (numVal(idx) = numVal(idx + 1))
-                    Case "~=": numVal(idx + 1) = (numVal(idx) <> numVal(idx + 1))
-                    Case ">=", "=>": numVal(idx + 1) = (numVal(idx) >= numVal(idx + 1))
-                    Case "<=", "=<": numVal(idx + 1) = (numVal(idx) <= numVal(idx + 1))
-                    Case ">": numVal(idx + 1) = (numVal(idx) > numVal(idx + 1))
-                    Case "<": numVal(idx + 1) = (numVal(idx) < numVal(idx + 1))
+                    Case "==": numVal(idx + 1) = -(numVal(idx) = numVal(idx + 1))
+                    Case "~=": numVal(idx + 1) = -(numVal(idx) <> numVal(idx + 1))
+                    Case ">=", "=>": numVal(idx + 1) = -(numVal(idx) >= numVal(idx + 1))
+                    Case "<=", "=<": numVal(idx + 1) = -(numVal(idx) <= numVal(idx + 1))
+                    Case ">": numVal(idx + 1) = -(numVal(idx) > numVal(idx + 1))
+                    Case "<": numVal(idx + 1) = -(numVal(idx) < numVal(idx + 1))
                 End Select
             End If
 
         Next idx
 
-        evaluate = -(numVal(valueUb) <> 0)
+        If Not (didEvaluate) Then
+            evaluate = (numVal(valueUb) <> 0)
+        Else
+            evaluate = numVal(valueUb)
+        End If
 
     Else
 
@@ -550,17 +554,21 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
             ' Switch on the sign
             Select Case signs(idx)
-                Case "==": strVal(idx + 1) = CStr(CLng(strVal(idx) = strVal(idx + 1)))
-                Case "~=": strVal(idx + 1) = CStr(CLng(strVal(idx) <> strVal(idx + 1)))
-                Case ">=", "=>": strVal(idx + 1) = CStr(CLng(strVal(idx) >= strVal(idx + 1)))
-                Case "<=", "=<": strVal(idx + 1) = CStr(CLng(strVal(idx) <= strVal(idx + 1)))
-                Case ">": strVal(idx + 1) = CStr(CLng(strVal(idx) > strVal(idx + 1)))
-                Case "<": strVal(idx + 1) = CStr(CLng(strVal(idx) < strVal(idx + 1)))
+                Case "==": strVal(idx + 1) = CStr(-CLng(strVal(idx) = strVal(idx + 1)))
+                Case "~=": strVal(idx + 1) = CStr(-CLng(strVal(idx) <> strVal(idx + 1)))
+                Case ">=", "=>": strVal(idx + 1) = CStr(-CLng(strVal(idx) >= strVal(idx + 1)))
+                Case "<=", "=<": strVal(idx + 1) = CStr(-CLng(strVal(idx) <= strVal(idx + 1)))
+                Case ">": strVal(idx + 1) = CStr(-CLng(strVal(idx) > strVal(idx + 1)))
+                Case "<": strVal(idx + 1) = CStr(-CLng(strVal(idx) < strVal(idx + 1)))
             End Select
 
         Next idx
 
-        evaluate = -((CLng(strVal(valueUb))) <> 0)
+        If Not (didEvaluate) Then
+            evaluate = ((CLng(strVal(valueUb))) <> 0)
+        Else
+            evaluate = CLng(strVal(valueUb))
+        End If
 
     End If
 
