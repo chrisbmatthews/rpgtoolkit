@@ -489,6 +489,13 @@ Public Sub LoadState(ByVal file As String)
             Next t
         End If
 
+        ' Read loop offset
+        If (minorVer >= 2) Then
+
+            loopOffset = BinReadLong(num)
+
+        End If
+
         showPlayer(selectedPlayer) = True
 
     Close num
@@ -506,7 +513,7 @@ Public Sub SaveState(ByVal file As String)
     Open file$ For Binary As #num
         Call BinWriteString(num, "RPGTLKIT SAVE")
         Call BinWriteInt(num, 3)    'majorver
-        Call BinWriteInt(num, 1)    'minorver
+        Call BinWriteInt(num, 2)    'minorver
                    
         'print num vars...
         Dim nCount As Long
@@ -667,7 +674,10 @@ Public Sub SaveState(ByVal file As String)
             End If
         Next t
 
-    Close #num
-End Sub
+        ' Write loop offset
+        Call BinWriteLong(num, loopOffset)
 
+    Close num
+
+End Sub
 
