@@ -1,4 +1,4 @@
-Attribute VB_Name = "paths"
+Attribute VB_Name = "modPaths"
 'All contents copyright 2003, Christopher Matthews
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
@@ -136,7 +136,7 @@ Function fGetSpecialFolder(CSIDL As Long) As String
     ' Info is stored in the IDL structure.
     '
     fGetSpecialFolder = ""
-    If SHGetSpecialFolderLocation(setup.hwnd, CSIDL, IDL) = 0 Then
+    If SHGetSpecialFolderLocation(0, CSIDL, IDL) = 0 Then
         '
         ' Get the path from the ID list, and return the folder.
         '
@@ -209,6 +209,7 @@ Function StartMenuDir() As String
      
     'StartMenuDir = toRet
     
+    Dim str As String
     StartMenuDir = fGetSpecialFolder(CSIDL_programs)
 End Function
 
