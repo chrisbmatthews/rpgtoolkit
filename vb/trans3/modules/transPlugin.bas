@@ -430,10 +430,6 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
                         Call debugger("Error: Plugin could not execute command!-- " & Text)
                     End If
 
-                    ' Some plugins--truiken's flash plugin--steal the focus from us
-                    Call SetFocus(0)
-                    Call SetFocus(host.hwnd)
-
                     ' All's good
                     QueryPlugins = True
                     Exit Function
