@@ -564,7 +564,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     For tokenIdx = 2 To number
 
         ' Get the token
-        valueList(tokenIdx) = GetVarList(Text, tokenIdx)
+        valueList(tokenIdx) = Trim$(GetVarList(Text, tokenIdx))
 
         ' We need to get the data type
         If ((dType = DT_VOID) And (tokenIdx = 2)) Then
@@ -589,7 +589,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             Select Case equal
 
                 Case "++"
-                    If ((hClass <> 0) And (Not noVar)) Then
+                    If ((hClass <> 0) And (Not (noVar))) Then
                         ' If this class handles this operator
                         If (isMethodMember("operator++", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                             ' Call the method
@@ -602,7 +602,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                     Exit Sub
 
                 Case "--"
-                    If ((hClass <> 0) And (Not noVar)) Then
+                    If ((hClass <> 0) And (Not (noVar))) Then
                         ' If this class handles this operator
                         If (isMethodMember("operator--", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                             ' Call the method
@@ -657,39 +657,42 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                         ' If we found one
                         If (toFind <> 0) Then
                             ' Check for operator overloading on previous token
-                            Dim prevToken As String
+                            Dim prevToken As String, tdc As String
                             prevToken = valueList(tokenIdx + toFind)
                             ' Get its value
-                            If (getVariable(prevToken & "!", lit, num, theProgram) = DT_NUM) Then
-                                ' If it's not NULL
-                                If (num <> 0) Then
-                                    ' See if it's an object
-                                    Dim hTokenClass As Long
-                                    hTokenClass = CLng(num)
-                                    If (isObject(hTokenClass, theProgram)) Then
-                                        ' See if it handles said conjuction
-                                        Dim cnj As String
-                                        cnj = "operator" & conjunctions(tokenIdx + toFind)
-                                        If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
-                                            ' Call the method
-                                            Call callObjectMethod(hTokenClass, cnj & "(" & CStr(numberUse(tokenIdx)) & ")", theProgram, retval, cnj)
-                                            ' Switch on returned type
-                                            Dim theVal As String
-                                            Select Case retval.dataType
-                                                Case DT_LIT: theVal = retval.lit
-                                                Case DT_NUM: theVal = CStr(retval.num)
-                                                Case DT_REFERENCE: theVal = retval.ref
-                                            End Select
-                                            ' Fill in new data
-                                            Call getValue(theVal, lit, numberUse(tokenIdx + toFind), theProgram)
-                                            ' Flag this spot holds an identity
-                                            nulled(tokenIdx) = True
-                                        End If
-                                    End If
-                                End If
-                            End If
-                        End If
-                    End If
+                            tdc = RightB$(prevToken, 2)
+                            If ((tdc <> "!") And (tdc <> "$")) Then
+                                If (getVariable(prevToken & "!", lit, num, theProgram) = DT_NUM) Then
+                                    ' If it's not NULL
+                                    If (num <> 0) Then
+                                        ' See if it's an object
+                                        Dim hTokenClass As Long
+                                        hTokenClass = CLng(num)
+                                        If (isObject(hTokenClass, theProgram)) Then
+                                            ' See if it handles said conjuction
+                                            Dim cnj As String
+                                            cnj = "operator" & conjunctions(tokenIdx + toFind)
+                                            If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
+                                                ' Call the method
+                                                Call callObjectMethod(hTokenClass, cnj & "(" & CStr(numberUse(tokenIdx)) & ")", theProgram, retval, cnj)
+                                                ' Switch on returned type
+                                                Dim theVal As String
+                                                Select Case retval.dataType
+                                                    Case DT_LIT: theVal = retval.lit
+                                                    Case DT_NUM: theVal = CStr(retval.num)
+                                                    Case DT_REFERENCE: theVal = retval.ref
+                                                End Select
+                                                ' Fill in new data
+                                                Call getValue(theVal, lit, numberUse(tokenIdx + toFind), theProgram)
+                                                ' Flag this spot holds an identity
+                                                nulled(tokenIdx) = True
+                                            End If ' isMethodMember
+                                        End If ' isObject
+                                    End If ' (num <> 0)
+                                End If ' (getVariable == DT_NUM)
+                            End If ' ((tdc <> "!") And (tdc <> "$"))
+                        End If ' (toFind <> 0)
+                    End If ' ((tokenIdx <> 2) And (tokenIdx <= (number - 2)))
                 Next tokenIdx
 
                 ' Build the equation into a string
