@@ -301,7 +301,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
             anotre = True
             dataType = dataType(parts(dataIdx), prg, False, anotre)
             dataIdx = dataIdx + 1
-        Loop Until ((anotre) And (dataIdx >= UBound(parts)))
+        Loop Until ((anotre) And (dataIdx > UBound(parts)))
 
         ' Bail
         Exit Function
