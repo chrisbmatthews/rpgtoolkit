@@ -19,6 +19,7 @@
 void inlineString::resize(int newSize)
 {
 	if (newSize <= 0) newSize = 1;
+	newSize++;
 	if (newSize >= m_length)
 	{
 		//we can keep all contents
@@ -53,6 +54,7 @@ inlineString::inlineString(std::string cFrom, int length)
 {
 	//cast the STL string to char* and copy that memory to this string
 	if (length <= 0) length = 1;
+	length++;
 	m_contents = new(char[length]);
 	m_length = length;
 	strcpy(m_contents, cFrom.c_str());
@@ -81,7 +83,7 @@ inlineString& inlineString::getChars(int start, int length)
 		}
 	}
 
-	static inlineString toRet(length + 1);	//string to return
+	static inlineString toRet(length);		//string to return
 	int pos = 0;							//position in string
 	int chrIdx = 0;							//character index
 
@@ -123,6 +125,7 @@ inlineString::inlineString(int length)
 {
 	//Set an initial value for the inlineString
 	if (length <= 0) length = 1;
+	length++;
 	m_contents = new(char[length]);
 	m_length = length;
 	strcpy(m_contents, "");
@@ -135,6 +138,7 @@ inlineString::inlineString(char* defaultVal, int length)
 {
 	//just copy the memory over
 	if (length <= 0) length = 1;
+	length++;
 	m_contents = new(char[length]);
 	m_length = length;
 	strcpy(m_contents, defaultVal);
@@ -147,6 +151,7 @@ inlineString::inlineString(char defaultVal, int length)
 {
 	//just copy the memory over
 	if (length <= 0) length = 1;
+	length++;
 	m_contents = new(char[length]);
 	m_length = length;
 	strcpy(m_contents, (char*)defaultVal);
