@@ -1382,7 +1382,7 @@ Public Sub saveAsFile(): On Error Resume Next
         Call Show
         
         ' call save routine
-        savebrdasmnu_click
+        savebrdasmnu_Click
         
     End If
     
@@ -2118,7 +2118,7 @@ Public Sub saveFile(): On Error Resume Next
     ' if new board then call save as routine
     If filename$(2) = "" Then
         Call Show
-        Call savebrdasmnu_click
+        Call savebrdasmnu_Click
         Exit Sub
     End If
         
@@ -2341,8 +2341,6 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
                     
                 End If ' .selectedTile <> "TBM"
 
-
-
                 ' set ambient details
                 boardList(activeBoardIndex).theData.ambientRed(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientR
                 boardList(activeBoardIndex).theData.ambientGreen(xx, yy, boardList(activeBoardIndex).currentLayer) = boardList(activeBoardIndex).ambientG
@@ -2456,6 +2454,9 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
             ' show program set form
             programset.Show vbModal
             
+            ' draw programs
+            Call drawPrograms
+            
             Exit Sub
             
         End If
@@ -2477,6 +2478,9 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
             
             ' item set form
             itemset.Show vbModal
+            
+            ' draw items
+            Call drawItems
             
             Exit Sub
             
@@ -2528,6 +2532,9 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
             
             ' show warp form
             warpset.Show vbModal
+            
+             ' draw warps
+            Call drawWarps
             
             Exit Sub
             
@@ -3429,7 +3436,7 @@ End Sub
 '========================================================================
 ' Save as routine: File -> Save Board As...
 '========================================================================
-Private Sub savebrdasmnu_click(): On Error Resume Next
+Private Sub savebrdasmnu_Click(): On Error Resume Next
 
     ChDir (currentDir)
 
@@ -3448,21 +3455,19 @@ Private Sub savebrdasmnu_click(): On Error Resume Next
     ChDir (currentDir)
 
     ' if no filename entered, exit.
-    If dlg.strSelectedFile = "" Then Exit Sub
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
 
     ' set filename.
     boardList(activeBoardIndex).boardName = dlg.strSelectedFileNoPath
-
-    Call savebrdmnu_Click
-
+    
     ' save board.
-    ' Call saveBoard(dlg.strSelectedFile, boardList(activeBoardIndex).theData)
+    Call saveBoard(dlg.strSelectedFile, boardList(activeBoardIndex).theData)
 
     ' update form caption.
-    ' activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & dlg.strSelectedFileNoPath & ")"
+    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & dlg.strSelectedFileNoPath & ")"
 
     ' set board state to "unaltered".
-    ' boardList(activeBoardIndex).boardNeedUpdate = False
+    boardList(activeBoardIndex).boardNeedUpdate = False
 
     ' add to project tree.
     Call tkMainForm.fillTree("", projectPath)
@@ -3470,33 +3475,33 @@ Private Sub savebrdasmnu_click(): On Error Resume Next
 End Sub
 
 '========================================================================
-' save routine
+' save routine: File -> Save Board
 '========================================================================
 Private Sub savebrdmnu_Click(): On Error Resume Next
 
-    ' get filename
-    filename$(2) = boardList(activeBoardIndex).boardName$
+    ' if no filename exists, we've just created this board, so show dialog.
+    If LenB(boardList(activeBoardIndex).boardName) = 0 Then
+        Call savebrdasmnu_Click
+        Exit Sub
+    End If
 
-    ' if no filename exists, call save as routine
-    If filename$(2) = "" Then savebrdasmnu_click: Exit Sub
-
-    If (GetAttr(filename(2)) And vbReadOnly) Then
-
-        Call MsgBox("This file is read-only; please choose a different file.")
-        Call savebrdasmnu_click
+    'Check this isn't read-only.
+    If (GetAttr(projectPath & brdPath & boardList(activeBoardIndex).boardName) And vbReadOnly) Then
+        
+        Call MsgBox(boardList(activeBoardIndex).boardName & " is read-only, please choose a different filename", vbExclamation)
+        Call savebrdasmnu_Click
 
         Exit Sub
-
     End If
 
     ' set changes to false
     boardList(activeBoardIndex).boardNeedUpdate = False
 
     ' save board
-    Call saveBoard(projectPath$ + brdPath$ + filename$(2), boardList(activeBoardIndex).theData)
+    Call saveBoard(projectPath & brdPath & boardList(activeBoardIndex).boardName, boardList(activeBoardIndex).theData)
 
     ' update form caption
-    activeBoard.Caption = LoadStringLoc(802, "Board Editor") + " (" + filename$(2) + ")"
+    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & boardList(activeBoardIndex).boardName & ")"
 
 End Sub
 
