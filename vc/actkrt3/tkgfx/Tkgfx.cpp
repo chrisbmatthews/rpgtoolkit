@@ -28,13 +28,10 @@
 #include "CTile.h"
 #include "CUtil.h"
 #include "tkpluglocalfns.h"
-#include <iostream.h>
 #include <vector>
 
-
-//the tiles in memory...
-//std::vector<CTile> gvTiles;
-std::vector<CTile*> gvTiles;
+// The tiles in memory
+static std::vector<CTile *> gvTiles;
 
 ///////////////////////////////////////////////////////
 // Exported Functions
@@ -291,18 +288,10 @@ int APIENTRY GFXDrawBoardCNV ( CNV_HANDLE cnv,
 														int nIsometric )
 
 {
-	int nIsoEvenOdd = 0;
-	if ( topy % 2 == 0 ) 
-		nIsoEvenOdd = 1;
-	else
-		nIsoEvenOdd = 0;
+	const int nIsoEvenOdd = !(topy % 2);
 
-	//clear list of tiles with transparency...
-	//gsetTransparentTiles.clear();
-
-	int nLower, nUpper;	//bottom and top layers to draw
-	nLower=1;
-	nUpper=nBsizel;
+	int nLower = 1;
+	int nUpper = nBsizel;
 
 	if (layer > nBsizel)
 	{
@@ -313,14 +302,14 @@ int APIENTRY GFXDrawBoardCNV ( CNV_HANDLE cnv,
 		layer = 0;
 	}
 
-	if (layer!=0) {
-		nLower=layer;
-		nUpper=layer;
+	if (layer)
+	{
+		nLower = layer;
+		nUpper = layer;
 	}
 
-	int nWidth, nHeight;
-	nWidth = tilesX;
-	nHeight = tilesY;
+	int nWidth = tilesX;
+	int nHeight = tilesY;
 	if (nWidth + topx > nBsizex)
 	{
 		nWidth = nBsizex - topx;
@@ -332,11 +321,11 @@ int APIENTRY GFXDrawBoardCNV ( CNV_HANDLE cnv,
 
 	g_topX = topx;
 	g_topY = topy;
-	for ( layer=nLower; layer<=nUpper; layer++ ) 
+	for (layer = nLower; layer <= nUpper; layer++) 
 	{
-		for ( int y=1; y<=nHeight; y++ ) 
+		for (int y = 1; y <= nHeight; y++) 
 		{
-			for ( int x=1; x<=nWidth; x++ ) 
+			for (int x = 1; x <= nWidth; x++) 
 			{
 				drawBoardTileCNV( x, 
 											 y, 
@@ -519,11 +508,10 @@ int APIENTRY GFXDrawTileCNV ( const char* fname,
 													 int nIsometric,
 													 int nIsoEvenOdd ) 
 {
-	std::string strFilename = fname;
-	std::string strPath = "tiles\\";
-	strFilename = strPath + strFilename;
+	CONST std::string strPath = "tiles\\";
+	CONST std::string strFilename = strPath + fname;
 
-	CGDICanvas *canvas = reinterpret_cast<CGDICanvas *>(cnv);
+	CGDICanvas *CONST canvas = reinterpret_cast<CGDICanvas *>(cnv);
 
 	int xx, yy;
 
@@ -562,64 +550,56 @@ int APIENTRY GFXDrawTileCNV ( const char* fname,
 		}
 	}
 
-	//see if we need to clear the tile cache...
+	// See if we need to clear the tile cache
 	if (gvTiles.size() > TILE_CACHE_SIZE)
 		GFXClearTileCache();
 
-	//first check if this tile has already been drawn...
-	RGBSHADE rgb;
-	rgb.r = rred;
-	rgb.g = ggreen;
-	rgb.b = bblue;
-	//std::vector<RGBSHADE> vShades;
-	//vShades.push_back(rgb);
+	// Attempt to find the tile
+	CONST RGBSHADE rgb = {rred, ggreen, bblue};
 
-	std::vector<CTile*>::iterator itr = gvTiles.begin();
+	std::vector<CTile *>::iterator itr = gvTiles.begin();
 	for (; itr != gvTiles.end(); itr++)
 	{
-		std::string strVect = (*itr)->getFilename();
+		CONST std::string strVect = (*itr)->getFilename();
 		if (strVect.compare(strFilename) == 0)
 		{
-			//match!
-			//(*itr)->gdiDraw(hdc, xx, yy, vShades, SHADE_UNIFORM);
-			//return 1;
 			if ((*itr)->isShadedAs(rgb, SHADE_UNIFORM))
 			{
-				if (nIsometric == 1)
+				if (nIsometric)
 				{
 					if ((*itr)->isIsometric())
 					{
-						//found a match...
+						// Found a match
 						(*itr)->cnvDraw(canvas, xx, yy);
-						return 1;			
+						return TRUE;			
 					}
 				}
-				else
+				else if (!(*itr)->isIsometric())
 				{
-					if (!(*itr)->isIsometric())
-					{
-						//found a match...
-						(*itr)->cnvDraw(canvas, xx, yy);
-						return 1;			
-					}
+					// Found a match
+					(*itr)->cnvDraw(canvas, xx, yy);
+					return TRUE;			
 				}
 			}
 		}
 	}
 
-	//wasn't found.
-	//we have to load it...
-	//check if file exists
-	if (!(util::tileExists(strFilename)))
-		return 1;
+	if (!(util::tileExists(strFilename))) return 1;
 
-	HDC hdc = canvas->OpenDC();
-	CTile* t = new CTile((long)hdc, strFilename, rgb, SHADE_UNIFORM, (bool)nIsometric);
-	canvas->CloseDC( hdc );
+	// Load the tile
+	CONST HDC hdc = canvas->OpenDC();
+	CTile *p = new CTile(INT(hdc), strFilename, rgb, SHADE_UNIFORM, nIsometric);
+	canvas->CloseDC(hdc);
 
-	gvTiles.push_back(t);
-	t->cnvDraw(canvas, xx, yy);
-	return 1;
+	// Push it into the vector
+	gvTiles.push_back(p);
+
+	// Draw the tile
+	p->cnvDraw(canvas, xx, yy);
+
+	// All's good
+	return TRUE;
+
 }
 
 

@@ -707,7 +707,7 @@ void drawBoardTile ( int x,
 // Returns: 
 //
 ///////////////////////////////////////////////////////
-void drawBoardTileCNV ( int x, 
+inline void drawBoardTileCNV ( int x, 
 										 int y, 
 										 int layer,
 										 int ar, 
@@ -1429,7 +1429,7 @@ void openFromTileSet ( char fname[], int number )
 	int xx,yy;
 	unsigned char rrr,ggg,bbb;
 
-	int a=tilesetInfo(fname);
+	const int a = tilesetInfo(fname);
 
 	if (number<1 || number>tileset.tilesInSet) return;
 	
