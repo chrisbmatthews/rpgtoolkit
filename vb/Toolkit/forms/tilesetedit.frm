@@ -32,11 +32,10 @@ Begin VB.Form tilesetedit
       _ExtentY        =   8281
       _Version        =   393216
       Style           =   1
-      Tab             =   1
       TabHeight       =   520
       TabCaption(0)   =   "Manually"
       TabPicture(0)   =   "tilesetedit.frx":0CCA
-      Tab(0).ControlEnabled=   0   'False
+      Tab(0).ControlEnabled=   -1  'True
       Tab(0).Control(0)=   "frmManual"
       Tab(0).Control(0).Enabled=   0   'False
       Tab(0).Control(1)=   "Picture1"
@@ -44,7 +43,7 @@ Begin VB.Form tilesetedit
       Tab(0).ControlCount=   2
       TabCaption(1)   =   "Visually"
       TabPicture(1)   =   "tilesetedit.frx":0CE6
-      Tab(1).ControlEnabled=   -1  'True
+      Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "frmVisual"
       Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
@@ -55,7 +54,7 @@ Begin VB.Form tilesetedit
       Begin VB.PictureBox Picture1 
          BorderStyle     =   0  'None
          Height          =   975
-         Left            =   -74760
+         Left            =   240
          ScaleHeight     =   975
          ScaleWidth      =   4935
          TabIndex        =   13
@@ -97,7 +96,7 @@ Begin VB.Form tilesetedit
       Begin VB.Frame frmVisual 
          Caption         =   "Visually Add Files"
          Height          =   4095
-         Left            =   120
+         Left            =   -74880
          TabIndex        =   5
          Top             =   480
          Width           =   5175
@@ -235,7 +234,7 @@ Begin VB.Form tilesetedit
       Begin VB.Frame frmManual 
          Caption         =   "Manually Add Files"
          Height          =   2055
-         Left            =   -74880
+         Left            =   120
          TabIndex        =   2
          Top             =   480
          Width           =   5175
