@@ -126,7 +126,7 @@ Public Sub LoadState(ByVal file As String)
     Dim minorVer As Integer
 
     'Clear some settings:
-    facing = South
+    facing = SOUTH
     For t = 0 To 4
         showPlayer(t) = False           'Hide the players. Individually shown in restorePlayer
         pPos(t).loopFrame = -1
@@ -283,6 +283,7 @@ Public Sub LoadState(ByVal file As String)
             Input #num, MWinSize
             Call fread(num)
             Input #num, newPlyrName
+            Close num
             initTime = Timer()
             addTime = gameTime
             showPlayer(selectedPlayer) = True

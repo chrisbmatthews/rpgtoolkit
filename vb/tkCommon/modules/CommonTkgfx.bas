@@ -21,7 +21,6 @@ Private lastAnmFile As String   'last opened anm file name
 '=========================================================================
 ' Delcarations for actkrt3.dll graphic exports
 '=========================================================================
-
 Public Declare Function GFXFunctionPtr Lib "actkrt3.dll" (ByVal functionAddr As Long) As Long
 Public Declare Function GFXInit Lib "actkrt3.dll" (cbArray As Long, ByVal cbArrayCount As Long) As Long
 Public Declare Function GFXKill Lib "actkrt3.dll" () As Long
@@ -54,7 +53,7 @@ Public Sub drawTile(ByVal dc As Long, ByVal file As String, ByVal x As Double, B
     Dim anm As TKTileAnm, iso As Long, of As String, Temp As String, ex As String, ff As String
 
     'Don't draw the tile if there isn't one!
-    If RemovePath(file) = vbNullString Then Exit Sub
+    If (LenB(RemovePath(file)) = 0) Then Exit Sub
 
     If bIsometric Then
         iso = 1
@@ -131,12 +130,12 @@ End Sub
 '=========================================================================
 Public Sub drawTileCNV(ByVal cnv As Long, ByVal file As String, ByVal x As Double, ByVal y As Double, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal bMask As Boolean, Optional ByVal bNonTransparentMask As Boolean = True, Optional ByVal bIsometric As Boolean = False, Optional ByVal isoEvenOdd As Boolean = False)
 
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     
     Dim anm As TKTileAnm, iso As Long, of As String, Temp As String, ex As String, ff As String
     
     'Don't draw the tile if there isn't one!
-    If RemovePath(file) = vbNullString Then Exit Sub
+    If (LenB(RemovePath(file)) = 0) Then Exit Sub
     
     If bIsometric Then
         iso = 1
@@ -208,7 +207,7 @@ Public Sub drawTileCNV(ByVal cnv As Long, ByVal file As String, ByVal x As Doubl
     
     Exit Sub
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     
     Resume Next
 End Sub
