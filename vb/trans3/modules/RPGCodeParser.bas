@@ -979,24 +979,33 @@ Public Function ParseRPGCodeCommand( _
 
                                         cN = Mid(bT, b + 1, a - b)
 
-                                        If (GetCommandName(cN) = "") Then
+                                        Dim theInlineCommand As String
+                                        theInlineCommand = UCase(GetCommandName(cN))
+
+                                        If (theInlineCommand = "") Then
 
                                             'Math in brackets
                                             v = CStr(RPGCEvaluate(cN))
 
                                         Else
 
-                                            'Now let's execute this command...
+                                            'Now let's execute this command
                                             oPP = prg.programPos
                                             rV.usingReturnData = True
                                             prg.programPos = DoSingleCommand(cN, prg, rV)
                                             prg.programPos = oPP
 
-                                            'Get the value it returned...
-                                            Select Case rV.dataType
-                                                Case DT_NUM: v = " " & CStr(rV.num)
-                                                Case DT_LIT: v = " " & Chr(34) & rV.lit & Chr(34)
-                                            End Select
+                                            'Get the value it returned
+                                            If (theInlineCommand <> "WAIT") _
+                                             And (theInlineCommand <> "GET") Then
+                                                Select Case rV.dataType
+                                                    Case DT_NUM: v = " " & CStr(rV.num)
+                                                    Case DT_LIT: v = " " & Chr(34) & rV.lit & Chr(34)
+                                                End Select
+                                            Else
+                                                'Wait/Get command-- don't add quotes!
+                                                v = " " & rV.lit
+                                            End If
 
                                         End If
 
