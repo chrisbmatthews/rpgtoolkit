@@ -161,8 +161,8 @@ Private Sub loadTutorial()
         a = a + 1
         ReDim Preserve m_pages(Int(a / 2))
         With m_pages(Int(a / 2))
-            .title = LoadResString(a)
-            .content = LoadResString(a + 1)
+            .title = LoadResString(100 + a)
+            .content = LoadResString(a + 101)
             If (.title = "") Then
                 ReDim Preserve m_pages(Int(a / 2) - 2)
                 Exit Do
