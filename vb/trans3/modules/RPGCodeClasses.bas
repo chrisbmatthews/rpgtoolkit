@@ -300,12 +300,12 @@ Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS
     parseArrayD() = Split(toParse, "][")
 
     'Add the vars
-    ReDim x(UBound(parseArrayD)) As Long
+    ReDim X(UBound(parseArrayD)) As Long
     ReDim size(UBound(parseArrayD)) As Long
     For idx = 0 To UBound(size)
         size(idx) = CLng(parseArrayD(idx))
     Next idx
-    Call getVarsFromArray(0, size(), x(), scope, variableName, variableType)
+    Call getVarsFromArray(0, size(), X(), scope, variableName, variableType)
 
 End Sub
 
@@ -356,7 +356,7 @@ End Sub
 '=========================================================================
 ' Add a method to a scope
 '=========================================================================
-Private Sub addMethodToScope(ByVal theClass As String, ByVal text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE)
+Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE)
 
     On Error Resume Next
 
@@ -367,7 +367,7 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal text As String, ByR
     Dim pos As Long             'Pos we're using
 
     'Get the method's name
-    origName = GetMethodName(text)
+    origName = GetMethodName(Text)
     methodName = UCase(theClass) & "::" & UCase(origName)
 
     'Get line method starts on
@@ -375,7 +375,7 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal text As String, ByR
 
     'Check if we errored out
     If (theLine = -1) Then
-        Call debugger("Could not find method " & origName & " -- " & text)
+        Call debugger("Could not find method " & origName & " -- " & Text)
         Exit Sub
     End If
 
@@ -386,7 +386,7 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal text As String, ByR
     For idx = 0 To UBound(scope.methods)
         If (scope.methods(idx).name = UCase(origName)) Then
             'Illegal redifinition
-            Call debugger("Illegal redefinition of method " & origName & " -- " & text)
+            Call debugger("Illegal redefinition of method " & origName & " -- " & Text)
             Exit Sub
 
         ElseIf (scope.methods(idx).name = "") Then
@@ -413,26 +413,26 @@ End Sub
 '=========================================================================
 ' Remove class name from a function
 '=========================================================================
-Private Function removeClassName(ByVal text As String) As String
+Private Function removeClassName(ByVal Text As String) As String
 
     On Error Resume Next
 
     Dim idx As Long         'For loop var
     Dim char As String * 2  'Characters
 
-    For idx = 1 To Len(text)
+    For idx = 1 To Len(Text)
         'Get a character
-        char = Mid(text, idx, 2)
+        char = Mid(Text, idx, 2)
         'Check if it's the scope operator
         If (char = "::") Then
             'Found it
-            removeClassName = Mid(text, idx + 2)
+            removeClassName = Mid(Text, idx + 2)
             Exit Function
         End If
     Next idx
 
     'Didn't find it
-    removeClassName = text
+    removeClassName = Text
 
 End Function
 
@@ -760,7 +760,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
     On Error Resume Next
 
     Dim hClass As Long              'Handle to use
-    Dim retVal As RPGCODE_RETURN    'Return value
+    Dim retval As RPGCODE_RETURN    'Return value
 
     'Return -1 on error
     hClass = -1
@@ -778,7 +778,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         classes(hClass).strInstancedFrom = UCase(theClass)
         classes(hClass).hClass = hClass
         Call clearObject(classes(hClass), prg)
-        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retVal)
+        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval)
     End If
 
     'Return a handle to the class
@@ -789,24 +789,24 @@ End Function
 '=========================================================================
 ' Grab vars from an array
 '=========================================================================
-Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef x() As Long, ByRef scope As RPGCODE_CLASS_SCOPE, ByVal prefix As String, ByVal postfix As String)
+Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef X() As Long, ByRef scope As RPGCODE_CLASS_SCOPE, ByVal prefix As String, ByVal postFix As String)
 
     On Error Resume Next
 
     Dim dimIdx As Long      'Dimension index
     Dim theVar As String    'The variable
 
-    For x(depth) = 0 To size(depth)
+    For X(depth) = 0 To size(depth)
         If (depth <= UBound(size)) Then
-            Call getVarsFromArray(depth + 1, size(), x(), scope, prefix, postfix)
+            Call getVarsFromArray(depth + 1, size(), X(), scope, prefix, postFix)
         Else
             theVar = ""
             For dimIdx = 0 To UBound(size)
-                theVar = theVar & "[" & CStr(x(dimIdx)) & "]"
+                theVar = theVar & "[" & CStr(X(dimIdx)) & "]"
             Next dimIdx
-            Call addVarToScope(prefix & theVar & postfix, scope)
+            Call addVarToScope(prefix & theVar & postFix, scope)
         End If
-    Next x(depth)
+    Next X(depth)
 
 End Sub
 
@@ -838,12 +838,12 @@ End Function
 '=========================================================================
 ' Splice up a line for object things
 '=========================================================================
-Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgram) As String
+Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgram) As String
 
     On Error Resume Next
 
     Dim value As String             'Value of function
-    Dim retVal As RPGCODE_RETURN    'Return value
+    Dim retval As RPGCODE_RETURN    'Return value
     Dim begin As Long               'Char to begin at
     Dim char As String              'Character(s)
     Dim spacesOK As Boolean         'Spaces are okay?
@@ -861,18 +861,18 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     Dim a As Long                   'Loop var
 
     'Get location of first ->
-    begin = inStrOutsideQuotes(1, text, "->")
+    begin = inStrOutsideQuotes(1, Text, "->")
 
     If (begin = 0) Then
         'Contains no object manipulation
-        spliceForObjects = text
+        spliceForObjects = Text
         Exit Function
     End If
 
     'Loop over each charater, forwards
-    For a = (begin + 2) To Len(text)
+    For a = (begin + 2) To Len(Text)
         'Get a character
-        char = Mid(text, a, 1)
+        char = Mid(Text, a, 1)
         Select Case char
 
             Case "!", "$", "-"
@@ -907,7 +907,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     Next a
 
     'Record the method's command line
-    cLine = ParseRPGCodeCommand(Trim(Mid(text, begin + 2, lngEnd - begin - 1)), prg)
+    cLine = ParseRPGCodeCommand(Trim(Mid(Text, begin + 2, lngEnd - begin - 1)), prg)
     If (Not var) Then
         cmdName = UCase(GetCommandName(cLine))
     Else
@@ -929,7 +929,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     'Loop over each charater, backwards
     For a = (begin - 1) To 1 Step -1
         'Get a character
-        char = Mid(text, a, 1)
+        char = Mid(Text, a, 1)
         If ((spacesOK) And (char = " ")) Then
             'Alter char
             char = ""
@@ -958,7 +958,8 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     Next a
 
     'Record the object
-    object = parseArray(UCase(Trim(Mid(text, start, begin - start))), prg)
+    object = parseArray(UCase(Trim(Mid(Text, start, begin - start))), prg)
+    If (object = "") Then object = GetWithPrefix()
 
     'Get its handle
     If (object <> "THIS") Then
@@ -978,7 +979,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
 
         'Check if we're to release
         If (cmdName = "RELEASE") Then
-            Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retVal)
+            Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retval)
             Call clearObject(classes(hClass), prg)
             Call killHandle(hClass)
             classes(hClass).hClass = 0
@@ -988,13 +989,13 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
             If (isMethodMember(cmdName, hClass, prg, outside)) Then
 
                 'Execute the method
-                Call callObjectMethod(hClass, cLine, prg, retVal)
+                Call callObjectMethod(hClass, cLine, prg, retval)
 
                 'Replace text with value the method returned
-                If (retVal.dataType = DT_NUM) Then
-                    value = " " & CStr(retVal.num)
-                ElseIf (retVal.dataType = DT_LIT) Then
-                    value = " " & Chr(34) & retVal.lit & Chr(34)
+                If (retval.dataType = DT_NUM) Then
+                    value = " " & CStr(retval.num)
+                ElseIf (retval.dataType = DT_LIT) Then
+                    value = " " & Chr(34) & retval.lit & Chr(34)
                 End If
 
             Else
@@ -1011,7 +1012,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
             'It's a member
             value = getObjectVarName(cLine, hClass)
         Else
-            Call debugger("Error: Could not get/set " & cLine & " -- " & text)
+            Call debugger("Error: Could not get/set " & cLine & " -- " & Text)
         End If
     End If
 
@@ -1019,7 +1020,7 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     value = replace(value, ",", ".")
 
     'Complete the return string
-    spliceForObjects = Mid(text, 1, start - 1) & value & Mid(text, lngEnd + 1)
+    spliceForObjects = Mid(Text, 1, start - 1) & value & Mid(Text, lngEnd + 1)
     If (Trim(spliceForObjects) = "0") Then
         spliceForObjects = ""
     Else
