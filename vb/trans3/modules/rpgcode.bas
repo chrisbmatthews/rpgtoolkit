@@ -11423,18 +11423,33 @@ End Sub
 '=========================================================================
 Public Sub ItemStanceRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
+    
     If (CountData(Text) <> 2) Then
         Call debugger("ItemStance() requires two data elements-- " & Text)
         Exit Sub
     End If
+    
     Dim paras() As parameters
     paras() = getParameters(Text, prg)
-    If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_LIT) Then
-        Call debugger("ItemStance() requires num, lit-- " & Text)
+    
+    If paras(0).dataType = DT_LIT Then
+        Select Case UCase$(paras(0).lit)
+            Case "TARGET": If targetType = TYPE_ITEM Then paras(0).num = target
+            Case "SOURCE": If sourceType = TYPE_ITEM Then paras(0).num = Source
+            Case Else
+                Call debugger("ItemStance() requires num! , lit$-- " & Text)
+                Exit Sub
+        End Select
+    End If
+    
+    If paras(1).dataType <> DT_LIT Then
+        Call debugger("ItemStance() requires num!, lit$-- " & Text)
         Exit Sub
     End If
+    
     itmPos(inBounds(paras(0).num, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))).stance = paras(1).lit
     itmPos(inBounds(paras(0).num, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))).frame = 0
+
 End Sub
 
 '=========================================================================
@@ -11442,16 +11457,41 @@ End Sub
 '=========================================================================
 Public Sub PlayerStanceRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
+    
     If (CountData(Text) <> 2) Then
         Call debugger("PlayerStance() requires two data elements-- " & Text)
         Exit Sub
     End If
-    Dim paras() As parameters
+    
+    Dim paras() As parameters, i As Long
     paras() = getParameters(Text, prg)
-    If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_LIT) Then
+    
+    If (paras(0).dataType = DT_LIT) Then
+
+        paras(0).num = -1
+        paras(0).lit = UCase$(paras(0).lit)
+
+        'Search the player handles for a match
+        For i = 0 To 4
+            If (UCase$(playerListAr(i)) = paras(0).lit) Then paras(0).num = i
+        Next i
+
+        If (paras(0).num = -1) Then
+            Select Case paras(0).lit
+                Case "TARGET": If (targetType = TYPE_PLAYER) Then paras(0).num = target
+                Case "SOURCE": If (sourceType = TYPE_PLAYER) Then paras(0).num = Source
+                Case Else
+                        Call debugger("PlayerStance(): player handle not found!-- " & Text)
+                        Exit Sub
+            End Select
+        End If
+    End If
+    
+    If paras(1).dataType <> DT_LIT Then
         Call debugger("PlayerStance() requires num, lit-- " & Text)
         Exit Sub
     End If
+    
     pPos(inBounds(paras(0).num, 0, 4)).stance = paras(1).lit
     pPos(inBounds(paras(0).num, 0, 4)).frame = 0
 End Sub
@@ -11461,16 +11501,30 @@ End Sub
 '=========================================================================
 Public Sub ItemSpeedRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
+    
     If (CountData(Text) <> 2) Then
         Call debugger("ItemSpeed() requires two data elements-- " & Text)
         Exit Sub
     End If
+    
     Dim paras() As parameters
     paras() = getParameters(Text, prg)
-    If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_NUM) Then
-        Call debugger("ItemSpeed() requires two numerical data elements-- " & Text)
+    
+    If paras(0).dataType = DT_LIT Then
+        Select Case UCase$(paras(0).lit)
+            Case "TARGET": If targetType = TYPE_ITEM Then paras(0).num = target
+            Case "SOURCE": If sourceType = TYPE_ITEM Then paras(0).num = Source
+            Case Else
+                Call debugger("ItemSpeed() requires num! , lit$-- " & Text)
+                Exit Sub
+        End Select
+    End If
+    
+    If paras(1).dataType <> DT_NUM Then
+        Call debugger("ItemSpeed() requires num!, num!-- " & Text)
         Exit Sub
     End If
+    
     itemMem(inBounds(paras(0).num, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))).speed = paras(1).num
 End Sub
 
@@ -11479,16 +11533,41 @@ End Sub
 '=========================================================================
 Public Sub PlayerSpeedRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
+    
     If (CountData(Text) <> 2) Then
         Call debugger("PlayerSpeed() requires two data elements-- " & Text)
         Exit Sub
     End If
-    Dim paras() As parameters
+    
+    Dim paras() As parameters, i As Long
     paras() = getParameters(Text, prg)
-    If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_NUM) Then
+    
+    If (paras(0).dataType = DT_LIT) Then
+
+        paras(0).num = -1
+        paras(0).lit = UCase$(paras(0).lit)
+
+        'Search the player handles for a match
+        For i = 0 To 4
+            If (UCase$(playerListAr(i)) = paras(0).lit) Then paras(0).num = i
+        Next i
+
+        If (paras(0).num = -1) Then
+            Select Case paras(0).lit
+                Case "TARGET": If (targetType = TYPE_PLAYER) Then paras(0).num = target
+                Case "SOURCE": If (sourceType = TYPE_PLAYER) Then paras(0).num = Source
+                Case Else
+                        Call debugger("PlayerSpeed(): player handle not found!-- " & Text)
+                        Exit Sub
+            End Select
+        End If
+    End If
+    
+    If paras(1).dataType <> DT_NUM Then
         Call debugger("PlayerSpeed() requires two numerical data elements-- " & Text)
         Exit Sub
     End If
+    
     playerMem(inBounds(paras(0).num, 0, 4)).speed = paras(1).num
 End Sub
 
