@@ -1084,6 +1084,7 @@ Private Function renderPlayer(ByVal cnv As Long, _
                     If LenB(thePlayer.standingGfx(direction)) Then
                         'If so, change the stance to STANDing.
                         .stance = "stand" & Right$(.stance, Len(.stance) - 4)
+                        bIdleGfx = True
 
                         'Start the loop counter for idleness.
                         .loopFrame = -1
@@ -1204,7 +1205,8 @@ Private Function renderItem(ByVal cnv As Long, _
                     If LenB(theItem.standingGfx(direction)) Then
                         'If so, change the stance to STANDing.
                         .stance = "stand" & Right$(.stance, Len(.stance) - 4)
-                        
+                        bIdleGfx = True
+
                         'Start the loop counter for idleness.
                         .loopFrame = -1
                     End If
