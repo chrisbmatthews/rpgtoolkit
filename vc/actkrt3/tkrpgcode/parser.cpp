@@ -192,7 +192,7 @@ inline int returnVbString(inlineString theString, int &lengthBuffer)
 	if (memAdd) delete memAdd;
 
 	//allocate some memory for the string
-	memAdd = new(char[theString.len() + 1]);
+	memAdd = new(char[theString.len()]);
 
 	//copy the string into the memory
 	theString.newMem(memAdd);
