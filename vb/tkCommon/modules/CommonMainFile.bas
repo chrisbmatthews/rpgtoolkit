@@ -68,6 +68,8 @@ Public Type TKMain
     hotSpotX As Byte                  'x hot spot on mouse
     hotSpotY As Byte                  'y hot spot on mouse
     transpcolor As Long               'transparent color on cursor
+    resX As Long                      'custom x resolution
+    resY As Long                      'custom y resolution
 End Type
 
 '=========================================================================
@@ -385,6 +387,11 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                 .transpcolor = RGB(255, 0, 0)
             End If
 
+            If (minorVer >= 7) Then
+                mainMem.resX = BinReadLong(num)
+                mainMem.resY = BinReadLong(num)
+            End If
+
         Close num
 
         If minorVer <= 2 Then
@@ -543,7 +550,7 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT MAIN")    'Filetype
         Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 6)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
+        Call BinWriteInt(num, 7)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
         Call BinWriteInt(num, 1)    'registered
         Call BinWriteString(num, "NOCODE")            'No reg code
     
@@ -611,6 +618,8 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         Call BinWriteByte(num, theMain.hotSpotX)
         Call BinWriteByte(num, theMain.hotSpotY)
         Call BinWriteLong(num, theMain.transpcolor)
+        Call BinWriteLong(num, theMain.resX)
+        Call BinWriteLong(num, theMain.resY)
         
     Close num
 
@@ -622,6 +631,8 @@ End Sub
 Public Sub MainClear(ByRef theMain As TKMain)
     On Error Resume Next
     With theMain
+        .resX = 0
+        .resY = 0
         .gameTitle = vbNullString              'title of game
         .mainScreenType = 0        'screen type 2=windowed, 1=optimal resolution (640x480), 0- actual window
         .extendToFullScreen = 0    'extend screen to maximum extents (0=no, 1=yes)
