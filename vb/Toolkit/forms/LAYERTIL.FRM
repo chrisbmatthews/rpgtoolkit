@@ -37,7 +37,16 @@ Begin VB.Form frmLayerTile
       Left            =   120
       TabIndex        =   0
       Top             =   120
-      Width           =   2295
+      Width           =   3550
+      Begin VB.TextBox txtIntensity 
+         Enabled         =   0   'False
+         Height          =   285
+         Left            =   2520
+         TabIndex        =   8
+         Text            =   "50"
+         Top             =   1440
+         Width           =   615
+      End
       Begin VB.PictureBox Picture1 
          BorderStyle     =   0  'None
          Height          =   495
@@ -58,13 +67,13 @@ Begin VB.Form frmLayerTile
       End
       Begin VB.CheckBox chkTrans 
          Appearance      =   0  'Flat
-         Caption         =   "Transparently Layer"
+         Caption         =   "Translucently Layer (%)"
          ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
          TabIndex        =   3
          Top             =   1440
-         Width           =   1695
+         Width           =   1935
       End
       Begin VB.CheckBox chkPreview 
          Appearance      =   0  'Flat
@@ -103,14 +112,16 @@ Attribute VB_Exposed = False
 '========================================================================
 Option Explicit
 
+Private intensity As Double
+Private layerData(1, 64, 32) As Long        'The two tiles we are layering.
+
+Private Const BASE_TILE = 0
+Private Const LAYER_TILE = 1
 '========================================================================
 ' The Cancel button
 '========================================================================
-Private Sub butCancel_click()
-    
-    'Just unload, the tile will be changed back in Form_Unload
+Private Sub butCancel_click(): On Error Resume Next
     Unload Me
-    
 End Sub
 
 '========================================================================
@@ -118,13 +129,12 @@ End Sub
 '========================================================================
 Private Sub butOK_Click(): On Error Resume Next
     
-    'Change the tile
+    'Change the tile.
     Call Preview
     
-    'Don't change the tile back during unload
+    'Change the tile back during unload.
     saveChanges = True
     
-    'Unload
     Unload Me
     
 End Sub
@@ -134,73 +144,48 @@ End Sub
 '========================================================================
 Private Sub butOpenTile_click(): On Error Resume Next
 
-    'Redim the buffer array
-    ReDim buffer(32, 32)
-    
-    'Store the current tileMem
-    Dim x As Integer, y As Integer
-    For x = 1 To 32
-        For y = 1 To 32
-            bufTile(x, y) = tileMem(x, y)
-        Next y
-    Next x
-    
-    'Open a file dialog
+    'Open a file dialog.
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath + tilePath
+    dlg.strDefaultFolder = projectPath & tilePath
     dlg.strTitle = "Open Tile For Layering"
     dlg.strDefaultExt = "gph"
     dlg.strFileTypes = "Supported Types|*.gph;*.tst|RPG Toolkit Tile (*.gph)|*.gph|Tileset (*.tst)|*.tst|All files(*.*)|*.*"
     ChDir (currentDir)
     
-    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub 'Pressed cancel
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
     
-    'If we got here, see if we got a correct file
-    Dim noPath As String
-    filename(1) = dlg.strSelectedFile
-    noPath = dlg.strSelectedFileNoPath
-    
-    If UCase(extention(filename(1))) = "TST" Then
+    If UCase$(GetExt(dlg.strSelectedFile)) = "TST" Then
         
-        'Selected an archive, open it
+        'Selected an archive, open it.
         tstnum = 0
-        tstFile = noPath
+        tstFile = dlg.strSelectedFileNoPath
         
-        'Open the tileset form
+        'Open the tileset form.
         ChDir (currentDir)
         tilesetForm.Show vbModal
         
-        If setFilename = "" Then Exit Sub
-        Call openWinTile(projectPath + tilePath + setFilename)
+        If setFilename = vbNullString Then Exit Sub
+        Call openWinTile(projectPath & tilePath & setFilename)
     
     Else
          
         'No archive, just open it up!
-        Call openWinTile(filename(1))
+        Call openWinTile(dlg.strSelectedFile)
         
     End If
     
-    'Clear the preview picturebox
     picPreview.Cls
     
-    'Paint the opened tile on the picturebox
+    'The layer tile is now in tileMem.
+    
+    Dim x As Long, y As Long
     For x = 1 To 32
         For y = 1 To 32
-            Call vbPicPSet(picPreview, x - 1, y - 1, tileMem(x, y))
-            bufTile(x, y) = tileMem(x, y)
+            layerData(LAYER_TILE, x, y) = tileMem(x, y)
+            Call vbPicPSet(picPreview, x - 1, y - 1, layerData(LAYER_TILE, x, y))
         Next y
     Next x
     
-    'Change tilemem back
-    For x = 1 To 32
-        For y = 1 To 32
-            buffer(x, y) = tileMem(x, y)
-            tileMem(x, y) = bufTile(x, y)
-            bufTile(x, y) = buffer(x, y)
-        Next y
-    Next x
-    
-    'Preview tile
     If chkPreview.value Then Call Preview
     
 End Sub
@@ -208,19 +193,19 @@ End Sub
 '========================================================================
 ' The preview checkbox
 '========================================================================
-Private Sub chkPreview_Click()
+Private Sub chkPreview_Click(): On Error Resume Next
     
-    'If it's unchecked, change the tile back
+    Dim x As Long, y As Long
+    
+    'If it's unchecked, change the tile back.
     If chkPreview.value = 0 Then
     
-        Dim x, y As Integer
         For x = 1 To 32
             For y = 1 To 32
-                tileMem(x, y) = tilePreview(x, y)
+                tileMem(x, y) = layerData(BASE_TILE, x, y)
             Next y
         Next x
     
-        'Redraw
         activeTile.tileRedraw
         
     Else
@@ -232,21 +217,14 @@ Private Sub chkPreview_Click()
 End Sub
 
 '========================================================================
-' The transparent checkbox
+' The translucent checkbox
 '========================================================================
 Private Sub chkTrans_Click()
 
-    'Update variable
-    With openTileEditorDocs(activeTile.indice)
-        If .transparentLayer = 0 Then
-            .transparentLayer = 1
-        Else
-            .transparentLayer = 0
-        End If
-    End With
-    
-    'Preview tile
+    'Preview tile.
     If chkPreview.value Then Call Preview
+    'Enable the intensity text field.
+    txtIntensity.Enabled = chkTrans.value
 
 End Sub
 
@@ -255,23 +233,24 @@ End Sub
 '========================================================================
 Private Sub Form_Load(): On Error Resume Next
     
-    'Localize this form
+    'Localize this form.
     ' Call LocalizeForm(Me)
     
-    'Store the current tile and clear buftile
+    'Store the current tile as the base and set a clear layer tile.
     Dim x As Integer, y As Integer
     For x = 1 To 32
         For y = 1 To 32
-            bufTile(x, y) = -1
-            tilePreview(x, y) = tileMem(x, y)
+            layerData(BASE_TILE, x, y) = tileMem(x, y)
+            layerData(LAYER_TILE, x, y) = -1
         Next y
     Next x
     
-    'Set this to false at startup
     saveChanges = False
-    
-    'Set the chkTrans checkbox
-    chkTrans.value = openTileEditorDocs(activeTile.indice).transparentLayer = 1
+    'Set the chkTrans checkbox.
+    chkTrans.value = 0
+    txtIntensity.Enabled = chkTrans.value
+    intensity = 50                  '50% mix value to start with.
+    txtIntensity.Text = CStr(intensity)
         
 End Sub
 
@@ -280,25 +259,22 @@ End Sub
 '========================================================================
 Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
 
-    'See if the user has clicked "OK" or not
+    'See if the user has clicked "OK" or not.
     If Not saveChanges Then
         
-        'Use new Undo
+        'Use new Undo.
         Call activeTile.setUndo
         
-        'Change the tile
-        Dim x As Integer, y As Integer
+        'Change the tile.
+        Dim x As Long, y As Long
         For x = 1 To 32
             For y = 1 To 32
-                If tileMem(x, y) <> -1 Then
-                    tileMem(x, y) = tilePreview(x, y)
-                End If
+                tileMem(x, y) = layerData(BASE_TILE, x, y)
             Next y
         Next x
         
     End If
     
-    'Redraw
     activeTile.tileRedraw
     
 End Sub
@@ -308,7 +284,6 @@ End Sub
 '========================================================================
 Private Sub picPreview_Click(): On Error Resume Next
 
-    'Open tile
     Call butOpenTile_click
     
 End Sub
@@ -318,55 +293,53 @@ End Sub
 '========================================================================
 Private Sub Preview(): On Error Resume Next
 
-    'First we need to to set the tile back to how it was at the start
-    Dim x, y As Integer
-    For x = 1 To 32
-        For y = 1 To 32
-            tileMem(x, y) = tilePreview(x, y)
-        Next y
-    Next x
-
+    Dim x As Long, y As Long
+    
     For x = 1 To 32
         For y = 1 To 32
         
-            If openTileEditorDocs(activeTile.indice).transparentLayer = 0 Then
-            
-                'Not a transparent layer, just copy it
-                If bufTile(x, y) = -1 Then bufTile(x, y) = tileMem(x, y)
-                tileMem(x, y) = bufTile(x, y)
+            If chkTrans.value = 0 Then
+                'Not a translucent layering, just copy it.
                 
+                If layerData(LAYER_TILE, x, y) = -1 Then
+                    'Draw the base pixel.
+                    tileMem(x, y) = layerData(BASE_TILE, x, y)
+                Else
+                    'Layer tile is not transparent here - draw the layer pixel.
+                    tileMem(x, y) = layerData(LAYER_TILE, x, y)
+                End If
+               
             Else
             
-                'Transparent layer, add effect
-                If bufTile(x, y) = -1 Then
-                
-                    'Transparent pixel
-                    bufTile(x, y) = tileMem(x, y)
+                If layerData(LAYER_TILE, x, y) = -1 Then
+                    'Draw the base pixel.
+                    tileMem(x, y) = layerData(BASE_TILE, x, y)
                 Else
-                
-                    'Not transparent
+                    'Layer tile is not transparent here - draw the layer pixel.
                     
-                    'Needed variables
-                    Dim rrbuf As String, ggbuf As String, bbbuf As String
-                    Dim rrtile As String, ggtile As String, bbtile As String
-                    rrbuf = red(bufTile(x, y))
-                    ggbuf = green(bufTile(x, y))
-                    bbbuf = blue(bufTile(x, y))
-                    rrtile = red(tileMem(x, y))
-                    ggtile = green(tileMem(x, y))
-                    bbtile = green(tileMem(x, y))
-                    rrtile = rrtile + rrbuf: If rrtile > 255 Then rrtile = 255
-                    ggtile = ggtile + ggbuf: If ggtile > 255 Then ggtile = 255
-                    bbtile = bbtile + bbbuf: If bbtile > 255 Then bbtile = 255
-                    tileMem(x, y) = RGB(rrtile, ggtile, bbtile)
+                    Dim r As Byte, g As Byte, b As Byte
                     
+                    'Add the scaled values from each tile.
+                    r = red(layerData(LAYER_TILE, x, y)) * (intensity / 100) + red(layerData(BASE_TILE, x, y)) * (1 - intensity / 100)
+                    g = green(layerData(LAYER_TILE, x, y)) * (intensity / 100) + green(layerData(BASE_TILE, x, y)) * (1 - intensity / 100)
+                    b = blue(layerData(LAYER_TILE, x, y)) * (intensity / 100) + blue(layerData(BASE_TILE, x, y)) * (1 - intensity / 100)
+                                        
+                    tileMem(x, y) = RGB(r, g, b)
                 End If
-                
-            End If
-            
+            End If 'chkTrans.value = 0
+        
         Next y
     Next x
     
-    'Redraw
     activeTile.tileRedraw
+End Sub
+
+'==============================================================================
+'Set intensity for translucent layering.
+'==============================================================================
+Private Sub txtIntensity_LostFocus()
+    
+    intensity = inBounds(val(txtIntensity.Text), 0, 100)
+    txtIntensity.Text = CStr(intensity)
+
 End Sub
