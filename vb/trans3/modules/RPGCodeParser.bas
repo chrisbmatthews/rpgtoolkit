@@ -1380,10 +1380,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     ' This will take an array such as array[a! + 2]["Pos"]$ and replace variables, commands,
     ' equations, etc with their values.
 
-    '// Passing string(s) ByRef for preformance related reasons
-
-    ' Just skip errors because they're probably the rpgcoder's fault
-    On Error GoTo skipError
+    On Error Resume Next
 
     ' Have something to return incase we leave early
     parseArray = variable
@@ -1512,5 +1509,4 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     ' Pass it back with the type (! or $) on the end
     parseArray = build & variableType
 
-skipError:
 End Function
