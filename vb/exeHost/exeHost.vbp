@@ -1,5 +1,5 @@
 Type=Exe
-Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\..\..\WINDOWS\System32\stdole2.tlb#OLE Automation
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\WINDOWS\System32\stdole2.tlb#OLE Automation
 Module=modMain; Modules\modMain.bas
 Module=modSelfExtract; Modules\modSelfExtract.bas
 Module=CommonPaths; ..\tkCommon\modules\CommonPaths.bas
@@ -10,7 +10,7 @@ Startup="Sub Main"
 HelpFile=""
 Title="RPGToolkit 3 EXE Host"
 ExeName32="exeHost.dll"
-Path32="..\..\..\..\..\..\..\Program Files\Toolkit3"
+Path32="build"
 Command32=""
 Name="exeHost"
 HelpContextID="0"
