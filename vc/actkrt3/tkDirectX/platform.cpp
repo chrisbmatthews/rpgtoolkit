@@ -673,7 +673,7 @@ inline bool DrawCanvasPartial(CGDICanvas* pCanvas, int destx, int desty, int src
 		{
 			//use DirectX
 			int n = pCanvas->BltPart(gDXInfo.lpddsSecond, destx, desty, srcx, srcy, width, height, lRasterOp);
-			if (n == 1)
+			if (n)
 			{
 				bToRet = true;
 			}
@@ -684,7 +684,7 @@ inline bool DrawCanvasPartial(CGDICanvas* pCanvas, int destx, int desty, int src
 			HDC hdc = OpenDC();
 
 			int n = pCanvas->BltPart(hdc, destx, desty, srcx, srcy, width, height, lRasterOp);
-			if (n == 1)
+			if (n)
 			{
 				bToRet = true;
 			}

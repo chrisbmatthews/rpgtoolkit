@@ -34,8 +34,8 @@ typedef struct dxInfoTag
 {
 	bool bFullScreen;					//running in fullscreen mode?
 	int nColorDepth;					//color depth
-	int nWidth;							//width of surafces
-	int nHeight;						//height of surafces
+	int nWidth;							//width of surface
+	int nHeight;						//height of surface
 	LPDIRECTDRAW7 lpdd;					//main direct draw object
 	LPDIRECTDRAWSURFACE7 lpddsPrime;	//direct draw primary surface
 	LPDIRECTDRAWSURFACE7 lpddsSecond;	//direct draw back buffer
