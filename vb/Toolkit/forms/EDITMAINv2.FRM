@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form editmainfile 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Project Properties (Untitled)"
@@ -53,7 +53,6 @@ Begin VB.Form editmainfile
       _Version        =   393216
       Style           =   1
       Tabs            =   7
-      Tab             =   3
       TabsPerRow      =   7
       TabHeight       =   520
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -67,9 +66,11 @@ Begin VB.Form editmainfile
       EndProperty
       TabCaption(0)   =   "Project Settings"
       TabPicture(0)   =   "EDITMAINv2.frx":0CCA
-      Tab(0).ControlEnabled=   0   'False
-      Tab(0).Control(0)=   "prjframe"
-      Tab(0).Control(1)=   "envframe"
+      Tab(0).ControlEnabled=   -1  'True
+      Tab(0).Control(0)=   "envframe"
+      Tab(0).Control(0).Enabled=   0   'False
+      Tab(0).Control(1)=   "prjframe"
+      Tab(0).Control(1).Enabled=   0   'False
       Tab(0).ControlCount=   2
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
@@ -80,14 +81,13 @@ Begin VB.Form editmainfile
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "actionframe"
-      Tab(2).Control(1)=   "prgframe"
+      Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(1)=   "actionframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
-      Tab(3).ControlEnabled=   -1  'True
+      Tab(3).ControlEnabled=   0   'False
       Tab(3).Control(0)=   "fightframe"
-      Tab(3).Control(0).Enabled=   0   'False
       Tab(3).ControlCount=   1
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
@@ -97,9 +97,9 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Frame3"
+      Tab(5).Control(0)=   "Label24"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Label24"
+      Tab(5).Control(2)=   "Frame3"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
@@ -268,7 +268,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1335
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   74
          Tag             =   "1186"
          Top             =   600
@@ -631,6 +631,23 @@ Begin VB.Form editmainfile
             Top             =   720
             Width           =   1095
          End
+         Begin VB.Label lblInitialBoardTip 
+            Caption         =   "Note: You can leave the initial board empty if do not want to specify one."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   240
+            TabIndex        =   100
+            Top             =   1200
+            Width           =   5175
+         End
          Begin VB.Label Label10 
             Caption         =   "Initial Character File:"
             BeginProperty Font 
@@ -679,13 +696,13 @@ Begin VB.Form editmainfile
                Strikethrough   =   0   'False
             EndProperty
             ForeColor       =   &H00FF0000&
-            Height          =   495
+            Height          =   255
             Left            =   240
             MouseIcon       =   "EDITMAINv2.frx":1150
             MousePointer    =   99  'Custom
             TabIndex        =   61
             Tag             =   "1158"
-            Top             =   1080
+            Top             =   1320
             Visible         =   0   'False
             Width           =   2175
          End
@@ -701,13 +718,13 @@ Begin VB.Form editmainfile
                Strikethrough   =   0   'False
             EndProperty
             ForeColor       =   &H00FF0000&
-            Height          =   495
+            Height          =   255
             Left            =   3000
             MouseIcon       =   "EDITMAINv2.frx":145A
             MousePointer    =   99  'Custom
             TabIndex        =   60
             Tag             =   "1157"
-            Top             =   1080
+            Top             =   1320
             Visible         =   0   'False
             Width           =   2415
          End
@@ -1500,7 +1517,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1695
-         Left            =   -74760
+         Left            =   240
          TabIndex        =   12
          Tag             =   "1182"
          Top             =   600
@@ -1621,7 +1638,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1815
-         Left            =   -74760
+         Left            =   240
          TabIndex        =   2
          Top             =   2520
          Width           =   6495
@@ -2501,7 +2518,7 @@ Private Sub Form_Load(): On Error Resume Next
     filename(2) = vbNullString
     sliGameSpeed.max = MAX_GAMESPEED                'Gamespeed range.
     sliGameSpeed.min = -MAX_GAMESPEED
-    Call infofill
+    Call infoFill
 End Sub
 
 '=========================================================================
@@ -2543,7 +2560,7 @@ End Sub
 '=========================================================================
 ' Fill in the form with info
 '=========================================================================
-Private Sub infofill()
+Private Sub infoFill()
     On Error Resume Next
     optEnableFighting.value = True
     If mainMem.startupPrg$ <> "" Then
@@ -2769,7 +2786,7 @@ End Sub
 '=========================================================================
 ' Close menu
 '=========================================================================
-Private Sub mnuCLose_Click()
+Private Sub mnuClose_Click()
     Call Unload(Me)
 End Sub
 
@@ -2798,7 +2815,7 @@ Private Sub newmainmnu_Click()
     If user = 6 Then
         mainFile$ = ""
         Call newmain
-        Call infofill
+        Call infoFill
     End If
 End Sub
 
