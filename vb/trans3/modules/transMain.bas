@@ -504,7 +504,7 @@ Public Sub setupMain(): On Error Resume Next
     Call gameSpeed(getGameSpeed(mainMem.gameSpeed))
 
     ' Get the last gAvgTime from the registry
-    m_renderCount = 10
+    m_renderCount = 100
     m_renderTime = CDbl(GetSetting("RPGToolkit3", "Trans3", "gAvgTime", -1)) * m_renderCount
 
     If (m_renderTime <= 0) Then
