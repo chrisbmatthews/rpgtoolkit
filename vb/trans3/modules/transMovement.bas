@@ -1372,7 +1372,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                         'Check divide by zero.
                         If .loopSpeed = 0 Then .loopSpeed = 1
                         
-Call traceString("ITM.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
+' Call traceString("ITM.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
                         
                     End With
                     
@@ -1569,8 +1569,8 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                         'Check divide by zero.
                         If .loopSpeed = 0 Then .loopSpeed = 1
                         
-   Call traceString(" ")
-   Call traceString("PLY.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
+   'Call traceString(" ")
+   'Call traceString("PLY.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
                         
                         'Set all players to move at the selected player's speed regardless,
                         '(won't work otherwise!).
@@ -1585,7 +1585,7 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                 
             End If '.loopFrame = 0
             
-Call traceString("MVPLY.x=" & pPos(playerIdx).x & ".y=" & pPos(playerIdx).y & _
+'Call traceString("MVPLY.x=" & pPos(playerIdx).x & ".y=" & pPos(playerIdx).y & _
                 " .dir=" & pendingPlayerMovement(playerIdx).direction & _
                 ".loopFrame=" & pPos(playerIdx).loopFrame & _
                 " topX=" & topX & " topY=" & topY)
