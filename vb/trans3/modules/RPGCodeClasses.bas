@@ -1801,8 +1801,10 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                             Exit For
                         End If
                     Else
-                        start = a + 1
-                        Exit For
+                        If (arrayDepth = 0) Then
+                            start = a + 1
+                            Exit For
+                        End If
                     End If
                 End If
 
