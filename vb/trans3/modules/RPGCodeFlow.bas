@@ -273,8 +273,9 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
                 destList(pList) = destList(pList) & "!"
             End If
 
-            ' Declare this variable
+            ' Declare and set this variable
             Call declareVariable(destList(pList), theProgram)
+            Call SetVariable(destList(pList), dUse, theProgram)
 
         Next pList
 
@@ -789,7 +790,7 @@ Public Sub runProgram( _
         theProgram.programPos = 0
         Do While _
                    ((theProgram.programPos >= 0) _
-                   And (theProgram.programPos <= theProgram.Length) _
+                   And (theProgram.programPos <= theProgram.length) _
                    And (runningProgram))
 
             prgPos = theProgram.programPos
