@@ -9186,7 +9186,6 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Dim pPic As String
     Dim f As String
     
-    Call processEvent
     If lineNum = 1 Then
         If MWinBkg <> -1 Then
             Call canvasFill(cnvMsgBox, MWinBkg)

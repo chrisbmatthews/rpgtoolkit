@@ -1434,11 +1434,15 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
 
     'Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
-        If (isVarMember(theVar, topNestle(theProgram), theProgram)) Then
-            ' Get the new name
-            theVar = getObjectVarName(theVar, topNestle(theProgram))
-            ' All class members are global
-            bForceGlobal = True
+        Dim this As Long
+        this = topNestle(theProgram)
+        If (this) Then
+            If (isVarMember(theVar, this, theProgram)) Then
+                ' Get the new name
+                theVar = getObjectVarName(theVar, this)
+                ' All class members are global
+                bForceGlobal = True
+            End If
         End If
     End If
 
@@ -1539,8 +1543,12 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
 
     ' Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
-        If (isVarMember(theVar, topNestle(theProgram), theProgram)) Then
-            theVar = getObjectVarName(theVar, topNestle(theProgram))
+        Dim this As Long
+        this = topNestle(theProgram)
+        If (this) Then
+            If (isVarMember(theVar, this, theProgram)) Then
+                theVar = getObjectVarName(theVar, this)
+            End If
         End If
     End If
 

@@ -155,25 +155,41 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     Dim oldPos As Long
     oldPos = theProgram.programPos
-
+Call traceString(Text)
+Call traceString("a")
     ' Now to find that method name
     Dim theMethod As RPGCodeMethod, params() As parameters, number As Long
     Dim lit As String, num As Double, this As Long
     this = topNestle(theProgram)
+Call traceString("b")
     Call SetVariable("this!", CStr(hOldThisObject), theProgram, True)
+Call traceString("c")
     Call increaseNestle(hOldThisObject, theProgram)
+Call traceString("d")
     params = getParameters(Text, theProgram, number)
+Call traceString("e")
     Dim bOldInClass As Boolean
+Call traceString("f")
     bOldInClass = theProgram.classes.insideClass
+Call traceString("g")
     theProgram.classes.insideClass = False
+Call traceString("h")
     Call SetVariable("this!", CStr(this), theProgram, True)
+Call traceString("i")
     theProgram.classes.insideClass = bOldInClass
+Call traceString("j")
     Call decreaseNestle(theProgram)
+Call traceString("k")
     theMethod.lngParams = number
+Call traceString("j")
     ReDim theMethod.dtParams(number - 1)
+Call traceString("m")
     ReDim theMethod.classTypes(number - 1)
+Call traceString("n")
     Dim i As Long
+Call traceString("o")
     For i = 1 To number
+Call traceString("p")
         theMethod.dtParams(i - 1) = params(i - 1).dataType
         If (theMethod.dtParams(i - 1) = DT_NUM) Then
             If (isObject(params(i - 1).num)) Then
