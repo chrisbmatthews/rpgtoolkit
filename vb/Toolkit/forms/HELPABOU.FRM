@@ -39,6 +39,7 @@ Begin VB.Form helpAbout
       ForeColor       =   &H00000000&
       Height          =   1695
       Left            =   240
+      Locked          =   -1  'True
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   5
@@ -242,16 +243,4 @@ Private Sub Form_Load()
 ErrorHandler:
     Call HandleError
     Resume Next
-End Sub
-
-Private Sub Text1_KeyDown(keyCode As Integer, Shift As Integer)
-    keyCode = 0: Shift = 0
-End Sub
-
-Private Sub Text1_KeyPress(KeyAscii As Integer)
-    KeyAscii = 0
-End Sub
-
-Private Sub Text1_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    Button = -1: Shift = 0
 End Sub
