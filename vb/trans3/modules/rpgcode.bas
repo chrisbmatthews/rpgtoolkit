@@ -20,7 +20,7 @@ Public inWith() As String
 ' RPGCode Commands
 '=========================================================================
 
-Public Sub CompilerPopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub CompilerPopRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error Resume Next
     
@@ -29,11 +29,11 @@ Public Sub CompilerPopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgr
     retval.dataType = DT_VOID
     retval.num = -1
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)    'how many data elements are there?
     If number <> 0 Then
-        Call debugger("Error: Com_Pop_Piler must have 0 data elements!-- " + Text$)
+        Call debugger("Error: Com_Pop_Piler must have 0 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -45,7 +45,7 @@ Public Sub CompilerPopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgr
 End Sub
 
 
-Sub CompilerEnterLocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CompilerEnterLocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#com_enterlocal_piler()
     'enter a new local scope -- undocumented -- only called by internal compiler
     
@@ -54,7 +54,7 @@ Sub CompilerEnterLocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgr
     Call AddHeapToStack(theProgram)
 End Sub
 
-Sub AutoCommandRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub AutoCommandRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#AutoCommand()
     'tuns autocommand on for this program (means you dont' have to use #'s)
     
@@ -64,7 +64,7 @@ Sub AutoCommandRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByR
 End Sub
 
 
-Sub CompilerExitLocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CompilerExitLocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#com_exitlocal_piler()
     'exit a new local scope -- undocumented -- only called by internal compiler
     
@@ -75,7 +75,7 @@ End Sub
 
 
 
-Sub CompilerPushRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CompilerPushRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#com_push_piler(a$!)
     'push a var onto the compiler stack (undocumented command-- only used by internal compiler)
     
@@ -86,11 +86,11 @@ Sub CompilerPushRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, By
     retval.dataType = DT_VOID
     retval.num = -1
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)    'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Error: Com_Push_Piler must have 1 data elements!-- " + Text$)
+        Call debugger("Error: Com_Push_Piler must have 1 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -189,7 +189,7 @@ Private Function formatDirectionString(directions As String) As String
     formatDirectionString = toRet
 End Function
 
-Sub GetThreadIDRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetThreadIDRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#threadID! = #GetThreadID([dest!])
     'return the threadID of the currently running prtogram.
     'if -1, then it is not a thread.
@@ -207,11 +207,11 @@ Sub GetThreadIDRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByR
     Dim lit1 As String, lit2 As String
     Dim num1 As Double, num2 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)    'how many data elements are there?
     If number <> 0 And number <> 1 Then
-        Call debugger("Error: GetThreadID has must have 0 or 1 data elements!-- " + Text$)
+        Call debugger("Error: GetThreadID has must have 0 or 1 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -233,7 +233,7 @@ End Sub
 
 
 
-Sub ThreadWakeRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Sub ThreadWakeRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
     '#ThreadWake(threadID!)
     'wake up a thread
     
@@ -245,18 +245,18 @@ Sub ThreadWakeRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Dim lit1 As String
     Dim num1 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)    'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Error: ThreadWake must 1 data element!-- " + Text$)
+        Call debugger("Error: ThreadWake must 1 data element!-- " + text$)
         Exit Sub
     End If
     
     useIt1 = GetElement(dataUse$, 1)
     a = getValue(useIt1, lit1, num1, theProgram)
     If a <> 0 Then
-        Call debugger("Error: ThreadWake data type must be numerical!-- " + Text$)
+        Call debugger("Error: ThreadWake data type must be numerical!-- " + text$)
         Exit Sub
     Else
         Call ThreadWake(num1)
@@ -267,7 +267,7 @@ End Sub
 
 
 
-Sub ThreadSleepRemainingRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub ThreadSleepRemainingRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#dest! = #ThreadSleepRemaining(threadID! [, dest!])
     'how much time is left in the thread sleep?
     
@@ -282,11 +282,11 @@ Sub ThreadSleepRemainingRPG(ByVal Text As String, ByRef theProgram As RPGCodePro
     retval.dataType = DT_VOID
     retval.num = -1
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)    'how many data elements are there?
     If number <> 1 And number <> 2 Then
-        Call debugger("Error: ThreadSleepRemaining must have 1 or 2 data elements!-- " + Text$)
+        Call debugger("Error: ThreadSleepRemaining must have 1 or 2 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -297,7 +297,7 @@ Sub ThreadSleepRemainingRPG(ByVal Text As String, ByRef theProgram As RPGCodePro
     
     a = getValue(useIt1, lit1, num1, theProgram)
     If a <> 0 Then
-        Call debugger("Error: ThreadSleepRemaining data type must be numerical!-- " + Text$)
+        Call debugger("Error: ThreadSleepRemaining data type must be numerical!-- " + text$)
         Exit Sub
     Else
         Dim dRemain As Double
@@ -309,7 +309,7 @@ Sub ThreadSleepRemainingRPG(ByVal Text As String, ByRef theProgram As RPGCodePro
     End If
 End Sub
 
-Sub LocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub LocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#dest!$ = #Local(varname!$ [, dest!$])
     'declare a variable as local
     'also returns cuirrent value of variable
@@ -325,11 +325,11 @@ Sub LocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
     retval.dataType = DT_VOID
     retval.num = -1
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)    'how many data elements are there?
     If number <> 1 And number <> 2 Then
-        Call debugger("Error: Local must have 1 or 2 data elements!-- " + Text$)
+        Call debugger("Error: Local must have 1 or 2 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -375,7 +375,7 @@ Sub LocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
     End If
 End Sub
 
-Sub GlobalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GlobalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#dest!$ = #Global(varname!$ [, dest!$])
     'declare a variable as global
     'also returns cuirrent value of variable
@@ -391,11 +391,11 @@ Sub GlobalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
     retval.dataType = DT_VOID
     retval.num = -1
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)    'how many data elements are there?
     If number <> 1 And number <> 2 Then
-        Call debugger("Error: Global must have 1 or 2 data elements!-- " + Text$)
+        Call debugger("Error: Global must have 1 or 2 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -451,7 +451,7 @@ Sub GlobalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
 End Sub
 
 
-Sub TellThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub TellThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '[#ret!$ =] #TellThread(threadID!, command$ [, dest$!])
     'call command defined by command$ in a running thread
     'optionally returns a value to dest!$
@@ -468,11 +468,11 @@ Sub TellThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRe
     Dim lit1 As String, lit2 As String, lit3 As String
     Dim num1 As Double, num2 As Double, num3 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)    'how many data elements are there?
     If number <> 2 And number <> 3 Then
-        Call debugger("Error: TellThread has must have 2 or 3 data elements!-- " + Text$)
+        Call debugger("Error: TellThread has must have 2 or 3 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -502,12 +502,12 @@ End Sub
 
 
 'Private part As String  'partial section of a string
-Sub SmartStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SmartStepRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#SmartSTep(ON/OFF)
     'Turn smart stepping on or off
     'OBSOLETE (Nov 5, 2002)
     On Error Resume Next
-    Call debugger("Warning: SmartStep is obsolete!-- " + Text$)
+    Call debugger("Warning: SmartStep is obsolete!-- " + text$)
     
     'On Error GoTo errorhandler
     'use$ = text$
@@ -541,12 +541,12 @@ End Sub
 
 
 
-Sub AnimatedTilesRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub AnimatedTilesRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#AnimatedTiles(ON/OFF)
     'Turn animated tiles on/off
     'OBSOLETE (Nov 5, 2002)
     On Error Resume Next
-    Call debugger("Warning: AnimatedTiles is obsolete!-- " + Text$)
+    Call debugger("Warning: AnimatedTiles is obsolete!-- " + text$)
 
     Exit Sub
 'Begin error handling code:
@@ -556,17 +556,17 @@ errorhandler:
 End Sub
 
 
-Sub GiveExpRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GiveExpRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#GiveExp("handle",Exp_to_add!)
     'Give player experience-- raise level if required.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: GiveExp must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GiveExp must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -575,7 +575,7 @@ Sub GiveExpRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     lev = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or lev = 1 Then
-        Call debugger("Error: GiveExp data type must be literal and numeric!-- " + Text$)
+        Call debugger("Error: GiveExp data type must be literal and numeric!-- " + text$)
     Else
         Dim theOne As Long, t As Long
         theOne = -1
@@ -623,7 +623,7 @@ errorhandler:
 End Sub
 
 
-Sub KillAllRedirectsRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub KillAllRedirectsRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#KillAllRedirects()
     'clears all redirects
     On Error GoTo errorhandler
@@ -636,28 +636,28 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub KillRedirectRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub KillRedirectRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#KillRedirect("#Mwin")
     'kill a redirect redirect
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Error: Redirect must have 1 data element!-- " + Text$)
+        Call debugger("Error: Redirect must have 1 data element!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
     a = getValue(useIt1$, lit1$, num1, theProgram)
     If a = 0 Then
-        Call debugger("Error: Redirect data type must be literal!-- " + Text$)
+        Call debugger("Error: Redirect data type must be literal!-- " + text$)
     Else
         Call killRedirect(lit1$)
     End If
 End Sub
 
-Sub ParallaxRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ParallaxRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Parallax ([012])
     'Changes prallax type'
     '0-full system
@@ -665,7 +665,7 @@ Sub ParallaxRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '2-parallax off
     'OBSOLETE (Nov 5, 2002)
     On Error Resume Next
-    Call debugger("Warning: Parallax is obsolete!-- " + Text$)
+    Call debugger("Warning: Parallax is obsolete!-- " + text$)
     Exit Sub
 'Begin error handling code:
 errorhandler:
@@ -673,7 +673,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Sub PlayerStepRPG(ByRef text As String, ByRef theProgram As RPGCodeProgram)
     '====================================================================
     '#PlayerStep(handle$, x!, y!)
     'Causes player handle$ to take one step in the direction of x!,y!
@@ -685,15 +685,15 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim i As Long, paras() As parameters, path As String, playerNum As Long
     
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     If UBound(paras) <> 2 Then
-        Call debugger("Error: PlayerStep() must have 3 data elements!-- " & Text)
+        Call debugger("Error: PlayerStep() must have 3 data elements!-- " & text)
         Exit Sub
     End If
     
     If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_NUM Or paras(2).dataType <> DT_NUM Then
-        Call debugger("PlayerStep() requires lit$, num!, num!-- " & Text)
+        Call debugger("PlayerStep() requires lit$, num!, num!-- " & text)
         Exit Sub
     End If
     
@@ -708,7 +708,7 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     If UCase$(paras(0).lit) = "SOURCE" And sourceType = 0 Then playerNum = Source
     
     If playerNum = -1 Then
-        Call debugger("PlayerStep(): player handle$ not found!-- " & Text)
+        Call debugger("PlayerStep(): player handle$ not found!-- " & text)
         Exit Sub 'Player handle not found, exit.
     End If
     
@@ -766,7 +766,7 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Sub ItemStepRPG(ByRef text As String, ByRef theProgram As RPGCodeProgram)
     '====================================================================
     '#ItemStep(itemNum!, x!, y!)
     'Causes itemNum! to take one step in the direction of x!,y! following
@@ -778,15 +778,15 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim itemNum As Long, paras() As parameters, path As String
     
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     If UBound(paras) <> 2 Then
-        Call debugger("Error: ItemStep() must have 3 data elements!-- " & Text)
+        Call debugger("Error: ItemStep() must have 3 data elements!-- " & text)
         Exit Sub
     End If
     
     If (paras(1).dataType <> DT_NUM Or paras(2).dataType <> DT_NUM) Then
-        Call debugger("ItemStep() requires num!, num!, num!-- " & Text)
+        Call debugger("ItemStep() requires num!, num!, num!-- " & text)
         Exit Sub
     End If
     
@@ -841,25 +841,25 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub AddPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub AddPlayerRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#AddPlayer("file.tem")
     'Add player to party.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: AddPlayer has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: AddPlayer has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: AddPlayer has no data element!-- " + Text$)
+        Call debugger("Error: AddPlayer has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: AddPlayer data type must be literal!-- " + Text$)
+        Call debugger("Error: AddPlayer data type must be literal!-- " + text$)
     Else
         lit$ = addExt(lit$, ".tem")
         'find empty slot:
@@ -869,7 +869,7 @@ Sub AddPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
             If playerListAr$(t) = "" Then slot = t: t = 4
         Next t
         If slot = -1 Then
-            Call debugger("Error: AddPlayer cannot add another member- Party is full!-- " + Text$)
+            Call debugger("Error: AddPlayer cannot add another member- Party is full!-- " + text$)
             Exit Sub
         End If
         Call CreateCharacter(projectPath & temPath & lit$, slot)
@@ -882,22 +882,22 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub aiRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub aiRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#AI(level!)
     'causes enemy to use internal ai
     'of specified level
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: AI has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: AI has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = RPGC_DT.DT_LIT Then
-        Call debugger("Error: AI data type must be numerical!-- " + Text$)
+        Call debugger("Error: AI data type must be numerical!-- " + text$)
     Else
         If targetType = TYPE_PLAYER Then
             'players targeted.
@@ -909,14 +909,14 @@ Sub aiRPG(Text$, ByRef theProgram As RPGCodeProgram)
         ElseIf targetType = TYPE_ENEMY Then
             'enemies targeted.
             'cannot be done.
-            Call debugger("Error: AI can only be used by enemy AI programs!-- " + Text$)
+            Call debugger("Error: AI can only be used by enemy AI programs!-- " + text$)
         End If
     End If
 
 End Sub
 
 Public Sub AnimationRPG( _
-                           ByVal Text As String, _
+                           ByVal text As String, _
                            ByRef theProgram As RPGCodeProgram, _
                            ByRef retval As RPGCODE_RETURN _
                                                             )
@@ -927,31 +927,31 @@ Public Sub AnimationRPG( _
     On Error Resume Next
 
     Dim elements As Long
-    elements = CountData(Text)
+    elements = CountData(text)
 
     If (elements <> 3) And (elements <> 4) Then
-        Call debugger("Animation() must have three or four data elements-- " & Text)
+        Call debugger("Animation() must have three or four data elements-- " & text)
         Exit Sub
     End If
 
     If (elements = 4) And (Not isMultiTasking()) Then
-        Call debugger("Animation() only accepts a fourth parameter in a thread-- " & Text)
+        Call debugger("Animation() only accepts a fourth parameter in a thread-- " & text)
         Exit Sub
     End If
 
     If (retval.usingReturnData) And (Not isMultiTasking()) Then
-        Call debugger("Warning: Animation() only returns a value in a thread-- " & Text)
+        Call debugger("Warning: Animation() only returns a value in a thread-- " & text)
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
 
     If _
          (paras(0).dataType <> DT_LIT) Or _
          (paras(1).dataType <> DT_NUM) Or _
          (paras(2).dataType <> DT_NUM) Or _
          ((elements = 4) And (paras(3).dataType <> DT_NUM)) Then
-         Call debugger("Animation() only accepts lit, num, num [,num] -- " & Text)
+         Call debugger("Animation() only accepts lit, num, num [,num] -- " & text)
          Exit Sub
     End If
 
@@ -976,16 +976,16 @@ Public Sub AnimationRPG( _
 
 End Sub
 
-Sub applyStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub applyStatusRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#ApplyStatus("handle", "filename.ste")
     'apply status effect to a player, or the target handle
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: ApplyStatus must have 2 data elements!-- " + Text$)
+        Call debugger("Error: ApplyStatus must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -995,7 +995,7 @@ Sub applyStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     fileN = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or fileN = 0 Then
-        Call debugger("Error: ApplyStatus requires lit, lit!-- " + Text$)
+        Call debugger("Error: ApplyStatus requires lit, lit!-- " + text$)
     Else
         Dim theOne As Long, t As Long
         theOne = -1
@@ -1046,12 +1046,12 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub BattleSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub BattleSpeedRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#BattleSpeed(speed!)
     'changes battle speed, like in the customize menu
     'speed! is 0-7
     On Error Resume Next
-    Call debugger("Warning: BattleSpeed is obsolete!-- " + Text$)
+    Call debugger("Warning: BattleSpeed is obsolete!-- " + text$)
     'use$ = text$
     'dataUse$ = GetBrackets(use$)    'Get text inside brackets
     'number = CountData(dataUse$)        'how many data elements are there?
@@ -1068,7 +1068,7 @@ Sub BattleSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'End If
 End Sub
 
-Sub BreakRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub BreakRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Break()
     'opens debugger and breaks.
     On Error GoTo errorhandler
@@ -1081,21 +1081,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub CallPlayerSwapRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub CallPlayerSwapRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
     'CallPlayerSwap()
     On Error Resume Next
     Call debugger("Warning: CallPlayerSwap() is temporarily unavaliable; use AddPlayer() and RemovePlayer() player!")
 End Sub
 
-Sub CharacterSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub CharacterSpeedRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#CharacterSpeed(speed!)
     'changes char speed, like in the customize menu
     'speed! is 0-3
     'Deprecated (Nov 5, 2002) use GameSpeed instead
     On Error GoTo errorhandler
     
-    Call debugger("Warning: CharacterSpeed is deprecated, use GameSpeed instead!-- " + Text$)
-    Call GameSpeedRPG(Text$, theProgram)
+    Call debugger("Warning: CharacterSpeed is deprecated, use GameSpeed instead!-- " + text$)
+    Call GameSpeedRPG(text$, theProgram)
 
     Exit Sub
 'Begin error handling code:
@@ -1104,7 +1104,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GameSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GameSpeedRPG(text$, ByRef theProgram As RPGCodeProgram)
     '==========================
     'EDITED: [Delano - 3/05/04]
     'Altered delay for speed! = 3; runs too fast on some machines.
@@ -1123,12 +1123,12 @@ Sub GameSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim use As String, dataUse As String, number As Long, useIt As String
     Dim lit As String, speed As Double, parameter1Type As Long
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)        'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
     If number <> 1 Then
-        Call debugger("Warning: GameSpeed has only 1 data element!-- " + Text$)
+        Call debugger("Warning: GameSpeed has only 1 data element!-- " + text$)
     End If
     
     useIt$ = GetElement(dataUse$, 1)
@@ -1137,7 +1137,7 @@ Sub GameSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
     If parameter1Type = 1 Then
         'If parameter is literal.
-        Call debugger("Error: GameSpeed data type must be numerical!-- " + Text$)
+        Call debugger("Error: GameSpeed data type must be numerical!-- " + text$)
     Else
         'Parameter is numerical.
         speed = inBounds(speed, 0, MAX_GAMESPEED)
@@ -1152,18 +1152,18 @@ errorhandler:
 End Sub
 
 
-Sub checkButtonRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub checkButtonRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #CheckButton(x!,y![,button_num!])
     'checks if a click at x!,y! is in a button
     'if it is, the button number is returned.
     'if it isn't, returns -1
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 And number <> 2 Then
-        Call debugger("Error: CheckButton must have three numerical variables! " + Text$)
+        Call debugger("Error: CheckButton must have three numerical variables! " + text$)
     End If
     Dim var1 As String, var2 As String, var3 As String
     var1$ = GetElement(dataUse$, 1)
@@ -1218,7 +1218,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub clearbuttonsRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub clearbuttonsRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#ClearButtons()
     'clears all buttons from memory
     On Error GoTo errorhandler
@@ -1231,21 +1231,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub CosRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub CosRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error Resume Next
     
     'Re-written by KSNiloc
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     If Not paras(0).dataType = DT_NUM Then
-        Call debugger("Cos() requires a numerical data element-- " & Text)
+        Call debugger("Cos() requires a numerical data element-- " & text)
         Exit Sub
     End If
 
-    Select Case CountData(Text)
+    Select Case CountData(text)
     
         Case 1
             retval.dataType = DT_NUM
@@ -1255,14 +1255,14 @@ Public Sub CosRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRe
             Call SetVariable(paras(1).dat, Round(Cos(radians(paras(0).num)), 7), theProgram)
         
         Case Else
-            Call debugger("Cos() requires one or two data elements-- " & Text)
+            Call debugger("Cos() requires one or two data elements-- " & text)
     
     End Select
 
 End Sub
 
 Public Sub CreateItemRPG( _
-                            ByVal Text As String, _
+                            ByVal text As String, _
                             ByRef theProgram As RPGCodeProgram _
                                                                  )
 
@@ -1276,8 +1276,8 @@ Public Sub CreateItemRPG( _
 
     On Error Resume Next
 
-    If CountData(Text) <> 2 Then
-        debugger "Error: CreateItem must have 2 data elements!-- " & Text
+    If CountData(text) <> 2 Then
+        debugger "Error: CreateItem must have 2 data elements!-- " & text
         Exit Sub
     End If
 
@@ -1287,13 +1287,13 @@ Public Sub CreateItemRPG( _
     Dim paras() As parameters
 
     'Get the parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     lit = paras(0).lit
     theOne = paras(1).num
 
     'Make sure they're the right type
     If paras(0).dataType <> DT_LIT And paras(1).dataType <> DT_NUM Then
-        debugger "CreateItem()'s parameters are lit,num-- " & Text
+        debugger "CreateItem()'s parameters are lit,num-- " & text
         Exit Sub
     End If
 
@@ -1312,7 +1312,7 @@ Public Sub CreateItemRPG( _
 
 End Sub
 
-Sub DestroyItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub DestroyItemRPG(text$, ByRef theProgram As RPGCodeProgram)
     'EDITED: [Delano - 20/04/04]
     'Bug: Tile was still solid to players after the item had been removed.
     
@@ -1320,17 +1320,17 @@ Sub DestroyItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'remove item from board.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: DestroyItem has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: DestroyItem has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     Dim aa As Long
     aa = getValue(useIt$, lit$, num, theProgram)
     If aa = 1 Then
-        Call debugger("Error: DestroyItem data element must be numerical!-- " + Text$)
+        Call debugger("Error: DestroyItem data element must be numerical!-- " + text$)
         Exit Sub
     End If
     'remove from board memory...
@@ -1348,26 +1348,26 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub DestroyPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub DestroyPlayerRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#DestroyPlayer("file" or handle)
     'Remove player from party.
     'does not puts player in available list.
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: DestroyPlayer has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: DestroyPlayer has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: DestroyPlayer has no data element!-- " + Text$)
+        Call debugger("Error: DestroyPlayer has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: DestroyPlayer data type must be literal!-- " + Text$)
+        Call debugger("Error: DestroyPlayer data type must be literal!-- " + text$)
     Else
         Dim ext As String, file As String, t As Long
         ext$ = GetExt(lit$)
@@ -1409,17 +1409,17 @@ Sub DestroyPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
 End Sub
 
-Sub DrawCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub DrawCircleRPG(text$, ByRef theProgram As RPGCodeProgram)
 
     '#DrawCircle(x!, y!, radius! [,startangle!, endangle!, [cnvId!]])
     'draw a circle or arc.
 
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 And number <> 5 And number <> 6 Then
-        Call debugger("Error: DrawCircle must have 3 or 5 or 6 data elements!-- " + Text$)
+        Call debugger("Error: DrawCircle must have 3 or 5 or 6 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -1463,7 +1463,7 @@ Sub DrawCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub DrawEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub DrawEnemyRPG(text$, ByRef theProgram As RPGCodeProgram)
 
     ' ! MODIFIED BY KSNiloc...
 
@@ -1471,11 +1471,11 @@ Sub DrawEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'draws an enemy at x, y
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 And number <> 4 Then
-        Call debugger("Error: DrawEnemy must have 3 data elements!-- " + Text$)
+        Call debugger("Error: DrawEnemy must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt$ = GetElement(dataUse$, 1)
@@ -1495,7 +1495,7 @@ Sub DrawEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If cnv = 0 Then cnv = cnvRPGCodeScreen
     
     If a = 0 Or b = 1 Or c = 1 Then
-        Call debugger("Error: DrawEnemy data type must be literal, num, num!-- " + Text$)
+        Call debugger("Error: DrawEnemy data type must be literal, num, num!-- " + text$)
     Else
         Dim x As Double, y As Double, en As String, fn As String, hdc As Long, eenum As Long
         x = num2
@@ -1523,7 +1523,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub EraseItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Sub EraseItemRPG(ByRef text As String, ByRef theProgram As RPGCodeProgram)
     '=====================================================================
     '#EraseItem(itemnum!)
     'Removes an item from the screen, but not the board.
@@ -1532,14 +1532,14 @@ Sub EraseItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim paras() As parameters
     
-    paras = GetParameters(Text, theProgram)
+    paras = GetParameters(text, theProgram)
     
     If UBound(paras) <> 0 Then
-        Call debugger("Warning: EraseItem() has only 1 data element!-- " & Text)
+        Call debugger("Warning: EraseItem() has only 1 data element!-- " & text)
         Exit Sub
     End If
     If paras(0).dataType <> DT_NUM Then
-        Call debugger("Error: EraseItem() data element must be numerical!-- " & Text)
+        Call debugger("Error: EraseItem() data element must be numerical!-- " & text)
         Exit Sub
     End If
     
@@ -1552,34 +1552,34 @@ Sub EraseItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
 End Sub
 
-Sub fightMenuGraphicRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub fightMenuGraphicRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#FightMenuGraphic("file.gif")
     'internal fight menu background graphic.
     On Error Resume Next
     
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: FightMenuGraphic has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: FightMenuGraphic has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: FightMenuGraphic data type must be literal!-- " + Text$)
+        Call debugger("Error: FightMenuGraphic data type must be literal!-- " + text$)
     Else
         fightMenuGraphic$ = lit$
     End If
 End Sub
 
-Sub fightStyleRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub fightStyleRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#FightStyle(0/1)
     'change fighitng style
     '0-side view, 1-front view
     'obsolete...
     On Error Resume Next
-    Call debugger("Warning: FightStyle is obsolete!-- " + Text$)
+    Call debugger("Warning: FightStyle is obsolete!-- " + text$)
     'On Error GoTo errorhandler
     'Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     'use$ = text$
@@ -1599,16 +1599,16 @@ Sub fightStyleRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub FillCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub FillCircleRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#FillCircle(x!,y!,radius!, [cnvId!])
     'draw a filled circle
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 And number <> 4 Then
-        Call debugger("Error: FillCircle must have 3 or 4 data elements!-- " + Text$)
+        Call debugger("Error: FillCircle must have 3 or 4 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -1652,16 +1652,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub FillRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub FillRectRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#fillrect(x1,y1,x2,y2, [cnvId!])
     'fill a rect
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 4 And number <> 5 Then
-        Call debugger("Error: FillRect must have 4 or 5 data elements!-- " + Text$)
+        Call debugger("Error: FillRect must have 4 or 5 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, xx1 As Long, yy1 As Long, xx2 As Long, yy2 As Long
@@ -1705,25 +1705,25 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub FontRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub FontRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Font ("font.fnt")
     'Changes font.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Font has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Font has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Font has no data element!-- " + Text$)
+        Call debugger("Error: Font has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Font data type must be literal!-- " + Text$)
+        Call debugger("Error: Font data type must be literal!-- " + text$)
     Else
         'lit$ = addext(lit$, ".fnt")
         fontName$ = lit$
@@ -1742,21 +1742,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub FontSizeRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub FontSizeRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#FontSize(size)
     'change font size
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: FontSize has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: FontSize has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: FontSize data type must be numerical!-- " + Text$)
+        Call debugger("Error: FontSize data type must be numerical!-- " + text$)
     Else
         num = inBounds(num, 0, 255)
         fontSize = num
@@ -1770,7 +1770,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub ForceRedrawRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub ForceRedrawRPG(ByRef text As String, ByRef theProgram As RPGCodeProgram)
     '==============================================================================
     '#ForceRedraw() - forces a render.
     '==============================================================================
@@ -1781,7 +1781,7 @@ Public Sub ForceRedrawRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgr
     
 End Sub
 
-Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
+Public Function ForRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram) As Long
 '#For(a!=0;a!<=8;a!=a!+1)
 '{
 '   ...
@@ -1793,12 +1793,12 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(theProgram.program(theProgram.programPos))    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     Dim res As Long
     If number <> 3 Then
-        Call debugger("Error: For must have 3 data elements!-- " + Text$)
+        Call debugger("Error: For must have 3 data elements!-- " + text$)
         res = 0
         theProgram.programPos = increment(theProgram)
         ForRPG = runBlock(res, theProgram)
@@ -1879,17 +1879,17 @@ errorhandler:
     Resume Next
 End Function
 
-Sub GetBoardTileRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetBoardTileRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #boardgettile(x!, y!, layer![, dest$])
     'get the filename of the tile
     'at a specific board position
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 4 And number <> 3 Then
-        Call debugger("Error: boardgettile must have 4 data elements!-- " + Text$)
+        Call debugger("Error: boardgettile must have 4 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, ax As Long, ay As Long, al As Long
@@ -1902,7 +1902,7 @@ Sub GetBoardTileRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     ay = getValue(useIt2$, lit$, num2, theProgram)
     al = getValue(useIt3$, lit$, num3, theProgram)
     If ax = 1 Or ay = 1 Or al = 1 Then
-        Call debugger("Error: boardgettile data must be numeric, numeric, numeric, literal!-- " + Text$)
+        Call debugger("Error: boardgettile data must be numeric, numeric, numeric, literal!-- " + text$)
     Else
         Dim f As String
         
@@ -1924,17 +1924,17 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetBoardTileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetBoardTileTypeRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #GetBoardTileType(x!, y!, layer![, type$])
     'get the tiletype of the tile
     'at a specific board position
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 4 And number <> 3 Then
-        Call debugger("Error: GetBoardTileType must have 4 data elements!-- " + Text$)
+        Call debugger("Error: GetBoardTileType must have 4 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, ax As Long, ay As Long, al As Long, ll As Long, t As String
@@ -1946,7 +1946,7 @@ Sub GetBoardTileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval 
     ay = getValue(useIt2$, lit$, num2, theProgram)
     al = getValue(useIt3$, lit$, num3, theProgram)
     If ax = 1 Or ay = 1 Or al = 1 Then
-        Call debugger("Error: GetBoardTileType data must be numeric, numeric, numeric, literal!-- " + Text$)
+        Call debugger("Error: GetBoardTileType data must be numeric, numeric, numeric, literal!-- " + text$)
     Else
         num1 = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
         num2 = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
@@ -1995,16 +1995,16 @@ errorhandler:
 End Sub
 
 
-Sub GetColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GetColorRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#GetColor(r!, g!, b!)
     'gets current font color
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 Then
-        Call debugger("Error: GetColor must have 3 data elements!-- " + Text$)
+        Call debugger("Error: GetColor must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2025,16 +2025,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetCornerRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GetCornerRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#GetCorner(topx!,topy!)
     'returns topx, topy
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: GetCorner must have two numerical variables! " + Text$)
+        Call debugger("Error: GetCorner must have two numerical variables! " + text$)
     End If
     Dim var1 As String, var2 As String
     var1$ = GetElement(dataUse$, 1)
@@ -2049,16 +2049,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub getDPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #GetDP(handle$[,dest!])
     'get dp of player
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: GetDP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GetDP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2066,7 +2066,7 @@ Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
     Dim hand As Long, theOne As Long, t As Long, aa As Long, curhp As Double
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     If hand = 0 Then
-        Call debugger("Error: GetDP handle must be literal!-- " + Text$)
+        Call debugger("Error: GetDP handle must be literal!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -2136,16 +2136,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetFontSizeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetFontSizeRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #GetFontSize([dest!])
     'get the current size of the font
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 And number <> 0 Then
-        Call debugger("Error: GetFontSize must have 1 data element!-- " + Text$)
+        Call debugger("Error: GetFontSize must have 1 data element!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2162,16 +2162,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub getFPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub getFPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #GetFP(handle$[,dest!])
     'get fp of player
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: GetFP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GetFP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2179,7 +2179,7 @@ Sub getFPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
     Dim hand As Long, theOne As Long, t As Long, aa As Long, curhp As Double
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     If hand = 0 Then
-        Call debugger("Error: GetFP handle must be literal!-- " + Text$)
+        Call debugger("Error: GetFP handle must be literal!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -2248,16 +2248,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetGPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetGPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #GetGP([dest!])
     'Get current GP
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 And number <> 0 Then
-        Call debugger("Warning: GetGP has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: GetGP has more than 1 data element!-- " + text$)
         Exit Sub
     End If
     If number = 1 Then
@@ -2273,16 +2273,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #GetHP("handle"[,dest!])
     'Get current Player HP
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: GetHP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GetHP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2290,7 +2290,7 @@ Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
     Dim hand As Long, theOne As Long, t As Long, aa As Long, curhp As Double
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     If hand = 0 Then
-        Call debugger("Error: GetHP handle must be literal!-- " + Text$)
+        Call debugger("Error: GetHP handle must be literal!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -2363,16 +2363,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub getLevelRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #GetLevel("handle"[,dest!])
     'get player's level
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: GetLevel must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GetLevel must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2380,7 +2380,7 @@ Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
     Dim hand As Long, theOne As Long, t As Long, aa As Long, curhp As Double
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     If hand = 0 Then
-        Call debugger("Error: GetLevel handle must be literal!-- " + Text$)
+        Call debugger("Error: GetLevel handle must be literal!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -2448,16 +2448,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetMaxHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #GetMaxHP("handle"[,dest!])
     'Get character's MAX HP level
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: GetMaxHP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GetMaxHP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2465,7 +2465,7 @@ Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
     Dim hand As Long, theOne As Long, t As Long, aa As Long, curhp As Double
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     If hand = 0 Then
-        Call debugger("Error: GetMaxHP handle must be literal!-- " + Text$)
+        Call debugger("Error: GetMaxHP handle must be literal!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -2535,16 +2535,16 @@ End Sub
 
 
 
-Sub GetMaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetMaxSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #GetMaxSMP("handle"[,dest!])
     'Get max SMP
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: GetMaxSMP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GetMaxSMP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2552,7 +2552,7 @@ Sub GetMaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
     Dim hand As Long, theOne As Long, t As Long, aa As Long, curhp As Double
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     If hand = 0 Then
-        Call debugger("Error: GetMaxSMP handle must be literal!-- " + Text$)
+        Call debugger("Error: GetMaxSMP handle must be literal!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -2619,7 +2619,7 @@ errorhandler:
 End Sub
 
 
-Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GetPixelRPG(text$, ByRef theProgram As RPGCodeProgram)
 
     ' ! MODIFIED BY KSNiloc...
 
@@ -2627,11 +2627,11 @@ Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'get the pixel at x!, y! and put it's value in r!, g!, b!
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 5 And number <> 6 Then
-        Call debugger("Error: GetPixel must have 5 data elements!-- " + Text$)
+        Call debugger("Error: GetPixel must have 5 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, xx As Long, yy As Long, x As Double, y As Double
@@ -2651,7 +2651,7 @@ Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If cnv = 0 Then cnv = cnvRPGCodeScreen
     
     If xx = 1 Or yy = 1 Then
-        Call debugger("Error: GetPixel data type must be numerical!-- " + Text$)
+        Call debugger("Error: GetPixel data type must be numerical!-- " + text$)
     Else
         Dim p As Long, rr As Long, gg As Long, bb As Long
         p = CanvasGetPixel(cnv, x, y)
@@ -2670,16 +2670,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetResRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GetResRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#GetRes(destx!, desty!)
     'get x and y resolution (of mainForm form), in pixels.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: GetRes must have two numerical variables! " + Text$)
+        Call debugger("Error: GetRes must have two numerical variables! " + text$)
     End If
     Dim var1 As String, var2 As String, xx As Long, yy As Long
     var1$ = GetElement(dataUse$, 1)
@@ -2699,7 +2699,7 @@ errorhandler:
 End Sub
 
 Public Sub GetRPG( _
-                     ByVal Text As String, _
+                     ByVal text As String, _
                      ByRef theProgram As RPGCodeProgram, _
                      ByRef retval As RPGCODE_RETURN _
                                                       )
@@ -2712,15 +2712,15 @@ Public Sub GetRPG( _
     'Get(a$ [,milliSeconds!])
     
     Dim number As Long
-    number = CountData(Text)
+    number = CountData(text)
     If number <> 0 And number <> 1 And number <> 2 Then
-        debugger "Get() requires 0-2 data elements-- " & Text
+        debugger "Get() requires 0-2 data elements-- " & text
         Exit Sub
     End If
 
     'Get out parameters...
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
 
     retval.dataType = DT_LIT
     
@@ -2740,7 +2740,7 @@ Public Sub GetRPG( _
                 'specifying the number of milliSeconds to call processevent for.
                 
                 If Not paras(0).dataType = DT_NUM Then
-                    debugger "Get()'s millisecond specification must be numerical-- " & Text
+                    debugger "Get()'s millisecond specification must be numerical-- " & text
                     Exit Sub
                 End If
 
@@ -2759,7 +2759,7 @@ Public Sub GetRPG( _
             'It's Get(dest$,milliSeconds!)...
             
             If Not paras(1).dataType = DT_NUM Then
-                debugger "Get()'s millisecond specification must be numerical-- " & Text
+                debugger "Get()'s millisecond specification must be numerical-- " & text
                 Exit Sub
             End If
             
@@ -2769,16 +2769,16 @@ Public Sub GetRPG( _
     
 End Sub
 
-Sub GetSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #GetSMP("handle"[,dest!])
     'get player's SMP level
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: GetSMP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GetSMP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2786,7 +2786,7 @@ Sub GetSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     Dim hand As Long, theOne As Long, t As Long, aa As Long, curhp As Double
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     If hand = 0 Then
-        Call debugger("Error: GetSMP handle must be literal!-- " + Text$)
+        Call debugger("Error: GetSMP handle must be literal!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -2851,21 +2851,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub giveGpRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub giveGpRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#GiveGP(100)
     'give gp
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: GiveGP has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: GiveGP has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: GiveGP data type must be numerical!-- " + Text$)
+        Call debugger("Error: GiveGP data type must be numerical!-- " + text$)
     Else
         GPCount = GPCount + num
     End If
@@ -2877,16 +2877,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GiveHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GiveHPRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#GiveHP("handle",HP_to_add!)
     'Give player HP
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: GiveHP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GiveHP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -2895,7 +2895,7 @@ Sub GiveHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     lev = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or lev = 1 Then
-        Call debugger("Error: GiveHP data type must be literal and numeric!-- " + Text$)
+        Call debugger("Error: GiveHP data type must be literal and numeric!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -2964,36 +2964,36 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GiveItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GiveItemRPG(text$, ByRef theProgram As RPGCodeProgram)
     On Error Resume Next
     '#GiveItem("filename")
     'Give player the item defined in the filename file.
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: GiveItem has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: GiveItem has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: GiveItem data type must be literal!-- " + Text$)
+        Call debugger("Error: GiveItem data type must be literal!-- " + text$)
     Else
         Call inv.addItem(lit)
     End If
 End Sub
 
-Sub GiveSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GiveSmpRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#GiveSMP("handle", smp_to_add!)
     'Give player SMP
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: GiveSMP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: GiveSMP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -3002,7 +3002,7 @@ Sub GiveSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     lev = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or lev = 1 Then
-        Call debugger("Error: GiveSMP data type must be literal and numeric!-- " + Text$)
+        Call debugger("Error: GiveSMP data type must be literal and numeric!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -3074,7 +3074,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GoDosRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub GoDosRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#GoDos("command")
     'Perform dos command
     On Error GoTo errorhandler
@@ -3082,18 +3082,18 @@ Sub GoDosRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     'disabled october 5/99 due to possible
     'security issues.
-    Call debugger("Error: GoDos has been disabled due to posible security issues!-- " + Text$)
+    Call debugger("Error: GoDos has been disabled due to posible security issues!-- " + text$)
     Exit Sub
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: GoDos has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: GoDos has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: GoDos data type must be literal!-- " + Text$)
+        Call debugger("Error: GoDos data type must be literal!-- " + text$)
     Else
         Dim comm As String, dum As Long
         comm$ = lit$
@@ -3107,7 +3107,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub Gone(Text$, ByRef theProgram As RPGCodeProgram)
+Sub Gone(text$, ByRef theProgram As RPGCodeProgram)
     '#Gone()
     'Removes program filename
     On Error GoTo errorhandler
@@ -3122,16 +3122,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub HPRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub HPRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#HP ("Handle", new_HP_level!)
     'Set player's HP
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: HP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: HP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -3140,7 +3140,7 @@ Sub HPRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     lev = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or lev = 1 Then
-        Call debugger("Error: HP data type must be literal and numeric!-- " + Text$)
+        Call debugger("Error: HP data type must be literal and numeric!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -3192,7 +3192,7 @@ errorhandler:
 End Sub
 
 Public Function IfThen( _
-                          ByVal Text As String, _
+                          ByVal text As String, _
                           ByRef prg As RPGCodeProgram _
                                                         ) As Long
                                                         
@@ -3228,7 +3228,7 @@ Public Function IfThen( _
     'Allow the array to enlarge itself...
     On Error GoTo enlargeDoneIf
     
-    Select Case LCase(GetCommandName(Text))
+    Select Case LCase(GetCommandName(text))
 
         Case "else"
             If Not doneIf(ub) Then
@@ -3263,7 +3263,7 @@ Public Function IfThen( _
     End Select
 
     Dim res As Long
-    res = evaluate(GetBrackets(Text), prg)
+    res = evaluate(GetBrackets(text), prg)
 
     If res = 1 Then
     
@@ -3311,7 +3311,7 @@ errorhandler:
     Resume Next
 End Function
 
-Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub IncludeRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Include("file.prg")
     'include file in program
     On Error GoTo erropenprginclude
@@ -3320,20 +3320,20 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim theLine As String
 
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: Include has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Include has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Include has no data element!-- " + Text$)
+        Call debugger("Error: Include has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Include data type must be literal!-- " + Text$)
+        Call debugger("Error: Include data type must be literal!-- " + text$)
     Else
         lit$ = addExt(lit$, ".prg")
         'check if it's already included...
@@ -3422,7 +3422,7 @@ Resume Next
 End Sub
 
 
-Sub innRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub innRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Inn()
     'Restores party's hp/smp
     On Error GoTo errorhandler
@@ -3444,7 +3444,7 @@ errorhandler:
 End Sub
 
 Public Sub internalMenuRPG( _
-                              ByVal Text As String, _
+                              ByVal text As String, _
                               ByRef theProgram As RPGCodeProgram _
                                                                    )
 
@@ -3464,16 +3464,16 @@ Public Sub internalMenuRPG( _
 
     On Error Resume Next
 
-    If Not CountData(Text) = 1 Then
-        debugger "InternalMenu() must have one data type-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "InternalMenu() must have one data type-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
 
     If Not paras(0).dataType = DT_NUM Then
-        debugger "InternalMenu() must have a numerical data element-- " & Text
+        debugger "InternalMenu() must have a numerical data element-- " & text
         Exit Sub
     End If
 
@@ -3482,33 +3482,33 @@ Public Sub internalMenuRPG( _
         Case 0: showMenu MNU_MAIN
         Case 1: showMenu MNU_INVENTORY
         Case 2: showMenu MNU_EQUIP
-        Case 3: debugger "Error: Details menu is obsolete!-- " & Text
+        Case 3: debugger "Error: Details menu is obsolete!-- " & text
         Case 4: showMenu MNU_ABILITIES
-        Case 5: debugger "Error: Customize menu is obsolete!-- " & Text
-        Case Else: debugger "Error: Not valid InternalMenu() value!-- " & Text
+        Case 5: debugger "Error: Customize menu is obsolete!-- " & text
+        Case Else: debugger "Error: Not valid InternalMenu() value!-- " & text
 
     End Select
 
 End Sub
 
-Sub ItalicsRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ItalicsRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Italics(ON/OFF)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Italics has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Italics has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Italics has no data element!-- " + Text$)
+        Call debugger("Error: Italics has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Italics data type must be literal!-- " + Text$)
+        Call debugger("Error: Italics data type must be literal!-- " + text$)
     Else
     
         ' ! MODIFIED BY KSNiloc...
@@ -3524,24 +3524,24 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub itemCountRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub itemCountRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #ItemCount("handle or filename"[,number!])
     'count # of items carried by player
     'returns to number!
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: ItemCount has more than 1 data element!-- " + Text$)
+        Call debugger("Error: ItemCount has more than 1 data element!-- " + text$)
         Exit Sub
     End If
     useIt$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: ItemCount data type must be literal!-- " + Text$)
+        Call debugger("Error: ItemCount data type must be literal!-- " + text$)
     Else
         'Scan inventory for this item
         Dim ex As String, theOne As Long, t As Long, retNum As Long
@@ -3576,7 +3576,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Function ItemLocationRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Boolean
+Public Function ItemLocationRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram) As Boolean
     '============================================================
     '#ItemLocation(itemnum!, x!, y!, layer!)
     'returns position of an item and stores in x!, y!, layer!
@@ -3590,16 +3590,16 @@ Public Function ItemLocationRPG(ByVal Text As String, ByRef theProgram As RPGCod
     
     Dim paras() As parameters, itemNum As Long
     
-    paras = GetParameters(Text, theProgram)
+    paras = GetParameters(text, theProgram)
     
     If UBound(paras) <> 3 Then
-        Call debugger("Error: ItemLocation() requires 4 data elements!-- " & Text)
+        Call debugger("Error: ItemLocation() requires 4 data elements!-- " & text)
         Exit Function
     End If
     
     If paras(1).dataType <> DT_NUM Or _
         paras(2).dataType <> DT_NUM Or paras(3).dataType <> DT_NUM Then
-        Call debugger("Error: ItemLocation() requires numerical data elements!-- " & Text)
+        Call debugger("Error: ItemLocation() requires numerical data elements!-- " & text)
         Exit Function
     End If
     
@@ -3626,12 +3626,12 @@ Public Function ItemLocationRPG(ByVal Text As String, ByRef theProgram As RPGCod
         
 End Function
 
-Sub ItemWalkSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ItemWalkSpeedRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#ItemWalkSpeed("fast/slow")
     'change item walk speed.
     'OBSOLETE (Nov 5, 2002)
     On Error Resume Next
-    Call debugger("Warning: ItemWalkSpeed is obsolete!-- " + Text$)
+    Call debugger("Warning: ItemWalkSpeed is obsolete!-- " + text$)
     
     'On Error GoTo errorhandler
     'use$ = text$
@@ -3664,7 +3664,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub KillRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub KillRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
     '#Kill(var!$,var!$,etc.)
     'deletes one or more variables
     On Error GoTo errorhandler
@@ -3675,10 +3675,10 @@ Public Sub KillRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim a As Long
     
-    If CountData(Text) > 1 Then
-        For a = 0 To CountData(Text) - 1
+    If CountData(text) > 1 Then
+        For a = 0 To CountData(text) - 1
             'Ooo... I love recursing... =P
-            KillRPG "Kill(" & GetElement(Text, a + 1) & ")", theProgram
+            KillRPG "Kill(" & GetElement(text, a + 1) & ")", theProgram
         Next a
         Exit Sub
     End If
@@ -3691,20 +3691,20 @@ Public Sub KillRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     
     'NOTE: 'a' removed from this list...
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: Kill has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Kill has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Kill has no data element!-- " + Text$)
+        Call debugger("Error: Kill has no data element!-- " + text$)
         Exit Sub
     End If
     typeVar = variType(useIt$, globalHeap)
     If typeVar = -1 Then
-        Call debugger("Error: Kill cannot determine variable type!-- " + Text$)
+        Call debugger("Error: Kill cannot determine variable type!-- " + text$)
         Exit Sub
     End If
     If typeVar = 0 Then
@@ -3723,17 +3723,17 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub LayerPutRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#LayerPut(x!, y!, layer!, "tile.gph")
     'put a tile on a specific position
     'coords are actual board coords (ie, not screen coords)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 4 Then
-        Call debugger("Error: LayerPut must have 4 data elements!-- " + Text$)
+        Call debugger("Error: LayerPut must have 4 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, ax As Long, ay As Long, al As Long, ag As Long, num4 As Double
@@ -3746,7 +3746,7 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     al = getValue(useIt3$, lit$, num3, theProgram)
     ag = getValue(useIt4$, lit1$, num4, theProgram)
     If ax = 1 Or ay = 1 Or al = 1 Or ag = 0 Then
-        Call debugger("Error: LayerPut data must be numeric, numeric, numeric, literal!-- " + Text$)
+        Call debugger("Error: LayerPut data must be numeric, numeric, numeric, literal!-- " + text$)
     Else
         'internal engine drawing routines
         'first, get the shade color of the board...
@@ -3819,25 +3819,25 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub LoadRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Load("filename")
     'Load saved game
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: Load has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Load has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Load has no data element!-- " + Text$)
+        Call debugger("Error: Load has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Load data type must be literal!-- " + Text$)
+        Call debugger("Error: Load data type must be literal!-- " + text$)
     Else
         lit$ = addExt(lit$, ".sav")
         Call LoadState(savPath & lit$)
@@ -3872,25 +3872,25 @@ errorhandler:
 End Sub
 
 
-Sub MainFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub MainFileRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#MainFile("mainForm.gam")
     'Run specified mainForm file.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: MainFile has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: MainFile has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: MainFile has no data element!-- " + Text$)
+        Call debugger("Error: MainFile has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: MainFile data type must be literal!-- " + Text$)
+        Call debugger("Error: MainFile data type must be literal!-- " + text$)
     Else
         lit$ = addExt(lit$, ".gam")
         lit$ = gamPath & lit$
@@ -3906,16 +3906,16 @@ errorhandler:
 End Sub
 
 
-Sub MaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub MaxHPRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#MaxHP("handle",new_MaxHP_level!)
     'Set new max HP level
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: MaxHP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: MaxHP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -3924,7 +3924,7 @@ Sub MaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     lev = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or lev = 1 Then
-        Call debugger("Error: MaxHP data type must be literal and numeric!-- " + Text$)
+        Call debugger("Error: MaxHP data type must be literal and numeric!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -3956,16 +3956,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub MaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub MaxSmpRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#MaxSMP("Handle",new_Max_sm_level!)
     'Set max SMP
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: MaxSMP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: MaxSMP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -3974,7 +3974,7 @@ Sub MaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     lev = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or lev = 1 Then
-        Call debugger("Error: MaxSMP data type must be literal and numeric!-- " + Text$)
+        Call debugger("Error: MaxSMP data type must be literal and numeric!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -4007,16 +4007,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub MemRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub MemRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Mem (x,y,memloc)
     'scan tile from memory
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 Then
-        Call debugger("Error: Mem must have 3 data elements!-- " + Text$)
+        Call debugger("Error: Mem must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -4053,28 +4053,28 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub menuGraphicRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub menuGraphicRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#MenuGraphic("file.gif")
     'internal menu background graphic.
     On Error Resume Next
     
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: MenuGraphic has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: MenuGraphic has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: MenuGraphic data type must be literal!-- " + Text$)
+        Call debugger("Error: MenuGraphic data type must be literal!-- " + text$)
     Else
         menuGraphic$ = lit$
     End If
 End Sub
 
-Sub MidiPlayRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub MidiPlayRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#MidiPlay("filename.mid")
     'or
     '#PlayMidi("filename.mid")
@@ -4084,20 +4084,20 @@ Sub MidiPlayRPG(Text$, ByRef theProgram As RPGCodeProgram)
     On Error GoTo errorhandler
 
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: MediaPlay has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: MediaPlay has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: MediaPlay has no data element!-- " + Text$)
+        Call debugger("Error: MediaPlay has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: MediaPlay data type must be literal!-- " + Text$)
+        Call debugger("Error: MediaPlay data type must be literal!-- " + text$)
     Else
         boardList(activeBoardIndex).theData.boardMusic$ = lit$
         Call processEvent
@@ -4111,7 +4111,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub MidiRestRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub MidiRestRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#MidiRest()
     'or
     '#MediaStop
@@ -4128,7 +4128,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub mouseClickRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub mouseClickRPG(text$, ByRef theProgram As RPGCodeProgram)
     'MouseClick(x!,y!, [noWait!])
     'waits for mouse click and returns
     'coords
@@ -4137,17 +4137,17 @@ Sub mouseClickRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 3 Then
-        Call debugger("Error: MouseClick must have two numerical variables! " + Text$)
+        Call debugger("Error: MouseClick must have two numerical variables! " + text$)
     End If
     Dim var1 As String, var2 As String
     'var1$ = GetElement(dataUse$, 1)
     'var2$ = GetElement(dataUse$, 2)
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     var1 = paras(0).dat
     var2 = paras(1).dat
     
@@ -4170,17 +4170,17 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub mouseMoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub mouseMoveRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#MouseMove(x!,y!)
     'waits for mouse movement and returns
     'coords
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: MouseMove must have two numerical variables! " + Text$)
+        Call debugger("Error: MouseMove must have two numerical variables! " + text$)
     End If
     Dim var1 As String, var2 As String
     var1$ = GetElement(dataUse$, 1)
@@ -4200,12 +4200,12 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub MoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub MoveRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Move(x,y)
     'Moves current program to x,y
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     
@@ -4217,7 +4217,7 @@ Sub MoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If num < 3 Then useitL$ = "1"
     
     If useitX$ = "" Or useitY$ = "" Or useitL$ = "" Then
-        Call debugger("Error: Move has no data element!-- " + Text$)
+        Call debugger("Error: Move has no data element!-- " + text$)
         Exit Sub
     End If
     Dim ax As Long, ay As Long, al As Long, numx As Double, numy As Double, numl As Double
@@ -4226,7 +4226,7 @@ Sub MoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     ay = getValue(useitY$, lity$, numy, theProgram)
     al = getValue(useitL$, litl$, numl, theProgram)
     If ax = 1 Or ay = 1 Or al = 1 Then
-        Call debugger("Error: Move data type must be numerical!-- " + Text$)
+        Call debugger("Error: Move data type must be numerical!-- " + text$)
     Else
         If theProgram.boardNum >= 0 Then
             boardList(activeBoardIndex).theData.progX(theProgram.boardNum) = numx
@@ -4242,21 +4242,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub Mp3PauseRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub Mp3PauseRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Mp3Pause ("filename.wav/mp3")
     'Play wav or mp3 file (pauses game while playing mp3)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Mp3Pause has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Mp3Pause has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Mp3Pause data type must be literal!-- " + Text$)
+        Call debugger("Error: Mp3Pause data type must be literal!-- " + text$)
     Else
         Dim ext As String
         ext$ = GetExt(lit$)
@@ -4274,7 +4274,7 @@ errorhandler:
 End Sub
 
 
-Sub MWinClsRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub MWinClsRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#MWinCls()
     'Clear message win.
     On Error GoTo errorhandler
@@ -4292,14 +4292,14 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub MWinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub MWinRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
     'MWin(text$)
     'Add to the message box
-    If CountData(Text) <> 1 Then
-        Call debugger("MWin() requires one data element-- " & Text)
+    If CountData(text) <> 1 Then
+        Call debugger("MWin() requires one data element-- " & text)
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     If paras(0).dataType = DT_LIT Then
         Call AddToMsgBox(MWinPrepare(paras(0).lit, theProgram), theProgram)
     Else
@@ -4307,22 +4307,22 @@ Public Sub MWinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     End If
 End Sub
 
-Sub MWinSizeRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub MWinSizeRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#MWinSize(size!)
     'changes message window size.
     'size! is a percentage of the screen width
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: CharacterSpeed has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: CharacterSpeed has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: CharacterSpeed data type must be numerical!-- " + Text$)
+        Call debugger("Error: CharacterSpeed data type must be numerical!-- " + text$)
     Else
         num = inBounds(num, 10, 100)
         MWinSize = num
@@ -4336,25 +4336,25 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub NewPlyr(Text$, ByRef theProgram As RPGCodeProgram)
+Sub NewPlyr(text$, ByRef theProgram As RPGCodeProgram)
     On Error Resume Next
     '#Newplyr("name.cha/gph/tem")
     'Change active player graphic
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: NewPlyr has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: NewPlyr has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: NewPlyr has no data element!-- " + Text$)
+        Call debugger("Error: NewPlyr has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: NewPlyr data type must be literal!-- " + Text$)
+        Call debugger("Error: NewPlyr data type must be literal!-- " + text$)
     Else
         Dim ee As String
         lit$ = addExt(lit$, ".tem")
@@ -4419,18 +4419,18 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PathFindRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub PathFindRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #PathFind (x1!, y1!, x2!, y2!, dest$ [, layer!])
     'find the shortest walkable path between two points on the board, and return it
     'as a string in dest$
     'if no layer specified, the player's current layer is assumed.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 5 And number <> 6 Then
-        Call debugger("Error: PathFind must have 5 or 6 data elements!-- " + Text$)
+        Call debugger("Error: PathFind must have 5 or 6 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, useIt6 As String, num4 As Double, num5 As Double, num6 As Double
@@ -4450,7 +4450,7 @@ Sub PathFindRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef 
     e5 = getValue(useIt5$, lit5$, num5, theProgram)
     e6 = getValue(useIt6$, lit6$, num6, theProgram)
     If e1 = 1 Or e2 = 1 Or e3 = 1 Or e4 = 1 Or e5 = 0 Or e6 = 1 Then
-        Call debugger("Error: PathFind data type must be num, num, num, num, lit [, num]!-- " & Text$)
+        Call debugger("Error: PathFind data type must be num, num, num, num, lit [, num]!-- " & text$)
         Exit Sub
     End If
     
@@ -4475,25 +4475,25 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PlayAviRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub PlayAviRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#PlayAvi(file$)
     'plays avi (full screen)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: PlayAvi has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: PlayAvi has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: PlayAvi has no data element!-- " + Text$)
+        Call debugger("Error: PlayAvi has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: PlayAvi data type must be literal!-- " + Text$)
+        Call debugger("Error: PlayAvi data type must be literal!-- " + text$)
     Else
         lit$ = addExt(lit$, ".avi")
         lit$ = projectPath & mediaPath & lit$
@@ -4516,25 +4516,25 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PlayAviSmallRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub PlayAviSmallRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#PlayAviSmall(file$)
     'plays avi (windowed)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: PlayAviSmall has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: PlayAviSmall has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: PlayAviSmall has no data element!-- " + Text$)
+        Call debugger("Error: PlayAviSmall has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: PlayAviSmall data type must be literal!-- " + Text$)
+        Call debugger("Error: PlayAviSmall data type must be literal!-- " + text$)
     Else
         lit$ = addExt(lit$, ".avi")
         lit$ = projectPath & mediaPath & lit$
@@ -4549,13 +4549,13 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PostureRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub PostureRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Posture(0-9[,handle$])
     'show player posture, assumed to be
     'default if not specified.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     useIt$ = GetElement(dataUse$, 1)
@@ -4565,7 +4565,7 @@ Sub PostureRPG(Text$, ByRef theProgram As RPGCodeProgram)
     a = getValue(useIt$, lit$, num, theProgram)
     b = getValue(useIt2$, lit2$, num2, theProgram)
     If a = 1 Or b = 0 Then
-        Call debugger("Error: Posture data type must be num, lit!-- " + Text$)
+        Call debugger("Error: Posture data type must be num, lit!-- " + text$)
     Else
         theOne = -1
         lit2$ = FindPlayerHandle(lit2$)
@@ -4597,13 +4597,13 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub prg(Text$, ByRef theProgram As RPGCodeProgram)
+Sub prg(text$, ByRef theProgram As RPGCodeProgram)
     '#Prg(prgnum!,x!,y!,layer!)
     'or #Prg(prgname$,x!,y!,layer!)
     'Move program
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
 
@@ -4630,13 +4630,13 @@ Sub prg(Text$, ByRef theProgram As RPGCodeProgram)
             End If
         Next t
         If theOne = -1 Then
-            Call debugger("Error: Prg filename not found!-- " + Text$)
+            Call debugger("Error: Prg filename not found!-- " + text$)
             Exit Sub
         End If
         num1 = theOne
     End If
     If ax = 1 Or ay = 1 Or al = 1 Then
-        Call debugger("Error: Prg data type must be numerical!-- " + Text$)
+        Call debugger("Error: Prg data type must be numerical!-- " + text$)
     Else
         boardList(activeBoardIndex).theData.progX(num1) = num2
         boardList(activeBoardIndex).theData.progY(num1) = num3
@@ -4650,20 +4650,20 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PrintRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub PrintRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Print("text")
     'puts text at current x and y pos.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: Print has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Print has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Print has no data element!-- " + Text$)
+        Call debugger("Error: Print has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
@@ -4690,16 +4690,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub Prompt(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub Prompt(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #Prompt("Question>"[,var!$])
     'Prompts user
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number > 2 Then
-        Call debugger("Error: Prompt must have 2 data elements!-- " + Text$)
+        Call debugger("Error: Prompt must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -4728,7 +4728,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Sub PushItemRPG(ByRef text As String, ByRef theProgram As RPGCodeProgram)
     '====================================================================
     '#PushItem(itemNum!, path!)
     'Pushes item itemNum! along the route described by path$
@@ -4748,15 +4748,15 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim itemNum As Long, paras() As parameters
     
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     If UBound(paras) <> 1 Then
-        Call debugger("Error: PushItem() must have 2 data elements!-- " & Text)
+        Call debugger("Error: PushItem() must have 2 data elements!-- " & text)
         Exit Sub
     End If
     
     If paras(1).dataType <> DT_LIT Then
-        Call debugger("PushItem() requires num! , lit$-- " & Text)
+        Call debugger("PushItem() requires num! , lit$-- " & text)
         Exit Sub
     End If
     
@@ -4765,7 +4765,7 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
             Case "TARGET": If targetType = 1 Then itemNum = target
             Case "SOURCE": If sourceType = 1 Then itemNum = Source
             Case Else
-                Call debugger("PushItem() requires num! , lit$-- " & Text)
+                Call debugger("PushItem() requires num! , lit$-- " & text)
                 Exit Sub
         End Select
     End If
@@ -4814,7 +4814,7 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Sub PushRPG(ByRef text As String, ByRef theProgram As RPGCodeProgram)
     '================================================================
     '#Push(path! [, handle$])
     'Pushes player handle$ along the route described by path$
@@ -4835,16 +4835,16 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim count As Long, i As Long, paras() As parameters, playerNum As Long
     
-    count = CountData(Text)
-    paras() = GetParameters(Text, theProgram)
+    count = CountData(text)
+    paras() = GetParameters(text, theProgram)
     
     If count <> 1 And count <> 2 Then
-        Call debugger("Error: Push() must have 1 or 2 data elements!-- " & Text)
+        Call debugger("Error: Push() must have 1 or 2 data elements!-- " & text)
         Exit Sub
     End If
     
     If paras(0).dataType <> DT_LIT Then
-        Call debugger("Push() requires lit$ [, lit$]-- " & Text)
+        Call debugger("Push() requires lit$ [, lit$]-- " & text)
         Exit Sub
     End If
     
@@ -4865,13 +4865,13 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
                 Case "TARGET": If targetType = 0 Then playerNum = target
                 Case "SOURCE": If sourceType = 0 Then playerNum = Source
                 Case Else
-                        Call debugger("Push(): player handle$ not found!-- " & Text)
+                        Call debugger("Push(): player handle$ not found!-- " & text)
                         Exit Sub
             End Select
         End If
         
         If playerNum = -1 Then
-            Call debugger("Push(): player handle$ not found!-- " & Text)
+            Call debugger("Push(): player handle$ not found!-- " & text)
             Exit Sub 'Player handle not found, exit.
         End If
         
@@ -4931,7 +4931,7 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub PutItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub PutItemRPG(text$, ByRef theProgram As RPGCodeProgram)
     'EDITED: [Isometrics - Delano - 28/04/04]
     'Added code to update the pendingPlayer movements when the player is placed - prevents jumping.
 
@@ -4942,7 +4942,7 @@ Sub PutItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
@@ -4962,7 +4962,7 @@ Sub PutItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     al = getValue(useIt4$, lit4$, num4, theProgram)
     
     If ah = 1 Or ax = 1 Or ay = 1 Or al = 1 Then
-        Call debugger("Error: PutItem data must be num,num,num,num!-- " + Text$)
+        Call debugger("Error: PutItem data must be num,num,num,num!-- " + text$)
         Exit Sub
     End If
     
@@ -4993,7 +4993,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub PutPlayerRPG(text$, ByRef theProgram As RPGCodeProgram)
     '======================================
     'EDITED: [Isometrics - Delano 3/05/04]
     'Added code to update the pendingPlayer movements when the player is placed - prevents jumping.
@@ -5014,7 +5014,7 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim useIt1 As String, useIt2 As String, useIt3 As String, useIt4 As String
     Dim handeName As String, lit As String, num1 As Double, targetX As Double, targetY As Double, targetL As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)        'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
@@ -5037,7 +5037,7 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
     If parameter1Type = 0 Or parameter2Type = 1 Or parameter3Type = 1 Or parameter4Type = 1 Then
         'Check the RPG variable types.
-        Call debugger("Error: PutPlayer data must be lit,num,num,num!-- " + Text$)
+        Call debugger("Error: PutPlayer data must be lit,num,num,num!-- " + text$)
         Exit Sub
     End If
         
@@ -5097,15 +5097,15 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub PutRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Put(x!,y!,"graphic.gph")
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 Then
-        Call debugger("Error: Put must have 3 data elements!-- " + Text$)
+        Call debugger("Error: Put must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -5116,7 +5116,7 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     ay = getValue(useIt2$, lit$, num2, theProgram)
     ag = getValue(useIt3$, lit1$, num3, theProgram)
     If ax = 1 Or ay = 1 Or ag = 0 Then
-        Call debugger("Error: Put data must be numeric, numeric, literal!-- " + Text$)
+        Call debugger("Error: Put data must be numeric, numeric, literal!-- " + text$)
     Else
         'internal engine drawing routines
         'first, get the shade color of the board...
@@ -5151,16 +5151,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub RandomRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub RandomRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #Random(1200[,dest!])
     'Put a random number in dest!
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: Random requires 2 data elements!-- " + Text$)
+        Call debugger("Error: Random requires 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -5168,7 +5168,7 @@ Sub RandomRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     Dim ceiling As Double, Top As Long, aa As Long
     Top = getValue(useIt1$, lit$, ceiling, theProgram)
     If Top = 1 Then
-        Call debugger("Error: Random data type must be numerical!-- " + Text$)
+        Call debugger("Error: Random data type must be numerical!-- " + text$)
     Else
 
         'Use the timer... [KSNiloc]
@@ -5189,16 +5189,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub RedirectRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub RedirectRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Redirect("#Mwin", "#MyMwin")
     'redirect all input from one command into another
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 2 Then
-        Call debugger("Error: Redirect must have 2 data elements!-- " + Text$)
+        Call debugger("Error: Redirect must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -5207,32 +5207,32 @@ Sub RedirectRPG(Text$, ByRef theProgram As RPGCodeProgram)
     a = getValue(useIt1$, lit1$, num1, theProgram)
     b = getValue(useIt2$, lit2$, num2, theProgram)
     If a = 0 Or b = 0 Then
-        Call debugger("Error: Redirect data type must be lit, lit!-- " + Text$)
+        Call debugger("Error: Redirect data type must be lit, lit!-- " + text$)
     Else
         Call SetRedirect(lit1$, lit2$)
     End If
 End Sub
 
-Sub RemovePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub RemovePlayerRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#RemovePlayer("file" or handle)
     'Remove player from party.
     'puts player in available list.
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: RemovePlayer has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: RemovePlayer has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: RemovePlayer has no data element!-- " + Text$)
+        Call debugger("Error: RemovePlayer has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: RemovePlayer data type must be literal!-- " + Text$)
+        Call debugger("Error: RemovePlayer data type must be literal!-- " + text$)
     Else
         'ext$ = getext(lit$)
         lit$ = FindPlayerHandle(lit$)
@@ -5258,16 +5258,16 @@ Sub RemovePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
 End Sub
 
-Sub RemoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub RemoveRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Remove("handle",body_location!)
     'Remove item from specified body location.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: Remove must have 2 data elements!-- " + Text$)
+        Call debugger("Error: Remove must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -5276,7 +5276,7 @@ Sub RemoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     bloc = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or bloc = 1 Then
-        Call debugger("Error: Remove data type must be lit, num!-- " + Text$)
+        Call debugger("Error: Remove data type must be lit, num!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -5307,16 +5307,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub removeStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub removeStatusRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#RemoveStatus("handle", "handle/filename.ste")
     'removes status effect to a player, or the target handle
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: RemoveStatus must have 2 data elements!-- " + Text$)
+        Call debugger("Error: RemoveStatus must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -5325,7 +5325,7 @@ Sub removeStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     fileN = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or fileN = 0 Then
-        Call debugger("Error: RemoveStatus requires lit, lit!-- " + Text$)
+        Call debugger("Error: RemoveStatus requires lit, lit!-- " + text$)
     Else
         theHandle$ = ""
         ex$ = GetExt(lit2$)
@@ -5403,25 +5403,25 @@ Sub ResetRPG(ByRef theProgram As RPGCodeProgram)
 End Sub
 
 
-Sub RestorePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub RestorePlayerRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#RestorePlayer("player.tem")
     'restores a player who was previously on the team.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: RestorePlayer has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: RestorePlayer has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: RestorePlayer has no data element!-- " + Text$)
+        Call debugger("Error: RestorePlayer has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: RestorePlayer data type must be literal!-- " + Text$)
+        Call debugger("Error: RestorePlayer data type must be literal!-- " + text$)
     Else
         Dim slot As Long, t As Long
         lit$ = addExt(lit$, ".tem")
@@ -5431,7 +5431,7 @@ Sub RestorePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
             If playerListAr$(t) = "" Then slot = t: t = 4
         Next t
         If slot = -1 Then
-            Call debugger("Error: RestorePlayer cannot add another member- Party is full!-- " + Text$)
+            Call debugger("Error: RestorePlayer cannot add another member- Party is full!-- " + text$)
             Exit Sub
         End If
         Call RestoreCharacter(projectPath & temPath & lit$, slot, True)
@@ -5444,7 +5444,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub RestoreScreenArrayRPG(ByVal Text As String, _
+Public Sub RestoreScreenArrayRPG(ByVal text As String, _
     ByRef theProgram As RPGCodeProgram)
 
     'RestoreScreenArray(pos!,[x1!, y1!, x2!, y2!, xdest!, ydest!])
@@ -5459,19 +5459,19 @@ Public Sub RestoreScreenArrayRPG(ByVal Text As String, _
 
     'Get the parameters...
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     'Are they numerical?
     Dim a As Long
     For a = 0 To UBound(paras)
         If Not paras(a).dataType = DT_NUM Then
             debugger "RestoreScreenArray() requires numerical data element" _
-                & "s-- " & Text
+                & "s-- " & text
             Exit Sub
         End If
     Next a
     
-    Select Case CountData(Text)
+    Select Case CountData(text)
     
         Case 1, 7
         
@@ -5503,7 +5503,7 @@ Public Sub RestoreScreenArrayRPG(ByVal Text As String, _
         
         Case Else
             debugger "RestoreScreenArray() requires either one or seven dat" _
-            & "a elements-- " & Text
+            & "a elements-- " & text
             Exit Sub
     
     End Select
@@ -5515,22 +5515,22 @@ notDimensioned:
     Exit Sub
 
 noArrayElement:
-    debugger "No screen saved in position " & CStr(paras(0).num) & "-- " & Text
+    debugger "No screen saved in position " & CStr(paras(0).num) & "-- " & text
     Exit Sub
     
 End Sub
 
-Sub RestoreScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub RestoreScreenRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#RestoreScreen([x1!, y1!, x2!, y2!, xdest!, ydest!])
     'restore the screen from the rpgcodebuffer buffer
     'optionally specify source and dest coords
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num > 6 Then
-        Call debugger("Error: RestoreScreen needs 0 or 6 data element!-- " + Text$)
+        Call debugger("Error: RestoreScreen needs 0 or 6 data element!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, useIt6 As String, x1 As Double, y1 As Double, x2 As Double, y2 As Double, xd As Double, yd As Double
@@ -5557,7 +5557,7 @@ Sub RestoreScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
     sx = getValue(useIt5$, lit$, xd, theProgram)
     sy = getValue(useIt6$, lit$, yd, theProgram)
     If xx1 = 1 Or yy1 = 1 Or xx2 = 1 Or yy2 = 1 Or sx = 1 Or sy = 1 Then
-        Call debugger("Error: RestoreScreen requires numeriacal elements!-- " + Text$)
+        Call debugger("Error: RestoreScreen requires numeriacal elements!-- " + text$)
         Exit Sub
     End If
         
@@ -5574,7 +5574,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub ReturnMethodRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub ReturnMethodRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
 
     ' ReturnMethod(var!)
 
@@ -5586,7 +5586,7 @@ Public Sub ReturnMethodRPG(ByVal Text As String, ByRef theProgram As RPGCodeProg
     On Error Resume Next
 
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    dataUse$ = Trim(GetBrackets(Text$))
+    dataUse$ = Trim(GetBrackets(text$))
 
     ' Check for reference
     If (Left(dataUse, 1) = "&") Then
@@ -5687,7 +5687,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub RPGCodeRPG(ByVal Text As String, _
+Public Sub RPGCodeRPG(ByVal text As String, _
     ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     'RPGCode(command$)
@@ -5697,16 +5697,16 @@ Public Sub RPGCodeRPG(ByVal Text As String, _
     'Bug fix by KSNiloc
     '========================================================================
 
-    If Not CountData(Text) = 1 Then
-        debugger "RPGCode() requires one data element-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "RPGCode() requires one data element-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     If Not paras(0).dataType = DT_LIT Then
-        debugger "RPGCode() requires a literal data element-- " & Text
+        debugger "RPGCode() requires a literal data element-- " & text
         Exit Sub
     End If
     
@@ -5760,25 +5760,25 @@ Public Sub RPGCodeRPG(ByVal Text As String, _
 End Sub
 
 
-Sub RunRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Sub RunRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
     '#Run("prgram.prg")
     'Run a program
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: Run has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Run has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Run has no data element!-- " + Text$)
+        Call debugger("Error: Run has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Run data type must be literal!-- " + Text$)
+        Call debugger("Error: Run data type must be literal!-- " + text$)
     Else
         lit$ = addExt(lit$, ".prg")
 
@@ -5796,7 +5796,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub ThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#threadID! = #Thread("prgram.prg", persistent! [, dest!])
     'launch a thread
     'return an id we can use to refer to the thread again
@@ -5811,11 +5811,11 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
     retval.num = -1
     
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 3 Then
-        Call debugger("Error: Thread has must have 2 or 3 data elements!-- " + Text$)
+        Call debugger("Error: Thread has must have 2 or 3 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -5827,7 +5827,7 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
     a = getValue(useIt1$, lit1$, num1, theProgram)
     b = getValue(useIt2$, lit2$, num2, theProgram)
     If a = 0 Or b = 1 Then
-        Call debugger("Error: Thread data type must be literal, num!-- " + Text$)
+        Call debugger("Error: Thread data type must be literal, num!-- " + text$)
     Else
         
         Dim tID As Long
@@ -5846,25 +5846,25 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
 End Sub
 
 
-Sub SaveRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SaveRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Save (filename$)
     'Save progress.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: Save has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Save has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Save has no data element!-- " + Text$)
+        Call debugger("Error: Save has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Save data type must be literal!-- " + Text$)
+        Call debugger("Error: Save data type must be literal!-- " + text$)
     Else
         lit$ = addExt(lit$, ".sav")
         Call SaveState(savPath & lit$)
@@ -5877,7 +5877,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Public Sub SaveScreenRPG(text$, ByRef theProgram As RPGCodeProgram)
     'SaveScreen([pos!])
     'Save the screen into the rpgcodebuffer buffer
 
@@ -5886,8 +5886,8 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '========================================================================
 
     Dim countDat As String
-    countDat = CountData(Text)
-    If GetBrackets(Text) = "" Then countDat = 0
+    countDat = CountData(text)
+    If GetBrackets(text) = "" Then countDat = 0
        
     Select Case countDat
     
@@ -5896,7 +5896,7 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
             
         Case 1
             Dim paras() As parameters
-            paras = GetParameters(Text, theProgram)
+            paras = GetParameters(text, theProgram)
             
             If paras(0).dataType = DT_NUM Then
             
@@ -5915,14 +5915,14 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
             Else
                 debugger "SaveScreen() requires either no data elements or" _
-                    & " one numerical data element-- " & Text
+                    & " one numerical data element-- " & text
                 Exit Sub
                 
             End If
             
         Case Else
             debugger "SaveScreen() requires either one or two data elements" _
-                & "-- " & Text
+                & "-- " & text
             Exit Sub
             
     End Select
@@ -5941,16 +5941,16 @@ enlargeArray:
     
 End Sub
 
-Sub ScanRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ScanRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Scan (x,y,memloc)
     'scan tile into memory
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 Then
-        Call debugger("Error: Scan must have 3 data elements!-- " + Text$)
+        Call debugger("Error: Scan must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -5981,7 +5981,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
+Sub Send(text$, ByRef theProgram As RPGCodeProgram)
     '========================================
     '#Send (board$, x!, y!, layer!)
     'If layer is omitted, it is assumed to be 1.
@@ -5995,12 +5995,12 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     Dim useIt1 As String, useIt2 As String, useIt3 As String, useIt4 As String
     Dim lit As String, lit1 As String, num1 As Double, num2 As Double, num3 As Double, num4 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)            'Get text inside brackets
     number = CountData(dataUse$)            'how many data elements are there?
     
     If number <> 3 And number <> 4 Then
-        Call debugger("Error: Send must have 3 or 4 data elements!-- " + Text$)
+        Call debugger("Error: Send must have 3 or 4 data elements!-- " + text$)
         Exit Sub
     End If
     
@@ -6025,12 +6025,12 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     
     If parameter1Type = 0 Then
         'Type 0 corresponds to numerical.
-        Call debugger("Error: Send board data type must be literal!-- " + Text$)
+        Call debugger("Error: Send board data type must be literal!-- " + text$)
         Exit Sub
     End If
     If parameter2Type = 1 Or parameter3Type = 1 Or parameter4Type = 1 Then
         'Type 1 corresponds to literal.
-        Call debugger("Error: Send location data type must be numerical!-- " + Text$)
+        Call debugger("Error: Send location data type must be numerical!-- " + text$)
         Exit Sub
     End If
         
@@ -6116,17 +6116,17 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub setbuttonRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub setbuttonRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#SetButton("face.bmp",buttonnum,x1,y1,dx,dy)
     'Sets a button on the screen.
     'dx and dy are displacement
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number < 6 Then
-        Call debugger("Error: SetButton must have 6 data elements!-- " + Text$)
+        Call debugger("Error: SetButton must have 6 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, useIt6 As String, destBut As Double, x1 As Double, y1 As Double, dx As Double, dy As Double
@@ -6146,11 +6146,11 @@ Sub setbuttonRPG(Text$, ByRef theProgram As RPGCodeProgram)
     y2to = getValue(useIt6$, lit$, dy, theProgram)
     
     If theFace = 0 Then
-        Call debugger("Error: SetButton face data type must be literal!-- " + Text$)
+        Call debugger("Error: SetButton face data type must be literal!-- " + text$)
         Exit Sub
     End If
     If butTo = 1 Or x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Then
-        Call debugger("Error: SetButton coords must be numerical!-- " + Text$)
+        Call debugger("Error: SetButton coords must be numerical!-- " + text$)
     Else
         destBut = inBounds(destBut, 0, 50)
         x1 = inBounds(x1, 0, tilesX * 32)
@@ -6252,7 +6252,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SetImageAdditiveRPG(text$, ByRef theProgram As RPGCodeProgram)
 
     ' ! MODIFIED BY KSNiloc...
 
@@ -6261,11 +6261,11 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'blends image into background (percent! can be from -100 to 100)
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 6 And number <> 7 Then
-        Call debugger("Error: SetImageAdditive must have 6 data elements!-- " + Text$)
+        Call debugger("Error: SetImageAdditive must have 6 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, useIt6 As String, x1 As Double, y1 As Double, dx As Double, dy As Double, perc As Double
@@ -6290,11 +6290,11 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If cnvToUse = 0 Then cnvToUse = cnvRPGCodeScreen
     
     If theFace = 0 Then
-        Call debugger("Error: SetImageAdditive face data type must be literal!-- " + Text$)
+        Call debugger("Error: SetImageAdditive face data type must be literal!-- " + text$)
         Exit Sub
     End If
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Or pp = 1 Then
-        Call debugger("Error: SetImageAdditive coords must be numerical!-- " + Text$)
+        Call debugger("Error: SetImageAdditive coords must be numerical!-- " + text$)
     Else
         x1 = inBounds(x1, 0, tilesX * 32)
         y1 = inBounds(y1, 0, tilesY * 32)
@@ -6340,7 +6340,7 @@ Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
 End Sub
 
-Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub setImageRPG(text$, ByRef theProgram As RPGCodeProgram)
 
     ' ! MODIFIED BY KSNiloc...
 
@@ -6349,11 +6349,11 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'dx and dy are displacement
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 5 And number <> 6 Then
-        Call debugger("Error: SetImage must have 5 data elements!-- " + Text$)
+        Call debugger("Error: SetImage must have 5 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, x1 As Double, y1 As Double, dx As Double, dy As Double
@@ -6377,11 +6377,11 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If cnv2 = 0 Then cnv2 = cnvRPGCodeScreen
     
     If theFace = 0 Then
-        Call debugger("Error: SetImage face data type must be literal!-- " + Text$)
+        Call debugger("Error: SetImage face data type must be literal!-- " + text$)
         Exit Sub
     End If
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Then
-        Call debugger("Error: SetImage coords must be numerical!-- " + Text$)
+        Call debugger("Error: SetImage coords must be numerical!-- " + text$)
     Else
         x1 = inBounds(x1, 0, tilesX * 32)
         y1 = inBounds(y1, 0, tilesY * 32)
@@ -6413,7 +6413,7 @@ Sub setImageRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
 End Sub
 
-Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SetImageTranslucentRPG(text$, ByRef theProgram As RPGCodeProgram)
 
     ' ! MODIFIED BY KSNiloc...
 
@@ -6422,11 +6422,11 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'blends image into background.
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 5 And number <> 6 Then
-        Call debugger("Error: SetImageTranslucent must have 8 data elements!-- " + Text$)
+        Call debugger("Error: SetImageTranslucent must have 8 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, x1 As Double, y1 As Double, dx As Double, dy As Double
@@ -6450,11 +6450,11 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If cnv2 = 0 Then cnv2 = cnvRPGCodeScreen
     
     If theFace = 0 Then
-        Call debugger("Error: SetImageTranslucent face data type must be literal!-- " + Text$)
+        Call debugger("Error: SetImageTranslucent face data type must be literal!-- " + text$)
         Exit Sub
     End If
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Then
-        Call debugger("Error: SetImageTranslucent coords must be numerical!-- " + Text$)
+        Call debugger("Error: SetImageTranslucent coords must be numerical!-- " + text$)
     Else
         x1 = inBounds(x1, 0, tilesX * 32)
         y1 = inBounds(y1, 0, tilesY * 32)
@@ -6485,7 +6485,7 @@ Sub SetImageTranslucentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
 End Sub
 
-Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SetImageTransparentRPG(text$, ByRef theProgram As RPGCodeProgram)
 
     ' ! MODIFIED BY KSNiloc...
 
@@ -6494,11 +6494,11 @@ Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'consider r!, g!, b! color to be transparent
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 8 And number <> 9 Then
-        Call debugger("Error: SetImageTransparent must have 8 data elements!-- " + Text$)
+        Call debugger("Error: SetImageTransparent must have 8 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, useIt5 As String, useIt6 As String, useIt7 As String, useIt8 As String, x1 As Double, y1 As Double, dx As Double, dy As Double
@@ -6529,11 +6529,11 @@ Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If cnv2 = 0 Then cnv2 = cnvRPGCodeScreen
     
     If theFace = 0 Then
-        Call debugger("Error: SetImageTransparent face data type must be literal!-- " + Text$)
+        Call debugger("Error: SetImageTransparent face data type must be literal!-- " + text$)
         Exit Sub
     End If
     If x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Or rt = 1 Or gt = 1 Or bT = 1 Then
-        Call debugger("Error: SetImageTransparent coords must be numerical!-- " + Text$)
+        Call debugger("Error: SetImageTransparent coords must be numerical!-- " + text$)
     Else
         x1 = inBounds(x1, 0, tilesX * 32)
         y1 = inBounds(y1, 0, tilesY * 32)
@@ -6564,7 +6564,7 @@ Sub SetImageTransparentRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
 End Sub
 
-Sub SetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SetPixelRPG(text$, ByRef theProgram As RPGCodeProgram)
 
     ' ! MODIFIED BY KSNiloc...
 
@@ -6572,11 +6572,11 @@ Sub SetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'set pixel at x, y of selected color.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 3 Then
-        Call debugger("Error: SetPixel must have 2 data elements!-- " + Text$)
+        Call debugger("Error: SetPixel must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -6593,7 +6593,7 @@ Sub SetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If cnv = 0 Then cnv = cnvRPGCodeScreen
     
     If xx = 1 Or yy = 1 Then
-        Call debugger("Error: SetPixel data type must be numerical!-- " + Text$)
+        Call debugger("Error: SetPixel data type must be numerical!-- " + text$)
     Else
         Call CanvasSetPixel(cnv, x, y, fontColor)
         If cnv = cnvRPGCodeScreen Then
@@ -6610,16 +6610,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ShowRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ShowRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Show (var!$)
     'Show var in mwin
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Show has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Show has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
@@ -6638,20 +6638,20 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub SinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub SinRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error Resume Next
     
     'Re-written by KSNiloc
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
-    Select Case CountData(Text)
+    Select Case CountData(text)
     
         Case 1
             If Not paras(0).dataType = DT_NUM Then
-                debugger "Sin() requires a numerical data element-- " & Text
+                debugger "Sin() requires a numerical data element-- " & text
                 Exit Sub
             End If
             retval.dataType = DT_NUM
@@ -6659,20 +6659,20 @@ Public Sub SinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRe
         
         Case 2
             If Not paras(0).dataType = DT_NUM Then
-                debugger "Sin() requires a numerical data element-- " & Text
+                debugger "Sin() requires a numerical data element-- " & text
                 Exit Sub
             End If
             SetVariable paras(1).dat, Round(Sin(radians(paras(0).num)), 7), theProgram
         
         Case Else
-            debugger "Sin() requires one or two data elements-- " & Text
+            debugger "Sin() requires one or two data elements-- " & text
     
     End Select
 
 End Sub
 
 Public Sub SizedAnimationRPG( _
-                                ByVal Text As String, _
+                                ByVal text As String, _
                                 ByRef theProgram As RPGCodeProgram, _
                                 ByRef retval As RPGCODE_RETURN _
                                                                  )
@@ -6683,24 +6683,24 @@ Public Sub SizedAnimationRPG( _
     On Error Resume Next
 
     Dim elements As Long
-    elements = CountData(Text)
+    elements = CountData(text)
 
     If (elements <> 5) And (elements <> 6) Then
-        Call debugger("SizedAnimation() must have five or six data elements-- " & Text)
+        Call debugger("SizedAnimation() must have five or six data elements-- " & text)
         Exit Sub
     End If
 
     If (elements = 6) And (Not isMultiTasking()) Then
-        Call debugger("SizedAnimation() only accepts a sixth parameter in a thread-- " & Text)
+        Call debugger("SizedAnimation() only accepts a sixth parameter in a thread-- " & text)
         Exit Sub
     End If
 
     If (retval.usingReturnData) And (Not isMultiTasking()) Then
-        Call debugger("Warning: SizedAnimation() only returns a value in a thread-- " & Text)
+        Call debugger("Warning: SizedAnimation() only returns a value in a thread-- " & text)
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
 
     If _
          (paras(0).dataType <> DT_LIT) Or _
@@ -6709,7 +6709,7 @@ Public Sub SizedAnimationRPG( _
          (paras(3).dataType <> DT_NUM) Or _
          (paras(4).dataType <> DT_NUM) Or _
          ((elements = 6) And (paras(5).dataType <> DT_NUM)) Then
-         Call debugger("SizedAnimation() only accepts lit, num, num, num, num [,num] -- " & Text)
+         Call debugger("SizedAnimation() only accepts lit, num, num, num, num [,num] -- " & text)
          Exit Sub
     End If
 
@@ -6738,7 +6738,7 @@ Public Sub SizedAnimationRPG( _
 
 End Sub
 
-Function SkipMethodRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
+Function SkipMethodRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram) As Long
     '#Method methodname (parameter!, parameter2$, etc)
     'Skip over a method.
     On Error GoTo errorhandler
@@ -6753,16 +6753,16 @@ errorhandler:
     Resume Next
 End Function
 
-Sub SmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SmpRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#SMP("handle", new_SM_level!)
     'Set player SMP
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: SMP must have 2 data elements!-- " + Text$)
+        Call debugger("Error: SMP must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -6771,7 +6771,7 @@ Sub SmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
     hand = getValue(useIt1$, lit1$, num1, theProgram)
     lev = getValue(useIt2$, lit2$, num2, theProgram)
     If hand = 0 Or lev = 1 Then
-        Call debugger("Error: SMP data type must be literal and numeric!-- " + Text$)
+        Call debugger("Error: SMP data type must be literal and numeric!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -6824,11 +6824,11 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub SoundRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SoundRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Sound(..)
     'Discontinued ver 1 function
     On Error GoTo errorhandler
-    Call debugger("Warning: Version 1 #Sound Command No Longer Supported- Use Media Commands!-- " + Text$)
+    Call debugger("Warning: Version 1 #Sound Command No Longer Supported- Use Media Commands!-- " + text$)
 
     Exit Sub
 'Begin error handling code:
@@ -6837,16 +6837,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub SourceHandleRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub SourceHandleRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #SourceHandle([dest$])
     'get source handle
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 And number <> 0 Then
-        Call debugger("Error: SourceHandle must have one literal variable! " + Text$)
+        Call debugger("Error: SourceHandle must have one literal variable! " + text$)
     End If
     Dim var1 As String, tar As String
     var1$ = GetElement(dataUse$, 1)
@@ -6875,16 +6875,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub SourceLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub SourceLocationRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#SourceLocation(x!,y!)
     'get the coords of source.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: SourceLocation must have two numerical variables! " + Text$)
+        Call debugger("Error: SourceLocation must have two numerical variables! " + text$)
     End If
     Dim var1 As String, var2 As String, tarX As String, tarY As String
     var1$ = GetElement(dataUse$, 1)
@@ -6914,16 +6914,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub SqrtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub SqrtRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #Sqrt(9[, dest!])
     'calc squareroot
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: Sqrt must have 2 data elements!-- " + Text$)
+        Call debugger("Error: Sqrt must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -6931,7 +6931,7 @@ Sub SqrtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_R
     Dim aa As Long
     aa = getValue(useIt$, lit$, num1, theProgram)
     If aa = 1 Then
-        Call debugger("Error: Sqrt must have a numerical element!-- " + Text$)
+        Call debugger("Error: Sqrt must have a numerical element!-- " + text$)
         Exit Sub
     End If
     Dim calcu As Double
@@ -6949,13 +6949,13 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub StanceRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub StanceRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Stance(0-43[,handle$])
     'show player stance, assumed to be
     'default if not specified.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     useIt$ = GetElement(dataUse$, 1)
@@ -6965,7 +6965,7 @@ Sub StanceRPG(Text$, ByRef theProgram As RPGCodeProgram)
     a = getValue(useIt$, lit$, num, theProgram)
     b = getValue(useIt2$, lit2$, num2, theProgram)
     If a = 1 Or b = 0 Then
-        Call debugger("Error: Stance data type must be num, lit!-- " + Text$)
+        Call debugger("Error: Stance data type must be num, lit!-- " + text$)
     Else
         theOne = -1
         For t = 0 To 4
@@ -7040,7 +7040,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub StartRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub StartRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Start("filename")
     'Invokes the Windows9x START command, which runs
     '*any* file.
@@ -7050,16 +7050,16 @@ Sub StartRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'disabled the ability to #start .exe, .com, .pif and .bat .lnk files
     'also disabled starting a file with no extention
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Start has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Start has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Start data type must be literal!-- " + Text$)
+        Call debugger("Error: Start data type must be literal!-- " + text$)
     Else
         Dim ex As String, skipIt As Long, comm As String, dum As Long
         ex$ = GetExt(lit$)
@@ -7072,11 +7072,11 @@ Sub StartRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If skipIt = -1 Then
             If UCase$(ex$) = "EXE" Or UCase$(ex$) = "COM" Or UCase$(ex$) = "BAT" Or UCase$(ex$) = "PIF" Or UCase$(ex$) = "LNK" Then
-                Call debugger("Error: Start cannot run .exe, .com, .bat, .lnk or .pif files!--- " + Text$)
+                Call debugger("Error: Start cannot run .exe, .com, .bat, .lnk or .pif files!--- " + text$)
                 Exit Sub
             End If
             If ex$ = "" Then
-                Call debugger("Error: Start cannot run files with no extention!--- " + Text$)
+                Call debugger("Error: Start cannot run files with no extention!--- " + text$)
                 Exit Sub
             End If
         End If
@@ -7091,12 +7091,12 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub StaticTextRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub StaticTextRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#StaticText(ON/OFF)
     'Turn static text on/off
     'OBSOLETE (Nov 5, 2002)
     On Error Resume Next
-    Call debugger("Warning: StaticText is obsolete!-- " + Text$)
+    Call debugger("Warning: StaticText is obsolete!-- " + text$)
     
     'On Error GoTo errorhandler
     'use$ = text$
@@ -7128,21 +7128,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub TakeGPRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub TakeGPRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#TakeGP(100)
     'take GP
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: TakeGP has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: TakeGP has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: TakeGP data type must be numerical!-- " + Text$)
+        Call debugger("Error: TakeGP data type must be numerical!-- " + text$)
     Else
         GPCount = GPCount - num
     End If
@@ -7154,21 +7154,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub TakeItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub TakeItemRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#TakeItem("filename/handle")
     'Remove item from inventory
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: TakeItem has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: TakeItem has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: TakeItem data type must be literal!-- " + Text$)
+        Call debugger("Error: TakeItem data type must be literal!-- " + text$)
     Else
         Call inv.removeItem(lit)
     End If
@@ -7180,20 +7180,20 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub TanRPG(ByVal Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub TanRPG(ByVal text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error Resume Next
     
     'Re-written by KSNiloc
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
-    Select Case CountData(Text)
+    Select Case CountData(text)
     
         Case 1
             If Not paras(0).dataType = DT_NUM Then
-                debugger "Tan() requires a numerical data element-- " & Text
+                debugger "Tan() requires a numerical data element-- " & text
                 Exit Sub
             End If
             retval.dataType = DT_NUM
@@ -7201,28 +7201,28 @@ Sub TanRPG(ByVal Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
         
         Case 2
             If Not paras(0).dataType = DT_NUM Then
-                debugger "Tan() requires a numerical data element-- " & Text
+                debugger "Tan() requires a numerical data element-- " & text
                 Exit Sub
             End If
             SetVariable paras(1).dat, Tan(radians(paras(0).num)), theProgram
 
         Case Else
-            debugger "Tan() requires one or two data elements-- " & Text
+            debugger "Tan() requires one or two data elements-- " & text
     
     End Select
 
 End Sub
 
-Sub TargetHandleRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub TargetHandleRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #TargetHandle([dest$])
     'get handle of the TARGET handle.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 And number <> 0 Then
-        Call debugger("Error: TargetHandle must have one literal variable! " + Text$)
+        Call debugger("Error: TargetHandle must have one literal variable! " + text$)
     End If
     Dim var1 As String, tar As String
     var1$ = GetElement(dataUse$, 1)
@@ -7251,16 +7251,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub TargetLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub TargetLocationRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#TargetLocation(x!,y!)
     'get the coords of target.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: TargetLocation must have two numerical variables! " + Text$)
+        Call debugger("Error: TargetLocation must have two numerical variables! " + text$)
     End If
     Dim var1 As String, var2 As String, aa As Double, xx As Double, yy As Double, tarX As String, tarY As String
     var1$ = GetElement(dataUse$, 1)
@@ -7305,7 +7305,7 @@ errorhandler:
 End Sub
 
 
-Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub TextRPG(text$, ByRef theProgram As RPGCodeProgram)
 
     ' ! MODIFIED BY KSNiloc...
 
@@ -7313,11 +7313,11 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'puts text at x y
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 And number <> 4 Then
-        Call debugger("Error: Text must have 3 data elements!-- " + Text$)
+        Call debugger("Error: Text must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -7339,7 +7339,7 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
         lit1$ = CStr(num3)
     End If
     If xto = 1 Or yto = 1 Then
-        Call debugger("Error: Text location data type must be numerical!-- " + Text$)
+        Call debugger("Error: Text location data type must be numerical!-- " + text$)
     Else
         textX = num1
         textY = num2 + 1
@@ -7348,7 +7348,7 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim hdc As Long
         hdc = CanvasOpenHDC(cnv)
 
-        Select Case LCase(GetCommandName(Text))
+        Select Case LCase(GetCommandName(text))
             Case "text": putText lit1$, num1, num2, fontColor, fontSize, fontSize, hdc
             Case "pixeltext"
                 putText lit1, (num1 / fontSize) + 1, _
@@ -7381,13 +7381,13 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub TextSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub TextSpeedRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#TextSpeed(speed!)
     'changes text speed, like in the customize menu
     'speed! is 0-3
     'OBSOLETE (Nov 5, 2002)
     On Error Resume Next
-    Call debugger("Warning: TextSpeed is obsolete!-- " + Text$)
+    Call debugger("Warning: TextSpeed is obsolete!-- " + text$)
     
     'On Error GoTo errorhandler
     'use$ = text$
@@ -7412,13 +7412,13 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub TileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub TileTypeRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#TileType(1,2,"type",layer)
     'Set tile type.
     'Layer is assumed to be 1
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     Dim useIt4 As String, num4 As Double, xx As Long, yy As Long, typea As Long, lay As Long, theX As Long, theY As Long, theLay As Long, lie As String
@@ -7433,7 +7433,7 @@ Sub TileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     typea = getValue(useIt3$, lit1$, num3, theProgram)
     lay = getValue(useIt4$, lie$, num4, theProgram)
     If xx = 1 Or yy = 1 Or lay = 1 Or typea = 0 Then
-        Call debugger("Error: TileType data type must be num, num, lit, num!-- " + Text$)
+        Call debugger("Error: TileType data type must be num, num, lit, num!-- " + text$)
     Else
         theX = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
         theY = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
@@ -7475,32 +7475,32 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub UnderArrowRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub UnderArrowRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#UnderArrow("on/off")
     'turn under arrow on or off.
     'OBSOLETE (Nov 5, 2002)
     On Error Resume Next
-    Call debugger("Warning: UnderArrow is obsolete!-- " + Text$)
+    Call debugger("Warning: UnderArrow is obsolete!-- " + text$)
 End Sub
 
-Sub UnderlineRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub UnderlineRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Underline(ON/OFF)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Underline has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Underline has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Underline has no data element!-- " + Text$)
+        Call debugger("Error: Underline has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Underline data type must be literal!-- " + Text$)
+        Call debugger("Error: Underline data type must be literal!-- " + text$)
     Else
     
         ' ! MODIFIED BY KSNiloc...
@@ -7516,7 +7516,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ViewBrd(text$, ByRef theProgram As RPGCodeProgram)
     '#ViewBrd("board.brd", [topx!, topy!])
     'View a board
     'Backup board graphics:
@@ -7524,11 +7524,11 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num2 As Double, num3 As Double
     Dim oldtX As Double, oldtY As Double
     oldtX = topX: oldtY = topY
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If Not (number = 1 Or number = 3) Then
-        Call debugger("Warning: ViewBrd has must have 1 or 3 data elements!-- " + Text$)
+        Call debugger("Warning: ViewBrd has must have 1 or 3 data elements!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If number = 3 Then
@@ -7544,7 +7544,7 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
     b = getValue(useIt2$, lit$, num2, theProgram)
     c = getValue(useIt3$, lit$, num3, theProgram)
     If a = 0 Or b = 1 Or c = 1 Then
-        Call debugger("Error: ViewBrd data type must be literal, num, num!-- " + Text$)
+        Call debugger("Error: ViewBrd data type must be literal, num, num!-- " + text$)
     Else
         brd$ = addExt(lit$, ".brd")
         Dim boardTemp As TKBoard
@@ -7572,7 +7572,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub WaitRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub WaitRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#Wait (var$)
     'Puts key press in var$
     On Error GoTo errorhandler
@@ -7581,7 +7581,7 @@ Sub WaitRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_R
     Dim keyP As String
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number = 1 Then
@@ -7603,7 +7603,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CreateCursorMapRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CreateCursorMapRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     'dest! = #CreateCursorMap([dest!])
     'create a new cursor map, and return it's index
     On Error Resume Next
@@ -7612,7 +7612,7 @@ Sub CreateCursorMapRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval A
     Dim keyP As String
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
@@ -7631,7 +7631,7 @@ Sub CreateCursorMapRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval A
 End Sub
 
 
-Sub KillCursorMapRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub KillCursorMapRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#KillCursorMap(idx!)
     'destroy the cursor map at index idx
     On Error Resume Next
@@ -7640,25 +7640,25 @@ Sub KillCursorMapRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As 
     Dim keyP As String
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
     Dim idx As Long
     If number <> 1 Then
-        Call debugger("Error: KillCursorMap must have 1 data element!-- " + Text$)
+        Call debugger("Error: KillCursorMap must have 1 data element!-- " + text$)
     Else
         useIt1$ = GetElement(dataUse$, 1)
         a = getValue(useIt1$, lit1$, num1, theProgram)
         If a <> DT_NUM Then
-            Call debugger("Error: KillCursorMap data type must be numerical!-- " + Text$)
+            Call debugger("Error: KillCursorMap data type must be numerical!-- " + text$)
         Else
             Call DeleteCursorMapTable(num1)
         End If
     End If
 End Sub
 
-Sub CursorMapAddRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CursorMapAddRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#CursorMapAdd(x!, y!, mapidx!)
     'add a hotspot to the cursor map mapidx! at coord x!, y! (pixels)
     On Error Resume Next
@@ -7667,13 +7667,13 @@ Sub CursorMapAddRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     Dim keyP As String
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
     Dim idx As Long
     If number <> 3 Then
-        Call debugger("Error: CursorMapAdd must have 3 data elements!-- " + Text$)
+        Call debugger("Error: CursorMapAdd must have 3 data elements!-- " + text$)
     Else
         useIt1$ = GetElement(dataUse$, 1)
         useIt2$ = GetElement(dataUse$, 2)
@@ -7683,7 +7683,7 @@ Sub CursorMapAddRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
         b = getValue(useIt2$, lit2$, num2, theProgram)
         c = getValue(useIt3$, lit3$, num3, theProgram)
         If a <> DT_NUM Or b <> DT_NUM Or c <> DT_NUM Then
-            Call debugger("Error: CursorMapAdd data type must be num, num num!-- " + Text$)
+            Call debugger("Error: CursorMapAdd data type must be num, num num!-- " + text$)
         Else
             Dim cm As CURSOR_MAP
             cm.x = num1
@@ -7698,7 +7698,7 @@ Sub CursorMapAddRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
 End Sub
 
 
-Sub CreateCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CreateCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#cnvId! = CreateCanvas(sizex!, sizey!, [cnvId!])
     'create an offscreen canvas
     On Error Resume Next
@@ -7707,13 +7707,13 @@ Sub CreateCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     Dim dataUse As String
     Dim number As Long
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
     Dim idx As Long
     If number <> 2 And number <> 3 Then
-        Call debugger("Error: CreateCanvas must have 2 or 3 data elements!-- " + Text$)
+        Call debugger("Error: CreateCanvas must have 2 or 3 data elements!-- " + text$)
     Else
         Dim useIt1 As String, useIt2 As String, useIt3 As String
         useIt1 = GetElement(dataUse$, 1)
@@ -7728,7 +7728,7 @@ Sub CreateCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
         b = getValue(useIt2$, lit2$, num2, theProgram)
         
         If a <> DT_NUM Or b <> DT_NUM Then
-            Call debugger("Error: CreateCanvas data type must be num, num!-- " + Text$)
+            Call debugger("Error: CreateCanvas data type must be num, num!-- " + text$)
         Else
             Dim cnv As Long
             cnv = CreateCanvas(num1, num2)
@@ -7745,7 +7745,7 @@ Sub CreateCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
 End Sub
 
 
-Sub DrawCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub DrawCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#DrawCanvas(cnvId!, x!, y!, [sizex!, sizey!, [destcnvId!]])
     'draw a canvas to the screen
     'optionally resize it
@@ -7755,13 +7755,13 @@ Sub DrawCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPG
     Dim dataUse As String
     Dim number As Long
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
     Dim idx As Long
     If number <> 3 And number <> 5 And number <> 6 Then
-        Call debugger("Error: DrawCanvas must have 3 or 5 or 6 data elements!-- " + Text$)
+        Call debugger("Error: DrawCanvas must have 3 or 5 or 6 data elements!-- " + text$)
     Else
         Dim useIt1 As String, useIt2 As String, useIt3 As String, useIt4 As String, useIt5 As String, useIt6 As String
         useIt1 = GetElement(dataUse$, 1)
@@ -7815,7 +7815,7 @@ End Sub
 
 
 
-Sub KillCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub KillCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#KillCanvas(cnvId!)
     'kill an offscreen canvas
     On Error Resume Next
@@ -7824,13 +7824,13 @@ Sub KillCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPG
     Dim dataUse As String
     Dim number As Long
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
     Dim idx As Long
     If number <> 1 Then
-        Call debugger("Error: KillCanvas must have 1 data element!-- " + Text$)
+        Call debugger("Error: KillCanvas must have 1 data element!-- " + text$)
     Else
         Dim useIt1 As String
         useIt1 = GetElement(dataUse$, 1)
@@ -7842,7 +7842,7 @@ Sub KillCanvasRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPG
         a = getValue(useIt1$, lit1$, num1, theProgram)
         
         If a <> DT_NUM Then
-            Call debugger("Error: KillCanvas data type must be num!-- " + Text$)
+            Call debugger("Error: KillCanvas data type must be num!-- " + text$)
         Else
             Call DestroyCanvas(num1)
 
@@ -7854,7 +7854,7 @@ End Sub
 
 
 
-Sub CursorMapRunRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CursorMapRunRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#selected! = #CursorMapRun(mapidx!, [selected!])
     'run the cursor map at mapidx!
     'return the index of the selection
@@ -7864,19 +7864,19 @@ Sub CursorMapRunRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     Dim keyP As String
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     
     Dim idx As Long
     If number <> 1 And number <> 2 Then
-        Call debugger("Error: CursorMapRun must have 1 or 2 data elements!-- " + Text$)
+        Call debugger("Error: CursorMapRun must have 1 or 2 data elements!-- " + text$)
     Else
         useIt1$ = GetElement(dataUse$, 1)
         useIt2$ = GetElement(dataUse$, 2)
         a = getValue(useIt1$, lit1$, num1, theProgram)
         If a <> DT_NUM Then
-            Call debugger("Error: CursorMapAdd data type must be numerical!-- " + Text$)
+            Call debugger("Error: CursorMapAdd data type must be numerical!-- " + text$)
         Else
             Dim res As Long
             res = CursorMapRun(cursorMapTables(num1))
@@ -7891,12 +7891,12 @@ End Sub
 
 
 
-Sub WalkSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub WalkSpeedRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#WalkSpeed("fast/slow")
     'change chr walk speed.
     'OBSOLETE (Nov 5, 2002)
     On Error Resume Next
-    Call debugger("Warning: WalkSpeed is obsolete!-- " + Text$)
+    Call debugger("Warning: WalkSpeed is obsolete!-- " + text$)
     
     'On Error GoTo errorhandler
     'use$ = text$
@@ -7928,7 +7928,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Sub WanderRPG(ByRef text As String, ByRef theProgram As RPGCodeProgram)
     '==================================================================
     '#Wander(itemNum! [, restrict!])
     'Causes the item to take a step in a random (restricted) direction.
@@ -7940,11 +7940,11 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     Dim count As Long, itemNum As Long, paras() As parameters
     Dim low As Long, high As Long, direction As Long, restrict As Long
     
-    count = CountData(Text)
-    paras = GetParameters(Text, theProgram)
+    count = CountData(text)
+    paras = GetParameters(text, theProgram)
     
     If count <> 1 And count <> 2 Then
-        Call debugger("Error: Wander() requires have 1 or 2 data elements!-- " & Text)
+        Call debugger("Error: Wander() requires have 1 or 2 data elements!-- " & text)
     End If
     
     If paras(0).dataType = DT_LIT Then
@@ -7952,13 +7952,13 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
             Case "TARGET": If targetType = 1 Then itemNum = target
             Case "SOURCE": If sourceType = 1 Then itemNum = Source
             Case Else
-                Call debugger("Error: Wander data type must be num! [, num!]-- " + Text$)
+                Call debugger("Error: Wander data type must be num! [, num!]-- " + text$)
                 Exit Sub
         End Select
     End If
     If count = 2 Then
         If paras(1).dataType <> DT_NUM Then
-            Call debugger("Error: Wander data type must be num! [, num!]-- " + Text$)
+            Call debugger("Error: Wander data type must be num! [, num!]-- " + text$)
             Exit Sub
         Else
             restrict = paras(1).num
@@ -8020,21 +8020,21 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub WavRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub WavRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Wav ("filename.wav/mp3")
     'Play wav or mp3 file
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Wav has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Wav has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Wav data type must be literal!-- " + Text$)
+        Call debugger("Error: Wav data type must be literal!-- " + text$)
     Else
         Dim ext As String
         ext$ = GetExt(lit$)
@@ -8050,7 +8050,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub WavStopRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub WavStopRPG(text$, ByRef theProgram As RPGCodeProgram)
     'WavStop()
     'Stop wav
     On Error GoTo errorhandler
@@ -8064,7 +8064,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
+Function WhileRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram) As Long
 'While(condition)
 '{
 '   ...
@@ -8077,7 +8077,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
      ' ! MODIFIED BY KSNiloc...
     
     Dim use As String
-    use$ = Text$
+    use$ = text$
     Dim dataUseWhile As String
     dataUseWhile$ = GetBrackets(theProgram.program(theProgram.programPos))
     'Now evaluate condition:
@@ -8093,7 +8093,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
     res = evaluate(dataUseWhile$, theProgram)
     
     Dim isUntil As Boolean
-    isUntil = (LCase(GetCommandName(Text)) = "until")
+    isUntil = (LCase(GetCommandName(text)) = "until")
     
     Dim okToRun As Boolean
     If isUntil Then
@@ -8155,30 +8155,30 @@ errorhandler:
     Resume Next
 End Function
 
-Sub BitmapRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub BitmapRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Bitmap("file.bmp", [cnvId!])
     'Show bmp
     On Error GoTo errorhandler
 
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 And number <> 2 Then
-        Call debugger("Error: Bitmap must have 1 or 2 data elements!-- " + Text$)
+        Call debugger("Error: Bitmap must have 1 or 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
     If useIt1$ = "" Then
-        Call debugger("Error: Bitmap has no data element!-- " + Text$)
+        Call debugger("Error: Bitmap has no data element!-- " + text$)
         Exit Sub
     End If
     Dim b As Long
     a = getValue(useIt1$, lit1$, num1, theProgram)
     b = getValue(useIt2$, lit2$, num2, theProgram)
     If a = DT_NUM Then
-        Call debugger("Error: Bitmap data type must be literal!-- " + Text$)
+        Call debugger("Error: Bitmap data type must be literal!-- " + text$)
     Else
         lit1$ = addExt(lit1$, ".bmp")
         lit1$ = projectPath$ & bmpPath$ & lit1$
@@ -8204,25 +8204,25 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub BoldRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub BoldRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Bold(ON/OFF)
     'Turn bold on/off
     On Error GoTo errorhandler
     Dim use As String, a As Long, lit As String, dataUse As String, number As Long, num As Double, useIt As String
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Bold has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Bold has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Bold has no data element!-- " + Text$)
+        Call debugger("Error: Bold has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Bold data type must be literal!-- " + Text$)
+        Call debugger("Error: Bold data type must be literal!-- " + text$)
     Else
         
         ' ! MODIFIED BY KSNiloc...
@@ -8240,25 +8240,25 @@ End Sub
 
 
 
-Sub BorderColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub BorderColorRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#BorderColor(rr!,gg!,bb!)
     'set border color.
     'OBSOLETE (Nov 5, 2002)
     On Error Resume Next
-    Call debugger("Warning: BorderColor is obsolete!-- " + Text$)
+    Call debugger("Warning: BorderColor is obsolete!-- " + text$)
 End Sub
 
-Sub Branch(Text$, ByRef theProgram As RPGCodeProgram)
+Sub Branch(text$, ByRef theProgram As RPGCodeProgram)
     '#Branch (:label name)
     'Branches to :label name
     'label can also be a string var
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Branch has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Branch has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     
@@ -8267,7 +8267,7 @@ Sub Branch(Text$, ByRef theProgram As RPGCodeProgram)
     useIt = lit
     
     If useIt$ = "" Then
-        Call debugger("Error: Branch has no label element!-- " + Text$)
+        Call debugger("Error: Branch has no label element!-- " + text$)
         Exit Sub
     End If
     
@@ -8282,7 +8282,7 @@ Sub Branch(Text$, ByRef theProgram As RPGCodeProgram)
         End If
     Next t
     If foundIt = -1 Then
-        Call debugger("Error: Branch label not found!-- " + Text$)
+        Call debugger("Error: Branch label not found!-- " + text$)
     Else
         theProgram.programPos = foundIt
     End If
@@ -8294,7 +8294,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub CallShopRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
 
     'CallShop(item$, item$, item$, ...)
     'Call a shop
@@ -8307,8 +8307,8 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Dim error As Boolean                'error occured?
 
     'Make sure we have at least one element
-    If (CountData(Text) = 0) Then
-        Call debugger("CallShop() requires at least one data element-- " & Text)
+    If (CountData(text) = 0) Then
+        Call debugger("CallShop() requires at least one data element-- " & text)
         Exit Sub
     End If
 
@@ -8316,7 +8316,7 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     forSale.appendItmExtension = False
 
     'Grab the items passed in
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
 
     'Loop over each item
     For itmNum = 0 To UBound(paras)
@@ -8339,7 +8339,7 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
     If error Then
         'Errors occured
-        Call debugger("CallShop() did not execute correctly-- " & Text)
+        Call debugger("CallShop() did not execute correctly-- " & text)
         Call Unload(forSale)
         Set forSale = Nothing
         Exit Sub
@@ -8366,16 +8366,16 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub CastIntRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CastIntRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #CastInt(source![,dest!])
     'Changes floating point to int.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: CastInt must have 2 data elements!-- " + Text$)
+        Call debugger("Error: CastInt must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -8383,7 +8383,7 @@ Sub CastIntRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
     Dim cst As Long
     cst = getValue(useIt1$, lit$, num1, theProgram)
     If cst = 1 Then
-        Call debugger("Error: CastInt data type must be numerical!-- " + Text$)
+        Call debugger("Error: CastInt data type must be numerical!-- " + text$)
     Else
         Dim value As Long
         value = Int(num1)
@@ -8401,16 +8401,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CastLitRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CastLitRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #CastLit(source![,dest$])
     'Casts a num to a string
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: CastLit must have 2 data elements!-- " + Text$)
+        Call debugger("Error: CastLit must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -8418,7 +8418,7 @@ Sub CastLitRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
     Dim cst As Long, value As String
     cst = getValue(useIt1$, lit$, num1, theProgram)
     If cst = 1 Then
-        Call debugger("Error: CastLit data type must be numerical!-- " + Text$)
+        Call debugger("Error: CastLit data type must be numerical!-- " + text$)
     Else
         value$ = CStr(num1)
         ' ! MODIFIED BY KSNiloc
@@ -8436,16 +8436,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CastNumRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CastNumRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a! = #CastNum(source$![,dest!])
     'Casts a string to a num
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 And number <> 1 Then
-        Call debugger("Error: CastNum must have 2 data elements!-- " + Text$)
+        Call debugger("Error: CastNum must have 2 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -8470,25 +8470,25 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub Change(Text$, ByRef theProgram As RPGCodeProgram)
+Sub Change(text$, ByRef theProgram As RPGCodeProgram)
     '#Change ("program.prg")
     'Changes program filename
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     num = CountData(dataUse$)        'how many data elements are there?
     If num <> 1 Then
-        Call debugger("Warning: Change has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Change has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Change has no data element!-- " + Text$)
+        Call debugger("Error: Change has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Change data type must be literal!-- " + Text$)
+        Call debugger("Error: Change data type must be literal!-- " + text$)
     Else
         lit$ = addExt(lit$, ".prg")
         If theProgram.boardNum >= 0 Then
@@ -8503,16 +8503,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CharAtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CharAtRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #CharAt("text",loc![,dest$])
     'gets character at location loc!
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 And number <> 2 Then
-        Call debugger("Error: CharAt must have 3 data elements!-- " + Text$)
+        Call debugger("Error: CharAt must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -8522,7 +8522,7 @@ Sub CharAtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     redc = getValue(useIt1$, lit1$, num1, theProgram)
     greenc = getValue(useIt2$, lit2$, num2, theProgram)
     If redc = 0 Or greenc = 1 Then
-        Call debugger("Error: CharAt data type must be lit, num, lit!-- " + Text$)
+        Call debugger("Error: CharAt data type must be lit, num, lit!-- " + text$)
     Else
         Dim Length As Long, cH As String
         Length = Len(lit1$)
@@ -8542,7 +8542,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub clearBufferRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub clearBufferRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#ClearBuffer()
     'clears keyboard buffer.
     On Error GoTo errorhandler
@@ -8555,32 +8555,32 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ClearRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Public Sub ClearRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
 
-    '#Clear()
-    'Clears the screen to black
-    On Error GoTo errorhandler
+    ' Clear([canvas! = cnvRPGCodeScreen])
+    ' Clears a canvas to black
 
-    Call CanvasFill(cnvRPGCodeScreen, 0)
-    Call renderRPGCodeScreen
+    If (GetBrackets(text) = "") Then
+        Call CanvasFill(cnvRPGCodeScreen, 0)
+        Call renderRPGCodeScreen
+    Else
+        Dim paras() As parameters
+        paras() = GetParameters(text, prg)
+        Call CanvasFill(paras(0).num, 0)
+    End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
-Sub ColorRGB(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ColorRGB(ByVal text$, ByRef theProgram As RPGCodeProgram)
     '#ColorRGB (red!, green!, blue!)
     'Changes Font color. (RGB color code)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 Then
-        Call debugger("Error: ColorRGB must have 3 data elements!-- " + Text$)
+        Call debugger("Error: ColorRGB must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -8591,7 +8591,7 @@ Sub ColorRGB(Text$, ByRef theProgram As RPGCodeProgram)
     greenc = getValue(useIt2$, lit$, num2, theProgram)
     bluec = getValue(useIt3$, lit$, num3, theProgram)
     If redc = 1 Or greenc = 1 Or bluec = 1 Then
-        Call debugger("Error: Color data type must be numerical!-- " + Text$)
+        Call debugger("Error: Color data type must be numerical!-- " + text$)
     Else
         num1 = inBounds(num1, 0, 255)
         num2 = inBounds(num2, 0, 255)
@@ -8606,21 +8606,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ColorRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Color (color_code!)
     'Changes Font color (dos)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Color has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Color has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: Color data type must be numerical!-- " + Text$)
+        Call debugger("Error: Color data type must be numerical!-- " + text$)
     Else
         num = inBounds(num, 0, 255)
         fontColor = GFXGetDOSColor(num)
@@ -8633,21 +8633,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub KillThreadRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub KillThreadRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#KillThread(threadID!)
     'kill a thread that is running
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: KillThread has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: KillThread has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: KillThread data type must be numerical!-- " + Text$)
+        Call debugger("Error: KillThread data type must be numerical!-- " + text$)
     Else
         Call KillThread(num)
     End If
@@ -8659,7 +8659,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ThreadSleepRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Sub ThreadSleepRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
     '#ThreadSleep(threadID!, duration!)
     'put a thread to sleep for duration! seconds.
     On Error GoTo errorhandler
@@ -8670,18 +8670,18 @@ Sub ThreadSleepRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Dim lit1 As String, lit2 As String
     Dim num1 As Double, num2 As Double
     
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Warning: ThreadSleep must have 2 data elements!-- " + Text$)
+        Call debugger("Warning: ThreadSleep must have 2 data elements!-- " + text$)
     End If
     useIt1 = GetElement(dataUse$, 1)
     useIt2 = GetElement(dataUse$, 2)
     a = getValue(useIt1, lit1, num1, theProgram)
     b = getValue(useIt2, lit2, num2, theProgram)
     If a = 1 Or b = 1 Then
-        Call debugger("Error: KillThread data type must be num, num!-- " + Text$)
+        Call debugger("Error: KillThread data type must be num, num!-- " + text$)
     Else
         Call ThreadSleep(num1, num2)
     End If
@@ -8693,25 +8693,25 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub DebugRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub DebugRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Debug(ON/OFF)
     'Turn debugger on/off
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Debug has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Debug has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
-        Call debugger("Error: Debug has no data element!-- " + Text$)
+        Call debugger("Error: Debug has no data element!-- " + text$)
         Exit Sub
     End If
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: Debug data type must be literal!-- " + Text$)
+        Call debugger("Error: Debug data type must be literal!-- " + text$)
     Else
         If UCase$(lit$) = "ON" Then
             debugYN = 1
@@ -8727,21 +8727,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub DelayRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub DelayRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Delay(1.4)
     'Delay for a number of seconds.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Delay has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Delay has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: Delay data type must be numerical!-- " + Text$)
+        Call debugger("Error: Delay data type must be numerical!-- " + text$)
     Else
         Dim delayLength As Double, t1 As Long, c As Double, t2 As Long
         delayLength = num
@@ -8758,14 +8758,14 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub DirSavRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub DirSavRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#a$ = #DirSav([dest$])
     'get dir of saved games, put
     'selected file in dest$
     'puts CANCEL in dest if cancelled.
     On Error Resume Next
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     useIt$ = GetElement(dataUse$, 1)
@@ -8785,7 +8785,7 @@ Sub DirSavRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     retval.lit = file$
 End Sub
 
-Sub done(Text$, ByRef theProgram As RPGCodeProgram)
+Sub done(text$, ByRef theProgram As RPGCodeProgram)
     '#Done()
     'Ends program without redrawing screen.
     'Do nothing
@@ -8799,7 +8799,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub Dos(ByVal Text$, ByRef theProgram As RPGCodeProgram)
+Sub Dos(ByVal text$, ByRef theProgram As RPGCodeProgram)
     '#Dos()
     'Return to OS (Windows)
     On Error GoTo errorhandler
@@ -8814,22 +8814,22 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub drainAllRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub drainAllRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#DrainAll(100)
     'attacks all enemy or players (drains SMP)
     'uses whatever is targeted.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: DrainAll has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: DrainAll has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: DrainAll data type must be numerical!-- " + Text$)
+        Call debugger("Error: DrainAll data type must be numerical!-- " + text$)
     Else
         If targetType = 0 Then
             'players targeted.
@@ -8856,23 +8856,23 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub DrawLineRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub DrawLineRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#drawLine(x1,y1,x2,y2, [cnvId!])
     'draws a line
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 4 And number <> 5 Then
-        Call debugger("Error: DrawLine must have 4 or 5 data elements!-- " + Text$)
+        Call debugger("Error: DrawLine must have 4 or 5 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, x1 As Double, y1 As Double, x2 As Double, y2 As Double, xx1 As Long, yy1 As Long, xx2 As Long, yy2 As Long
     Dim useIt5 As String
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     x1 = paras(0).num
     y1 = paras(1).num
     x2 = paras(2).num
@@ -8905,16 +8905,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub DrawRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub DrawRectRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#drawRect(x1,y1,x2,y2, [cnvId!])
     'draw rect
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 4 And number <> 5 Then
-        Call debugger("Error: DrawRect must have 4 or 5 data elements!-- " + Text$)
+        Call debugger("Error: DrawRect must have 4 or 5 data elements!-- " + text$)
         Exit Sub
     End If
     Dim useIt4 As String, x1 As Double, y1 As Double, x2 As Double, y2 As Double, xx1 As Long, yy1 As Long, xx2 As Long, yy2 As Long
@@ -8955,7 +8955,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub EmptyRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub EmptyRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Empty()
     'clears all variables
     On Error GoTo errorhandler
@@ -8968,7 +8968,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub EndRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub EndRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#End()
     'End prg or function block.
     'Do nothing.
@@ -8982,17 +8982,17 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub EquipRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Equip("handle",bodylocation!,"item name")
     'Equips something from the items into a body
     'location.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 Then
-        Call debugger("Error: Equip must have 3 data elements!-- " + Text$)
+        Call debugger("Error: Equip must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -9003,7 +9003,7 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
     bloc = getValue(useIt2$, lit2$, num2, theProgram)
     iname = getValue(useIt3$, lit3$, num1, theProgram)
     If hand = 0 Or bloc = 1 Or iname = 0 Then
-        Call debugger("Error: Equip data type must be lit, num, lit!-- " + Text$)
+        Call debugger("Error: Equip data type must be lit, num, lit!-- " + text$)
     Else
         theOne = -1
         lit1$ = FindPlayerHandle(lit1$)
@@ -9036,17 +9036,17 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
             End If
         Next t
         If theItem = -1 Then
-            Call debugger("Error: Player is not carrying specified item!-- " & Text$)
+            Call debugger("Error: Player is not carrying specified item!-- " & text$)
             Exit Sub
         End If
         
         If Not (canItemEquip(projectPath$ & itmPath$ & inv.fileNames(theItem))) Then
-            Call debugger("Error: Specified Item is Not Equipable!-- " & Text$)
+            Call debugger("Error: Specified Item is Not Equipable!-- " & text$)
             Exit Sub
         End If
 
         If Not (CanPlayerUse(theOne, openItem(projectPath$ & itmPath$ & inv.fileNames(theItem)))) Then
-            Call debugger("Error: Player cannot use specified item!-- " & Text$)
+            Call debugger("Error: Player cannot use specified item!-- " & text$)
             Exit Sub
         End If
         
@@ -9064,16 +9064,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ErasePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ErasePlayerRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#ErasePlayer("handle")
     'Erase player from board.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Erase has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Erase has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     Dim aa As Long, theOne As Long, t As Long
@@ -9108,7 +9108,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
+Sub Fade(text$, ByRef theProgram As RPGCodeProgram)
     '#Fade(fadetype)
     'Fadesout with specified type
     '0 is 1.4 fadeout and is default
@@ -9119,11 +9119,11 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
     '5 fade to black
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Fade has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Fade has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     If useIt$ = "" Then
@@ -9134,7 +9134,7 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
     Dim stepSize As Long
     
     If a = 1 Then
-        Call debugger("Error: Fade data type must be numerical!-- " + Text$)
+        Call debugger("Error: Fade data type must be numerical!-- " + text$)
     Else
         Dim xx1 As Double, xx2 As Double, yy1 As Double, yy2 As Double, size As Long
         Select Case num
@@ -9256,7 +9256,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Function Fbranch(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
+Public Function Fbranch(ByVal text As String, ByRef theProgram As RPGCodeProgram) As Long
 
     '#FBranch (:label name)
     'Function branch to specified location and execute group of commands.
@@ -9266,8 +9266,8 @@ Public Function Fbranch(ByVal Text As String, ByRef theProgram As RPGCodeProgram
     '=========================================================================
 
     On Error Resume Next
-    Call debugger("FBranch() has deprecated into Branch()-- " & Text)
-    Call Branch(Text, theProgram)
+    Call debugger("FBranch() has deprecated into Branch()-- " & text)
+    Call Branch(text, theProgram)
     Fbranch = theProgram.programPos
     
     'NOTE:  I understand the difference between Branch() and FBranch().
@@ -9276,18 +9276,18 @@ Public Function Fbranch(ByVal Text As String, ByRef theProgram As RPGCodeProgram
     
 End Function
 
-Sub FightEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub FightEnemyRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#FightEnemy("enemy.ene","background.bkg")
     'fight enemy against background.
     On Error GoTo errorhandler
     ReDim en$(4)
     ReDim dat$(5)
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number < 2 Or number > 5 Then
-        Call debugger("Error: FightEnemy must have two to five data elements!-- " + Text$)
+        Call debugger("Error: FightEnemy must have two to five data elements!-- " + text$)
         Exit Sub
     End If
     Dim t As Long, b As Long, bk As String
@@ -9299,7 +9299,7 @@ Sub FightEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Next t
     b = getValue(dat$(number), bk$, num2, theProgram)
     If a = 0 Or b = 0 Then
-        Call debugger("Error: FightEnemy data must be lit, lit!-- " + Text$)
+        Call debugger("Error: FightEnemy data must be lit, lit!-- " + text$)
         Exit Sub
     End If
     For t = 0 To 3
@@ -9319,16 +9319,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub FightRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub FightRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Fight(skill!, bkg$)
     'fight some enemies of skill skill!
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 2 Then
-        Call debugger("Error: Fight must have two data elements!-- " + Text$)
+        Call debugger("Error: Fight must have two data elements!-- " + text$)
         Exit Sub
     End If
     useIt$ = GetElement(dataUse$, 1)
@@ -9337,7 +9337,7 @@ Sub FightRPG(Text$, ByRef theProgram As RPGCodeProgram)
     a = getValue(useIt$, lit$, num, theProgram)
     b = getValue(useIt2$, lit2$, num2, theProgram)
     If a = 1 Or b = 0 Then
-        Call debugger("Error: Fight data must be num, lit!-- " + Text$)
+        Call debugger("Error: Fight data must be num, lit!-- " + text$)
         Exit Sub
     End If
     lit2$ = addExt(lit2$, ".bkg")
@@ -9353,16 +9353,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub WinColorRGB(Text$, ByRef theProgram As RPGCodeProgram)
+Sub WinColorRGB(text$, ByRef theProgram As RPGCodeProgram)
     '#WinColorRGB (red!, green!, blue!)
     'Changes Message Window background color. (RGB color code)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 3 Then
-        Call debugger("Error: WinColorRGB must have 3 data elements!-- " + Text$)
+        Call debugger("Error: WinColorRGB must have 3 data elements!-- " + text$)
         Exit Sub
     End If
     useIt1$ = GetElement(dataUse$, 1)
@@ -9373,7 +9373,7 @@ Sub WinColorRGB(Text$, ByRef theProgram As RPGCodeProgram)
     greenc = getValue(useIt2$, lit$, num2, theProgram)
     bluec = getValue(useIt3$, lit$, num3, theProgram)
     If redc = 1 Or greenc = 1 Or bluec = 1 Then
-        Call debugger("Error: WinColor data type must be numerical!-- " + Text$)
+        Call debugger("Error: WinColor data type must be numerical!-- " + text$)
     Else
         MWinPic$ = ""
         num1 = inBounds(num1, 0, 255)
@@ -9389,21 +9389,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub WinColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub WinColorRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#WinColor (color_code!)
     'Changes Message Window background color. (Dos color code)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: WinColor has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: WinColor has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: WinColor data type must be numerical!-- " + Text$)
+        Call debugger("Error: WinColor data type must be numerical!-- " + text$)
     Else
         MWinPic$ = ""
         num = inBounds(num, 0, 255)
@@ -9417,22 +9417,22 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub WinGraphic(Text$, ByRef theProgram As RPGCodeProgram)
+Sub WinGraphic(text$, ByRef theProgram As RPGCodeProgram)
     '#WinGraphic ("graphic.bmp")
     'Changes Message Window background graphic.
     'The data "NONE" removes the graphic and sets the color to black
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: WinGraphic has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: WinGraphic has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 0 Then
-        Call debugger("Error: WinGraphic data type must be literal!-- " + Text$)
+        Call debugger("Error: WinGraphic data type must be literal!-- " + text$)
     Else
         MWinPic$ = lit$
         MWinBkg = -1
@@ -9445,17 +9445,17 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub WinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub WinRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
 
     '=========================================================================
     'Obsolete
     '=========================================================================
 
-    Call debugger("Win() is obsolete-- " & Text)
+    Call debugger("Win() is obsolete-- " & text)
 
 End Sub
 
-Public Function addExt(ByVal Text As String, ByVal ext As String) As String
+Public Function addExt(ByVal text As String, ByVal ext As String) As String
 
     '=========================================================================
     'Adds the extension passed in a filename if it does not contain one
@@ -9463,14 +9463,14 @@ Public Function addExt(ByVal Text As String, ByVal ext As String) As String
 
     On Error Resume Next
     
-    If GetExt(Text) = "" Then
-        Text = Text & ext
+    If GetExt(text) = "" Then
+        text = text & ext
     End If
-    addExt = Text
+    addExt = text
 
 End Function
 
-Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub AddToMsgBox(ByVal text As String, ByRef theProgram As RPGCodeProgram)
 
     'Adds selected text to message window at line lineNum
     'Should resize mwin.
@@ -9518,20 +9518,20 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Dim leng As Long
     Dim tot As Long
     
-    leng = Len(Text$)
+    leng = Len(text$)
     leng = leng * fontSize
     If leng / 2 > xHeight Then
         tot = Int((xHeight) / fontSize)
         If tot <> 0 Then
-            oth$ = Mid$(Text$, tot + 1, Len(Text$) - tot)
-            Text$ = Mid$(Text$, 1, tot)
+            oth$ = Mid$(text$, tot + 1, Len(text$) - tot)
+            text$ = Mid$(text$, 1, tot)
         End If
     End If
     
     Dim hdc As Long
     hdc = CanvasOpenHDC(cnvMsgBox)
     
-    Call putText(Text$, _
+    Call putText(text$, _
                     1, _
                     lineNum, _
                     fontColor, _
@@ -9577,22 +9577,22 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     End If
 End Sub
 
-Sub attackAllRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub attackAllRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#AttackAll(100)
     'attacks all enemy or players.
     'uses whatever is targeted.
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: AttackAll has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: AttackAll has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: AttackAll data type must be numerical!-- " + Text$)
+        Call debugger("Error: AttackAll data type must be numerical!-- " + text$)
     Else
         If targetType = 0 Then
             'players targeted.
@@ -9621,7 +9621,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub WipeRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Wipe("gfx.bmp", type!, [speed!])
     'wipe to a graphic.
     'if the filename is "", then the #savescreen canvas is used
@@ -9641,13 +9641,13 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'speed! is the speed (defaults to 1-- higher == faster)
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     useIt1$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
     If number < 2 Then
-        Call debugger("Error: Wipe requires 2-3 data elements!-- " + Text$)
+        Call debugger("Error: Wipe requires 2-3 data elements!-- " + text$)
         Exit Sub
     End If
 
@@ -9662,7 +9662,7 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         zz = 0
     End If
     If xx = 0 Or yy = 1 Or zz = 1 Then
-        Call debugger("Error: Wipe data type must be lit, num!, num!-- " + Text$)
+        Call debugger("Error: Wipe data type must be lit, num!, num!-- " + text$)
     Else
         'load the image...
         If file$ <> "" Then
@@ -9852,21 +9852,21 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub zoomInRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#ZoomIn(percent!)
     'zooms in the screen by specified percent
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: ZoomIn has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: ZoomIn has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: ZoomIn data type must be numerical!-- " + Text$)
+        Call debugger("Error: ZoomIn data type must be numerical!-- " + text$)
     Else
         'copy current view to cache...
         Dim zoomPerc As Double, tt As Long, newWidth As Long, newHeight As Long
@@ -9910,21 +9910,21 @@ errorhandler:
 End Sub
 
 
-Sub earthquakeRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub earthquakeRPG(text$, ByRef theProgram As RPGCodeProgram)
     '#Earthquake(intensity!)
     'causes earthquake
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
+    use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
     If number <> 1 Then
-        Call debugger("Warning: Earthquake has more than 1 data element!-- " + Text$)
+        Call debugger("Warning: Earthquake has more than 1 data element!-- " + text$)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
     If a = 1 Then
-        Call debugger("Error: Earthquake data type must be numerical!-- " + Text$)
+        Call debugger("Error: Earthquake data type must be numerical!-- " + text$)
     Else
         'copy current view to cache...
         'allPurposeCanvas = CreateCanvas(tilesX * 32, tilesY * 32)
@@ -9985,47 +9985,47 @@ End Sub
 
 'File manipulation
 
-Sub OpenFileInputRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub OpenFileInputRPG(text$, ByRef theProgram As RPGCodeProgram)
 
  '#OpenFileInput(filename$,folder$)
  'Opens a file in input mode.
 
  Dim file As Integer
- file = DoOpenFile(Text$, theProgram)
+ file = DoOpenFile(text$, theProgram)
  If Not file = 0 Then Open openFullFile(file) For Input As #file
 End Sub
 
-Sub OpenFileOutputRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub OpenFileOutputRPG(text$, ByRef theProgram As RPGCodeProgram)
 
  '#OpenFileOutput(filename$,folder$)
  'Opens a file in output mode.
 
  Dim file As Integer
- file = DoOpenFile(Text$, theProgram)
+ file = DoOpenFile(text$, theProgram)
  If Not file = 0 Then Open openFullFile(file) For Output As #file
 End Sub
 
-Sub OpenFileAppendRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub OpenFileAppendRPG(text$, ByRef theProgram As RPGCodeProgram)
 
  '#OpenFileAppend(filename$,folder$)
  'Opens a file in append mode.
 
  Dim file As Integer
- file = DoOpenFile(Text$, theProgram)
+ file = DoOpenFile(text$, theProgram)
  If Not file = 0 Then Open openFullFile(file) For Append As #file
 End Sub
 
-Sub OpenFileBinaryRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub OpenFileBinaryRPG(text$, ByRef theProgram As RPGCodeProgram)
 
  '#OpenFileInput(filename$,folder$)
  'Opens a file in binary mode.
 
  Dim file As Integer
- file = DoOpenFile(Text$, theProgram)
+ file = DoOpenFile(text$, theProgram)
  If Not file = 0 Then Open openFullFile(file) For Binary As #file
 End Sub
 
-Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
+Function DoOpenFile(text$, ByRef theProgram As RPGCodeProgram) As Integer
 
  On Error GoTo error
 
@@ -10037,22 +10037,22 @@ Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
  Dim temp2 As Double
  Dim a As Long
  
- Temp = CountData(Text$)
+ Temp = CountData(text$)
  If Not Temp = 2 Then
-  debugger "OpenFile needs two data elements-- " & Text$
+  debugger "OpenFile needs two data elements-- " & text$
   Exit Function
  End If
  
- file = GetElement(GetBrackets(Text$), 1)   'get the parameters that
+ file = GetElement(GetBrackets(text$), 1)   'get the parameters that
  temp2 = 0: a = getValue(file, file, temp2, theProgram)
  If Not temp2 = 0 Then
-  debugger "OpenFile needs literal data elements-- " & Text$
+  debugger "OpenFile needs literal data elements-- " & text$
   Exit Function
  End If
- folder = GetElement(GetBrackets(Text$), 2) 'were passed to the command
+ folder = GetElement(GetBrackets(text$), 2) 'were passed to the command
  temp2 = 0: a = getValue(folder, folder, temp2, theProgram)
  If Not temp2 = 0 Then
-  debugger "OpenFile needs literal data elements-- " & Text$
+  debugger "OpenFile needs literal data elements-- " & text$
   Exit Function
  End If
  Select Case LCase(folder) 'retrieve the full path of the folder
@@ -10103,7 +10103,7 @@ Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
  On Error GoTo error
 
  ' ! ADDED BY KSNiloc...
- If LCase(GetCommandName(Text)) = "openfileinput" Then
+ If LCase(GetCommandName(text)) = "openfileinput" Then
     If Not fileExists(App.path & "\" & fullfolder & file) Then
         debugger "Error: " & App.path & "\" & fullfolder & file & " does not exist!"
         Exit Function
@@ -10128,7 +10128,7 @@ dimOpenFile:
     Resume
 End Function
 
-Sub CloseFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub CloseFileRPG(text$, ByRef theProgram As RPGCodeProgram)
  
  '#CloseFile(filename$)
  'Closes an open file.
@@ -10142,16 +10142,16 @@ Sub CloseFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
  Dim a As Long 'used for loops
  Dim temp2 As Double
  
- Temp = CountData(Text$)
+ Temp = CountData(text$)
  If Not Temp = 1 Then
-  debugger "CloseFile needs one data element-- " & Text$
+  debugger "CloseFile needs one data element-- " & text$
   Exit Sub
  End If
  
- file = GetElement(GetBrackets(Text$), 1) 'get the filename
+ file = GetElement(GetBrackets(text$), 1) 'get the filename
  temp2 = 0: a = getValue(file, file, temp2, theProgram)
  If Not temp2 = 0 Then
-  debugger "CloseFile needs a literal data element-- " & Text$
+  debugger "CloseFile needs a literal data element-- " & text$
   Exit Sub
  End If
  For a = 1 To UBound(openFile)
@@ -10171,7 +10171,7 @@ error:
 End Sub
 
 Public Sub FileInputRPG( _
-                           ByVal Text As String, _
+                           ByVal text As String, _
                            ByRef theProgram As RPGCodeProgram, _
                            ByRef retval As RPGCODE_RETURN _
                                                             )
@@ -10185,16 +10185,16 @@ Public Sub FileInputRPG( _
     'Re-written by a _much_ more experienced KSNiloc
     '====================================================================================
 
-    If Not CountData(Text) = 1 Then
-        debugger "FileInput() requires two data elements-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "FileInput() requires two data elements-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     If paras(0).dataType <> DT_LIT Then
-        debugger "FileInput() must have a literal data element-- " & Text
+        debugger "FileInput() must have a literal data element-- " & text
         Exit Sub
     End If
     
@@ -10222,7 +10222,7 @@ error:
 End Sub
 
 Public Sub FilePrintRPG( _
-                           ByVal Text As String, _
+                           ByVal text As String, _
                            ByRef theProgram As RPGCodeProgram _
                                                                 )
  
@@ -10235,16 +10235,16 @@ Public Sub FilePrintRPG( _
     'Re-written by a _much_ more experienced KSNiloc
     '====================================================================================
 
-    If Not CountData(Text) = 2 Then
-        debugger "FilePrint() requires two data elements-- " & Text
+    If Not CountData(text) = 2 Then
+        debugger "FilePrint() requires two data elements-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_LIT Then
-        debugger "FilePrint() must have literal data elements-- " & Text
+        debugger "FilePrint() must have literal data elements-- " & text
         Exit Sub
     End If
     
@@ -10271,7 +10271,7 @@ error:
 End Sub
 
 Public Sub FileGetRPG( _
-                         ByVal Text As String, _
+                         ByVal text As String, _
                          ByRef theProgram As RPGCodeProgram, _
                          ByRef retval As RPGCODE_RETURN _
                                                           )
@@ -10285,16 +10285,16 @@ Public Sub FileGetRPG( _
     'Re-written by a _much_ more experienced KSNiloc
     '====================================================================================
 
-    If Not CountData(Text) = 1 Then
-        debugger "FileGet() requires two data elements-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "FileGet() requires two data elements-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     If paras(0).dataType <> DT_LIT Then
-        debugger "FileGet() must have a literal data element-- " & Text
+        debugger "FileGet() must have a literal data element-- " & text
         Exit Sub
     End If
     
@@ -10324,7 +10324,7 @@ error:
 End Sub
 
 Public Sub FilePutRPG( _
-                         ByVal Text As String, _
+                         ByVal text As String, _
                          ByRef theProgram As RPGCodeProgram _
                                                               )
  
@@ -10337,16 +10337,16 @@ Public Sub FilePutRPG( _
     'Re-written by a _much_ more experienced KSNiloc
     '====================================================================================
 
-    If Not CountData(Text) = 2 Then
-        debugger "FilePut() requires two data elements-- " & Text
+    If Not CountData(text) = 2 Then
+        debugger "FilePut() requires two data elements-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = GetParameters(text, theProgram)
     
     If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_LIT Then
-        debugger "FilePut() must have literal data elements-- " & Text
+        debugger "FilePut() must have literal data elements-- " & text
         Exit Sub
     End If
     
@@ -10374,7 +10374,7 @@ error:
     debugger "Unexpected error with FilePut()-- " & error
 End Sub
 
-Sub FileEOFRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub FileEOFRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
  
  '#a! = #FileEOF(filename$)
  'Has the end of the file been reached?
@@ -10389,16 +10389,16 @@ Sub FileEOFRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
  Dim a As Long 'used for loops
  Dim temp2 As Double
 
- Temp = CountData(Text$)
+ Temp = CountData(text$)
  If Not Temp = 1 Then
-  debugger "FileEOF needs one data element-- " & Text$
+  debugger "FileEOF needs one data element-- " & text$
   Exit Sub
  End If
 
- file = GetElement(GetBrackets(Text$), 1) 'get the filename
+ file = GetElement(GetBrackets(text$), 1) 'get the filename
  temp2 = 0: a = getValue(file, file, temp2, theProgram)
  If Not temp2 = 0 Then
-  debugger "FileEOF element must be literal-- " & Text$
+  debugger "FileEOF element must be literal-- " & text$
   Exit Sub
  End If
  For a = 1 To UBound(openFile)
@@ -10416,7 +10416,7 @@ error:
  debugger "Unexpected error with FileEOF-- " & error
 End Sub
 
-Sub StringLenRPG(Text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub StringLenRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
 'a! = Length (string$)
 'Get's the length of a string.
 'ADDED May 15, 2004 (Euix)
@@ -10425,12 +10425,12 @@ Dim brackets As String, BracketCount As Integer, BracketType As Long
 Dim StringElement As String, StringData As String, Temp As Double
 
 'Get bracket data
-brackets = GetBrackets(Text)
+brackets = GetBrackets(text)
 BracketCount = CountData(brackets)
 
     'Check if we have enough data elements
     If BracketCount <> 1 Then
-        Call debugger("Error: Length requires one data element!-- " & Text)
+        Call debugger("Error: Length requires one data element!-- " & text)
         Exit Sub
     End If
 
@@ -10439,14 +10439,14 @@ StringElement = GetElement(brackets, 1) 'Get string element
 BracketType = getValue(StringElement, StringData, Temp, theProgram)
 
 If BracketType = DT_NUM Then
-    Call debugger("Error: Length element must be literal!-- " & Text): Exit Sub
+    Call debugger("Error: Length element must be literal!-- " & text): Exit Sub
 End If
 
 retval.dataType = DT_NUM
 retval.num = Len(StringData)
 End Sub
 
-Sub GetItemNameRPG(Text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub GetItemNameRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
 '#a$ = #GetItemName (filename$)
 'Gets the handle of an item.
 'ADDED May 18, 2004 (Euix)
@@ -10454,19 +10454,19 @@ Sub GetItemNameRPG(Text As String, theProgram As RPGCodeProgram, retval As RPGCO
 Dim brackets As String, BracketCount As Integer, BracketElement As String
 Dim BracketType As Long, itemFile As String, Temp As Double
 
-brackets = GetBrackets(Text) 'Get brackets
+brackets = GetBrackets(text) 'Get brackets
 BracketCount = CountData(brackets) 'Get bracket count
         
     'Check if we have enough elements
     If BracketCount <> 1 Then
-        MsgBox "Error: GetItemName requires 1 data element!-- " & Text: Exit Sub
+        MsgBox "Error: GetItemName requires 1 data element!-- " & text: Exit Sub
     End If
     
 BracketElement = GetElement(brackets, 1) 'Get the filename
 BracketType = getValue(BracketElement, itemFile, Temp, theProgram)
 
     If BracketType = DT_NUM Then
-        Call debugger("Error: GetItemName element must be literal!-- " & Text): Exit Sub
+        Call debugger("Error: GetItemName element must be literal!-- " & text): Exit Sub
     End If
     
         retval.dataType = DT_LIT
@@ -10474,7 +10474,7 @@ BracketType = getValue(BracketElement, itemFile, Temp, theProgram)
         Exit Sub
 End Sub
 
-Sub GetItemDescRPG(Text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub GetItemDescRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
 On Error GoTo errorhandler
 '#a$ = #GetItemDesc (filename$)
 'Gets the one-line description of an item.
@@ -10484,18 +10484,18 @@ Dim brackets As String, BracketCount As Integer, BracketElement As String
 Dim BracketType As Long, itemFile As String, ItemData As TKItem, Temp As Double
 
 'Get bracket data and bracket element count
-brackets = GetBrackets(Text)
+brackets = GetBrackets(text)
 BracketCount = CountData(brackets)
     
     'Check if we have enough elements
-    If BracketCount <> 1 Then Call debugger("Error: GetItemDesc requires 1 data element!-- " & Text): Exit Sub
+    If BracketCount <> 1 Then Call debugger("Error: GetItemDesc requires 1 data element!-- " & text): Exit Sub
 
 'Get bracket elements, and values
 BracketElement = GetElement(brackets, 1)
 BracketType = getValue(BracketElement, itemFile, Temp, theProgram)
     
     'Check if the data type is correct
-    If BracketType = DT_NUM Then Call debugger("Error: GetItemDesc element is literal-- " & Text)
+    If BracketType = DT_NUM Then Call debugger("Error: GetItemDesc element is literal-- " & text)
 
 'Open item and get desc.
 ItemData = openItem(App.path & "\" & projectPath$ & itmPath$ & itemFile)
@@ -10506,10 +10506,10 @@ retval.lit = ItemData.itmDescription
 Exit Sub
 
 errorhandler:
-    Call debugger("Error: GetItemDesc-- Item couldn't be opened, or an other error has occured!-- " & Text): Exit Sub
+    Call debugger("Error: GetItemDesc-- Item couldn't be opened, or an other error has occured!-- " & text): Exit Sub
 End Sub
 
-Sub InStrRPG(Text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub InStrRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
 '#a! = #Instr (string$,string2$)
 'Returns 1 if string2$ exists within string$
 'Returns 0 if string2$ doesn't exist within string$
@@ -10522,11 +10522,11 @@ Dim BracketElement(1) As String, BracketValue(1) As String, Temp As Double
 Dim ret As Integer
 
 'Get brackets, and bracket count
-brackets = GetBrackets(Text)
+brackets = GetBrackets(text)
 BracketCount = CountData(brackets)
 
     If BracketCount <> 2 Then
-        Call debugger("Error: InStr requires two data elements!-- " & Text): Exit Sub
+        Call debugger("Error: InStr requires two data elements!-- " & text): Exit Sub
     End If
     
 'Get values...
@@ -10536,13 +10536,13 @@ BracketElement(1) = GetElement(brackets, 2)
 BracketType = getValue(BracketElement(0), BracketValue(0), Temp, theProgram)
 
     If BracketType <> DT_LIT Then
-        Call debugger("Error: InStr elements are literal,literal-- " & Text): Exit Sub
+        Call debugger("Error: InStr elements are literal,literal-- " & text): Exit Sub
     End If
     
 BracketType = getValue(BracketElement(1), BracketValue(1), Temp, theProgram)
     
     If BracketType <> DT_LIT Then
-        Call debugger("Error: InStr elements are literal,literal-- " & Text): Exit Sub
+        Call debugger("Error: InStr elements are literal,literal-- " & text): Exit Sub
     End If
     
 'Set return value
@@ -10559,7 +10559,7 @@ End If
 
 End Sub
 
-Sub GetItemCostRPG(Text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub GetItemCostRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
 On Error GoTo errorhandler:
 
 '#a! = #GetItemCost (filename$)
@@ -10569,19 +10569,19 @@ On Error GoTo errorhandler:
 Dim brackets As String, BracketCount As Integer, BracketElement As String
 Dim BracketType As Long, itemFile As String, ItemData As TKItem, Temp As Double
 
-brackets = GetBrackets(Text) 'Get brackets
+brackets = GetBrackets(text) 'Get brackets
 BracketCount = CountData(brackets) 'Get bracket count
         
     'Check if we have enough elements
     If BracketCount <> 1 Then
-        MsgBox "Error: GetItemCost requires 1 data element!-- " & Text: Exit Sub
+        MsgBox "Error: GetItemCost requires 1 data element!-- " & text: Exit Sub
     End If
     
 BracketElement = GetElement(brackets, 1) 'Get the filename
 BracketType = getValue(BracketElement, itemFile, Temp, theProgram)
 
     If BracketType = DT_NUM Then
-        Call debugger("Error: GetItemCost element must be literal!-- " & Text): Exit Sub
+        Call debugger("Error: GetItemCost element must be literal!-- " & text): Exit Sub
     End If
     
 'Open item and get the cost.
@@ -10593,10 +10593,10 @@ retval.num = ItemData.buyPrice
 Exit Sub
 
 errorhandler:
-    Call debugger("Error: GetItemCost-- Item couldn't be opened, or an other error has occured!-- " & Text): Exit Sub
+    Call debugger("Error: GetItemCost-- Item couldn't be opened, or an other error has occured!-- " & text): Exit Sub
 End Sub
 
-Sub GetItemSellRPG(Text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub GetItemSellRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
 On Error GoTo errorhandler
 '#a! = #GetItemSellPrice (filename$)
 'Get's the selling price of an item.
@@ -10605,19 +10605,19 @@ On Error GoTo errorhandler
 Dim brackets As String, BracketCount As Integer, BracketElement As String
 Dim BracketType As Long, itemFile As String, ItemData As TKItem, Temp As Double
 
-brackets = GetBrackets(Text) 'Get brackets
+brackets = GetBrackets(text) 'Get brackets
 BracketCount = CountData(brackets) 'Get bracket count
         
     'Check if we have enough elements
     If BracketCount <> 1 Then
-        MsgBox "Error: GetItemSellPrice requires 1 data element!-- " & Text: Exit Sub
+        MsgBox "Error: GetItemSellPrice requires 1 data element!-- " & text: Exit Sub
     End If
     
 BracketElement = GetElement(brackets, 1) 'Get the filename
 BracketType = getValue(BracketElement, itemFile, Temp, theProgram)
 
     If BracketType = DT_NUM Then
-        Call debugger("Error: GetItemSellPrice element must be literal!-- " & Text): Exit Sub
+        Call debugger("Error: GetItemSellPrice element must be literal!-- " & text): Exit Sub
     End If
     
 'Open item and get the selling price.
@@ -10629,7 +10629,7 @@ retval.num = ItemData.sellPrice
 Exit Sub
 
 errorhandler:
-    Call debugger("Error: GetItemSellPrice-- Item couldn't be opened, or an other error has occured!-- " & Text): Exit Sub
+    Call debugger("Error: GetItemSellPrice-- Item couldn't be opened, or an other error has occured!-- " & text): Exit Sub
 End Sub
 
 '=============================================================================
@@ -10685,7 +10685,7 @@ arrayError:
 End Function
 
 Public Function SwitchCase( _
-                              ByVal Text As String, _
+                              ByVal text As String, _
                               ByRef prg As RPGCodeProgram _
                                                             ) As Long
 
@@ -10721,13 +10721,13 @@ Public Function SwitchCase( _
         
         'Get our parameters...
         Dim paras() As parameters
-        paras() = GetParameters(Text, prg)
+        paras() = GetParameters(text, prg)
 
-        Select Case LCase(GetCommandName(Text))
+        Select Case LCase(GetCommandName(text))
 
             Case "switch"
-                If Not CountData(Text) = 1 Then
-                    debugger "Switch() can only have one data element-- " & Text
+                If Not CountData(text) = 1 Then
+                    debugger "Switch() can only have one data element-- " & text
                     On Error GoTo skipBlock: Err.Raise 0
                 End If
                 Select Case paras(0).dataType
@@ -10747,8 +10747,8 @@ Public Function SwitchCase( _
 
             Case "case"
             
-                If GetBrackets(Text) = "" Then
-                    debugger "Case() needs at least one data element-- " & Text
+                If GetBrackets(text) = "" Then
+                    debugger "Case() needs at least one data element-- " & text
                     On Error GoTo skipBlock: Err.Raise 0
                 End If
                 
@@ -10778,7 +10778,7 @@ Public Function SwitchCase( _
                     For a = 0 To UBound(paras)
                         If Not paras(a).dataType = vtype Then
                             debugger "All variables in Case() must be the sam" _
-                                & "e type as the Switch()-- " & Text
+                                & "e type as the Switch()-- " & text
                             On Error GoTo skipBlock: Err.Raise 0
                         End If
                     Next a
@@ -10870,7 +10870,7 @@ enlargeFoundSwitch:
 End Function
 
 Public Sub spliceVariables( _
-                              ByVal Text As String, _
+                              ByVal text As String, _
                               ByRef prg As RPGCodeProgram, _
                               ByRef retval As RPGCODE_RETURN _
                                                                )
@@ -10880,16 +10880,16 @@ Public Sub spliceVariables( _
     '=========================================================================
     'splice$ = spliceVariables("Var: <var!>")
     
-    If Not CountData(Text) = 1 Then
-        debugger "SpliceVariables() requires one data element-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "SpliceVariables() requires one data element-- " & text
         Exit Sub
     End If
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     
     If Not paras(0).dataType = DT_LIT Then
-        debugger "SpliceVariables() requires a literal data element-- " & Text
+        debugger "SpliceVariables() requires a literal data element-- " & text
         Exit Sub
     End If
     
@@ -10899,7 +10899,7 @@ Public Sub spliceVariables( _
 End Sub
 
 Public Sub SplitRPG( _
-                       ByVal Text As String, _
+                       ByVal text As String, _
                        ByRef prg As RPGCodeProgram, _
                        ByRef retval As RPGCODE_RETURN _
                                                         )
@@ -10911,8 +10911,8 @@ Public Sub SplitRPG( _
 
     On Error Resume Next
 
-    If Not CountData(Text) = 3 Then
-        debugger "Split() requires three data elements-- " & Text
+    If Not CountData(text) = 3 Then
+        debugger "Split() requires three data elements-- " & text
         Exit Sub
     End If
     
@@ -10922,11 +10922,11 @@ Public Sub SplitRPG( _
     Dim postFix As String
     Dim a As Long
     
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     
     For a = 0 To UBound(paras)
         If Not paras(a).dataType = DT_LIT Then
-            debugger "Split() requires literal data elements-- " & Text
+            debugger "Split() requires literal data elements-- " & text
             Exit Sub
         End If
     Next a
@@ -10946,7 +10946,7 @@ Public Sub SplitRPG( _
 End Sub
 
 Public Sub asciiToChr( _
-                         ByVal Text As String, _
+                         ByVal text As String, _
                          ByRef prg As RPGCodeProgram, _
                          ByRef retval As RPGCODE_RETURN _
                                                           )
@@ -10957,26 +10957,26 @@ Public Sub asciiToChr( _
     'c! = Asc(char$)
     'c$ = Chr(char!)
     
-    If Not CountData(Text) = 1 Then
-        debugger GetCommandName(Text) & _
-            " requires one data element-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger GetCommandName(text) & _
+            " requires one data element-- " & text
         Exit Sub
     End If
     
     Dim paras() As parameters
-    paras = GetParameters(Text, prg)
+    paras = GetParameters(text, prg)
     
-    Select Case LCase(GetCommandName(Text))
+    Select Case LCase(GetCommandName(text))
         Case "asc"
             If Not paras(0).dataType = DT_LIT Then
-                debugger "Asc() requires a literal data element-- " & Text
+                debugger "Asc() requires a literal data element-- " & text
                 Exit Sub
             End If
             retval.dataType = DT_NUM
             retval.num = Asc(paras(0).lit)
         Case "chr"
             If Not paras(0).dataType = DT_NUM Then
-                debugger "Chr() requires a numerical data element-- " & Text
+                debugger "Chr() requires a numerical data element-- " & text
                 Exit Sub
             End If
             retval.dataType = DT_LIT
@@ -10986,7 +10986,7 @@ Public Sub asciiToChr( _
 End Sub
 
 Public Sub trimRPG( _
-                      ByVal Text As String, _
+                      ByVal text As String, _
                       ByRef prg As RPGCodeProgram, _
                       ByRef retval As RPGCODE_RETURN _
                                                        )
@@ -10996,16 +10996,16 @@ Public Sub trimRPG( _
     '=========================================================================
     'trim$ = Trim(text$)
 
-    If Not CountData(Text) = 1 Then
-        debugger "Trim() requires one data element-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "Trim() requires one data element-- " & text
         Exit Sub
     End If
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
 
     If Not paras(0).dataType = DT_LIT Then
-        debugger "Trim() requires a literal data element-- " & Text
+        debugger "Trim() requires a literal data element-- " & text
         Exit Sub
     End If
 
@@ -11015,7 +11015,7 @@ Public Sub trimRPG( _
 End Sub
 
 Public Sub rightLeft( _
-                        ByVal Text As String, _
+                        ByVal text As String, _
                         ByRef prg As RPGCodeProgram, _
                         ByRef retval As RPGCODE_RETURN _
                                                          )
@@ -11028,23 +11028,23 @@ Public Sub rightLeft( _
     
     On Error Resume Next
     
-    If Not CountData(Text) = 2 Then
-        debugger GetCommandName(Text) & _
-            " requires two data elements-- " & Text
+    If Not CountData(text) = 2 Then
+        debugger GetCommandName(text) & _
+            " requires two data elements-- " & text
         Exit Sub
     End If
     
     Dim paras() As parameters
-    paras = GetParameters(Text, prg)
+    paras = GetParameters(text, prg)
 
     If Not ((paras(0).dataType = DT_LIT) And (paras(1).dataType = DT_NUM)) Then
-        debugger GetCommandName(Text) & _
-            " 's elements are literal, numerical-- " & Text
+        debugger GetCommandName(text) & _
+            " 's elements are literal, numerical-- " & text
         Exit Sub
     End If
     
     retval.dataType = DT_LIT
-    Select Case LCase(GetCommandName(Text))
+    Select Case LCase(GetCommandName(text))
         Case "right"
             retval.lit = Right(paras(0).lit, paras(1).num)
         Case "left"
@@ -11054,7 +11054,7 @@ Public Sub rightLeft( _
 End Sub
 
 Public Sub cursorMapHand( _
-                            ByVal Text As String, _
+                            ByVal text As String, _
                             ByRef prg As RPGCodeProgram _
                                                           )
 
@@ -11064,11 +11064,11 @@ Public Sub cursorMapHand( _
     'CursorMapHand(file$,stretch!)
 
     Dim cd As Long
-    cd = CountData(Text)
-    If GetBrackets(Text) = "" Then cd = 0
+    cd = CountData(text)
+    If GetBrackets(text) = "" Then cd = 0
 
     If cd > 2 Then
-        debugger "CursorMapHand() requires 0-2 data element(s)-- " & Text
+        debugger "CursorMapHand() requires 0-2 data element(s)-- " & text
         Exit Sub
     End If
 
@@ -11078,16 +11078,16 @@ Public Sub cursorMapHand( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     
     If Not paras(0).dataType = DT_LIT Then
-        debugger "CursorMapHand()'s first data element must be literal-- " & Text
+        debugger "CursorMapHand()'s first data element must be literal-- " & text
         Exit Sub
     End If
 
     If cd = 2 Then
         If Not paras(1).dataType = DT_NUM Then
-            debugger "CursorMapHand()'s second data element must be numerical-- " & Text
+            debugger "CursorMapHand()'s second data element must be numerical-- " & text
             Exit Sub
         End If
     End If
@@ -11107,7 +11107,7 @@ Public Sub cursorMapHand( _
         ElseIf paras(1).num = 0 Then
             drawImage fface, 0, 0, handHDC
         Else
-            debugger "CursorMapHand()'s second data element must be 1 or 0-- " & Text
+            debugger "CursorMapHand()'s second data element must be 1 or 0-- " & text
         End If
     Else
         DrawSizedImage fface, 0, 0, 32, 32, handHDC
@@ -11116,11 +11116,11 @@ Public Sub cursorMapHand( _
 End Sub
 
 Public Sub mousePointer( _
-                           ByVal Text As String, _
+                           ByVal text As String, _
                            ByRef prg As RPGCodeProgram _
                                                          )
 
-    Call debugger("MousePointer() is not functional-- " & Text)
+    Call debugger("MousePointer() is not functional-- " & text)
 
     '=========================================================================
     'Changes mouse pointer [KSNiloc]
@@ -11133,8 +11133,8 @@ Public Sub mousePointer( _
     On Error Resume Next
 
     Dim countDat As Long
-    countDat = CountData(Text)
-    If GetBrackets(Text) = "" Then countDat = 0
+    countDat = CountData(text)
+    If GetBrackets(text) = "" Then countDat = 0
 
     Select Case countDat
     
@@ -11143,7 +11143,7 @@ Public Sub mousePointer( _
         
         Case 1
             Dim paras() As parameters
-            paras() = GetParameters(Text, prg)
+            paras() = GetParameters(text, prg)
 
             If paras(0).dataType = DT_NUM Then
                 host.mousePointer = paras(0).num
@@ -11167,14 +11167,14 @@ Public Sub mousePointer( _
             host.mousePointer = projectPath & bmpPath & paras(0).lit
 
         Case Else
-            debugger "MousePointer() can have either zero or one data elements--" & Text
+            debugger "MousePointer() can have either zero or one data elements--" & text
 
     End Select
 
 End Sub
 
 Public Sub debuggerRPG( _
-                          ByVal Text As String, _
+                          ByVal text As String, _
                           ByRef prg As RPGCodeProgram _
                                                         )
 
@@ -11182,16 +11182,16 @@ Public Sub debuggerRPG( _
     'Pops up the debugger [KSNiloc]
     '=========================================================================
     
-    If Not CountData(Text) = 1 Then
-        debugger "Debugger() requires one data element-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "Debugger() requires one data element-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     
     If Not paras(0).dataType = DT_LIT Then
-        debugger "Debugger()'s data element must be literal-- " & Text
+        debugger "Debugger()'s data element must be literal-- " & text
         Exit Sub
     End If
 
@@ -11200,7 +11200,7 @@ Public Sub debuggerRPG( _
 End Sub
 
 Public Sub onError( _
-                      ByVal Text As String, _
+                      ByVal text As String, _
                       ByRef prg As RPGCodeProgram _
                                                     )
 
@@ -11209,18 +11209,18 @@ Public Sub onError( _
     '=========================================================================
     'OnError(:error)
 
-    If GetBrackets(Text) = "" Then
+    If GetBrackets(text) = "" Then
         errorBranch = ""
         Exit Sub
     End If
 
-    If Not CountData(Text) = 1 Then
-        debugger "OnError() requires one data element-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "OnError() requires one data element-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras = GetParameters(Text, prg)
+    paras = GetParameters(text, prg)
 
     If LCase(paras(0).dat) = "resume next" Or LCase(paras(0).dat) = "resumenext" Then
         errorBranch = "Resume Next"
@@ -11228,7 +11228,7 @@ Public Sub onError( _
     End If
     
     If Not paras(0).dataType = DT_LIT Then
-        debugger "OnError() requires a literal data element-- " & Text
+        debugger "OnError() requires a literal data element-- " & text
         Exit Sub
     End If
     
@@ -11237,7 +11237,7 @@ Public Sub onError( _
 End Sub
 
 Public Sub resumeNextRPG( _
-                            ByVal Text As String, _
+                            ByVal text As String, _
                             ByRef prg As RPGCodeProgram _
                                                           )
 
@@ -11264,7 +11264,7 @@ Public Sub resumeNextRPG( _
 End Sub
 
 Public Sub MBoxRPG( _
-                      ByVal Text As String, _
+                      ByVal text As String, _
                       ByRef prg As RPGCodeProgram, _
                       ByRef retval As RPGCODE_RETURN _
                                                        )
@@ -11277,15 +11277,15 @@ Public Sub MBoxRPG( _
     On Error Resume Next
 
     Dim cd As Long
-    cd = CountData(Text)
+    cd = CountData(text)
 
     If cd < 1 And cd > 6 Then
-        debugger "MsgBox() requires one data element-- " & Text
+        debugger "MsgBox() requires one data element-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
 
     On Error GoTo error
     If cd > 0 Then If Not paras(0).dataType = DT_LIT Then Err.Raise 0
@@ -11321,11 +11321,11 @@ Public Sub MBoxRPG( _
 
     Exit Sub
 error:
-    debugger "MsgBox()'s parameters are lit,lit,num,num,num,lit--" & Text
+    debugger "MsgBox()'s parameters are lit,lit,num,num,num,lit--" & text
 End Sub
 
 Public Sub animationDelayRPG( _
-                                ByVal Text As String, _
+                                ByVal text As String, _
                                 ByRef prg As RPGCodeProgram _
                                                               )
                                                               
@@ -11338,21 +11338,21 @@ Public Sub animationDelayRPG( _
 
     On Error Resume Next
 
-    If Not CountData(Text) = 1 Then
-        debugger "AnimationDelay() requires one data element-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "AnimationDelay() requires one data element-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     
     If Not paras(0).dataType = DT_NUM Then
-        debugger "AnimationDelay() requires a numerical data element-- " & Text
+        debugger "AnimationDelay() requires a numerical data element-- " & text
         Exit Sub
     End If
 
     If paras(0).num < 0 Then
-        debugger "AnimationDelay() requires a positive number-- " & Text
+        debugger "AnimationDelay() requires a positive number-- " & text
         Exit Sub
     End If
 
@@ -11361,7 +11361,7 @@ Public Sub animationDelayRPG( _
 End Sub
 
 Public Sub setConstantsRPG( _
-                              ByVal Text As String _
+                              ByVal text As String _
                                                      )
 
     '======================================================================================
@@ -11371,8 +11371,8 @@ Public Sub setConstantsRPG( _
 
     On Error Resume Next
 
-    If Not GetBrackets(Text) = "" Then
-        debugger "SetConstants() requires no data elements-- " & Text
+    If Not GetBrackets(text) = "" Then
+        debugger "SetConstants() requires no data elements-- " & text
         Exit Sub
     End If
 
@@ -11381,7 +11381,7 @@ Public Sub setConstantsRPG( _
 End Sub
 
 Public Sub logRPG( _
-                     ByVal Text As String, _
+                     ByVal text As String, _
                      ByRef prg As RPGCodeProgram, _
                      ByRef retval As RPGCODE_RETURN _
                                                       )
@@ -11393,16 +11393,16 @@ Public Sub logRPG( _
 
     On Error Resume Next
 
-    If Not CountData(Text) = 1 Then
-        debugger "Log() requires one data element-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "Log() requires one data element-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
 
     If Not paras(0).dataType = DT_NUM Then
-        debugger "Log() must have a numerical data element-- " & Text
+        debugger "Log() must have a numerical data element-- " & text
         Exit Sub
     End If
 
@@ -11412,7 +11412,7 @@ Public Sub logRPG( _
 End Sub
 
 Public Sub onBoardRPG( _
-                         ByVal Text As String, _
+                         ByVal text As String, _
                          ByRef prg As RPGCodeProgram, _
                          ByRef retval As RPGCODE_RETURN _
                                                           )
@@ -11424,16 +11424,16 @@ Public Sub onBoardRPG( _
 
     On Error Resume Next
 
-    If Not CountData(Text) = 1 Then
-        debugger "onBoard() requires one data element-- " & Text
+    If Not CountData(text) = 1 Then
+        debugger "onBoard() requires one data element-- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
 
     If Not paras(0).dataType = DT_NUM Then
-        debugger "onBoard() must have a numerical data element-- " & Text
+        debugger "onBoard() must have a numerical data element-- " & text
         Exit Sub
     End If
     
@@ -11446,7 +11446,7 @@ Public Sub onBoardRPG( _
 
 End Sub
 
-Public Sub autoLocalRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+Public Sub autoLocalRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
 
     '=========================================================================
     'Forces implicitly created variables to be locally scoped
@@ -11454,8 +11454,8 @@ Public Sub autoLocalRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     '=========================================================================
     'AutoLocal()
 
-    If Not CountData(Text) = 0 Then
-        debugger "AutoLocal() requires no data elements-- " & Text
+    If Not CountData(text) = 0 Then
+        debugger "AutoLocal() requires no data elements-- " & text
         Exit Sub
     End If
 
@@ -11464,7 +11464,7 @@ Public Sub autoLocalRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
 End Sub
 
 Public Sub getBoardNameRPG( _
-                              ByVal Text As String, _
+                              ByVal text As String, _
                               ByRef prg As RPGCodeProgram, _
                               ByRef retval As RPGCODE_RETURN _
                                                                )
@@ -11474,8 +11474,8 @@ Public Sub getBoardNameRPG( _
     '=========================================================================
     'fileName$ = GetBoardName()
 
-    If Not CountData(Text) = 0 Then
-        debugger "GetBoardName() requires no data elements-- " & Text
+    If Not CountData(text) = 0 Then
+        debugger "GetBoardName() requires no data elements-- " & text
         Exit Sub
     End If
 
@@ -11485,7 +11485,7 @@ Public Sub getBoardNameRPG( _
 End Sub
 
 Public Sub LCaseRPG( _
-                       ByVal Text As String, _
+                       ByVal text As String, _
                        ByRef prg As RPGCodeProgram, _
                        ByRef retval As RPGCODE_RETURN _
                                                         )
@@ -11496,18 +11496,18 @@ Public Sub LCaseRPG( _
     'ucase$ = LCase(text$ [,dest$])
    
     Dim cd As Integer
-    cd = CountData(Text)
+    cd = CountData(text)
    
     If cd <> 1 And cd <> 2 Then
-        debugger "LCase() requires one or two data elements-- " & Text
+        debugger "LCase() requires one or two data elements-- " & text
         Exit Sub
     End If
    
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
    
     If paras(0).dataType <> DT_LIT Then
-        debugger "LCase() requires a literal data element-- " & Text
+        debugger "LCase() requires a literal data element-- " & text
         Exit Sub
     End If
    
@@ -11524,7 +11524,7 @@ Public Sub LCaseRPG( _
 End Sub
 
 Public Sub UCaseRPG( _
-                       ByVal Text As String, _
+                       ByVal text As String, _
                        ByRef prg As RPGCodeProgram, _
                        ByRef retval As RPGCODE_RETURN _
                                                         )
@@ -11535,18 +11535,18 @@ Public Sub UCaseRPG( _
     'ucase$ = UCase(text$ [,dest$])
    
     Dim cd As Integer
-    cd = CountData(Text)
+    cd = CountData(text)
    
     If cd <> 1 And cd <> 2 Then
-        debugger "UCase() requires one or two data elements-- " & Text
+        debugger "UCase() requires one or two data elements-- " & text
         Exit Sub
     End If
    
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
    
     If paras(0).dataType <> DT_LIT Then
-        debugger "UCase() requires a literal data element-- " & Text
+        debugger "UCase() requires a literal data element-- " & text
         Exit Sub
     End If
    
@@ -11563,7 +11563,7 @@ Public Sub UCaseRPG( _
 End Sub
 
 Public Sub appPathRPG( _
-                         ByVal Text As String, _
+                         ByVal text As String, _
                          ByRef prg As RPGCodeProgram, _
                          ByRef retval As RPGCODE_RETURN _
                                                           )
@@ -11574,10 +11574,10 @@ Public Sub appPathRPG( _
     'path$ = AppPath([dest$])
    
     Dim cd As Long
-    cd = CountData(Text)
+    cd = CountData(text)
    
     If cd <> 0 And cd <> 1 Then
-        debugger "AppPath() requires zero or one data elements-- " & Text
+        debugger "AppPath() requires zero or one data elements-- " & text
         Exit Sub
     End If
    
@@ -11589,14 +11589,14 @@ Public Sub appPathRPG( _
         retval.lit = thePath
     ElseIf cd = 1 Then
         Dim paras() As parameters
-        paras() = GetParameters(Text, prg)
+        paras() = GetParameters(text, prg)
         SetVariable paras(0).dat, thePath, prg
     End If
 
 End Sub
 
 Public Sub midRPG( _
-                     ByVal Text As String, _
+                     ByVal text As String, _
                      ByRef prg As RPGCodeProgram, _
                      ByRef retval As RPGCODE_RETURN _
                                                       )
@@ -11607,15 +11607,15 @@ Public Sub midRPG( _
     'mid$ = Mid(string$,start!,length! [,dest$])
 
     Dim cd As Long
-    cd = CountData(Text)
+    cd = CountData(text)
 
     If (cd <> 3) And (cd <> 4) Then
-        Call debugger("Mid() requires three or four data elements-- " & Text)
+        Call debugger("Mid() requires three or four data elements-- " & text)
         Exit Sub
     End If
    
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
    
     If _
          paras(0).dataType <> DT_LIT _
@@ -11623,7 +11623,7 @@ Public Sub midRPG( _
          Or paras(2).dataType <> DT_NUM _
                                          Then
 
-        Call debugger("Mid()'s data elements are lit, num, num-- " & Text)
+        Call debugger("Mid()'s data elements are lit, num, num-- " & text)
         Exit Sub
 
     End If
@@ -11641,7 +11641,7 @@ Public Sub midRPG( _
 End Sub
 
 Public Sub replaceRPG( _
-                         ByVal Text As String, _
+                         ByVal text As String, _
                          ByRef prg As RPGCodeProgram, _
                          ByRef retval As RPGCODE_RETURN _
                                                           )
@@ -11654,20 +11654,20 @@ Public Sub replaceRPG( _
     On Error Resume Next
 
     Dim cd As Long
-    cd = CountData(Text)
+    cd = CountData(text)
    
     If cd <> 3 And cd <> 4 Then
-        debugger "Replace() requires three or four data elements-- " & Text
+        debugger "Replace() requires three or four data elements-- " & text
         Exit Sub
     End If
    
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
 
     Dim a As Long
     For a = 0 To UBound(paras)
         If Not paras(a).dataType = DT_LIT Then
-            debugger "Replace() requires literal data elements-- " & Text
+            debugger "Replace() requires literal data elements-- " & text
             Exit Sub
         End If
     Next a
@@ -11684,14 +11684,14 @@ Public Sub replaceRPG( _
 
 End Sub
 
-Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub pixelMovementRPG(ByVal text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     'PixelMovement(ON/OFF)
 
     Dim elements As Long
-    elements = CountData(Text)
+    elements = CountData(text)
 
     If (elements <> 0) And (elements <> 1) Then
-        Call debugger("PixelMovement() requires zero or one data element-- " & Text)
+        Call debugger("PixelMovement() requires zero or one data element-- " & text)
         Exit Sub
     End If
 
@@ -11704,10 +11704,10 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, B
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
 
     If paras(0).dataType <> DT_LIT Then
-        Call debugger("PixelMovement() requires a literal data element-- " & Text)
+        Call debugger("PixelMovement() requires a literal data element-- " & text)
         Exit Sub
     End If
 
@@ -11720,7 +11720,7 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, B
             movementSize = 1
 
         Case Else
-            Call debugger("PixelMovement()'s data element must be ON or OFF-- " & Text)
+            Call debugger("PixelMovement()'s data element must be ON or OFF-- " & text)
 
     End Select
 
@@ -11729,25 +11729,25 @@ End Sub
 '=========================================================================
 ' End an animation :: EndAnimation(animationID!)
 '=========================================================================
-Public Sub endAnimationRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+Public Sub endAnimationRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
 
     On Error Resume Next
 
-    If CountData(Text) <> 1 Then
-        Call debugger("EndAnimation() requires one data element-- " & Text)
+    If CountData(text) <> 1 Then
+        Call debugger("EndAnimation() requires one data element-- " & text)
         Exit Sub
     End If
 
     If Not isMultiTasking() Then
-        Call debugger("EndAnimation() is only valid in a thread-- " & Text)
+        Call debugger("EndAnimation() is only valid in a thread-- " & text)
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
 
     If paras(0).dataType <> DT_NUM Then
-        Call debugger("EndAnimation() requires a numerical data element-- " & Text)
+        Call debugger("EndAnimation() requires a numerical data element-- " & text)
         Exit Sub
     End If
 
@@ -11758,18 +11758,18 @@ End Sub
 '=========================================================================
 ' RenderNow(ON/OFF) :: Force cnvRenderNow to be rendered
 '=========================================================================
-Public Sub renderNowRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+Public Sub renderNowRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
     Dim elements As Long
-    elements = CountData(Text)
+    elements = CountData(text)
     If elements <> 1 And elements <> 2 Then
-        Call debugger("RenderNow() requires one or two data elements-- " & Text)
+        Call debugger("RenderNow() requires one or two data elements-- " & text)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     If paras(0).dataType <> DT_LIT Then
-        Call debugger("RenderNow() requires a literal data element-- " & Text)
+        Call debugger("RenderNow() requires a literal data element-- " & text)
         Exit Sub
     End If
     If UCase(paras(0).lit) = "ON" Then
@@ -11777,7 +11777,7 @@ Public Sub renderNowRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     ElseIf UCase(paras(0).lit) = "OFF" Then
         renderRenderNowCanvas = False
     Else
-        Call debugger("RenderNow()'s data element must be ON or OFF-- " & Text)
+        Call debugger("RenderNow()'s data element must be ON or OFF-- " & text)
     End If
     If elements <> 2 Then
         renderRenderNowCanvasTranslucent = False
@@ -11795,12 +11795,12 @@ End Sub
 '=========================================================================
 ' MultiRun() {} :: Run commands as a group in a thread
 '=========================================================================
-Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) As Long
+Public Function MultiRunRPG(ByVal text As String, ByRef prg As RPGCodeProgram) As Long
 
     On Error Resume Next
     
-    If GetBrackets(Text) <> "" Then
-        Call debugger("MultiRun() requires no data elements-- " & Text)
+    If GetBrackets(text) <> "" Then
+        Call debugger("MultiRun() requires no data elements-- " & text)
     Else
         multiRunStatus = 1
 
@@ -11833,21 +11833,21 @@ End Function
 ' str$ = IIf(x! == y!, "yes", "no")
 ' num! = IIf(x! == y!, 324, 102)
 '=========================================================================
-Public Sub IIfRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub IIfRPG(ByVal text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     Dim cd As Long
-    cd = CountData(Text)
+    cd = CountData(text)
 
     If (cd <> 3) Then
-        debugger "IIf() requires three data elements -- " & Text
+        debugger "IIf() requires three data elements -- " & text
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
 
     If (paras(1).dataType <> paras(2).dataType) Then
-        debugger "IIf()'s second and third data elements must be of the same type -- " & Text
+        debugger "IIf()'s second and third data elements must be of the same type -- " & text
         Exit Sub
     End If
 
@@ -11864,18 +11864,18 @@ End Sub
 '=========================================================================
 ' ShopColors(pos!,r!,g!,b!) :: Set the colors used in the shop
 '=========================================================================
-Public Sub shopColorsRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+Public Sub shopColorsRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
-    If CountData(Text) <> 4 Then
-        Call debugger("ShopColors() requires four data elements-- " & Text)
+    If CountData(text) <> 4 Then
+        Call debugger("ShopColors() requires four data elements-- " & text)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     Dim idx As Long
     For idx = 0 To UBound(paras)
         If paras(0).dataType <> DT_NUM Then
-            Call debugger("ShopColors() requires numerical data elements-- " & Text)
+            Call debugger("ShopColors() requires numerical data elements-- " & text)
             Exit Sub
         End If
     Next idx
@@ -11885,16 +11885,16 @@ End Sub
 '=========================================================================
 ' ItemStance(num!, stance$)
 '=========================================================================
-Public Sub ItemStanceRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+Public Sub ItemStanceRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
-    If (CountData(Text) <> 2) Then
-        Call debugger("ItemStance() requires two data elements-- " & Text)
+    If (CountData(text) <> 2) Then
+        Call debugger("ItemStance() requires two data elements-- " & text)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_LIT) Then
-        Call debugger("ItemStance() requires num, lit-- " & Text)
+        Call debugger("ItemStance() requires num, lit-- " & text)
         Exit Sub
     End If
     itmPos(inBounds(paras(0).num, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))).stance = paras(1).lit
@@ -11904,16 +11904,16 @@ End Sub
 '=========================================================================
 ' PlayerStance(num!, stance$)
 '=========================================================================
-Public Sub PlayerStanceRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+Public Sub PlayerStanceRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
-    If (CountData(Text) <> 2) Then
-        Call debugger("PlayerStance() requires two data elements-- " & Text)
+    If (CountData(text) <> 2) Then
+        Call debugger("PlayerStance() requires two data elements-- " & text)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_LIT) Then
-        Call debugger("PlayerStance() requires num, lit-- " & Text)
+        Call debugger("PlayerStance() requires num, lit-- " & text)
         Exit Sub
     End If
     pPos(inBounds(paras(0).num, 0, 4)).stance = paras(1).lit
@@ -11923,16 +11923,16 @@ End Sub
 '=========================================================================
 ' ItemSpeed(num!, speed!)
 '=========================================================================
-Public Sub ItemSpeedRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+Public Sub ItemSpeedRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
-    If (CountData(Text) <> 2) Then
-        Call debugger("ItemSpeed() requires two data elements-- " & Text)
+    If (CountData(text) <> 2) Then
+        Call debugger("ItemSpeed() requires two data elements-- " & text)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_NUM) Then
-        Call debugger("ItemSpeed() requires two numerical data elements-- " & Text)
+        Call debugger("ItemSpeed() requires two numerical data elements-- " & text)
         Exit Sub
     End If
     itemMem(inBounds(paras(0).num, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))).speed = paras(1).num
@@ -11941,16 +11941,16 @@ End Sub
 '=========================================================================
 ' PlayerSpeed(num!, speed!)
 '=========================================================================
-Public Sub PlayerSpeedRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+Public Sub PlayerSpeedRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
-    If (CountData(Text) <> 2) Then
-        Call debugger("PlayerSpeed() requires two data elements-- " & Text)
+    If (CountData(text) <> 2) Then
+        Call debugger("PlayerSpeed() requires two data elements-- " & text)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_NUM) Then
-        Call debugger("PlayerSpeed() requires two numerical data elements-- " & Text)
+        Call debugger("PlayerSpeed() requires two numerical data elements-- " & text)
         Exit Sub
     End If
     playerMem(inBounds(paras(0).num, 0, 4)).speed = paras(1).num
@@ -11959,16 +11959,16 @@ End Sub
 '=========================================================================
 ' MouseCursor(file$, x!, y!, r!, g!, b!)
 '=========================================================================
-Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
+Public Sub MouseCursorRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
-    If (CountData(Text) <> 6) Then
-        Call debugger("MouseCursor() requires six data elements-- " & Text)
+    If (CountData(text) <> 6) Then
+        Call debugger("MouseCursor() requires six data elements-- " & text)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     If (paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_NUM Or paras(2).dataType <> DT_NUM Or paras(3).dataType <> DT_NUM Or paras(4).dataType <> DT_NUM Or paras(5).dataType <> DT_NUM) Then
-        Call debugger("MouseCursor() takes lit, num, num, num, num, num-- " & Text)
+        Call debugger("MouseCursor() takes lit, num, num, num, num, num-- " & text)
         Exit Sub
     End If
     host.cursorHotSpotX = paras(1).num
@@ -11996,20 +11996,20 @@ End Sub
 ' width! = GetTextWidth(text$)
 ' height! = GetTextHeight(text$)
 '=========================================================================
-Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub GetTextWidthRPG(ByVal text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
 
     On Error Resume Next
 
-    If (CountData(Text) <> 1) Then
-        Call debugger("GetTextWidth()/GetTextHeight() requires one data element-- " & Text)
+    If (CountData(text) <> 1) Then
+        Call debugger("GetTextWidth()/GetTextHeight() requires one data element-- " & text)
         Exit Sub
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
 
     If (paras(0).dataType <> DT_LIT) Then
-        Call debugger("GetTextWidth()/GetTextHeight() parameter must be lit-- " & Text)
+        Call debugger("GetTextWidth()/GetTextHeight() parameter must be lit-- " & text)
         Exit Sub
     End If
 
@@ -12042,7 +12042,7 @@ Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, By
 
     retval.dataType = DT_NUM
 
-    Select Case LCase(GetCommandName(Text))
+    Select Case LCase(GetCommandName(text))
         Case "gettextwidth": retval.num = textWidth
         Case "gettextheight": retval.num = textHeight
     End Select
@@ -12052,14 +12052,14 @@ End Sub
 '=========================================================================
 ' object = new(class [,constructParams])
 '=========================================================================
-Public Sub NewRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub NewRPG(ByVal text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     On Error Resume Next
-    If (CountData(Text) < 1) Then
-        Call debugger("New() requires at least one data element-- " & Text)
+    If (CountData(text) < 1) Then
+        Call debugger("New() requires at least one data element-- " & text)
         Exit Sub
     End If
     Dim paras() As parameters, a As Long, construct() As String
-    paras() = GetParameters(Text, prg)
+    paras() = GetParameters(text, prg)
     ReDim construct(0)
     For a = 1 To UBound(paras)
         ReDim Preserve construct(a - 1)
@@ -12072,6 +12072,6 @@ Public Sub NewRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retva
     retval.dataType = DT_NUM
     retval.num = createRPGCodeObject(paras(0).lit, prg, construct(), (UBound(paras) = 0))
     If (retval.num = -1) Then
-        Call debugger("Error creating object-- " & Text)
+        Call debugger("Error creating object-- " & text)
     End If
 End Sub
