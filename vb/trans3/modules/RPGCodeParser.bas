@@ -12,16 +12,18 @@ Attribute VB_Name = "RPGCodeParser"
 Option Explicit
 
 '=========================================================================
-' Integral variables
+' A parameter
 '=========================================================================
-
-Public Type parameters          'rpgcode parmater structure
-    num As Double               '  numerical
-    lit As String               '  literal
-    dat As String               '  un-altered data
-    dataType As RPGC_DT         '  type returned (lit or num)
+Public Type parameters
+    num As Double       '  numerical
+    lit As String       '  literal
+    dat As String       '  un-altered data
+    dataType As RPGC_DT '  type returned (lit or num)
 End Type
 
+'=========================================================================
+' Commonly used operators
+'=========================================================================
 Private m_mathSigns(21) As String
 Private m_compSigns(9) As String
 
@@ -269,7 +271,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
     ' + Allows math in the text
     '=========================================================================
 
-    '// Passing text ByRef for preformance related reasons
+    '// Passing string(s) ByRef for preformance related reasons
 
     ' Declare a variable to work on
     Dim str As String
@@ -479,9 +481,11 @@ End Function
 '=========================================================================
 ' Get the variable at number in an equation
 '=========================================================================
-Public Function GetVarList(ByVal Text As String, ByVal number As Long) As String
+Public Function GetVarList(ByRef Text As String, ByVal number As Long) As String
 
     On Error Resume Next
+
+    '// Passing string(s) ByRef for preformance related reasons
 
     Dim ignoreNext As Long, element As Long, part As String, p As Long, returnVal As String
     
@@ -523,9 +527,11 @@ End Function
 '=========================================================================
 ' Return the content in text between the start and end symbols
 '=========================================================================
-Public Function ParseWithin(ByVal Text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
+Public Function ParseWithin(ByRef Text As String, ByRef startSymbol As String, ByRef endSymbol As String) As String
 
     On Error Resume Next
+
+    '// Passing string(s) ByRef for preformance related reasons
 
     Dim Length As Integer
     Dim t As Integer
@@ -564,18 +570,13 @@ Public Function ParseWithin(ByVal Text As String, ByVal startSymbol As String, B
 End Function
 
 '=========================================================================
-' Determine if a string contains a substring
-'=========================================================================
-Public Function stringContains(ByVal theString As String, ByVal theChar As String) As Boolean
-    stringContains = (InStr(1, theString, theChar, vbTextCompare) > 0)
-End Function
-
-'=========================================================================
 ' Count the number of values in an equation
 '=========================================================================
-Public Function ValueNumber(ByVal Text As String) As Long
+Public Function ValueNumber(ByRef Text As String) As Long
 
     On Error Resume Next
+
+    '// Passing string(s) ByRef for preformance related reasons
 
     Dim ignoreNext As Long, Length As Long, ele As Long, p As Long, part As String
     
@@ -592,7 +593,7 @@ Public Function ValueNumber(ByVal Text As String) As Long
             End If
         ElseIf part = "=" Or part = "+" Or part = "-" Or part = "/" Or part = "*" Or part = "\" Or part = "^" _
         Or part = "%" Or part = "`" Or part = "|" Or part = "&" Then
-            If ignoreNext = 0 Then ele = ele + 1
+            If (ignoreNext = 0) Then ele = ele + 1
         End If
     Next p
 
@@ -601,35 +602,25 @@ Public Function ValueNumber(ByVal Text As String) As Long
 End Function
 
 '=========================================================================
-' Remove the character passed in from the text passed in
-'=========================================================================
-Public Function removeChar(ByVal Text As String, ByVal char As String) As String
-    On Error Resume Next
-    removeChar = replace(Text, char, "")
-End Function
-
-'=========================================================================
 ' Get the bracket element at eleeNum
 '=========================================================================
-Public Function GetElement(ByVal Text As String, ByVal eleeNum As Long) As String
+Public Function GetElement(ByRef Text As String, ByVal eleeNum As Long) As String
 
     On Error Resume Next
 
-    Dim Length As Long, element As Long, part As String, ignore As Long, returnVal As String, p As Long
+    '// Passing string(s) ByRef for preformance related reasons
+
+    Dim Length As Long, element As Long, part As String, ignore As Boolean, returnVal As String, p As Long
     
     Length = Len(Text$)
     For p = 1 To Length + 1
         part = Mid$(Text, p, 1)
         If part = ("""") Then
             'A quote
-            If ignore = 0 Then
-                ignore = 1
-            Else
-                ignore = 0
-            End If
+            ignore = (Not ignore)
             returnVal = returnVal & part
         ElseIf part = "," Or part = ";" Or (LenB(part) = 0) Then
-            If ignore = 0 Then
+            If (Not ignore) Then
                 element = element + 1
                 If element = eleeNum Then
                     GetElement = returnVal
@@ -652,26 +643,28 @@ End Function
 '=========================================================================
 ' Count the number of bracket elements in text
 '=========================================================================
-Public Function CountData(ByVal Text As String) As Long
+Public Function CountData(ByRef Text As String) As Long
 
     On Error Resume Next
 
-    'If there is no text, there are no elements
+    '// Passing string(s) ByRef for preformance related reasons
+
+    ' If there is no text, there are no elements
     Dim gB As String
     gB = GetBrackets(Text, True)
     If (LenB(gB) = 0) Then Exit Function
 
-    'Setup delimiter array
+    ' Setup delimiter array
     Dim c(1) As String
     c(0) = ","
     c(1) = ";"
 
-    'Split at the delimiters
+    ' Split at the delimiters
     Dim S() As String
     Dim uD() As String
     S() = multiSplit(Text, c, uD, True)
 
-    'Number of data elements will be one higher than the upper bound
+    ' Number of data elements will be one higher than the upper bound
     CountData = UBound(S) + 1
 
 End Function
@@ -679,60 +672,31 @@ End Function
 '=========================================================================
 ' Return the first space after the command / the opening bracket
 '=========================================================================
-Public Function LocateBrackets(ByVal Text As String) As Long
+Public Function LocateBrackets(ByRef Text As String) As Long
 
     On Error Resume Next
-    
-    Dim Length As Long, p As Long, part As String, posAt As Long
-    
-    'First look for brackets--make it easy:
-    Length = Len(Text$)
-    For p = 1 To Length
-        part = Mid$(Text$, p, 1)
-        If part = "(" Then
-            posAt = p
-            Exit For
-        End If
-    Next p
-    If posAt <> 0 Then
-        LocateBrackets = posAt
-        Exit Function
-    End If
 
-    'OK- no brackets.  Find position of first space after command.
-    For p = 1 To Length
-        part = Mid$(Text, p, 1)
-        If part = "#" Then posAt = p
-        Exit For
-    Next p
-    If posAt = 0 Then
-        Exit Function 'couldn't find a command!
-    End If
-    For p = posAt To Length     'Find first occurrence of command name
-        part = Mid$(Text$, p, 1)
-        If part <> " " Then
-            posAt = p
-            Exit For
-        End If
-    Next p
-    For p = posAt To Length     'Find where command name ends.
-        part = Mid$(Text$, p, 1)
-        If part = " " Then
-            posAt = p
-            Exit For
-        End If
-    Next p
+    '// Passing string(s) ByRef for preformance related reasons
 
-    LocateBrackets = posAt
+    Dim p As Long
+
+    For p = 1 To Len(Text$)
+        If (Mid$(Text$, p, 1) = "(") Then
+            LocateBrackets = p
+            Exit Function
+        End If
+    Next p
 
 End Function
 
 '=========================================================================
 ' Retrieve the text inside the brackets
 '=========================================================================
-Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBrackets As Boolean) As String
+Public Function GetBrackets(ByRef Text As String, Optional ByVal doNotCheckForBrackets As Boolean) As String
 
     On Error Resume Next
+
+    '// Passing string(s) ByRef for preformance related reasons
 
     Dim ignoreClosing As Boolean
     Dim use As String, location As Long, Length As Long, bracketDepth As Long, p As Long, part As String
@@ -922,11 +886,13 @@ End Function
 '=========================================================================
 ' Retrieve the parameters from the command passed in
 '=========================================================================
-Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As parameters()
+Public Function GetParameters(ByRef Text As String, ByRef theProgram As RPGCodeProgram) As parameters()
 
     On Error Resume Next
 
-    ' Declarations...
+    '// Passing string(s) ByRef for preformance related reasons
+
+    ' Declarations
     Dim ret() As parameters
     Dim count As Long
     Dim brackets As String
@@ -935,7 +901,7 @@ Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeP
     Dim num As Double
     Dim dataType As RPGC_DT
 
-    ' Get the parameters...
+    ' Get the parameters
     count = CountData(Text)
     brackets = GetBrackets(Text)
     For a = 1 To count
@@ -954,8 +920,8 @@ Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeP
         ret(a - 1).dat = theElem
     Next a
 
-    ' Pass back the data...
-    GetParameters = ret()
+    ' Pass back the data
+    GetParameters = ret
 
 End Function
 
@@ -975,7 +941,7 @@ End Function
 ' Parse the line passed in
 '=========================================================================
 Public Function ParseRPGCodeCommand( _
-                                       ByVal line As String, _
+                                       ByRef line As String, _
                                        ByRef prg As RPGCodeProgram, _
                                        Optional ByVal startAt As Long _
                                                                         ) As String
@@ -986,6 +952,8 @@ Public Function ParseRPGCodeCommand( _
     ' parsers (heh...)
 
     On Error Resume Next
+
+    '// Passing string(s) ByRef for preformance related reasons
 
     Dim cmdName As String       ' Command name of line we're parsing
     cmdName = UCase$(GetCommandName(line))
@@ -1137,9 +1105,11 @@ End Function
 '=========================================================================
 ' Replace not within quotes
 '=========================================================================
-Public Function replaceOutsideQuotes(ByVal Text As String, ByVal find As String, ByVal replace As String)
+Public Function replaceOutsideQuotes(ByRef Text As String, ByRef find As String, ByRef replace As String)
 
     On Error Resume Next
+
+    '// Passing string(s) ByRef for preformance related reasons
 
     Dim ignore As Boolean
     Dim build As String
@@ -1239,10 +1209,12 @@ End Function
 '=========================================================================
 ' Parse an array
 '=========================================================================
-Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram) As String
+Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram) As String
 
     ' This will take an array such as Array[a!+2]["Pos"]$ and replace variables, commands,
     ' equations, etc with their values.
+
+    '// Passing string(s) ByRef for preformance related reasons
 
     ' Just skip errors because they're probably the rpgcoder's fault
     On Error GoTo skipError
@@ -1255,7 +1227,7 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
     toParse = replaceOutsideQuotes(variable, " ", "")
     toParse = replaceOutsideQuotes(toParse, vbTab, "")
 
-    If (InStr(1, toParse, "[") = 0) Then
+    If (InStrB(1, toParse, "[") = 0) Then
         ' There's not a [ so it's not an array and we're not needed
         Exit Function
     End If

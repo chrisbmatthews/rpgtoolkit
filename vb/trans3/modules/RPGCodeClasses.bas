@@ -510,7 +510,7 @@ Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS
     For idx = 0 To UBound(size)
         size(idx) = CLng(parseArrayD(idx))
     Next idx
-    Call getVarsFromArray(0, size(), x(), scope, variableName, variableType)
+    Call getVarsFromArray(0, size, x, scope, variableName, variableType)
 
 End Sub
 

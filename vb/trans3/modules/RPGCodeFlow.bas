@@ -51,8 +51,7 @@ Public Enum RPGC_DT                     'rpgcode data type enum
     DT_LIT = 1                          '  literal variable
     DT_STRING = 2                       '  string
     DT_NUMBER = 3                       '  number
-    DT_EQUATION = 4                     '  equation
-    DT_REFERENCE = 5                    '  reference to a var
+    DT_REFERENCE = 4                    '  reference to a var
 End Enum
 
 Public Type activeButton                'setButton() structure
@@ -66,9 +65,11 @@ End Type
 '=========================================================================
 ' Call a method in a class
 '=========================================================================
-Public Sub callObjectMethod(ByVal hClass As Long, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, ByVal methodName As String)
+Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, ByVal methodName As String)
 
     On Error Resume Next
+
+    '// Passing string(s) ByRef for preformance related reasons
 
     Dim theClass As RPGCODE_CLASS   'The class
 
@@ -150,13 +151,20 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByVal Text As String, ByRef pr
 End Sub
 
 '=========================================================================
-' Pops up the rpgcode debugger
+' Pop up the rpgcode debugger
 '=========================================================================
-Public Sub debugger(ByVal Text As String)
+Public Sub debugger(ByRef Text As String)
 
     On Error Resume Next
 
-    If (Not checkErrorHandling()) Then
+    '// Passing string(s) ByRef for preformance related reasons
+
+    If (LenB(errorBranch) <> 0) Then
+        errorKeep.program(0) = errorKeep.program(0) & "*ERROR CHECKING FLAG"
+        If (errorBranch <> "Resume Next") Then
+            Call Branch("Branch(" & errorBranch & ")", errorKeep)
+        End If
+    Else
         If (debugYN = 1) Then
             Call debugWin.Show
             debugWin.buglist.Text = debugWin.buglist.Text & Text & vbNewLine
@@ -165,19 +173,6 @@ Public Sub debugger(ByVal Text As String)
     End If
 
 End Sub
-
-'=========================================================================
-' Checks if the user has error handling in place
-'=========================================================================
-Private Function checkErrorHandling() As Boolean
-    If (LenB(errorBranch) <> 0) Then
-        checkErrorHandling = True
-        errorKeep.program(0) = errorKeep.program(0) & "*ERROR CHECKING FLAG"
-        If (errorBranch <> "Resume Next") Then
-            Call Branch("Branch(" & errorBranch & ")", errorKeep)
-        End If
-    End If
-End Function
 
 '=========================================================================
 ' Increment the program position
@@ -204,7 +199,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     Dim mName As String, includeFile As String, methodName As String, oldPos As Long, foundIt As Long
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
-    If (LenB(commandName$) = 0) Then
+    If (LenB(commandName) = 0) Then
         mName = GetCommandName(Text)   'get command name without extra info
     Else
         mName = commandName
@@ -262,17 +257,19 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Next pList
     
         'Get parameters from method line
-        dataUse$ = GetBrackets(theProgram.program$(foundIt))   'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(theProgram.program(foundIt))   'Get text inside brackets (parameter list)
         number2 = CountData(dataUse$)        'how many data elements are there?
         For pList = 1 To number2
-            destList$(pList) = GetElement(dataUse$, pList)
+            destList$(pList) = GetElement(dataUse, pList)
         Next pList
 
         ReDim quotes(0) As Long
         Dim commaNum As Long
         commaNum = -1
         For pList = 1 To Len(Text)
-            If ((Mid$(Text, pList, 1) = ",") Or (Mid$(Text, pList, 1) = "(")) Then
+            Dim mtpl As String
+            mtpl = Mid$(Text, pList, 1)
+            If ((mtpl = ",") Or (mtpl = "(")) Then
                 commaNum = commaNum + 1
                 ReDim Preserve quotes(commaNum)
                 Dim adv As Long
@@ -302,8 +299,10 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             If (dataG = 0) Then
                 dUse$ = CStr(num)
             Else
+                Dim rl As String
+                rl = Right$(lit, 1)
                 If ((Mid$(Text, quotes(pList - 1), 1) <> (""""))) _
-                 And (Right$(lit, 1) <> "!") And (Right$(lit, 1) <> "$") Then
+                 And (rl <> "!") And (rl <> "$") Then
                     If (lit <> parameterList(pList)) Then
                         dUse = lit
                     Else
@@ -320,22 +319,23 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
                     dUse = lit
                 End If
             End If
-            
-            If Right$(destList$(pList), 1) <> "!" And Right$(destList$(pList), 1) <> "$" Then
-                destList$(pList) = destList$(pList) & "!"
+
+            Dim rdl As String
+            rdl = Right$(destList(pList), 1)
+            If (rdl <> "!" And rdl <> "$") Then
+                destList(pList) = destList(pList) & "!"
             End If
 
-            'make sure the variable becomes local to the method...
             Dim dummyRet As RPGCODE_RETURN
-            Call LocalRPG("#local(" + destList$(pList) + ")", theProgram, dummyRet)
+            Call LocalRPG("local(" & destList$(pList) & ")", theProgram, dummyRet)
             Call SetVariable(destList$(pList), dUse$, theProgram)
         Next pList
-    
+
         Dim theOne As Long, se As Long
         'find the spot where the pointer list is first empty...
         theOne = 1
         For se = 1 To 100
-            If (LenB(pointer$(se)) = 0) Then
+            If (LenB(pointer(se)) = 0) Then
                 theOne = se
                 Exit For
             End If
@@ -365,9 +365,6 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Dim oldErrorHandler As String
         oldErrorHandler = errorBranch
 
-        'Nullify error handler
-        'errorBranch = vbNullString
-
         Call runBlock(1, theProgram)
 
         'Restore error handler
@@ -381,9 +378,9 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         'Clear our variables from pointer list
         For t = 1 To number
             For se = theOne To topList
-                If UCase$(pointer$(se)) = UCase$(destList$(t)) Then
-                    pointer$(se) = vbNullString
-                    correspPointer$(se) = vbNullString
+                If UCase$(pointer(se)) = UCase$(destList(t)) Then
+                    pointer(se) = vbNullString
+                    correspPointer(se) = vbNullString
                     se = 100
                 End If
             Next se
@@ -401,10 +398,10 @@ End Sub
 '=========================================================================
 Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
 
-'Called after a movement loop, or during idling when the activation key is pressed.
-'If after movement loop, the passPos is the target co-ords: if movement was blocked,
-'the target co-ords will be different from the pos co-ords.
-'If called during idling, the current pos location is passed in.
+    'Called after a movement loop, or during idling when the activation key is pressed.
+    'If after movement loop, the passPos is the target co-ords: if movement was blocked,
+    'the target co-ords will be different from the pos co-ords.
+    'If called during idling, the current pos location is passed in.
 
     On Error Resume Next
 
@@ -801,18 +798,20 @@ End Function
 ' Run the rpgcode program passed in
 '=========================================================================
 Public Sub runProgram( _
-                         ByVal file As String, _
+                         ByRef file As String, _
                          Optional ByVal boardNum As Long = -1, _
                          Optional ByVal setSourceAndTarget As Boolean = True, _
                          Optional ByVal startupProgram As Boolean _
                                                                     )
 
     On Error GoTo runPrgErr
-    
+
+    '// Passing string(s) ByRef for preformance related reasons
+
     If Trim$(Right$(file, 1)) = "\" Then Exit Sub
-    
+
     runningProgram = True
-   
+
     Call hideMsgBox
     Call setConstants
     Call clearButtons
@@ -842,7 +841,7 @@ Public Sub runProgram( _
 
     Dim mainRetVal As RPGCODE_RETURN
     mainRetVal.usingReturnData = True
-    Call MethodCallRPG("Main()", "", theProgram, mainRetVal, True)
+    Call MethodCallRPG("Main", "Main", theProgram, mainRetVal, True)
     If mainRetVal.num <> 1 Then
         theProgram.programPos = 0
         Do While _
@@ -906,9 +905,11 @@ End Function
 '=========================================================================
 ' Do any single command - unattached to a program
 '=========================================================================
-Public Function DoIndependentCommand(ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN) As Long
+Public Function DoIndependentCommand(ByRef rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN) As Long
     On Error Resume Next
+    '// Passing string(s) ByRef for preformance related reasons
     rpgcodeCommand = ParseRPGCodeCommand(rpgcodeCommand, errorKeep)
+    rpgcodeCommand = ParseRPGCodeCommand(rpgcodeCommand, theProgram)
     Dim oPP As Long
     oPP = errorKeep.programPos
     DoSingleCommand rpgcodeCommand, errorKeep, retval
@@ -918,13 +919,15 @@ End Function
 '=========================================================================
 ' Do any single command - attached to a program
 '=========================================================================
-Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
+Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
 
-    'Performs a command, and returns the new line number
-    'afterwards.  If it returns -1, then the program is done.
+    ' Performs a command, and returns the new line number
+    ' afterwards.  If it returns -1, then the program is done.
 
     On Error Resume Next
-   
+
+    '// Passing string(s) ByRef for preformance related reasons
+
     Dim checkIt As String
     checkIt = replace(replace(replace _
         (LCase$(rpgcodeCommand), " ", vbNullString _
@@ -2124,9 +2127,6 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
             DoSingleCommand = increment(theProgram)
             Exit Function
         
-    
-        '''KSNiloc's Commands
-        
         Case "OPENFILEINPUT"
             OpenFileInputRPG splice$, theProgram
             DoSingleCommand = increment(theProgram)
@@ -2176,15 +2176,8 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
             FileEOFRPG splice$, theProgram, retval
             DoSingleCommand = increment(theProgram)
             Exit Function
-
-        Case "SCRIPT"
-            'DoSingleCommand = ScriptRPG(splice$, theProgram)
-            Exit Function
-
-        '''End KSNiloc's Commands
-        
-        'Euix's Commands
-        Case "LENGTH", "LEN" 'Len added by KSNiloc
+       
+        Case "LENGTH", "LEN"
             Call StringLenRPG(splice$, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
