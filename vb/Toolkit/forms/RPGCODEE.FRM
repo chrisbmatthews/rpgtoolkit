@@ -100,6 +100,7 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
+      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -114,6 +115,25 @@ Begin VB.Form rpgcodeedit
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin VB.Menu mnuPopPrg 
+      Caption         =   "Right-click on program"
+      Visible         =   0   'False
+      Begin VB.Menu mnuPopPrg_Cut 
+         Caption         =   "Cut"
+      End
+      Begin VB.Menu mnuPopPrg_Copy 
+         Caption         =   "Copy"
+      End
+      Begin VB.Menu mnuPopPrg_Paste 
+         Caption         =   "Paste"
+      End
+      Begin VB.Menu separator 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuPopPrg_SelectAll 
+         Caption         =   "Select All"
+      End
    End
    Begin VB.Menu prgfilemnu 
       Caption         =   "&File"
@@ -202,12 +222,15 @@ Begin VB.Form rpgcodeedit
       Caption         =   "Edit"
       Begin VB.Menu mnuCut 
          Caption         =   "C&ut"
+         Shortcut        =   ^X
       End
       Begin VB.Menu mnuCopy 
          Caption         =   "&Copy"
+         Shortcut        =   ^C
       End
       Begin VB.Menu mnuPaste 
          Caption         =   "&Paste"
+         Shortcut        =   ^V
       End
       Begin VB.Menu blankmenu1 
          Caption         =   "-"
@@ -226,6 +249,7 @@ Begin VB.Form rpgcodeedit
       End
       Begin VB.Menu mnuSelectAll 
          Caption         =   "Select &All"
+         Shortcut        =   ^A
       End
    End
    Begin VB.Menu mnuView 
@@ -359,7 +383,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '==========================================================================
-' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 ' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '==========================================================================
@@ -369,6 +393,11 @@ Attribute VB_Exposed = False
 '==========================================================================
 
 Option Explicit
+
+'==========================================================================
+' Declares
+'==========================================================================
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 
 '==========================================================================
 ' Globals
@@ -383,6 +412,15 @@ Private secondCombo As ComboBox     ' Second bookmark combo box
 Private mouseDownSelStart As Long   ' Current position at mouse down
 Private mouseDownSelLength As Long  ' Length of selection at mouse down
 Private oldLine As Long             ' Old line
+
+'==========================================================================
+' Constants
+'==========================================================================
+Private Const WM_CUT = &H300
+Private Const WM_COPY = &H301
+Private Const WM_PASTE = &H302
+Private Const WM_CLEAR = &H303
+Private Const WM_UNDO = &H304
 
 '==========================================================================
 ' Obtain type of form
@@ -513,12 +551,58 @@ Private Sub CodeForm_GotFocus()
 End Sub
 
 '==========================================================================
+' Edit Menu
+'==========================================================================
+Private Sub mnuCut_Click(): On Error Resume Next
+    rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
+    'Call Clipboard.SetText(codeForm.SelText, vbCFText)
+    'codeForm.SelText = vbNullString
+    Call SendMessage(codeForm.hwnd, WM_CUT, 0, 0&)
+End Sub
+
+Private Sub mnuCopy_Click(): On Error Resume Next
+    'Call Clipboard.SetText(codeForm.SelText, vbCFText)
+    Call SendMessage(codeForm.hwnd, WM_COPY, 0, 0&)
+End Sub
+
+Private Sub mnuPaste_Click(): On Error Resume Next
+    rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
+    'codeForm.SelText = Clipboard.GetText(vbCFText)
+    Call SendMessage(codeForm.hwnd, WM_PASTE, 0, 0&)
+    Call colorPastedCode                'This is crap!
+End Sub
+
+Private Sub mnuSelectAll_Click(): On Error Resume Next
+    codeForm.selStart = 0
+    codeForm.SelLength = Len(codeForm.Text)
+End Sub
+
+'==========================================================================
+' Right-click edit menu
+'==========================================================================
+Private Sub mnuPopPrg_Copy_Click(): On Error Resume Next
+    Call mnuCopy_Click
+End Sub
+
+Private Sub mnuPopPrg_Cut_Click(): On Error Resume Next
+    Call mnuCut_Click
+End Sub
+
+Private Sub mnuPopPrg_Paste_Click(): On Error Resume Next
+    Call mnuPaste_Click
+End Sub
+
+Private Sub mnuPopPrg_SelectAll_Click(): On Error Resume Next
+    Call mnuSelectAll_Click
+End Sub
+
+'==========================================================================
 ' Key pressed in the code field
 '==========================================================================
 Private Sub CodeForm_KeyPress(KeyAscii As Integer): On Error Resume Next
 
     ' Alterations made
-    rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
+    'rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
 
     Select Case KeyAscii
 
@@ -615,9 +699,26 @@ End Sub
 ' Mouse down the field
 '==========================================================================
 Private Sub codeform_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    mouseDownSelStart = codeForm.selStart
-    mouseDownSelLength = codeForm.SelLength
-    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+    
+    If Button = vbRightButton Then
+        
+        mnuPopPrg_Copy.Enabled = False
+        mnuPopPrg_Paste.Enabled = False
+        mnuPopPrg_Cut.Enabled = False
+        
+        'Determine which options to enable.
+        If LenB(Clipboard.GetText(vbCFText)) Then mnuPopPrg_Paste.Enabled = True
+        If codeForm.SelLength Then mnuPopPrg_Copy.Enabled = True: mnuPopPrg_Cut.Enabled = True
+    
+        PopupMenu mnuPopPrg
+        
+    Else
+        'Highlight code.
+        mouseDownSelStart = codeForm.selStart
+        mouseDownSelLength = codeForm.SelLength
+        oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+    End If
+    
 End Sub
 
 '==========================================================================
@@ -628,8 +729,9 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
     If ((Shift = 2) And (keyCode = 86)) Then
 
         ' Paste
-        codeForm.SelText = Clipboard.GetText(vbCFText)
-        Call colorPastedCode
+        Call mnuPaste_Click
+        'CodeForm.SelText = Clipboard.GetText(vbCFText)
+        'Call colorPastedCode
         keyCode = 0: Shift = 0
         Exit Sub
 
@@ -998,23 +1100,8 @@ End Sub
 '==========================================================================
 ' Show the reference
 '==========================================================================
-Private Sub rpgr_Click()
-    On Error GoTo ErrorHandler
+Private Sub rpgr_Click(): On Error Resume Next
     Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help3, resourcePath$ + m_LangFile))
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-'==========================================================================
-' Select all
-'==========================================================================
-Private Sub mnuSelectAll_Click()
-    codeForm.selStart = 0
-    codeForm.SelLength = Len(codeForm.Text)
 End Sub
 
 '==========================================================================
