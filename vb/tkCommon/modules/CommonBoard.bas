@@ -51,6 +51,7 @@ Public Type TKBoard
     ambientBlue() As Integer              'ambient tile blue
     tiletype() As Byte                    'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
     brdBack As String                     'board background img (parallax layer)
+    brdBackCNV As Long                    'Canvas holding the background image
     brdFore As String                     'board foreground image (parallax)
     borderBack As String                  'border background img
     brdColor As Long                      'board color
