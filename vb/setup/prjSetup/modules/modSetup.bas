@@ -208,6 +208,8 @@ Public Sub performSetup()
 
     ' Clean up
     Call Kill("zip.zip")
+    Call Kill("vb5stkit.dll")
+    Call Kill("tkzip.dll")
 
 End Sub
 
@@ -228,7 +230,7 @@ Private Sub extractDir( _
         Dim strName As String
         strName = GetZipFilename(fileIdx)
         frmMain.progress.Value = fileIdx
-        frmMain.progress.Text = CStr(frmMain.progress.Percent) & "% complete"
+        frmMain.progress.Text = CStr(Round(frmMain.progress.Percent)) & "% complete"
         Call ZIPExtract(strName, extractInto & strName)
         DoEvents
     Next fileIdx
