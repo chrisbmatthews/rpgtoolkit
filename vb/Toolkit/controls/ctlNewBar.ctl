@@ -1,27 +1,43 @@
 VERSION 5.00
 Begin VB.UserControl ctlNewBar 
-   ClientHeight    =   4845
+   ClientHeight    =   5115
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   1815
-   ScaleHeight     =   4845
+   ScaleHeight     =   5115
    ScaleWidth      =   1815
    Begin VB.PictureBox newBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4845
+      Height          =   5115
       Left            =   0
-      ScaleHeight     =   4845
+      ScaleHeight     =   5115
       ScaleWidth      =   1815
       TabIndex        =   0
       Top             =   0
       Width           =   1815
       Begin VB.CommandButton CommandDock 
+         Caption         =   "        Edit Tileset"
+         Height          =   375
+         Index           =   6
+         Left            =   0
+         MaskColor       =   &H00FFFFFF&
+         Picture         =   "ctlNewBar.ctx":0000
+         Style           =   1  'Graphical
+         TabIndex        =   13
+         TabStop         =   0   'False
+         Tag             =   "1403"
+         ToolTipText     =   "Create animations for battles"
+         Top             =   4560
+         UseMaskColor    =   -1  'True
+         Width           =   1815
+      End
+      Begin VB.CommandButton CommandDock 
          Caption         =   "         Edit Animation"
          Height          =   375
          Index           =   14
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":0000
+         Picture         =   "ctlNewBar.ctx":03CD
          Style           =   1  'Graphical
          TabIndex        =   12
          TabStop         =   0   'False
@@ -35,7 +51,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   12
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":04BD
+         Picture         =   "ctlNewBar.ctx":088A
          Style           =   1  'Graphical
          TabIndex        =   11
          TabStop         =   0   'False
@@ -49,7 +65,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   7
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":07BD
+         Picture         =   "ctlNewBar.ctx":0B8A
          Style           =   1  'Graphical
          TabIndex        =   10
          TabStop         =   0   'False
@@ -63,7 +79,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   9
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":0AAE
+         Picture         =   "ctlNewBar.ctx":0E7B
          Style           =   1  'Graphical
          TabIndex        =   9
          TabStop         =   0   'False
@@ -77,7 +93,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   8
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":0DB1
+         Picture         =   "ctlNewBar.ctx":117E
          Style           =   1  'Graphical
          TabIndex        =   8
          TabStop         =   0   'False
@@ -91,7 +107,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   5
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":10F5
+         Picture         =   "ctlNewBar.ctx":14C2
          Style           =   1  'Graphical
          TabIndex        =   7
          TabStop         =   0   'False
@@ -105,7 +121,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   3
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":12CC
+         Picture         =   "ctlNewBar.ctx":1699
          Style           =   1  'Graphical
          TabIndex        =   6
          TabStop         =   0   'False
@@ -119,7 +135,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   4
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":177D
+         Picture         =   "ctlNewBar.ctx":1B4A
          Style           =   1  'Graphical
          TabIndex        =   5
          TabStop         =   0   'False
@@ -133,7 +149,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   2
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":1876
+         Picture         =   "ctlNewBar.ctx":1C43
          Style           =   1  'Graphical
          TabIndex        =   4
          TabStop         =   0   'False
@@ -147,7 +163,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   15
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":1B71
+         Picture         =   "ctlNewBar.ctx":1F3E
          Style           =   1  'Graphical
          TabIndex        =   3
          TabStop         =   0   'False
@@ -160,7 +176,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   1
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":1EAD
+         Picture         =   "ctlNewBar.ctx":227A
          Style           =   1  'Graphical
          TabIndex        =   2
          TabStop         =   0   'False
@@ -174,7 +190,7 @@ Begin VB.UserControl ctlNewBar
          Height          =   375
          Index           =   0
          Left            =   0
-         Picture         =   "ctlNewBar.ctx":2124
+         Picture         =   "ctlNewBar.ctx":24F1
          Style           =   1  'Graphical
          TabIndex        =   1
          TabStop         =   0   'False
@@ -221,11 +237,13 @@ Private Sub CommandDock_Click(Index As Integer)
                 Call .newstatuseffectmnu_Click
             Case 14:
                 Call .newanimationmnu_Click
+            Case 6:                             'Added by Delano.
+                tilesetedit.Show vbModal
         End Select
     End With
     
 End Sub
 
-Private Sub CommandDock_MouseMove(Index As Integer, button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub CommandDock_MouseMove(Index As Integer, button As Integer, Shift As Integer, x As Single, y As Single)
     'tkMainForm.ignoreFocus = True
 End Sub
