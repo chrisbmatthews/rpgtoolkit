@@ -7,7 +7,6 @@ Attribute VB_Name = "transMain"
 
 '=======================================================================
 ' Trans engine entry (and exit) procedures
-' Status: A-
 '=======================================================================
 
 Option Explicit
@@ -45,17 +44,6 @@ Private m_renderTime As Double          ' Cumulative GS_MOVEMENT state loop time
 Private m_testingPRG As Boolean         ' Are we testing a program?
 
 '=======================================================================
-' Average time for one loop in the GS_MOVEMENT gamestate
-'=======================================================================
-Public Property Get gAvgTime() As Double
-    gAvgTime = m_renderTime / m_renderCount
-End Property
-Public Property Let gAvgTime(ByVal newVal As Double)
-    m_renderTime = newVal
-    m_renderCount = 1
-End Property
-
-'=======================================================================
 ' Main entry point
 '=======================================================================
 Public Sub Main()
@@ -84,6 +72,13 @@ Public Sub Main()
     End If
 
 End Sub
+
+'=======================================================================
+' Average time for one loop in the GS_MOVEMENT gamestate
+'=======================================================================
+Public Property Get gAvgTime() As Double
+    gAvgTime = m_renderTime / m_renderCount
+End Property
 
 '=======================================================================
 ' Close systems
