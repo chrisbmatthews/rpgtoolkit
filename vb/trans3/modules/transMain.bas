@@ -396,10 +396,10 @@ Public Sub gameLogic()
 
             ' Convert *STUPID* string positions to numerical
             Select Case UCase$(pPos(selectedPlayer).stance)
-                Case "WALK_S": facing = South
-                Case "WALK_W": facing = West
-                Case "WALK_N": facing = North
-                Case "WALK_E": facing = East
+                Case "WALK_S": facing = SOUTH
+                Case "WALK_W": facing = WEST
+                Case "WALK_N": facing = NORTH
+                Case "WALK_E": facing = EAST
             End Select
 
             ' Back to idle state
@@ -646,7 +646,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Next pNum
 
         ' Start him facing south
-        facing = South
+        facing = SOUTH
 
     End If
 

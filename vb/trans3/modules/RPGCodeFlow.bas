@@ -2257,12 +2257,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Call MBoxRPG(splice, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
-        
-        Case "ANIMATIONDELAY"
-            Call animationDelayRPG(splice, theProgram)
-            DoSingleCommand = increment(theProgram)
-            Exit Function
-            
+
         Case "SETCONSTANTS"
             Call setConstantsRPG(splice)
             DoSingleCommand = increment(theProgram)

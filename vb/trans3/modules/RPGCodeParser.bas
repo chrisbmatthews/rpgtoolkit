@@ -1010,42 +1010,35 @@ End Function
 '=========================================================================
 ' Retrieve the parameters from the command passed in
 '=========================================================================
-Public Function GetParameters(ByRef Text As String, ByRef theProgram As RPGCodeProgram) As parameters()
+Public Function getParameters(ByRef Text As String, ByRef theProgram As RPGCodeProgram, Optional ByRef dataCount As Long) As parameters()
 
     On Error Resume Next
 
     '// Passing string(s) ByRef for preformance related reasons
 
     ' Declarations
-    Dim ret() As parameters
-    Dim count As Long
-    Dim brackets As String
-    Dim a As Long
-    Dim lit As String
-    Dim num As Double
-    Dim dataType As RPGC_DT
+    Dim ret() As parameters, count As Long, brackets As String
+    Dim i As Long, lit As String, num As Double, dataType As RPGC_DT
 
     ' Get the parameters
     count = CountData(Text)
+    dataCount = count
     brackets = GetBrackets(Text)
-    For a = 1 To count
+    For i = 1 To count
         Dim theElem As String
-        theElem = Trim$(GetElement(brackets, a))
+        theElem = Trim$(GetElement(brackets, i))
         dataType = getValue(theElem, lit, num, theProgram)
-        ReDim Preserve ret(a - 1)
+        ReDim Preserve ret(i - 1)
+        ret(i - 1).dataType = dataType
         Select Case dataType
-            Case DT_LIT
-                ret(a - 1).dataType = DT_LIT
-                ret(a - 1).lit = lit
-            Case DT_NUM
-                ret(a - 1).dataType = DT_NUM
-                ret(a - 1).num = num
+            Case DT_LIT: ret(i - 1).lit = lit
+            Case DT_NUM: ret(i - 1).num = num
         End Select
-        ret(a - 1).dat = theElem
-    Next a
+        ret(i - 1).dat = theElem
+    Next i
 
     ' Pass back the data
-    GetParameters = ret
+    getParameters = ret
 
 End Function
 
@@ -1445,7 +1438,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
 
     Dim arrayElements() As parameters
     ' Use my getParameters() function to retrieve the values of the dimensions
-    arrayElements() = GetParameters(build, prg)
+    arrayElements() = getParameters(build, prg)
 
     ' Splice out the object's overloaded [] operator, if existent
     If (hClass) Then

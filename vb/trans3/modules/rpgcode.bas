@@ -648,7 +648,7 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim i As Long, paras() As parameters, path As String, playerNum As Long
     
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     If UBound(paras) <> 2 Then
         Call debugger("Error: PlayerStep() must have 3 data elements!-- " & Text)
@@ -717,10 +717,10 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         Call CanvasGetScreen(cnvRPGCodeScreen)
         
         Select Case UCase$(pPos(selectedPlayer).stance)
-            Case "WALK_S": facing = South
-            Case "WALK_W": facing = West
-            Case "WALK_N": facing = North
-            Case "WALK_E": facing = East
+            Case "WALK_S": facing = SOUTH
+            Case "WALK_W": facing = WEST
+            Case "WALK_N": facing = NORTH
+            Case "WALK_E": facing = EAST
         End Select
         
         'Call runQueuedMovements
@@ -741,7 +741,7 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim itemNum As Long, paras() As parameters, path As String
     
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     If UBound(paras) <> 2 Then
         Call debugger("Error: ItemStep() must have 3 data elements!-- " & Text)
@@ -907,7 +907,7 @@ Public Sub AnimationRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
 
     If _
          (paras(0).dataType <> DT_LIT) Or _
@@ -1201,7 +1201,7 @@ Public Sub CosRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRe
     'Re-written by KSNiloc
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     If Not paras(0).dataType = DT_NUM Then
         Call debugger("Cos() requires a numerical data element-- " & Text)
@@ -1250,7 +1250,7 @@ Public Sub CreateItemRPG( _
     Dim paras() As parameters
 
     'Get the parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     lit = paras(0).lit
     theOne = paras(1).num
 
@@ -1494,7 +1494,7 @@ Sub EraseItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim paras() As parameters
     
-    paras = GetParameters(Text, theProgram)
+    paras = getParameters(Text, theProgram)
     
     If UBound(paras) Then
         Call debugger("Warning: EraseItem() has only 1 data element!-- " & Text)
@@ -2685,7 +2685,7 @@ Public Sub GetRPG( _
 
     'Get out parameters...
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
 
     retval.dataType = DT_LIT
     
@@ -3400,7 +3400,7 @@ Public Sub internalMenuRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
 
     If Not paras(0).dataType = DT_NUM Then
         debugger "InternalMenu() must have a numerical data element-- " & Text
@@ -3520,7 +3520,7 @@ Public Function ItemLocationRPG(ByVal Text As String, ByRef theProgram As RPGCod
 
     Dim paras() As parameters, itemNum As Long
 
-    paras = GetParameters(Text, theProgram)
+    paras = getParameters(Text, theProgram)
 
     If UBound(paras) <> 3 Then
         Call debugger("Error: ItemLocation() requires 4 data elements!-- " & Text)
@@ -3727,7 +3727,7 @@ Public Sub LoadRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     On Error Resume Next
     
     Dim paras() As parameters, t As Long
-    paras = GetParameters(Text, theProgram)
+    paras = getParameters(Text, theProgram)
     
     If UBound(paras) <> 0 Then
         Call debugger("Warning: #Load() requires 1 data element!-- " + Text)
@@ -4037,7 +4037,7 @@ Sub mouseClickRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'var1$ = GetElement(dataUse$, 1)
     'var2$ = GetElement(dataUse$, 2)
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     var1 = paras(0).dat
     var2 = paras(1).dat
     
@@ -4189,7 +4189,7 @@ Public Sub MWinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
         Call debugger("MWin() requires one data element-- " & Text)
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     If paras(0).dataType = DT_LIT Then
         Call AddToMsgBox(MWinPrepare(paras(0).lit, theProgram), theProgram)
     Else
@@ -4634,7 +4634,7 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim itemNum As Long, paras() As parameters
     
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     If UBound(paras) <> 1 Then
         Call debugger("Error: PushItem() must have 2 data elements!-- " & Text)
@@ -4707,7 +4707,7 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     'If handle$ is not supplied, it pushes the selected player
     '================================================================
     'Last edited for 3.0.5 by Delano: individual character speeds.
-    
+
     'Syntax:
         'All directions should be separated by a comma, but we can recover if they are not.
         'Direction types can be mixed, e.g. "N,SOUTH,2,NE" will work.
@@ -4718,103 +4718,108 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     '#Push("1,2,3,4,5,6,7,8" [,handle$])
 
     On Error Resume Next
-    
+
     Dim count As Long, i As Long, paras() As parameters, playerNum As Long
-    
-    count = CountData(Text)
-    paras() = GetParameters(Text, theProgram)
-    
+
+    paras = getParameters(Text, theProgram, count)
+
     If count <> 1 And count <> 2 Then
         Call debugger("Error: Push() must have 1 or 2 data elements!-- " & Text)
         Exit Sub
     End If
-    
+
     If paras(0).dataType <> DT_LIT Then
         Call debugger("Push() requires lit$ [, lit$]-- " & Text)
         Exit Sub
     End If
-    
+
     If count = 1 Then
         'Only one element.
         playerNum = selectedPlayer
     Else
         'Find the corresponding player number.
         playerNum = -1
-    
-        'Search the player handles for a match:
-        For i = 0 To 4
-            If (UCase$(playerListAr(i)) = UCase$(paras(1).lit)) Then
-                playerNum = i
-                Exit For
+
+        If (paras(1).dataType = DT_LIT) Then
+
+            paras(1).lit = UCase$(paras(1).lit)
+
+            'Search the player handles for a match:
+            For i = 0 To 4
+                If (UCase$(playerListAr(i)) = paras(1).lit) Then
+                    playerNum = i
+                    Exit For
+                End If
+            Next i
+
+            If (playerNum = -1) Then
+                Select Case paras(1).lit
+                    Case "TARGET": If (targetType = TYPE_PLAYER) Then playerNum = target
+                    Case "SOURCE": If (sourceType = TYPE_PLAYER) Then playerNum = Source
+                    Case Else
+                            Call debugger("Push(): player handle$ not found!-- " & Text)
+                            Exit Sub
+                End Select
             End If
-        Next i
-        
-        If ((paras(1).dataType = DT_LIT) And (playerNum = -1)) Then
-            Select Case UCase$(paras(1).lit)
-                Case "TARGET": If targetType = 0 Then playerNum = target
-                Case "SOURCE": If sourceType = 0 Then playerNum = Source
-                Case Else
-                        Call debugger("Push(): player handle$ not found!-- " & Text)
-                        Exit Sub
-            End Select
+
+        Else
+
+            If ((paras(1).num >= 0) And (paras(1).num <= 4)) Then
+
+                ' Use this numerical value
+                playerNum = paras(1).num
+
+            End If
+
         End If
-        
-        If playerNum = -1 Then
+
+        If (playerNum = -1) Then
             Call debugger("Push(): player handle$ not found!-- " & Text)
-            Exit Sub 'Player handle not found, exit.
+            Exit Sub
         End If
-        
+
     End If 'ubound = 0
-    
+
     '3.0.5: Queue system:
     '====================
     'Ok, we've got an array of directions, now we need to check if we have to
     'queue them or just run them straight off.
-    
+
     'cbm: Do not require comma delimited inputs (for backwards compatibility)
     paras(0).lit = formatDirectionString(paras(0).lit)
-    
-'Call traceString("PUSH: path=" & paras(0).lit & " Len=" & Len(pendingPlayerMovement(playerNum).queue) & _
-                " .queue=" & pendingPlayerMovement(playerNum).queue)
-    
-    
+
     'Make sure the queue isn't too long.
-    If Len(pendingPlayerMovement(playerNum).queue) > 32 Then Exit Sub
+    If (Len(pendingPlayerMovement(playerNum).queue) > 32) Then Exit Sub
         'We have more than 16 movements queued up.
-    
+
     Call setQueuedMovements(pendingPlayerMovement(playerNum).queue, paras(0).lit)
-    
+
     'For ALL cases we've set up queuing.
-    
-    If isMultiTasking Then
+
+    If (isMultiTasking()) Then
         'Nothing else needed - exit sub and let movePlayers handle the rest.
         'We may be multirunning as well, but this has priority
         gGameState = GS_MOVEMENT
-    
-    ElseIf multiRunStatus > 0 Then
+
+    ElseIf (multiRunStatus <> 0) Then
         'Set the command to move after multi-running.
         'Movement is triggered at the end of MultiRunRPG.
         multiRunStatus = 2
-        
+
     Else
         'If not running concurrently, run these queued movements now.
 
         Do While movePlayers(playerNum)
-            Call renderNow
-            Call processEvent
+            Call renderNow(cnvRPGCodeScreen, True)
+            Call renderRPGCodeScreen
         Loop
 
-        'Update the rpgcode canvas in case we're still in a program.
-        Call CanvasGetScreen(cnvRPGCodeScreen)
-
         Select Case UCase$(pPos(selectedPlayer).stance)
-            Case "WALK_S": facing = South
-            Case "WALK_W": facing = West
-            Case "WALK_N": facing = North
-            Case "WALK_E": facing = East
+            Case "WALK_S": facing = SOUTH
+            Case "WALK_W": facing = WEST
+            Case "WALK_N": facing = NORTH
+            Case "WALK_E": facing = EAST
         End Select
-
-        ' Call runQueuedMovements
 
     End If
 
@@ -5348,7 +5353,7 @@ Public Sub RestoreScreenArrayRPG(ByVal Text As String, _
 
     'Get the parameters...
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     'Are they numerical?
     Dim a As Long
@@ -5576,7 +5581,7 @@ Public Sub RPGCodeRPG(ByVal Text As String, _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     If Not paras(0).dataType = DT_LIT Then
         debugger "RPGCode() requires a literal data element-- " & Text
@@ -5770,7 +5775,7 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
             
         Case 1
             Dim paras() As parameters
-            paras = GetParameters(Text, theProgram)
+            paras = getParameters(Text, theProgram)
             
             If paras(0).dataType = DT_NUM Then
             
@@ -5988,7 +5993,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     Call renderNow(-1, True)
     Call CanvasGetScreen(cnvRPGCodeScreen)
     
-    facing = South              'Facing south
+    facing = SOUTH              'Facing south
     wentToNewBoard = True
     Call setConstants
     Call checkMusic(True)
@@ -6497,7 +6502,7 @@ Public Sub SinRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRe
     'Re-written by KSNiloc
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     Select Case CountData(Text)
     
@@ -6552,7 +6557,7 @@ Public Sub SizedAnimationRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
 
     If _
          (paras(0).dataType <> DT_LIT) Or _
@@ -7039,7 +7044,7 @@ Sub TanRPG(ByVal Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
     'Re-written by KSNiloc
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     Select Case CountData(Text)
     
@@ -7793,7 +7798,7 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     Dim low As Long, high As Long, direction As Long, restrict As Long
     
     count = CountData(Text)
-    paras = GetParameters(Text, theProgram)
+    paras = getParameters(Text, theProgram)
     
     If count <> 1 And count <> 2 Then
         Call debugger("Error: Wander() requires have 1 or 2 data elements!-- " & Text)
@@ -8170,7 +8175,7 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     forSale.appendItmExtension = False
 
     'Grab the items passed in
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
 
     'Loop over each item
     For itmNum = 0 To UBound(paras)
@@ -8420,7 +8425,7 @@ Public Sub ClearRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Call renderRPGCodeScreen
     Else
         Dim paras() As parameters
-        paras() = GetParameters(Text, prg)
+        paras() = getParameters(Text, prg)
         Call CanvasFill(paras(0).num, 0)
     End If
 
@@ -8727,7 +8732,7 @@ Sub DrawLineRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim useIt5 As String
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     x1 = paras(0).num
     y1 = paras(1).num
     x2 = paras(2).num
@@ -10044,7 +10049,7 @@ Public Sub FileInputRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     If paras(0).dataType <> DT_LIT Then
         debugger "FileInput() must have a literal data element-- " & Text
@@ -10094,7 +10099,7 @@ Public Sub FilePrintRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_LIT Then
         debugger "FilePrint() must have literal data elements-- " & Text
@@ -10144,7 +10149,7 @@ Public Sub FileGetRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     If paras(0).dataType <> DT_LIT Then
         debugger "FileGet() must have a literal data element-- " & Text
@@ -10196,7 +10201,7 @@ Public Sub FilePutRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, theProgram)
+    paras() = getParameters(Text, theProgram)
     
     If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_LIT Then
         debugger "FilePut() must have literal data elements-- " & Text
@@ -10509,7 +10514,7 @@ Public Function WithRPG(ByVal cLine As String, ByRef prg As RPGCodeProgram) As L
     On Error GoTo error
  
     Dim paras() As parameters
-    paras() = GetParameters(cLine, prg)
+    paras() = getParameters(cLine, prg)
 
     If Not CountData(cLine) = 1 Then
         debugger "With only needs one parameter-- " & cLine
@@ -10574,7 +10579,7 @@ Public Function SwitchCase( _
         
         'Get our parameters...
         Dim paras() As parameters
-        paras() = GetParameters(Text, prg)
+        paras() = getParameters(Text, prg)
 
         Select Case LCase$(GetCommandName(Text))
 
@@ -10737,7 +10742,7 @@ Public Sub spliceVariables( _
     End If
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     
     If Not paras(0).dataType = DT_LIT Then
         debugger "SpliceVariables() requires a literal data element-- " & Text
@@ -10773,7 +10778,7 @@ Public Sub SplitRPG( _
     Dim postFix As String
     Dim a As Long
 
-    paras = GetParameters(Text, prg)
+    paras = getParameters(Text, prg)
 
     For a = 0 To UBound(paras)
         If paras(a).dataType <> DT_LIT Then
@@ -10815,7 +10820,7 @@ Public Sub asciiToChr( _
     End If
     
     Dim paras() As parameters
-    paras = GetParameters(Text, prg)
+    paras = getParameters(Text, prg)
     
     Select Case LCase$(GetCommandName(Text))
         Case "asc"
@@ -10853,7 +10858,7 @@ Public Sub trimRPG( _
     End If
     
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
 
     If Not paras(0).dataType = DT_LIT Then
         debugger "Trim$() requires a literal data element-- " & Text
@@ -10886,7 +10891,7 @@ Public Sub rightLeft( _
     End If
     
     Dim paras() As parameters
-    paras = GetParameters(Text, prg)
+    paras = getParameters(Text, prg)
 
     If Not ((paras(0).dataType = DT_LIT) And (paras(1).dataType = DT_NUM)) Then
         debugger GetCommandName(Text) & _
@@ -10929,7 +10934,7 @@ Public Sub cursorMapHand( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     
     If Not paras(0).dataType = DT_LIT Then
         debugger "CursorMapHand()'s first data element must be literal-- " & Text
@@ -10994,7 +10999,7 @@ Public Sub mousePointer( _
         
         Case 1
             Dim paras() As parameters
-            paras() = GetParameters(Text, prg)
+            paras() = getParameters(Text, prg)
 
             If paras(0).dataType = DT_NUM Then
                 host.mousePointer = paras(0).num
@@ -11039,7 +11044,7 @@ Public Sub debuggerRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     
     If Not paras(0).dataType = DT_LIT Then
         debugger "Debugger()'s data element must be literal-- " & Text
@@ -11071,7 +11076,7 @@ Public Sub onError( _
     End If
 
     Dim paras() As parameters
-    paras = GetParameters(Text, prg)
+    paras = getParameters(Text, prg)
 
     If LCase$(paras(0).dat) = "resume next" Or LCase$(paras(0).dat) = "resumenext" Then
         errorBranch = "Resume Next"
@@ -11136,7 +11141,7 @@ Public Sub MBoxRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
 
     On Error GoTo error
     If cd > 0 Then If Not paras(0).dataType = DT_LIT Then Err.Raise 0
@@ -11173,42 +11178,6 @@ Public Sub MBoxRPG( _
     Exit Sub
 error:
     debugger "MsgBox()'s parameters are lit,lit,num,num,num,lit--" & Text
-End Sub
-
-Public Sub animationDelayRPG( _
-                                ByVal Text As String, _
-                                ByRef prg As RPGCodeProgram _
-                                                              )
-                                                              
-    '======================================================================================
-    'Sets animation delay [KSNiloc]
-    '======================================================================================
-    'KEEP THIS COMMAND UNDOCUMENTED
-    '======================================================================================
-    'AnimationDelay(3)
-
-    On Error Resume Next
-
-    If Not CountData(Text) = 1 Then
-        debugger "AnimationDelay() requires one data element-- " & Text
-        Exit Sub
-    End If
-
-    Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
-    
-    If Not paras(0).dataType = DT_NUM Then
-        debugger "AnimationDelay() requires a numerical data element-- " & Text
-        Exit Sub
-    End If
-
-    If paras(0).num < 0 Then
-        debugger "AnimationDelay() requires a positive number-- " & Text
-        Exit Sub
-    End If
-
-    animationDelay = paras(0).num
-
 End Sub
 
 Public Sub setConstantsRPG( _
@@ -11250,7 +11219,7 @@ Public Sub logRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
 
     If Not paras(0).dataType = DT_NUM Then
         debugger "Log() must have a numerical data element-- " & Text
@@ -11281,7 +11250,7 @@ Public Sub onBoardRPG( _
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
 
     If Not paras(0).dataType = DT_NUM Then
         debugger "onBoard() must have a numerical data element-- " & Text
@@ -11350,7 +11319,7 @@ Public Sub LCaseRPG( _
     End If
    
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
    
     If paras(0).dataType <> DT_LIT Then
         debugger "LCase$() requires a literal data element-- " & Text
@@ -11389,7 +11358,7 @@ Public Sub UCaseRPG( _
     End If
    
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
    
     If paras(0).dataType <> DT_LIT Then
         debugger "UCase$() requires a literal data element-- " & Text
@@ -11435,7 +11404,7 @@ Public Sub appPathRPG( _
         retval.lit = thePath
     ElseIf cd = 1 Then
         Dim paras() As parameters
-        paras() = GetParameters(Text, prg)
+        paras() = getParameters(Text, prg)
         SetVariable paras(0).dat, thePath, prg
     End If
 
@@ -11461,7 +11430,7 @@ Public Sub midRPG( _
     End If
    
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
    
     If _
          paras(0).dataType <> DT_LIT _
@@ -11508,7 +11477,7 @@ Public Sub replaceRPG( _
     End If
    
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
 
     Dim a As Long
     For a = 0 To UBound(paras)
@@ -11550,7 +11519,7 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, B
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
 
     If paras(0).dataType <> DT_LIT Then
         Call debugger("PixelMovement() requires a literal data element-- " & Text)
@@ -11590,7 +11559,7 @@ Public Sub endAnimationRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
 
     If paras(0).dataType <> DT_NUM Then
         Call debugger("EndAnimation() requires a numerical data element-- " & Text)
@@ -11613,7 +11582,7 @@ Public Sub renderNowRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     If paras(0).dataType <> DT_LIT Then
         Call debugger("RenderNow() requires a literal data element-- " & Text)
         Exit Sub
@@ -11690,7 +11659,7 @@ Public Sub IIfRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retva
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
 
     If (paras(1).dataType <> paras(2).dataType) Then
         debugger "IIf()'s second and third data elements must be of the same type -- " & Text
@@ -11717,7 +11686,7 @@ Public Sub shopColorsRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     Dim idx As Long
     For idx = 0 To UBound(paras)
         If paras(0).dataType <> DT_NUM Then
@@ -11738,7 +11707,7 @@ Public Sub ItemStanceRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_LIT) Then
         Call debugger("ItemStance() requires num, lit-- " & Text)
         Exit Sub
@@ -11757,7 +11726,7 @@ Public Sub PlayerStanceRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_LIT) Then
         Call debugger("PlayerStance() requires num, lit-- " & Text)
         Exit Sub
@@ -11776,7 +11745,7 @@ Public Sub ItemSpeedRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_NUM) Then
         Call debugger("ItemSpeed() requires two numerical data elements-- " & Text)
         Exit Sub
@@ -11794,7 +11763,7 @@ Public Sub PlayerSpeedRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     If (paras(0).dataType <> DT_NUM Or paras(1).dataType <> DT_NUM) Then
         Call debugger("PlayerSpeed() requires two numerical data elements-- " & Text)
         Exit Sub
@@ -11812,7 +11781,7 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         Exit Sub
     End If
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     If (paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_NUM Or paras(2).dataType <> DT_NUM Or paras(3).dataType <> DT_NUM Or paras(4).dataType <> DT_NUM Or paras(5).dataType <> DT_NUM) Then
         Call debugger("MouseCursor() takes lit, num, num, num, num, num-- " & Text)
         Exit Sub
@@ -11852,7 +11821,7 @@ Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, By
     End If
 
     Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
 
     If (paras(0).dataType <> DT_LIT) Then
         Call debugger("GetTextWidth()/GetTextHeight() parameter must be lit-- " & Text)
@@ -11905,7 +11874,7 @@ Public Sub newRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retva
         Exit Sub
     End If
     Dim paras() As parameters, a As Long, construct() As String
-    paras() = GetParameters(Text, prg)
+    paras() = getParameters(Text, prg)
     ReDim construct(0)
     For a = 1 To UBound(paras)
         ReDim Preserve construct(a - 1)
@@ -11930,7 +11899,7 @@ Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodePr
 
     ' First, parse the parameters passed to us
     Dim paras() As parameters
-    paras = GetParameters(Text, prg)
+    paras = getParameters(Text, prg)
 
     ' Is everything good?
     Dim allIsGood As Boolean
