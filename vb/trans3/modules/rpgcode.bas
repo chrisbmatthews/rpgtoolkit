@@ -3206,130 +3206,97 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Function IfThen( _
-                          ByVal Text As String, _
-                          ByRef prg As RPGCodeProgram _
-                                                        ) As Long
-                                                        
-    '==========================================================================
-    'Re-written by KSNiloc
-    '==========================================================================
+Public Function IfThen(ByVal Text As String, ByRef prg As RPGCodeProgram) As Long
 
-    'if (x! == y!)
-    '{
-    '   ...
-    '   ...
-    '}
-    'elseif (y! == z!)
-    '{
-    '   ...
-    '   ...
-    '}
-    'else
-    '{
-    '   ...
-    '   ...
-    '}
+    ' Check which command we are
+    Dim strCommand As String
+    strCommand = prg.strCommands(prg.programPos)
 
-    'Static variables
-    Static doneIf() As Boolean
+    Select Case strCommand
 
-    'First make sure that the doneIf() array is dimensioned...
-    On Error GoTo dimDoneIf
-    Dim ub As Long
-    ub = UBound(doneIf)
-    
-    'Allow the array to enlarge itself...
-    On Error GoTo enlargeDoneIf
-    
-    Dim res As Long, cmd As String
-    
-    cmd = LCase$(GetCommandName(Text))
-    
-    Select Case cmd
+        Case "IF"
 
-        Case "else"
-            If Not doneIf(ub) Then
-            
-                If isMultiTasking() Then
+            ' Obtain text inside the brackets
+            Dim strBrackets As String
+            strBrackets = GetBrackets(Text)
 
-                    'Let the main loop make our job easy...
-                    startThreadLoop prg, TYPE_IF
-                    IfThen = prg.programPos
-                    Exit Function
-                
-                Else
-            
-                    IfThen = runBlock(1, prg)
-                
-                End If
-                
-            Else
-                IfThen = runBlock(0, prg)
-            End If
-            res = -1
-        
-        Case "elseif"
-            'Only use this is it truly is 'else'...
-            If Not (doneIf(ub)) Then res = 1
-        
-        Case "if"
-            'Move onto the next place in the array...
-            doneIf(ub + 1) = False
-        
-    End Select
+            ' Evaluate the brackets
+            Dim lngEval As Long
+            lngEval = evaluate(strBrackets, prg)
 
-    If (res = 0) Then
+            ' Save whether this block was run
+            prg.bRunBlock(prg.programPos) = CBool(lngEval)
 
-        res = evaluate(GetBrackets(Text), prg)
+            ' Run the block
+            IfThen = runBlock(lngEval, prg)
 
-        If (res) Then
-    
-            doneIf(UBound(doneIf)) = True
-
-            If isMultiTasking() Then
-
-                'Main loop time...
-                startThreadLoop prg, TYPE_IF
-                IfThen = prg.programPos
-                Exit Function
-        
-            End If
-    
-        End If
-
-        Dim bRunningPrg As Boolean
-        bRunningPrg = runningProgram
-        runningProgram = True
-        IfThen = runBlock(res, prg)
-        runningProgram = bRunningPrg
-
-    End If
-
-    On Error Resume Next
-
-    Dim i As Long, Length As Long
-    Length = prg.Length
-    i = prg.programPos
-    Do
-        i = i + 1
-    Loop Until (LenB(prg.program(i)) <> 0 And prg.program(i) <> "{" And prg.program(i) <> "}" Or i >= Length)
-
-    Select Case prg.strCommands(i)
         Case "ELSE", "ELSEIF"
-        Case Else
-            ReDim Preserve doneIf(UBound(doneIf) - 1)
+
+            ' Find the nearest if without an else
+            Dim i As Long, lngDepth As Long, lngLine As Long
+            lngLine = -1
+            For i = (prg.programPos - 1) To 0 Step -1
+
+                ' Switch on the command here
+                Select Case prg.strCommands(i)
+
+                    Case "IF", "ELSEIF"
+
+                        ' Confirm this if has no else
+                        If (lngDepth = 0) Then
+
+                            ' This is it!
+                            lngLine = i
+                            Exit For
+
+                        Else
+
+                            If (prg.strCommands(i) = "IF") Then
+
+                                ' One else accounted for
+                                lngDepth = lngDepth - 1
+
+                            End If
+
+                        End If
+
+                    Case "ELSE"
+                        ' Increase depth
+                        lngDepth = lngDepth + 1
+
+                End Select
+
+            Next i
+
+            Dim lngRunBlock As Long
+
+            ' If that if existed
+            If (lngLine <> -1) Then
+
+                ' If it didn't run
+                If Not (prg.bRunBlock(lngLine)) Then
+
+                    If (strCommand = "ELSE") Then
+
+                        ' Run the block
+                        lngRunBlock = 1
+
+                    Else
+
+                        ' If using elseif, also evaluate the brackets
+                        lngRunBlock = evaluate(GetBrackets(Text), prg)
+                        prg.bRunBlock(prg.programPos) = CBool(lngRunBlock)
+
+                    End If
+
+                End If
+
+            End If
+
+            ' Exit by running the block
+            IfThen = runBlock(lngRunBlock, prg)
+
     End Select
-
-Exit Function
-    
-dimDoneIf:
-    ReDim doneIf(0)
-    Resume
-
-enlargeDoneIf:
-    ReDim Preserve doneIf(UBound(doneIf) + 1)
-    Resume
 
 End Function
 
