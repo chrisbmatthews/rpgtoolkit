@@ -77,5 +77,4 @@ Private Sub Form_Load()
             .Left = Screen.width - .width
         End With
     End If
-    DoEvents
 End Sub
