@@ -70,9 +70,6 @@ Public Sub Main()
         'Clean up
         Call closeSystems
 
-        'Show the end form
-        Call showEndForm
-
     End If
 
 End Sub
@@ -99,6 +96,7 @@ Public Sub closeSystems()
     Call UnregisterClass(host.className, App.hInstance)
     Call Unload(debugwin)
     Call closeActiveX
+    Call showEndForm
 End Sub
 
 '=======================================================================
@@ -150,7 +148,6 @@ Private Function getMainFilename() As String
             Call openSystems(True)
             Call runProgram(projectPath & prgPath & args(1))
             Call closeSystems
-            End
 
         End If
 
@@ -383,6 +380,7 @@ Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call DXRefresh
     Call calculateSlackTime
     Call initClock(RENDER_FPS)
+    Call initEventProcessor(AddressOf closeSystems)
 End Sub
 
 '=======================================================================
@@ -500,7 +498,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     'Change the DirectX host's caption to the game's title (for windowed mode)
     If mainMem.gameTitle <> "" Then
-        host.caption = mainMem.gameTitle
+        host.Caption = mainMem.gameTitle
     End If
 
     If mainMem.initChar <> "" Then

@@ -69,6 +69,12 @@ Public Declare Sub PostQuitMessage Lib "user32" (ByVal nExitCode As Long)
 Public Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hdc As Long) As Long
 
 '=========================================================================
+' Public declarations
+'=========================================================================
+Public Declare Sub initEventProcessor Lib "actkrt3.dll" (ByVal closeSystemsAddress As Long)
+Public Declare Sub processEvent Lib "actkrt3.dll" ()
+
+'=========================================================================
 ' Event handler
 '=========================================================================
 Public Function wndProc( _
@@ -97,7 +103,6 @@ Public Function wndProc( _
             'Window was closed-- bail!
             If Not gShuttingDown Then
                 Call closeSystems
-                Call showEndForm(True)
             End If
 
         Case WM_CHAR
@@ -147,29 +152,3 @@ End Function
 Public Function HiWord(ByRef LongIn As Long) As Integer
    Call CopyMemory(HiWord, ByVal (VarPtr(LongIn) + 2), 2)
 End Function
-
-'=========================================================================
-' Process events
-'=========================================================================
-Public Sub processEvent()
-
-    'This procedure is pretty much a replacement for DoEvents.
-    'It will process a message from the queue *if there is one*
-    'and then be done with.
-
-    Dim message As msg
-    If PeekMessage(message, host.hwnd, 0, 0, PM_REMOVE) Then
-        'There was a message, check if it's WinProc asking
-        'to leave this loop...
-        If message.message = WM_QUIT Then
-            'It was-- quit
-            Call closeSystems
-            Call showEndForm(True)
-        Else
-            'It wasn't, send the message to WinProc
-            Call TranslateMessage(message)
-            Call DispatchMessage(message)
-        End If
-    End If
-
-End Sub

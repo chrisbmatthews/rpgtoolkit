@@ -11,15 +11,23 @@
 #include <windows.h>
 
 //////////////////////////////////////////////////////////////////////////
+// Type definitions
+//////////////////////////////////////////////////////////////////////////
+typedef void (__stdcall* closeSystemsPointer)();
+
+//////////////////////////////////////////////////////////////////////////
 // Globals
 //////////////////////////////////////////////////////////////////////////
-HWND hostHwnd = NULL;
+HWND hostHwnd = NULL;				//Handle of host window
+closeSystemsPointer closeSystems;	//Close systems procedure
 
 /////////////////////////////////////////////////////////////////////////
 // Prototypes
 //////////////////////////////////////////////////////////////////////////
 void APIENTRY mainEventLoop(int gameLogicAddress);
 int APIENTRY createHostWindow(int x, int y, int width, int height, int style, char* caption, int instance, int wndProc, char* className, int hCursor);
+void APIENTRY initEventProcessor(int closeSystemsAddress);
+void APIENTRY processEvent();
 
 //////////////////////////////////////////////////////////////////////////
 // Create the DirectX host window
@@ -85,7 +93,7 @@ int APIENTRY createHostWindow(
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Windows main event loop
+// Trans main event loop
 //////////////////////////////////////////////////////////////////////////
 void APIENTRY mainEventLoop(int gameLogicAddress)
 {
@@ -127,6 +135,45 @@ void APIENTRY mainEventLoop(int gameLogicAddress)
 		//Run a frame of game logic
         gameLogic();
 
+    }
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Initiate the event processor
+//////////////////////////////////////////////////////////////////////////
+void APIENTRY initEventProcessor(int closeSystemsAddress)
+{
+	//Create pointer to closeSystems
+	closeSystems = (closeSystemsPointer)closeSystemsAddress;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Process events
+//////////////////////////////////////////////////////////////////////////
+void APIENTRY processEvent()
+{
+
+    //This procedure is pretty much a replacement for DoEvents.
+    //It will process a message from the queue *if there is one*
+    //and then be done with.
+
+    MSG message;
+    if ( PeekMessage(&message, hostHwnd, 0, 0, PM_REMOVE) )
+	{
+        //There was a message, check if it's WinProc asking
+        //to leave this loop...
+        if ( message.message == WM_QUIT )
+		{
+            //It was-- quit
+            closeSystems();
+		}
+        else
+		{
+            //It wasn't, send the message to WinProc
+            TranslateMessage(&message);
+            DispatchMessage(&message);
+        }
     }
 
 }
