@@ -79,8 +79,8 @@ Begin VB.Form editmainfile
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "prgframe"
-      Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(0)=   "actionframe"
+      Tab(2).Control(1)=   "prgframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -95,9 +95,9 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label24"
+      Tab(5).Control(0)=   "Frame3"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Frame3"
+      Tab(5).Control(2)=   "Label24"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
@@ -2438,7 +2438,7 @@ Private Sub infofill()
     
     pathbox.Caption = projectPath$
     
-    Call testGraphicsMode
+    'Call testGraphicsMode
     If targetPlatform = 0 Or targetPlatform = 2 Then
         win9x.value = True
     End If
@@ -2730,7 +2730,7 @@ Private Sub mnusaveas_Click()
     ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    aa = fileExist(filename$(1))
+    aa = FileExist(filename$(1))
     If aa = 1 Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
         If bb = 7 Then Exit Sub

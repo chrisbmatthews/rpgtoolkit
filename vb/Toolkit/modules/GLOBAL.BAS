@@ -78,7 +78,7 @@ Public activePlayer As characteredit     'active mdi child form
 Public activePlayerIndex As Long     'index for active board
 
 'Item Editor:
-Public activeItem As EditItem     'active mdi child form
+Public activeItem As edititem     'active mdi child form
 Public activeItemIndex As Long     'index for active item
 
 'Main File editor

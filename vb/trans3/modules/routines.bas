@@ -13,7 +13,7 @@ Public Sub openMainFile(ByVal file As String)
 
     projectPath = ""
     mainMem.mainResolution = 0
-           
+
     a = openMain(file, mainMem)
     Call ChangeLanguage(resourcePath & m_LangFile)
     If mainMem.mainDisableProtectReg = 1 Then
