@@ -137,6 +137,9 @@ void APIENTRY mainEventLoop(int gameLogicAddress)
 
     }
 
+	//Deallocate resources used by this library
+	closeSystems();
+
 }
 
 //////////////////////////////////////////////////////////////////////////

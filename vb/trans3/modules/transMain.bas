@@ -67,9 +67,6 @@ Public Sub Main()
         'Run game
         Call mainEventLoop(AddressOf gameLogic)
 
-        'Clean up
-        Call closeSystems
-
     End If
 
 End Sub
