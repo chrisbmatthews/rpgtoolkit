@@ -999,14 +999,11 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     'and will be centred horiztonally about this point.
     'If cnvTarget= -1 then render to screen, else render to canvas
     'Can also set the opacity of sprites in this function.
-    'Problems occur if the sprites are partially off the screen and transluscent,
-    'since no actkrt functions have been written (yet) to do this.
     '============================================================================
     'Called by DXDrawSprites only. New arguments added in these calls.
 
     On Error Resume Next
 
-    'Using local varibles as the values may change. Or could pass the co-ords as ByVal arguments instead.
     Dim xOrig As Double, yOrig As Double, xTarg As Double, yTarg As Double
 
     xOrig = pending.xOrig
@@ -1025,7 +1022,7 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     originTile = boardList(activeBoardIndex).theData.tiletype(Round(xOrig), -Int(-yOrig), Int(boardL))
        
     'Do some tiletype checks now instead of later.
-    Dim drawTransluscently As Boolean
+    Dim drawTranslucently As Boolean
     
     '    If [tiles on layers above]
     '    OR [Moving *to* "under" tile (target)]
@@ -1038,7 +1035,7 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
             Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
             Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
             Or (targetTile = UNDER And originTile = UNDER) Then
-                drawTransluscently = True
+                drawTranslucently = True
         End If
     Else
         If _
@@ -1046,7 +1043,7 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
             Or (targetTile = UNDER And Round(boardX) = Round(xTarg) And -Int(-boardY) = -Int(-yTarg)) _
             Or (originTile = UNDER And Round(boardX) = Round(xOrig) And -Int(-boardY) = -Int(-yOrig)) _
             Or (targetTile = UNDER And originTile = UNDER) Then
-                drawTransluscently = True
+                drawTranslucently = True
         End If
     End If
 
@@ -1085,119 +1082,135 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
             renderWidth = spriteWidth - offsetX
             cornerX = 0
             
-            'Temporary fix. Until partial transparent function is written.
-            bAccountForUnderTiles = False
-            
-        ElseIf cornerX + spriteWidth > resX Then 'Must never be greater than resX!!
-            'Frame off right side.
+        ElseIf cornerX + spriteWidth > resX Then
+        
+            'Frame off right side. Must never be greater than resX!!
             offsetX = 0
             renderWidth = resX - cornerX
             
-            'Temporary fix. Until partial transparent function is written.
-            bAccountForUnderTiles = False
-            
         Else
+        
             offsetX = 0
             renderWidth = spriteWidth
+            
         End If
         
         If cornerY < 0 Then
+        
             'Frame off top. cornerY must never be less than zero!
             offsetY = Abs(cornerY)
             renderHeight = spriteHeight - offsetY
             cornerY = 0
             
-            'Temporary fix. Until partial transparent function is written.
-            bAccountForUnderTiles = False
-            
         ElseIf cornerY + spriteHeight > resY Then
+        
             'Frame off bottom.
             offsetY = 0
             renderHeight = resY - cornerY
             
-            'Temporary fix. Until partial transparent function is written.
-            bAccountForUnderTiles = False
-            
         Else
+        
             offsetY = 0
             renderHeight = spriteHeight
+            
         End If
         
         'We now have the position and area of the sprite to draw.
         'Check if we need to draw the sprite transluscently:
         
-        If drawTransluscently And bAccountForUnderTiles Then
-        'If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
-            Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
-            Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
-            Or (targetTile = UNDER And originTile = UNDER)) Then
-            
-            'If bAccountForUnderTiles AND [tiles on layers above
-            '    OR [Moving *to* "under" tile (target)]
-            '    OR [Moving *from* "under" tile (origin)]
-            '    OR [Moving between "under" tiles]]
-            
-            'If on "under" tiles, make sprite transluscent.
-            '4th argument controls opacity of sprite.
+        If drawTranslucently And bAccountForUnderTiles Then
+            'If on "under" tiles, make sprite translucent.
             
             If cnvTarget = -1 Then 'Draw to screen
             
-               'BUG: This should be a Draw-Partial function! But there is none for transluscent!!
-                Call DXDrawCanvasTranslucent(cnvFrameID, cornerX, cornerY, 0.25, -1, TRANSP_COLOR)
-                
+                Call DXDrawCanvasTranslucentPartial(cnvFrameID, _
+                                                    cornerX, _
+                                                    cornerY, _
+                                                    offsetX, _
+                                                    offsetY, _
+                                                    renderWidth, _
+                                                    renderHeight, _
+                                                    0.25, -1, _
+                                                    TRANSP_COLOR)
             Else 'Draw to canvas.
             
-                'BUG: This should be Partial AND Canvas2CanvasBlt AND transluscent!! No such function!
-                Call DXDrawCanvasTranslucent(cnvFrameID, cornerX, cornerY, 0.25, -1, TRANSP_COLOR)
-                
+                Call canvas2canvasBltTranslucentPartial(cnvFrameID, _
+                                                        cnvTarget, _
+                                                        cornerX, _
+                                                        cornerY, _
+                                                        offsetX, _
+                                                        offsetY, _
+                                                        renderWidth, _
+                                                        renderHeight, _
+                                                        0.25, -1, _
+                                                        TRANSP_COLOR)
             End If
             
         Else
             'Draw solid. Transparent refers to the transparent colour (alpha) on the frame.
             
             If cnvTarget = -1 Then 'Draw to screen
-                Call DXDrawCanvasTransparentPartial(cnvFrameID, cornerX, cornerY, offsetX, offsetY, renderWidth, renderHeight, TRANSP_COLOR)
                 
+                Call DXDrawCanvasTransparentPartial(cnvFrameID, _
+                                                    cornerX, _
+                                                    cornerY, _
+                                                    offsetX, _
+                                                    offsetY, _
+                                                    renderWidth, _
+                                                    renderHeight, _
+                                                    TRANSP_COLOR)
             Else 'Draw to canvas
 
-                Call canvas2CanvasBltTransparentPartial(cnvFrameID, cnvTarget, cornerX, cornerY, offsetX, offsetY, renderWidth, renderHeight, TRANSP_COLOR)
-                Call canvas2CanvasBltTransparentPartial(cnvFrameID, cnvTarget, cornerX, cornerY, offsetX, offsetY, renderWidth, renderHeight, TRANSP_COLOR)
-
+                Call canvas2CanvasBltTransparentPartial(cnvFrameID, _
+                                                        cnvTarget, _
+                                                        cornerX, _
+                                                        cornerY, _
+                                                        offsetX, _
+                                                        offsetY, _
+                                                        renderWidth, _
+                                                        renderHeight, _
+                                                        TRANSP_COLOR)
             End If
         End If
-        
         
     Else 'Sprite is entirely on the board.
     
         'Check if we need to draw the sprite transluscently.
         
-        If drawTransluscently And bAccountForUnderTiles Then
-        'If bAccountForUnderTiles And (checkAbove(boardX, boardY, boardL) = 1 _
-            Or (targetTile = UNDER And Round(boardX) = xTarg And Round(boardY) = yTarg) _
-            Or (originTile = UNDER And Round(boardX) = xOrig And Round(boardY) = yOrig) _
-            Or (targetTile = UNDER And originTile = UNDER)) Then
-            
-            'If bAccountForUnderTiles AND [tiles on layers above
-            '    OR [Moving *to* "under" tile (target)]
-            '    OR [Moving *from* "under" tile (origin)]
-            '    OR [Moving between "under" tiles]]
-            
+        If drawTranslucently And bAccountForUnderTiles Then
             'If on "under" tiles, make sprite transluscent.
             
             If cnvTarget = -1 Then 'Draw to screen
-               Call DXDrawCanvasTranslucent(cnvFrameID, cornerX, cornerY, 0.25, -1, TRANSP_COLOR)
-               
+            
+               Call DXDrawCanvasTranslucent(cnvFrameID, _
+                                            cornerX, _
+                                            cornerY, _
+                                            0.25, -1, _
+                                            TRANSP_COLOR)
             Else 'Draw to canvas
-                'This should be Canvas2CanvasBlt transluscent!!
-                Call DXDrawCanvasTranslucent(cnvFrameID, cornerX, cornerY, 0.25, -1, TRANSP_COLOR)
                 
+                Call canvas2CanvasBltTranslucent(cnvFrameID, _
+                                                 cnvTarget, _
+                                                 cornerX, _
+                                                 cornerY, _
+                                                 0.25, , _
+                                                 TRANSP_COLOR)
             End If
             
         Else
             If cnvTarget = -1 Then 'Draw to screen
-                Call DXDrawCanvasTransparent(cnvFrameID, cornerX, cornerY, TRANSP_COLOR)
+            
+                Call DXDrawCanvasTransparent(cnvFrameID, _
+                                             cornerX, _
+                                             cornerY, _
+                                             TRANSP_COLOR)
             Else 'Draw to canvas
-                Call canvas2CanvasBltTransparent(cnvFrameID, cnvTarget, cornerX, cornerY, TRANSP_COLOR)
+            
+                Call canvas2CanvasBltTransparent(cnvFrameID, _
+                                                 cnvTarget, _
+                                                 cornerX, _
+                                                 cornerY, _
+                                                 TRANSP_COLOR)
             End If
         End If
     End If
