@@ -1268,7 +1268,7 @@ End Sub
 '=========================================================================
 ' Determine if an item is idle
 '=========================================================================
-Private Function isItemIdle(ByVal num As Long) As Boolean
+Public Function isItemIdle(ByVal num As Long, Optional ByVal refresh As Boolean) As Boolean
 
     On Error GoTo fin
 
@@ -1279,6 +1279,11 @@ Private Function isItemIdle(ByVal num As Long) As Boolean
     ReDim Preserve lastDir(maxItem)     'Make one spot for each item
 
     Dim skipSecondCheck As Boolean      'Skip the second check?
+
+    If (refresh) Then
+        'Update time stamp
+        timeStamps(num) = Timer()
+    End If
 
     With itmPos(num)
 
@@ -1334,13 +1339,18 @@ End Function
 '=========================================================================
 ' Determine if a player is idle
 '=========================================================================
-Private Function isPlayerIdle(ByVal num As Long) As Boolean
+Public Function isPlayerIdle(ByVal num As Long, Optional ByVal refresh As Boolean) As Boolean
 
     On Error GoTo fin
 
     Static timeStamps(4) As Double   'Time stamps of idleness
     Static lastDir(4) As String      'Last direction
     Dim skipSecondCheck As Boolean   'Skip the second check?
+
+    If (refresh) Then
+        'Update time stamp
+        timeStamps(num) = Timer()
+    End If
 
     With pPos(num)
 

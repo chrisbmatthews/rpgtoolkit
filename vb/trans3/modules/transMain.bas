@@ -183,7 +183,7 @@ Private Function getMainFilename() As String
             Else
                 getMainFilename = loadedMainFile
             End If
-        
+
         End If
 
     End If
