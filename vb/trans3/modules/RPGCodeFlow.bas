@@ -215,13 +215,10 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             'restore stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
             
-            If dataG = 0 Then
+            If (dataG = 0) Or (Not (InStr(1, lit, Chr(34)))) Then
                 dUse$ = CStr(num)
             Else
                 dUse$ = lit$
-                If (Not (InStr(1, lit, Chr(34)))) Then
-                    dUse = lit & "!"
-                End If
             End If
             
             If Right(destList$(pList), 1) <> "!" And Right(destList$(pList), 1) <> "$" Then
