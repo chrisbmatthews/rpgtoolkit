@@ -36,7 +36,7 @@ Begin VB.Form frmMain
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Release 3.0.4 (September 2004)"
+      Caption         =   "Release 3.0.5 (December 2004)"
       ForeColor       =   &H00000000&
       Height          =   255
       Left            =   120
