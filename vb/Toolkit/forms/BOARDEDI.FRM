@@ -1173,7 +1173,7 @@ End Sub
 '========================================================================
 ' select new tile type {from tkMainForm: tiletypes_MouseDown}
 '========================================================================
-Public Sub ChangeTileType(ByRef button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single): On Error Resume Next
+Public Sub ChangeTileType(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single): On Error Resume Next
     
     Dim ttype As Long, colorCode As Long, levelnum As Long, aPoint As Long, xx As Long, yy As Long
     
@@ -2060,7 +2060,7 @@ End Sub
 '========================================================================
 ' when board is clicked
 '========================================================================
-Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
     
     ' update board as changed
     boardList(activeBoardIndex).boardNeedUpdate = True
@@ -2079,7 +2079,7 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
     yy = pixelToBoardCoordY(X, Y)
     
     ' left click
-    If button = 1 Then
+    If Button = 1 Then
     
         ' if gradient is about to be defined
         If boardList(activeBoardIndex).boardAboutToDefineGradient = True Then
@@ -2439,7 +2439,7 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
     End If
     
     ' right click {show tile info}
-    If button = 2 Then
+    If Button = 2 Then
     
         Dim i As Integer
 
@@ -2487,14 +2487,18 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
     ignore = 0
     
     ' redraw board
-    If redraw = True Then Call boardRedraw
+    If (redraw) Then
+        Call boardRedraw
+    Else
+        Call refreshGrid
+    End If
     
 End Sub
 
 '========================================================================
 ' when mouse moves over board
 '========================================================================
-Private Sub boardform_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub boardform_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
     
     Dim xx As Long, yy As Long
     
@@ -2511,8 +2515,8 @@ Private Sub boardform_MouseMove(button As Integer, Shift As Integer, X As Single
     End If
     
     ' if left mouse button held down
-    If button = 1 Then
-        Call boardform_MouseDown(button, Shift, X, Y)
+    If Button = 1 Then
+        Call boardform_MouseDown(Button, Shift, X, Y)
     End If
     
 End Sub
