@@ -722,8 +722,10 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                                             End Select
                                             ' Fill in new data
                                             Call getValue(theVal, lit, numberUse(tokenIdx - 1), theProgram)
-                                            ' Flag this spot holds an identity
+                                            ' Nullify this position
                                             nulled(tokenIdx) = True
+                                            ' Count functions as variable
+                                            bIsVar(tokenIdx) = True
                                         End If ' isMethodMember
                                     End If ' isObject
                                 End If ' (num <> 0)
