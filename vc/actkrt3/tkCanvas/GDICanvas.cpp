@@ -858,237 +858,287 @@ int CGDICanvas::BltTranslucent(CGDICanvas* pCanvas, int x, int y, double dIntens
 	}
 	return nToRet;
 }
-int CGDICanvas::BltTranslucent(LPDIRECTDRAWSURFACE7 lpddsSurface, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor)
+
+//
+// Translucent blit
+//
+int CGDICanvas::BltTranslucent(const LPDIRECTDRAWSURFACE7 lpddsSurface, const int x, const int y, const double dIntensity, long crUnaffectedColor, long crTransparentColor)
 {
-	int nToRet = 0;
-	if (lpddsSurface && this->usingDX())
+
+	// If we have a valid surface ptr and we're using DirectX
+	if (lpddsSurface && usingDX())
 	{
-		//do a quick blt on my own...
-		RECT destRect;
-		SetRect(&destRect, x, y, x+this->GetWidth(), y+this->GetHeight());
 
-		RECT rect;
-		SetRect(&rect, 0, 0, this->GetWidth(), this->GetHeight());
-
-		//lock the destination surface...
+		// Lock the destination surface
 		DDSURFACEDESC2 destSurface;
-		memset(&destSurface, 0, sizeof(DDSURFACEDESC2));
-		destSurface.dwSize = sizeof(DDSURFACEDESC2);
+		INIT_DD_STRUCT(destSurface);
 		HRESULT hr = lpddsSurface->Lock(NULL, &destSurface, DDLOCK_SURFACEMEMORYPTR | DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
-		if (!FAILED(hr))
+
+		if (FAILED(hr))
 		{
-			//lock the source surface...
-			DDSURFACEDESC2 srcSurface;
-			memset(&srcSurface, 0, sizeof(DDSURFACEDESC2));
-			srcSurface.dwSize = sizeof(DDSURFACEDESC2);
-			hr = GetDXSurface()->Lock(NULL, &srcSurface, DDLOCK_SURFACEMEMORYPTR | DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
-			if (!FAILED(hr))
+			// Return failed
+			return 0;
+		}
+
+		// Lock the source surface
+		DDSURFACEDESC2 srcSurface;
+		INIT_DD_STRUCT(srcSurface);
+		hr = GetDXSurface()->Lock(NULL, &srcSurface, DDLOCK_SURFACEMEMORYPTR | DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
+
+		if (FAILED(hr))
+		{
+
+			// Unlock destination surface
+			lpddsSurface->Unlock(NULL);
+
+			// Failed
+			return 0;
+
+		}
+
+		// Obtain the pixel format
+		DDPIXELFORMAT ddpfDest;
+		INIT_DD_STRUCT(ddpfDest);
+		lpddsSurface->GetPixelFormat(&ddpfDest);
+
+		// (Could kill this check by saving color depth and using function pointer?)
+
+		// Switch on pixel format
+		switch (ddpfDest.dwRGBBitCount)
+		{
+
+			// 32-bit color depth
+			case 32:
 			{
 
-				DDPIXELFORMAT ddpfDest;
-				memset(&ddpfDest, 0, sizeof(DDPIXELFORMAT));
-				ddpfDest.dwSize = sizeof(DDPIXELFORMAT);
-				lpddsSurface->GetPixelFormat(&ddpfDest);
+				// Calculate pixels per row
+				const int nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 
-				//I'm going to assume that the source and destination pixel formats are the same
-				//maybe a bad assumption, I don't know :)
-				switch (ddpfDest.dwRGBBitCount)
+				// Obtain pointers to the surfaces
+				// (*const means that the address pointed to will not change, but
+				// the data at that address can be changed freely)
+				DWORD *const pSurfDest = reinterpret_cast<DWORD *>(destSurface.lpSurface);
+				DWORD *const pSurfSrc = reinterpret_cast<DWORD *>(srcSurface.lpSurface);
+
+				// For the y axis
+				for (int yy = 0; yy < m_nHeight; yy++)
 				{
-					case 32:
+
+					// Calculate index into destination and source, respectively
+					int idxd = (yy + y) * nPixelsPerRow + x;
+					int idx = yy * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
+
+					// For the x axis
+					for (int xx = 0; xx < m_nWidth; xx++)
 					{
-						int nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount/8);
-						DWORD* pSurfDest = (DWORD*)destSurface.lpSurface;
-						DWORD* pSurfSrc = (DWORD*)srcSurface.lpSurface;
 
-						//now blt!!!
-						int idx = 0;	//index into source surface...
-						for (int yy = 0; yy < GetHeight(); yy++)
+						// Obtain a pixel in RGB format
+						const long srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
+
+						// Check for unaffected color
+						if (srcRGB == crUnaffectedColor)
 						{
-							int idxd = (yy+y)*nPixelsPerRow + x;
-							idx = yy * ( srcSurface.lPitch / (ddpfDest.dwRGBBitCount/8) ) + 0;
-							for (int xx=0; xx < GetWidth(); xx++)
-							{
-								long src = pSurfSrc[idx];
-								long dest = pSurfDest[idxd];
-								//convert pixels to RGB...
-								long srcRGB = ConvertDDColor(src, &ddpfDest);
-								long destRGB = ConvertDDColor(dest, &ddpfDest);
-
-								int r, g, b;
-								if (srcRGB == crUnaffectedColor)
-								{
-									r = GetRValue(srcRGB);
-									g = GetGValue(srcRGB);
-									b = GetBValue(srcRGB);
-								}
-								else
-								{
-									if (srcRGB != crTransparentColor)
-									{
-										r = (GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity));
-										g = (GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity));
-										b = (GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity));
-									}
-								}
-								if (srcRGB != crTransparentColor)
-								{
-									//ok, r, g, b contain the color we should set the dest to...
-									DWORD dClr = ConvertColorRef(RGB(r, g, b), &ddpfDest);
-									pSurfDest[idxd] = dClr;
-								}
-								
-								//pSurfDest[idxd] = pSurfSrc[idx];
-								idx++;
-								idxd++;
-							}
+							// Directly copy
+							pSurfDest[idxd] = ConvertColorRef(srcRGB, &ddpfDest);
 						}
-					}
-					break;
 
-					case 24:
-					{
-						//obtain modified params...
-						long crTemp = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
-						if (crUnaffectedColor != -1)
+						// Check for opaque color
+						else if (srcRGB != crTransparentColor)
 						{
-							SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crUnaffectedColor);
-							crUnaffectedColor =GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
-						}
-						if (crTransparentColor != -1)
-						{
-							SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTransparentColor);
-							crTransparentColor =GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
-						}
-						SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTemp);
-						for (int yy = 0; yy < GetHeight(); yy++)
-						{
-							for (int xx=0; xx < GetWidth(); xx++)
-							{
-								long srcRGB = GetRGBPixel(&srcSurface, &ddpfDest, xx, yy);
-								long destRGB = GetRGBPixel(&destSurface, &ddpfDest, xx+x, yy+y);
-								//long src = pSurfSrc[idx];
-								//long dest = pSurfDest[idxd];
 
-								int r, g, b;
-								if (srcRGB == crUnaffectedColor)
-								{
-									r = GetRValue(srcRGB);
-									g = GetGValue(srcRGB);
-									b = GetBValue(srcRGB);
-								}
-								else
-								{
-									if (srcRGB != crTransparentColor)
-									{
-										r = (GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity));
-										g = (GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity));
-										b = (GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity));
-									}
-								}
-								if (srcRGB != crTransparentColor)
-								{
-									//ok, r, g, b contain the color we should set the dest to...
-									long crColor = RGB(r, g, b);
-									SetRGBPixel(&destSurface, &ddpfDest, x+xx, y+yy, crColor);
-								}
-							}
-						}
-					}
-					break;
+							// Obtain destination RGB
+							const long destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
 
-					case 16:
-					{
-						int nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount/8);
-						WORD* pSurfDest = (WORD*)destSurface.lpSurface;
-						WORD* pSurfSrc = (WORD*)srcSurface.lpSurface;
+							// Calculate translucent rgb value
+							const int r = (GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity));
+							const int g = (GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity));
+							const int b = (GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity));
 
-						//now blt!!!
-						int idx = 0;	//index into source surface...
-						for (int yy = 0; yy < GetHeight(); yy++)
-						{
-							int idxd = (yy+y)*nPixelsPerRow + x;
-							idx = yy * ( srcSurface.lPitch / (ddpfDest.dwRGBBitCount/8) ) + 0;
-							for (int xx=0; xx < GetWidth(); xx++)
-							{
-								long src = pSurfSrc[idx];
-								long dest = pSurfDest[idxd];
-								//convert pixels to RGB...
-								long srcRGB = ConvertDDColor(src, &ddpfDest);
-								long destRGB = ConvertDDColor(dest, &ddpfDest);
+							// Lay down translucently
+							pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
 
-								int r, g, b;
-								if (srcRGB == crUnaffectedColor)
-								{
-									r = GetRValue(srcRGB);
-									g = GetGValue(srcRGB);
-									b = GetBValue(srcRGB);
-								}
-								else
-								{
-									if (srcRGB != crTransparentColor)
-									{
-										r = (GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity));
-										g = (GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity));
-										b = (GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity));
-									}
-								}
-								if (srcRGB != crTransparentColor)
-								{
-									//ok, r, g, b contain the color we should set the dest to...
-									WORD dClr = ConvertColorRef(RGB(r, g, b), &ddpfDest);
-									pSurfDest[idxd] = dClr;
-								}
-								
-								//pSurfDest[idxd] = pSurfSrc[idx];
-								idx++;
-								idxd++;
-							}
 						}
-					}
-					break;
 
-					default:
-					{
-						//unsupported color depth, just blt...
-						GetDXSurface()->Unlock(NULL);
-						lpddsSurface->Unlock(NULL);
-						if (crTransparentColor == -1)
-						{
-							return this->Blt(lpddsSurface, x, y);
-						}
-						else
-						{
-							return this->BltTransparent(lpddsSurface, x, y, crTransparentColor);
-						}
-					}
+						// Increment position on surfaces
+						idx++;
+						idxd++;
+
+					} // x axis
+				} // y axis
+			} break; // 32 bit blt
+
+			// 24 bit color depth
+			case 24:
+			{
+
+				// Modify RGB params by setting and getting a pixel
+				const long crTemp = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
+				if (crUnaffectedColor != -1)
+				{
+					// Modify unaffected color
+					SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crUnaffectedColor);
+					crUnaffectedColor = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
 				}
+				if (crTransparentColor != -1)
+				{
+					// Modify transparent color
+					SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTransparentColor);
+					crTransparentColor = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
+				}
+				// Set back down pixel
+				SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTemp);
 
+				// For the y axis
+				for (int yy = 0; yy < m_nHeight; yy++)
+				{
+
+					// For the x axis
+					for (int xx = 0; xx < m_nWidth; xx++)
+					{
+
+						// Get pixel on source surface
+						const long srcRGB = GetRGBPixel(&srcSurface, &ddpfDest, xx, yy);
+
+						// Check for unaffected color
+						if (srcRGB == crUnaffectedColor)
+						{
+							// Just copy over
+							SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, srcRGB);
+						}
+
+						// If color is not transparent
+						else if (srcRGB != crTransparentColor)
+						{
+
+							// Obtain destination pixel
+							const long destRGB = GetRGBPixel(&destSurface, &ddpfDest, xx + x, yy + y);
+
+							// Calculate new rgb color
+							const int r = (GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity));
+							const int g = (GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity));
+							const int b = (GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity));
+
+							// Set the pixel
+							SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, RGB(r, g, b));
+
+						}
+
+					} // x axis
+				} // y axis
+			} break; // 24 bit blt
+
+			// 16 bit color depth
+			case 16:
+			{
+
+				// Calculate pixels per row
+				const int nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+
+				// Obtain pointers to the surfaces
+				// (*const means that the address pointed to will not change, but
+				// the data at that address can be changed freely)
+				WORD *const pSurfDest = reinterpret_cast<WORD *>(destSurface.lpSurface);
+				WORD *const pSurfSrc = reinterpret_cast<WORD *>(srcSurface.lpSurface);
+
+				// For the y axis
+				for (int yy = 0; yy < m_nHeight; yy++)
+				{
+
+					// Calculate index into destination and source, respectively
+					int idxd = (yy + y) * nPixelsPerRow + x;
+					int idx = yy * (srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8));
+
+					// For the x axis
+					for (int xx = 0; xx < m_nWidth; xx++)
+					{
+
+						// Obtain a pixel in RGB format
+						const long srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
+
+						// Check for unaffected color
+						if (srcRGB == crUnaffectedColor)
+						{
+							// Directly copy
+							pSurfDest[idxd] = ConvertColorRef(srcRGB, &ddpfDest);
+						}
+
+						// Check for opaque color
+						else if (srcRGB != crTransparentColor)
+						{
+
+							// Obtain destination RGB
+							const long destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
+
+							// Calculate translucent rgb value
+							const int r = (GetRValue(srcRGB) * dIntensity) + (GetRValue(destRGB) * (1 - dIntensity));
+							const int g = (GetGValue(srcRGB) * dIntensity) + (GetGValue(destRGB) * (1 - dIntensity));
+							const int b = (GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity));
+
+							// Lay down translucently
+							pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
+
+						}
+
+						// Increment position on surfaces
+						idx++;
+						idxd++;
+
+					} // x axis
+				} // y axis
+			} break; // 16 bit blt
+
+			// Unsupported color depth
+			default:
+			{
+
+				// Unlock surfaces
 				GetDXSurface()->Unlock(NULL);
 				lpddsSurface->Unlock(NULL);
-				nToRet = 1;
-			}
-			else
-			{
-				nToRet = 0;
-				lpddsSurface->Unlock(NULL);
-			}
-		}
-		else
-		{
-			nToRet = 0;
-		}
-	}
-	else
+
+				// If a transp color is not set
+				if (crTransparentColor == -1)
+				{
+					// Just no direct blt
+					return Blt(lpddsSurface, x, y);
+				}
+				else
+				{
+					// Else, do transp blt
+					return BltTransparent(lpddsSurface, x, y, crTransparentColor);
+				}
+
+			} break;
+
+		} // Color depth switch
+
+		// Unlock the surfaces
+		GetDXSurface()->Unlock(NULL);
+		lpddsSurface->Unlock(NULL);
+
+		// All's good
+		return 1;
+
+	} // Can use DirectX
+
+	else if (lpddsSurface)
 	{
-		if (lpddsSurface)
-		{
-			HDC hdc = 0;
-			lpddsSurface->GetDC(&hdc);
-			nToRet = BltTranslucent(hdc, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
-			lpddsSurface->ReleaseDC(hdc);
-		}
+
+		// Not using DirectX, but we have a surface
+		HDC hdc = 0;
+		lpddsSurface->GetDC(&hdc);
+
+		// Do super slow GDI blt
+		const int nToRet = BltTranslucent(hdc, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
+		lpddsSurface->ReleaseDC(hdc);
+
+		// Return the result
+		return nToRet;
+
 	}
-	return nToRet;
+
+	// If we made it here, we failed
+	return 0;
+
 }
 
 
@@ -1291,14 +1341,14 @@ long CGDICanvas::GetRGBColor(long crColor)
 //Returning information
 //////////////////////////////////////////////////////////////////////
 //return width
-int CGDICanvas::GetWidth()
+inline int CGDICanvas::GetWidth()
 {
 	//return the width
 	return(m_nWidth);
 }
 
 //return height
-int CGDICanvas::GetHeight()
+inline int CGDICanvas::GetHeight()
 {
 	//return the height
 	return(m_nHeight);
