@@ -91,7 +91,7 @@ Public Property Let animationDelay(ByVal newVal As Double)
 End Property
 
 Public Property Get framesPerMove() As Double
-    framesPerMove = Round(2 / slackTime)
+    framesPerMove = Round(4 / slackTime)
 End Property
 
 Public Function onlyDecimal(ByVal number As Double) As Double
