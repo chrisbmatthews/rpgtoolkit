@@ -110,7 +110,7 @@ Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
         ene = parties(partyIdx).fighterList(fightIdx).enemy
         
         'Check if there is an AI program
-        If (LenB(ene.eneRPGCode) <> 0) Then
+        If (LenB(ene.eneRPGCode)) Then
             'Yep-- there is
 
             Dim a As Long, b As Long
@@ -155,9 +155,8 @@ Public Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighter
     
     If fightInProgress Then
         'yup-- send it
-        If (LenB(mainMem.fightPlugin) <> 0) Then
-            Dim code As Long
-            code = INFORM_SOURCE_ATTACK
+        If (LenB(mainMem.fightPlugin)) Then
+            Const code As Long = INFORM_SOURCE_ATTACK
             
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -181,7 +180,7 @@ Public Sub fightInformRemoveStat(ByVal targetPartyIndex As Long, ByVal targetFig
     
     If fightInProgress Then
         'yup-- send it
-        If (LenB(mainMem.fightPlugin) <> 0) Then
+        If (LenB(mainMem.fightPlugin)) Then
             Dim code As Long
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -216,7 +215,7 @@ Public Sub fightInformItemUse(ByVal sourcePartyIndex As Long, ByVal sourceFighte
     
     If fightInProgress Then
         'yup-- send it
-        If (LenB(mainMem.fightPlugin) <> 0) Then
+        If (LenB(mainMem.fightPlugin)) Then
             Const code = INFORM_SOURCE_ITEM
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -238,7 +237,7 @@ Public Sub fightInformSpecialMove(ByVal sourcePartyIndex As Long, ByVal sourceFi
     
     If fightInProgress Then
         'yup-- send it
-        If (LenB(mainMem.fightPlugin) <> 0) Then
+        If (LenB(mainMem.fightPlugin)) Then
             Const code = INFORM_SOURCE_SMP
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -261,7 +260,7 @@ Public Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
 
     If fightInProgress Then
         'yup-- send it
-        If (LenB(mainMem.fightPlugin) <> 0) Then
+        If (LenB(mainMem.fightPlugin)) Then
             Const code = INFORM_SOURCE_PARTY_DEFEATED
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -284,7 +283,7 @@ Public Sub fightInformCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
     
     If fightInProgress Then
         'yup-- send it
-        If (LenB(mainMem.fightPlugin) <> 0) Then
+        If (LenB(mainMem.fightPlugin)) Then
             Const code = INFORM_SOURCE_CHARGED
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -431,7 +430,7 @@ Private Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     End If
     
     For t = 0 To UBound(playerListAr)
-        If LenB(playerListAr(t)) <> 0 Then
+        If LenB(playerListAr(t)) Then
             Call giveExperience(exp, playerMem(t))
         End If
     Next t
@@ -439,7 +438,7 @@ Private Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     GPCount = GPCount + gp
     
     'run rpgcode program, if any
-    If LenB(rewardPrg) <> 0 Then
+    If LenB(rewardPrg) Then
         Call runProgram(projectPath & prgPath & rewardPrg)
     End If
 End Sub
@@ -477,7 +476,7 @@ Public Sub runFight( _
 
     If (fightInProgress) Then Exit Sub
 
-    If (LenB(mainMem.fightPlugin) <> 0) Then
+    If (LenB(mainMem.fightPlugin)) Then
 
         Dim isFightPlugin As Long
         Dim plugName As String
@@ -509,13 +508,13 @@ Public Sub runFight( _
             ReDim eParty(num) As TKEnemy
             For t = 0 To num - 1
                 eParty(t) = enemyMem(t)
-                If LenB(enemyMem(t).eneRunPrg) <> 0 Then
+                If LenB(enemyMem(t).eneRunPrg) Then
                     strRunProgram = enemyMem(t).eneRunPrg
                 End If
                 If enemyMem(t).eneRun = 0 Then
                     canrun = 0
                 End If
-                If LenB(enemyMem(t).eneWinPrg) <> 0 Then
+                If LenB(enemyMem(t).eneWinPrg) Then
                     strRewardProgram = enemyMem(t).eneWinPrg
                 End If
             Next t
@@ -524,14 +523,14 @@ Public Sub runFight( _
             ' Create player party
             cnt = 0
             For t = 0 To UBound(playerMem)
-                If LenB(playerFile(t)) <> 0 Then
+                If LenB(playerFile(t)) Then
                     cnt = cnt + 1
                 End If
             Next t
             ReDim pParty(cnt) As TKPlayer
             cnt = 0
             For t = 0 To UBound(playerMem)
-                If LenB(playerFile(t)) <> 0 Then
+                If LenB(playerFile(t)) Then
                     pParty(cnt) = playerMem(t)
                     cnt = cnt + 1
                 End If
@@ -553,7 +552,7 @@ Public Sub runFight( _
             Else
                 fightOutcome = PLUGFight(plugName, num, -1, bkg, canrun)
             End If
-            
+
             Select Case fightOutcome
 
                 Case FIGHT_RUN_AUTO     'R an away
@@ -641,7 +640,7 @@ End Sub
 '=========================================================================
 Public Sub startFightPlugin()
     On Error Resume Next
-    If (LenB(mainMem.fightPlugin) <> 0) Then
+    If (LenB(mainMem.fightPlugin)) Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         If Not isComPlugin(plugName) Then
@@ -657,7 +656,7 @@ End Sub
 '=========================================================================
 Public Sub stopFightPlugin()
     On Error Resume Next
-    If (LenB(mainMem.fightPlugin) <> 0) Then
+    If (LenB(mainMem.fightPlugin)) Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         If isComPlugin(plugName) Then

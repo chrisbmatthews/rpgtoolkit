@@ -380,7 +380,7 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
     For layer = 1 To boardList(activeBoardIndex).theData.bSizeL
         Dim bgt As String
         bgt = BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData)
-        If LenB(bgt) <> 0 Then
+        If LenB(bgt) Then
             'If there is a tile here.
 
             Call drawTileCNV(cnvScrollCache, _
@@ -505,7 +505,7 @@ Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
     
     On Error Resume Next
 
-    If LenB(boardList(activeBoardIndex).theData.brdBack) <> 0 Then
+    If LenB(boardList(activeBoardIndex).theData.brdBack) Then
         'If there is a background.
     
         Dim pixelTopX As Long, pixelTopY As Long
@@ -705,7 +705,7 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                 For lll = 1 To boardList(activeBoardIndex).theData.bSizeL
                     Dim bgt As String
                     bgt = BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData)
-                    If LenB(bgt) <> 0 Then
+                    If LenB(bgt) Then
                         ext$ = GetExt(bgt)
                         If UCase$(ext$) <> "TAN" Then
                             'not the animated part
@@ -777,7 +777,7 @@ Private Function renderBackground() As Boolean
         ' Fill bkg will black
         Call CanvasFill(cnvBackground, 0)
         ' If there's an image set
-        If (LenB(boardList(activeBoardIndex).theData.brdBack) <> 0) Then
+        If (LenB(boardList(activeBoardIndex).theData.brdBack)) Then
             ' Load the image, stretching to fit the board
             Call CanvasLoadFullPicture(cnvBackground, projectPath & bmpPath & boardList(activeBoardIndex).theData.brdBack, resX, resY)
         End If
@@ -1077,7 +1077,7 @@ Private Function renderPlayer(ByVal cnv As Long, _
                 End Select
 
                 If direction <> -1 Then
-                    If LenB(thePlayer.standingGfx(direction)) <> 0 Then
+                    If LenB(thePlayer.standingGfx(direction)) Then
                         'If so, change the stance to STANDing.
                         .stance = "stand" & Right$(.stance, Len(.stance) - 4)
 
@@ -1195,7 +1195,7 @@ Private Function renderItem(ByVal cnv As Long, _
                 
                 'Check that a standing graphic for this direction exists.
                 If direction <> -1 Then
-                    If LenB(theItem.standingGfx(direction)) <> 0 Then
+                    If LenB(theItem.standingGfx(direction)) Then
                         'If so, change the stance to STANDing.
                         .stance = "stand" & Right$(.stance, Len(.stance) - 4)
                         

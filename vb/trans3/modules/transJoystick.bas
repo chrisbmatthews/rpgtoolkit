@@ -232,7 +232,7 @@ Function joyDirection(ByRef buttonOnOff() As Boolean) As Integer
     rc = joyGetPosEx(JOYSTICKID1, ji)
    
     ' Display the status
-    If (rc <> 0) Then
+    If (rc) Then
         useJoystick = False
         Exit Function
     End If

@@ -265,7 +265,7 @@ End Function
 '=========================================================================
 ' Evaluates if the text passed in is true (1) or false (0)
 '=========================================================================
-Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Optional ByRef didEvaluate As Boolean) As Long
+Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Optional ByRef didEvaluate As Boolean, Optional ByRef pStrOut As String) As Long
 
     '// Passing string(s) ByRef for preformance related reasons
 
@@ -294,7 +294,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
         ' Check if logic was found
         Dim partUb As Long
         partUb = UBound(parts)
-        If (partUb <> 0) Then
+        If (partUb) Then
 
             Dim toRet As Long
 
@@ -445,7 +445,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
             End If
 
-            If (numVal(idx) <> 0) Then
+            If (numVal(idx)) Then
                 ' Becomes false
                 numVal(idx) = 0
             Else
@@ -460,7 +460,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
         End If
 
-        If (idx <> 0) Then
+        If (idx) Then
 
             ' Check for type mismatch
             If (typeVal(idx) <> typeVal(0)) Then
@@ -571,6 +571,11 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
             End Select
 
         Next idx
+
+        If Not (IsMissing(pStrOut)) Then
+            ' Pass out the final string
+            pStrOut = strVal(valueUb)
+        End If
 
         If ((Not (didEvaluate)) And (Not (prg.strict))) Then
             evaluate = -((CLng(strVal(valueUb))) <> 0)
@@ -1151,7 +1156,7 @@ Public Function ParseRPGCodeCommand( _
                                         Dim theInlineCommand As String
                                         theInlineCommand = UCase$(GetCommandName(cN))
 
-                                        If (LenB(theInlineCommand) <> 0) Then
+                                        If (LenB(theInlineCommand)) Then
 
                                             ' Now let's execute this command
                                             oPP = prg.programPos
@@ -1270,37 +1275,33 @@ Public Function MWinPrepare(ByVal Text As String, ByRef prg As RPGCodeProgram) A
     firstLocation = InStr(1, Text, "<")
 
     'If we found one
-    If (firstLocation <> 0) Then
+    If (firstLocation) Then
 
         'Find the associated >
         Dim secondLocation As Long
         secondLocation = InStr(1, Text, ">")
 
         'If we found one
-        If (secondLocation <> 0) Then
+        If (secondLocation) Then
 
             'Get the name of the variable between them
             Dim theVar As String
             theVar = Mid$(Text, firstLocation + 1, secondLocation - firstLocation - 1)
 
-            'Put the variable in brackets
-            Dim cLine As String
-            cLine = "(" & theVar & ")"
-
-            'Use GetParameters() to get its value
-            Dim value() As parameters
-            value() = GetParameters(cLine, prg)
+            ' Get its value
+            Dim value As parameters
+            value.dataType = getValue(theVar, value.lit, value.num, prg)
 
             'Change it to a string, if required
             Dim theValue As String
-            If (value(0).dataType <> DT_NUM) Then
-                theValue = value(0).lit
+            If (value.dataType <> DT_NUM) Then
+                theValue = value.lit
             Else
-                theValue = CStr(value(0).num)
+                theValue = CStr(value.num)
             End If
 
             'Replace <var!> with the var's value
-            Text = replace(Text, "<" & theVar & ">", theValue)
+            Text = replace(Text, "<" & theVar & ">", theValue, , 1)
 
             'Recurse passing in the running text
             MWinPrepare = MWinPrepare(Text, prg)
@@ -1361,7 +1362,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     Dim hClass As Long, hClassDbl As Double, lit As String
     Call getValue(variableName & "!", lit, hClassDbl, prg)
     hClass = CLng(hClassDbl)
-    If (hClass <> 0) Then
+    If (hClass) Then
         If (isObject(hClass, prg)) Then
             ' Check for overloaded [] operator
             If (Not isMethodMember("operator[]", hClass, prg, topNestle(prg) <> hClass)) Then
@@ -1410,7 +1411,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     arrayElements() = GetParameters(build, prg)
 
     ' Splice out the object's overloaded [] operator, if existent
-    If (hClass <> 0) Then
+    If (hClass) Then
         ' Create a return value
         Dim retval As RPGCODE_RETURN
         ' Call the method

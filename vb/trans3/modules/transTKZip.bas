@@ -137,7 +137,7 @@ Public Sub deletePath(ByVal path As String)
     
     Dim aFile As String
     aFile = Dir(path & "*.*")
-    Do While (LenB(aFile) <> 0)
+    Do While (LenB(aFile))
         Call Kill(path & aFile)
         aFile = Dir()
     Loop

@@ -208,7 +208,7 @@ Public Function playerGetCustomHandleIdx(ByRef thePlayer As TKPlayer, ByVal idx 
     Dim t As Long
     
     For t = 0 To UBound(thePlayer.customGfxNames)
-        If (LenB(thePlayer.customGfxNames(t)) <> 0) Then
+        If (LenB(thePlayer.customGfxNames(t))) Then
             If cnt = idx Then
                 playerGetCustomHandleIdx = t
                 Exit Function
@@ -477,7 +477,7 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
     Open file$ For Binary As #num
         Dim b As Byte
         Get #num, 14, b
-        If b <> 0 Then
+        If (b) Then
             Close #num
             GoTo ver2oldchar
         End If

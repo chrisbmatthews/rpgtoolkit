@@ -186,7 +186,7 @@ Public Sub BeginPlugins()
 
     Dim t As Long
     For t = 0 To UBound(mainMem.plugins)
-        If LenB(mainMem.plugins(t)) <> 0 Then
+        If LenB(mainMem.plugins(t)) Then
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
             If isComPlugin(plugName) Then
@@ -213,7 +213,7 @@ Public Sub EndPlugins()
 
     Dim t As Long
     For t = 0 To UBound(mainMem.plugins)
-        If (LenB(mainMem.plugins(t)) <> 0) Then
+        If (LenB(mainMem.plugins(t))) Then
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
             If (isComPlugin(plugName)) Then
@@ -392,7 +392,7 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
     Dim t As Long
     For t = 0 To UBound(mainMem.plugins)
 
-        If (LenB(mainMem.plugins(t)) <> 0) Then
+        If (LenB(mainMem.plugins(t))) Then
 
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))

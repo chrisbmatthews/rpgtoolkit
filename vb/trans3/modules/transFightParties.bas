@@ -141,7 +141,7 @@ Public Sub CreateEnemyParty(ByRef party As FighterParty, ByRef enemies() As TKEn
 
     'determine win program...
     For t = 0 To UBound(enemies)
-        If (LenB(enemies(t).eneRPGCode) <> 0) Then
+        If (LenB(enemies(t).eneRPGCode)) Then
             party.winProgram = enemies(t).eneRPGCode
         End If
     Next t
@@ -213,7 +213,7 @@ End Sub
 '=========================================================================
 Public Function getPartyMemberCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long) As Long
     On Error Resume Next
-    If parties(partyIdx).fighterList(fighterIdx).maxChargeTime <> 0 Then
+    If parties(partyIdx).fighterList(fighterIdx).maxChargeTime Then
         getPartyMemberCharge = parties(partyIdx).fighterList(fighterIdx).chargeCounter / _
                                parties(partyIdx).fighterList(fighterIdx).maxChargeTime * 100
     End If

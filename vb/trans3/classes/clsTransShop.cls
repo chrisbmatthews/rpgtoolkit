@@ -250,7 +250,7 @@ Private Sub createItemDisplay(ByVal theCanvas As Long, ByVal theType As SHOP_TYP
         ReDim m_itemStrcutures(.upperBound())
         For itmNum = 0 To .upperBound()
             Text = .handles(itmNum)
-            If (LenB(Text) <> 0) Then
+            If (LenB(Text)) Then
                 m_indices(curLine) = itmNum
                 m_itemStrcutures(curLine) = openItem(projectPath & itmPath & .fileNames(itmNum))
                 curLine = curLine + 1
@@ -318,7 +318,7 @@ Private Sub updateItemInfo(ByVal pos As Long)
     cnv = CreateCanvas(172, 399)
     Call CanvasFill(cnv, TRANSP_COLOR)
     With item(pos)
-        If (LenB(.itemName) <> 0) Then
+        If (LenB(.itemName)) Then
             Call CanvasDrawText(cnv, .itemName, fontName, 25, 1, 1, 0, , , True)
             Call CanvasDrawText(cnv, .itmDescription, fontName, 20, 1, (3 * 25 - 25) / 20, 0)
             If .MenuYN = 1 Then
@@ -433,7 +433,7 @@ Private Sub shopMenuScanKeys(ByVal baseCanvas As Long, ByVal theType As SHOP_TYP
             Call cursorDelay
             Exit Do
         ElseIf isPressed("ENTER") Or isPressed("SPACE") Or isPressed("RIGHT") Then
-            If (LenB(Trim$(handles(pos))) <> 0) Then
+            If (LenB(Trim$(handles(pos)))) Then
                 If processTransaction(pos, theType) Then
                     Call CanvasFill(cnv, 0)
                     If theType = Buy Then

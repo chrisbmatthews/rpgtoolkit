@@ -82,7 +82,7 @@ Public Sub Main()
     mainFile = getMainFilename()
 
     ' If we got one
-    If (LenB(mainFile) <> 0) Then
+    If (LenB(mainFile)) Then
 
         ' Open the main file
         Call openMain(mainFile, mainMem)
@@ -132,7 +132,7 @@ Private Function getMainFilename() As String
 
     On Error Resume Next
 
-    If (LenB(Command) <> 0) Then
+    If (LenB(Command)) Then
 
         Dim args() As String
         args() = Split(Command, " ")
@@ -313,7 +313,7 @@ Public Sub gameLogic()
             gameTime = (Timer() - initTime) + addTime
 
             ' Check the player's queue to see if movement is about to start.
-            If (LenB(pendingPlayerMovement(selectedPlayer).queue) <> 0) Then
+            If (LenB(pendingPlayerMovement(selectedPlayer).queue)) Then
                 ' There is a queue.
                 gGameState = GS_MOVEMENT
             End If
@@ -493,7 +493,7 @@ Private Sub initActiveX()
     On Error Resume Next
     Dim a As Long
     For a = 0 To UBound(mainMem.plugins)
-        If (LenB(mainMem.plugins(a)) <> 0) Then
+        If (LenB(mainMem.plugins(a))) Then
             Dim fullPath As String
             fullPath = projectPath & plugPath & mainMem.plugins(a)
             Call ExecCmd("regsvr32 /s """ & fullPath & """")
@@ -512,7 +512,7 @@ Private Sub closeActiveX()
     On Error Resume Next
     Dim a As Long
     For a = 0 To UBound(mainMem.plugins)
-        If (LenB(mainMem.plugins(a)) <> 0) Then
+        If (LenB(mainMem.plugins(a))) Then
             Dim fullPath As String
             fullPath = projectPath & plugPath & mainMem.plugins(a)
             Call ExecCmd("regsvr32 /s /u """ & fullPath & """")
@@ -587,11 +587,11 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     Call LoadFontsFromFolder(projectPath & fontPath)
 
     ' Change the DirectX host's caption to the game's title (for windowed mode)
-    If (LenB(mainMem.gameTitle) <> 0) Then
+    If (LenB(mainMem.gameTitle)) Then
         host.Caption = mainMem.gameTitle
     End If
 
-    If (LenB(mainMem.initChar) <> 0) Then
+    If (LenB(mainMem.initChar)) Then
         ' If a main character has been specified, load it
         Call CreateCharacter(projectPath & temPath & mainMem.initChar, 0)
     End If

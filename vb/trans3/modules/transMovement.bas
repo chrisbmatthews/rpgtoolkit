@@ -112,7 +112,7 @@ Public Function checkAbove(ByVal x As Long, ByVal y As Long, ByVal layer As Long
     Dim uptile As String
     For lay = layer + 1 To boardList(activeBoardIndex).theData.bSizeL
         uptile$ = BoardGetTile(x, y, lay, boardList(activeBoardIndex).theData)
-        If (LenB(uptile$) <> 0) Then
+        If (LenB(uptile$)) Then
         
             checkAbove = 1
             Exit Function
@@ -269,7 +269,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
     'Items.
     For i = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
     
-        If LenB(itemMem(i).itemName) <> 0 And i <> currentItem Then
+        If LenB(itemMem(i).itemName) And i <> currentItem Then
     
             Call isoCoordTransform(itmPos(i).x, itmPos(i).y, tPosX, tPosY)
             Call isoCoordTransform(pendingItemMovement(i).xTarg, _
@@ -440,7 +440,7 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
         bChanged = False
         For sx = 1 To boardList(activeBoardIndex).theData.bSizeX
             For sy = 1 To boardList(activeBoardIndex).theData.bSizeY
-                If Score(sx, sy) <> 0 Then
+                If Score(sx, sy) Then
                     'This square has been travelled to
                     'Check to see if we can go one step
                     'further
@@ -490,7 +490,7 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
     Dim toRet As String
     Dim lastX As Double
     Dim lastY As Double
-    If Score(x1, y1) <> 0 Then
+    If Score(x1, y1) Then
         'We found a path
                 
         toRet$ = vbNullString
@@ -512,7 +512,7 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
                         If iX >= 0 And iX <= boardList(activeBoardIndex).theData.bSizeX Then
                             If iY >= 0 And iY <= boardList(activeBoardIndex).theData.bSizeY Then
                                 
-                                If Score(iX, iY) < BestScore And Score(iX, iY) <> 0 Then
+                                If Score(iX, iY) < BestScore And Score(iX, iY) Then
                                     BestScore = Score(iX, iY)
                                     bestX = iX
                                     bestY = iY
@@ -1776,7 +1776,7 @@ Private Function getQueuedMovement(ByRef queue As String) As Long: On Error Resu
 
     Dim i As Long
         
-    If LenB(queue) <> 0 Then
+    If LenB(queue) Then
         'The queue exists, get the next movement.
         
         i = InStr(queue, ",")                   'Check for comma-split moves.
@@ -1875,22 +1875,12 @@ Public Sub setQueuedMovements(ByRef queue As String, ByRef path As String): On E
     End If
     
     'Queue the movements: add the elements to the player's queue.
-    If LenB(queue) <> 0 Then
+    If LenB(queue) Then
         queue = queue & "," & jString
     Else
         queue = jString
     End If
-        
-'Call traceString("in:setQueuedMovements queue = " & queue)
 
-        'Dim qLength As Long, dLength As Long, i As Long
-        'qLength = UBound(pendingPlayerMovement(handleNum).queue)
-        'dLength = UBound(directionArray)
-        'ReDim Preserve pendingPlayerMovement(handleNum).queue(qLength + dLength)
-        'For i = 0 To dLength
-        '    .queue(qLength + i) = directionArray(i)
-        'Next i
-        
 End Sub
 
 Private Function checkScrollNorth(ByVal playerNum As Long) As Boolean

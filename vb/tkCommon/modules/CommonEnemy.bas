@@ -221,7 +221,7 @@ Public Function enemyGetCustomHandleIdx(ByRef theEnemy As TKEnemy, ByVal idx As 
     Dim t As Long
     
     For t = 0 To UBound(theEnemy.customGfxNames)
-        If (LenB(theEnemy.customGfxNames(t)) <> 0) Then
+        If (LenB(theEnemy.customGfxNames(t))) Then
             If cnt = idx Then
                 enemyGetCustomHandleIdx = t
                 Exit Function
@@ -316,7 +316,7 @@ Public Function openEnemy(ByVal file As String) As TKEnemy
         Open file For Binary Access Read As num
             Dim b As Byte
             Get num, 15, b
-            If b <> 0 Then
+            If (b) Then
                 Close num
                 GoTo ver2oldEnemy
             End If

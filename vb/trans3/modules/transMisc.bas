@@ -45,7 +45,7 @@ Public Function determineSpecialMoves(ByVal handle As String, ByRef fileList() A
     For t = 0 To UBound(playerMem(cnum).smlist)
         Dim ignore As Long
         ignore = 0
-        If (LenB(playerMem(cnum).smlist$(t)) <> 0) Then
+        If (LenB(playerMem(cnum).smlist$(t))) Then
             'Now check if the player can use it yet:
             'First check exp.
             a = getIndependentVariable(playerMem(cnum).experienceVar$, l$, expl)
@@ -70,7 +70,7 @@ Public Function determineSpecialMoves(ByVal handle As String, ByRef fileList() A
             
             If ignore <> 1 Then
                 'now check conditioned var
-                If (LenB(playerMem(cnum).spcVar$(t)) <> 0) Then
+                If (LenB(playerMem(cnum).spcVar$(t))) Then
                     a = getIndependentVariable(playerMem(cnum).spcVar$(t), txt$, nn)
                     If a = 0 Then
                         'numerical
@@ -271,7 +271,7 @@ Public Sub openItems()
             If (runIt) And (LenB(.itmName(itemNum)) <> 0) Then
                 itemMem(itemNum) = openItem(projectPath & itmPath & .itmName(itemNum))
                 itemMem(itemNum).bIsActive = True
-                If (LenB(.itemMulti(itemNum)) <> 0) Then
+                If (LenB(.itemMulti(itemNum))) Then
                     multiPrg = .itemMulti(itemNum)
                 Else
                     multiPrg = itemMem(itemNum).itmPrgOnBoard
@@ -401,7 +401,7 @@ Public Function CanPlayerUse(ByVal num As Long, ByRef anItem As TKItem) As Boole
     Else
         Dim ll As Long
         For ll = 0 To UBound(anItem.itmChars)
-            If (LenB(anItem.itmChars$(ll)) <> 0) Then
+            If (LenB(anItem.itmChars$(ll))) Then
                 If UCase$(anItem.itmChars$(ll)) = UCase$(playerListAr$(num)) Then
                     okAll = 1
                 End If
@@ -423,7 +423,7 @@ Public Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     If (LenB(playerEquip$(equipNum, playerNum)) = 0) Then Exit Sub
 
     anItem = openItem(projectPath & itmPath & playerEquip$(equipNum, playerNum))
-    If (LenB(anItem.prgRemove$) <> 0) Then
+    If (LenB(anItem.prgRemove$)) Then
         Call runProgram(projectPath & prgPath & anItem.prgRemove$)
     End If
 
@@ -520,7 +520,7 @@ Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file 
     'Run equip program:
     targetType = TYPE_PLAYER
     target = playerNum
-    If (LenB(anItem.prgEquip) <> 0) Then
+    If (LenB(anItem.prgEquip)) Then
         Call runProgram(projectPath & prgPath & anItem.prgEquip)
     End If
 

@@ -97,12 +97,12 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
         'first check the joystick...
         Dim keyb As String
         keyb = getAsciiKey()
-        If LenB(keyb) <> 0 Then
+        If LenB(keyb) Then
             If Asc(LCase$(keyb)) >= 32 Then
                 textBoxContents = textBoxContents & LCase$(keyb)
             End If
             If Asc(keyb) = 8 Then
-                If LenB(textBoxContents) <> 0 Then
+                If LenB(textBoxContents) Then
                     textBoxContents = Mid$(textBoxContents, 1, Len(textBoxContents) - 1)
                 End If
             End If
@@ -222,7 +222,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     'obtain files...
     Dim a As String
     a = Dir(path + ext)
-    Do While LenB(a) <> 0
+    Do While LenB(a)
         Files(count) = a
         count = count + 1
         If count > UBound(Files) Then
@@ -301,12 +301,12 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         'first check the joystick...
         Dim keyb As String
         keyb = getAsciiKey()
-        If LenB(keyb) <> 0 Then
+        If LenB(keyb) Then
             If Asc(LCase$(keyb)) >= 32 Then
                 textBoxContents = textBoxContents & LCase$(keyb)
             End If
             If Asc(keyb) = 8 Then
-                If LenB(textBoxContents) <> 0 Then
+                If LenB(textBoxContents) Then
                     textBoxContents = Mid$(textBoxContents, 1, Len(textBoxContents) - 1)
                 End If
             End If
@@ -595,7 +595,7 @@ Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional 
     
     cnv = CreateCanvas(width, textSize * (subStrings + UBound(options) + 3))
     Call CanvasFill(cnv, bgColor)
-    If LenB(bgPic) <> 0 Then
+    If LenB(bgPic) Then
         Call CanvasLoadSizedPicture(cnv, bgPic)
     End If
     

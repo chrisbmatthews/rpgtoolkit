@@ -64,7 +64,7 @@ Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal re
     Dim aProgram As RPGCodeProgram
     ReDim aProgram.program(10)
     aProgram.boardNum = -1
-    If (number = selectedPlayer) And (LenB(newPlyrName$) <> 0) Then
+    If (number = selectedPlayer) And (LenB(newPlyrName) <> 0) Then
         Call NewPlyr("NewPlyr(""" & newPlyrName & """)", aProgram)
     End If
     
@@ -152,7 +152,7 @@ Public Sub LoadState(ByVal file As String)
                     Line Input #num, Temp$
                     'internationalisation-- convert ',' to '.'
                     Temp$ = replace(Temp$, ",", ".")
-                    If LenB(vName$) <> 0 Then
+                    If LenB(vName$) Then
                         Call SetNumVar(vName$, val(Temp$), globalHeap)
                     End If
                 Next t
@@ -162,7 +162,7 @@ Public Sub LoadState(ByVal file As String)
                     vName$ = vName & "$"
                     Line Input #num, Temp$
                     'internationalisation-- convert ',' to '.'
-                    If LenB(vName$) <> 0 Then
+                    If LenB(vName$) Then
                         Call SetLitVar(vName$, Temp$, globalHeap)
                     End If
                 Next t
@@ -174,7 +174,7 @@ Public Sub LoadState(ByVal file As String)
                     Line Input #num, Temp$
                     'internationalisation-- convert ',' to '.'
                     Temp$ = replace(Temp$, ",", ".")
-                    If LenB(vName$) <> 0 Then
+                    If LenB(vName$) Then
                         Call SetNumVar(vName$, val(Temp$), globalHeap)
                     End If
                 Next t
@@ -183,7 +183,7 @@ Public Sub LoadState(ByVal file As String)
                 For t = 1 To nCount
                     Line Input #num, vName$
                     Line Input #num, Temp$
-                    If LenB(vName$) <> 0 Then
+                    If LenB(vName$) Then
                         Call SetLitVar(vName$, Temp$, globalHeap)
                     End If
                 Next t
@@ -192,7 +192,7 @@ Public Sub LoadState(ByVal file As String)
                 For t = 1 To nCount
                     Line Input #num, vName$
                     Line Input #num, Temp$
-                    If LenB(vName$) <> 0 Then
+                    If LenB(vName$) Then
                         Call SetRedirect(vName$, Temp$)
                     End If
                 Next t
@@ -311,7 +311,7 @@ Public Sub LoadState(ByVal file As String)
         For t = 1 To nCount
             varname = BinReadString(num)
             varValue = BinReadDouble(num)
-            If LenB(varname) <> 0 Then
+            If LenB(varname) Then
                 Call SetNumVar(varname, varValue, globalHeap)
             End If
         Next t
@@ -320,7 +320,7 @@ Public Sub LoadState(ByVal file As String)
         For t = 1 To nCount
             varname = BinReadString(num)
             varString = BinReadString(num)
-            If LenB(varname) <> 0 Then
+            If LenB(varname) Then
                 Call SetLitVar(varname, varString, globalHeap)
             End If
         Next t
@@ -330,7 +330,7 @@ Public Sub LoadState(ByVal file As String)
         For t = 1 To nCount
             varname = BinReadString(num)
             varString = BinReadString(num)
-            If LenB(varname) <> 0 Then
+            If LenB(varname) Then
                 Call SetRedirect(varname, varString)
             End If
         Next t
@@ -432,7 +432,7 @@ Public Sub LoadState(ByVal file As String)
             dSleepDuration = BinReadDouble(num)
             
             Dim tID As Long
-            If (LenB(f) <> 0) Then
+            If (LenB(f)) Then
                 tID = CreateThread(f, bPersist)
                 Threads(tID).thread.programPos = pos
                 If (bSleep) Then
@@ -445,7 +445,7 @@ Public Sub LoadState(ByVal file As String)
             heaps = BinReadLong(num)
             Dim tt As Long
             For tt = 0 To heaps
-                If tt <> 0 Then
+                If tt Then
                     Call AddHeapToStack(Threads(t).thread)
                 End If
                 'read num vars...
@@ -455,7 +455,7 @@ Public Sub LoadState(ByVal file As String)
                 For ttt = 1 To nCount
                     varname = BinReadString(num)
                     varValue = BinReadDouble(num)
-                    If ((LenB(varname) <> 0) And (LenB(f) <> 0)) Then
+                    If ((LenB(varname) <> 0) And (LenB(f)) <> 0) Then
                         Call SetNumVar(varname, varValue, Threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
@@ -466,7 +466,7 @@ Public Sub LoadState(ByVal file As String)
                 For ttt = 1 To nCount
                     varname = BinReadString(num)
                     varString = BinReadString(num)
-                    If ((LenB(varname) <> 0) And (LenB(f) <> 0)) Then
+                    If ((LenB(varname) <> 0) And (LenB(f)) <> 0) Then
                         Call SetLitVar(varname, varString, Threads(t).thread.heapStack(tt))
                     End If
                 Next ttt
@@ -478,14 +478,14 @@ Public Sub LoadState(ByVal file As String)
 
         'Read rpgcode object stuffs
         If (minorVer >= 1) Then
-            ReDim classes(BinReadLong(num))
-            For t = 0 To UBound(classes)
-                classes(t).hClass = BinReadLong(num)
-                classes(t).strInstancedFrom = BinReadString(num)
+            ReDim g_objects(BinReadLong(num))
+            For t = 0 To UBound(g_objects)
+                g_objects(t).hClass = BinReadLong(num)
+                g_objects(t).strInstancedFrom = BinReadString(num)
             Next t
-            ReDim objHandleUsed(BinReadLong(num))
-            For t = 0 To UBound(objHandleUsed)
-                objHandleUsed(t) = (BinReadByte(num) = 1)
+            ReDim g_objHandleUsed(BinReadLong(num))
+            For t = 0 To UBound(g_objHandleUsed)
+                g_objHandleUsed(t) = (BinReadByte(num) = 1)
             Next t
         End If
 
@@ -653,14 +653,14 @@ Public Sub SaveState(ByVal file As String)
         Call BinWriteDouble(num, transLocate.movementSize)
         
         'Write rpgcode object stuffs
-        Call BinWriteLong(num, UBound(classes))
-        For t = 0 To UBound(classes)
-            Call BinWriteLong(num, classes(t).hClass)
-            Call BinWriteString(num, classes(t).strInstancedFrom)
+        Call BinWriteLong(num, UBound(g_objects))
+        For t = 0 To UBound(g_objects)
+            Call BinWriteLong(num, g_objects(t).hClass)
+            Call BinWriteString(num, g_objects(t).strInstancedFrom)
         Next t
-        Call BinWriteLong(num, UBound(objHandleUsed))
-        For t = 0 To UBound(objHandleUsed)
-            If (objHandleUsed(t)) Then
+        Call BinWriteLong(num, UBound(g_objHandleUsed))
+        For t = 0 To UBound(g_objHandleUsed)
+            If (g_objHandleUsed(t)) Then
                 Call BinWriteByte(num, 1)
             Else
                 Call BinWriteByte(num, 0)

@@ -119,7 +119,7 @@ Public Sub debugger(ByRef Text As String)
 
     '// Passing string(s) ByRef for preformance related reasons
 
-    If (LenB(errorBranch) <> 0) Then
+    If (LenB(errorBranch)) Then
         errorKeep.program(0) = errorKeep.program(0) & "*ERROR CHECKING FLAG"
         If (errorBranch <> "Resume Next") Then
             Call Branch("Branch(" & errorBranch & ")", errorKeep)
@@ -173,7 +173,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     includeFile = ParseBefore(mName, ".")
     methodName = ParseAfter(mName, ".")
 
-    If (LenB(methodName) <> 0) Then
+    If (LenB(methodName)) Then
         'include file...
         includeFile = addExt(includeFile, ".prg")
         Call IncludeRPG("include(""" & includeFile & """)", theProgram)
@@ -385,7 +385,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
     'First, test for programs:
     For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
         
-        If LenB(boardList(activeBoardIndex).theData.programName(t)) <> 0 Then
+        If LenB(boardList(activeBoardIndex).theData.programName(t)) Then
             'OK, how is it activated?
             If boardList(activeBoardIndex).theData.activationType(t) = 0 Then
                 'We step on it: check we're on or moving to the tile.
@@ -465,7 +465,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
         Call isoCoordTransform(itmPos(t).x, itmPos(t).y, objX, objY)
     
         If itemMem(t).BoardYN = 1 Then  'Board item.
-            If LenB(boardList(activeBoardIndex).theData.itmName(t)) <> 0 Then
+            If LenB(boardList(activeBoardIndex).theData.itmName(t)) Then
                 'The item exists.
                 
                 If boardList(activeBoardIndex).theData.itmActivationType(t) = 0 Then
@@ -564,7 +564,7 @@ Public Function runBlock( _
 
             Case Else
 
-                If (runCommands <> 0) Then
+                If (runCommands) Then
                     Call DoCommand(prg, retval)
                 Else
                     prg.programPos = increment(prg)
@@ -620,7 +620,7 @@ Public Function runItmYN(ByVal itmNum As Long) As Boolean
         End If
     End If
     If runIt = 1 Then
-        If LenB(boardList(activeBoardIndex).theData.itemProgram$(t)) <> 0 And UCase$(boardList(activeBoardIndex).theData.itemProgram$(t)) <> "NONE" Then
+        If LenB(boardList(activeBoardIndex).theData.itemProgram$(t)) And UCase$(boardList(activeBoardIndex).theData.itemProgram$(t)) <> "NONE" Then
             Call runProgram(projectPath$ & prgPath$ & boardList(activeBoardIndex).theData.itemProgram$(t))
             toRet = True
         Else
@@ -782,6 +782,12 @@ Public Sub runProgram( _
     Call FlushKB
     Dim retval As RPGCODE_RETURN
 
+    If (startupProgram) Then
+        Call CanvasFill(cnvRPGCodeScreen, 0)
+    Else
+        Call CanvasGetScreen(cnvRPGCodeScreen)
+    End If
+
     Call renderRPGCodeScreen
 
     Dim prgPos As Long, errorsA As Long
@@ -826,7 +832,7 @@ Public Sub runProgram( _
     runningProgram = False
     Call stopWaitingForInput
 
-    If (LenB(nextProgram) <> 0) Then
+    If (LenB(nextProgram)) Then
         Dim oldNextProgram As String
         oldNextProgram = nextProgram
         nextProgram = vbNullString
@@ -2393,7 +2399,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
                 Dim newLine As String, theBrackets As String
                 newLine = "(" & testText
                 theBrackets = GetBrackets(splice)
-                If (LenB(theBrackets) <> 0) Then
+                If (LenB(theBrackets)) Then
                     newLine = newLine & "," & theBrackets & ")"
                 Else
                     newLine = newLine & ")"

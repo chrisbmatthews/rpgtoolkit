@@ -106,7 +106,7 @@ Public Function MainGetNthPlugin(ByRef theMain As TKMain, ByVal idx As Long) As 
     On Error Resume Next
     Dim t As Long, cnt As Long
     For t = 0 To UBound(theMain.plugins)
-        If (LenB(theMain.plugins(t)) <> 0) Then
+        If (LenB(theMain.plugins(t))) Then
             If cnt = idx Then
                 MainGetNthPlugin = theMain.plugins(t)
                 Exit Function
@@ -236,7 +236,7 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
         Open file For Binary As num
             Dim b As Byte
             Get num, 14, b
-            If b <> 0 Then
+            If (b) Then
                 Close num
                 GoTo ver2oldMain
             End If
@@ -401,7 +401,7 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
             Dim pdir As String
             Dim pfile As String
             pfile = Dir(plugPath & "*.*")
-            Do While (LenB(pfile) <> 0)
+            Do While (LenB(pfile))
                 Call FileCopy(plugPath & pfile, projectPath & plugPath & pfile)
                 pfile = Dir
             Loop
@@ -463,7 +463,7 @@ ver2oldMain:
             .mainResolution = fread(num)         'resoltion
             Dim numberOfPlugins As Long
             numberOfPlugins = fread(num)   'number of plugins following.
-            If numberOfPlugins <> 0 Then
+            If numberOfPlugins Then
                 For t = 0 To numberOfPlugins - 1
                     Dim inr As Integer
                     inr = fread(num)      'use plugin yn?
@@ -487,7 +487,7 @@ ver2oldMain:
             Dim pdir2 As String
             Dim pfile2 As String
             pfile2 = Dir(plugPath & "*.*")
-            Do While (LenB(pfile2) <> 0)
+            Do While (LenB(pfile2))
                 Call FileCopy(plugPath & pfile2, projectPath & plugPath & pfile2)
                 pfile2 = Dir
             Loop

@@ -277,7 +277,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
                 End If
 
-            ElseIf (LCase$(LeftB$(theLine, 20) = "#autolocal")) Then
+            ElseIf (LCase$(LeftB$(theLine, 20)) = "#autolocal") Then
 
                 ' Put auto localization in effect
                 openProgram.autoLocal = True
@@ -285,7 +285,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 ' Remove this line
                 theLine = vbNullString
 
-            ElseIf (LCase$(LeftB$(theLine, 14) = "#strict")) Then
+            ElseIf (LCase$(LeftB$(theLine, 14)) = "#strict") Then
 
                 ' Put strictness in effect
                 openProgram.strict = True
@@ -312,7 +312,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 For a = 0 To (UBound(lines) + 1)
 
                     If (a = UBound(lines) + 1) Then
-                        If (LenB(uD(UBound(lines))) <> 0) Then
+                        If (LenB(uD(UBound(lines)))) Then
                             openProgram.program(p + a) = uD(UBound(lines))
                         End If
 
@@ -372,7 +372,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 Do
                     ' Check the next line
                     moveLine = moveLine + 1
-                    If (LenB(openProgram.program(moveLine)) <> 0) Then
+                    If (LenB(openProgram.program(moveLine))) Then
                         ' There's a line here
                         If (openProgram.program(moveLine) = "{") Then
                             ' Implementation is here
@@ -457,7 +457,7 @@ Public Sub includeProgram(ByRef prg As RPGCodeProgram, ByRef strFile As String)
 
     ' Add all of the other program's methods
     For idx = 0 To UBound(toInclude.methods)
-        If (LenB(toInclude.methods(idx).name) <> 0) Then
+        If (LenB(toInclude.methods(idx).name)) Then
             Call addMethodToPrg( _
                                     toInclude.methods(idx).name, _
                                     toInclude.methods(idx).line + prg.Length + 2, _

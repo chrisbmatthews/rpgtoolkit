@@ -352,7 +352,7 @@ Public Function animGetMaxFrame(ByRef theAnim As TKAnimation) As Long
     animGetMaxFrame = -1
     Dim frameIdx As Long
     For frameIdx = 0 To UBound(theAnim.animFrame)
-        If LenB(theAnim.animFrame(frameIdx)) <> 0 Then
+        If LenB(theAnim.animFrame(frameIdx)) Then
             animGetMaxFrame = animGetMaxFrame + 1
         End If
     Next frameIdx
@@ -478,7 +478,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
     Dim tbm As TKTileBitmap
 
     ext = UCase$(GetExt(frameFile))
-    If (LenB(frameFile) <> 0) Or Left$(ext, 3) = "TST" Then
+    If (LenB(frameFile)) Or Left$(ext, 3) = "TST" Then
 
         ' We can draw the frame!
 
@@ -554,7 +554,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
         t = nextAnmCacheIdx
         If (anm.animSizeX <> GetCanvasWidth(anmCache(t).cnv) Or anm.animSizeY <> GetCanvasHeight(anmCache(t).cnv)) Then
 
-            If (anmCache(t).cnv <> 0) Then
+            If (anmCache(t).cnv) Then
                 Call SetCanvasSize(anmCache(t).cnv, anm.animSizeX, anm.animSizeY)
             Else
                 ' Create the canvas
@@ -641,7 +641,7 @@ Public Sub AnimDrawFrameCanvas(ByRef theAnim As TKAnimation, ByVal framenum As L
     Call Canvas2CanvasBltTransparent(cnvTemp, cnv, x, y, TRANSP_COLOR)
     Call DestroyCanvas(cnvTemp)
     
-    If playSound And ((LenB(theAnim.animSound(framenum))) <> 0) Then
+    If playSound And ((LenB(theAnim.animSound(framenum)))) Then
         Const wFlags As Integer = SND_ASYNC Or SND_NODEFAULT
         If pakFileRunning Then
             Call sndPlaySound(PakLocate(mediaPath & theAnim.animSound(framenum)), wFlags%)

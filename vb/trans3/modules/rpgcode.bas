@@ -32,7 +32,7 @@ Public Sub CompilerPopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgr
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)    'how many data elements are there?
-    If number <> 0 Then
+    If number Then
         Call debugger("Error: Com_Pop_Piler must have 0 data elements!-- " + Text$)
         Exit Sub
     End If
@@ -161,7 +161,7 @@ Private Function formatDirectionString(directions As String) As String
             Select Case part
                 Case "N", "S":
                     'determine if the next char is 'E' or 'W':
-                    If (LenB(nextPart) <> 0) Then
+                    If (LenB(nextPart)) Then
                         If (nextPart = "E" Or nextPart = "W") Then
                             'ok, this is a valid diagonal direction...
                             directionString = directionString & delimiter & part & nextPart
@@ -255,7 +255,7 @@ Sub ThreadWakeRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     
     useIt1 = GetElement(dataUse$, 1)
     a = getValue(useIt1, lit1, num1, theProgram)
-    If a <> 0 Then
+    If (a) Then
         Call debugger("Error: ThreadWake data type must be numerical!-- " + Text$)
         Exit Sub
     Else
@@ -296,7 +296,7 @@ Sub ThreadSleepRemainingRPG(ByVal Text As String, ByRef theProgram As RPGCodePro
     End If
     
     a = getValue(useIt1, lit1, num1, theProgram)
-    If a <> 0 Then
+    If (a) Then
         Call debugger("Error: ThreadSleepRemaining data type must be numerical!-- " + Text$)
         Exit Sub
     Else
@@ -1496,7 +1496,7 @@ Sub EraseItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     paras = GetParameters(Text, theProgram)
     
-    If UBound(paras) <> 0 Then
+    If UBound(paras) Then
         Call debugger("Warning: EraseItem() has only 1 data element!-- " & Text)
         Exit Sub
     End If
@@ -1798,11 +1798,11 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     theProgram.programPos = increment(theProgram)
     res = evaluate(u2, theProgram)
     
-    If (res <> 0) Then
+    If (res) Then
 
         If Not (isMultiTasking() And (Not theProgram.looping)) Then
     
-            Do While (res <> 0)
+            Do While (res)
                 res = evaluate(u2, theProgram)
                 Dim oldLine As Long, newPos As Long, curLine As Long
         
@@ -2109,7 +2109,7 @@ Sub GetFontSizeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
-    If number <> 1 And number <> 0 Then
+    If number <> 1 And number Then
         Call debugger("Error: GetFontSize must have 1 data element!-- " + Text$)
         Exit Sub
     End If
@@ -2221,7 +2221,7 @@ Sub GetGPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
-    If number <> 1 And number <> 0 Then
+    If number <> 1 And number Then
         Call debugger("Warning: GetGP has more than 1 data element!-- " + Text$)
         Exit Sub
     End If
@@ -2678,7 +2678,7 @@ Public Sub GetRPG( _
     
     Dim number As Long
     number = CountData(Text)
-    If number <> 0 And number <> 1 And number <> 2 Then
+    If number And number <> 1 And number <> 2 Then
         debugger "Get() requires 0-2 data elements-- " & Text
         Exit Sub
     End If
@@ -3230,7 +3230,7 @@ Public Function IfThen( _
     Dim res As Long
     res = evaluate(GetBrackets(Text), prg)
 
-    If (res <> 0) Then
+    If (res) Then
     
         doneIf(UBound(doneIf)) = True
 
@@ -3358,7 +3358,7 @@ Sub innRPG(Text$, ByRef theProgram As RPGCodeProgram)
     On Error GoTo errorhandler
     Dim t As Long, nHP As Double, nSMP As Double
     For t = 0 To 4
-        If LenB(playerListAr$(t)) <> 0 Then
+        If LenB(playerListAr$(t)) Then
             nHP = getPlayerMaxHP(playerMem(t))
             nSMP = getPlayerMaxSMP(playerMem(t))
             Call SetVariable(playerMem(t).healthVar$, CStr(nHP), theProgram)
@@ -3539,7 +3539,7 @@ Public Function ItemLocationRPG(ByVal Text As String, ByRef theProgram As RPGCod
     'Bound the item number in the valid range.
     itemNum = inBounds(paras(0).num, 0, (UBound(boardList(activeBoardIndex).theData.itmActivate)))
 
-    If LenB(pendingItemMovement(itemNum).queue) <> 0 And isMultiTasking() Then
+    If LenB(pendingItemMovement(itemNum).queue) And isMultiTasking() Then
         'We're still moving. Hold the line until movement finishes,
         'but only for multitasking otherwise movement will never finish.
         ItemLocationRPG = False
@@ -3668,7 +3668,7 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
         xx = num1 - scTopX
         yy = num2 - scTopY
         For lll = 1 To 8
-            If (LenB(BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData)) <> 0) Then
+            If (LenB(BoardGetTile(num1, num2, lll, boardList(activeBoardIndex).theData))) Then
                 'If Not (usingDX()) Then
                 '
                 '    Call drawTileCNV(cnvScrollCache, _
@@ -3745,7 +3745,7 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'Create characters:
         Dim t As Long
         For t = 0 To 4
-            If (LenB(playerFile$(t)) <> 0) Then
+            If (LenB(playerFile$(t))) Then
                 Call RestoreCharacter(playerFile$(t), t, False)
             End If
         Next t
@@ -6699,7 +6699,7 @@ Sub SourceHandleRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
-    If number <> 1 And number <> 0 Then
+    If number <> 1 And number Then
         Call debugger("Error: SourceHandle must have one literal variable! " + Text$)
     End If
     Dim var1 As String, tar As String
@@ -7075,7 +7075,7 @@ Sub TargetHandleRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     use$ = Text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
     number = CountData(dataUse$)        'how many data elements are there?
-    If number <> 1 And number <> 0 Then
+    If number <> 1 And number Then
         Call debugger("Error: TargetHandle must have one literal variable! " + Text$)
     End If
     Dim var1 As String, tar As String
@@ -7953,7 +7953,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
     If isUntil Then
         okToRun = (res = 0)
     Else
-        okToRun = (res <> 0)
+        okToRun = (res)
     End If
 
     If okToRun Then
@@ -7978,7 +7978,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
                 If (isUntil) Then
                     If (res = 0) Then
                         res = 1
-                    ElseIf (res <> 0) Then
+                    ElseIf (res) Then
                         done = True
                         res = 0
                     End If
@@ -8180,7 +8180,7 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
             Call debugger("Error: Literal data elements required-- " & paras(itmNum).dat)
             error = True
         End If
-        If (LenB(paras(itmNum).lit) <> 0) Then
+        If (LenB(paras(itmNum).lit)) Then
             paras(itmNum).lit = addExt(paras(itmNum).lit, ".itm")
             If Not fileExists(projectPath & itmPath & paras(itmNum).lit) Then
                 Call debugger("Error: Item not found-- " & paras(itmNum).lit)
@@ -8692,7 +8692,7 @@ Sub drainAllRPG(Text$, ByRef theProgram As RPGCodeProgram)
             'players targeted.
             Dim t As Long
             For t = 0 To 4
-                If (LenB(playerListAr$(t)) <> 0) Then
+                If (LenB(playerListAr$(t))) Then
                     Call doAttack(-1, -1, PLAYER_PARTY, 1, num, True)
                 End If
             Next t
@@ -9379,7 +9379,7 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     leng = leng * fontSize
     If leng / 2 > xHeight Then
         tot = ((xHeight) \ fontSize)
-        If tot <> 0 Then
+        If tot Then
             oth$ = Mid$(Text$, tot + 1, Len(Text$) - tot)
             Text$ = Mid$(Text$, 1, tot)
         End If
@@ -9431,7 +9431,7 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
         End If
         lineNum = 1
     End If
-    If (LenB(oth$) <> 0) Then
+    If (LenB(oth$)) Then
         Call AddToMsgBox(oth$, theProgram)
     End If
 End Sub
@@ -9457,7 +9457,7 @@ Sub attackAllRPG(Text$, ByRef theProgram As RPGCodeProgram)
             'players targeted.
             Dim t As Long
             For t = 0 To 4
-                If (LenB(playerListAr$(t)) <> 0) Then
+                If (LenB(playerListAr$(t))) Then
                     Call doAttack(-1, -1, PLAYER_PARTY, 1, num, False)
                 End If
             Next t
@@ -9524,7 +9524,7 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: Wipe data type must be lit, num!, num!-- " + Text$)
     Else
         'load the image...
-        If (LenB(file$) <> 0) Then
+        If (LenB(file$)) Then
             file$ = addExt(file$, ".bmp")
             file$ = projectPath$ & bmpPath$ & file$
         End If
@@ -9536,7 +9536,7 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
             file$ = PakLocate(file$)
         End If
         
-        If (LenB(file$) <> 0) Then
+        If (LenB(file$)) Then
             Call CanvasLoadSizedPicture(cnv, file$)
         End If
         
@@ -11224,7 +11224,7 @@ Public Sub setConstantsRPG( _
 
     On Error Resume Next
 
-    If (LenB(GetBrackets(Text)) <> 0) Then
+    If (LenB(GetBrackets(Text))) Then
         debugger "SetConstants() requires no data elements-- " & Text
         Exit Sub
     End If
@@ -11307,7 +11307,7 @@ Public Sub autoLocalRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     '=========================================================================
     'AutoLocal()
 
-    If Not CountData(Text) = 0 Then
+    If (LenB(GetBrackets(Text))) Then
         debugger "AutoLocal() requires no data elements-- " & Text
         Exit Sub
     End If
@@ -11429,7 +11429,7 @@ Public Sub appPathRPG( _
     Dim cd As Long
     cd = CountData(Text)
    
-    If cd <> 0 And cd <> 1 Then
+    If cd And cd <> 1 Then
         debugger "AppPath() requires zero or one data elements-- " & Text
         Exit Sub
     End If
@@ -11543,7 +11543,7 @@ Public Sub pixelMovementRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, B
     Dim elements As Long
     elements = CountData(Text)
 
-    If (elements <> 0) And (elements <> 1) Then
+    If (elements) And (elements <> 1) Then
         Call debugger("PixelMovement() requires zero or one data element-- " & Text)
         Exit Sub
     End If
@@ -11652,7 +11652,7 @@ Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) A
 
     On Error Resume Next
 
-    If (LenB(GetBrackets(Text)) <> 0) Then
+    If (LenB(GetBrackets(Text))) Then
         Call debugger("MultiRun() requires no data elements-- " & Text)
     Else
         multiRunStatus = 1
@@ -11840,7 +11840,7 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         paras(1).lit = theFile
     End If
     host.mousePointer = paras(1).lit
-    If (LenB(theFile) <> 0) Then Call Kill(theFile)
+    If (LenB(theFile)) Then Call Kill(theFile)
 End Sub
 
 '=========================================================================

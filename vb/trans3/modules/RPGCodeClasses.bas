@@ -1,8 +1,8 @@
 Attribute VB_Name = "RPGCodeClasses"
 '=========================================================================
-'All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
-'All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
+' All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
 '=========================================================================
 
 '=========================================================================
@@ -12,14 +12,10 @@ Attribute VB_Name = "RPGCodeClasses"
 Option Explicit
 
 '=========================================================================
-' All classes
+' Globals
 '=========================================================================
-Public classes() As RPGCODE_CLASS_INSTANCE  ' All classes
-
-'=========================================================================
-' Array of used handles
-'=========================================================================
-Public objHandleUsed() As Boolean           ' This handle used?
+Public g_objects() As RPGCODE_CLASS_INSTANCE ' All objects
+Public g_objHandleUsed() As Boolean          ' This handle used?
 
 '=========================================================================
 ' An instance of a class
@@ -27,7 +23,6 @@ Public objHandleUsed() As Boolean           ' This handle used?
 Private Type RPGCODE_CLASS_INSTANCE
     hClass As Long                          ' Handle to this class
     strInstancedFrom As String              ' It was instanced from this class
-    objClass As Object                      ' For internal class use only
 End Type
 
 '=========================================================================
@@ -89,32 +84,6 @@ Public Type RPGCodeProgram
 End Type
 
 '=========================================================================
-' Check if something is an internal class
-'=========================================================================
-Public Function isInternalClass(ByVal theClass As String, ByRef theObject As Object) As Boolean
-
-    ' Capitalize theClass
-    theClass = UCase$(theClass)
-
-    ' Assume it is
-    isInternalClass = True
-
-    ' Switch on internal classes
-    Select Case theClass
-
-    '    Case "BOOL"
-    '        ' It's a boolean
-    '        Set theObject = New CRPGCodeBool
-
-        Case Else
-            ' It's not an internal class
-            isInternalClass = False
-
-    End Select
-
-End Function
-
-'=========================================================================
 ' Check a method override name
 '=========================================================================
 Public Function checkOverrideName(ByRef theClass As RPGCODE_CLASS, ByVal theMethod As String) As String
@@ -141,7 +110,7 @@ Public Function checkOverrideName(ByRef theClass As RPGCODE_CLASS, ByVal theMeth
             ' Found the method
             If (scope.methods(idx).name = theMethod) Then
                 ' Check for an override
-                If (LenB(scope.methods(idx).override) <> 0) Then
+                If (LenB(scope.methods(idx).override)) Then
                     ' Return this
                     checkOverrideName = scope.methods(idx).override
                 End If
@@ -161,7 +130,7 @@ Public Function isObject(ByVal hClass As Long, ByRef prg As RPGCodeProgram) As B
     On Error Resume Next
 
     ' Return if it's an object
-    isObject = (getClass(hClass, prg).strName <> "INVALID")
+    isObject = (LenB(g_objects(hClass).strInstancedFrom))
 
 End Function
 
@@ -209,9 +178,12 @@ End Sub
 '=========================================================================
 Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
+    Const SCOPE_PUBLIC = 0      ' Public scope
+    Const SCOPE_PRIVATE = 1     ' Private scope
+
     Dim lineIdx As Long         ' Current line
     Dim inClass As Boolean      ' Inside a class?
-    Dim scope As String         ' Current scope (public or private)
+    Dim scope As Long           ' Current scope (public or private)
     Dim cmd As String           ' The command
     Dim opening As Boolean      ' Looking for { bracket?
     Dim depth As Long           ' Depth in class
@@ -316,10 +288,10 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                             Next idx
                             ' For each scope
                             Dim scopeIdx As Long
-                            For scopeIdx = 0 To 1
+                            For scopeIdx = SCOPE_PUBLIC To SCOPE_PRIVATE
                                 ' Get this scope
                                 Dim theScope As RPGCODE_CLASS_SCOPE
-                                If (scopeIdx = 0) Then
+                                If (scopeIdx = SCOPE_PUBLIC) Then
                                     theScope = theClass.scopePublic
                                 Else
                                     theScope = theClass.scopePrivate
@@ -327,7 +299,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                                 ' Loop over each method
                                 If Not (theClass.isInterface) Then
                                     For idx = 0 To UBound(theScope.methods)
-                                        If (scopeIdx = 0) Then
+                                        If (scopeIdx = SCOPE_PUBLIC) Then
                                             Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic, toInherit, , , True)
                                         Else
                                             Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePrivate, toInherit, , , True)
@@ -336,7 +308,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                                 Else
                                     ' Inheriting class should implement an interface's methods
                                     For idx = 0 To UBound(theScope.methods)
-                                        If (scopeIdx = 0) Then
+                                        If (scopeIdx = SCOPE_PUBLIC) Then
                                             Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePublic)
                                         Else
                                             Call addMethodToScope(prg.classes.classes(classIdx).strName, theScope.methods(idx).name, prg, prg.classes.classes(classIdx).scopePrivate)
@@ -405,15 +377,15 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
                 If (cmd = "STRUCT") Then
                     ' It's a structure, default to public visibility
-                    scope = "public"
+                    scope = SCOPE_PUBLIC
                     inStruct = True
                 ElseIf (cmd = "INTERFACE") Then
                     ' Default to public in interfaces
-                    scope = "public"
+                    scope = SCOPE_PUBLIC
                     inStruct = False
                 Else
                     ' Default to private in classes
-                    scope = "private"
+                    scope = SCOPE_PRIVATE
                     inStruct = False
                 End If
 
@@ -428,7 +400,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                     methodCheckIdx = lineIdx
                     Do
                         methodCheckIdx = methodCheckIdx + 1
-                        If (LenB(prg.program(methodCheckIdx)) <> 0) Then
+                        If (LenB(prg.program(methodCheckIdx))) Then
                             ' Check if the method is here
                             methodHere = (prg.program(methodCheckIdx) = "{")
                             ignoreCheck = methodCheckIdx - lineIdx + 2 ' + 2 to compensate for
@@ -437,7 +409,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                             Exit Do
                         End If
                     Loop
-                    If (scope = "private") Then
+                    If (scope = SCOPE_PRIVATE) Then
                         Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePrivate, , (prg.classes.classes(classIdx).isInterface))
                     Else
                         Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePublic, , (prg.classes.classes(classIdx).isInterface))
@@ -448,20 +420,20 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             Else
                 ' Found a variable
                 If Not (inStruct) Then
-                    If (scope = "public") Then
+                    If (scope = SCOPE_PUBLIC) Then
                         ' Issue a warning
                         Call debugger("You seem to be exposing variables from your class--this defeats abstraction by circumventing encapsulation--you may want to reconsider this choice of action; " & prg.program(lineIdx))
                     End If
                 End If
                 If (InStrB(1, prg.program(lineIdx), "[")) Then
                     ' It's an array
-                    If (scope = "private") Then
+                    If (scope = SCOPE_PRIVATE) Then
                         Call addArrayToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePrivate)
                     Else
                         Call addArrayToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePublic)
                     End If
                 Else
-                    If (scope = "private") Then
+                    If (scope = SCOPE_PRIVATE) Then
                         Call addVarToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePrivate)
                     Else
                         Call addVarToScope(prg.program(lineIdx), prg.classes.classes(classIdx).scopePublic)
@@ -477,30 +449,28 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
                 Case "private:"
                     ' Found start of private scope
-                    scope = "public"
                     methodHere = False
                     If (inStruct) Then
-                        scope = "error"
+                        scope = -1
                     Else
-                        scope = "private"
+                        scope = SCOPE_PRIVATE
                     End If
 
                 Case "public:"
                     ' Found start of public scope
-                    scope = "public"
                     methodHere = False
                     If (inStruct) Then
-                        scope = "error"
+                        scope = -1
                     Else
-                        scope = "public"
+                        scope = SCOPE_PUBLIC
                     End If
 
             End Select
 
-            If (scope = "error") Then
+            If (scope = -1) Then
                 ' No scope in structures
                 Call debugger("Scope is not valid in structures-- " & prg.program(lineIdx))
-                scope = "public"
+                scope = SCOPE_PUBLIC
             End If
 
             ' Make sure this line isn't run
@@ -573,15 +543,23 @@ Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS
     End If
 
     ' Split it at '][' (bewteen elements)
-    parseArrayD() = Split(toParse, "][")
+    parseArrayD = Split(toParse, "][")
 
     ' Add the vars
+    On Error GoTo error
     ReDim x(UBound(parseArrayD)) As Long
     ReDim size(UBound(parseArrayD)) As Long
     For idx = 0 To UBound(size)
         size(idx) = CLng(parseArrayD(idx))
     Next idx
     Call getVarsFromArray(0, size, x, scope, variableName, variableType)
+
+    Exit Sub
+
+error:
+
+    ' They are attempting to add a map: add as regular variable
+    Call addVarToScope(theVar, scope)
 
 End Sub
 
@@ -596,12 +574,27 @@ Private Sub addVarToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_S
     Dim idx As Long         ' Loop var
     Dim pos As Long         ' Position we're using
 
+    ' Check for some idiot trying to send an inital value
+    theVar = Trim$(theVar)
+    Dim spacePos As Long
+    spacePos = InStr(1, theVar, " ")
+    If (spacePos) Then
+        ' Check if they really were stupid enough to set an inital value:
+        If (InStrB(1, theVar, "=")) Then
+            Call debugger("You cannot set initial values in abstract types, use the constructor to acomplish this-- " & theVar)
+        End If
+        ' Keep only until first space
+        theVar = Left$(theVar, spacePos - 1)
+    End If
+
     ' Make theVar all caps
-    origName = Trim$(theVar)
-    theVar = Trim$(UCase$(theVar))
+    origName = theVar
+    theVar = UCase$(theVar)
 
     ' Default to ! if no type def character
-    If (Right$(theVar, 1) <> "!" And Right$(theVar, 1) <> "$") Then
+    Dim tdc As String
+    tdc = RightB$(theVar, 2)
+    If ((tdc <> "!") And (tdc <> "$")) Then
         ' Add the !
         theVar = theVar & "!"
     End If
@@ -748,8 +741,8 @@ End Function
 ' Initiate the class system
 '=========================================================================
 Public Sub initRPGCodeClasses()
-    ReDim objHandleUsed(0)
-    ReDim classes(0)
+    ReDim g_objHandleUsed(250)
+    ReDim g_objects(250)
     Call newHandle
 End Sub
 
@@ -760,9 +753,9 @@ Private Sub killHandle(ByVal hClass As Long)
 
     On Error Resume Next
 
-    If (Not (UBound(objHandleUsed) < hClass)) Then
+    If (UBound(g_objHandleUsed) >= hClass) Then
         ' Write in the data
-        objHandleUsed(hClass) = False
+        g_objHandleUsed(hClass) = False
     End If
 
 End Sub
@@ -781,8 +774,8 @@ Private Function newHandle() As Long
     pos = -1
 
     ' Loop over each handle
-    For idx = 0 To UBound(objHandleUsed)
-        If Not (objHandleUsed(idx)) Then
+    For idx = 0 To UBound(g_objHandleUsed)
+        If Not (g_objHandleUsed(idx)) Then
             ' Free position
             pos = idx
             Exit For
@@ -791,12 +784,12 @@ Private Function newHandle() As Long
 
     If (pos = -1) Then
         ' Didn't find a spot
-        ReDim Preserve objHandleUsed(UBound(objHandleUsed) + 1)
-        pos = UBound(objHandleUsed)
+        pos = UBound(g_objHandleUsed) + 1
+        ReDim Preserve g_objHandleUsed(UBound(g_objHandleUsed) + 250)
     End If
 
     ' Write in the data
-    objHandleUsed(pos) = True
+    g_objHandleUsed(pos) = True
     newHandle = pos
 
 End Function
@@ -811,8 +804,9 @@ Public Function canInstanceClass(ByVal theClass As String, ByRef prg As RPGCodeP
     Dim idx As Long     ' Loop var
 
     ' Loop over each class we can instance
+    theClass = UCase$(theClass)
     For idx = 0 To UBound(prg.classes.classes)
-        If (prg.classes.classes(idx).strName = UCase$(theClass)) Then
+        If (prg.classes.classes(idx).strName = theClass) Then
             ' Yes, we can
             canInstanceClass = True
             Exit Function
@@ -845,6 +839,14 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
     ' Make the var all caps
     var = Trim$(UCase$(var))
 
+    ' Get location of first "[" character
+    Dim istr As Long, anArray As String
+    istr = InStr(1, var, "[")
+    If (istr) Then
+        ' Get the var without its brackets
+        anArray = Left$(var, istr - 1) & Right$(var, 1)
+    End If
+
     ' For each scope
     For scopeIdx = 0 To 1
 
@@ -862,10 +864,8 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
 
             If (scope.isDynamicArray(idx)) Then
                 ' Check this dynamic array
-                Dim istr As Long
-                istr = InStr(1, var, "[")
                 If (istr) Then
-                    If (scope.strVars(idx) = (Left$(var, istr - 1) & Right$(var, 1))) Then
+                    If (scope.strVars(idx) = anArray) Then
                         ' It is a member
                         isVarMember = True
                         Exit Function
@@ -1012,7 +1012,7 @@ Public Function getClass(ByVal hClass As Long, ByRef prg As RPGCodeProgram) As R
     Dim idx As Long         ' Loop var
 
     ' Get the class' name
-    strClass = classes(hClass).strInstancedFrom
+    strClass = g_objects(hClass).strInstancedFrom
 
     ' Loop over every class it could be
     For idx = 0 To UBound(prg.classes.classes)
@@ -1088,35 +1088,23 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
 
     Dim hClass As Long              ' Handle to use
     Dim retval As RPGCODE_RETURN    ' Return value
-    Dim obj As Object               ' An object
 
     ' Check if we can instance this class
-    If ((canInstanceClass(theClass, prg)) Or (isInternalClass(theClass, obj))) Then
+    If (canInstanceClass(theClass, prg)) Then
         ' Create a new handle
         hClass = newHandle()
         ' Make sure we have enough room in the instances array
-        If (UBound(classes) < hClass) Then
+        If (UBound(g_objects) < hClass) Then
             ' Enlarge the array
-            ReDim Preserve classes(hClass)
+            ReDim Preserve g_objects(hClass)
         End If
         ' Write in the data
-        classes(hClass).strInstancedFrom = UCase$(theClass)
-        classes(hClass).hClass = hClass
-        ' If (obj Is Nothing) Then
-            ' Clear the object
-            Call clearObject(classes(hClass), prg)
-            ' Call the constructor
-            Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
-        ' Else
-            ' Make a class structure for this class
-            ' Dim theClass As RPGCODE_CLASS
-            ' Call obj.CreateClassStruct(theClass, prg)
-            ' Call addClassToProgram(theClass, prg)
-            ' Save the object
-            ' Set classes(hClass).objClass = obj
-            ' Call the constructor
-            ' Call obj.Construct(hClass, constructParams, prg)
-        ' End If
+        g_objects(hClass).strInstancedFrom = UCase$(theClass)
+        g_objects(hClass).hClass = hClass
+        ' Clear the object
+        Call clearObject(g_objects(hClass), prg)
+        ' Call the constructor
+        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
     End If
 
     ' Return a handle to the class
@@ -1136,7 +1124,7 @@ Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef x(
 
     For x(depth) = 0 To size(depth)
         If (depth <= UBound(size)) Then
-            Call getVarsFromArray(depth + 1, size(), x(), scope, prefix, postFix)
+            Call getVarsFromArray(depth + 1, size, x, scope, prefix, postFix)
         Else
             theVar = vbNullString
             For dimIdx = 0 To UBound(size)
@@ -1268,7 +1256,9 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Else
         ' Parse the var
         cLine = parseArray(cLine, prg)
-        If (Right$(cLine, 1) <> "!" And Right$(cLine, 1) <> "$") Then
+        Dim rcl As String
+        rcl = RightB$(cLine, 2)
+        If ((rcl <> "!") And (rcl <> "$")) Then
             ' Assume object
             cLine = cLine & "!"
         End If
@@ -1331,7 +1321,9 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     If (LenB(object) = 0) Then object = GetWithPrefix()
 
     ' Get its handle
-    If ((Right$(object, 1) <> "!") And (Right$(object, 1) <> "$")) Then
+    Dim robj As String
+    robj = RightB$(object, 2)
+    If ((robj <> "!") And (robj <> "$")) Then
         ' Append an "!"
         Call getValue(object & "!", object, hClassDbl, prg)
     Else
@@ -1342,73 +1334,95 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     ' Convert the handle to long
     hClass = CLng(hClassDbl)
 
-    ' Check if we're calling from outside
-    outside = (topNestle(prg) <> hClass)
+    ' Check if we have an object
+    If Not (isObject(hClass, prg)) Then
 
-    If Not (var) Then
+        ' Not an object
+        Call debugger("Error: " & object & " is not an object!-- " & Text)
 
-        ' Check if we're to release
-        If (cmdName = "RELEASE") Then
+    Else
 
-            If (classes(hClass).objClass Is Nothing) Then
-                Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retval, "~" & classes(hClass).strInstancedFrom)
-                Call clearObject(classes(hClass), prg)
+        ' Check if we're calling from outside
+        outside = (topNestle(prg) <> hClass)
+
+        If Not (var) Then
+
+            ' Check if we're to release
+            If (cmdName = "RELEASE") Then
+
+                ' Call the deconstructor
+                Call callObjectMethod(hClass, "~" & g_objects(hClass).strInstancedFrom, prg, retval, "~" & g_objects(hClass).strInstancedFrom)
+
+                ' Kill the object's members
+                Call clearObject(g_objects(hClass), prg)
+
+                ' Kill the object
+                Call killHandle(hClass)
+
+                ' Clear the object's hClass
+                g_objects(hClass).hClass = 0
+
+                ' Clear what the object was instanced from
+                g_objects(hClass).strInstancedFrom = vbNullString
+
+            ElseIf (cmdName = "GETTYPE") Then
+
+                ' Return type of object
+                value = g_objects(hClass).strInstancedFrom
+
             Else
-                Call classes(hClass).objClass.Deconstruct
-            End If
 
-            Call killHandle(hClass)
-            classes(hClass).hClass = 0
-            classes(hClass).strInstancedFrom = vbNullString
-            Set classes(hClass).objClass = Nothing
+                If (isMethodMember(cmdName, hClass, prg, outside)) Then
 
-        ElseIf (cmdName = "GETTYPE") Then
+                    ' Execute the method
+                    Call callObjectMethod(hClass, cLine, prg, retval, cmdName)
 
-            ' Return type of object
-            value = classes(hClass).strInstancedFrom
+                    ' Replace text with value the method returned
+                    If (retval.dataType = DT_NUM) Then
+                        value = " " & CStr(retval.num)
+                    ElseIf (retval.dataType = DT_LIT) Then
+                        value = " """ & retval.lit & """"
+                    ElseIf (retval.dataType = DT_REFERENCE) Then
+                        value = " " & retval.ref
+                    End If
 
-        Else
+                Else
 
-            If (isMethodMember(cmdName, hClass, prg, outside)) Then
+                    If (isMethodMember(cLine, hClass, prg, False)) Then
+                        Call debugger("Error: Method " & cLine & " is not avaliable from outside " & g_objects(hClass).strInstancedFrom & "; " & Text)
+                    Else
+                        Call debugger("Error: Method " & cLine & " is not a member of " & g_objects(hClass).strInstancedFrom & "; " & Text)
+                    End If
 
-                ' Execute the method
-                Call callObjectMethod(hClass, cLine, prg, retval, cmdName)
-
-                ' Replace text with value the method returned
-                If (retval.dataType = DT_NUM) Then
-                    value = " " & CStr(retval.num)
-                ElseIf (retval.dataType = DT_LIT) Then
-                    value = " """ & retval.lit & """"
-                ElseIf (retval.dataType = DT_REFERENCE) Then
-                    value = " " & retval.ref
                 End If
 
+            End If
+
+        Else
+
+            ' It's a variable
+            If (isVarMember(cLine, hClass, prg, outside)) Then
+                ' It's a member
+                value = getObjectVarName(cLine, hClass)
             Else
-
-                Call debugger("Error: Could not call method-- " & cLine)
-
+                If (isVarMember(cLine, hClass, prg, False)) Then
+                    Call debugger("Error: Variable " & cLine & " is not avaliable from outside " & g_objects(hClass).strInstancedFrom & "; " & Text)
+                Else
+                    Call debugger("Error: Variable " & cLine & " is not a member of " & g_objects(hClass).strInstancedFrom & "; " & Text)
+                End If
             End If
 
         End If
 
-    Else
-        ' It's a variable
-        If (isVarMember(cLine, hClass, prg, outside)) Then
-            ' It's a member
-            value = getObjectVarName(cLine, hClass)
-        Else
-            Call debugger("Error: Could not get/set " & cLine & " -- " & Text)
-        End If
     End If
 
-    If ((lngEnd = Length) And (start = 1)) Then
-        ' Return NULL
-        spliceForObjects = vbNullString
-    Else
-        ' Complete the return string
-        spliceForObjects = Mid$(Text, 1, start - 1) & value & Mid$(Text, lngEnd + 1)
+    If Not ((lngEnd = Length) And (start = 1)) Then
         ' Recurse, passing in the running text
-        spliceForObjects = spliceForObjects(spliceForObjects, prg)
+        spliceForObjects = spliceForObjects( _
+                                               Mid$(Text, 1, start - 1) & _
+                                               value & _
+                                               Mid$(Text, lngEnd + 1), prg _
+                                                                             )
     End If
 
 End Function

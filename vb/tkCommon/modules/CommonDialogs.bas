@@ -173,7 +173,7 @@ Public Function ColorDialog(Optional ByVal returnNegOnCancel As Boolean = True) 
     ' Open the Choose Color box.  If the user chooses a color, set Form1's
     ' background color to that color.
     retval = ChooseColor(cc)
-    If retval <> 0 Then  ' success
+    If (retval) Then   ' success
       ' Copy the possibly altered contents of the custom color list
       ' back into the array.
       Call CopyMemory(custCols(0), ByVal pMem, 64)

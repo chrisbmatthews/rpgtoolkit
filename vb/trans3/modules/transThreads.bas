@@ -221,11 +221,11 @@ Private Sub ExecuteAllThreads()
     'Run threads without loops (maybe using Branch)
     Dim c As Long
     For c = 0 To UBound(Threads)
-        If (LenB(Threads(c).filename) <> 0) Then
+        If (LenB(Threads(c).filename)) Then
             If Threads(c).bIsSleeping Then
                 'thread is asleep
                 'time to wake up?
-                If Threads(c).sleepStartTime + Threads(c).sleepDuration <= Timer Then
+                If Threads(c).sleepStartTime + Threads(c).sleepDuration <= Timer() Then
                     'wake up!
                     Threads(c).bIsSleeping = False
                     Call ExecuteThread(Threads(c).thread)
@@ -359,7 +359,7 @@ Public Sub launchBoardThreads(ByRef board As TKBoard)
         End If
     Next a
     For a = 0 To UBound(board.Threads)
-        If (LenB(board.Threads(a)) <> 0) Then
+        If (LenB(board.Threads(a))) Then
             id = CreateThread(projectPath & prgPath & board.Threads(a), False)
             Call CBSetNumerical("Threads[" & CStr(a) & "]!", id)
         End If
@@ -450,7 +450,7 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
 
             Case TYPE_WHILE             'WHILE LOOP
                                         '----------
-                If evaluate(.condition, .prg) <> 0 Then
+                If evaluate(.condition, .prg) Then
                     .prg.programPos = .start
                     .end = False
                 Else
@@ -473,7 +473,7 @@ Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
                 oPP = .prg.programPos
                 .prg.programPos = DoSingleCommand(.increment, .prg, rV)
                 .prg.programPos = oPP
-                If evaluate(.condition, .prg) <> 0 Then
+                If evaluate(.condition, .prg) Then
                     .prg.programPos = .start
                     .end = False
                 Else

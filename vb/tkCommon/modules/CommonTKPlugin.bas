@@ -138,7 +138,7 @@ Public Sub releaseComPlugins()
     For idx = 0 To UBound(m_comPlugins)
 
         ' If there's an object here
-        If (Not m_comPlugins(idx) Is Nothing) Then
+        If Not (m_comPlugins(idx) Is Nothing) Then
 
             ' Release the plugin
             Set m_comPlugins(idx).obj = Nothing
@@ -190,7 +190,7 @@ Public Sub setupComPlugin(ByVal plugName As String, Optional ByVal vendorIndepen
     With m_comPlugins(ub)
 
         ' Create the object
-        If (Not IsMissing(vendorIndependentId)) Then
+        If Not (IsMissing(vendorIndependentId)) Then
             Set .obj = CreateObject(vendorIndependentId)
         Else
             Set .obj = CreateObject(getObjectFromFile(plugName))
@@ -222,7 +222,7 @@ Public Function comPlugin(ByVal plugName As String) As CComPlugin
     For idx = 0 To UBound(m_comPlugins)
 
         ' If this object is not NULL
-        If (Not m_comPlugins(idx) Is Nothing) Then
+        If Not (m_comPlugins(idx) Is Nothing) Then
 
             ' Check if it's the file we're looking for
             If (m_comPlugins(idx).filename = plugName) Then
@@ -248,7 +248,7 @@ Public Function isComPlugin(ByVal plugName As String) As Boolean
     On Error Resume Next
 
     ' See if it's already setup
-    If (Not comPlugin(plugName) Is Nothing) Then
+    If Not (comPlugin(plugName) Is Nothing) Then
         ' Already setup!
         isComPlugin = True
         Exit Function
@@ -260,7 +260,7 @@ Public Function isComPlugin(ByVal plugName As String) As Boolean
     Set obj = CreateObject(vidid)
 
     ' Do we have something?
-    If (Not obj Is Nothing) Then
+    If Not (obj Is Nothing) Then
         Call setupComPlugin(plugName, vidid)
         isComPlugin = True
     End If

@@ -104,10 +104,10 @@ Function LoadStringLoc(ByVal tagID As Long, ByVal equivStringOptional As String)
     'be accessed)'
     On Error Resume Next
     Dim idx As Long
-    If LenB(m_LangFile) <> 0 Then
+    If LenB(m_LangFile) Then
         If tagID = 1010 Then
             'none string
-            If LenB(m_LangNoneString) <> 0 Then
+            If LenB(m_LangNoneString) Then
                 LoadStringLoc = m_LangNoneString
                 Exit Function
             End If

@@ -439,7 +439,7 @@ Public Sub boardSize(ByRef fName As String, ByRef x As Long, ByRef y As Long)
     Open fileOpen For Binary Access Read As num
         Dim b As Byte
         Get num, 15, b
-        If b <> 0 Then
+        If (b) Then
             Close #num
             GoTo ver2oldboard
         End If
@@ -759,7 +759,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
         Open fileOpen For Binary As num
             Dim b As Byte
             Get num, 15, b
-            If b <> 0 Then
+            If (b) Then
                 Close num
                 GoTo ver2oldboard
             End If
@@ -807,7 +807,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                 Temp$ = .tileIndex(t)
             
                 'scan for animated tiles
-                If LenB(Temp$) <> 0 Then
+                If LenB(Temp$) Then
                     ex$ = GetExt(Temp$)
                     If UCase$(ex$) = "TAN" Then
                         Call BoardAddTileAnmLUTRef(theBoard, t)
@@ -819,7 +819,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                     Dim pakFileRunning As Boolean
                 #End If
             
-                If LenB(Temp$) <> 0 And pakFileRunning Then
+                If LenB(Temp$) And pakFileRunning Then
                     'do check for pakfile system
                     'ex$ = GetExt(temp$)
                     'ex$ = Left$(ex$, 3)
@@ -957,7 +957,7 @@ exitTheFor:
                 .itmActivationType(t) = BinReadInt(num)  'activation type- 0-step on, 1- conditional (activation key)
                 .itemProgram(t) = BinReadString(num)    'program to run when item is touched.
                 .itemMulti(t) = BinReadString(num)     'multitask program for item
-                If LenB(.itmName(t)) <> 0 Then
+                If LenB(.itmName(t)) Then
                     t = t + 1
                     Call dimensionItemArrays(theBoard)
                 End If

@@ -128,7 +128,7 @@ Public Property Let mousePointer(ByVal newValue As String)
     hdc = CanvasOpenHDC(cnvMousePointer)
     Call DrawSizedImage(newValue, 0, 0, 32, 32, hdc)
     Call CanvasCloseHDC(cnvMousePointer, hdc)
-    If (LenB(theFile) <> 0) Then Call Kill(theFile)
+    If (LenB(theFile)) Then Call Kill(theFile)
 End Property
 
 '=========================================================================

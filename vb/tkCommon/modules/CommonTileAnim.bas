@@ -97,7 +97,7 @@ Function TileAnmFrameCount(ByRef theAnm As TKTileAnm) As Long
     Dim cnt As Long
         
     For t = 0 To UBound(theAnm.animTileFrame)
-        If (LenB(TileAnmGet(theAnm, t)) <> 0) Then
+        If (LenB(TileAnmGet(theAnm, t))) Then
             cnt = t
         End If
     Next t
@@ -194,7 +194,7 @@ Sub TileAnmInsert(ByVal theFile As String, ByRef theAnm As TKTileAnm, ByVal nFra
     End If
     
 #If isToolkit = 0 Then
-    If (LenB(theFile) <> 0) And pakFileRunning Then
+    If (LenB(theFile)) And pakFileRunning Then
         'do check for pakfile system
         Dim ex As String
         Dim Temp As String

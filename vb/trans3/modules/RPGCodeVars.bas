@@ -154,7 +154,7 @@ Private Function equEvaluate(ByVal Text As String) As Double
             End If
         Else
             ' If we have a number, then we've reached its end
-            If (LenB(num) <> 0) Then
+            If (LenB(num)) Then
                 ' Record the token
                 tokenIdx = tokenIdx + 1
                 ReDim Preserve tokens(tokenIdx)
@@ -196,7 +196,7 @@ Private Function equEvaluate(ByVal Text As String) As Double
     Next idx
 
     ' Before we try and solve this equation, let's make sure all's good
-    If ((depth <> 0) Or ((operatorIdx + 1) <> tokenIdx)) Then
+    If ((depth) Or ((operatorIdx + 1) <> tokenIdx)) Then
         ' Error out
         equEvaluate = -1
         Exit Function
@@ -268,7 +268,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
     If (allowEquations) Then
 
         ' Create an array of signs
-        Dim signs(10) As String
+        Dim signs(11) As String
         signs(0) = "+"
         signs(1) = "-"
         signs(2) = "/"
@@ -280,6 +280,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
         signs(8) = "`"
         signs(9) = "%"
         signs(10) = "=="
+        signs(11) = "="
 
         ' Replace "-x" with "0 - x"
         Text = replace(Text, "-", "0-")
@@ -292,7 +293,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
         parts = multiSplit(Text, signs, delimiters, True)
 
         ' Check if it's an equation
-        isEquation = (UBound(parts) <> 0)
+        isEquation = (UBound(parts))
 
         ' Get the data type
         Dim anotre As Boolean, dataIdx As Long
@@ -377,7 +378,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
     ' At this point I'm going to check for user defined casts
     If (getVariable(Text & "!", lit, num, prg) = DT_NUM) Then
         ' It turned out numerical... that's good :)
-        If (num <> 0) Then
+        If (num) Then
             ' We got a number, to boot
             hClass = CLng(num)
             If (isObject(hClass, prg)) Then
@@ -517,13 +518,15 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
         ' Get the destination variable and remove unwanted characters
         Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", vbNullString), " ", vbNullString), vbTab, vbNullString), theProgram)
-        If (Right$(Destination, 1) <> "!" And Right$(Destination, 1) <> "$") Then
+        Dim rdtdc As String
+        rdtdc = RightB$(Destination, 2)
+        If ((rdtdc <> "!") And (rdtdc <> "$")) Then
             ' Append a "!"
             Destination = Destination & "!"
             ' Get value of the destination
             Call getValue(Destination, lit, num, theProgram)
             ' If it's not NULL
-            If (num <> 0) Then
+            If (num) Then
                 ' Check if it's already an object
                 If (isObject(num, theProgram)) Then
                     ' It is; we may need to handle an overloaded =
@@ -592,7 +595,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             Select Case equal
 
                 Case "++"
-                    If ((hClass <> 0) And (Not (noVar))) Then
+                    If ((hClass) And (Not (noVar))) Then
                         ' If this class handles this operator
                         If (isMethodMember("operator++", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                             ' Call the method
@@ -605,7 +608,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                     Exit Sub
 
                 Case "--"
-                    If ((hClass <> 0) And (Not (noVar))) Then
+                    If ((hClass) And (Not (noVar))) Then
                         ' If this class handles this operator
                         If (isMethodMember("operator--", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                             ' Call the method
@@ -628,7 +631,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             ' Check if we can evaluate using logic
             Dim dRes As Double
             logicEval = True
-            dRes = CDbl(evaluate(MidB$(oldText, InStrB(1, oldText, equal) + 2), theProgram, logicEval))
+            dRes = CDbl(evaluate(MidB$(oldText, InStrB(1, oldText, equal) + LenB(equal)), theProgram, logicEval))
 
             If Not (logicEval) Then
 
@@ -658,7 +661,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                             End If
                         Loop
                         ' If we found one
-                        If (toFind <> 0) Then
+                        If (toFind) Then
                             ' Check for operator overloading on previous token
                             Dim prevToken As String, tdc As String
                             prevToken = valueList(tokenIdx + toFind)
@@ -667,7 +670,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                             If ((tdc <> "!") And (tdc <> "$")) Then
                                 If (getVariable(prevToken & "!", lit, num, theProgram) = DT_NUM) Then
                                     ' If it's not NULL
-                                    If (num <> 0) Then
+                                    If (num) Then
                                         ' See if it's an object
                                         Dim hTokenClass As Long
                                         hTokenClass = CLng(num)
@@ -718,7 +721,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
             End If
 
-            If ((hClass <> 0) And (equal <> "=") And (Not noVar)) Then
+            If ((hClass) And (equal <> "=") And (Not noVar)) Then
                 ' If this class handles this *specific* operator
                 If (isMethodMember("operator" & equal, hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                     ' Call the method
@@ -740,7 +743,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Case "%=": dRes = dRes Mod destNum
             End Select
 
-            If ((hClass <> 0) And (Not noVar)) Then
+            If ((hClass) And (Not (noVar))) Then
                 ' If this class handles =
                 If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                     ' Call the method
@@ -767,23 +770,31 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Call getValue(Trim$(valueList(tokenIdx)), litUse(tokenIdx), num, theProgram)
             Next tokenIdx
 
-            ' Combine the tokens
-            Dim res As String
-            For tokenIdx = 2 To number
-                res = res & litUse(tokenIdx)
-            Next tokenIdx
+            ' Check if we can evaluate using logic
+            Dim strRes As String
+            logicEval = True
+            Call evaluate(MidB$(oldText, InStrB(1, oldText, equal) + LenB(equal)), theProgram, logicEval, strRes)
 
-            If ((equal = "+=") And (Not noVar)) Then
+            If Not (logicEval) Then
+
+                ' Combine the tokens
+                For tokenIdx = 2 To number
+                    strRes = strRes & litUse(tokenIdx)
+                Next tokenIdx
+
+            End If
+
+            If ((equal = "+=") And (Not (noVar))) Then
                 ' Add result to existing value
-                res = destLit & res
+                strRes = destLit & strRes
             End If
 
             ' If we recorded a class' handle earlier
-            If ((hClass <> 0) And (Not noVar)) Then
+            If ((hClass) And (Not (noVar))) Then
                 ' If this class handles =
                 If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                     ' Call the method
-                    Call callObjectMethod(hClass, "operator=(""" & res & """)", theProgram, retval, "operator=")
+                    Call callObjectMethod(hClass, "operator=(""" & strRes & """)", theProgram, retval, "operator=")
                     ' Leave this procedure
                     Exit Sub
                 End If
@@ -791,10 +802,10 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
             If Not (noVar) Then
                 ' Set destination to result
-                Call SetVariable(Destination, res, theProgram)
+                Call SetVariable(Destination, strRes, theProgram)
             Else
                 ' Pass out value via params
-                pLit = res
+                pLit = strRes
             End If
 
         Case Else       'INVALID DESTINATION VARIABLE
@@ -913,15 +924,16 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                 ' Try for an object
                 Dim noArray As String
                 noArray = Mid$(Text, 1, InStr(1, Text, "[") - 1)
-                If (LenB(noArray) <> 0) Then
+                If (LenB(noArray)) Then
                     ' Use stuff before "["
                     Call getVariable(noArray & "!", litA, numA, theProgram)
                 Else
                     ' Use the text in its entirety
                     Call getVariable(Text & "!", litA, numA, theProgram)
                 End If
-                If (numA <> 0) Then
+                If (numA) Then
                     If (isObject(CLng(numA), theProgram)) Then
+                        bWasVar = True
                         If (getVariable(Text, litA, numA, theProgram) = DT_NUM) Then
                             num = numA
                             getValue = DT_NUM
@@ -953,7 +965,7 @@ End Function
 ' Determine if a literal variable exists
 '=========================================================================
 Public Function litVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
-    If (LenB(varname) <> 0) Then
+    If (LenB(varname)) Then
         litVarExists = (RPGCLitExists(UCase$(varname), heapID) = 1)
     End If
 End Function
@@ -1020,7 +1032,7 @@ End Sub
 ' Determine if a numerical variable exists
 '=========================================================================
 Public Function numVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
-    If (LenB(varname) <> 0) Then
+    If (LenB(varname)) Then
         numVarExists = (RPGCNumExists(UCase$(varname), heapID) = 1)
     End If
 End Function
@@ -1283,7 +1295,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
                 theVar = theVar & "!"
                 Call getValue(theVar, litA, numA, theProgram)
                 ' If it's not NULL
-                If (numA <> 0) Then
+                If (numA) Then
                     ' Check if it's already an object
                     If (isObject(numA, theProgram)) Then
                         ' It is; we may need to handle an overloaded ! or $

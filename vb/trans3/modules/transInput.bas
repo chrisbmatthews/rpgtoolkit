@@ -570,7 +570,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     ' Check custom plugins to see if they request an input.
     Dim plugName As String
     For Index = 0 To UBound(mainMem.plugins)
-        If (LenB(mainMem.plugins(Index)) <> 0) Then
+        If (LenB(mainMem.plugins(Index))) Then
             'If there is a plugin in this slot, get the name.
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(Index))
             If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
@@ -581,7 +581,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     Next Index
 
     ' Check the menu plugin.
-    If (LenB(mainMem.menuPlugin) <> 0) Then
+    If (LenB(mainMem.menuPlugin)) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
             Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
@@ -589,7 +589,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     End If
 
     ' Check the fight plugin.
-    If (LenB(mainMem.fightPlugin) <> 0) Then
+    If (LenB(mainMem.fightPlugin)) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
             Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
@@ -626,7 +626,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         ' Check extended runtime keys
         For Index = 0 To 50
             If UCase$(Chr$(keyCode)) = UCase$(Chr$(mainMem.runTimeKeys(Index))) Then
-                If (LenB(mainMem.runTimePrg(Index)) <> 0) Then
+                If (LenB(mainMem.runTimePrg(Index))) Then
                     Call runProgram(projectPath & prgPath & mainMem.runTimePrg(Index))
                 End If
             End If
@@ -662,7 +662,7 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
 
     'Check custom plugins to see if they request an input.
     For Index = 0 To UBound(mainMem.plugins)
-        If (LenB(mainMem.plugins(Index)) <> 0) Then
+        If (LenB(mainMem.plugins(Index))) Then
             'If there is a plugin in this slot, get the name.
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(Index))
             
@@ -674,7 +674,7 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
     Next Index
 
     'Check the menu plugin.
-    If (LenB(mainMem.menuPlugin) <> 0) Then
+    If (LenB(mainMem.menuPlugin)) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
@@ -683,7 +683,7 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
     End If
 
     'Check the fight plugin.
-    If (LenB(mainMem.fightPlugin) <> 0) Then
+    If (LenB(mainMem.fightPlugin)) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then

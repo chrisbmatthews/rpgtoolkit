@@ -23,7 +23,7 @@ Public Function chooseHit(Optional ByVal enemyNum As Long) As Long
     Dim hit As Long
     Do
         hit = Int(Rnd(1) * 5)
-        If (LenB(playerListAr(hit)) <> 0) Then
+        If (LenB(playerListAr(hit))) Then
             If getPlayerHP(playerMem(hit)) > 0 Then
                 chooseHit = hit
                 Exit Function
@@ -219,7 +219,7 @@ Private Function enemyCanDoSM(ByRef theEnemy As TKEnemy, ByRef moveArray() As St
     Dim move As TKSpecialMove
     
     For t = 0 To UBound(theEnemy.eneSpecialMove)
-        If (LenB(theEnemy.eneSpecialMove(t)) <> 0) Then
+        If (LenB(theEnemy.eneSpecialMove(t))) Then
             move = openSpecialMove(projectPath$ & spcPath$ & theEnemy.eneSpecialMove(t))
             If move.smSMP <= getEnemySMP(theEnemy) Then
                 'we can do it...

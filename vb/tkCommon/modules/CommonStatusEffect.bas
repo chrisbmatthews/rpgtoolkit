@@ -53,7 +53,7 @@ Sub openStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
     Open file$ For Binary As #num
         Dim b As Byte
         Get #num, 17, b
-        If b <> 0 Then
+        If (b) Then
             Close #num
             GoTo ver2oldstatus
         End If

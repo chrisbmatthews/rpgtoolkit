@@ -313,7 +313,7 @@ Public Sub CanvasLoadFullPicture(ByVal canvasID As Long, ByVal file As String, B
     If CanvasOccupied(canvasID) And fileExists(file) Then
         Dim img As Long, sizex As Long, sizey As Long
         img = IMGLoad(file)
-        If (img <> 0) Then
+        If (img) Then
             sizex = IMGGetWidth(img)
             sizey = IMGGetHeight(img)
             
@@ -728,7 +728,7 @@ End Sub
 '=========================================================================
 Public Function CreateCanvas(ByVal width As Long, ByVal height As Long, Optional ByVal bUseDX As Boolean = True) As Long
     On Error Resume Next
-    If width <> 0 And height <> 0 Then
+    If width And height Then
         CreateCanvas = CNVCreate(canvasHost, width, height, 1)
     Else
         CreateCanvas = -1
@@ -810,5 +810,5 @@ End Sub
 ' Determine if a canvas exists
 '=========================================================================
 Public Property Get CanvasOccupied(ByVal handle As Long) As Boolean
-    CanvasOccupied = (CNVExists(handle) <> 0)
+    CanvasOccupied = (CNVExists(handle))
 End Property

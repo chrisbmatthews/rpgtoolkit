@@ -115,7 +115,7 @@ Public Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
     Open file$ For Binary Access Read As num
         Dim b As Byte
         Get num, 13, b
-        If b <> 0 Then
+        If (b) Then
             Close num
             GoTo ver2bkg
         End If

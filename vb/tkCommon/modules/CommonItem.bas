@@ -202,7 +202,7 @@ Public Function itemGetCustomHandleIdx(ByRef theItem As TKItem, ByVal idx As Lon
     On Error Resume Next
     Dim cnt As Long, t As Long
     For t = 0 To UBound(theItem.customGfxNames)
-        If (LenB(theItem.customGfxNames(t)) <> 0) Then
+        If (LenB(theItem.customGfxNames(t))) Then
             If cnt = idx Then
                 itemGetCustomHandleIdx = t
                 Exit Function
@@ -353,7 +353,7 @@ Public Function openItem(ByVal file As String) As TKItem
     Open file$ For Binary Access Read As #num
         Dim b As Byte
         Get #num, 14, b
-        If b <> 0 Then
+        If (b) Then
             Close #num
             GoTo ver2olditem
         End If
