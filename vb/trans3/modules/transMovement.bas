@@ -1324,7 +1324,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
     
     For itmIdx = 0 To UBound(pendingItemMovement)
         'All of these items will be in view.
-        If singleItem = itmIdx Or -1 Then
+        If singleItem = itmIdx Or singleItem = -1 Then
         
             If itmPos(itmIdx).loopFrame <= 0 Then
                 'Parse the queue.
@@ -1505,14 +1505,14 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
 'If singlePlayer supplied, will only move that player.
 'Called by: gameLogic, runQueuedMovements
 '======================================================
-    
+
     Dim playerIdx As Long, mvOccured As Boolean
     Static staticTileType() As Byte
     ReDim Preserve staticTileType(UBound(pendingPlayerMovement))
-    
+
     For playerIdx = 0 To UBound(pendingPlayerMovement)
-    
-        If showPlayer(playerIdx) And (singlePlayer = playerIdx Or -1) Then
+
+        If showPlayer(playerIdx) And (singlePlayer = playerIdx Or singlePlayer = -1) Then
             'If player is visible, or we're running this for singlePlayer only.
         
             If pPos(playerIdx).loopFrame < 0 Then
