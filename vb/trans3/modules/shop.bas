@@ -3,89 +3,70 @@ Attribute VB_Name = "Shop"
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
-'shop
-Global itemsforsale$(500)   'filenames of 500 items to sell.
+Option Explicit
+
+Public itemsforsale(500) As String  'filenames of 500 items to sell.
 Public itemMap(500) As Long
 
-'FIXIT: Declare 'num' with an early-bound data type                                        FixIT90210ae-R1672-R1B8ZE
-Sub shopGiveItems(file$, num)
+Public Sub shopGiveItems(ByVal file As String, ByVal num As Long)
     'add num items as defined by file$
-    On Error GoTo errorhandler
-    n$ = getItemName(projectPath$ + itmPath$ + file$)
-    file$ = addext(file$, ".itm")
 
-    'Scan inventory for this item
+    On Error Resume Next
+
+    Dim n As String
+    n = getItemName(projectPath & itmPath & file)
+    file = addext(file, ".itm")
+    Dim theOne As Long, t As Long
     theOne = -1
-    For t = 0 To UBound(inv.item)
-        If UCase$(inv.item(t).file) = UCase$(file$) Then theOne = t
-    Next t
-    If theOne <> -1 Then
-        inv.item(theOne).number = inv.item(theOne).number + num
-        Exit Sub
-    Else
-        theOne = -1
-        For t = 0 To UBound(inv.item)
-            If inv.item(t).file = "" Then theOne = t: t = 500
+    With inv
+        For t = 0 To UBound(.item)
+            If UCase(.item(t).file) = UCase(file) Then theOne = t
         Next t
-    End If
-    If theOne = -1 Then
-        Call debugger("Error: Can't give item!  Inventory is full!-- " + text$)
-        Exit Sub
-    End If
-    inv.item(theOne).file = file$
-    inv.item(theOne).number = num
-    'Now get item handle:
-    inv.item(theOne).handle = n$
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-'FIXIT: Declare 'num' with an early-bound data type                                        FixIT90210ae-R1672-R1B8ZE
-Sub shopTakeItems(file$, num)
-    'take num items as defined by file$
-    On Error GoTo errorhandler
-    n$ = getItemName(projectPath$ + itmPath$ + file$)
-    file$ = addext(file$, ".itm")
-    'Scan inventory for this item
-    theOne = -1
-    For t = 0 To UBound(inv.item)
-        If UCase$(inv.item(t).file) = UCase$(file$) Then theOne = t
-    Next t
-    If theOne <> -1 Then
-        inv.item(theOne).number = inv.item(theOne).number - num
-        If inv.item(theOne).number <= 0 Then
-            inv.item(theOne).file = ""
-            inv.item(theOne).number = 0
-            inv.item(theOne).handle = ""
+        If theOne <> -1 Then
+            .item(theOne).number = .item(theOne).number + num
+        Else
+            theOne = -1
+            For t = 0 To UBound(.item)
+                If .item(t).file = "" Then
+                    theOne = t
+                    Exit For
+                End If
+            Next t
+            If theOne <> -1 Then
+                With .item(theOne)
+                    .file = file
+                    .number = num
+                    .handle = n
+                End With
+            End If
         End If
-        Exit Sub
-    End If
+    End With
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-'FIXIT: Declare 'num' with an early-bound data type                                        FixIT90210ae-R1672-R1B8ZE
-Sub summonShop(itemsell$(), num)
-    'opens shop window to sell any items in the
-    'itemsell$ array (num is size of array)
-    On Error GoTo errorhandler
+Public Sub shopTakeItems(ByVal file As String, ByVal num As Long)
+    'take num items as defined by file$
 
-    shopwindow.Show
+    On Error Resume Next
+    Dim n As String
+    n = getItemName(projectPath & itmPath & file)
+    file = addext(file, ".itm")
+    Dim theOne As Long, t As Long
+    theOne = -1
+    With inv
+        For t = 0 To UBound(.item)
+            If UCase(.item(t).file) = UCase(file) Then theOne = t
+        Next t
+        If theOne <> -1 Then
+            With .item(theOne)
+                .number = .number - num
+                If .number <= 0 Then
+                    .file = ""
+                    .number = 0
+                    .handle = ""
+                End If
+            End With
+        End If
+    End With
 
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
 End Sub
-

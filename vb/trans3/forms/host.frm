@@ -1,9 +1,9 @@
 VERSION 5.00
 Begin VB.Form host 
-   BorderStyle     =   0  'None
+   BorderStyle     =   4  'Fixed ToolWindow
    ClientHeight    =   2085
-   ClientLeft      =   0
-   ClientTop       =   0
+   ClientLeft      =   45
+   ClientTop       =   285
    ClientWidth     =   2850
    Icon            =   "host.frx":0000
    LinkTopic       =   "Form2"
@@ -41,9 +41,9 @@ Private Sub Form_GotFocus()
     redraw.Enabled = False
 End Sub
 
-Private Sub Form_KeyDown(keyCode As Integer, shift As Integer)
+Private Sub Form_KeyDown(keyCode As Integer, Shift As Integer)
     On Error Resume Next
-    Call keyDownEvent(keyCode, shift)
+    Call keyDownEvent(keyCode, Shift)
 End Sub
 
 Private Sub Form_KeyPress(KeyAscii As Integer)
@@ -57,12 +57,12 @@ Private Sub Form_LostFocus()
     redraw.Enabled = True
 End Sub
 
-Private Sub Form_MouseDown(button As Integer, shift As Integer, x As Single, y As Single)
-    Call mouseDownEvent(x, y, shift, button)
+Private Sub Form_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
+    Call mouseDownEvent(X, Y, Shift, button)
 End Sub
 
-Private Sub Form_MouseMove(button As Integer, shift As Integer, x As Single, y As Single)
-    Call mouseMoveEvent(x, y)
+Private Sub Form_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
+    Call mouseMoveEvent(X, Y)
 End Sub
 
 Private Sub Form_Resize()

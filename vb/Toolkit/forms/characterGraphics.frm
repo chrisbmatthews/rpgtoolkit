@@ -1,104 +1,138 @@
 VERSION 5.00
 Begin VB.Form characterGraphics 
-   BorderStyle     =   1  'Fixed Single
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
+   BorderStyle     =   0  'None
    Caption         =   "Character Graphics"
    ClientHeight    =   5055
-   ClientLeft      =   480
-   ClientTop       =   1170
-   ClientWidth     =   8610
+   ClientLeft      =   435
+   ClientTop       =   840
+   ClientWidth     =   8190
    Icon            =   "characterGraphics.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    ScaleHeight     =   5055
-   ScaleWidth      =   8610
-   StartUpPosition =   1  'CenterOwner
+   ScaleWidth      =   8190
+   ShowInTaskbar   =   0   'False
+   StartUpPosition =   2  'CenterScreen
    Tag             =   "1236"
-   Begin VB.CommandButton Command6 
-      Appearance      =   0  'Flat
+   Begin Toolkit.TKTopBar TopBar 
+      Height          =   480
+      Left            =   0
+      TabIndex        =   5
+      Top             =   0
+      Width           =   3135
+      _ExtentX        =   5530
+      _ExtentY        =   847
+      Object.Width           =   3135
+      Caption         =   "Character Sprite List"
+   End
+   Begin Toolkit.TKButton Command6 
+      Height          =   375
+      Left            =   7200
+      TabIndex        =   4
+      Top             =   600
+      Width           =   735
+      _ExtentX        =   661
+      _ExtentY        =   661
+      Object.Width           =   360
       Caption         =   "OK"
-      Height          =   345
-      Left            =   7320
-      TabIndex        =   0
-      Tag             =   "1022"
-      Top             =   240
-      Width           =   1095
    End
    Begin VB.Frame Frame1 
-      Caption         =   "Sprite List"
-      Height          =   4695
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   4335
       Left            =   120
-      TabIndex        =   1
-      Top             =   120
+      TabIndex        =   0
+      Top             =   480
       Width           =   6975
-      Begin VB.CommandButton Command2 
-         Appearance      =   0  'Flat
+      Begin Toolkit.TKButton Command2 
+         Height          =   375
+         Left            =   3480
+         TabIndex        =   9
+         Top             =   3720
+         Width           =   1335
+         _ExtentX        =   661
+         _ExtentY        =   661
+         Object.Width           =   360
          Caption         =   "Remove"
-         Height          =   345
+      End
+      Begin Toolkit.TKButton Command1 
+         CausesValidation=   0   'False
+         Height          =   375
          Left            =   3480
          TabIndex        =   8
-         Top             =   4200
+         Top             =   3240
          Width           =   1095
-      End
-      Begin VB.CommandButton Command1 
-         Appearance      =   0  'Flat
+         _ExtentX        =   661
+         _ExtentY        =   661
+         Object.Width           =   360
          Caption         =   "Add"
-         Height          =   345
+      End
+      Begin VB.PictureBox Command8 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   442
          Left            =   3480
+         MousePointer    =   99  'Custom
+         Picture         =   "characterGraphics.frx":0CCA
+         ScaleHeight     =   405
+         ScaleWidth      =   435
          TabIndex        =   7
-         Top             =   3720
-         Width           =   1095
+         Top             =   960
+         Width           =   465
+      End
+      Begin VB.PictureBox command14 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   375
+         Left            =   6120
+         MousePointer    =   99  'Custom
+         Picture         =   "characterGraphics.frx":1654
+         ScaleHeight     =   375
+         ScaleWidth      =   615
+         TabIndex        =   6
+         Top             =   530
+         Width           =   615
       End
       Begin VB.ListBox spriteList 
-         Height          =   4155
+         Appearance      =   0  'Flat
+         Height          =   3735
          Left            =   240
-         TabIndex        =   5
+         TabIndex        =   2
          Top             =   360
          Width           =   3015
       End
       Begin VB.TextBox Text1 
+         Appearance      =   0  'Flat
          Height          =   285
          Left            =   3480
-         TabIndex        =   4
+         TabIndex        =   1
          Top             =   600
-         Width           =   2055
-      End
-      Begin VB.CommandButton Command14 
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   5640
-         TabIndex        =   3
-         Tag             =   "1021"
-         Top             =   600
-         Width           =   1095
-      End
-      Begin VB.CommandButton Command8 
-         Appearance      =   0  'Flat
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   3480
-         Picture         =   "characterGraphics.frx":0CCA
-         Style           =   1  'Graphical
-         TabIndex        =   2
-         Top             =   960
-         Width           =   375
+         Width           =   2535
       End
       Begin VB.Label Label2 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "Animation"
+         ForeColor       =   &H80000008&
          Height          =   255
          Left            =   3480
-         TabIndex        =   6
+         TabIndex        =   3
          Tag             =   "2061"
          Top             =   360
          Width           =   2415
       End
+   End
+   Begin VB.Shape Shape1 
+      Height          =   5055
+      Left            =   0
+      Top             =   0
+      Width           =   8175
    End
 End
 Attribute VB_Name = "characterGraphics"
@@ -180,7 +214,7 @@ Private Sub Command14_Click()
     ChDir (currentdir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + miscPath$ + antiPath$
-    Text1.text = antiPath$
+    Text1.Text = antiPath$
     
     idx = spriteList.ListIndex
     If idx = -1 Then idx = 0
@@ -193,7 +227,7 @@ Private Sub Command14_Click()
     End If
 End Sub
 
-Private Sub Command2_Click()
+Private Sub command2_Click()
     On Error Resume Next
     
     Dim idx As Long, dx As Long
@@ -246,8 +280,10 @@ End Sub
 Private Sub Form_Load()
     On Error Resume Next
     Call LocalizeForm(Me)
-    
+    Set TopBar.theForm = Me
     Call infofill
+    Command8.MouseIcon = Images.MouseLink
+    Command14.MouseIcon = Images.MouseLink
 End Sub
 
 
@@ -259,10 +295,10 @@ Private Sub spriteList_Click()
     If idx = -1 Then idx = 0
     
     If idx < UBound(playerList(activePlayerIndex).theData.gfx) Then
-        Text1.text = playerList(activePlayerIndex).theData.gfx(idx)
+        Text1.Text = playerList(activePlayerIndex).theData.gfx(idx)
     Else
         dx = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, idx - UBound(playerList(activePlayerIndex).theData.gfx))
-        Text1.text = playerList(activePlayerIndex).theData.customGfx(dx)
+        Text1.Text = playerList(activePlayerIndex).theData.customGfx(dx)
     End If
 End Sub
 
@@ -281,10 +317,10 @@ Private Sub Text1_Change()
     If idx = -1 Then idx = 0
     
     If idx < UBound(playerList(activePlayerIndex).theData.gfx) Then
-        playerList(activePlayerIndex).theData.gfx(idx) = Text1.text
+        playerList(activePlayerIndex).theData.gfx(idx) = Text1.Text
     Else
         dx = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, idx - UBound(playerList(activePlayerIndex).theData.gfx))
-        playerList(activePlayerIndex).theData.customGfx(dx) = Text1.text
+        playerList(activePlayerIndex).theData.customGfx(dx) = Text1.Text
     End If
 End Sub
 

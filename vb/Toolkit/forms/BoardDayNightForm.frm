@@ -1,72 +1,100 @@
 VERSION 5.00
 Begin VB.Form BoardDayNightForm 
-   BorderStyle     =   1  'Fixed Single
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
+   BorderStyle     =   0  'None
    Caption         =   "Board Night Fighting Options"
-   ClientHeight    =   2850
-   ClientLeft      =   45
-   ClientTop       =   330
-   ClientWidth     =   6555
+   ClientHeight    =   3015
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   6375
    Icon            =   "BoardDayNightForm.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   2850
-   ScaleWidth      =   6555
-   StartUpPosition =   1  'CenterOwner
+   ScaleHeight     =   3015
+   ScaleWidth      =   6375
+   ShowInTaskbar   =   0   'False
+   StartUpPosition =   2  'CenterScreen
    Tag             =   "1860"
-   Begin VB.CommandButton Command1 
-      Appearance      =   0  'Flat
-      Caption         =   "OK"
-      Height          =   345
-      Left            =   5280
-      TabIndex        =   9
-      Tag             =   "1022"
-      Top             =   240
+   Begin Toolkit.TKTopBar TopBar 
+      Height          =   480
+      Left            =   0
+      TabIndex        =   10
+      Top             =   0
+      Width           =   3375
+      _ExtentX        =   5953
+      _ExtentY        =   847
+      Object.Width           =   3375
+      Caption         =   "Night Fighting Options"
+   End
+   Begin Toolkit.TKButton Command1 
+      Height          =   495
+      Left            =   5160
+      TabIndex        =   8
+      Top             =   480
       Width           =   1095
+      _ExtentX        =   661
+      _ExtentY        =   873
+      Object.Width           =   360
+      Caption         =   "OK"
    End
    Begin VB.Frame Frame1 
-      Caption         =   "Night Battle Options"
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
       Height          =   2535
       Left            =   120
       TabIndex        =   0
       Tag             =   "1862"
-      Top             =   120
+      Top             =   360
       Width           =   4935
-      Begin VB.CommandButton Command5 
+      Begin VB.PictureBox command5 
          Appearance      =   0  'Flat
-         Caption         =   "Browse..."
-         Height          =   345
-         Left            =   3720
-         TabIndex        =   7
-         Tag             =   "1021"
-         Top             =   1560
-         Width           =   1095
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   375
+         Left            =   3960
+         Picture         =   "BoardDayNightForm.frx":0CCA
+         ScaleHeight     =   375
+         ScaleWidth      =   615
+         TabIndex        =   9
+         Top             =   1490
+         Width           =   615
       End
       Begin VB.TextBox Text1 
+         Appearance      =   0  'Flat
          Height          =   285
          Left            =   1800
          TabIndex        =   6
          Top             =   1560
-         Width           =   1815
+         Width           =   2055
       End
       Begin VB.TextBox skillbox 
+         Appearance      =   0  'Flat
          Height          =   285
          Left            =   1800
          TabIndex        =   2
          Text            =   "1"
          Top             =   840
-         Width           =   1815
+         Width           =   2055
       End
       Begin VB.CheckBox fyes 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "When night falls, use custom battle options"
+         ForeColor       =   &H80000008&
          Height          =   495
          Left            =   120
          TabIndex        =   1
          Tag             =   "1861"
-         Top             =   360
+         Top             =   240
          Width           =   4335
       End
       Begin VB.Label Label5 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "Also see Background Editor"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -77,19 +105,21 @@ Begin VB.Form BoardDayNightForm
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H00FF0000&
+         ForeColor       =   &H80000008&
          Height          =   495
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "BoardDayNightForm.frx":0CCA
+         MouseIcon       =   "BoardDayNightForm.frx":12B4
          MousePointer    =   99  'Custom
-         TabIndex        =   8
+         TabIndex        =   7
          Tag             =   "1056"
          Top             =   1920
          Visible         =   0   'False
          Width           =   2295
       End
       Begin VB.Label Label3 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "Also see Enemy Info"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -100,11 +130,11 @@ Begin VB.Form BoardDayNightForm
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H00FF0000&
+         ForeColor       =   &H80000008&
          Height          =   255
          Index           =   2
          Left            =   2280
-         MouseIcon       =   "BoardDayNightForm.frx":0FD4
+         MouseIcon       =   "BoardDayNightForm.frx":15BE
          MousePointer    =   99  'Custom
          TabIndex        =   4
          Tag             =   "1055"
@@ -113,7 +143,10 @@ Begin VB.Form BoardDayNightForm
          Width           =   2415
       End
       Begin VB.Label Label1 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "Background:"
+         ForeColor       =   &H80000008&
          Height          =   255
          Left            =   120
          TabIndex        =   5
@@ -122,7 +155,10 @@ Begin VB.Form BoardDayNightForm
          Width           =   1455
       End
       Begin VB.Label Label3 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "Board Skill:"
+         ForeColor       =   &H80000008&
          Height          =   255
          Index           =   0
          Left            =   120
@@ -131,6 +167,12 @@ Begin VB.Form BoardDayNightForm
          Top             =   840
          Width           =   1215
       End
+   End
+   Begin VB.Shape Shape1 
+      Height          =   3015
+      Left            =   0
+      Top             =   0
+      Width           =   6375
    End
 End
 Attribute VB_Name = "BoardDayNightForm"
@@ -144,33 +186,33 @@ Attribute VB_Exposed = False
 
 Option Explicit
 Sub infofill()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
     fyes.value = boardList(activeBoardIndex).theData.BoardNightBattleOverride
     If boardList(activeBoardIndex).theData.BoardNightBattleOverride = 0 Then
         'fyes.Value = 0
         Label3(0).Enabled = 0
-        Command5.Enabled = 0
+        command5.Enabled = 0
         skillbox.Enabled = 0
         Label1.Enabled = False
         Text1.Enabled = False
     Else
         'fyes.Value = 1
         Label3(0).Enabled = 1
-        Command5.Enabled = 1
+        command5.Enabled = 1
         skillbox.Enabled = 1
         Label1.Enabled = True
         Text1.Enabled = True
     End If
 
-    skillbox.text = str$(boardList(activeBoardIndex).theData.BoardSkillNight)
+    skillbox.Text = str$(boardList(activeBoardIndex).theData.BoardSkillNight)
     If boardList(activeBoardIndex).theData.BoardBackgroundNight$ <> "" Then
-        Text1.text = boardList(activeBoardIndex).theData.BoardBackgroundNight$
+        Text1.Text = boardList(activeBoardIndex).theData.BoardBackgroundNight$
     End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -199,29 +241,31 @@ Private Sub Command5_Click()
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + bkgpath$ + antiPath$
     boardList(activeBoardIndex).theData.BoardBackgroundNight$ = antiPath$
-    Text1.text = antiPath$
+    Text1.Text = antiPath$
 End Sub
-
 
 Private Sub Form_Load()
     Call LocalizeForm(Me)
     Call infofill
+    command5.MousePointer = 99
+    command5.MouseIcon = Images.MouseLink
+    Set TopBar.theForm = Me
 End Sub
 
 Private Sub fyes_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     boardList(activeBoardIndex).theData.BoardNightBattleOverride = fyes.value
     If boardList(activeBoardIndex).theData.BoardNightBattleOverride = 0 Then
         'fyes.Value = 0
         Label3(0).Enabled = 0
-        Command5.Enabled = 0
+        command5.Enabled = 0
         skillbox.Enabled = 0
         Label1.Enabled = False
         Text1.Enabled = False
     Else
         'fyes.Value = 1
         Label3(0).Enabled = 1
-        Command5.Enabled = 1
+        command5.Enabled = 1
         skillbox.Enabled = 1
         Label1.Enabled = True
         Text1.Enabled = True
@@ -230,49 +274,49 @@ Private Sub fyes_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Label3_Click(Index As Integer)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If Index = 2 Then mainfight.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Label5_Click(Index As Integer)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If Index = 1 Then editBackground.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub skillbox_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
-    boardList(activeBoardIndex).theData.BoardSkillNight = val(skillbox.text)
+    boardList(activeBoardIndex).theData.BoardSkillNight = val(skillbox.Text)
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Text1_Change()
-    boardList(activeBoardIndex).theData.BoardBackgroundNight$ = Text1.text
+    boardList(activeBoardIndex).theData.BoardBackgroundNight$ = Text1.Text
 End Sub
 
 
