@@ -1859,7 +1859,7 @@ Public Sub setQueuedMovements(ByRef queue As String, ByRef path As String): On E
     If (movementSize <> 1) Then
         'We still want to push in tile units, so queue up 1/movementSize entries
         'per move.
-        ReDim largeArray((UBound(smallArray) + 1) \ movementSize - 1)
+        ReDim largeArray((UBound(smallArray) + 1) / movementSize - 1)
         
         i = -1
         For element = 0 To UBound(largeArray)
