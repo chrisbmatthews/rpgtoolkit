@@ -24,7 +24,7 @@ Option Explicit
 Public fightInProgress As Boolean   'fight going yn
 Public numEne As Long               'number of enemies loaded
 Public enemies(3) As String         'filenames of enemies loaded
-Public canrun As Long               'can players run from fight?
+Public canRun As Long               'can players run from fight?
 
 '=========================================================================
 ' Read-only pointer to fightInProgress
@@ -393,7 +393,7 @@ End Sub
 '========================================================================
 ' Load the enemies passed in
 '=========================================================================
-Public Sub loadEnemies(ByRef eneList() As String, ByVal num As Long)
+Private Sub loadEnemies(ByRef eneList() As String, ByVal num As Long)
     On Error Resume Next
     Dim t As Long
     For t = 0 To num - 1
@@ -404,7 +404,7 @@ End Sub
 '=========================================================================
 ' Reward the players
 '=========================================================================
-Public Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
+Private Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     On Error Resume Next
     Dim t As Long
     Dim exp As Long
@@ -490,7 +490,7 @@ Public Sub runFight( _
     'load enemies
     Call loadEnemies(eneList, num)
     
-    canrun = 1
+    canRun = 1
     Dim t As Long, cnt As Long
     'create enemy party...
     Dim strRunProgram As String
@@ -502,7 +502,7 @@ Public Sub runFight( _
             strRunProgram = enemyMem(t).eneRunPrg
         End If
         If enemyMem(t).eneRun = 0 Then
-            canrun = 0
+            canRun = 0
         End If
         If enemyMem(t).eneWinPrg <> "" Then
             strRewardProgram = enemyMem(t).eneWinPrg
@@ -554,9 +554,9 @@ Public Sub runFight( _
             'Tell fight plugin to run the fight
             Dim fightOutcome As Long
             If isVBPlugin(plugName) Then
-                fightOutcome = VBPlugin(plugName).fight(num, -1, bkg, canrun)
+                fightOutcome = VBPlugin(plugName).fight(num, -1, bkg, canRun)
             Else
-                fightOutcome = PLUGFight(plugName, num, -1, bkg, canrun)
+                fightOutcome = PLUGFight(plugName, num, -1, bkg, canRun)
             End If
             
             Select Case fightOutcome
