@@ -29,6 +29,19 @@ Private Declare Sub DXKillMusic Lib "actkrt3.dll" ()
 Private Declare Sub DXPlayMidi Lib "actkrt3.dll" (ByVal strFilename As String, Optional ByVal bLoop As Boolean = False)
 Private Declare Sub DXStopMidi Lib "actkrt3.dll" ()
 Private Declare Function DXIsMidiPlaying Lib "actkrt3.dll" () As Long
+Private Declare Function GetVersionExA Lib "kernel32" (ByRef lpVersionInformation As OSVERSIONINFO) As Integer
+
+'=========================================================================
+' Operating system version info
+'=========================================================================
+Public Type OSVERSIONINFO
+   dwOSVersionInfoSize As Long
+   dwMajorVersion As Long
+   dwMinorVersion As Long
+   dwBuildNumber As Long
+   dwPlatformId As Long
+   szCSDVersion As String * 128
+End Type
 
 '=========================================================================
 ' Public variables
@@ -40,6 +53,7 @@ Public fgDevice As Long                  ' Foreground music device
 ' Member variables
 '=========================================================================
 Private bkgDevice As Long                ' Background music device (audiere)
+Private m_bDXMidis As Boolean            ' Play MIDIs through DirectX?
 
 '=========================================================================
 ' Member constants
@@ -96,11 +110,22 @@ Public Sub initMedia()
 
     Call TKAudiereInit
 
-    Dim lngInit As Long
-    lngInit = DXInitMusic(host.hwnd)
+    ' Get the operating system version
+    Dim ver As OSVERSIONINFO
+    Call GetVersionExA(ver)
+    If (ver.dwPlatformId = 1) Then
 
-    If (lngInit = 0) Then
-        Call MsgBox("Could not initiate DirectMusic - please make sure you have DirectX 8 or higher installed!")
+        ' Running on Win9x: use DX to play MIDIs (doesn't seem to work as well,
+        ' but it's better than nothing!)
+        Dim lngInit As Long
+        lngInit = DXInitMusic(host.hwnd)
+        If (lngInit) Then
+            ' Use DirectMusic to play MIDIs
+            m_bDXMidis = True
+        Else
+            Call MsgBox("Could not initiate DirectMusic - please make sure you have DirectX 8 or higher installed!")
+        End If
+
     End If
 
     bkgDevice = TKAudiereCreateHandle()
@@ -142,7 +167,7 @@ Public Sub killMedia()
     Call TKAudiereDestroyHandle(bkgDevice)
     Call TKAudiereDestroyHandle(fgDevice)
     Call TKAudiereKill
-    Call DXKillMusic
+    If (m_bDXMidis) Then Call DXKillMusic
 
 End Sub
 
@@ -191,6 +216,7 @@ End Function
 ' Check if DirectMusic supports a format
 '=========================================================================
 Private Function isPlayedByDX(ByRef ext As String) As Boolean
+    If Not (m_bDXMidis) Then Exit Function
     Select Case ext
         Case "MID", "MIDI", "RMI", "MPL"
             ' DirectMusic plays this
