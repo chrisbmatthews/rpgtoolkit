@@ -323,11 +323,10 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                         If (prg.program(methodCheckIdx) <> "") Then
                             If (prg.program(methodCheckIdx) = "{") Then
                                 ' The method's body is right here
-                                Call addMethodToPrg(prg.classes.classes(classIdx).strName & "::" & GetMethodName(prg.program(methodCheckIdx)), methodCheckIdx, prg)
-                            Else
-                                ' Leave this loop
-                                Exit Do
+                                Call addMethodToPrg(prg.classes.classes(classIdx).strName & "::" & GetMethodName(prg.program(lineIdx)), methodCheckIdx, prg)
                             End If
+                            ' Leave this loop
+                            Exit Do
                         End If
                     Loop
                     If (scope = "private") Then
@@ -358,7 +357,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
         End If
 
-        If ((inClass) And (depth = 1)) Then
+        If ((inClass) And ((depth = 1) Or (depth = 0))) Then
 
             Select Case LCase(Trim(prg.program(lineIdx)))
 
@@ -389,7 +388,10 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             End If
 
             ' Make sure this line isn't run
-            prg.program(lineIdx) = ""
+            If (prg.program(methodCheckIdx) <> "{") Then
+                methodCheckIdx = -1
+                prg.program(lineIdx) = ""
+            End If
 
         End If
 
