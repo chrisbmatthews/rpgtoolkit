@@ -132,16 +132,16 @@ Private Function getMainFilename() As String
 
     On Error Resume Next
 
-    If (LenB(Command)) Then
+    If (LenB(Command$())) Then
 
         Dim args() As String
-        args() = Split(Command, " ")
+        args() = Split(Command$(), " ")
 
         If (UBound(args) = 0) Then
 
-            If (LCase$(GetExt(Command)) = "tpk") Then
+            If (LCase$(GetExt(Command$())) = "tpk") Then
 
-                Call setupPakSystem(TempDir & Command)
+                Call setupPakSystem(TempDir & Command$())
                 Call Kill(PakFileMounted)
                 Call ChDir(currentDir)
                 getMainFilename = "main.gam"
@@ -157,7 +157,7 @@ Private Function getMainFilename() As String
 
             Else
 
-                getMainFilename = gamPath & Command
+                getMainFilename = gamPath & Command$()
 
             End If
 
@@ -187,7 +187,7 @@ Private Function getMainFilename() As String
 
             Dim dlg As FileDialogInfo
             With dlg
-                .strDefaultFolder = gamPath$
+                .strDefaultFolder = gamPath
                 .strSelectedFile = vbNullString
                 .strTitle = "Open Main File"
                 .strDefaultExt = "gam"
@@ -566,19 +566,14 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     ' Set initial game speed
     Call gameSpeed(mainMem.gameSpeed)
     
-    ' Set some initial loop-time values based on average pc specs.
-    ' Could do a few blank renders at this point to test the speed.
-    'm_renderTime = 0.4
-    'm_renderCount = 10    'Don't set this too high or the system will take longer to settle.
-
-    'Need a better method than this! Either more accurate estimate, or write last gAvgTime to file.
+    ' Need a better method than this! Either more accurate estimate, or write last gAvgTime to file.
     Dim i As Long
     m_renderTime = Timer()
     For i = 0 To 20
         Call DXRefresh
     Next i
     m_renderTime = Timer() - m_renderTime
-    m_renderCount = 15     'Account for extra routine time in the movement loop.
+    m_renderCount = 15     ' Account for extra routine time in the movement loop
 
     ' Register all fonts
     Call LoadFontsFromFolder(projectPath & fontPath)
@@ -593,12 +588,12 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call CreateCharacter(projectPath & temPath & mainMem.initChar, 0)
     End If
 
-    'Set up these before the start program runs, in case movement occurs before the
-    'start board loads.
-    selectedPlayer = 0          'Set to use player 0 as walking graphics.
-    facing = SOUTH              'Start him facing south.
+    ' Set up these before the start program runs, in case movement occurs before the
+    ' start board loads
+    selectedPlayer = 0          'Set to use player 0 as walking graphics
+    facing = SOUTH              'Start him facing south
 
-    'Hide all players except the walking graphic one
+    ' Hide all players except the walking graphic one
     For i = 0 To UBound(showPlayer)
         showPlayer(i) = (i = selectedPlayer)
         pPos(i).stance = "WALK_S"
@@ -627,7 +622,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)
         Call openItems
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
-        
+
         ' Setup player position, only if an initial board has been specified.
         If (LenB(mainMem.initBoard)) Then
             With pPos(selectedPlayer)
@@ -639,6 +634,6 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
                 pendingPlayerMovement(selectedPlayer).lOrig = .l
             End With
         End If
-    End If 'Not SavedGame Or TestingPrg
+    End If
 
 End Sub
