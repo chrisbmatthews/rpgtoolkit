@@ -688,15 +688,6 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                     conjunctions(tokenIdx) = MathFunction(Text, tokenIdx)
                     ' Get the value of the token
                     Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram, , bIsVar(tokenIdx))
-                    ' Check for negative numbers
-                    If Not (bIsVar(tokenIdx)) Then
-                        If (conjunctions(tokenIdx - 1) = "-") Then
-                            If (tokenIdx <> 2) Then
-                                conjunctions(tokenIdx - 1) = "+"
-                            End If
-                            numberUse(tokenIdx) = -numberUse(tokenIdx)
-                        End If
-                    End If
                     ' If this isn't the first token
                     If ((tokenIdx <> 2) And (tokenIdx <= (number - 2))) Then
                         ' Find a token
