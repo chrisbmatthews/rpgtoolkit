@@ -22,9 +22,9 @@ Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As L
 ' Current state of logic
 Public gGameState As GAME_LOGIC_STATE
 
-Private gRenderCount As Long             'Count of GS_MOVEMENT state loops.
-Private gRenderTime As Double            'Cumulative GS_MOVEMENT state loop time.
-                                         ' gAvgTime = gRenderTime / gRenderCount
+Private m_renderCount As Long             'Count of GS_MOVEMENT state loops.
+Private m_renderTime As Double            'Cumulative GS_MOVEMENT state loop time.
+                                          ' gAvgTime = m_renderTime / m_renderCount
 'Private irc As Long        'Temps
 'Private irt As Double
 
@@ -64,7 +64,7 @@ Public host As CDirectXHost
 ' Average time for one loop in the GS_MOVEMENT gamestate.
 '=======================================================================
 Public Property Get gAvgTime() As Double
-    gAvgTime = gRenderTime / gRenderCount
+    gAvgTime = m_renderTime / m_renderCount
 End Property
 
 '=======================================================================
@@ -147,7 +147,7 @@ Private Function getMainFilename() As String
                 getMainFilename = "main.gam"
                 projectPath = vbNullString
                 errorBranch = "Resume Next"
-                savPath = GetSetting("TK3 EXE HOST", "Settings", "Save Path", "")
+                savPath = GetSetting("TK3 EXE HOST", "Settings", "Save Path", vbNullString)
                 Call DeleteSetting("TK3 EXE HOST", "Settings", "Save Path")
                 If (LenB(savPath) = 0) Then
                     savPath = "Saved\"
@@ -325,7 +325,7 @@ Public Sub gameLogic()
             End If
 
             ' Render the scene
-            renderOccured = renderNow
+            renderOccured = renderNow()
             'IDLErenderOccured = rendernow
 
         Case GS_PAUSE           'PAUSE STATE
@@ -418,8 +418,8 @@ Public Sub gameLogic()
         If loopTime < 1 / 4 Then
             'No machine should render slower than this, so > 1/4 would be anomalous, and
             'would unbalance the average (at least early on).
-            gRenderTime = gRenderTime + loopTime
-            gRenderCount = gRenderCount + 1
+            m_renderTime = m_renderTime + loopTime
+            m_renderCount = m_renderCount + 1
         End If
     End If
     
@@ -431,7 +431,7 @@ Public Sub gameLogic()
     '        irc = irc + 1
     '    End If
     'End If
-   
+
     ' Stick the fps in the title, for test purposes.
     host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps (GS_M)]" '_
                  ' & " [" & CStr(Round(irc / irt, 1)) & " fps (GS_I)]"
@@ -493,13 +493,13 @@ Private Sub initActiveX()
         If (LenB(mainMem.plugins(a)) <> 0) Then
             Dim fullPath As String
             fullPath = projectPath & plugPath & mainMem.plugins(a)
-            Call ExecCmd("regsvr32 /s " & ("""") & fullPath & (""""))
+            Call ExecCmd("regsvr32 /s """ & fullPath & """")
         End If
     Next a
     fullPath = projectPath & plugPath & mainMem.menuPlugin
-    Call ExecCmd("regsvr32 /s " & ("""") & fullPath & (""""))
+    Call ExecCmd("regsvr32 /s """ & fullPath & """")
     fullPath = projectPath & plugPath & mainMem.fightPlugin
-    Call ExecCmd("regsvr32 /s " & ("""") & fullPath & (""""))
+    Call ExecCmd("regsvr32 /s """ & fullPath & """")
 End Sub
 
 '=======================================================================
@@ -512,13 +512,13 @@ Private Sub closeActiveX()
         If (LenB(mainMem.plugins(a)) <> 0) Then
             Dim fullPath As String
             fullPath = projectPath & plugPath & mainMem.plugins(a)
-            Call ExecCmd("regsvr32 /s /u " & ("""") & fullPath & (""""))
+            Call ExecCmd("regsvr32 /s /u """ & fullPath & """")
         End If
     Next a
     fullPath = projectPath & plugPath & mainMem.menuPlugin
-    Call ExecCmd("regsvr32 /s /u " & ("""") & fullPath & (""""))
+    Call ExecCmd("regsvr32 /s /u """ & fullPath & """")
     fullPath = projectPath & plugPath & mainMem.fightPlugin
-    Call ExecCmd("regsvr32 /s /u " & ("""") & fullPath & (""""))
+    Call ExecCmd("regsvr32 /s /u """ & fullPath & """")
 End Sub
 
 '=======================================================================
@@ -569,16 +569,16 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     
     ' Set some initial loop-time values based on average pc specs.
     ' Could do a few blank renders at this point to test the speed.
-    'gRenderTime = 0.4
-    'gRenderCount = 10    'Don't set this too high or the system will take longer to settle.
+    'm_renderTime = 0.4
+    'm_renderCount = 10    'Don't set this too high or the system will take longer to settle.
 
     Dim i As Long
-    gRenderTime = Timer()
+    m_renderTime = Timer()
     For i = 0 To 20
         Call DXRefresh
     Next i
-    gRenderTime = Timer() - gRenderTime
-    gRenderCount = 15     'Account for extra routine time in the movement loop.
+    m_renderTime = Timer() - m_renderTime
+    m_renderCount = 15     'Account for extra routine time in the movement loop.
 
     ' Register all fonts
     Call LoadFontsFromFolder(projectPath & fontPath)

@@ -51,7 +51,7 @@ Public cursorHotSpotY As Long       'y hot spot of cursor
 '=========================================================================
 Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal className As String, ByVal hCursor As Long) As Long
 Private Declare Sub killHostWindow Lib "actkrt3.dll" (ByVal className As String, ByVal hInstance As Long)
-Private Declare Sub changeHostWindowCaption Lib "actkrt3.dll" (ByVal newCaption As String)
+Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String) As Long
 
 '=========================================================================
 ' Member Win32 APIs
@@ -105,7 +105,7 @@ Public Property Let Caption(ByVal newValue As String)
     If (Not m_created) Then
         m_createCaption = newValue
     Else
-        Call changeHostWindowCaption(newValue)
+        Call SetWindowText(hwnd, newValue)
     End If
 End Property
 
@@ -115,7 +115,7 @@ End Property
 Public Property Let mousePointer(ByVal newValue As String)
     On Error Resume Next
     Dim hdc As Long, theFile As String
-    Call CanvasFill(cnvMousePointer, mainMem.transpColor)
+    Call CanvasFill(cnvMousePointer, mainMem.transpcolor)
     If (newValue = "TK DEFAULT") Then
         theFile = TempDir() & "pointer"
         Call Kill(theFile)
