@@ -2019,6 +2019,7 @@ Begin VB.MDIForm tkMainForm
             End
             Begin VB.PictureBox selectedcolor 
                Appearance      =   0  'Flat
+               AutoRedraw      =   -1  'True
                BackColor       =   &H80000005&
                ForeColor       =   &H80000008&
                Height          =   495
