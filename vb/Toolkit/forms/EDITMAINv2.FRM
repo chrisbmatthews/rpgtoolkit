@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.Form editmainfile 
    BorderStyle     =   1  'Fixed Single
@@ -76,17 +76,17 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "startframe"
+      Tab(1).Control(0)=   "fraSettings"
       Tab(1).Control(0).Enabled=   0   'False
-      Tab(1).Control(1)=   "fraSettings"
+      Tab(1).Control(1)=   "startframe"
       Tab(1).Control(1).Enabled=   0   'False
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(0)=   "actionframe"
       Tab(2).Control(0).Enabled=   0   'False
-      Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(1)=   "prgframe"
       Tab(2).Control(1).Enabled=   0   'False
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
@@ -102,9 +102,9 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Frame3"
+      Tab(5).Control(0)=   "Label24"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Label24"
+      Tab(5).Control(2)=   "Frame3"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
@@ -1939,7 +1939,7 @@ End Sub
 '=========================================================================
 Public Sub saveFile()
     On Error Resume Next
-    filename(2) = mainfile
+    filename(2) = mainFile
     mainNeedUpdate = False
     If filename(2) = "" Then
         Call editmainfile.Show
@@ -2382,6 +2382,7 @@ End Sub
 '=========================================================================
 Private Sub Form_Activate()
     Set activeForm = Me
+    Call hideAllTools
 End Sub
 
 '=========================================================================
@@ -2391,7 +2392,7 @@ Private Sub Form_Load()
     On Error Resume Next
     Call LocalizeForm(Me)
     editmainfile.height = 6270
-    editmainfile.Width = 7600
+    editmainfile.width = 7600
     filename(2) = ""
     Call infofill
     sliGameSpeed.max = MAX_GAMESPEED
@@ -2484,7 +2485,7 @@ Private Sub infofill()
     
     gametitlebox.Text = mainMem.gameTitle$
     gametitlebox2.Text = mainMem.gameTitle$
-    editmainfile.Caption = LoadStringLoc(800, "Main Project Editor") + "  (" + mainfile$ + ")"
+    editmainfile.Caption = LoadStringLoc(800, "Main Project Editor") + "  (" + mainFile$ + ")"
     
     pathbox.Caption = projectPath
     
@@ -2680,7 +2681,7 @@ Private Sub newmainmnu_Click()
     Dim user As VbMsgBoxResult
     user = MsgBox(LoadStringLoc(947, "Remove current data and start a new file.  Are you sure?"), 4)
     If user = 6 Then
-        mainfile$ = ""
+        mainFile$ = ""
         Call newmain
         Call infofill
     End If
@@ -2719,7 +2720,7 @@ Private Sub mnusaveas_Click()
         If bb = 7 Then Exit Sub
     End If
     Call saveMain(filename$(1), mainMem)
-    mainfile$ = antiPath$
+    mainFile$ = antiPath$
     editmainfile.Caption = LoadStringLoc(800, "Project Properties") + " (" + antiPath$ + ")"
     mainNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
