@@ -1371,7 +1371,8 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                         'Check divide by zero.
                         If .loopSpeed <= 0 Then .loopSpeed = 1
                         
-' Call traceString("ITM.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
+'Call traceString(" ")
+'Call traceString("ITM.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
                         
                     End With
                     
@@ -1570,7 +1571,7 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                         If .loopSpeed <= 0 Then .loopSpeed = 1
                         
    'Call traceString(" ")
-   'Call traceString("PLY.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2) & _
+   'call traceString("PLY.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2) & _
                     "totalLoopOffset=" & Round(loopOffset * Round((1 / gAvgTime) / 10)))
                         
                         'Set all players to move at the selected player's speed regardless,
@@ -1593,7 +1594,6 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                 
             If pendingPlayerMovement(playerIdx).direction <> MV_IDLE Then
         
-                
                 'Always increment the position as a fraction of the total movement.
                 If pushPlayer(playerIdx, staticTileType(playerIdx)) Or staticTileType(playerIdx) = SOLID Then
                     'Only increment frames if we're moving or are not allowed to move.
@@ -1673,10 +1673,12 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
         Exit Function
     End If
 
-'If pPos(pNum).loopFrame = 0 Then 'Call traceString(" ")
+'If pPos(pNum).loopFrame = 0 Then Call traceString(" ")
 'Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
                 ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
                 ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
+                ".xOrig=" & pendingPlayerMovement(pNum).xOrig & _
+                ".yOrig=" & pendingPlayerMovement(pNum).yOrig & _
                 ".loopFrame=" & pPos(pNum).loopFrame & _
                 " topX=" & topX & " topY=" & topY)
 
@@ -1757,6 +1759,9 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
             End If
             
     End Select
+    
+    topX = Round(topX, 5)               'Need topX,Y as FRACTIONs.
+    topY = Round(topY, 5)
     
     'We can move, put the test location into the true loc.
     pPos(pNum) = testPos
