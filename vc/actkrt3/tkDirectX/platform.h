@@ -39,7 +39,7 @@ typedef struct dxInfoTag
 	LPDIRECTDRAW7 lpdd;					// Main direct draw object
 	LPDIRECTDRAWSURFACE7 lpddsPrime;	// Direct draw primary surface
 	LPDIRECTDRAWSURFACE7 lpddsSecond;	// Direct draw back buffer
-	union
+	struct
 	{
 		LPDIRECTDRAWCLIPPER lpddClip;	// Clipper
 		RECT surfaceRect;				// Rect of surface
