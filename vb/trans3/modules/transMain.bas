@@ -561,7 +561,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     saveFileLoaded = False          ' Starting new game
 
     ' Set initial pixel movement value
-    If (mainMem.pixelMovement = 1) Then
+    If (mainMem.pixelMovement) Then
         movementSize = 0.25
     Else
         movementSize = 1
@@ -574,7 +574,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     m_renderTime = Timer()
     Dim i As Long
     For i = 0 To 20
-        Call DXRefresh
+        Call DXFlip
     Next i
     m_renderTime = Timer() - m_renderTime
     m_renderCount = 15     ' Account for extra routine time in the movement loop
@@ -584,7 +584,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     ' Change the DirectX host's caption to the game's title (for windowed mode)
     If (LenB(mainMem.gameTitle)) Then
-        host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps]"
+        host.Caption = mainMem.gameTitle ' & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps]"
     End If
 
     If (LenB(mainMem.initChar)) Then

@@ -147,7 +147,7 @@ Public Sub LoadState(ByVal file As String)
             Input #num, majorVer
             Input #num, minorVer
             Call clearVars(globalHeap)
-            Call garbageCollect
+            Call garbageCollect(g_garbageHeap)
             If minorVer = 0 Then
                 'old style...
                 'Now, all the numerical variables:
@@ -309,7 +309,7 @@ Public Sub LoadState(ByVal file As String)
         Call BinReadInt(num)    'majorver 3
         minorVer = BinReadInt(num)   'minorver 0
         Call clearVars(globalHeap)
-        Call garbageCollect
+        Call garbageCollect(g_garbageHeap)
         
         'get num vars...
         nCount = BinReadLong(num)
@@ -511,17 +511,17 @@ Public Sub LoadState(ByVal file As String)
 
             Dim lngFreeableObjectsSize As Long
             lngFreeableObjectsSize = BinReadLong(num)
-            Call resizeFreeableObjects(lngFreeableObjectsSize)
+            Call resizeFreeableObjects(g_garbageHeap, lngFreeableObjectsSize)
             For t = 0 To lngFreeableObjectsSize
                 Dim lngData As Long
                 lngData = BinReadLong(num)
                 If (lngData) Then
-                    Call markForCollection(lngData)
+                    Call markForCollection(g_garbageHeap, lngData)
                 End If
             Next t
 
         Else
-            Call resizeFreeableObjects(0)
+            Call resizeFreeableObjects(g_garbageHeap, 0)
         End If
 
         showPlayer(selectedPlayer) = True
@@ -702,10 +702,10 @@ Public Sub SaveState(ByVal file As String)
             End If
         Next t
         Dim lngFreeableObjects As Long
-        lngFreeableObjects = countFreeableObjects()
+        lngFreeableObjects = countFreeableObjects(g_garbageHeap)
         Call BinWriteLong(num, lngFreeableObjects)
         For t = 0 To lngFreeableObjects
-            Call BinWriteLong(num, getFreeableObjectHandle(t))
+            Call BinWriteLong(num, getFreeableObjectHandle(g_garbageHeap, t))
         Next t
 
         ' Write loop offset

@@ -274,6 +274,7 @@ End Function
 '=========================================================================
 Public Function DXClearScreen(ByVal crColor As Long) As Long
 
+
     ' Draw to the back buffer
     Call canvasFill(m_cnvBack, crColor)
 
@@ -345,6 +346,15 @@ End Function
 ' Flip the back buffer onto the screen
 '=========================================================================
 Public Sub DXRefresh()
+
+    ' Check if this is the correct function
+    If (runningProgram) Then
+
+        ' Use the rpgcode version
+        Call renderRPGCodeScreen
+        Exit Sub
+
+    End If
 
 #If Not (USE_BACK_CANVAS) Then
 
