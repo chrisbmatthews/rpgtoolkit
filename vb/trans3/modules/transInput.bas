@@ -325,8 +325,9 @@ Public Function WaitForKey() As String
     Dim jButtonNum As Long
     For jButtonNum = 1 To UBound(jButton)
         'Check the other buttons
-        If jButton(jButtonNum) Then
+        If (jButton(jButtonNum)) Then
             WaitForKey = "BUTTON" & CStr(jButtonNum + 1)
+            Exit Function
         End If
     Next jButtonNum
 
