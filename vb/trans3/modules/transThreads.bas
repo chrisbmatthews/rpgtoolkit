@@ -577,7 +577,7 @@ Public Sub ceaseMultitaskAnimation(ByVal pos As Long)
     ElseIf multitaskCurrentlyAnimating = pos Then
         'The one we removed was queued up!
         multitaskCurrentlyAnimating = multitaskCurrentlyAnimating + 1
-        If multitaskCurrentlyAnimating = UBound(multitaskAnimations) Then
+        If multitaskCurrentlyAnimating >= UBound(multitaskAnimations) Then
             multitaskCurrentlyAnimating = 1
         End If
 
