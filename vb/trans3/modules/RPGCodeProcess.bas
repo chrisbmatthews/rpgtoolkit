@@ -190,7 +190,6 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     Dim p As Long                   ' Ongoing length of program
     Dim num As Long                 ' File number
     Dim theLine As String           ' Line read from file
-    Dim thePrg As RPGCodeProgram    ' Return value
     Dim c(2) As String              ' Delimiter array
     Dim lines() As String           ' Array of lines
     Dim uD() As String              ' Delimters used
@@ -200,7 +199,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     Dim done As Boolean             ' Done?
 
     ' Init the PRG
-    Call InitRPGCodeProcess(thePrg)
+    Call InitRPGCodeProcess(openProgram)
 
     ' Get a free file number
     num = FreeFile()
@@ -217,8 +216,8 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     ' Open the file
     Open file For Input Access Read As num
 
-        ' Dimension the .program() array...
-        ReDim thePrg.program(0)
+        ' Dimension the .program() array
+        ReDim openProgram.program(0)
 
         Do Until EOF(num)
 
@@ -238,7 +237,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 Do Until done
                     If Not EOF(num) Then
                         buildTemp = replace(Trim$(stripComments(fread(num))), vbTab, vbNullString)
-                        Select Case Right$(buildTemp, 1)
+                        Select Case RightB$(buildTemp, 2)
                             Case "_"
                                 buildTemp = _
                                     Mid$(buildTemp, 1, Len(buildTemp) - 1)
@@ -255,10 +254,10 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             End If
 
             ' Remove prefixed #
-            If (Left$(theLine, 1) = "#") Then theLine = Right$(theLine, Len(theLine) - 1)
+            If (LeftB$(theLine, 2) = "#") Then theLine = Mid$(theLine, 2)
 
             ' Read line if not comment
-            If (Not Left$(theLine, 1) = "*") And (Not Left$(theLine, 2) = "//") Then
+            If (Not LeftB$(theLine, 2) = "*") And (Not LeftB$(theLine, 2) = "//") Then
 
                 ' Split that sucker like it has NEVER been split before!
                 lines() = multiSplit(theLine, c, uD, True)
@@ -272,31 +271,31 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
                     If (a = UBound(lines) + 1) Then
                         If (LenB(uD(UBound(lines))) <> 0) Then
-                            thePrg.program(p + a) = uD(UBound(lines))
+                            openProgram.program(p + a) = uD(UBound(lines))
                         End If
 
                     ElseIf (a = 0) Then
-                        thePrg.program(p + a) = lines(a)
+                        openProgram.program(p + a) = lines(a)
 
                     Else
 
                         Select Case uD(a - 1)
 
                             Case "{", "}"
-                                thePrg.program(p + a) = uD(a - 1)
-                                thePrg.program(p + a + 1) = lines(a)
+                                openProgram.program(p + a) = uD(a - 1)
+                                openProgram.program(p + a + 1) = lines(a)
                                 p = p + 1
 
                             Case "#"
                                 If Left$(lines(a), 1) = " " Then
-                                    thePrg.program(p + a) = uD(a - 1) & lines(a)
+                                    openProgram.program(p + a) = uD(a - 1) & lines(a)
                                 Else
-                                    thePrg.program(p + a - 1) = _
-                                        thePrg.program(p + a - 1) & uD(a - 1) & lines(a)
+                                    openProgram.program(p + a - 1) = _
+                                        openProgram.program(p + a - 1) & uD(a - 1) & lines(a)
                                 End If
 
                             Case Else
-                                thePrg.program(p + a) = lines(a)
+                                openProgram.program(p + a) = lines(a)
 
                         End Select
 
@@ -305,12 +304,12 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 Next a
 
                 ' Update p
-                p = UBound(thePrg.program) + 1
+                p = UBound(openProgram.program) + 1
 
             End If
 
             ' Update length of program
-            thePrg.Length = p
+            openProgram.Length = p
 
         Loop ' (until end of file)
 
@@ -318,10 +317,10 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
     ' Now cycle over each line
     Dim strClass As String, depth As Long
-    For a = 0 To UBound(thePrg.program)
-        thePrg.program(a) = Trim$(replaceOutsideQuotes(thePrg.program(a), "#", vbNullString))
+    For a = 0 To UBound(openProgram.program)
+        openProgram.program(a) = Trim$(replaceOutsideQuotes(openProgram.program(a), "#", vbNullString))
         Dim ucl As String
-        ucl = UCase$(thePrg.program(a))
+        ucl = UCase$(openProgram.program(a))
         If (LeftB$(ucl, 12) = "METHOD") Then
             ' It's a method
             If (StrPtr(strClass)) Then
@@ -331,18 +330,18 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 Do
                     ' Check the next line
                     moveLine = moveLine + 1
-                    If (LenB(thePrg.program(moveLine)) <> 0) Then
+                    If (LenB(openProgram.program(moveLine)) <> 0) Then
                         ' There's a line here
-                        If (thePrg.program(moveLine) = "{") Then
+                        If (openProgram.program(moveLine) = "{") Then
                             ' Implementation is here
-                            Call addMethodToPrg(strClass & "::" & GetMethodName(thePrg.program(a)), a, thePrg)
+                            Call addMethodToPrg(strClass & "::" & GetMethodName(openProgram.program(a)), a, openProgram)
                         End If
                         ' Either way, exit this loop
                         Exit Do
                     End If
                 Loop
             Else
-                Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
+                Call addMethodToPrg(GetMethodName(openProgram.program(a)), a, openProgram)
             End If
         ElseIf (ucl = "{") Then
             If (StrPtr(strClass)) Then
@@ -358,29 +357,75 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
         ElseIf (LeftB$(ucl, 10) = "CLASS") Then
             ' It's a class
             Dim istr As Long
-            istr = InStr(1, thePrg.program(a), ":")
+            istr = InStr(1, openProgram.program(a), ":")
             If (istr) Then
-                strClass = Trim$(replace(Left$(thePrg.program(a), istr - 1), "class", vbNullString, , 1, vbTextCompare))
+                strClass = Trim$(replace(Left$(openProgram.program(a), istr - 1), "class", vbNullString, , 1, vbTextCompare))
             Else
-                strClass = GetMethodName(thePrg.program(a))
+                strClass = GetMethodName(openProgram.program(a))
             End If
         End If
     Next a
 
     ' Splice up the classes
-    Call spliceUpClasses(thePrg)
-
-    ' Return the result
-    openProgram = thePrg
+    Call spliceUpClasses(openProgram)
 
     Exit Function
 
 enlargeProgram:
     ' Uh-oh! The array is too small. We can fix that...
-    ReDim Preserve thePrg.program(UBound(thePrg.program) + 1)
+    ReDim Preserve openProgram.program(UBound(openProgram.program) + 1)
     Resume
 
 End Function
+
+'=========================================================================
+' Include the contents of a file in a program
+'=========================================================================
+Public Sub includeProgram(ByRef prg As RPGCodeProgram, ByRef strFile As String)
+
+    '// Passing string(s) ByRef for preformance reasons
+
+    ' Open the program
+    Dim toInclude As RPGCodeProgram
+    toInclude = openProgram(strFile)
+
+    ' A little trick to workaround a VB bug
+    Dim ub As Long, backupPrg As RPGCodeProgram
+    ub = UBound(prg.program)
+    backupPrg = prg
+    ReDim Preserve backupPrg.program(ub + 2 + toInclude.Length)
+    prg = backupPrg
+
+    ' Index variable
+    Dim idx As Long
+
+    ' Add all of the other program's methods
+    For idx = 0 To UBound(toInclude.methods)
+        If (LenB(toInclude.methods(idx).name) <> 0) Then
+            Call addMethodToPrg( _
+                                    toInclude.methods(idx).name, _
+                                    toInclude.methods(idx).line + prg.Length + 2, _
+                                    prg)
+        End If
+    Next idx
+
+    ' Add all of its classes
+    For idx = 0 To UBound(toInclude.classes.classes)
+        Call addClassToProgram(toInclude.classes.classes(idx), prg)
+    Next idx
+
+    ' Prevent running of loose code
+    prg.program(prg.Length + 1) = "Stop()"
+
+    ' Add its code to the program
+    For idx = 0 To UBound(toInclude.program)
+        prg.program(prg.Length + 2 + idx) = toInclude.program(idx)
+    Next idx
+
+    ' Update the length of the program
+    prg.Length = prg.Length + 2 + UBound(toInclude.program)
+
+End Sub
 
 '=========================================================================
 ' Strip comments off a line

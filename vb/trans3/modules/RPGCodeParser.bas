@@ -978,12 +978,18 @@ Public Function ParseRPGCodeCommand( _
 
     '// Passing string(s) ByRef for preformance related reasons
 
+    ' Check for methods that might elude this code
+    If (LeftB$(UCase$(line), 12) = "METHOD") Then
+        ParseRPGCodeCommand = line
+        Exit Function
+    End If
+
     Dim cmdName As String       ' Command name of line we're parsing
     cmdName = UCase$(GetCommandName(line))
 
     ' Some things don' t require parsing
     Select Case cmdName
-        Case "@", "*", vbNullString, "LABEL", "OPENBLOCK", "CLOSEBLOCK", "REDIRECT", "METHOD"
+        Case "@", "*", vbNullString, "LABEL", "OPENBLOCK", "CLOSEBLOCK", "REDIRECT"
             ParseRPGCodeCommand = line
             Exit Function
     End Select
@@ -1102,7 +1108,7 @@ Public Function ParseRPGCodeCommand( _
                                                     ")"
                                         Else
                                             ret = _
-                                                    Mid$(bT, 1, b - 1) & _
+                                                    Mid$(bT, 1, b) & _
                                                     v & _
                                                     Mid$(bT, a + 1, Len(bT) - a)
                                         End If

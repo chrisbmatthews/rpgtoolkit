@@ -3357,42 +3357,7 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Exit Sub
         End If
 
-        'Retrieve the code from the program...
-        tempPRG = openProgram(fileN)
-
-        ' Colin says: VB decided to mess up!!
-        Dim ub As Long
-        ub = UBound(theProgram.program)
-        ReDim Preserve errorKeep.program(ub + 2 + tempPRG.Length)
-        theProgram = errorKeep
-
-        For count = 0 To UBound(tempPRG.methods)
-            If (LenB(tempPRG.methods(count).name) <> 0) Then
-                Call addMethodToPrg( _
-                                        tempPRG.methods(count).name, _
-                                        tempPRG.methods(count).line + theProgram.Length + 2, _
-                                        theProgram)
-            End If
-        Next count
-
-        For count = 0 To UBound(tempPRG.classes.classes)
-            Call addClassToProgram(tempPRG.classes.classes(count), theProgram)
-        Next count
-
-        'Don't let any loose code in the .prg file be run...
-        theProgram.program(theProgram.Length + 1) = "Stop()"
-
-        'Add each line from the included file to the main file...
-        For count = 0 To UBound(tempPRG.program)
-            theProgram.program(theProgram.Length + 2 + count) = tempPRG.program(count)
-        Next count
-
-        'Update the length of the program...
-        theProgram.Length = theProgram.Length + 2 + UBound(tempPRG.program)
-
-        '====================================================================
-        'End bug fix by KSNiloc
-        '====================================================================
+        Call includeProgram(theProgram, fileN)
 
     End If
 

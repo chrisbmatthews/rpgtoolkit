@@ -236,7 +236,42 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     ' Loop over each line
     For lineIdx = 0 To UBound(prg.program)
 
-        cmd = UCase$(GetCommandName(prg.program(lineIdx)))
+        If (LeftB$(LCase$(prg.program(lineIdx)), 12) = "global") Then
+
+            ' Define a var
+            Dim constParts() As String, constDelimiters(0) As String, ud() As String
+            constDelimiters(0) = " "
+            constParts = multiSplit(prg.program(lineIdx), constDelimiters, ud, True, True)
+
+            ' Check for correct number of parts
+            If (UBound(constParts) = 2) Then
+
+                ' Only define if it's not existent
+                If ( _
+                        (Not numVarExists(constParts(1), globalHeap) And _
+                        (Not numVarExists(constParts(1), prg.heapStack(prg.currentHeapFrame))))) _
+                            Then
+
+                    ' Create the var
+                    Dim retval As RPGCODE_RETURN
+                    Call DoSingleCommand(constParts(1) & "=" & constParts(2), prg, retval)
+                    ' constParts(2) = Mid$(ParseRPGCodeCommand(spliceForObjects("x=" & constParts(2), prg), prg), 3)
+                    ' Call SetVariable(constParts(1), constParts(2), prg)
+
+                End If
+
+                ' Don't run this line
+                cmd = vbNullString
+
+            End If
+
+        Else
+
+            ' Get the command on this line
+            cmd = UCase$(GetCommandName(prg.program(lineIdx)))
+
+        End If
+
         ignoreCheck = ignoreCheck - 1
 
         If (opening And inClass And (cmd = "OPENBLOCK")) Then
@@ -341,8 +376,11 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 scope = vbNullString
             End If
 
-        ElseIf ((cmd = "CLASS" Or cmd = "STRUCT" Or cmd = "INTERFACE") And (Not inClass)) Then
+        ElseIf (cmd = "CLASS" Or cmd = "STRUCT" Or cmd = "INTERFACE") Then
             ' Found a class
+            depth = 0
+            ignoreCheck = 0
+            methodHere = False
             inClass = True
             opening = True
             classIdx = classIdx + 1
@@ -353,10 +391,8 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             ReDim prg.classes.classes(classIdx).scopePublic.methods(0)
             ReDim prg.classes.classes(classIdx).scopePublic.strVars(0)
             ReDim prg.classes.classes(classIdx).scopePublic.isDynamicArray(0)
-            If (cmd = "INTERFACE") Then
-                ' It's an interface
-                prg.classes.classes(classIdx).isInterface = True
-            End If
+            prg.classes.classes(classIdx).isInterface = (cmd = "INTERFACE")
+
             ' Split up the line
             chars(0) = ":"
             chars(1) = ","
@@ -430,6 +466,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 Case "private:"
                     ' Found start of private scope
                     scope = "public"
+                    methodHere = False
                     If (inStruct) Then
                         scope = "error"
                     Else
@@ -439,6 +476,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 Case "public:"
                     ' Found start of public scope
                     scope = "public"
+                    methodHere = False
                     If (inStruct) Then
                         scope = "error"
                     Else

@@ -401,6 +401,16 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
         End If
     End If
 
+    ' Check for numerical var without its sign
+    If (numVarExists(Text, prg.heapStack(prg.currentHeapFrame)) Or _
+        numVarExists(Text, globalHeap)) Then
+
+        ' It's a numerical var
+        dataType = DT_NUM
+        Exit Function
+
+    End If
+
     ' If we're still not free of this nightmare then assume string, for
     ' backwards compatibility
     dataType = DT_STRING
@@ -1111,9 +1121,8 @@ Public Function variType(ByVal var As String, ByVal heapID As Long) As Long
         End If
     End If
     
-    If typeIt = 1 Then variType = 1
-    If typeIt = 2 Then variType = 0
-    If typeIt = 0 Then variType = -1
+    If typeIt = 1 Then variType = DT_LIT
+    If typeIt = 2 Then variType = DT_NUM
 
 End Function
 
@@ -1249,12 +1258,12 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
     varType = variType(theVar, globalHeap)
     getVariable = varType
 
-    If ((Right$(theVar, 1) <> "!") And (Right$(theVar, 1) <> "$")) Then
-        ' Append a "!"
-        theVar = theVar & "!"
+    Dim tdc As String
+    tdc = RightB$(theVar, 2)
+    If ((tdc <> "!") And (tdc <> "$")) Then
         ' Get value of the destination
         Dim litA As String, numA As Double
-        Call getValue(theVar, litA, numA, theProgram)
+        Call getValue(theVar & "!", litA, numA, theProgram)
         ' If it's not NULL
         If (numA <> 0) Then
             ' Check if it's already an object

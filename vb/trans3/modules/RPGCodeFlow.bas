@@ -931,6 +931,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     If (LenB(rpgcodeCommand) = 0) Then
         ' No text!
         DoSingleCommand = increment(theProgram)
+        errorKeep = theProgram
         Exit Function
     End If
 
@@ -951,17 +952,17 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
 
     ElseIf Left$(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
         onError "OnError(" & Right$(checkIt, Len(checkIt) - InStr(1, _
-            LCase$(rpgcodeCommand), "goto", vbTextCompare) - 1) & ")", theProgram
+            LCase$(rpgcodeCommand), "goto") - 1) & ")", theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
 
     End If
-    
-    If theProgram.program(0) & _
-        "*ERROR CHECKING FLAG" = errorKeep.program(0) Then
+
+    If theProgram.program(0) & "*ERROR CHECKING FLAG" = errorKeep.program(0) Then
         preErrorPos = theProgram.programPos
         theProgram.programPos = errorKeep.programPos
     End If
+
     errorKeep = theProgram
 
     If (isMultiTasking() And theProgram.looping) And (multiRunStatus = 0) Then Exit Function
