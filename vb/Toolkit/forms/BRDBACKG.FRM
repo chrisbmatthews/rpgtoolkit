@@ -1,11 +1,13 @@
 VERSION 5.00
 Begin VB.Form brdbackground 
-   BorderStyle     =   1  'Fixed Single
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
+   BorderStyle     =   0  'None
    Caption         =   "Board Backgrounds"
-   ClientHeight    =   1560
-   ClientLeft      =   1905
-   ClientTop       =   2115
-   ClientWidth     =   8070
+   ClientHeight    =   1815
+   ClientLeft      =   1860
+   ClientTop       =   1785
+   ClientWidth     =   7215
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -18,14 +20,52 @@ Begin VB.Form brdbackground
    ForeColor       =   &H80000008&
    Icon            =   "BRDBACKG.frx":0000
    LinkTopic       =   "Form2"
-   MaxButton       =   0   'False
-   MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   1560
-   ScaleWidth      =   8070
+   ScaleHeight     =   1815
+   ScaleWidth      =   7215
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1079"
+   Begin Toolkit.TKButton Command3 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   8
+      Top             =   600
+      Width           =   855
+      _ExtentX        =   1508
+      _ExtentY        =   661
+      Object.Width           =   360
+      Caption         =   "OK"
+   End
+   Begin VB.PictureBox command16 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Left            =   2640
+      MousePointer    =   99  'Custom
+      Picture         =   "BRDBACKG.frx":0CCA
+      ScaleHeight     =   375
+      ScaleWidth      =   615
+      TabIndex        =   6
+      Top             =   1000
+      Width           =   615
+   End
+   Begin Toolkit.TKTopBar TopBar 
+      Height          =   480
+      Left            =   0
+      TabIndex        =   5
+      Top             =   0
+      Width           =   4215
+      _ExtentX        =   7435
+      _ExtentY        =   847
+      Object.Width           =   4215
+      Caption         =   "Board Background"
+   End
    Begin VB.Frame Frame3 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Board Color"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -36,44 +76,41 @@ Begin VB.Form brdbackground
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ForeColor       =   &H80000008&
       Height          =   1215
-      Left            =   4080
-      TabIndex        =   5
+      Left            =   3600
+      TabIndex        =   3
       Tag             =   "1083"
-      Top             =   120
+      Top             =   480
       Width           =   2535
-      Begin VB.PictureBox Picture1 
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H00FFFFFF&
-         Height          =   495
-         Left            =   120
-         ScaleHeight     =   435
-         ScaleWidth      =   315
-         TabIndex        =   7
-         Top             =   360
-         Width           =   375
-      End
-      Begin VB.CommandButton Command1 
-         Appearance      =   0  'Flat
-         Caption         =   "Select Color"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   495
+      Begin Toolkit.TKButton command1 
+         Height          =   375
          Left            =   600
-         TabIndex        =   6
-         Tag             =   "1080"
-         Top             =   360
-         Width           =   1335
+         TabIndex        =   7
+         Top             =   480
+         Width           =   1815
+         _ExtentX        =   3201
+         _ExtentY        =   661
+         Object.Width           =   360
+         Caption         =   "Select Color"
+      End
+      Begin VB.PictureBox Picture1 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   375
+         Left            =   120
+         ScaleHeight     =   345
+         ScaleWidth      =   345
+         TabIndex        =   4
+         Top             =   480
+         Width           =   375
       End
    End
    Begin VB.Frame Frame1 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Board Bitmap"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -84,31 +121,15 @@ Begin VB.Form brdbackground
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ForeColor       =   &H80000008&
       Height          =   1215
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   0
       Tag             =   "1085"
-      Top             =   120
-      Width           =   3735
-      Begin VB.CommandButton Command16 
-         Caption         =   "Browse..."
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   345
-         Left            =   2520
-         TabIndex        =   3
-         Tag             =   "1021"
-         Top             =   600
-         Width           =   1095
-      End
+      Top             =   480
+      Width           =   3375
       Begin VB.TextBox brdbmpname 
+         Appearance      =   0  'Flat
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -120,17 +141,9 @@ Begin VB.Form brdbackground
          EndProperty
          Height          =   285
          Left            =   120
-         TabIndex        =   2
+         TabIndex        =   1
          Top             =   600
          Width           =   2295
-      End
-      Begin VB.Image Image1 
-         Appearance      =   0  'Flat
-         Height          =   270
-         Left            =   2520
-         Picture         =   "BRDBACKG.frx":0CCA
-         Top             =   240
-         Width           =   375
       End
       Begin VB.Label Label2 
          Appearance      =   0  'Flat
@@ -150,30 +163,17 @@ Begin VB.Form brdbackground
          Height          =   255
          Index           =   0
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   2
          Tag             =   "1013"
          Top             =   360
          Width           =   1215
       End
    End
-   Begin VB.CommandButton Command3 
-      Appearance      =   0  'Flat
-      Caption         =   "OK"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   345
-      Left            =   6840
-      TabIndex        =   0
-      Tag             =   "1022"
-      Top             =   240
-      Width           =   1095
+   Begin VB.Shape Shape1 
+      Height          =   1815
+      Left            =   0
+      Top             =   0
+      Width           =   7215
    End
 End
 Attribute VB_Name = "brdbackground"
@@ -196,22 +196,22 @@ End Sub
 
 Private Sub borderbmpname_Change()
     On Error Resume Next
-    boardList(activeBoardIndex).theData.borderBack$ = borderbmpname.text
+    boardList(activeBoardIndex).theData.borderBack$ = borderbmpname.Text
 End Sub
 
 Private Sub brdbmpname_Change()
     On Error Resume Next
-    boardList(activeBoardIndex).theData.brdBack$ = brdbmpname.text
+    boardList(activeBoardIndex).theData.brdBack$ = brdbmpname.Text
 End Sub
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     boardList(activeBoardIndex).theData.brdColor = ColorDialog()
     Call vbPicFillRect(Picture1, 0, 0, 1000, 1000, brdColor)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     'Call HandleError
     Resume Next
 End Sub
@@ -219,8 +219,8 @@ End Sub
 Private Sub Command16_Click()
 On Error Resume Next
     Dim dlg As FileDialogInfo
-    ChDir (currentdir$)
-    dlg.strDefaultFolder = projectPath$ + bmppath$
+    ChDir (currentDir$)
+    dlg.strDefaultFolder = projectPath$ + bmpPath$
     dlg.strTitle = "Open Bitmap"
     dlg.strDefaultExt = "bmp"
     dlg.strFileTypes = strFileDialogFilterGfx
@@ -230,35 +230,35 @@ On Error Resume Next
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmppath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
     thextention$ = extention(filename$(1))
    ' If UCase$(thextention$) = "GIF" Then
    '     dummy = GifToBMP(Filename$(1), "rpgscrtc.bmp")
    '     Filename$(1) = "rpgscrtc.bmp"
    ' End If
     boardList(activeBoardIndex).theData.brdBack$ = antiPath$
-    brdbmpname.text = antiPath$
+    brdbmpname.Text = antiPath$
 End Sub
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     boardNeedUpdate = True
     Unload brdbackground
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command4_Click()
 On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmppath$
+    dlg.strDefaultFolder = projectPath$ + bmpPath$
     dlg.strTitle = "Open Graphic"
     dlg.strDefaultExt = "bmp"
     dlg.strFileTypes = strFileDialogFilterGfx
@@ -268,41 +268,42 @@ On Error Resume Next
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmppath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
     thextention$ = extention(filename$(1))
    ' If UCase$(thextention$) = "GIF" Then
    '     dummy = GifToBMP(Filename$(1), "rpgscrtc.bmp")
    '     Filename$(1) = "rpgscrtc.bmp"
    ' End If
     boardList(activeBoardIndex).theData.borderBack$ = antiPath$
-    borderbmpname.text = antiPath$
+    borderbmpname.Text = antiPath$
 End Sub
 
 Private Sub Form_Activate()
-    On Error GoTo errorhandler
-If boardList(activeBoardIndex).theData.brdBack$ <> "" Then brdbmpname.text = boardList(activeBoardIndex).theData.brdBack$
-If boardList(activeBoardIndex).theData.borderBack$ <> "" Then borderbmpname.text = boardList(activeBoardIndex).theData.borderBack$
+    On Error GoTo ErrorHandler
+If boardList(activeBoardIndex).theData.brdBack$ <> "" Then brdbmpname.Text = boardList(activeBoardIndex).theData.brdBack$
+If boardList(activeBoardIndex).theData.borderBack$ <> "" Then borderbmpname.Text = boardList(activeBoardIndex).theData.borderBack$
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
 
-    If boardList(activeBoardIndex).theData.brdBack$ <> "" Then brdbmpname.text = boardList(activeBoardIndex).theData.brdBack$
+    If boardList(activeBoardIndex).theData.brdBack$ <> "" Then brdbmpname.Text = boardList(activeBoardIndex).theData.brdBack$
     Call vbPicFillRect(Picture1, 0, 0, 1000, 1000, boardList(activeBoardIndex).theData.brdColor)
-
+    Set TopBar.theForm = Me
+    command16.MouseIcon = Images.MouseLink()
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

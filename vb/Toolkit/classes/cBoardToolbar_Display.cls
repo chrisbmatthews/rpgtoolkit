@@ -45,6 +45,7 @@ Public Property Get Setting(ByVal id As eDisplay) As Integer
     Setting = mDisplay(id)
 End Property
 Public Property Let Update(ByVal id As Integer, ByVal newValue As Integer)
+    On Error Resume Next
     mDisplay(id) = newValue
     Select Case id
         Case 0: activeBoard.drawLayers
