@@ -339,22 +339,18 @@ End Function
 '=========================================================================
 ' Strip comments off a line
 '=========================================================================
-Public Function stripComments(ByVal text As String) As String
+Public Function stripComments(ByVal Text As String) As String
     Dim a As Long, char As String, ignore As Boolean
-    For a = 1 To Len(text)
-        char = Mid(text, a, 2)
+    For a = 1 To Len(Text)
+        char = Mid(Text, a, 2)
         If (Left(char, 1) = Chr(34)) Then
-            If (ignore) Then
-                ignore = False
-            Else
-                ignore = True
-            End If
+            ignore = (Not ignore)
         ElseIf (char = "//") And (Not ignore) Then
-            stripComments = Mid(text, 1, a - 1)
+            stripComments = Mid(Text, 1, a - 1)
             Exit Function
         End If
     Next a
-    stripComments = text
+    stripComments = Text
 End Function
 
 '=========================================================================

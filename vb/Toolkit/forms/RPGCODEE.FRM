@@ -117,7 +117,6 @@ Begin VB.Form rpgcodeedit
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
-      RightMargin     =   1,00000e5
       TextRTF         =   $"RPGCODEE.frx":0D08
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Courier New"

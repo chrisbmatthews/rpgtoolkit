@@ -2926,8 +2926,6 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     If tkMainForm.boardCount = 0 Then
         tkMainForm.popButton(3).value = 0
         tkMainForm.popButton(3).Visible = False
-        tkMainForm.pTools.Visible = False
-        tkMainForm.bBar.Visible = False
     End If
 
     Call hideAllTools

@@ -130,7 +130,7 @@ Private Function APIString2VBString(ByVal str As String) As String
     Dim part As String, stringPos As Integer
     For stringPos = 0 To Len(str)
         part = Mid(str, stringPos, 1)
-        If part = chr(0) Then
+        If part = Chr(0) Then
             Exit For
         Else
             APIString2VBString = APIString2VBString & part
@@ -200,11 +200,11 @@ Private Function DialogFilterToAPIFilter(ByVal filter As String) As String
     Dim toRet As String, t As Integer, part As String
     For t = 0 To Len(filter)
         part = Mid(filter, t, 1)
-        If part = "|" Then part = chr(0)
+        If part = "|" Then part = Chr(0)
         toRet = toRet & part
     Next t
-    toRet = toRet & chr(0)
-    toRet = toRet & chr(0)
+    toRet = toRet & Chr(0)
+    toRet = toRet & Chr(0)
     DialogFilterToAPIFilter = toRet
 End Function
 
@@ -285,4 +285,5 @@ Public Function SaveFileDialog(ByRef dlgInfo As FileDialogInfo, Optional ByVal h
     Else
         SaveFileDialog = True
     End If
+
 End Function

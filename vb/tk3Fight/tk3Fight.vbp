@@ -1,5 +1,5 @@
 Type=OleDll
-Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\WINDOWS\System32\stdole2.tlb#OLE Automation
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\..\..\WINDOWS\System32\stdole2.tlb#OLE Automation
 Module=modCallbacks; modules\modCallbacks.bas
 Module=modConstants; modules\modConstants.bas
 Class=clsTk3Fight; classes\clsMain.cls
@@ -9,7 +9,7 @@ Startup="(None)"
 HelpFile=""
 Title="tk3Fight"
 ExeName32="tk3fight.dll"
-Path32="build"
+Path32="..\..\..\..\..\.."
 Command32=""
 Name="tk3Fight"
 HelpContextID="0"

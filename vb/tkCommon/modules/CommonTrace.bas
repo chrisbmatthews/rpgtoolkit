@@ -57,14 +57,14 @@ End Sub
 '=========================================================================
 ' Write the text passed in to the tracing file
 '=========================================================================
-Public Sub traceString(ByVal Text As String)
+Public Sub traceString(ByVal text As String)
     On Error Resume Next
     #If (enableTracer) Then
         If isTracing Then
             Dim tf As Long
             tf = FreeFile()
             Open traceFile For Append As #tf
-            Print #tf, Text
+            Print #tf, text
             Close #tf
         End If
     #End If
