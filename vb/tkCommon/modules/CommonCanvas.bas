@@ -18,6 +18,7 @@ Private Declare Function IMGBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, 
 Private Declare Function IMGGetWidth Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGGetHeight Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal filename As String) As Long
+Private Declare Function IMGFree Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 
 '=========================================================================
 ' Canvas manipulation
@@ -44,8 +45,8 @@ Private Declare Function CNVShiftLeft Lib "actkrt3.dll" (ByVal handle As Long, B
 Private Declare Function CNVShiftRight Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftUp Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftDown Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
-Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
+Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
 Private Declare Function CNVCreateCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long) As Long
 Private Declare Sub CNVKillCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long, ByVal hCanvasHostDC As Long)
 
@@ -309,32 +310,37 @@ End Sub
 ' Load a picture onto a canvas and resize *the canvas*
 '=========================================================================
 Public Sub canvasLoadFullPicture(ByVal canvasID As Long, ByVal file As String, ByVal minX As Long, ByVal minY As Long)
+    
     On Error Resume Next
+    Dim hdc As Long, img As Long, sizex As Long, sizey As Long
+    
     If canvasOccupied(canvasID) And fileExists(file) Then
-        Dim img As Long, sizex As Long, sizey As Long
+        'If canvas and file exist.
+        
         img = IMGLoad(file)
         If (img) Then
+        
             sizex = IMGGetWidth(img)
             sizey = IMGGetHeight(img)
             
+            'Size the canvas.
             If minX = -1 Then
+                'Set it to the size of image.
                 Call setCanvasSize(canvasID, sizex, sizey)
             Else
-                Dim tW As Long, tH As Long
-                tW = sizex
-                tH = sizey
-                If sizex < minX Then
-                    tW = minX
-                End If
-                If sizey < minY Then
-                    tH = minY
-                End If
-                Call setCanvasSize(canvasID, tW, tH)
+                'Size a larger canvas if one is requested.
+                If sizex < minX Then sizex = minX
+                If sizey < minY Then sizey = minY
+                Call setCanvasSize(canvasID, sizex, sizey)
             End If
-            Dim hdc As Long
+            
+            'Blt the image to the canvas.
             hdc = canvasOpenHDC(canvasID)
             Call IMGBlt(img, 0, 0, hdc)
             Call canvasCloseHDC(canvasID, hdc)
+            
+            'Unload the IMG.
+            Call IMGFree(img)
         End If
     End If
 End Sub
