@@ -25,10 +25,10 @@ Public Declare Function DXDrawText Lib "actkrt3.dll" (ByVal x As Long, ByVal y A
 Public Declare Function DXDrawCanvas Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 Public Declare Function DXDrawCanvasTransparent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
 Public Declare Function DXDrawCanvasTranslucent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
-Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
+Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
 Public Declare Function DXCopyScreenToCanvas Lib "actkrt3.dll" (ByVal canvasID As Long) As Long
-Public Declare Function DXDrawCanvasTranslucentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+Public Declare Function DXDrawCanvasTranslucentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
 '=========================================================================
 ' Constants
@@ -346,22 +346,22 @@ Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1): On Error Resume N
     #If False Then
         'If parallaxing is disabled - to be done.
         
-        Dim xDest As Long, yDest As Long, xSrc As Long, ySrc As Long, width As Long, height As Long
+        Dim xDest As Long, yDest As Long, xsrc As Long, ysrc As Long, width As Long, height As Long
         If topX < 0 Then
             xDest = -topX * 32: width = getCanvasWidth(cnvBackground)
         Else
-            xSrc = topX * 32: width = tilesX * 32
+            xsrc = topX * 32: width = tilesX * 32
         End If
         If topY < 0 Then
             yDest = -topY * 32: height = getCanvasHeight(cnvBackground)
         Else
-            ySrc = topY * 32: height = tilesY * 32
+            ysrc = topY * 32: height = tilesY * 32
         End If
         
         If cnv = -1 Then
-            Call DXDrawCanvasPartial(cnvBackground, xDest, yDest, xSrc, ySrc, width, height)
+            Call DXDrawCanvasPartial(cnvBackground, xDest, yDest, xsrc, ysrc, width, height)
         Else
-            Call canvas2CanvasBltPartial(cnvBackground, cnv, xDest, yDest, xSrc, ySrc, width, height)
+            Call canvas2CanvasBltPartial(cnvBackground, cnv, xDest, yDest, xsrc, ysrc, width, height)
         End If
         
     #End If
@@ -1384,10 +1384,10 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
         If (renderRenderNowCanvas) Then
             If (cnvTarget = -1) Then
                 ' To the screen
-                Call DXDrawCanvasTranslucent(cnvRenderNow, 0, 0)
+                Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, TRANSP_COLOR_ALT)
             Else
                 ' To a canvas
-                Call canvas2CanvasBltTranslucent(cnvRenderNow, cnvTarget, 0, 0)
+                Call canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, TRANSP_COLOR_ALT)
             End If
         End If
 
@@ -1574,7 +1574,7 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
     With host
         .width = width * Screen.TwipsPerPixelX
         .height = height * Screen.TwipsPerPixelY
-        .top = (Screen.height - .height) \ 2
+        .Top = (Screen.height - .height) \ 2
         .Left = (Screen.width - .width) \ 2
         If Not (inFullScreenMode) Then
             ' If not in full screen mode, increase to account for window border
