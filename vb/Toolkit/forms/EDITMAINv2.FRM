@@ -2043,7 +2043,7 @@ End Property
 ' Fill in plugin tab
 '=========================================================================
 Private Sub pluginInfoFill()
-    On Error Resume Next
+    On Error GoTo error
     Call plugList.Clear
     Dim t As Integer
     For t = 0 To UBound(mainMem.plugins)
@@ -2054,6 +2054,7 @@ Private Sub pluginInfoFill()
         End If
     Next t
     Call PLUGShutdownSystem
+error:
 End Sub
 
 '=========================================================================
@@ -2514,10 +2515,8 @@ End Sub
 ' Load form
 '=========================================================================
 Private Sub Form_Load(): On Error Resume Next
-
+    On Error Resume Next
     Call LocalizeForm(Me)
-    Me.Height = 6270
-    Me.Width = 7600
     filename(2) = vbNullString
     sliGameSpeed.max = MAX_GAMESPEED                'Gamespeed range.
     sliGameSpeed.min = -MAX_GAMESPEED
@@ -2617,6 +2616,7 @@ Private Sub infofill()
    
     gametitlebox.Text = mainMem.gameTitle$
     gametitlebox2.Text = mainMem.gameTitle$
+
     editmainfile.Caption = LoadStringLoc(800, "Main Project Editor") + "  (" + mainFile$ + ")"
     
     pathbox.Caption = projectPath
@@ -2630,7 +2630,7 @@ Private Sub infofill()
     eighthundred.value = (mainMem.mainResolution = 1)
     tentwentyfour.value = (mainMem.mainResolution = 2)
     optResCustom.value = (mainMem.mainResolution = 4)
-    
+
     Call pluginInfoFill
 
     daynightcheckbox.value = mainMem.mainUseDayNight
@@ -2649,9 +2649,9 @@ Private Sub infofill()
     Else
         regprotect.value = 0
     End If
-    
+
     regprotect.Visible = False
-   
+
     cursormove.Text = mainMem.cursorMoveSound
     cursorselect.Text = mainMem.cursorSelectSound
     cursorcancel.Text = mainMem.cursorCancelSound
@@ -2666,7 +2666,7 @@ Private Sub infofill()
         Case COLOR32:
             color32bit.value = True
     End Select
-   
+
     Select Case mainMem.pixelMovement
         Case PIXEL_MOVEMENT_PIXEL_PUSH
             optPixelBased.value = True
@@ -2682,7 +2682,7 @@ Private Sub infofill()
             chkUsePixelPush.value = 0
             chkUsePixelPush.Enabled = False
     End Select
-    
+
     sliGameSpeed.value = getGameSpeed(mainMem.gameSpeed)
 
 End Sub
