@@ -208,5 +208,5 @@ End Function
 '=========================================================================
 Public Function fileExists(ByVal file As String) As Boolean
     On Local Error Resume Next
-    fileExists = (GetAttr(file) And vbDirectory) = 0
+    fileExists = ((GetAttr(file) And vbDirectory) = 0)
 End Function

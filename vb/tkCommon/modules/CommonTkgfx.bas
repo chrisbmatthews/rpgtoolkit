@@ -292,36 +292,33 @@ Public Sub getAmbientLevel(ByRef shadeR As Long, ByRef shadeB As Long, ByRef sha
 
     With boardList(activeBoardIndex)
 
-        'First check the independent variables.
-        #If isToolkit = 0 Then
+#If (isToolkit = 0) Then
 
-            'Clear the 'add on' variables
-            addOnR = 0
-            addOnG = 0
-            addOnB = 0
+        'Clear the 'add on' variables
+        addOnR = 0
+        addOnG = 0
+        addOnB = 0
 
-            Call getIndependentVariable("AmbientRed!", lit, ambientR)
-            Call getIndependentVariable("AmbientBlue!", lit, ambientB)
-            Call getIndependentVariable("AmbientGreen!", lit, ambientG)
+        Call getIndependentVariable("AmbientRed!", lit, ambientR)
+        Call getIndependentVariable("AmbientBlue!", lit, ambientB)
+        Call getIndependentVariable("AmbientGreen!", lit, ambientG)
 
-            'Check the ambient effects.
-            Select Case .theData.ambientEffect
-                Case 1  'Fog/mist (lighten)
-                    shadeR = 75: shadeB = 75: shadeG = 75
-                Case 2  'Darken
-                    shadeR = -75: shadeB = -75: shadeG = -75
-                Case 3  'Watery
-                    shadeR = 0: shadeB = 75: shadeG = 0
-            End Select
+        'Check the ambient effects.
+        Select Case .theData.ambientEffect
+            Case 1  'Fog/mist (lighten)
+                shadeR = 75: shadeB = 75: shadeG = 75
+            Case 2  'Darken
+                shadeR = -75: shadeB = -75: shadeG = -75
+            Case 3  'Watery
+                shadeR = 0: shadeB = 75: shadeG = 0
+        End Select
 
-            'Check day/night levels
-            If (mainMem.mainUseDayNight = 1) And (.theData.BoardDayNight = 1) Then
-                lightLevel = DetermineLightLevel()
-            Else
-                lightLevel = 0
-            End If
+        'Check day/night levels
+        If (mainMem.mainUseDayNight = 1) And (.theData.BoardDayNight = 1) Then
+            lightLevel = DetermineLightLevel()
+        End If
 
-        #End If
+#End If
 
         'Check the board ambient levels and calculate.
         shadeR = shadeR + ambientR + lightLevel + .ambientR

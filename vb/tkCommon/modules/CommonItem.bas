@@ -67,10 +67,10 @@ Public Type TKItem
     
     loopSpeed As Long               '.speed converted to loops (3.0.5)
     
-    #If isToolkit = 0 Then
-        bIsActive As Boolean        'is item active?
-        hasIdleGfx(7) As Boolean    'do we have idling graphics?
-    #End If
+#If isToolkit = 0 Then
+    bIsActive As Boolean            'is item active?
+    hasIdleGfx(7) As Boolean        'do we have idling graphics?
+#End If
 End Type
 
 '=========================================================================
@@ -341,9 +341,9 @@ Public Function openItem(ByVal file As String) As TKItem
     
     Call ItemClear(theItem)
     
-    #If isToolkit = 1 Then
-        itemList(activeItemIndex).itemNeedUpdate = False
-    #End If
+#If (isToolkit = 1) Then
+    itemList(activeItemIndex).itemNeedUpdate = False
+#End If
     theItem.itmAnimation$ = vbNullString
     theItem.itmSizeType = 0
        
@@ -462,11 +462,11 @@ Public Function openItem(ByVal file As String) As TKItem
                 theItem.speed = BinReadDouble(num)
                 theItem.idleTime = BinReadDouble(num)
             End If
-            #If (isToolkit = 0) Then
-                For t = 0 To UBound(theItem.standingGfx)
-                    theItem.hasIdleGfx(t) = (LenB(theItem.standingGfx(t)) <> 0)
-                Next t
-            #End If
+#If (isToolkit = 0) Then
+            For t = 0 To UBound(theItem.standingGfx)
+                theItem.hasIdleGfx(t) = (LenB(theItem.standingGfx(t)) <> 0)
+            Next t
+#End If
             If (minorVer < 6) Then
                 'REST has been depreciated-- move REST graphic to STAND_S
                 theItem.standingGfx(ITEM_WALK_S) = theItem.gfx(ITEM_REST)

@@ -54,9 +54,9 @@ Public Function openSpecialMove(ByVal file As String) As TKSpecialMove
     Call SpecialMoveClear(theMove)
     file$ = PakLocate(file$)
     
-    #If isToolkit = 1 Then
-        specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
-    #End If
+#If isToolkit = 1 Then
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
+#End If
     
     Dim num As Long, fileHeader As String, minorVer As Long, majorVer As Long
     num = FreeFile
@@ -128,9 +128,9 @@ Public Sub saveSpecialMove(ByVal file As String, ByRef theMove As TKSpecialMove)
 
     If (LenB(file) = 0) Then Exit Sub
     
-    #If isToolkit = 1 Then
-        specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
-    #End If
+#If isToolkit = 1 Then
+    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
+#End If
     
     Call Kill(file)
     Open file For Binary Access Write As num

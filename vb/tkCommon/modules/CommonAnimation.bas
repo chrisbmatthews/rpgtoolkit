@@ -93,9 +93,9 @@ Public Sub openAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
     If Not fileExists(file) Then Exit Sub
     Call AnimationClear(theAnim)
     file = PakLocate(file)
-    #If isToolkit = 1 Then
-        animationList(activeAnimationIndex).animNeedUpdate = False
-    #End If
+#If isToolkit = 1 Then
+    animationList(activeAnimationIndex).animNeedUpdate = False
+#End If
 
     Dim num As Long         'file position
     Dim frameIdx As Long    'frame index
@@ -201,9 +201,9 @@ Public Sub animDelay(ByVal seconds As Double): On Error Resume Next
     
         'This loop is the "delay", during this loop nothing happens.
         'Process user input for trans3.
-        #If isToolkit = 0 Then
-            Call processEvent
-        #End If
+#If isToolkit = 0 Then
+        Call processEvent
+#End If
         
     Loop
 

@@ -44,9 +44,9 @@ Sub openStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
     Call StatusClear(theEffect)
     file$ = PakLocate(file$)
     
-    #If isToolkit = 1 Then
-        statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
-    #End If
+#If isToolkit = 1 Then
+    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
+#End If
     
     Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long
     num = FreeFile
@@ -120,9 +120,9 @@ Sub saveStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
     num = FreeFile
     If (LenB(file) = 0) Then Exit Sub
     
-    #If isToolkit = 1 Then
-        statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
-    #End If
+#If isToolkit = 1 Then
+    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
+#End If
     
     Kill file
     Open file$ For Binary Access Write As #num

@@ -18,8 +18,8 @@ Option Explicit
 #Const enableTracer = False         'tracer is enabled?
 
 #If (enableTracer) Then
-    Private traceFile As String     'file to save to
-    Private isTracing As Boolean    'are we tracing?
+Private traceFile As String         'file to save to
+Private isTracing As Boolean        'are we tracing?
 #End If
 
 '=========================================================================
@@ -28,17 +28,17 @@ Option Explicit
 Public Sub StartTracing(ByVal file As String)
 
     On Error Resume Next
-    
-    #If (enableTracer) Then
-        traceFile = file
-        isTracing = True
-        Call Kill(traceFile)
-        Dim tf As Long
-        tf = FreeFile()
-        Open traceFile For Append As #tf
-        Print #tf, "Tracing..."
-        Close #tf
-    #End If
+
+#If (enableTracer) Then
+    traceFile = file
+    isTracing = True
+    Call Kill(traceFile)
+    Dim tf As Long
+    tf = FreeFile()
+    Open traceFile For Append As #tf
+    Print #tf, "Tracing..."
+    Close #tf
+#End If
 
 End Sub
 
@@ -47,11 +47,11 @@ End Sub
 '=========================================================================
 Public Sub StopTracing()
     On Error Resume Next
-    #If (enableTracer) Then
-        If isTracing Then
-            isTracing = False
-        End If
-    #End If
+#If (enableTracer) Then
+    If isTracing Then
+        isTracing = False
+    End If
+#End If
 End Sub
 
 '=========================================================================
@@ -59,15 +59,15 @@ End Sub
 '=========================================================================
 Public Sub traceString(ByVal Text As String)
     On Error Resume Next
-    #If (enableTracer) Then
-        If isTracing Then
-            Dim tf As Long
-            tf = FreeFile()
-            Open traceFile For Append As #tf
-            Print #tf, Text
-            Close #tf
-        End If
-    #End If
+#If (enableTracer) Then
+    If isTracing Then
+        Dim tf As Long
+        tf = FreeFile()
+        Open traceFile For Append As #tf
+        Print #tf, Text
+        Close #tf
+    End If
+#End If
 End Sub
 
 '=========================================================================

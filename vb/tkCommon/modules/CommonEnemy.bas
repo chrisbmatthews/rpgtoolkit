@@ -302,9 +302,9 @@ Public Function openEnemy(ByVal file As String) As TKEnemy
 
     num = FreeFile()
     If (LenB(file$) = 0) Then Exit Function
-    #If isToolkit = 1 Then
-        enemylist(activeEnemyIndex).eneNeedUpdate = False
-    #End If
+#If isToolkit = 1 Then
+    enemylist(activeEnemyIndex).eneNeedUpdate = False
+#End If
 
     Call EnemyClear(theEnemy)
 

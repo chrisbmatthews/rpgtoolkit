@@ -81,13 +81,13 @@ Public Type TKPlayer
     
     loopSpeed As Long               '.speed converted to loops
 
-    #If (isToolkit = 0) Then        '--Trans3 only
-        status(10) As FighterStatus '  status effects applied to player
-        nextLevel As Integer        '  exp value at which level up occurs
-        levelProgression As Integer '  exp required until level up
-        levelStarts() As Double     '  exp values at which all levels start
-        hasIdleGfx(7) As Boolean    '  do we have idling graphics?
-    #End If
+#If (isToolkit = 0) Then            '--Trans3 only
+    status(10) As FighterStatus     '  status effects applied to player
+    nextLevel As Integer            '  exp value at which level up occurs
+    levelProgression As Integer     '  exp required until level up
+    levelStarts() As Double         '  exp values at which all levels start
+    hasIdleGfx(7) As Boolean        '  do we have idling graphics?
+#End If
 
 End Type
 
@@ -97,10 +97,10 @@ End Type
 Public Type playerDoc
     charFile As String              'Filename
     theData As TKPlayer             'Main data
-    #If (isToolkit = 1) Then        '--Toolkit3 only
-        charNeedUpdate As Boolean   '  Changes made?
-        specialMoveNumber As Long   '  which spc move is selected?
-    #End If
+#If (isToolkit = 1) Then            '--Toolkit3 only
+    charNeedUpdate As Boolean       '  Changes made?
+    specialMoveNumber As Long       '  which spc move is selected?
+#End If
 End Type
 
 '=========================================================================
@@ -453,9 +453,9 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
     Dim num As Long, tstName As String
     num = FreeFile()
     If (LenB(file$) = 0) Then Exit Sub
-    #If (isToolkit = 1) Then
-        playerList(activePlayerIndex).charNeedUpdate = False
-    #End If
+#If (isToolkit = 1) Then
+    playerList(activePlayerIndex).charNeedUpdate = False
+#End If
     thePlayer.charLevelUpType = 0
     thePlayer.charSizeType = 0
     
@@ -584,12 +584,12 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                     thePlayer.standingGfx(t) = BinReadString(num)
                 Next t
             End If
-            
-            #If (isToolkit = 0) Then
-                For t = 0 To UBound(thePlayer.standingGfx)
-                    thePlayer.hasIdleGfx(t) = (LenB(thePlayer.standingGfx(t)) <> 0)
-                Next t
-            #End If
+
+#If (isToolkit = 0) Then
+            For t = 0 To UBound(thePlayer.standingGfx)
+                thePlayer.hasIdleGfx(t) = (LenB(thePlayer.standingGfx(t)) <> 0)
+            Next t
+#End If
 
             'MINOR VERSION 7: READ IDLE TIME
             If (minorVer >= 7) Then
@@ -597,11 +597,11 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                 thePlayer.speed = BinReadDouble(num)
             Else
                 thePlayer.idleTime = 3
-                #If (isToolkit = 1) Then
-                    thePlayer.speed = 0.01
-                #Else
-                    thePlayer.speed = walkDelay
-                #End If
+#If (isToolkit = 1) Then
+            thePlayer.speed = 0.01
+#Else
+            thePlayer.speed = walkDelay
+#End If
             End If
 
             Dim cnt As Long
@@ -1268,8 +1268,8 @@ Public Sub PlayerClear(ByRef thePlayer As TKPlayer)
     ReDim thePlayer.customGfx(5)
     ReDim thePlayer.customGfxNames(5)
 
-    #If (isToolkit = 0) Then
-        'Clear status effects if in engine
-        Call PlayerClearAllStatus(thePlayer)
-    #End If
+#If (isToolkit = 0) Then
+    'Clear status effects if in engine
+    Call PlayerClearAllStatus(thePlayer)
+#End If
 End Sub
