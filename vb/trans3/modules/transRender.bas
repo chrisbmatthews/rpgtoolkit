@@ -69,10 +69,10 @@ Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal 
 Private Declare Function DXRenderCanvas Lib "actkrt3.dll" Alias "DXDrawCanvas" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 
 ' Draw a canavs transparently onto the screen
-Public Declare Function DXRenderCanvasTransparent Lib "actkrt3.dll" Alias "DXDrawCanvasTransparent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
+Private Declare Function DXRenderCanvasTransparent Lib "actkrt3.dll" Alias "DXDrawCanvasTransparent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
 
 ' Draw a canavs translucently onto the screen
-Public Declare Function DXRenderCanvasTranslucent Lib "actkrt3.dll" Alias "DXDrawCanvasTranslucent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+Private Declare Function DXRenderCanvasTranslucent Lib "actkrt3.dll" Alias "DXDrawCanvasTranslucent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
 #End If
 
