@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form boardinformation 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Board Information"
@@ -1113,11 +1113,11 @@ Attribute VB_Exposed = False
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 
 Sub infofill()
-On Error GoTo errorhandler
-    If boardList(activeBoardIndex).theData.dirLink$(1) <> "" Then nl.text = boardList(activeBoardIndex).theData.dirLink$(1)
-    If boardList(activeBoardIndex).theData.dirLink$(2) <> "" Then sl.text = boardList(activeBoardIndex).theData.dirLink$(2)
-    If boardList(activeBoardIndex).theData.dirLink$(3) <> "" Then el.text = boardList(activeBoardIndex).theData.dirLink$(3)
-    If boardList(activeBoardIndex).theData.dirLink$(4) <> "" Then wl.text = boardList(activeBoardIndex).theData.dirLink$(4)
+On Error GoTo ErrorHandler
+    If boardList(activeBoardIndex).theData.dirLink$(1) <> "" Then nl.Text = boardList(activeBoardIndex).theData.dirLink$(1)
+    If boardList(activeBoardIndex).theData.dirLink$(2) <> "" Then sl.Text = boardList(activeBoardIndex).theData.dirLink$(2)
+    If boardList(activeBoardIndex).theData.dirLink$(3) <> "" Then el.Text = boardList(activeBoardIndex).theData.dirLink$(3)
+    If boardList(activeBoardIndex).theData.dirLink$(4) <> "" Then wl.Text = boardList(activeBoardIndex).theData.dirLink$(4)
     If boardList(activeBoardIndex).theData.fightingYN = 0 Then
         fyes.value = 0
         Label3(0).Enabled = 0
@@ -1131,8 +1131,8 @@ On Error GoTo errorhandler
         skillbox.Enabled = 1
         bkgbox.Enabled = 1
     End If
-    skillbox.text = boardList(activeBoardIndex).theData.boardskill
-    If boardList(activeBoardIndex).theData.boardBackground$ <> "" Then Text2.text = boardList(activeBoardIndex).theData.boardBackground$
+    skillbox.Text = boardList(activeBoardIndex).theData.boardskill
+    If boardList(activeBoardIndex).theData.boardBackground$ <> "" Then Text2.Text = boardList(activeBoardIndex).theData.boardBackground$
     
     'Constant values
     consta.Clear
@@ -1158,14 +1158,14 @@ On Error GoTo errorhandler
     blayer.AddItem "7"
     blayer.AddItem "8"
 
-    If boardList(activeBoardIndex).theData.boardTitle$(1) <> "" Then layername.text = boardList(activeBoardIndex).theData.boardTitle$(1)
+    If boardList(activeBoardIndex).theData.boardTitle$(1) <> "" Then layername.Text = boardList(activeBoardIndex).theData.boardTitle$(1)
 
 
-    If boardList(activeBoardIndex).theData.boardMusic$ <> "" Then music.text = boardList(activeBoardIndex).theData.boardMusic$
+    If boardList(activeBoardIndex).theData.boardMusic$ <> "" Then music.Text = boardList(activeBoardIndex).theData.boardMusic$
 
     Check1.value = boardList(activeBoardIndex).theData.brdSavingYN
     
-    bs.caption = str$(boardList(activeBoardIndex).theData.Bsizex) + " X" + str$(boardList(activeBoardIndex).theData.Bsizey)
+    bs.Caption = str$(boardList(activeBoardIndex).theData.Bsizex) + " X" + str$(boardList(activeBoardIndex).theData.Bsizey)
 
     daynight.value = boardList(activeBoardIndex).theData.BoardDayNight
     If boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
@@ -1179,39 +1179,39 @@ On Error GoTo errorhandler
     Else
         Option2.value = True
     End If
-    sx.text = toString(boardList(activeBoardIndex).theData.Bsizex)
-    sy.text = toString(boardList(activeBoardIndex).theData.Bsizey)
+    sx.Text = toString(boardList(activeBoardIndex).theData.Bsizex)
+    sy.Text = toString(boardList(activeBoardIndex).theData.Bsizey)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub blayer_Click()
-    On Error GoTo errorhandler
-    whichone = blayer.ListIndex
-    If whichone = -1 Then whichone = 0
-    whichone = whichone + 1
-    layername.text = boardList(activeBoardIndex).theData.boardTitle$(whichone)
+    On Error GoTo ErrorHandler
+    whichOne = blayer.ListIndex
+    If whichOne = -1 Then whichOne = 0
+    whichOne = whichOne + 1
+    layername.Text = boardList(activeBoardIndex).theData.boardTitle$(whichOne)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Check1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     boardList(activeBoardIndex).theData.brdSavingYN = Check1.value
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1221,9 +1221,9 @@ End Sub
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + brdpath$
+    dlg.strDefaultFolder = projectPath$ + brdPath$
     dlg.strTitle = "Northern Link (Note: you may select archives!)"
     dlg.strDefaultExt = "brd"
     dlg.strFileTypes = "Supported Files|*.brd;*.prg|RPG Toolkit Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
@@ -1233,29 +1233,29 @@ Private Sub Command1_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     E$ = extention(antiPath$)
     If UCase$(E$) = "BRD" Then
-        FileCopy filename$(1), projectPath$ + brdpath$ + antiPath$
+        FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
     End If
     If UCase$(E$) = "PRG" Then
-        FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+        FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     End If
     boardList(activeBoardIndex).theData.dirLink$(1) = antiPath$
-    nl.text = antiPath$
+    nl.Text = antiPath$
 End Sub
 
 
 Private Sub Command10_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     boardNeedUpdate = True
 
     BoardDayNightForm.Show vbModal ', me
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -1269,9 +1269,9 @@ End Sub
 
 Private Sub Command2_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + brdpath$
+    dlg.strDefaultFolder = projectPath$ + brdPath$
     dlg.strTitle = "Southern Link (Note: you may select archives!)"
     dlg.strDefaultExt = "brd"
     dlg.strFileTypes = "Supported Files|*.brd;*.prg|RPG Toolkit Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
@@ -1281,30 +1281,30 @@ Private Sub Command2_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     E$ = extention(antiPath$)
     If UCase$(E$) = "BRD" Then
-        FileCopy filename$(1), projectPath$ + brdpath$ + antiPath$
+        FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
     End If
     If UCase$(E$) = "PRG" Then
-        FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+        FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     End If
     boardList(activeBoardIndex).theData.dirLink$(2) = antiPath$
-    sl.text = antiPath$
+    sl.Text = antiPath$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command3_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + brdpath$
+    dlg.strDefaultFolder = projectPath$ + brdPath$
     dlg.strTitle = "Eastern Link (Note: you may select archives!)"
     dlg.strDefaultExt = "brd"
     dlg.strFileTypes = "Supported Files|*.brd;*.prg|RPG Toolkit Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
@@ -1314,24 +1314,24 @@ Private Sub Command3_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     E$ = extention(antiPath$)
     If UCase$(E$) = "BRD" Then
-        FileCopy filename$(1), projectPath$ + brdpath$ + antiPath$
+        FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
     End If
     If UCase$(E$) = "PRG" Then
-        FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+        FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     End If
     boardList(activeBoardIndex).theData.dirLink$(3) = antiPath$
-    el.text = antiPath$
+    el.Text = antiPath$
 End Sub
 
 Private Sub Command4_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + brdpath$
+    dlg.strDefaultFolder = projectPath$ + brdPath$
     dlg.strTitle = "Western Link (Note: you may select archives!)"
     dlg.strDefaultExt = "brd"
     dlg.strFileTypes = "Supported Files|*.brd;*.prg|RPG Toolkit Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
@@ -1341,24 +1341,24 @@ Private Sub Command4_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     E$ = extention(antiPath$)
     If UCase$(E$) = "BRD" Then
-        FileCopy filename$(1), projectPath$ + brdpath$ + antiPath$
+        FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
     End If
     If UCase$(E$) = "PRG" Then
-        FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
+        FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
     End If
     boardList(activeBoardIndex).theData.dirLink$(4) = antiPath$
-    wl.text = antiPath$
+    wl.Text = antiPath$
 End Sub
 
 Private Sub Command5_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bkgpath$
+    dlg.strDefaultFolder = projectPath$ + bkgPath$
     dlg.strTitle = "Board Background"
     dlg.strDefaultExt = "bkg"
     dlg.strFileTypes = "RPG Toolkit Background (*.bkg)|*.bkg|All files(*.*)|*.*"
@@ -1368,26 +1368,37 @@ Private Sub Command5_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bkgpath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + bkgPath$ + antiPath$
     boardList(activeBoardIndex).theData.boardBackground$ = antiPath$
-    Text2.text = antiPath$
+    Text2.Text = antiPath$
 End Sub
 
-Private Sub Command6_Click(): On Error GoTo errorhandler
+Private Sub Command6_Click(): On Error GoTo ErrorHandler
+'========================================================
+'Altered for isometrics by Delano for 3.0.4.
+'Added label on this tab listing minmum board sizes.
 
-    boardList(activeBoardIndex).theData.boardskill = val(skillbox.text)
+    boardList(activeBoardIndex).theData.boardskill = val(skillbox.Text)
     
-    ' Check minimum board width/height values
-    If val(sx.text) < 19 Then: sx.text = "19"
-    If val(sy.text) < 11 Then: sy.text = "11"
+    'Fix: allow for minimum board size for isometric boards:
+    If boardList(activeBoardIndex).theData.isIsometric = 1 Then
+        'Isometric minima: 10x30 (640x480)
+        If val(sx.Text) < 10 Then: sx.Text = "10"
+        If val(sy.Text) < 30 Then: sy.Text = "30"
+    Else
+        '2D
+        If val(sx.Text) < 19 Then: sx.Text = "19"
+        If val(sy.Text) < 11 Then: sy.Text = "11"
+    End If
+
     
     ' Get layer selection
     bl = 8: If Option1.value = True Then bl = 4
     
     ' Get x and y values
-    bx = val(sx.text): By = val(sy.text)
+    bx = val(sx.Text): By = val(sy.Text)
     
     ' If changes were made to board width/height
     If bx <> boardList(activeBoardIndex).theData.Bsizex Or By <> boardList(activeBoardIndex).theData.Bsizey Then
@@ -1401,7 +1412,7 @@ Private Sub Command6_Click(): On Error GoTo errorhandler
         Call BoardResize(bx, By, bl, boardList(activeBoardIndex).theData)
         
         ' Resize form
-        Call activeBoard.resizeForm(activeBoard.width, activeBoard.height)
+        Call activeBoard.resizeForm(activeBoard.Width, activeBoard.height)
         
         boardNeedUpdate = True
         
@@ -1420,66 +1431,90 @@ Private Sub Command6_Click(): On Error GoTo errorhandler
 
     Exit Sub
 
-errorhandler:
+ErrorHandler:
     Call HandleError: Resume Next
 End Sub
 
 Private Sub Option1_Click()
     ignore = 1
-    VScroll2.Max = 2048: VScroll3.Max = 2048
+    VScroll2.max = 2048: VScroll3.max = 2048
     ignore = 0
 End Sub
 
 Private Sub Option2_Click()
-    If val(sx.text) > 1024 Then sx.text = "1024"
-    If val(sy.text) > 1024 Then sy.text = "1024"
+    If val(sx.Text) > 1024 Then sx.Text = "1024"
+    If val(sy.Text) > 1024 Then sy.Text = "1024"
     
     ignore = 1
-    VScroll2.Max = 1024: VScroll3.Max = 1024
+    VScroll2.max = 1024: VScroll3.max = 1024
     ignore = 0
 End Sub
 
 Private Sub sx_Change(): On Error Resume Next
     If Option1.value = True Then
-        If val(sx.text) > 2048 Then sx.text = "2048"
-        VScroll2.value = 2048 - val(sx.text)
+        If val(sx.Text) > 2048 Then sx.Text = "2048"
+        VScroll2.value = 2048 - val(sx.Text)
     Else
-        If val(sx.text) > 1024 Then sx.text = "1024"
-        VScroll2.value = 1024 - val(sx.text)
+        If val(sx.Text) > 1024 Then sx.Text = "1024"
+        VScroll2.value = 1024 - val(sx.Text)
     End If
 End Sub
 
 Private Sub sy_Change(): On Error Resume Next
     If Option1.value = True Then
-        If val(sy.text) > 2048 Then sy.text = "2048"
-        VScroll3.value = 2048 - val(sy.text)
+        If val(sy.Text) > 2048 Then sy.Text = "2048"
+        VScroll3.value = 2048 - val(sy.Text)
     Else
-        If val(sy.text) > 1024 Then sy.text = "1024"
-        VScroll3.value = 1024 - val(sy.text)
+        If val(sy.Text) > 1024 Then sy.Text = "1024"
+        VScroll3.value = 1024 - val(sy.Text)
     End If
 End Sub
 
 Private Sub VScroll2_Change(): If ignore = 1 Then Exit Sub
+'=========================================================
+'X-scroller. Set minimum values.
+
     If Option1.value = True Then
-        sx.text = 2048 - VScroll2.value
+        sx.Text = 2048 - VScroll2.value
     Else
-        sx.text = 1024 - VScroll2.value
+        sx.Text = 1024 - VScroll2.value
     End If
+    
+    If boardList(activeBoardIndex).theData.isIsometric = 1 Then
+        'Isometric minima: 10x30 (640x480)
+        If val(sx.Text) < 10 Then: sx.Text = "10"
+    Else
+        '2D
+        If val(sx.Text) < 19 Then: sx.Text = "19"
+    End If
+    
 End Sub
 
 Private Sub VScroll3_Change(): If ignore = 1 Then Exit Sub
+'=========================================================
+'Y-scroller. Set minimum values.
+
     If Option1.value = True Then
-        sy.text = 2048 - VScroll3.value
+        sy.Text = 2048 - VScroll3.value
     Else
-        sy.text = 1024 - VScroll3.value
+        sy.Text = 1024 - VScroll3.value
     End If
+    
+    If boardList(activeBoardIndex).theData.isIsometric = 1 Then
+        'Isometric minima: 10x30 (640x480)
+        If val(sy.Text) < 30 Then: sy.Text = "30"
+    Else
+        '2D
+        If val(sy.Text) < 11 Then: sy.Text = "11"
+    End If
+    
 End Sub
 
 Private Sub Command7_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + mediapath$
+    dlg.strDefaultFolder = projectPath$ + mediaPath$
     dlg.strTitle = "Select Board Music"
     dlg.strDefaultExt = "mid"
     dlg.strFileTypes = strFileDialogFilterMedia
@@ -1489,11 +1524,11 @@ Private Sub Command7_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
+    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
     boardList(activeBoardIndex).theData.boardMusic$ = antiPath$
-    music.text = antiPath$
+    music.Text = antiPath$
 End Sub
 
 Private Sub Command8_Click()
@@ -1502,7 +1537,7 @@ If boardList(activeBoardIndex).theData.boardMusic$ = "" Then MsgBox LoadStringLo
 ext$ = extention(boardList(activeBoardIndex).theData.boardMusic$)
 If UCase$(ext$) = "WAV" Then
     wFlags% = SND_ASYNC Or SND_NODEFAULT
-    x% = sndPlaySound(projectPath$ + mediapath$ + boardList(activeBoardIndex).theData.boardMusic$, wFlags%)
+    x% = sndPlaySound(projectPath$ + mediaPath$ + boardList(activeBoardIndex).theData.boardMusic$, wFlags%)
 Else
     'If UCase$(ext$) = "MID" Then
     '    OLE1.SourceDoc = projectPath$ + mediapath$ + boardmusic$
@@ -1510,7 +1545,7 @@ Else
     '    OLE1.Action = 7
     'Else
         mp3player.Show
-        mp3player.playSong (projectPath$ + mediapath$ + boardList(activeBoardIndex).theData.boardMusic$)
+        mp3player.playSong (projectPath$ + mediaPath$ + boardList(activeBoardIndex).theData.boardMusic$)
     'End If
 End If
 Exit Sub
@@ -1519,7 +1554,7 @@ Exit Sub
 End Sub
 
 Private Sub Command9_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 ext$ = extention(boardList(activeBoardIndex).theData.boardMusic$)
 If UCase$(ext$) = "WAV" Then
     wFlags% = SND_ASYNC
@@ -1531,27 +1566,27 @@ End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub consta_Click()
-    On Error GoTo errorhandler
-    whichone = consta.ListIndex
-    If whichone = -1 Then whichone = 0
-    whichone = whichone + 1
-    Text1.text = str$(boardList(activeBoardIndex).theData.brdConst(whichone))
+    On Error GoTo ErrorHandler
+    whichOne = consta.ListIndex
+    If whichOne = -1 Then whichOne = 0
+    whichOne = whichOne + 1
+    Text1.Text = str$(boardList(activeBoardIndex).theData.brdConst(whichOne))
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub daynight_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     boardNeedUpdate = True
     boardList(activeBoardIndex).theData.BoardDayNight = daynight.value
@@ -1564,17 +1599,17 @@ Private Sub daynight_Click()
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub el_Change()
-    boardList(activeBoardIndex).theData.dirLink$(3) = el.text
+    boardList(activeBoardIndex).theData.dirLink$(3) = el.Text
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     Call LocalizeTabStrip(TabStrip1)
     
@@ -1590,13 +1625,13 @@ Private Sub Form_Load()
     Call infofill
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub fyes_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If fyes.value = 0 Then
         'fyes.Value = 1
         boardList(activeBoardIndex).theData.fightingYN = 0
@@ -1621,77 +1656,77 @@ Private Sub fyes_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub HScroll1_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     boardList(activeBoardIndex).theData.Bsizex = HScroll1.value
-    bs.caption = str$(boardList(activeBoardIndex).theData.Bsizex) + " X" + str$(boardList(activeBoardIndex).theData.Bsizey)
+    bs.Caption = str$(boardList(activeBoardIndex).theData.Bsizex) + " X" + str$(boardList(activeBoardIndex).theData.Bsizey)
 
-    activeBoard.VScroll1.Max = boardList(activeBoardIndex).theData.Bsizey - tilesY + 1
-    activeBoard.HScroll1.Max = boardList(activeBoardIndex).theData.Bsizex - tilesX + 1
+    activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.Bsizey - tilesY + 1
+    activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.Bsizex - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.width, activeBoard.height)
+    Call activeBoard.resizeForm(activeBoard.Width, activeBoard.height)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Label3_Click(Index As Integer)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If Index = 2 Then mainfight.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Label5_Click(Index As Integer)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If Index = 1 Then editBackground.Show
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub layername_Change()
-    On Error GoTo errorhandler
-    whichone = blayer.ListIndex
-    If whichone = -1 Then whichone = 0
-    whichone = whichone + 1
-    boardList(activeBoardIndex).theData.boardTitle$(whichone) = layername.text
+    On Error GoTo ErrorHandler
+    whichOne = blayer.ListIndex
+    If whichOne = -1 Then whichOne = 0
+    whichOne = whichOne + 1
+    boardList(activeBoardIndex).theData.boardTitle$(whichOne) = layername.Text
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub music_Change()
-    boardList(activeBoardIndex).theData.boardMusic$ = music.text
+    boardList(activeBoardIndex).theData.boardMusic$ = music.Text
 End Sub
 
 Private Sub nl_Change()
-    boardList(activeBoardIndex).theData.dirLink$(1) = nl.text
+    boardList(activeBoardIndex).theData.dirLink$(1) = nl.Text
 End Sub
 
 Private Sub sl_Change()
-    boardList(activeBoardIndex).theData.dirLink$(2) = sl.text
+    boardList(activeBoardIndex).theData.dirLink$(2) = sl.Text
 End Sub
 
 Private Sub TabStrip1_Click()
@@ -1726,42 +1761,42 @@ Private Sub TabStrip1_Click()
 End Sub
 
 Private Sub Text1_Change()
-    whichone = consta.ListIndex
-    If whichone = -1 Then whichone = 0
-    whichone = whichone + 1
-    boardList(activeBoardIndex).theData.brdConst(whichone) = val(Text1.text)
+    whichOne = consta.ListIndex
+    If whichOne = -1 Then whichOne = 0
+    whichOne = whichOne + 1
+    boardList(activeBoardIndex).theData.brdConst(whichOne) = val(Text1.Text)
 
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Text2_Change()
-    boardList(activeBoardIndex).theData.boardBackground$ = Text2.text
+    boardList(activeBoardIndex).theData.boardBackground$ = Text2.Text
 End Sub
 
 Private Sub VScroll1_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     boardList(activeBoardIndex).theData.Bsizey = VScroll1.value
-    bs.caption = str$(boardList(activeBoardIndex).theData.Bsizex) + " X" + str$(boardList(activeBoardIndex).theData.Bsizey)
+    bs.Caption = str$(boardList(activeBoardIndex).theData.Bsizex) + " X" + str$(boardList(activeBoardIndex).theData.Bsizey)
 
-    activeBoard.VScroll1.Max = boardList(activeBoardIndex).theData.Bsizey - tilesY + 1
-    activeBoard.HScroll1.Max = boardList(activeBoardIndex).theData.Bsizex - tilesX + 1
+    activeBoard.VScroll1.max = boardList(activeBoardIndex).theData.Bsizey - tilesY + 1
+    activeBoard.HScroll1.max = boardList(activeBoardIndex).theData.Bsizex - tilesX + 1
     Call BoardSetSize(boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, boardList(activeBoardIndex).theData)
-    Call activeBoard.resizeForm(activeBoard.width, activeBoard.height)
+    Call activeBoard.resizeForm(activeBoard.Width, activeBoard.height)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub wl_Change()
-    boardList(activeBoardIndex).theData.dirLink$(4) = wl.text
+    boardList(activeBoardIndex).theData.dirLink$(4) = wl.Text
 End Sub
 
 
