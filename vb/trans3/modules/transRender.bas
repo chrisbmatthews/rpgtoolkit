@@ -248,7 +248,7 @@ End Sub
 '=========================================================================
 ' Check if board can scroll
 '=========================================================================
-Public Sub checkScrollBounds()
+Private Sub checkScrollBounds()
 
     On Error Resume Next
 
@@ -1375,9 +1375,10 @@ Private Function renderBoard() As Boolean
 End Function
 
 '=========================================================================
-' Render the scene now!
+' Render the scene now! Returns whether a redraw occured or not.
 '=========================================================================
-Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal forceRender As Boolean)
+Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
+                          Optional ByVal forceRender As Boolean) As Boolean
 
     On Error Resume Next
 
@@ -1489,9 +1490,11 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
 
         End If
         
+        renderNow = True
+        
     End If
 
-End Sub
+End Function
 
 '=========================================================================
 ' Same as renderNow, but used while running RPGCode
@@ -1597,154 +1600,6 @@ Private Sub DXDrawSprites(ByVal cnvTarget As Long)
         End If
     Next t
 
-End Sub
-
-'=========================================================================
-' Scroll the board left
-'=========================================================================
-Public Sub scrollLeft(ByVal movementFraction As Double)
-    On Error Resume Next
-    topX = topX + movementFraction
-    Call checkScrollBounds
-End Sub
-
-'=========================================================================
-' Scroll the board down
-'=========================================================================
-Public Sub scrollDown(ByVal movementFraction As Double)
-    On Error Resume Next
-    topY = topY - movementFraction
-    Call checkScrollBounds
-End Sub
-
-'=========================================================================
-' Scroll the board down and left
-'=========================================================================
-Public Sub scrollDownLeft(ByVal movementFraction As Double, ByVal scrollEast As Boolean, ByVal scrollNorth As Boolean)
-    'REWRITTEN: [Isometrics - Delano - 30/03/04]
-    'ADDED: Receives two more arguments from pushPlayerNorthEast.
-    'Scrolling directions are now independent from each other.
-    'Scrolls the rendered board North and/or East (by movementFraction tiles)
-    'Called by pushPlayerNorthEast only.
-    
-    On Error Resume Next
-    
-    'Correction for isometrics.
-    'Correction for independent directions.
-    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-        'Div 2 since the sprite travels half as far for each direction compared to horizontal/vertical
-        If scrollEast Then topX = topX + movementFraction / 2
-        If scrollNorth Then topY = topY - movementFraction / 2
-    Else
-        If scrollEast Then topX = topX + movementFraction
-        If scrollNorth Then topY = topY - movementFraction
-    End If
-    
-    'check if scroll is in the bounds of the board.
-    Call checkScrollBounds
-
-End Sub
-
-'=========================================================================
-' Scroll the board down and right
-'=========================================================================
-Public Sub scrollDownRight(ByVal movementFraction As Double, ByVal scrollWest As Boolean, ByVal scrollNorth As Boolean)
-    'REWRITTEN: [Isometrics - Delano - 31/03/04]
-    'ADDED: Receives two more arguments from pushPlayerNorthWest.
-    'Scrolling directions are now independent from each other.
-    'Scrolls the rendered board North and/or West (by movementFraction tiles)
-    'Called by pushPlayerNorthWest only.
-    
-    On Error Resume Next
-    
-    'Correction for isometrics.
-    'Correction for independent directions
-    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-        'Div 2 since the sprite travels half as far for each direction compared to horizontal/vertical
-        If scrollWest Then topX = topX - movementFraction / 2
-        If scrollNorth Then topY = topY - movementFraction / 2
-    Else
-        If scrollWest Then topX = topX - movementFraction
-        If scrollNorth Then topY = topY - movementFraction
-    End If
-    
-    'check if in bounds...
-    Call checkScrollBounds
-
-End Sub
-
-'=========================================================================
-' Scroll the board up and left
-'=========================================================================
-Public Sub scrollUpLeft(ByVal movementFraction As Double, ByVal scrollEast As Boolean, ByVal scrollsouth As Boolean)
-    'REWRITTEN: [Isometrics - Delano - 31/03/04]
-    'ADDED: Receives two more arguments from pushPlayerSouthEast.
-    'Scrolling directions are now independent from each other.
-    'Scrolls the rendered board South and/or East (by movementFraction tiles)
-    'Called by pushPlayerSouthEast only.
-    
-    On Error Resume Next
-    
-    'Trial correction for isometrics.
-    'Trial correction for independent directions
-    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-        'Div 2 since the sprite travels half as far for each direction compared to horizontal/vertical
-        If scrollEast Then topX = topX + movementFraction / 2
-        If scrollsouth Then topY = topY + movementFraction / 2
-    Else
-        If scrollEast Then topX = topX + movementFraction
-        If scrollsouth Then topY = topY + movementFraction
-    End If
-    
-    'check if in bounds...
-    Call checkScrollBounds
-        
-End Sub
-
-'=========================================================================
-' Scroll the board up and right
-'=========================================================================
-Public Sub scrollUpRight(ByVal movementFraction As Double, ByVal scrollWest As Boolean, ByVal scrollsouth As Boolean)
-    'REWRITTEN: [Isometrics - Delano - 31/03/04]
-    'ADDED: Receives two more arguments from pushPlayerSouthWest.
-    'Scrolling directions are now independent from each other.
-    'Scrolls the rendered board South and/or West (by movementFraction tiles)
-    'Called by pushPlayerSouthWest only.
-    
-    On Error Resume Next
-    
-    'Correction for isometrics.
-    'Correction for independent directions
-    If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-        'Div 2 since the sprite travels half as far for each direction compared to horizontal/vertical
-        If scrollWest Then topX = topX - movementFraction / 2
-        If scrollsouth Then topY = topY + movementFraction / 2
-    Else
-        If scrollWest Then topX = topX - movementFraction
-        If scrollsouth Then topY = topY + movementFraction
-    End If
-    
-    'check if in bounds...
-    Call checkScrollBounds
-     
-End Sub
-
-'=========================================================================
-' Scroll the board up
-'=========================================================================
-Public Sub scrollUp(ByVal movementFraction As Double)
-    On Error Resume Next
-    topY = topY + movementFraction
-    Call checkScrollBounds
-End Sub
-
-'=========================================================================
-' Scroll the board right
-'=========================================================================
-Public Sub scrollRight(ByVal movementFraction As Double)
-    On Error Resume Next
-    topX = topX - movementFraction
-    Call checkScrollBounds
 End Sub
 
 '=========================================================================
