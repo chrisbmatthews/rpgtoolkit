@@ -103,8 +103,6 @@ Public Sub debugger(ByRef Text As String)
 
     On Error Resume Next
 
-    '// Passing string(s) ByRef for preformance related reasons
-
     If (LenB(errorBranch)) Then
         errorKeep.program(0) = errorKeep.program(0) & "*ERROR CHECKING FLAG"
         If (errorBranch <> "Resume Next") Then
@@ -146,7 +144,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         mName = commandName
     End If
 
-    If (QueryPlugins(mName, Text, retval)) Then
+    If (queryPlugins(mName, Text, retval)) Then
         ' Found the command in a plugin, don't waste time checking for a method!
         Exit Sub
     End If
@@ -188,92 +186,91 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
         Exit Sub
 
-    Else
+    End If
 
-        ' Get the 'whole' method
-        theMethod = theProgram.methods(i)
+    ' Get the 'whole' method
+    theMethod = theProgram.methods(i)
 
-        ' Now pass variables
-        theProgram.programPos = foundIt
+    ' Now pass variables
+    theProgram.programPos = foundIt
 
-        ' Create a new local scope for this method
-        Call AddHeapToStack(theProgram)
+    ' Create a new local scope for this method
+    Call AddHeapToStack(theProgram)
 
-        ' Now to correspond the two lists
-        For i = 1 To number
+    ' Now to correspond the two lists
+    For i = 1 To number
 
-            Dim dUse As String
-            Select Case params(i - 1).dataType
-                Case DT_LIT: dUse = params(i - 1).lit
-                Case DT_NUM: dUse = CStr(params(i - 1).num)
-            End Select
+        Dim dUse As String
+        Select Case params(i - 1).dataType
+            Case DT_LIT: dUse = params(i - 1).lit
+            Case DT_NUM: dUse = CStr(params(i - 1).num)
+        End Select
 
-            ' Declare and set this variable
-            Call declareVariable(theMethod.paramNames(i), theProgram)
-            Call SetVariable(theMethod.paramNames(i), dUse, theProgram)
+        ' Declare and set this variable
+        Call declareVariable(theMethod.paramNames(i), theProgram)
+        Call SetVariable(theMethod.paramNames(i), dUse, theProgram)
 
-        Next i
+    Next i
 
-        Dim theOne As Long, se As Long
-        'find the spot where the pointer list is first empty...
-        theOne = 1
-        For se = 1 To 100
-            If (LenB(pointer(se)) = 0) Then
-                theOne = se
+    Dim theOne As Long, se As Long
+    ' Find the spot where the pointer list is first empty
+    theOne = 1
+    For se = 1 To 100
+        If (LenB(pointer(se)) = 0) Then
+            theOne = se
+            Exit For
+        End If
+    Next se
+
+    Dim topList As Long, t As Long
+    ' Put the variables in global pointer list
+    topList = theOne
+    For t = 1 To number
+        For se = theOne To 100
+            If (LenB(pointer$(se)) = 0) Then
+                pointer$(se) = replace(theMethod.paramNames(t), " ", vbNullString)
+                correspPointer$(se) = replace(params(t - 1).dat, " ", vbNullString)
+                topList = se
                 Exit For
             End If
         Next se
-    
-        Dim topList As Long, t As Long
-        ' Put the variables in global pointer list
-        topList = theOne
-        For t = 1 To number
-            For se = theOne To 100
-                If (LenB(pointer$(se)) = 0) Then
-                    pointer$(se) = replace(theMethod.paramNames(t), " ", vbNullString)
-                    correspPointer$(se) = replace(params(t - 1).dat, " ", vbNullString)
-                    topList = se
-                    Exit For
-                End If
-            Next se
-        Next t
+    Next t
 
-        ' Set up method return value
-        methodReturn = retval
+    ' Set up method return value
+    methodReturn = retval
 
-        ' OK- data is passed. Now run the method:
-        theProgram.programPos = increment(theProgram)
+    ' OK- data is passed. Now run the method:
+    theProgram.programPos = increment(theProgram)
 
-        ' Store current error handling thingy
-        Dim oldErrorHandler As String
-        oldErrorHandler = errorBranch
+    Dim oldErrorHandler As String, oldWith() As String
+    oldErrorHandler = errorBranch
+    oldWith = inWith
+    ReDim inWith(0)
 
-        Call runBlock(1, theProgram, True)
+    Call runBlock(1, theProgram, True)
 
-        ' Restore error handler
-        errorBranch = oldErrorHandler
+    errorBranch = oldErrorHandler
+    inWith = oldWith
 
-        ' Return to old program position
-        theProgram.programPos = oldPos
+    ' Return to old program position
+    theProgram.programPos = oldPos
 
-        ' Set up return value
-        retval = methodReturn
+    ' Set up return value
+    retval = methodReturn
 
-        ' Clear our variables from pointer list
-        For t = 1 To number
-            For se = theOne To topList
-                If UCase$(pointer(se)) = UCase$(theMethod.paramNames(t)) Then
-                    pointer(se) = vbNullString
-                    correspPointer(se) = vbNullString
-                    se = 100
-                End If
-            Next se
-        Next t
+    ' Clear our variables from pointer list
+    For t = 1 To number
+        For se = theOne To topList
+            If UCase$(pointer(se)) = UCase$(theMethod.paramNames(t)) Then
+                pointer(se) = vbNullString
+                correspPointer(se) = vbNullString
+                se = 100
+            End If
+        Next se
+    Next t
 
-        ' Kill the local scope
-        Call RemoveHeapFromStack(theProgram)
-
-    End If
+    ' Kill the local scope
+    Call RemoveHeapFromStack(theProgram)
 
 End Sub
 
@@ -845,7 +842,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
         errorKeep = theProgram
     End If
 
-    If (multiRunStatus = 0) Then
+    If (multiRunStatus = MR_NOT_RUNNING) Then
         If (theProgram.looping) Then
             If (isMultiTasking()) Then
                 Exit Function

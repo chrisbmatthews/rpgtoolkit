@@ -1060,10 +1060,10 @@ End Function
 Public Function GetWithPrefix() As String
     On Error Resume Next
     If (LenB(inWith(0)) = 0) Then Exit Function
-    Dim a As Long
-    For a = 0 To UBound(inWith)
-        GetWithPrefix = GetWithPrefix & inWith(a)
-    Next a
+    Dim i As Long
+    For i = 0 To UBound(inWith)
+        GetWithPrefix = GetWithPrefix & inWith(i)
+    Next i
 End Function
 
 '=========================================================================
@@ -1454,6 +1454,7 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
     Next i
 
     ' Parse for commands
+    build = spliceForObjects(build, prg)
     build = ParseRPGCodeCommand(build, prg)
 
     Dim arrayElements() As parameters

@@ -601,45 +601,48 @@ End Sub
 
 Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     '====================================================================
-    '#PlayerStep(handle$, x!, y!)
-    'Causes player handle$ to take one step in the direction of x!,y!
-    'following a route determined by pathFind.
+    ' PlayerStep(handle$, x!, y!)
+    ' Causes player handle$ to take one step in the direction of x!,y!
+    ' following a route determined by pathFind.
     '====================================================================
-    'Last edited for 3.0.5 by Delano: individual character speeds.
-    
+    ' Last edited for 3.0.5 by Delano: individual character speeds.
+
     On Error Resume Next
-    
-    Dim i As Long, paras() As parameters, path As String, playerNum As Long
-    
-    paras() = getParameters(Text, theProgram)
-    
-    If UBound(paras) <> 2 Then
+
+    Dim i As Long, paras() As parameters, path As String, playerNum As Long, count As Long
+
+    paras() = getParameters(Text, theProgram, count)
+
+    If (count <> 3) Then
         Call debugger("Error: PlayerStep() must have 3 data elements!-- " & Text)
         Exit Sub
     End If
-    
+
     If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_NUM Or paras(2).dataType <> DT_NUM Then
         Call debugger("PlayerStep() requires lit$, num!, num!-- " & Text)
         Exit Sub
     End If
-    
+
     playerNum = -1
-    
-    'Search the player handles for a match:
+
+    ' Search the player handles for a match
     For i = 0 To 4
-        If UCase$(playerListAr(i)) = UCase$(paras(0).lit) Then playerNum = i
+        If UCase$(playerListAr(i)) = UCase$(paras(0).lit) Then
+            playerNum = i
+            Exit For
+        End If
     Next i
-    
-    If UCase$(paras(0).lit) = "TARGET" And targetType = 0 Then playerNum = target
-    If UCase$(paras(0).lit) = "SOURCE" And sourceType = 0 Then playerNum = Source
-    
-    If playerNum = -1 Then
+
+    If (UCase$(paras(0).lit) = "TARGET" And targetType = TYPE_PLAYER) Then playerNum = target
+    If (UCase$(paras(0).lit) = "SOURCE" And sourceType = TYPE_PLAYER) Then playerNum = Source
+
+    If (playerNum = -1) Then
         Call debugger("PlayerStep(): player handle$ not found!-- " & Text)
-        Exit Sub 'Player handle not found, exit.
+        Exit Sub ' Player handle not found, exit
     End If
-    
-    'Use pathFind to determine the route towards the destination.
-    'Return a string and move the first tile.
+
+    ' Use pathFind to determine the route towards the destination
+    ' Return a string and move the first tile
     path = PathFind(pPos(playerNum).x, _
                     pPos(playerNum).y, _
                     paras(1).num, _
@@ -649,45 +652,42 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
                     True)
         
     '=================================
-    'Queue system 3.0.5
-        
-    'Take the first direction off the string.
+    ' Queue system 3.0.5
+
+    ' Take the first direction off the string.
     path = Left$(path, InStr(path, ",") - 1)
-        
+
     Call setQueuedMovements(pendingPlayerMovement(playerNum).queue, path)
-    
-    'For ALL cases we've set up queuing.
-    
-    If isMultiTasking Then
-        'Nothing else needed - exit sub and let movePlayers handle the rest.
-        'We may be multirunning as well, but this has priority.
+
+    ' For ALL cases we've set up queuing.
+
+    If (isMultiTasking()) Then
+        ' Nothing else needed - exit sub and let movePlayers handle the rest
+        ' We may be multirunning as well, but this has priority
         gGameState = GS_MOVEMENT
-    
-    ElseIf multiRunStatus > 0 Then
-        'Set the command to move after multi-running.
-        'Movement is triggered at the end of MultiRunRPG.
-        multiRunStatus = 2
-    
+
+    ElseIf (multiRunStatus <> MR_NOT_RUNNING) Then
+        ' Set the command to move after multi-running
+        ' Movement is triggered at the end of MultiRunRPG
+        multiRunStatus = MR_RUNNING_MOVEMENT
+
     Else
-        'If not running concurrently, run the queued movements now.
-        
+
+        ' If not running concurrently, run the queued movements now
+
         Do While movePlayers(playerNum)
-            Call renderNow
+            Call renderNow(cnvRPGCodeScreen)
+            Call renderRPGCodeScreen
             Call processEvent
         Loop
-        
-        'Update the rpgcode canvas in case we're still in a program.
-        Call canvasGetScreen(cnvRPGCodeScreen)
-        
+
         Select Case UCase$(pPos(selectedPlayer).stance)
             Case "WALK_S": facing = SOUTH
             Case "WALK_W": facing = WEST
             Case "WALK_N": facing = NORTH
             Case "WALK_E": facing = EAST
         End Select
-        
-        'Call runQueuedMovements
-        
+
     End If
 
 End Sub
@@ -699,30 +699,30 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     'a route determined by pathFind.
     '====================================================================
     'Last edited for 3.0.5 by Delano: individual character speeds.
-    
+
     On Error Resume Next
-    
+
     Dim itemNum As Long, paras() As parameters, path As String
-    
+
     paras() = getParameters(Text, theProgram)
-    
+
     If UBound(paras) <> 2 Then
         Call debugger("Error: ItemStep() must have 3 data elements!-- " & Text)
         Exit Sub
     End If
-    
+
     If (paras(1).dataType <> DT_NUM Or paras(2).dataType <> DT_NUM) Then
         Call debugger("ItemStep() requires num!, num!, num!-- " & Text)
         Exit Sub
     End If
-    
+
     If paras(0).dataType = DT_LIT Then
-        If UCase$(paras(0).lit) = "TARGET" And targetType = 1 Then itemNum = target
-        If UCase$(paras(0).lit) = "SOURCE" And sourceType = 1 Then itemNum = Source
+        If (UCase$(paras(0).lit) = "TARGET" And targetType = TYPE_ITEM) Then itemNum = target
+        If (UCase$(paras(0).lit) = "SOURCE" And sourceType = TYPE_ITEM) Then itemNum = Source
     End If
-    
-    'Use pathFind to determine the route towards the destination.
-    'Return a string and move the first tile.
+
+    ' Use pathFind to determine the route towards the destination
+    ' Return a string and move the first tile
     path = PathFind(itmPos(itemNum).x, _
                     itmPos(itemNum).y, _
                     paras(1).num, _
@@ -730,39 +730,36 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
                     itmPos(itemNum).l, _
                     False, _
                     True)
-    
+
     '=================================
-    'Queue system 3.0.5
-        
-    'Take the first direction off the path.
+    ' Queue system 3.0.5
+
+    ' Take the first direction off the path
     path = Left$(path, InStr(path, ",") - 1)
-        
+
     Call setQueuedMovements(pendingItemMovement(itemNum).queue, path)
-    
-    'For ALL cases we've set up queuing.
-    
-    If isMultiTasking Then
-        'Nothing else needed - exit sub and let movePlayers handle the rest.
-        'We may be multirunning as well, but this has priority
-        
-    ElseIf multiRunStatus > 0 Then
-        'Set the command to move after multi-running.
-        'Movement is triggered at the end of MultiRunRPG.
-        multiRunStatus = 2
-    
+
+    ' For ALL cases we've set up queuing.
+
+    If (isMultiTasking()) Then
+        ' Nothing else needed - exit sub and let movePlayers handle the rest
+        ' We may be multirunning as well, but this has priority
+
+    ElseIf (multiRunStatus <> MR_NOT_RUNNING) Then
+        'Set the command to move after multi-running
+        'Movement is triggered at the end of MultiRunRPG
+        multiRunStatus = MR_RUNNING_MOVEMENT
+
     Else
-        'If not running concurrently, run the queued movements now.
-        
+
+        ' If not running concurrently, run the queued movements now
+
         Do While moveItems(itemNum)
-            Call renderNow
+            Call renderNow(cnvRPGCodeScreen)
+            Call renderRPGCodeScreen
             Call processEvent
         Loop
-        
-        'Update the rpgcode canvas in case we're still in a program.
-        Call canvasGetScreen(cnvRPGCodeScreen)
-        
-        'Call runQueuedMovements
-    
+
     End If
 
 End Sub
@@ -1010,7 +1007,7 @@ End Sub
 Public Sub CallPlayerSwapRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     'CallPlayerSwap()
     On Error Resume Next
-    Call debugger("Warning: CallPlayerSwap() is temporarily unavaliable; use AddPlayer() and RemovePlayer() player!")
+    Call debugger("Warning: CallPlayerSwap() is temporairily unavaliable; use AddPlayer() and RemovePlayer() player!")
 End Sub
 
 Sub CharacterSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -1469,33 +1466,33 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub EraseItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
+Public Sub EraseItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     '=====================================================================
-    '#EraseItem(itemnum!)
-    'Removes an item from the screen, but not the board.
+    ' EraseItem(itemnum!)
+    ' Removes an item from the screen, but not the board.
     '=====================================================================
     On Error Resume Next
-    
+
     Dim paras() As parameters
-    
+
     paras = getParameters(Text, theProgram)
-    
+
     If UBound(paras) Then
         Call debugger("Warning: EraseItem() has only 1 data element!-- " & Text)
         Exit Sub
     End If
+
     If paras(0).dataType <> DT_NUM Then
         Call debugger("Error: EraseItem() data element must be numerical!-- " & Text)
         Exit Sub
     End If
-    
-    'De-activate the item, but don't erase it's data.
+
+    ' De-activate the item, but don't erase its data
     itemMem(paras(0).num).bIsActive = False
-    
-    Call renderNow(-1, True)                'Force a render.
-    Call canvasGetScreen(cnvRPGCodeScreen)
+
+    Call renderNow(cnvRPGCodeScreen, True)  ' Force a render
     Call renderRPGCodeScreen
-    
+
 End Sub
 
 Sub fightMenuGraphicRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -1577,23 +1574,7 @@ Sub FillCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Call getValue(useIt4, lit, cnv, theProgram)
 
     If (number = 3) Then
-        Dim x2 As Double, y2 As Double
-        x1 = x1 - radius
-        y1 = y1 - radius
-        x2 = x1 + radius * 2
-        y2 = y1 + radius * 2
-        Dim hdc As Long, pen As Long, l As Long, brush As Long, m As Long
-        hdc = DXLockScreen()
-        pen = CreatePen(0, 1, fontColor)
-        l = SelectObject(hdc, pen)
-        brush = CreateSolidBrush(fontColor)
-        m = SelectObject(hdc, brush)
-        Call Ellipse(hdc, x1, y1, x2, y2)
-        Call SelectObject(hdc, m)
-        Call SelectObject(hdc, l)
-        Call DeleteObject(brush)
-        Call DeleteObject(pen)
-        Call DXUnlockScreen
+        Call canvasDrawFilledEllipse(cnvRPGCodeScreen, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
         Call renderRPGCodeScreen
     Else
         Call canvasDrawFilledEllipse(cnv, x1 - radius, y1 - radius, x1 + radius, y1 + radius, fontColor)
@@ -1731,14 +1712,6 @@ Public Sub ForceRedrawRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgr
 End Sub
 
 Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
-'#For(a!=0;a!<=8;a!=a!+1)
-'{
-'   ...
-'   ...
-'}
-'For loop
-
-    ' ! MODIFIED BY KSNiloc...
 
     On Error GoTo errorhandler
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
@@ -3024,36 +2997,7 @@ errorhandler:
 End Sub
 
 Sub GoDosRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#GoDos("command")
-    'Perform dos command
-    On Error GoTo errorhandler
-    
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    'disabled october 5/99 due to possible
-    'security issues.
-    Call debugger("Error: GoDos has been disabled due to posible security issues!-- " + Text$)
-    Exit Sub
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    number = CountData(dataUse$)        'how many data elements are there?
-    If number <> 1 Then
-        Call debugger("Warning: GoDos has more than 1 data element!-- " + Text$)
-    End If
-    useIt$ = GetElement(dataUse$, 1)
-    a = getValue(useIt$, lit$, num, theProgram)
-    If a = 0 Then
-        Call debugger("Error: GoDos data type must be literal!-- " + Text$)
-    Else
-        Dim comm As String, dum As Long
-        comm$ = lit$
-        dum = Shell(comm$)
-    End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    Call debugger("Error: GoDos has been disabled due to posible security issues!-- " & Text$)
 End Sub
 
 Sub Gone(Text$, ByRef theProgram As RPGCodeProgram)
@@ -4631,10 +4575,10 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         'Nothing else needed - exit sub and let movePlayers handle the rest.
         'We may be multirunning as well, but this has priority.
     
-    ElseIf multiRunStatus > 0 Then
+    ElseIf multiRunStatus <> MR_NOT_RUNNING Then
         'Set the command to move after multi-running.
         'Movement is triggered at the end of MultiRunRPG.
-        multiRunStatus = 2
+        multiRunStatus = MR_RUNNING_MOVEMENT
         
     Else
         'If not running concurrently, run the queued movements now.
@@ -4754,10 +4698,10 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         'We may be multirunning as well, but this has priority
         gGameState = GS_MOVEMENT
 
-    ElseIf (multiRunStatus <> 0) Then
+    ElseIf (multiRunStatus <> MR_NOT_RUNNING) Then
         'Set the command to move after multi-running.
         'Movement is triggered at the end of MultiRunRPG.
-        multiRunStatus = 2
+        multiRunStatus = MR_RUNNING_MOVEMENT
 
     Else
         'If not running concurrently, run these queued movements now.
@@ -5805,108 +5749,109 @@ End Sub
 
 Public Sub Send(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     '====================================================================
-    '#Send (board$, x!, y!, layer!)
-    'If layer is omitted, it is assumed to be 1.
+    ' Send (board$, x!, y! [, layer!])
+    ' If layer is omitted, it is assumed to be 1.
     '====================================================================
     On Error Resume Next
-    
+
     Dim paras() As parameters, count As Long
-    
-    paras = getParameters(Text, theProgram)
-    count = UBound(paras)
-    
-    If count <> 2 And count <> 3 Then
-        Call debugger("Error: #Send() must have 3 or 4 data elements!-- " & Text)
+
+    paras = getParameters(Text, theProgram, count) ' [ Count can be obtained like so ]
+
+    If (count <> 3 And count <> 4) Then
+        Call debugger("Error: Send() must have 3 or 4 data elements!-- " & Text)
         Exit Sub
     End If
-    
-    If count = 2 Then
-        'Layer was omitted, add to the parameters. Take Layer = 1 as default.
+
+    If (count = 3) Then
+        ' Layer was omitted, add to the parameters. Take Layer = 1 as default.
         ReDim Preserve paras(3)
         paras(3).num = 1
         paras(3).dataType = DT_NUM
     End If
-    
-    If paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_NUM Or _
-        paras(2).dataType <> DT_NUM Or paras(3).dataType <> DT_NUM Then
-    
+
+    If (paras(0).dataType <> DT_LIT Or paras(1).dataType <> DT_NUM Or _
+        paras(2).dataType <> DT_NUM Or paras(3).dataType <> DT_NUM) Then
+
         Call debugger("Error: Send data types must be lit$, num!, num!, num!!-- " & Text)
         Exit Sub
-        
+
     End If
-        
+
     Dim targetBoardName As String, targetTileType As Long, targetBoardWidth As Long, targetBoardHeight As Long
     Dim targetX As Long, targetY As Long, targetL As Long
     Dim topXtemp As Double, topYtemp As Double
-    
-    'Add an extension if there isn't one.
+
+    ' Add an extension if there isn't one
     targetBoardName = addExt(paras(0).lit, ".brd")
-    
-    'Put the dimensions of the target board into targetBoardWidth, targetBoardHeight.
+
+    ' Put the dimensions of the target board into targetBoardWidth, targetBoardHeight
     Call boardSize(projectPath & brdPath & targetBoardName, targetBoardWidth, targetBoardHeight)
-    
-    'Check the target is valid.
+
+    ' Check the target is valid.
     targetX = inBounds(paras(1).num, 1, targetBoardWidth)
     targetY = inBounds(paras(2).num, 1, targetBoardHeight)
     targetL = inBounds(paras(3).num, 1, 8)
-    
-    'TestBoard clears the screen co-ords (topX,topY) via openBoard so these need to be held incase sending fails.
+
+    ' TestBoard clears the screen co-ords (topX,topY) via openBoard so these need to be held in case sending fails
     topXtemp = topX
     topYtemp = topY
-    
+
     targetTileType = TestBoard(projectPath & brdPath & targetBoardName, targetX, targetY, targetL)
 
-    'If targetTileType = -1 Or targetTileType = SOLID Then
-    If targetTileType = -1 Then
-        'If the board doesn't exist (-1) or the target tile is solid (SOLID = 1; new tiletype constant)
-        
-        'Need to re-insert old topX,topY since TestBoard has cleared them via openBoard.
+    ' If we can't be sent to the board
+    If (targetTileType = -1) Then
+        ' Need to re-insert old topX,topY since TestBoard has cleared them via openBoard.
         topX = topXtemp
         topY = topYtemp
         Exit Sub
     End If
-    
+
+    ' Destroy this board's item sprites
     Call destroyItemSprites
+
+    ' Open the board
     Call openBoard(projectPath & brdPath & targetBoardName, boardList(activeBoardIndex).theData)
     
-    'Clear non-persistent threads...
+    ' Clear non-persistent threads
     Call ClearNonPersistentThreads
-    Call clearAnmCache  'Delano. 3.0.4.
-    
-    'Clear the player's last frame render, to force a redraw directly on entering.
-    '(Prevents players starting new boards with old frame).
+
+    ' Clear the animation cache
+    Call clearAnmCache
+
+    ' Clear the player's last frame render, to force a redraw directly on entering
+    ' (Prevents players starting new boards with old frame)
     lastPlayerRender(selectedPlayer).canvas = -1
-    ' lastRender.canvas = -1
     scTopX = -1000
     scTopY = -1000
-       
+
     Call alignBoard(targetX, targetY)
     Call openItems
-    
+
     With pPos(selectedPlayer)
-    
+
         .x = targetX
         .y = targetY
         .l = targetL
-        
+
         pendingPlayerMovement(selectedPlayer).xOrig = .x
         pendingPlayerMovement(selectedPlayer).yOrig = .y
         pendingPlayerMovement(selectedPlayer).xTarg = .x
         pendingPlayerMovement(selectedPlayer).yTarg = .y
-    
+
     End With
-    
-    Call renderNow(-1, True)
-    Call canvasGetScreen(cnvRPGCodeScreen)
-    
-    facing = SOUTH              'Facing south
+
+    Call renderNow(cnvRPGCodeScreen, True)
+    Call renderRPGCodeScreen
+
+    facing = SOUTH              ' Facing south
     wentToNewBoard = True
     Call setConstants
     Call checkMusic(True)
-    
+
     Call launchBoardThreads(boardList(activeBoardIndex).theData)
-    
-   'Run the program to run on entering board.
+
+    ' Run the program to run on entering board
     If LenB(boardList(activeBoardIndex).theData.enterPrg) Then
         Call runProgram(projectPath & prgPath & boardList(activeBoardIndex).theData.enterPrg)
     End If
@@ -7760,10 +7705,10 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         'Nothing else needed - exit sub and let movePlayers handle the rest.
         'We may be multirunning as well, but this has priority.
         
-    ElseIf multiRunStatus > 0 Then
+    ElseIf multiRunStatus <> MR_NOT_RUNNING Then
         'Set the command to move after multi-running.
         'Movement is triggered at the end of MultiRunRPG.
-        multiRunStatus = 2
+        multiRunStatus = MR_RUNNING_MOVEMENT
         
     Else
         'If not running concurrently, run the queued movements now.
@@ -11523,7 +11468,7 @@ Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) A
     If (LenB(GetBrackets(Text))) Then
         Call debugger("MultiRun() requires no data elements-- " & Text)
     Else
-        multiRunStatus = 1
+        multiRunStatus = MR_RUNNING
 
         'Clear all the object queues: this is a prg and we don't want movement occuring.
         'But we do want multitasking objects to move, so check this isn't a thread!
@@ -11540,8 +11485,8 @@ Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) A
         MultiRunRPG = runBlock(1, prg)
 
         'Added: 3.0.5: Run any movements made in the block simultaneously at the end of the block.
-        If multiRunStatus = 2 Then Call runQueuedMovements
-        multiRunStatus = 0
+        If (multiRunStatus = MR_RUNNING_MOVEMENT) Then Call runQueuedMovements
+        multiRunStatus = MR_NOT_RUNNING
 
     End If
     

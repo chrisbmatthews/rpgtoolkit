@@ -22,9 +22,9 @@ Public Source As Long             'source player number
 Public sourceType As TARGET_TYPE  'source type
 
 Public Enum TARGET_TYPE           'targetted type
-    TYPE_PLAYER = 0               '  player
-    TYPE_ITEM = 1                 '  item
-    TYPE_ENEMY = 2                '  enemy
+    TYPE_PLAYER                   '  player
+    TYPE_ITEM                     '  item
+    TYPE_ENEMY                    '  enemy
 End Enum
 
 '=========================================================================

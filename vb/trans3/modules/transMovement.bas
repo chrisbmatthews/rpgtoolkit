@@ -8,7 +8,7 @@ Attribute VB_Name = "transMovement"
 
 Option Explicit
 
-'Movement constants.
+'Movement constants
 Public Const MV_IDLE = 0
 Public Const MV_NORTH = 1
 Public Const MV_SOUTH = 2
@@ -18,6 +18,27 @@ Public Const MV_NE = 5
 Public Const MV_NW = 6
 Public Const MV_SE = 7
 Public Const MV_SW = 8
+
+' Queue versions
+Public Const MVQ_IDLE = "0"
+Public Const MVQ_NORTH = "1"
+Public Const MVQ_SOUTH = "2"
+Public Const MVQ_EAST = "3"
+Public Const MVQ_WEST = "4"
+Public Const MVQ_NE = "5"
+Public Const MVQ_NW = "6"
+Public Const MVQ_SE = "7"
+Public Const MVQ_SW = "8"
+
+' Stance versions
+Public Const WALK_N = "walk_n"
+Public Const WALK_S = "walk_s"
+Public Const WALK_E = "walk_e"
+Public Const WALK_W = "walk_w"
+Public Const WALK_NE = "walk_ne"
+Public Const WALK_NW = "walk_nw"
+Public Const WALK_SE = "walk_se"
+Public Const WALK_SW = "walk_sw"
 
 'Tile type constants.
 'Note: Stairs in the form "stairs + layer number"; i.e. layer = stairs - 10
@@ -410,9 +431,7 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
                         For iY = sy - 1 To sy + 1
                             'Cull some squares (those not on map
                             'or those that are already moved to)
-                            If iX <> sx And iY <> sy And Not (bAllowDiagonal) Then
-                                'ignore diagonals.
-                            Else
+                            If Not (iX <> sx And iY <> sy And Not (bAllowDiagonal)) Then
                                 If Not (iX = sx And iY = sy) Then
                                     If iX >= 0 And iX <= boardList(activeBoardIndex).theData.bSizeX Then
                                         If iY >= 0 And iY <= boardList(activeBoardIndex).theData.bSizeY Then
@@ -420,7 +439,6 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
                                             'we can move a bit further
                                             'from (sX, sY) to (iX, iY)
                                             If EffectiveTileType(iX, iY, layer, bFaster) <> 1 Then
-                                            'If boardlist(activeboardindex).thedata.tiletype(iX, iY, layer) <> 1 Then
                                                 'It is walkable
                                                 'If we are to move there
                                                 'will the new score be an improvement?
@@ -429,26 +447,26 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
                                                     'set bChanged to True
                                                     Score(iX, iY) = Score(sx, sy) + 1
                                                     bChanged = True
-                                                End If
-                                            End If
-                                        End If
-                                    End If
-                                End If
-                            End If
-                        Next
-                    Next
-                End If
-            Next
-        Next
-    Loop Until bChanged = False
-    
+                                                End If ' Score(sx, sy) + 1 < Score(iX, iY) Or Score(iX, iY) = 0
+                                            End If ' effectiveTileType(iX, iY, layer, bFaster) <> 1
+                                        End If ' iY >= 0 And iY <= boardList(activeBoardIndex).theData.bSizeY
+                                    End If ' iX >= 0 And iX <= boardList(activeBoardIndex).theData.bSizeX
+                                End If ' Not (iX = sx And iY = sy)
+                            End If ' Not (iX <> sx And iY <> sy And Not (bAllowDiagonal))
+                        Next ' iY = sy - 1 To sy + 1
+                    Next ' iX = sx - 1 To sx + 1
+                End If ' Score(sx, sy)
+            Next ' sy = 1 To boardList(activeBoardIndex).theData.bSizeY
+        Next ' sx = 1 To boardList(activeBoardIndex).theData.bSizeX
+    Loop While (bChanged)
+
     '************************************************
     'We now have a map of the distance from the Target
     'stored, now we just have to find a way through it
     'To do this, we can start at the first point
     'and work our way around, always moving to the
     'point with the closest distance.
-    
+
     Dim toRet As String
     Dim lastX As Double
     Dim lastY As Double
@@ -473,30 +491,26 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
                     If Not (iX = sx And iY = sy) Then
                         If iX >= 0 And iX <= boardList(activeBoardIndex).theData.bSizeX Then
                             If iY >= 0 And iY <= boardList(activeBoardIndex).theData.bSizeY Then
-                                
                                 If Score(iX, iY) < BestScore And Score(iX, iY) Then
                                     BestScore = Score(iX, iY)
                                     bestX = iX
                                     bestY = iY
-                                End If
-                            
-                            
-                            End If
-                        End If
-                    End If
-                Next
-            Next
-            
+                                End If ' Score(iX, iY) < BestScore And Score(iX, iY)
+                            End If ' iY >= 0 And iY <= boardList(activeBoardIndex).theData.bSizeY
+                        End If ' iX >= 0 And iX <= boardList(activeBoardIndex).theData.bSizeX
+                    End If ' Not (iX = sx And iY = sy)
+                Next ' iY = sy - 1 To sy + 1
+            Next ' iX = sx - 1 To sx + 1
+
             If bestX = -1 Then
                 'If somehow the next point is not
                 'found then throw an error.
-                
                 'Lucky 19023 =)
                 Error 19023
                 PathFind = vbNullString
                 Exit Function
             End If
-            
+
             If bestY <> lastY And bestX <> lastX Then
                 'it's diagonal-- determine how the
                 'diagonal will be navigated.
@@ -1392,17 +1406,17 @@ Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) A
     'Select the stance direction - surely .stance shouldn't be a string!!
     With itmPos(itemNum)
         Select Case pendingItemMovement(itemNum).direction
-            Case MV_NORTH: .stance = "walk_n"
-            Case MV_SOUTH: .stance = "walk_s"
-            Case MV_EAST: .stance = "walk_e"
-            Case MV_WEST: .stance = "walk_w"
-            Case MV_NE: .stance = "walk_ne"
-            Case MV_NW: .stance = "walk_nw"
-            Case MV_SE: .stance = "walk_se"
-            Case MV_SW: .stance = "walk_sw"
+            Case MV_NORTH: .stance = WALK_N
+            Case MV_SOUTH: .stance = WALK_S
+            Case MV_EAST: .stance = WALK_E
+            Case MV_WEST: .stance = WALK_W
+            Case MV_NE: .stance = WALK_NE
+            Case MV_NW: .stance = WALK_NW
+            Case MV_SE: .stance = WALK_SE
+            Case MV_SW: .stance = WALK_SW
         End Select
     End With
-               
+
     'Ok, we have to insert the new fractional co-ords into a
     'test pos to see if we can move this frame.
     Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
@@ -1603,14 +1617,14 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
 
     'Change direction now in case we're going to be walking against a wall.
     Select Case pendingPlayerMovement(pNum).direction
-        Case MV_NORTH: pPos(pNum).stance = "walk_n"
-        Case MV_SOUTH: pPos(pNum).stance = "walk_s"
-        Case MV_EAST: pPos(pNum).stance = "walk_e"
-        Case MV_WEST: pPos(pNum).stance = "walk_w"
-        Case MV_NE: pPos(pNum).stance = "walk_ne"
-        Case MV_NW: pPos(pNum).stance = "walk_nw"
-        Case MV_SE: pPos(pNum).stance = "walk_se"
-        Case MV_SW: pPos(pNum).stance = "walk_sw"
+        Case MV_NORTH: pPos(pNum).stance = WALK_N
+        Case MV_SOUTH: pPos(pNum).stance = WALK_S
+        Case MV_EAST: pPos(pNum).stance = WALK_E
+        Case MV_WEST: pPos(pNum).stance = WALK_W
+        Case MV_NE: pPos(pNum).stance = WALK_NE
+        Case MV_NW: pPos(pNum).stance = WALK_NW
+        Case MV_SE: pPos(pNum).stance = WALK_SE
+        Case MV_SW: pPos(pNum).stance = WALK_SW
     End Select
 
     'Ok, we have to insert the new fractional co-ords into a
@@ -1726,7 +1740,7 @@ Public Sub runQueuedMovements(): On Error Resume Next
 '======================================================================
 'Called by ItemStepRPG, PlayerStepRPG, PushItemRPG, PushRPG, WanderRPG.
 
-    Do While (movePlayers Or moveItems)
+    Do While (movePlayers() Or moveItems())
         Call renderNow
         Call processEvent
     Loop
@@ -1752,28 +1766,28 @@ Public Sub setQueuedMovements(ByRef queue As String, ByRef path As String): On E
 
     Dim element As Long, jString As String
     Dim largeArray() As String, smallArray() As String, i As Long
-    
+
     smallArray = Split(path, ",")
-    
+
     For element = 0 To UBound(smallArray)
-    
+
         smallArray(element) = UCase$(Trim$(smallArray(element)))
-    
+
         Select Case smallArray(element)
-    
-            Case "NORTH", "N": smallArray(element) = "1"       'str(MV_NORTH)
-            Case "SOUTH", "S": smallArray(element) = "2"       'str(MV_SOUTH)
-            Case "EAST", "E": smallArray(element) = "3"        'str(MV_EAST)
-            Case "WEST", "W": smallArray(element) = "4"        'str(MV_WEST)
-            Case "NORTHEAST", "NE": smallArray(element) = "5"  'str(MV_NE)
-            Case "NORTHWEST", "NW": smallArray(element) = "6"  'str(MV_NW)
-            Case "SOUTHEAST", "SE": smallArray(element) = "7"  'str(MV_SE)
-            Case "SOUTHWEST", "SW": smallArray(element) = "8"  'str(MV_SW)
-            Case "1", "2", "3", "4", "5", "6", "7", "8":       'No action.
-            Case Else: smallArray(element) = "0"               'str(MV_IDLE)
-                        
+
+            Case "NORTH", "N": smallArray(element) = MVQ_NORTH
+            Case "SOUTH", "S": smallArray(element) = MVQ_SOUTH
+            Case "EAST", "E": smallArray(element) = MVQ_EAST
+            Case "WEST", "W": smallArray(element) = MVQ_WEST
+            Case "NORTHEAST", "NE": smallArray(element) = MVQ_NE
+            Case "NORTHWEST", "NW": smallArray(element) = MVQ_NW
+            Case "SOUTHEAST", "SE": smallArray(element) = MVQ_SE
+            Case "SOUTHWEST", "SW": smallArray(element) = MVQ_SE
+            Case MVQ_NORTH, MVQ_SOUTH, MVQ_EAST, MVQ_WEST, MVQ_NE, MVQ_NW, MVQ_SE, MVQ_SE
+            Case Else: smallArray(element) = MVQ_IDLE
+
         End Select
-        
+
     Next element
         
     If (movementSize <> 1) Then

@@ -384,8 +384,8 @@ End Sub
 '=========================================================================
 ' Query all plugins to see if they support a command
 '=========================================================================
-Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef retval As RPGCODE_RETURN) As Boolean
-   
+Public Function queryPlugins(ByVal mName As String, ByVal Text As String, ByRef retval As RPGCODE_RETURN) As Boolean
+
     Dim t As Long
     For t = 0 To UBound(mainMem.plugins)
 
@@ -428,7 +428,7 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
                     End If
 
                     ' All's good
-                    QueryPlugins = True
+                    queryPlugins = True
                     Exit Function
 
                 End If

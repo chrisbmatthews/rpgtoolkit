@@ -1218,7 +1218,10 @@ End Function
 '=========================================================================
 ' Splice up a line for object things
 '=========================================================================
-Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgram) As String
+Public Function spliceForObjects( _
+    ByVal Text As String, _
+    ByRef prg As RPGCodeProgram _
+        ) As String
 
     On Error Resume Next
 
@@ -1310,7 +1313,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
     ' Record the method's command line
     If (lngEnd = 0) Then lngEnd = Length
-    cLine = ParseRPGCodeCommand(Trim$(Mid$(Text, begin + 2, lngEnd - begin - 1)), prg)
+    cLine = ParseRPGCodeCommand(spliceForObjects(Trim$(Mid$(Text, begin + 2, lngEnd - begin - 1)), prg), prg)
     If Not (var) Then
         cmdName = UCase$(GetCommandName(cLine))
     Else
