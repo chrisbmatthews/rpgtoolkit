@@ -4,8 +4,8 @@ December 2004
 
 Welcome to the release of the RPGToolkit 3.05! This readme file addresses miscellaneous notes and information too timely to have been located in other places. To ensure a successful experience with version 3.05, we suggest you read this document. Also, be sure to view history.txt for a complete list of changes to this version.
 
-3.0.5 Readme - Important!
--------------------------
+3.05 Readme - Important!
+------------------------
 
 There have some imporant changes to the toolkit in this version that will require users to reset some values in certain game files if you are upgrading. These changes won't prevent you running any games, but not making them may produce results that appear to be bugs.
 
