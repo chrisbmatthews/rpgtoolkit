@@ -614,6 +614,7 @@ Private Sub Form_Load(): On Error Resume Next
     
     'Clear the animation info
     Call AnimationClear(animationList(dataIndex).theData)
+    animationList(dataIndex).theData.animPause = 0.15
 
 End Sub
 '========================================================================
@@ -920,10 +921,7 @@ End Sub
 '========================================================================
 Public Sub saveFile(): On Error Resume Next
     
-    'No need to update anymore
-    animationList(activeAnimationIndex).animNeedUpdate = False
-    
-    If animationList(activeAnimationIndex).animFile$ = "" Then
+    If animationList(activeAnimationIndex).animFile = "" Then
         
         'Filename is empty - ask where to save
         activeAnimation.Show
@@ -933,7 +931,10 @@ Public Sub saveFile(): On Error Resume Next
     End If
     
     'If we got here, we know the animfile. Just save
-    Call saveAnimation(projectPath$ + miscPath$ + animationList(activeAnimationIndex).animFile$, animationList(activeAnimationIndex).theData)
+    Call saveAnimation(projectPath & miscPath & animationList(activeAnimationIndex).animFile, animationList(activeAnimationIndex).theData)
+    
+    'No need to update anymore
+    animationList(activeAnimationIndex).animNeedUpdate = False
     
     'Update caption
     activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") + " (" + animationList(activeAnimationIndex).animFile$ + ")"
@@ -966,39 +967,32 @@ End Sub
 ' Save animation as
 '========================================================================
 Private Sub saveasanimmnu_Click(): On Error Resume Next
-    Dim dlg As FileDialogInfo
+    
+    ChDir (currentDir)
     
     'Info of the Dialog Box we will open
-    ChDir (currentDir$)
-    dlg.strDefaultFolder = projectPath$ + miscPath$
+    Dim dlg As FileDialogInfo
+    dlg.strDefaultFolder = projectPath & miscPath
     dlg.strTitle = "Save Animation As"
     dlg.strDefaultExt = "anm"
     dlg.strFileTypes = "RPG Toolkit Animation (*.anm)|*.anm|All files(*.*)|*.*"
     
-    If SaveFileDialog(dlg, Me.hwnd) Then Exit Sub 'User pressed cancel
+    If (Not SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub 'User pressed cancel
+    If dlg.strSelectedFile = vbNullString Then Exit Sub
     
-    'Filename
-    filename(1) = dlg.strSelectedFile
-    
-    'Filename without path
-    Dim antiPath As String, aa As Long, bb As Long
-    antiPath = dlg.strSelectedFileNoPath
-    ChDir (currentDir$)
-    
-    'If the file is empty, exit sub
-    If filename(1) = "" Then Exit Sub
+    ChDir (currentDir)
     
     'No need to update anymore
     animationList(activeAnimationIndex).animNeedUpdate = False
      
     'Save the animation
-    Call saveAnimation(filename(1), animationList(activeAnimationIndex).theData)
+    Call saveAnimation(dlg.strSelectedFile, animationList(activeAnimationIndex).theData)
     
-    'Set the animation nam
-    animationList(activeAnimationIndex).animFile = antiPath
+    'Set the animation name
+    animationList(activeAnimationIndex).animFile = dlg.strSelectedFileNoPath
     
     'Update the caption
-    activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") + " (" + antiPath$ + ")"
+    activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") & " (" & dlg.strSelectedFileNoPath & ")"
     
     'Update the tree
     Call tkMainForm.fillTree("", projectPath)
