@@ -24,7 +24,7 @@ Option Explicit
 Public fightInProgress As Boolean   'fight going yn
 Public numEne As Long               'number of enemies loaded
 Public enemies(3) As String         'filenames of enemies loaded
-Public canRun As Long               'can players run from fight?
+Public canrun As Long               'can players run from fight?
 
 '=========================================================================
 ' Read-only pointer to fightInProgress
@@ -424,10 +424,10 @@ Private Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
         Call CanvasGetScreen(cnvRPGCodeScreen)
         lineNum = 1
         If exp > 0 Then
-            Call AddToMsgBox("Players gained" & CStr(exp) & " experience!", thePrg)
+            Call AddToMsgBox("Players gained " & CStr(exp) & " experience!", thePrg)
         End If
         If gp > 0 Then
-            Call AddToMsgBox("Players gained" & CStr(gp) & " GP!", thePrg)
+            Call AddToMsgBox("Players gained " & CStr(gp) & " GP!", thePrg)
         End If
         Call renderRPGCodeScreen
         Call WaitForKey
@@ -490,7 +490,7 @@ Public Sub runFight( _
     'load enemies
     Call loadEnemies(eneList, num)
     
-    canRun = 1
+    canrun = 1
     Dim t As Long, cnt As Long
     'create enemy party...
     Dim strRunProgram As String
@@ -502,7 +502,7 @@ Public Sub runFight( _
             strRunProgram = enemyMem(t).eneRunPrg
         End If
         If enemyMem(t).eneRun = 0 Then
-            canRun = 0
+            canrun = 0
         End If
         If enemyMem(t).eneWinPrg <> "" Then
             strRewardProgram = enemyMem(t).eneWinPrg
@@ -554,9 +554,9 @@ Public Sub runFight( _
             'Tell fight plugin to run the fight
             Dim fightOutcome As Long
             If isVBPlugin(plugName) Then
-                fightOutcome = VBPlugin(plugName).fight(num, -1, bkg, canRun)
+                fightOutcome = VBPlugin(plugName).fight(num, -1, bkg, canrun)
             Else
-                fightOutcome = PLUGFight(plugName, num, -1, bkg, canRun)
+                fightOutcome = PLUGFight(plugName, num, -1, bkg, canrun)
             End If
             
             Select Case fightOutcome
