@@ -395,7 +395,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
     'Create incremented co-ords for activation checks.
     actPos = activationCoords(passPos, roundPos)
     'Create isometrically converted versions of the passed pos.
-    Call isoCoordTransform(passPos.x, passPos.y, passX, passY)
+    Call isoCoordTransform(passPos.X, passPos.Y, passX, passY)
     
     'Call traceString("PRGTest: ply.x=" & pPos(selectedPlayer).x & _
                                " ply.y=" & pPos(selectedPlayer).y & _
@@ -411,8 +411,8 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 'We've rounded roundpos for pixel movement.
                 
                 If _
-                    boardList(activeBoardIndex).theData.progX(t) = roundPos.x And _
-                    boardList(activeBoardIndex).theData.progY(t) = roundPos.y And _
+                    boardList(activeBoardIndex).theData.progX(t) = roundPos.X And _
+                    boardList(activeBoardIndex).theData.progY(t) = roundPos.Y And _
                     boardList(activeBoardIndex).theData.progLayer(t) = passPos.l Then
                     
                     'The locations match - run prg, if its' conditions are right.
@@ -437,8 +437,8 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
                 
                     If ( _
-                        objX = actPos.x And _
-                        objY = actPos.y And _
+                        objX = actPos.X And _
+                        objY = actPos.Y And _
                         boardList(activeBoardIndex).theData.progLayer(t) = passPos.l) _
                     Or ( _
                         Abs(objX - passX) <= 1 / 2 And _
@@ -456,12 +456,12 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 Else
                     '2D. activation co-ords and rounded co-ords.
                     If ( _
-                        objX = actPos.x And _
-                        objY = actPos.y And _
+                        objX = actPos.X And _
+                        objY = actPos.Y And _
                         boardList(activeBoardIndex).theData.progLayer(t) = passPos.l) _
                     Or ( _
-                        objX = roundPos.x And _
-                        objY = roundPos.y And _
+                        objX = roundPos.X And _
+                        objY = roundPos.Y And _
                         boardList(activeBoardIndex).theData.progLayer(t) = passPos.l) _
                     Then
                         'If [Next to] Or [On] tile.
@@ -481,7 +481,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
     'Ouch.  Now test for items:
     For t = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
     
-        Call isoCoordTransform(itmPos(t).x, itmPos(t).y, objX, objY)
+        Call isoCoordTransform(itmPos(t).X, itmPos(t).Y, objX, objY)
     
         If itemMem(t).BoardYN = 1 Then  'Board item.
             If LenB(boardList(activeBoardIndex).theData.itmName(t)) Then
@@ -512,8 +512,8 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 ElseIf boardList(activeBoardIndex).theData.itmActivationType(t) = 1 Then
                 
                     If _
-                        Abs(objX - actPos.x) <= 1 And _
-                        Abs(objY - actPos.y) <= 1 And _
+                        Abs(objX - actPos.X) <= 1 And _
+                        Abs(objY - actPos.Y) <= 1 And _
                         itmPos(t).l = passPos.l Then
                     
                         If (lastKeyPressed() = mainMem.Key) Then
@@ -783,6 +783,12 @@ Public Sub runProgram( _
 
     '// Passing string(s) ByRef for preformance related reasons
 
+    If (startupProgram) Then
+        Call canvasFill(cnvRPGCodeScreen, 0)
+    Else
+        Call canvasGetScreen(cnvRPGCodeScreen)
+    End If
+
     runningProgram = True
 
     Call hideMsgBox
@@ -804,12 +810,6 @@ Public Sub runProgram( _
 
     Call FlushKB
     Dim retval As RPGCODE_RETURN
-
-    If (startupProgram) Then
-        Call canvasFill(cnvRPGCodeScreen, 0)
-    Else
-        Call canvasGetScreen(cnvRPGCodeScreen)
-    End If
 
     Call renderRPGCodeScreen
 
