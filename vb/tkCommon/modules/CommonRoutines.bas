@@ -732,7 +732,7 @@ loadtileerr:
             Print #num, major               'Version
             Print #num, minor                'Minor version (ie 2.0)
             Print #num, detail             'Detail level- 1 is 32x32, 2 is 16x16
-            Print #num, compression        'Compression 1-on, 0-off
+            Print #num, 1        'Compression 1-on, 0-off
 
             Dim X As Integer, Y As Integer
             Dim occurances As Long, older As Long
