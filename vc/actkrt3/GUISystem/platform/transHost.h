@@ -27,7 +27,7 @@
 //-------------------------------------------------------------------
 typedef VOID (__stdcall *CBNoParams) (VOID);
 typedef INT (__stdcall *CBNoParamsRet) (VOID);
-typedef VOID (__stdcall *CBOneParam) (INT);
+typedef VOID (__stdcall *CBOneParam) (CONST INT);
 typedef VOID (__stdcall *CBTwoParams) (CONST INT, CONST INT);
 typedef VOID (__stdcall *CBFourParams) (CONST INT, CONST INT, CONST INT, CONST INT);
 

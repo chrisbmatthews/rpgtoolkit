@@ -303,7 +303,7 @@ LRESULT CALLBACK eventProcessor(
 		// Window activated/deactivated
         case WM_ACTIVATE:
 		{
-            if(wParam != WA_INACTIVE)
+            if (wParam != WA_INACTIVE)
 			{
                 //Window is being *activated*
                 setGameState(prevGameState);
