@@ -96,16 +96,17 @@ Public Function addToTileSet(ByVal file As String) As Integer: On Error Resume N
 
 End Function
 
-Private Function calcInsertionPoint(ByRef ts As tilesetHeader, _
-                                    ByRef size As Long, ByRef depth As Long, _
-                                    ByVal number As Long) As Long
+Public Function calcInsertionPoint(ByRef ts As tilesetHeader, ByVal number As Long, _
+                                   Optional ByRef refSize As Long, Optional ByRef refDepth As Long) As Long
 '==============================================================================
 'Calculates the byte position of the number tile in a tileset by on its quality.
 'Assigns size and depth dependent on quality.
 '==============================================================================
-'Called by openTileSet and insertIntoTileSet
+'Called by openTileSet and insertIntoTileSet, advanced tileset editor functions
 
     On Error Resume Next
+    
+    Dim size As Long, depth As Long
 
     Select Case ts.detail
         Case 1, ISODETAIL
@@ -124,6 +125,8 @@ Private Function calcInsertionPoint(ByRef ts As tilesetHeader, _
             size = 32: depth = 3
     End Select
     
+    refSize = size
+    refDepth = depth
     calcInsertionPoint = size * size * depth * (number - 1) + (TST_HEADER + 1)
 
 End Function
@@ -249,7 +252,7 @@ Public Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
         'Header could be read.
         
         'Calculate next insertion point in bytes.
-        position = calcInsertionPoint(tileset, size, depth, number)
+        position = calcInsertionPoint(tileset, number, size, depth)
         ReDim tileBlock(size * size * depth - 1)
         
         For x = 1 To size
@@ -328,7 +331,7 @@ Public Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error
     If detail = ISODETAIL Then detail = 1
     
     'Receive information about byte position, tile size, byte depth.
-    position = calcInsertionPoint(tileset, size, depth, number)
+    position = calcInsertionPoint(tileset, number, size, depth)
     ReDim tileBlock(size * size * depth - 1)
     
     ChDir (currentDir)
