@@ -75,18 +75,8 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef pr
     Call getVariable("this!", lit, oldThis, prg)
     Call SetVariable("this!", CStr(hClass), prg, True)
 
-    ' Class name to call under
-    Dim thePrefix As String
-
-    ' Check for overridden name
-    thePrefix = checkOverrideName(theClass, methodName)
-    If (LenB(thePrefix) = 0) Then
-        ' Didn't find one
-        thePrefix = theClass.strName
-    End If
-
     ' Call the method
-    Call MethodCallRPG(thePrefix & "::" & Text, thePrefix & "::" & methodName, prg, retval, True, True)
+    Call MethodCallRPG(Text, theClass.strName & "::" & methodName, prg, retval, True, True, hClass)
 
     ' Decrease the nestle
     Call decreaseNestle(prg)
@@ -133,7 +123,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean, Optional ByVal hObject As Long)
 
     On Error Resume Next
 
@@ -168,7 +158,6 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     Dim theMethod As RPGCodeMethod, params() As parameters, number As Long
     params = getParameters(Text, theProgram, number)
     theMethod.lngParams = number
-    theMethod.name = UCase$(Trim$(mName))
     ReDim theMethod.dtParams(number - 1)
     ReDim theMethod.classTypes(number - 1)
     Dim i As Long, bTryAgain As Boolean
@@ -182,7 +171,34 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             End If
         End If
     Next i
+
+    mName = UCase$(Trim$(mName))
+
+    If (hObject) Then
+
+        Dim lngResolutionPos As Long
+        lngResolutionPos = InStr(1, mName, "::")
+
+        If (lngResolutionPos) Then
+
+            ' Check for overriden name
+            Dim strPrefix As String
+            theMethod.name = removeClassName(mName)
+            strPrefix = checkOverrideName(getClass(hObject, theProgram), theMethod, theProgram)
+
+            If (LenB(strPrefix)) Then
+
+                ' Put in the new prefix
+                mName = strPrefix & Mid$(mName, lngResolutionPos)
+
+            End If
+
+        End If
+
+    End If
+
     Dim foundIt As Long
+    theMethod.name = mName
     foundIt = getMethodLine(theMethod, theProgram, i)
 
     If (foundIt = -1) Then
@@ -698,7 +714,7 @@ Public Sub runProgram( _
 
     '// Passing string(s) ByRef for preformance related reasons
 
-    If Trim$(right$(file, 1)) = "\" Then Exit Sub
+    If Trim$(Right$(file, 1)) = "\" Then Exit Sub
 
     runningProgram = True
 
@@ -845,8 +861,8 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
 
-    ElseIf left$(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
-        onError "OnError(" & right$(checkIt, Len(checkIt) - InStr(1, _
+    ElseIf Left$(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
+        onError "OnError(" & Right$(checkIt, Len(checkIt) - InStr(1, _
             LCase$(rpgcodeCommand), "goto") - 1) & ")", theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
@@ -905,7 +921,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
 
         testText = getRedirect(testText)
 
-        If left$(testText, 1) = "." Then
+        If Left$(testText, 1) = "." Then
             testText = UCase$(GetWithPrefix() & testText)
         End If
 

@@ -113,10 +113,7 @@ Private m_objectOffset As Long              ' Address of object array
 '=========================================================================
 ' Check a method override name
 '=========================================================================
-Public Function checkOverrideName(ByRef theClass As RPGCODE_CLASS, ByVal theMethod As String) As String
-
-    ' Capitalize theMethod
-    theMethod = UCase$(Trim$(theMethod))
+Public Function checkOverrideName(ByRef theClass As RPGCODE_CLASS, ByRef theMethod As RPGCodeMethod, ByRef prg As RPGCodeProgram) As String
 
     ' Loop variables
     Dim scopeIdx As Long, idx As Long
@@ -135,13 +132,13 @@ Public Function checkOverrideName(ByRef theClass As RPGCODE_CLASS, ByVal theMeth
         ' Loop over each of its methods
         For idx = 0 To UBound(scope.methods)
             ' Found the method
-            If (scope.methods(idx).name = theMethod) Then
+            If (methodsAreEqual(theMethod, scope.methods(idx), prg)) Then
                 ' Check for an override
                 If (LenB(scope.methods(idx).override)) Then
                     ' Return this
                     checkOverrideName = scope.methods(idx).override
                 End If
-                ' Either way, bail
+                ' Even if not, bail
                 Exit Function
             End If
         Next idx
@@ -890,7 +887,7 @@ End Sub
 '=========================================================================
 ' Remove class name from a function
 '=========================================================================
-Private Function removeClassName(ByVal Text As String) As String
+Public Function removeClassName(ByVal Text As String) As String
 
     On Error Resume Next
 
@@ -1021,7 +1018,13 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
     istr = InStr(1, var, "[")
     If (istr) Then
         ' Get the var without its brackets
-        anArray = Left$(var, istr - 1) & Right$(var, 1)
+        Dim tdc As String
+        tdc = RightB$(var, 2)
+        anArray = Left$(var, istr - 1)
+        If (tdc = "!" Or tdc = "$") Then
+            ' Add the array's sign on
+            anArray = anArray & tdc
+        End If
     End If
 
     ' For each scope
