@@ -55,7 +55,11 @@ End Sub
 ' Allows actkrt3.dll to force a render
 '=========================================================================
 Private Sub forceRender()
-    Call DXRefresh
+    If Not (runningProgram) Then
+        Call DXRefresh
+    Else
+        Call renderRPGCodeScreen
+    End If
 End Sub
 
 '=========================================================================

@@ -701,7 +701,7 @@ Public Sub mouseMoveEvent(ByVal x As Integer, ByVal y As Integer)
     On Error Resume Next
     mouseMoveX = x
     mouseMoveY = y
-    If (Not runningProgram) Then
+    If Not (runningProgram) Then
         Call DXRefresh
     Else
         Call renderRPGCodeScreen

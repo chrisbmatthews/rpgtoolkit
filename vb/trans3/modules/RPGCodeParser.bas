@@ -28,6 +28,24 @@ Private m_mathSigns(26) As String
 Private m_compSigns(9) As String
 
 '=========================================================================
+' Pad a string's signs
+'=========================================================================
+Public Sub padSigns(ByRef str As String)
+
+    '// Passing string ByRef for performance related reasons
+
+    ' Pad the string
+    Dim i As Long
+    For i = 0 To UBound(m_mathSigns)
+        str = replace(str, m_mathSigns(i), " " & m_mathSigns(i) & " ")
+    Next i
+    For i = 0 To UBound(m_compSigns)
+        str = replace(str, m_compSigns(i), " " & m_compSigns(i) & " ")
+    Next i
+
+End Sub
+
+'=========================================================================
 ' Build the sign arrays
 '=========================================================================
 Public Sub buildSignArrays()

@@ -203,7 +203,11 @@ End Sub
 ' Refresh the screen
 '=========================================================================
 Public Function CBRefreshScreen() As Long
-    Call DXRefresh
+    If Not (runningProgram) Then
+        Call DXRefresh
+    Else
+        Call renderRPGCodeScreen
+    End If
 End Function
 
 '=========================================================================
@@ -2728,7 +2732,11 @@ Function CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) 
     'display an offscreen canvas
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvas(canvasID, x, y)
+        If Not (runningProgram) Then
+            Call DXDrawCanvas(canvasID, x, y)
+        Else
+            Call Canvas2CanvasBlt(canvasID, cnvRPGCodeScreen, x, y)
+        End If
         CBDrawCanvas = 1
     Else
         CBDrawCanvas = 0
@@ -2740,7 +2748,11 @@ Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal 
     'display an offscreen canvas (partially)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height)
+        If Not (runningProgram) Then
+            Call DXDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height)
+        Else
+            Call Canvas2CanvasBltPartial(canvasID, cnvRPGCodeScreen, xDest, yDest, xsrc, ysrc, width, height)
+        End If
         CBDrawCanvasPartial = 1
     Else
         CBDrawCanvasPartial = 0
@@ -2752,7 +2764,11 @@ Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal 
     'display an offscreen canvas with transparency
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTransparent(canvasID, x, y, crTransparentColor)
+        If Not (runningProgram) Then
+            Call DXDrawCanvasTransparent(canvasID, x, y, crTransparentColor)
+        Else
+            Call Canvas2CanvasBltTransparent(canvasID, cnvRPGCodeScreen, x, y, crTransparentColor)
+        End If
         CBDrawCanvasTransparent = 1
     Else
         CBDrawCanvasTransparent = 0
@@ -2764,7 +2780,11 @@ Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As L
     'display an offscreen canvas (partially) with transparency
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
+        If Not (runningProgram) Then
+            Call DXDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
+        Else
+            Call Canvas2CanvasBltTransparentPartial(canvasID, cnvRPGCodeScreen, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
+        End If
         CBDrawCanvasTransparentPartial = 1
     Else
         CBDrawCanvasTransparentPartial = 0
@@ -2775,9 +2795,12 @@ Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal 
     'callback 51
     'display an offscreen canvas with translucency
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
-        Call DXDrawCanvasTranslucent(canvasID, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
+        If Not (runningProgram) Then
+            Call DXDrawCanvasTranslucent(canvasID, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
+        Else
+            Call Canvas2CanvasBltTranslucent(canvasID, cnvRPGCodeScreen, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
+        End If
         CBDrawCanvasTranslucent = 1
     Else
         CBDrawCanvasTranslucent = 0
@@ -2865,8 +2888,11 @@ Function CBCanvasGetScreen(ByVal cnvDest As Long) As Long
     'callback 61
     'copy the screen into a canvas
     On Error Resume Next
-    
-    CBCanvasGetScreen = CanvasGetScreen(cnvDest)
+    If Not (runningProgram) Then
+        CBCanvasGetScreen = CanvasGetScreen(cnvDest)
+    Else
+        Call Canvas2CanvasBlt(cnvRPGCodeScreen, cnvDest, 0, 0)
+    End If
 End Function
 
 Function CBLoadString(ByVal id As Long, ByVal defaultString As String) As String
@@ -2955,7 +2981,11 @@ Function CBDrawHand(ByVal pointx As Long, ByVal pointy As Long) As Long
     cnv = CreateCanvas(32, 32)
     Call CanvasFill(cnv, RGB(255, 0, 0))
     Call CanvasDrawHand(cnv, 32, 10)
-    Call DXDrawCanvasTransparent(cnv, pointx - 32 - 10, pointy - 10, RGB(255, 0, 0))
+    If Not (runningProgram) Then
+        Call DXDrawCanvasTransparent(cnv, pointx - 32 - 10, pointy - 10, RGB(255, 0, 0))
+    Else
+        Call Canvas2CanvasBltTransparent(cnv, cnvRPGCodeScreen, pointx - 32 - 10, pointy - 10, RGB(255, 0, 0))
+    End If
     Call DestroyCanvas(cnv)
     CBDrawHand = 1
 End Function
@@ -3397,7 +3427,11 @@ Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal si
     'callback 125
     'draw text directly to the screen at x, y (pixels)
     On Error Resume Next
-    CBDrawTextAbsolute = DXDrawText(x, y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
+    If Not (runningProgram) Then
+        CBDrawTextAbsolute = DXDrawText(x, y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
+    Else
+        Call CanvasDrawText(cnvRPGCodeScreen, Text, font, size, x, y, crColor, (isBold = 1), (isItalics = 1), (isUnderline = 1), (isCentred = 1), (isOutlined = 1))
+    End If
 End Function
 
 Sub CBReleaseFighterCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
