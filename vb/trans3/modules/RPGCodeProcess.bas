@@ -345,7 +345,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             Dim istr As Long
             istr = InStr(1, thePrg.program(a), ":")
             If (istr) Then
-                strClass = Trim$(replace(Left$(thePrg.program(a), istr - 1), "class", vbNullString, , , vbTextCompare))
+                strClass = Trim$(replace(Left$(thePrg.program(a), istr - 1), "class", vbNullString, , 1, vbTextCompare))
             Else
                 strClass = GetMethodName(thePrg.program(a))
             End If
