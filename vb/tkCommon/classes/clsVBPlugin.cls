@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '====================================================================================
 'VB Plugin Manager
-'Copyright 2004, Colin James Fitzpatrick
+'Copyright 2004, Colin James Fitzpatrick (KSNiloc)
 '====================================================================================
 
 Option Explicit

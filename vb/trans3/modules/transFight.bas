@@ -526,7 +526,7 @@ Public Sub runFight( _
             cnt = cnt + 1
         End If
     Next t
-    Call CreatePlayerParty(parties(1), pParty, inv, 0)
+    Call CreatePlayerParty(parties(1), pParty, 0)
     
     'play fight music
     Dim back As TKBackground

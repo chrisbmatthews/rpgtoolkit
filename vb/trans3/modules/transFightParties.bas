@@ -28,7 +28,6 @@ Public Type FighterParty                 'fighting party structure
     isPlayerControlled As Boolean        '  is it controlled by a player (if not, then controlled by cpu)
     fighterList() As Fighter             '  list of fighters in party
     gp As Long                           '  gp to win
-    fightInventory As TKInventory        '  inventory of this party
     winProgram As String                 '  rpgcode program to run when you beat them
 End Type
 
@@ -186,11 +185,10 @@ End Sub
 '=========================================================================
 ' Create a player party
 '=========================================================================
-Public Sub CreatePlayerParty(ByRef party As FighterParty, ByRef players() As TKPlayer, ByRef inventory As TKInventory, ByVal gp As Long)
+Public Sub CreatePlayerParty(ByRef party As FighterParty, ByRef players() As TKPlayer, ByVal gp As Long)
     On Error Resume Next
     Call CreateParty(party, UBound(players), False)
     
-    party.fightInventory = inventory
     party.gp = gp
     party.isPlayerControlled = True
     party.winProgram = ""
@@ -280,7 +278,7 @@ Public Sub doUseItem(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long,
     End If
     
     'set source and target...
-    source = sourceFightIdx
+    Source = sourceFightIdx
     If sourcePartyIdx = PLAYER_PARTY Then
         sourceType = TYPE_PLAYER
     Else
@@ -296,19 +294,7 @@ Public Sub doUseItem(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long,
     End If
        
     'remove this item from inventory...
-    Dim theOne As Long, t As Long
-    theOne = -1
-    For t = 0 To UBound(inv.item)
-        If UCase$(inv.item(t).file) = UCase$(itemFile) Then theOne = t
-    Next t
-    If theOne <> -1 Then
-        inv.item(theOne).number = inv.item(theOne).number - 1
-        If inv.item(theOne).number <= 0 Then
-            inv.item(theOne).number = 0
-            inv.item(theOne).file = ""
-            inv.item(theOne).handle = ""
-        End If
-    End If
+    Call inv.removeItem(itemFile, 1)
         
     'the plugin will run rpgcode if required
     'and it will run an animation if required
@@ -360,7 +346,7 @@ Public Sub doUseSpecialMove(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx A
     End If
     
     'set source and target...
-    source = sourceFightIdx
+    Source = sourceFightIdx
     If sourcePartyIdx = PLAYER_PARTY Then
         sourceType = TYPE_PLAYER
     Else
@@ -409,13 +395,13 @@ Public Sub invokeStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByRef th
 
     If theEffect.nStatusRPGCode = 1 Then
         If parties(partyIdx).fighterList(fightIdx).isPlayer Then
-            source = fightIdx
+            Source = fightIdx
             sourceType = TYPE_PLAYER
             target = fightIdx
             targetType = TYPE_PLAYER
             Call runProgram(theEffect.sStatusRPGCode, -1, False)
         Else
-            source = fightIdx
+            Source = fightIdx
             sourceType = TYPE_ENEMY
             target = fightIdx
             targetType = TYPE_ENEMY

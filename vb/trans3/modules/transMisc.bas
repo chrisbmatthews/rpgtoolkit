@@ -405,7 +405,7 @@ Public Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     End If
     
     'Put the equipment back in the item list:
-    Call AddItemToList(playerEquip$(equipNum, playerNum), inv)
+    Call inv.addItem(playerEquip(equipNum, playerNum), 1)
     playerEquip$(equipNum, playerNum) = ""
     equipList$(equipNum, playerNum) = "" 'What is equipped on each player (handle)
     
@@ -452,7 +452,7 @@ End Sub
 ' Equip an item to a player
 '=========================================================================
 Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file As String)
-    'Add equipment to equipnum on playernum
+
     On Error Resume Next
     
     Dim aFile As String
@@ -461,7 +461,7 @@ Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file 
     aFile = projectPath & itmPath & file
     anItem = openItem(aFile)
 
-    Call RemoveItemfromList(file$, inv)
+    Call inv.removeItem(file, 1)
     playerEquip(equipNum, playerNum) = file
     equipList(equipNum, playerNum) = anItem.itemName
 

@@ -1,4 +1,4 @@
-Attribute VB_Name = "time"
+Attribute VB_Name = "transTime"
 '=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.

@@ -1,18 +1,21 @@
 Attribute VB_Name = "RPGCode"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'rpgcode execution module
+'=========================================================================
+' RPGCode execution procedures
+'=========================================================================
+
 Option Explicit
 
-Public bFillingMsgBox As Boolean   'set to true while we're still filling the message box
-
-'Added by KSNiloc...
 Public inWith() As String
-Public RPGCodeSwitchCase As New Collection
-Public foundSwitch() As Boolean
-Public doneIf() As Boolean
+
+Private RPGCodeSwitchCase As New Collection
+Private foundSwitch() As Boolean
+Private doneIf() As Boolean
 
 Sub CompilerPopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#dest$ = #com_pop_piler()
@@ -3072,9 +3075,7 @@ Sub GiveItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 0 Then
         Call debugger("Error: GiveItem data type must be literal!-- " + Text$)
     Else
-        'Scan inventory for this item
-        lit$ = addExt(lit$, ".itm")
-        Call AddItemToList(lit$, inv)
+        Call inv.addItem(lit, 1)
     End If
 End Sub
 
@@ -3637,18 +3638,18 @@ Sub itemCountRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
         If UCase$(ex$) = "ITM" Then
             'MsgBox lit$
             theOne = -1
-            For t = 0 To UBound(inv.item)
-                If UCase$(inv.item(t).file) = UCase$(lit$) Then theOne = t
+            For t = 0 To inv.upperBound()
+                If UCase$(inv.fileNames(t)) = UCase$(lit$) Then theOne = t
             Next t
         Else
             theOne = -1
-            For t = 0 To UBound(inv.item)
-                If UCase$(inv.item(t).handle) = UCase$(lit$) Then theOne = t
+            For t = 0 To inv.upperBound()
+                If UCase$(inv.handles(t)) = UCase$(lit$) Then theOne = t
             Next t
         End If
         retNum = 0
         If theOne <> -1 Then
-            retNum = inv.item(theOne).number
+            retNum = inv.quantities(theOne)
         End If
         If number = 2 Then
             Call SetVariable(useIt2$, str$(retNum), theProgram)
@@ -5659,11 +5660,7 @@ Sub ResetRPG(ByRef theProgram As RPGCodeProgram)
         playerListAr$(num) = ""
         playerFile$(num) = ""
     Next num
-    For num = 0 To UBound(inv.item)
-        inv.item(num).file = ""
-        inv.item(num).handle = ""
-        inv.item(num).number = 0
-    Next num
+    Call inv.clear
     fightInProgress = False
     runningProgram = False
     'Call openMainFile(loadedMainFile$)
@@ -7475,29 +7472,7 @@ Sub TakeItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 0 Then
         Call debugger("Error: TakeItem data type must be literal!-- " + Text$)
     Else
-        Dim ext As String, theOne As Long, t As Long
-        'Scan inventory for this item
-        ext$ = GetExt(lit$)
-        
-        If UCase$(ext$) = "ITM" Then
-            theOne = -1
-            For t = 0 To UBound(inv.item)
-                If UCase$(inv.item(t).file) = UCase$(lit$) Then theOne = t
-            Next t
-        Else
-            theOne = -1
-            For t = 0 To UBound(inv.item)
-                If UCase$(inv.item(t).handle) = UCase$(lit$) Then theOne = t
-            Next t
-        End If
-        If theOne <> -1 Then
-            inv.item(theOne).number = inv.item(theOne).number - 1
-            If inv.item(theOne).number <= 0 Then
-                inv.item(theOne).number = 0
-                inv.item(theOne).file = ""
-                inv.item(theOne).handle = ""
-            End If
-        End If
+        Call inv.removeItem(lit, 1)
     End If
 
     Exit Sub
@@ -8794,37 +8769,16 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub callShopRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#CallShop("item1.itm","item2.item",...,"itemn.itm")
-    'opens shop window to sell items.
-    On Error GoTo errorhandler
-    Dim t As Long  'These variables are for For loops
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    number = CountData(dataUse$)        'how many data elements are there?
-    For t = 1 To number
-        itemsForSale$(t) = ""           'initializes the array to "" so we don't get any barfs
-        useIt1$ = GetElement(dataUse$, t)   'Gets an element out of the brackets
-        Dim cst As Long
-        cst = getValue(useIt1$, lit$, num1, theProgram) 'Not so sure what this does yet but I know the cst is a bool that is 0 if it didn't cast "which is never" and 1 if it does
-        If (lit$ = "") Then                             'If there is not any items in the command to put in the shop then it causes a debug message
-            Call debugger("Error: CallShop data type must be literal!-- " + Text$)
-        Else                                            ' Else it carries on its marry way to add the item to the shop.
-        lit$ = addExt(lit$, ".itm")
-        itemsForSale$(t) = lit$
-        End If
-    Next t
-    'only show the shop if not in fullscreen mode or no debug messages...
-    If Not (usingFullScreen() Or lit$ = "") Then
-        shopwindow.Show 1  'show the shop
-    End If
+Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    Call HandleError
-    Resume Next
+    'CallShop(item$, item$, item$, ...)
+    'Call a shop
+
+    On Error Resume Next
+
+    Dim paras() As parameters
+    paras() = GetParameters(Text, theProgram)
+
 End Sub
 
 Sub CastIntRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
@@ -9346,7 +9300,6 @@ Sub DrawLineRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim cnv As Double
     If number = 5 Then
         cnv = paras(4).num
-        Debug.Print cnv, paras(4).dat, paras(4).lit, paras(4).num
     End If
    
     'If xx1 = DT_LIT Or yy1 = DT_LIT Or xx2 = DT_LIT Or yy2 = DT_LIT Or a = DT_LIT Then
@@ -9491,28 +9444,28 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'Now, do we actually have this item?
         Dim theItem As Long
         theItem = -1
-        For t = 0 To UBound(inv.item)
-            If UCase$(lit3$) = UCase$(inv.item(t).handle) Then
-                If inv.item(t).number > 0 Then theItem = t
+        For t = 0 To inv.upperBound()
+            If UCase$(lit3$) = UCase$(inv.handles(t)) Then
+                If inv.quantities(t) > 0 Then theItem = t
                 Exit For
             End If
-            If UCase$(lit3$) = UCase$(inv.item(t).file) Then
-                If inv.item(t).number > 0 Then theItem = t
+            If UCase$(lit3$) = UCase$(inv.fileNames(t)) Then
+                If inv.quantities(t) > 0 Then theItem = t
                 Exit For
             End If
         Next t
         If theItem = -1 Then
-            Call debugger("Error: Player is not carrying specified item!-- " + Text$)
+            Call debugger("Error: Player is not carrying specified item!-- " & Text$)
             Exit Sub
         End If
         
-        If Not (canItemEquip(projectPath$ + itmPath$ + inv.item(theItem).file)) Then
-            Call debugger("Error: Specified Item is Not Equipable!-- " + Text$)
+        If Not (canItemEquip(projectPath$ & itmPath$ & inv.fileNames(theOne))) Then
+            Call debugger("Error: Specified Item is Not Equipable!-- " & Text$)
             Exit Sub
         End If
 
-        If Not (CanPlayerUse(projectPath$ + itmPath$ + inv.item(theItem).file, theOne)) Then
-            Call debugger("Error: Player cannot use specified item!-- " + Text$)
+        If Not (CanPlayerUse(projectPath$ & itmPath$ & inv.fileNames(theOne), theOne)) Then
+            Call debugger("Error: Player cannot use specified item!-- " & Text$)
             Exit Sub
         End If
         
@@ -9520,7 +9473,7 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         'Let's equip!
         Call removeEquip(num2, theOne)
-        Call addEquip(num2, theOne, inv.item(theItem).file)
+        Call addEquip(num2, theOne, inv.fileNames(theOne))
     End If
 
     Exit Sub

@@ -19,7 +19,7 @@ Public playerListAr(4) As String          '"Handles" of 5 (0-4) characters on te
 Public playerFile(4) As String            'Filenames of 5 chars
 Public otherPlayers(25) As String         'filenames of 25 other players that used to be equipped (0-25)
 Public otherPlayersHandle(25) As String   'handles of 25 other players that used to be equipped (0-25)
-Public inv As TKInventory                 'global inventory
+Public inv As New clsInventory            'global inventory
 Public playerEquip(16, 4) As String       'What is equipped on each player (filename)
 Public equipList(16, 4) As String         'What is equipped on each player (handle)
 Public equipHPadd(4) As Long              'amount of HP added because of equipment.
@@ -196,11 +196,11 @@ Public Sub LoadState(ByVal file As String)
                 playerListAr$(t) = fread(num)  '"Handles" of 5 (0-4) characters on team.
                 playerFile$(t) = fread(num)
             Next t
-            ReDim inv.item(500)
+            Call inv.clear
             For t = 0 To 500
-                Line Input #num, inv.item(t).file 'Filenames of 500 items in inventory
-                Line Input #num, inv.item(t).handle 'Handles of 500 items in inventory
-                Input #num, inv.item(t).number 'Number of each item in inventory
+                inv.fileNames(t) = fread(num)
+                inv.handles(t) = fread(num)
+                inv.quantities(t) = fread(num)
             Next t
             For t = 1 To 16
                 For z = 0 To 4
@@ -341,9 +341,9 @@ Public Sub LoadState(ByVal file As String)
         Dim sz As Integer
         sz = BinReadInt(num)
         For t = 0 To sz
-            inv.item(t).file = BinReadString(num)   'Filenames of 500 items in inventory
-            inv.item(t).handle = BinReadString(num)   'Handles of 500 items in inventory
-            inv.item(t).number = BinReadLong(num)   'Number of each item in inventory
+            inv.fileNames(t) = BinReadString(num)   'Filenames of 500 items in inventory
+            inv.handles(t) = BinReadString(num)   'Handles of 500 items in inventory
+            inv.quantities(t) = BinReadLong(num)   'Number of each item in inventory
         Next t
         For t = 1 To 16
             For z = 0 To 4
@@ -530,11 +530,11 @@ Public Sub SaveState(ByVal file As String)
             Call BinWriteString(num, playerListAr$(t))  '"Handles" of 5 (0-4) characters on team.
             Call BinWriteString(num, playerFile$(t))
         Next t
-        Call BinWriteInt(num, UBound(inv.item))
-        For t = 0 To UBound(inv.item)
-            Call BinWriteString(num, inv.item(t).file)  'Filenames of 500 items in inventory
-            Call BinWriteString(num, inv.item(t).handle)  'Handles of 500 items in inventory
-            Call BinWriteLong(num, inv.item(t).number)  'Number of each item in inventory
+        Call BinWriteInt(num, inv.upperBound())
+        For t = 0 To inv.upperBound()
+            Call BinWriteString(num, inv.fileNames(t))  'Filenames of 500 items in inventory
+            Call BinWriteString(num, inv.handles(t))  'Handles of 500 items in inventory
+            Call BinWriteLong(num, inv.quantities(t))  'Number of each item in inventory
         Next t
         For t = 1 To 16
             Dim z As Long

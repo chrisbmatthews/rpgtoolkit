@@ -55,8 +55,8 @@ Type TKEnemy
     eneMaxSMP As Long       'max smp
     eneFileName As String   'filename
     status(10) As FighterStatus
-    X As Long
-    Y As Long    'x and y location in fight
+    x As Long
+    y As Long    'x and y location in fight
 End Type
 
 Type enemyDoc
@@ -217,7 +217,7 @@ Sub saveEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
     'saves enemy in memory.
     On Error Resume Next
     
-    Dim num As Long, X As Long, Y As Long, t As Long
+    Dim num As Long, x As Long, y As Long, t As Long
     num = FreeFile
     If file = "" Then Exit Sub
     
@@ -277,7 +277,7 @@ Sub openEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
     
     On Error Resume Next
     
-    Dim num As Long, X As Long, Y As Long, t As Long, user As Long
+    Dim num As Long, x As Long, y As Long, t As Long, user As Long
     Dim fileHeader As String, majorVer As Long, minorVer As Long
     
     num = FreeFile
@@ -383,11 +383,11 @@ ver2oldenemy:
         Dim eneSizeX As Long, eneSizeY As Long
         eneSizeX = fread(num)       'size horizontally
         eneSizeY = fread(num)       'size vertically
-        For X = 1 To 19
-            For Y = 1 To 7
-                enemyGraphic$(X, Y) = fread(num) 'Enemy graphics filenames
-            Next Y
-        Next X
+        For x = 1 To 19
+            For y = 1 To 7
+                enemyGraphic$(x, y) = fread(num) 'Enemy graphics filenames
+            Next y
+        Next x
         'create tile bitmap...
         Dim tbmName As String, anmName As String
         tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
@@ -395,11 +395,11 @@ ver2oldenemy:
         Dim tbm As TKTileBitmap
         Call TileBitmapClear(tbm)
         Call TileBitmapResize(tbm, eneSizeX, eneSizeY)
-        For X = 1 To eneSizeX
-            For Y = 1 To eneSizeY
-                tbm.tiles(X - 1, Y - 1) = enemyGraphic(X, Y)
-            Next Y
-        Next X
+        For x = 1 To eneSizeX
+            For y = 1 To eneSizeY
+                tbm.tiles(x - 1, y - 1) = enemyGraphic(x, y)
+            Next y
+        Next x
         Call SaveTileBitmap(tbmName$, tbm)
         'create animation...
         anmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".anm"
@@ -467,20 +467,20 @@ Sub EnemyClear(ByRef theEnemy As TKEnemy)
     theEnemy.eneSneakUp = 0
     theEnemy.eneSizeX = 1
     theEnemy.eneSizeY = 1
-    Dim X As Long, Y As Long
-    For X = 0 To 19
-        For Y = 0 To 7
-            theEnemy.enemyGraphic(X, Y) = ""
-        Next Y
-    Next X
+    Dim x As Long, y As Long
+    For x = 0 To 19
+        For y = 0 To 7
+            theEnemy.enemyGraphic(x, y) = ""
+        Next y
+    Next x
     ReDim theEnemy.eneSpecialMove(100)
     ReDim theEnemy.eneWeakness(100)
     ReDim theEnemy.eneStrength(100)
-    For X = 0 To 100
-        theEnemy.eneSpecialMove(X) = ""
-        theEnemy.eneWeakness(X) = ""
-        theEnemy.eneStrength(X) = ""
-    Next X
+    For x = 0 To 100
+        theEnemy.eneSpecialMove(x) = ""
+        theEnemy.eneWeakness(x) = ""
+        theEnemy.eneStrength(x) = ""
+    Next x
     theEnemy.eneAI = 0
     theEnemy.eneUseRPGCode = 0
     theEnemy.eneRPGCode = ""

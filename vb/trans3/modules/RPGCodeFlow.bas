@@ -32,6 +32,7 @@ Public methodReturn As RPGCODE_RETURN   'return value for method calls
 Public errorKeep As RPGCodeProgram      'program kept as a backup for error handling
 Public preErrorPos As Long              'position before an error occured
 Public disregardLooping As Boolean      'disregard being in a loop
+Public bFillingMsgBox As Boolean        'filling message box?
 
 Public Enum RPGC_DT                     'rpgcode data type enum
     DT_VOID = -1                        '  can't tell
@@ -311,14 +312,14 @@ Public Sub multiTaskNow()
 
     'Run all item programs
     Dim t As Long
-    For t = 0 To UBound(multilist)
-        If multilist(t) <> "" Then
+    For t = 0 To UBound(multiList)
+        If multiList(t) <> "" Then
             target = t
             targetType = TYPE_ITEM
             Source = t
             sourceType = TYPE_ITEM
             If Not ExecuteThread(program(t + 1)) Then
-                multilist(t) = ""
+                multiList(t) = ""
             End If
         End If
     Next t
@@ -339,11 +340,11 @@ End Sub
 Public Sub openMulti()
     On Error Resume Next
     Dim t As Long
-    For t = 0 To UBound(multilist)
-        If multilist(t) <> "" Then
-            If multiopen(t) = 0 Then
-                program(t + 1) = openProgram(projectPath & prgPath & multilist(t))
-                multiopen(t) = 1
+    For t = 0 To UBound(multiList)
+        If multiList(t) <> "" Then
+            If multiOpen(t) = 0 Then
+                program(t + 1) = openProgram(projectPath & prgPath & multiList(t))
+                multiOpen(t) = 1
             End If
         End If
     Next t
@@ -688,7 +689,7 @@ Public Function runItmYN(ByVal itmNum As Long) As Boolean
             If runIt = 0 Then
                 'it is no longer active-- remove it
                 itemMem(itmNum).bIsActive = False
-                multilist$(itmNum) = ""
+                multiList$(itmNum) = ""
             End If
         End If
     End If

@@ -48,8 +48,10 @@ Public Const STAIRS6 = 16
 Public Const STAIRS7 = 17
 Public Const STAIRS8 = 18
 
+
+
 Public Type PLAYER_POSITION
-    stance As String    'current stance
+    stance As String      'current stance
     frame As Long       'animation frame
     x As Double         'current board x positon
     y As Double         'y pos
@@ -163,7 +165,7 @@ Function checkObstruction(ByVal x As Double, ByVal y As Double, ByVal l As Long,
     
     'Altered for pixel movement: test location.
 
-    For i = 0 To MAXITEM
+    For i = 0 To maxItem
            
         coordMatch = False
         If Not (usingPixelMovement) Then
@@ -1674,7 +1676,7 @@ Public Sub moveItems()
     'Move all pending items
     On Error Resume Next
     
-    If MAXITEM = -1 Then Exit Sub
+    If maxItem = -1 Then Exit Sub
     
     Dim maxP As Long
     maxP = UBound(pendingItemMovement)

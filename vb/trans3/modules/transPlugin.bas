@@ -1379,12 +1379,12 @@ Function CBGetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVa
             CBGetGeneralString = otherPlayersHandle$(arrayPos)
             Exit Function
         Case 4:
-            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
-            CBGetGeneralString = inv.item(arrayPos).file
+            arrayPos = inBounds(arrayPos, 0, inv.upperBound())
+            CBGetGeneralString = inv.fileNames(arrayPos)
             Exit Function
         Case 5:
-            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
-            CBGetGeneralString = inv.item(arrayPos).handle
+            arrayPos = inBounds(arrayPos, 0, inv.upperBound())
+            CBGetGeneralString = inv.handles(arrayPos)
             Exit Function
         Case 6:
             arrayPos = inBounds(arrayPos, 0, 16)
@@ -1488,8 +1488,8 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
     playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
-            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
-            CBGetGeneralNum = inv.item(arrayPos).number
+            arrayPos = inBounds(arrayPos, 0, inv.upperBound())
+            CBGetGeneralNum = inv.quantities(arrayPos)
             Exit Function
         Case 1:
             CBGetGeneralNum = equipHPadd(playerSlot)
@@ -1613,12 +1613,12 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
             otherPlayersHandle$(arrayPos) = newVal
             Exit Sub
         Case 4:
-            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
-            inv.item(arrayPos).file = newVal
+            arrayPos = inBounds(arrayPos, 0, inv.upperBound())
+            inv.fileNames(arrayPos) = newVal
             Exit Sub
         Case 5:
-            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
-            inv.item(arrayPos).handle = newVal
+            arrayPos = inBounds(arrayPos, 0, inv.upperBound())
+            inv.handles(arrayPos) = newVal
             Exit Sub
         Case 6:
             arrayPos = inBounds(arrayPos, 0, 16)
@@ -1694,8 +1694,8 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
     playerSlot = inBounds(playerSlot, 0, 4)
     Select Case infoCode
         Case 0:
-            arrayPos = inBounds(arrayPos, 0, UBound(inv.item))
-            inv.item(arrayPos).number = newVal
+            arrayPos = inBounds(arrayPos, 0, inv.upperBound())
+            inv.quantities(arrayPos) = newVal
             Exit Sub
         Case 1:
             equipHPadd(playerSlot) = newVal
@@ -2135,7 +2135,7 @@ Sub CBLoadItem(ByVal file As String, ByVal itmSlot As Long)
     On Error GoTo errorhandler
     
     'MODIFIED BY KSNiloc...
-    Do While MAXITEM < itmSlot
+    Do While maxItem < itmSlot
         dimensionItemArrays
     Loop
     itemMem(itmSlot) = openItem(projectPath$ & itmPath$ & file)
@@ -2376,7 +2376,7 @@ Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal ar
             CBGetBoardNum = boardList(activeBoardIndex).theData.fightingYN
             Exit Function
         Case 10:
-            arrayPos1 = inBounds(arrayPos1, 1, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 1, maxItem)
             CBGetBoardNum = boardList(activeBoardIndex).theData.brdConst(arrayPos1)
             Exit Function
         Case 11:
@@ -2400,23 +2400,23 @@ Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal ar
             CBGetBoardNum = boardList(activeBoardIndex).theData.activationType(arrayPos1)
             Exit Function
         Case 16:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmX(arrayPos1)
             Exit Function
         Case 17:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmY(arrayPos1)
             Exit Function
         Case 18:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmLayer(arrayPos1)
             Exit Function
         Case 19:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardNum = boardList(activeBoardIndex).theData.itmActivate(arrayPos1)
             Exit Function
         Case 20:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardNum = boardList(activeBoardIndex).theData.activationType(arrayPos1)
             Exit Function
         Case 21:
@@ -2520,31 +2520,31 @@ Function CBGetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal
             CBGetBoardString = boardList(activeBoardIndex).theData.activateDoneNum$(arrayPos1)
             Exit Function
         Case 13:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmName$(arrayPos1)
             Exit Function
         Case 14:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmVarActivate$(arrayPos1)
             Exit Function
         Case 15:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmDoneVarActivate$(arrayPos1)
             Exit Function
         Case 16:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmActivateInitNum$(arrayPos1)
             Exit Function
         Case 17:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardString = boardList(activeBoardIndex).theData.itmActivateDoneNum$(arrayPos1)
             Exit Function
         Case 18:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardString = boardList(activeBoardIndex).theData.itemProgram$(arrayPos1)
             Exit Function
         Case 19:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             CBGetBoardString = boardList(activeBoardIndex).theData.itemMulti$(arrayPos1)
             Exit Function
     End Select
@@ -2647,27 +2647,27 @@ Sub CBSetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arrayPo
             boardList(activeBoardIndex).theData.activationType(arrayPos1) = nValue
             Exit Sub
         Case 16:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.itmX(arrayPos1) = nValue
             Exit Sub
         Case 17:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             nValue = inBounds(nValue, 1, 50)
             boardList(activeBoardIndex).theData.itmY(arrayPos1) = nValue
             Exit Sub
         Case 18:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             nValue = inBounds(nValue, 1, 8)
             boardList(activeBoardIndex).theData.itmLayer(arrayPos1) = nValue
             Exit Sub
         Case 19:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.itmActivate(arrayPos1) = nValue
             Exit Sub
         Case 20:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             nValue = inBounds(nValue, 0, 1)
             boardList(activeBoardIndex).theData.activationType(arrayPos1) = nValue
             Exit Sub
@@ -2763,31 +2763,31 @@ Sub CBSetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arra
             boardList(activeBoardIndex).theData.activateDoneNum$(arrayPos1) = newVal
             Exit Sub
         Case 13:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             boardList(activeBoardIndex).theData.itmName$(arrayPos1) = newVal
             Exit Sub
         Case 14:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             boardList(activeBoardIndex).theData.itmVarActivate$(arrayPos1) = newVal
             Exit Sub
         Case 15:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             boardList(activeBoardIndex).theData.itmDoneVarActivate$(arrayPos1) = newVal
             Exit Sub
         Case 16:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             boardList(activeBoardIndex).theData.itmActivateInitNum$(arrayPos1) = newVal
             Exit Sub
         Case 17:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             boardList(activeBoardIndex).theData.itmActivateDoneNum$(arrayPos1) = newVal
             Exit Sub
         Case 18:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             boardList(activeBoardIndex).theData.itemProgram$(arrayPos1) = newVal
             Exit Sub
         Case 19:
-            arrayPos1 = inBounds(arrayPos1, 0, MAXITEM)
+            arrayPos1 = inBounds(arrayPos1, 0, maxItem)
             boardList(activeBoardIndex).theData.itemMulti$(arrayPos1) = newVal
             Exit Sub
     End Select

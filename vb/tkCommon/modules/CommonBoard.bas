@@ -1009,9 +1009,10 @@ ver2oldboard:
                 .activateDoneNum$(loopControl) = fread(num) 'what to make variable at end of activation.
                 .activationType(loopControl) = fread(num) 'activation type- 0-step on, 1- conditional (activation key)
             Next loopControl
+            ReDim boardList(activeBoardIndex).theData.itmName(0)
             For loopControl = 0 To 10
                 Call dimensionItemArrays
-                .itmName$(loopControl) = fread(num)   'filenames of items
+                .itmName(loopControl) = fread(num)   'filenames of items
                 .itmX(loopControl) = fread(num)        'x coord
                 .itmY(loopControl) = fread(num)             'y coord
                 .itmLayer(loopControl) = fread(num)         'layer coord

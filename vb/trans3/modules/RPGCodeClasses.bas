@@ -87,7 +87,7 @@ Function IsClassRPG(Class As String, pass As String, Text$, ByRef theProgram As 
   Case Else
    'May be a user-made class...
    file = App.path & "\" & projectPath$ & "prg\" & from & ".prg"
-   If FileExists(file) Then
+   If fileExists(file) Then
     IncludeRPG "#Include(""" & from & ".prg"")", theProgram
     IncreaseClassNestle Class
     Temp = InStr(1, Text$, ".", vbTextCompare)
@@ -134,13 +134,13 @@ Sub SetNewClass(Text$, ByRef theProgram As RPGCodeProgram)
   Exit Sub
  End If
 
- temp2 = GetValue(GetElement(GetBrackets(Text$), 1), name, temp3, theProgram)
+ temp2 = getValue(GetElement(GetBrackets(Text$), 1), name, temp3, theProgram)
  If Not temp3 = 0 Then
   debugger "Class.SetNew needs object data elements-- " & Text$
   Exit Sub
  End If
 
- temp2 = GetValue(GetElement(GetBrackets(Text$), 2), from, temp3, theProgram)
+ temp2 = getValue(GetElement(GetBrackets(Text$), 2), from, temp3, theProgram)
  If Not temp3 = 0 Then
   debugger "Class.SetNew needs object data elements-- " & Text$
   Exit Sub
@@ -208,7 +208,7 @@ Sub SetLocal(Text$, ByRef theProgram As RPGCodeProgram)
 
  Class = CBGetString("Class_Nestled_Name[" & CStr(CBGetNumerical("Class_Nestled!")) & "]$")
  var = GetElement(GetBrackets(Text$), 1)
- temp2 = GetValue(GetElement(GetBrackets(Text$), 2), Data, var2, theProgram)
+ temp2 = getValue(GetElement(GetBrackets(Text$), 2), Data, var2, theProgram)
 
  var = parseArray(var, theProgram)
 
@@ -283,7 +283,7 @@ Sub DestroyClass(Text$, ByRef theProgram As RPGCodeProgram)
   Exit Sub
  End If
 
- temp2 = GetValue(GetElement(GetBrackets(Text$), 1), name, temp3, theProgram)
+ temp2 = getValue(GetElement(GetBrackets(Text$), 1), name, temp3, theProgram)
  If IsNonInstanceableClass(name) Then
   debugger "Class """ & name & """ cannot be destroyed."
   Exit Sub
@@ -434,8 +434,8 @@ Public Sub Inherit(Text$, ByRef theProgram As RPGCodeProgram)
    debugger "Class.Inherit needs two data elements-- " & Text$
    Exit Sub
   End If
-  varType(0) = GetValue(GetElement(GetBrackets(Text$), 1), lit(0), num(0), theProgram)
-  varType(1) = GetValue(GetElement(GetBrackets(Text$), 2), lit(1), num(1), theProgram)
+  varType(0) = getValue(GetElement(GetBrackets(Text$), 1), lit(0), num(0), theProgram)
+  varType(1) = getValue(GetElement(GetBrackets(Text$), 2), lit(1), num(1), theProgram)
   If Not varType(0) = DT_LIT Or Not varType(1) = DT_LIT Then
    debugger "Class.Inherit needs object data elements-- " & Text$
    Exit Sub
@@ -464,7 +464,7 @@ Public Sub Inherit(Text$, ByRef theProgram As RPGCodeProgram)
   Dim fromClass As String
   fromClass = InClass.InheritFrom
   'fromClass = OnTopOfClassStack()
-  varType(0) = GetVariable(fromClass & "." & GetElement(GetBrackets(Text$), 1), lit(0), num(0), theProgram)
+  varType(0) = getVariable(fromClass & "." & GetElement(GetBrackets(Text$), 1), lit(0), num(0), theProgram)
   
   Select Case varType(0)
    Case DT_NUM

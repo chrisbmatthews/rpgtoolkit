@@ -195,7 +195,7 @@ Private Sub initGame()
     currentDir = CurDir()
     Call InitThreads
     Call initVarSystem
-    Call InitInventory(inv)
+    Call Load(inv)
     menuColor = RGB(0, 0, 0)
     MWinSize = 90
     mainMem.mainScreenType = 2
