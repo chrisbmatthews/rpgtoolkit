@@ -24,6 +24,7 @@ Public Sub Main()
     Call InitCanvasEngine
     Call initDirectories
     Call initBoardAndTileEditor
+    Call initPlayers
     Call initLocalization
     Call frmMain.Show(vbModal)
     Call tkMainForm.Show
@@ -60,6 +61,7 @@ Private Sub initRuntimes()
     'Initiate runtimes
     '=======================================================
     On Error Resume Next
+    If Command <> "" Then Call ChDir(App.path)
     If Not InitRuntime() Then
         Call MsgBox("Could not initialize actkrt3.dll.  Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
         End

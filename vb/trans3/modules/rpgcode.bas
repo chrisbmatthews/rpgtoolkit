@@ -3442,7 +3442,7 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim tempPRG As RPGCodeProgram
         Dim filen As String
         Dim count As Long
-             
+
         'Get a location for the tricky file...
         If Not pakFileRunning Then
             filen = projectPath & prgPath & lit
