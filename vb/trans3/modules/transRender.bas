@@ -206,60 +206,65 @@ End Sub
 '=========================================================================
 ' Redraw all layers at x, y *on the board*
 '=========================================================================
-Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer)
+Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As Integer): On Error Resume Next
 
-    On Error Resume Next
-
-    Dim x As Long, y As Long
-    x = xBoardCoord
-    y = yBoardCoord
-    
-    Call ambienteffect
+    'Call ambienteffect
 
     'internal engine drawing routines
     'first, get the shade color of the board...
-    Dim shadeR As Double, shadeG As Double, shadeB As Double
-    Dim lightShade As Double
-    Call ambientRGB(shadeR, shadeG, shadeB)
-    'now check day and night info...
-    If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
-        lightShade = DetermineLightLevel()
-        shadeR = shadeR + lightShade
-        shadeG = shadeG + lightShade
-        shadeB = shadeB + lightShade
-    End If
+    'Dim shadeR As Double, shadeG As Double, shadeB As Double
+    'Dim lightShade As Double
+    'Call ambientRGB(shadeR, shadeG, shadeB)
+    ''now check day and night info...
+    'If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
+    '    lightShade = DetermineLightLevel()
+    '    shadeR = shadeR + lightShade
+    '    shadeG = shadeG + lightShade
+    '    shadeB = shadeB + lightShade
+    'End If
+    '
+    'addOnR = addOnR + shadeR
+    'addOnG = addOnG + shadeG
+    'addOnB = addOnB + shadeB
     
-    addOnR = addOnR + shadeR
-    addOnG = addOnG + shadeG
-    addOnB = addOnB + shadeB
+    Dim shadeR As Long, shadeB As Long, shadeG As Long
+    Call getAmbientLevel(shadeR, shadeB, shadeG)
     
     'now redraw the layers...
-    Dim xx As Long, yy As Long
+    Dim xx As Long, yy As Long, x As Long, y As Long, layer As Long
+    
+    x = xBoardCoord
+    y = yBoardCoord
+
     xx = x - scTopX
     yy = y - scTopY
-    Dim lll As Long
-    Dim hdc As Long
-    Dim hdcMask As Long
-    For lll = 1 To boardList(activeBoardIndex).theData.bSizeL
-        If BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData) <> "" Then
+    
+    For layer = 1 To boardList(activeBoardIndex).theData.bSizeL
+        If BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData) <> "" Then
+            'If there is a tile here.
+        
             Call drawTileCNV(cnvScrollCache, _
-                          projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
+                          projectPath & tilePath & BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData), _
                           xx, _
                           yy, _
-                          boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + addOnR, _
-                          boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + addOnG, _
-                          boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + addOnB, False)
+                          boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                          boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                          boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, False)
+            
             If cnvScrollCacheMask <> -1 Then
+                
                 Call drawTileCNV(cnvScrollCacheMask, _
-                              projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
+                              projectPath & tilePath & BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData), _
                               xx, _
                               yy, _
-                              boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + addOnR, _
-                              boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + addOnG, _
-                              boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + addOnB, True, False)
+                              boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                              boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                              boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, True, False)
+            
             End If
         End If
-    Next lll
+    Next layer
+    
 End Sub
 
 '=========================================================================
@@ -315,25 +320,28 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
     On Error Resume Next
 
     'Ambient effects
-    Call ambienteffect
+    'Call ambienteffect
 
     'Shade of board
-    Dim shadeR As Double, shadeG As Double, shadeB As Double
-    Call ambientRGB(shadeR, shadeG, shadeB)
+    'Dim shadeR As Double, shadeG As Double, shadeB As Double
+    'Call ambientRGB(shadeR, shadeG, shadeB)
 
     'Day/night shade
-    If (mainMem.mainUseDayNight = 1) And (boardList(activeBoardIndex).theData.BoardDayNight = 1) Then
-        Dim lightShade As Long
-        lightShade = DetermineLightLevel()
-        shadeR = shadeR + lightShade
-        shadeG = shadeG + lightShade
-        shadeB = shadeB + lightShade
-    End If
+    'If (mainMem.mainUseDayNight = 1) And (boardList(activeBoardIndex).theData.BoardDayNight = 1) Then
+    '    Dim lightShade As Long
+    '    lightShade = DetermineLightLevel()
+    '    shadeR = shadeR + lightShade
+    '    shadeG = shadeG + lightShade
+    '    shadeB = shadeB + lightShade
+    'End If
 
     'Final shade
-    addOnR = addOnR + shadeR
-    addOnG = addOnG + shadeG
-    addOnB = addOnB + shadeB
+    'addOnR = addOnR + shadeR
+    'addOnG = addOnG + shadeG
+    'addOnB = addOnB + shadeB
+    
+    Dim shadeR As Long, shadeB As Long, shadeG As Long
+    Call getAmbientLevel(shadeR, shadeB, shadeG)
     
     'first things first- what prgs are on this layer?
     Dim prgNum As Long
@@ -376,9 +384,9 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
                                         projectPath & tilePath & boardList(activeBoardIndex).theData.progGraphic$(prgNum), _
                                         x - scTopX, _
                                         y - scTopY, _
-                                        boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + addOnR, _
-                                        boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + addOnG, _
-                                        boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + addOnB, False)
+                                        boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                                        boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                                        boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, False)
                     End If
                         
                     If cnvMask <> -1 Then
@@ -386,9 +394,9 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
                                         projectPath & tilePath & boardList(activeBoardIndex).theData.progGraphic$(prgNum), _
                                         x - scTopX, _
                                         y - scTopY, _
-                                        boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + addOnR, _
-                                        boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + addOnG, _
-                                        boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + addOnB, True, False)
+                                        boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
+                                        boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
+                                        boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, True, False)
                     End If
                 End If
             End If
@@ -584,22 +592,26 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
         For t = 0 To boardList(activeBoardIndex).theData.anmTileInsertIdx - 1
             If TileAnmShouldDrawFrame(boardList(activeBoardIndex).theData.animatedTile(t).theTile) Then
                 toRet = True
-                Call ambienteffect
+                'Call ambienteffect
                 'internal engine drawing routines
                 'first, get the shade color of the board...
-                Dim shadeR As Double, shadeG As Double, shadeB As Double
-                Call ambientRGB(shadeR, shadeG, shadeB)
+                'Dim shadeR As Double, shadeG As Double, shadeB As Double
+                'Call ambientRGB(shadeR, shadeG, shadeB)
                 'now check day and night info...
-                If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
-                    lightShade = DetermineLightLevel()
-                    shadeR = shadeR + lightShade
-                    shadeG = shadeG + lightShade
-                    shadeB = shadeB + lightShade
-                End If
+                'If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
+                '    lightShade = DetermineLightLevel()
+                '    shadeR = shadeR + lightShade
+                '    shadeG = shadeG + lightShade
+                '    shadeB = shadeB + lightShade
+                'End If
+                '
+                'addOnR = addOnR + shadeR
+                'addOnG = addOnG + shadeG
+                'addOnB = addOnB + shadeB
                 
-                addOnR = addOnR + shadeR
-                addOnG = addOnG + shadeG
-                addOnB = addOnB + shadeB
+                Dim shadeR As Long, shadeB As Long, shadeG As Long
+                Call getAmbientLevel(shadeR, shadeB, shadeG)
+
                 
                 'now redraw the layers...
                 x = boardList(activeBoardIndex).theData.animatedTile(t).x
@@ -617,9 +629,9 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                               projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                                               xx, _
                                               yy, _
-                                              boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + addOnR, _
-                                              boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + addOnG, _
-                                              boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + addOnB, False)
+                                              boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                              boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                              boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
                             End If
                             
                             If cnvMask <> -1 Then
@@ -627,9 +639,9 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                               projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
                                               xx, _
                                               yy, _
-                                              boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + addOnR, _
-                                              boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + addOnG, _
-                                              boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + addOnB, True, False)
+                                              boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                              boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                              boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, False)
                             End If
                         Else
                             If cnv <> -1 Then
@@ -638,17 +650,17 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                                                 cnv, _
                                                                 xx, _
                                                                 yy, _
-                                                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + addOnR, _
-                                                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + addOnG, _
-                                                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + addOnB, False)
+                                                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
                                 Else
                                     Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
                                                                 cnv, _
                                                                 xx, _
                                                                 yy, _
-                                                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + addOnR, _
-                                                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + addOnG, _
-                                                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + addOnB, True, True, False)
+                                                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, False)
                                 End If
                             End If
                             If cnvMask <> -1 Then
@@ -656,9 +668,9 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                                             cnvMask, _
                                                             xx, _
                                                             yy, _
-                                                            boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + addOnR, _
-                                                            boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + addOnG, _
-                                                            boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + addOnB, True, True, True)
+                                                            boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                                            boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                                            boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, True)
                             End If
                         End If
                     End If
@@ -746,15 +758,6 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     'FIXED: Edge of screen problems.
     'ADDED: a new argument: "pending". Using pending movements to fix iso transluscent problems.
     '"pending" is also passed to getBottomCentreX - this is an isometric fix.
-    'Substituted tile type constants.
-    'Renamed variables: cnv >> cnvFrameID
-    '                   x,y >> centreX,centreY
-    '                   sx,sy >> cornerX, cornerY
-    '                   srcX,srcY >> offsetX, offsetY
-    '                   W, h >> renderWidth, renderHeight
-    'New variables:     spriteWidth = getCanvasWidth(), spriteHeight = getCanvasHeight()
-    '                   targetTile, originTile (target and origin tile types)
-    
     'MISSING: Partial transluscency functions do not seem to have been written yet... needed for
     'transluscent sprites at edge of board, etc.
     '===========================================

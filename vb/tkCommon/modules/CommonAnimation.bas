@@ -743,9 +743,5 @@ Public Sub clearAnmCache(): On Error Resume Next
         anmCache(i).frame = 0
 
     Next i
-    
-    'Clear the player's last frame render, to force a redraw directly on entering.
-    '(Prevents players starting new boards with old frame).
-    lastPlayerRender(selectedPlayer).canvas = -1
 
 End Sub

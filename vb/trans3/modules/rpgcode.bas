@@ -6318,6 +6318,9 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     
     Call clearAnmCache  'Delano. 3.0.4.
     
+    'Clear the player's last frame render, to force a redraw directly on entering.
+    '(Prevents players starting new boards with old frame).
+    lastPlayerRender(selectedPlayer).canvas = -1
     lastRender.canvas = -1
     scTopX = -1000
     scTopY = -1000
