@@ -81,33 +81,67 @@ Sub fightTest()
     End If
 End Sub
 
+Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
 
-
-Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
-    'cause the enemy at partyIdx, fightIdx to attack...
     On Error Resume Next
-    
+   
+    '====================================================================================
+    'Re-written by KSNiloc
+    '====================================================================================
+   
+    'Check that we have an enemy
     If Not (parties(partyIdx).fighterList(fightIdx).isPlayer) Then
-        'yes, this is an enemy...
+
+        'Create a pointer
         Dim ene As TKEnemy
         ene = parties(partyIdx).fighterList(fightIdx).enemy
-        'check enemy AI...
-        'AI level 0-low, 1- medium, 3- high, 4- very high
-        ene.eneAI = 0
-        Select Case ene.eneAI
-            Case 0:
-                Call AIZero(partyIdx, fightIdx)
-            Case 1:
-                Call AIOne(partyIdx, fightIdx)
-            Case 2:
-                Call AITwo(partyIdx, fightIdx)
-            Case 3:
-                Call AIThree(partyIdx, fightIdx)
-        End Select
+       
+        'Check if there is an AI program
+        If ene.eneRPGCode <> "" Then
+            'Yep-- there is
+       
+            Dim a As Long
+            Dim b As Long
+            Dim indices(5) As Long
+
+            'Create indices of living players
+            For a = 0 To UBound(parties(PLAYER_PARTY).fighterList)
+                Dim theHealth As Double
+                theHealth = CBGetNumerical(parties(PLAYER_PARTY).fighterList(a).player.healthVar)
+                If theHealth > 0 Then
+                    b = b + 1
+                    indices(b) = a
+                End If
+            Next a
+
+            'Randomly choose one of them
+            Dim toAttack As Long
+            toAttack = indices(Int(Rnd(1) * b) + 1)
+           
+            'Set target, source, and run the program
+            CBSetTarget toAttack, TYPE_PLAYER
+            CBSetSource fightIdx, TYPE_ENEMY
+            runProgram projectPath & prgPath & ene.eneRPGCode, , False
+           
+        Else
+       
+            'No AI program, use internal AI
+            Select Case ene.eneAI
+                Case 0
+                    AIZero partyIdx, fightIdx
+                Case 1
+                    AIOne partyIdx, fightIdx
+                Case 2
+                    AITwo partyIdx, fightIdx
+                Case 3
+                    AIThree partyIdx, fightIdx
+            End Select
+       
+        End If
+       
     End If
+
 End Sub
-
-
 
 Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long)
     'call into the fight plugin
@@ -297,10 +331,14 @@ Sub fightTick()
                         Next S
                         
                         If Not (parties(t).fighterList(u).freezeCharge) Then
-                            'tell the plugin that the plyer is charged...
-                            Call fightInformCharge(t, u)
+                       
+                            'KSNiloc says:
+                            '   Should lock BEFORE calling plugin
+                       
                             'now lock the player from charging again...
                             parties(t).fighterList(u).freezeCharge = True
+                            'tell the plugin that the plyer is charged...
+                            Call fightInformCharge(t, u)
                         End If
                     End If
                 End If
