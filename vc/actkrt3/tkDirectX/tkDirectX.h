@@ -30,6 +30,9 @@
 #if !defined(DOUBLE)
 typedef double DOUBLE;
 #endif
+#if !defined(CNV_HANDLE)
+typedef INT CNV_HANDLE;
+#endif
 
 //------------------------------------------------------------------------
 // Prototypes

@@ -7,12 +7,12 @@
 //--------------------------------------------------------------------------
 // Inclusions
 //--------------------------------------------------------------------------
-#include "GDICanvas.h"		// Contains stuff for this file
+#include "GDICanvas.h"				// Contains stuff for this file
 
 //--------------------------------------------------------------------------
 // Externs
 //--------------------------------------------------------------------------
-extern DXINFO gDXInfo;		// DirectX info structure.
+extern CDirectDraw *g_pDirectDraw;	// Main DirectDraw object
 
 //--------------------------------------------------------------------------
 // Default constructor
@@ -142,34 +142,31 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 		)
 {
 
-	// If using DirectX
-	if (!(m_bUseDX = (bDX && gDXInfo.lpdd)))
+	// If a DirectDraw object exists
+	if (g_pDirectDraw)
+	{
+
+		// If using DirectX
+		if (m_bUseDX = (bDX && g_pDirectDraw->usingDirectX()))
+		{
+
+			// Create a DirectDraw surface
+			m_lpddsSurface = g_pDirectDraw->createSurface(width, height);
+
+		}
+
+	}
+
+	// If DirectDraw is not avaliable
+	if (!m_bUseDX)
 	{
 
 		// Destroy existing canvas
 		if (m_hdcMem) Destroy();
 
-		// Create new canvas
+		// Create a new canvas using GDI
 		m_hdcMem = CreateCompatibleDC(hdcCompatible);
 
-	}
-	else
-	{
-
-		// Create a DirectX surface
-		DDSURFACEDESC2 ddsd;
-		DD_INIT_STRUCT(ddsd);
-		ddsd.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
-		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY;
-		ddsd.dwWidth = width;
-		ddsd.dwHeight = height;
-		CONST HRESULT hr = gDXInfo.lpdd->CreateSurface(&ddsd, &m_lpddsSurface, NULL);
-		if (FAILED(hr))
-		{
-			// Use RAM (slower...)
-			ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-			gDXInfo.lpdd->CreateSurface(&ddsd, &m_lpddsSurface, NULL);
-		}
 	}
 
 	// Record width and height
@@ -801,10 +798,8 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 				CONST INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 
 				// Obtain pointers to the surfaces
-				// (*CONST means that the address pointed to will not change, but
-				// the data at that address can be changed freely)
-				DWORD *CONST pSurfDest = reinterpret_cast<DWORD *>(destSurface.lpSurface);
-				DWORD *CONST pSurfSrc = reinterpret_cast<DWORD *>(srcSurface.lpSurface);
+				LPDWORD CONST pSurfDest = reinterpret_cast<LPDWORD>(destSurface.lpSurface);
+				LPDWORD CONST pSurfSrc = reinterpret_cast<LPDWORD>(srcSurface.lpSurface);
 
 				// For the y axis
 				for (INT yy = ySrc; yy < height; yy++)
@@ -922,10 +917,8 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 				CONST INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 
 				// Obtain pointers to the surfaces
-				// (*CONST means that the address pointed to will not change, but
-				// the data at that address can be changed freely)
-				WORD *CONST pSurfDest = reinterpret_cast<WORD *>(destSurface.lpSurface);
-				WORD *CONST pSurfSrc = reinterpret_cast<WORD *>(srcSurface.lpSurface);
+				LPWORD CONST pSurfDest = reinterpret_cast<LPWORD>(destSurface.lpSurface);
+				LPWORD CONST pSurfSrc = reinterpret_cast<LPWORD>(srcSurface.lpSurface);
 
 				// For the y axis
 				for (INT yy = ySrc; yy < height; yy++)
@@ -1051,41 +1044,39 @@ INT FAST_CALL CGDICanvas::ShiftLeft(
 	CONST INT nPixels
 		)
 {
-	INT nToRet = 0;
-	if (this->usingDX())
+
+	// If using DirectX
+	if (usingDX())
 	{
-		CGDICanvas temp = (*this);
-		//blt them using directX blt call
-		RECT destRect;
-		SetRect(&destRect, 0, 0, m_nWidth-nPixels, m_nHeight);
 
-		RECT rect;
-		SetRect(&rect, nPixels, 0, m_nWidth, m_nHeight);
+		// Create a copy of this canvas
+		CONST CGDICanvas temp = *this;
 
-		//I'm going to use a raster operation witht he blt
-		//it will be SRCCOPY (straight copy!)
+		// Setup rects
+		RECT destRect = {0, 0, m_nWidth - nPixels, m_nHeight};
+		RECT rect = {nPixels, 0, m_nWidth, m_nHeight};
+
+		// Setup the blt effects
 		DDBLTFX bltFx;
-		memset(&bltFx, 0, sizeof(DDBLTFX));
-		bltFx.dwSize = sizeof(DDBLTFX);
+		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = SRCCOPY;
 
-		HRESULT hr = GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx);
-		if (FAILED(hr))
-		{
-			nToRet = 0;
-		}
-		else
-		{
-			nToRet = 1;
-		}
+		// Execute the blt
+		return SUCCEEDED(GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx));
+
 	}
 	else
 	{
-		HDC hdcMe = OpenDC();
-		nToRet = BitBlt(hdcMe, -nPixels, 0, GetWidth(), GetHeight(), hdcMe, 0, 0, SRCCOPY);
+		// Use GDI
+		CONST HDC hdcMe = OpenDC();
+		CONST INT nToRet = BitBlt(hdcMe, -nPixels, 0, GetWidth(), GetHeight(), hdcMe, 0, 0, SRCCOPY);
 		CloseDC(hdcMe);
+		return nToRet;
 	}
-	return nToRet;
+
+	// If here, we've failed
+	return FALSE;
+
 }
 
 //--------------------------------------------------------------------------
@@ -1095,41 +1086,39 @@ INT FAST_CALL CGDICanvas::ShiftRight(
 	CONST INT nPixels
 		)
 {
-	INT nToRet = 0;
-	if (this->usingDX())
+
+	// If using DirectX
+	if (usingDX())
 	{
-		CGDICanvas temp = (*this);
-		//blt them using directX blt call
-		RECT destRect;
-		SetRect(&destRect, nPixels, 0, m_nWidth, m_nHeight);
 
-		RECT rect;
-		SetRect(&rect, 0, 0, m_nWidth-nPixels, m_nHeight);
+		// Create a copy of this canvas
+		CONST CGDICanvas temp = *this;
 
-		//I'm going to use a raster operation witht he blt
-		//it will be SRCCOPY (straight copy!)
+		// Setup rects
+		RECT destRect = {nPixels, 0, m_nWidth, m_nHeight};
+		RECT rect = {0, 0, m_nWidth - nPixels, m_nHeight};
+
+		// Setup the blt effects
 		DDBLTFX bltFx;
-		memset(&bltFx, 0, sizeof(DDBLTFX));
-		bltFx.dwSize = sizeof(DDBLTFX);
+		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = SRCCOPY;
 
-		HRESULT hr = GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx);
-		if (FAILED(hr))
-		{
-			nToRet = 0;
-		}
-		else
-		{
-			nToRet = 1;
-		}
+		// Execute the blt
+		return SUCCEEDED(GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx));
+
 	}
 	else
 	{
-		HDC hdcMe = OpenDC();
-		nToRet = BitBlt(hdcMe, nPixels, 0, GetWidth(), GetHeight(), hdcMe, 0, 0, SRCCOPY);
+		// Use GDI
+		CONST HDC hdcMe = OpenDC();
+		CONST INT nToRet = BitBlt(hdcMe, nPixels, 0, GetWidth(), GetHeight(), hdcMe, 0, 0, SRCCOPY);
 		CloseDC(hdcMe);
+		return nToRet;
 	}
-	return nToRet;
+
+	// If here, we've failed
+	return FALSE;
+
 }
 
 //--------------------------------------------------------------------------
@@ -1139,41 +1128,39 @@ INT FAST_CALL CGDICanvas::ShiftUp(
 	CONST INT nPixels
 		)
 {
-	INT nToRet = 0;
-	if (this->usingDX())
+
+	// If using DirectX
+	if (usingDX())
 	{
-		CGDICanvas temp = (*this);
-		//blt them using directX blt call
-		RECT destRect;
-		SetRect(&destRect, 0, 0, m_nWidth, m_nHeight-nPixels);
 
-		RECT rect;
-		SetRect(&rect, 0, nPixels, m_nWidth, m_nHeight);
+		// Create a copy of this canvas
+		CONST CGDICanvas temp = *this;
 
-		//I'm going to use a raster operation witht he blt
-		//it will be SRCCOPY (straight copy!)
+		// Setup rects
+		RECT destRect = {0, 0, m_nWidth, m_nHeight - nPixels};
+		RECT rect = {0, nPixels, m_nWidth, m_nHeight};
+
+		// Setup the blt effects
 		DDBLTFX bltFx;
-		memset(&bltFx, 0, sizeof(DDBLTFX));
-		bltFx.dwSize = sizeof(DDBLTFX);
+		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = SRCCOPY;
 
-		HRESULT hr = GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx);
-		if (FAILED(hr))
-		{
-			nToRet = 0;
-		}
-		else
-		{
-			nToRet = 1;
-		}
+		// Execute the blt
+		return SUCCEEDED(GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx));
+
 	}
 	else
 	{
-		HDC hdcMe = OpenDC();
-		nToRet = BitBlt(hdcMe, 0, -nPixels, GetWidth(), GetHeight(), hdcMe, 0, 0, SRCCOPY);
+		// Use GDI
+		CONST HDC hdcMe = OpenDC();
+		CONST INT nToRet = BitBlt(hdcMe, 0, -nPixels, GetWidth(), GetHeight(), hdcMe, 0, 0, SRCCOPY);
 		CloseDC(hdcMe);
+		return nToRet;
 	}
-	return nToRet;
+
+	// If here, we've failed
+	return FALSE;
+
 }
 
 //--------------------------------------------------------------------------
@@ -1183,41 +1170,39 @@ INT FAST_CALL CGDICanvas::ShiftDown(
 	CONST INT nPixels
 		)
 {
-	INT nToRet = 0;
-	if (this->usingDX())
+
+	// If using DirectX
+	if (usingDX())
 	{
-		CGDICanvas temp = (*this);
-		//blt them using directX blt call
-		RECT destRect;
-		SetRect(&destRect, 0, nPixels, m_nWidth, m_nHeight);
 
-		RECT rect;
-		SetRect(&rect, 0, 0, m_nWidth, m_nHeight-nPixels);
+		// Create a copy of this canvas
+		CONST CGDICanvas temp = *this;
 
-		//I'm going to use a raster operation witht he blt
-		//it will be SRCCOPY (straight copy!)
+		// Setup rects
+		RECT destRect = {0, nPixels, m_nWidth, m_nHeight};
+		RECT rect = {0, 0, m_nWidth, m_nHeight - nPixels};
+
+		// Setup the blt effects
 		DDBLTFX bltFx;
-		memset(&bltFx, 0, sizeof(DDBLTFX));
-		bltFx.dwSize = sizeof(DDBLTFX);
+		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = SRCCOPY;
 
-		HRESULT hr = GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx);
-		if (FAILED(hr))
-		{
-			nToRet = 0;
-		}
-		else
-		{
-			nToRet = 1;
-		}
+		// Execute the blt
+		return SUCCEEDED(GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx));
+
 	}
 	else
 	{
-		HDC hdcMe = OpenDC();
-		nToRet = BitBlt(hdcMe, 0, nPixels, GetWidth(), GetHeight(), hdcMe, 0, 0, SRCCOPY);
+		// Use GDI
+		CONST HDC hdcMe = OpenDC();
+		CONST INT nToRet = BitBlt(hdcMe, 0, nPixels, GetWidth(), GetHeight(), hdcMe, 0, 0, SRCCOPY);
 		CloseDC(hdcMe);
+		return nToRet;
 	}
-	return nToRet;
+
+	// If here, we've failed
+	return FALSE;
+
 }
 
 
@@ -1470,29 +1455,6 @@ INLINE LONG CGDICanvas::GetRGBPixel(
 }
 
 //--------------------------------------------------------------------------
-// Set a block of pixels
-//--------------------------------------------------------------------------
-VOID FAST_CALL CGDICanvas::SetPixels(
-	CONST LPLONG p_crPixelArray,
-	CONST INT x,
-	CONST INT y,
-	CONST INT width,
-	CONST INT height
-		)
-{
-	if (usingDX())
-	{
-		// Blt them using directX blt call
-		SetPixelsDX(p_crPixelArray, x, y, width, height);
-	}
-	else
-	{
-		// Blt them using GDI
-		SetPixelsGDI(p_crPixelArray, x, y, width, height);
-	}
-}
-
-//--------------------------------------------------------------------------
 // Set pixels using DirectX
 //--------------------------------------------------------------------------
 VOID FAST_CALL CGDICanvas::SetPixelsDX(
@@ -1504,102 +1466,109 @@ VOID FAST_CALL CGDICanvas::SetPixelsDX(
 		)
 {
 
-	LPDIRECTDRAWSURFACE7 lpddsSurface = this->GetDXSurface();
+	// Get this DX surface
+	LPDIRECTDRAWSURFACE7 lpddsSurface = GetDXSurface();
 
-	if (lpddsSurface && this->usingDX())
+	// If using DirectX
+	if (lpddsSurface && usingDX())
 	{
-		//do a quick blt on my own...
-		RECT destRect;
-		SetRect(&destRect, x, y, x+this->GetWidth(), y+this->GetHeight());
 
-		RECT rect;
-		SetRect(&rect, 0, 0, this->GetWidth(), this->GetHeight());
-
-		//lock the destination surface...
+		// Lock the destination surface
 		DDSURFACEDESC2 destSurface;
-		memset(&destSurface, 0, sizeof(DDSURFACEDESC2));
-		destSurface.dwSize = sizeof(DDSURFACEDESC2);
+		DD_INIT_STRUCT(destSurface);
 		HRESULT hr = lpddsSurface->Lock(NULL, &destSurface, DDLOCK_SURFACEMEMORYPTR | DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
+
+		// If it locked
 		if (!FAILED(hr))
 		{
+
+			// Obtain pixel format
 			DDPIXELFORMAT ddpfDest;
-			memset(&ddpfDest, 0, sizeof(DDPIXELFORMAT));
-			ddpfDest.dwSize = sizeof(DDPIXELFORMAT);
+			DD_INIT_STRUCT(ddpfDest);
 			lpddsSurface->GetPixelFormat(&ddpfDest);
 
-			//I'm going to assume that the source and destination pixel formats are the same
-			//maybe a bad assumption, I don't know :)
+			// Switch on the pixel format
 			switch (ddpfDest.dwRGBBitCount)
 			{
+
+				// 32 bit
 				case 32:
 				{
-					INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount/8);
-					DWORD* pSurfDest = (DWORD*)destSurface.lpSurface;
 
-					//now blt!!!
-					INT idx = 0;	//index into source array...
+					CONST INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+					LPDWORD CONST pSurfDest = reinterpret_cast<LPDWORD>(destSurface.lpSurface);
+
+					// Lay down the pixels
+					INT idx = 0;	// Index into source array
 					for (INT yy = 0; yy < height; yy++)
 					{
-						INT idxd = (yy+y)*nPixelsPerRow + x;
-						for (INT xx=0; xx < width; xx++)
+						INT idxd = (yy + y) * nPixelsPerRow + x;
+						for (INT xx = 0; xx < width; xx++)
 						{
-							//convert pixels to RGB...
-							LONG srcRGB = p_crPixelArray[idx];
 
-							//put the pixel down
-							DWORD dClr = ConvertColorRef(srcRGB, &ddpfDest);
+							// Convert to RGB
+							CONST LONG srcRGB = p_crPixelArray[idx];
+
+							// Set the pixel down
+							CONST DWORD dClr = ConvertColorRef(srcRGB, &ddpfDest);
 							pSurfDest[idxd] = dClr;
 
 							idx++;
 							idxd++;
+
 						}
 					}
-				}
-				break;
+				} break;
 
+				// 16 bit
 				case 16:
 				{
-					INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount/8);
-					WORD* pSurfDest = (WORD*)destSurface.lpSurface;
 
-					//now blt!!!
-					INT idx = 0;	//index into source array...
+					CONST INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+					LPWORD CONST pSurfDest = reinterpret_cast<LPWORD>(destSurface.lpSurface);
+
+					// Lay down the pixels
+					INT idx = 0;	// Index into source array
 					for (INT yy = 0; yy < height; yy++)
 					{
-						INT idxd = (yy+y)*nPixelsPerRow + x;
-						for (INT xx=0; xx < width; xx++)
+						INT idxd = (yy + y) * nPixelsPerRow + x;
+						for (INT xx = 0; xx < width; xx++)
 						{
-							//convert pixels to RGB...
-							LONG srcRGB = p_crPixelArray[idx];
 
-							//put the pixel down
-							WORD dClr = ConvertColorRef(srcRGB, &ddpfDest);
+							// Convert to RGB
+							CONST LONG srcRGB = p_crPixelArray[idx];
+
+							// Set down the pixel
+							CONST WORD dClr = ConvertColorRef(srcRGB, &ddpfDest);
 							pSurfDest[idxd] = dClr;
 
 							idx++;
 							idxd++;
 						}
 					}
-				}
-				break;
+				} break;
 
 				default:
 				{
-					//for 24 bit, just do a regular set pixel thru GDI...
-					SetPixelsGDI( p_crPixelArray, x, y, width, height );
+					// Just use GDI
+					SetPixelsGDI(p_crPixelArray, x, y, width, height);
 				}
 			}
 
+			// Unlock
 			lpddsSurface->Unlock(NULL);
+
 		}
 		else
 		{
+			// Unlock
 			lpddsSurface->Unlock(NULL);
 		}
 	}
 	else
 	{
-		SetPixelsGDI( p_crPixelArray, x, y, width, height );
+		// Set using GDI
+		SetPixelsGDI(p_crPixelArray, x, y, width, height);
 	}
 
 }
@@ -1621,6 +1590,8 @@ INLINE VOID CGDICanvas::SetPixelsGDI(
 
 	// Position in the array
 	INT arrayPos = 0;
+
+	// Set the pixels
 	for (INT yy = y; yy < y + height; yy++)
 	{
 		for (INT xx = x; xx < x + width; xx++)
@@ -1632,4 +1603,27 @@ INLINE VOID CGDICanvas::SetPixelsGDI(
 	// Unlock the canvas
 	Unlock();
 
+}
+
+//--------------------------------------------------------------------------
+// Set a block of pixels
+//--------------------------------------------------------------------------
+VOID FAST_CALL CGDICanvas::SetPixels(
+	CONST LPLONG p_crPixelArray,
+	CONST INT x,
+	CONST INT y,
+	CONST INT width,
+	CONST INT height
+		)
+{
+	if (usingDX())
+	{
+		// Blt them using directX blt call
+		SetPixelsDX(p_crPixelArray, x, y, width, height);
+	}
+	else
+	{
+		// Blt them using GDI
+		SetPixelsGDI(p_crPixelArray, x, y, width, height);
+	}
 }

@@ -11,27 +11,33 @@
 //------------------------------------------------------------------------
 // Inclusions
 //------------------------------------------------------------------------
-#include "platform.h"						// Symbols for this file
+#include "platform.h"		// Symbols for this file
 
 //------------------------------------------------------------------------
-// Globals
+// Default constructor
 //------------------------------------------------------------------------
-DXINFO gDXInfo;								// DirectX info structure.
-
-//------------------------------------------------------------------------
-// Locals
-//------------------------------------------------------------------------
-STATIC BOOL g_bUseDirectX = FALSE;			// Using DirectX?
-STATIC HWND ghWndMain = NULL;				// Handle to host window
-STATIC HINSTANCE ghInstance;				// Handle of instance to app
-STATIC HDC ghDCLocked = NULL;				// HDC of locked surface
-STATIC HRGN g_Clipper = NULL;				// Clipping region
-STATIC CGDICanvas *g_pBackBuffer = NULL;	// Non-DirectX backbuffer
+CDirectDraw::CDirectDraw(VOID)
+{
+	// Initialize all members
+	m_bFullScreen = FALSE;
+	m_nColorDepth = 0;
+	m_nWidth = 0;
+	m_nHeight = 0;
+	m_lpdd = NULL;
+	m_lpddsPrime = NULL;
+	m_lpddsSecond = NULL;
+	m_lpddClip = NULL;
+	m_bUseDirectX = FALSE;
+	m_hWndMain = NULL;
+	m_hInstance = NULL;
+	m_hDCLocked = NULL;
+	m_pBackBuffer = NULL;
+}
 
 //------------------------------------------------------------------------
 // Initiate the graphics engine
 //------------------------------------------------------------------------
-BOOL FAST_CALL InitGraphicsMode(
+BOOL FAST_CALL CDirectDraw::InitGraphicsMode(
 	CONST HWND handle,
 	CONST INT nWidth,
 	CONST INT nHeight,
@@ -42,17 +48,18 @@ BOOL FAST_CALL InitGraphicsMode(
 {
 
 	// Store the main window's handle
-	ghWndMain = handle;
+	m_hWndMain = handle;
 
-	if (!ghWndMain) return FALSE;
+	if (!m_hWndMain) return FALSE;
 
 	// Initialize direct draw, but only of we're using DirectX
-	if (g_bUseDirectX = bUseDirectX)
+	if (m_bUseDirectX = bUseDirectX)
 	{
 
-		gDXInfo = InitDirectX(ghWndMain, nWidth, nHeight, nColorDepth, bFullScreen);
+		// Initialize DirectX
+		InitDirectX(m_hWndMain, nWidth, nHeight, nColorDepth, bFullScreen);
 
-		if (!gDXInfo.lpddsPrime)
+		if (!m_lpddsPrime)
 		{
 			// Problems initializing
 			KillGraphicsMode();
@@ -64,14 +71,14 @@ BOOL FAST_CALL InitGraphicsMode(
 	{
 
 		// Initiate the DirectX info structure
-		gDXInfo.lpdd = NULL;
-		gDXInfo.lpddsSecond = NULL;
-		gDXInfo.windowedMode.lpddClip = NULL;
-		gDXInfo.bFullScreen = FALSE;
-		gDXInfo.nColorDepth = 0;
+		m_lpdd = NULL;
+		m_lpddsSecond = NULL;
+		m_lpddClip = NULL;
+		m_bFullScreen = FALSE;
+		m_nColorDepth = 0;
 
 		// Make a back buffer
-		g_pBackBuffer = CreateCanvas(nWidth, nHeight, FALSE);
+		m_pBackBuffer = CreateCanvas(nWidth, nHeight, FALSE);
 
 		// Clear back buffer
 		DrawFilledRect(0, 0, nWidth, nHeight, 0);
@@ -84,7 +91,7 @@ BOOL FAST_CALL InitGraphicsMode(
 //------------------------------------------------------------------------
 // Initiate DirectX
 //------------------------------------------------------------------------
-DXINFO FAST_CALL InitDirectX(
+VOID FAST_CALL CDirectDraw::InitDirectX(
 	CONST HWND hWnd,
 	CONST INT nWidth,
 	CONST INT nHeight,
@@ -93,22 +100,21 @@ DXINFO FAST_CALL InitDirectX(
 		)
 {
 
-	// Initiate the return structure
-	DXINFO dxInfo;
-	dxInfo.lpdd = NULL;
-	dxInfo.lpddsPrime = NULL;
-	dxInfo.lpddsSecond = NULL;
-	dxInfo.windowedMode.lpddClip = NULL;
-	dxInfo.nWidth = nWidth;
-	dxInfo.nHeight = nHeight;
-	dxInfo.bFullScreen = bFullScreen;
-	gDXInfo.nColorDepth = nColorDepth;
+	// Set some members
+	m_lpdd = NULL;
+	m_lpddsPrime = NULL;
+	m_lpddsSecond = NULL;
+	m_lpddClip = NULL;
+	m_nWidth = nWidth;
+	m_nHeight = nHeight;
+	m_bFullScreen = bFullScreen;
+	m_nColorDepth = nColorDepth;
 
 	// Create DirectDraw
 	if (FAILED(DirectDrawCreateEx(
 		NULL,
-		reinterpret_cast<void **>(&dxInfo.lpdd),
-		IID_IDirectDraw7, NULL))) return dxInfo;
+		reinterpret_cast<void **>(&m_lpdd),
+		IID_IDirectDraw7, NULL))) return;
 
 	// Initiate the primary surface
 	DDSURFACEDESC2 ddsd;
@@ -117,8 +123,8 @@ DXINFO FAST_CALL InitDirectX(
 	if (bFullScreen)
 	{
 		// Full-screen mode
-		if (FAILED(dxInfo.lpdd->SetCooperativeLevel(hWnd,DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT))) return dxInfo;
-		if (FAILED(dxInfo.lpdd->SetDisplayMode(nWidth, nHeight, nColorDepth, 0, 0))) return dxInfo;
+		if (FAILED(m_lpdd->SetCooperativeLevel(hWnd,DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT))) return;
+		if (FAILED(m_lpdd->SetDisplayMode(nWidth, nHeight, nColorDepth, 0, 0))) return;
 		ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
 		ddsd.dwBackBufferCount = 1;		// Make a *real* backbuffer
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP;
@@ -126,38 +132,38 @@ DXINFO FAST_CALL InitDirectX(
 	else
 	{
 		// Windowed mode
-		if (FAILED(dxInfo.lpdd->SetCooperativeLevel(hWnd,DDSCL_NORMAL))) return dxInfo;
+		if (FAILED(m_lpdd->SetCooperativeLevel(hWnd,DDSCL_NORMAL))) return;
 		ddsd.dwFlags = DDSD_CAPS;
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;	// This will be the primary surface
 	}
 
 	// Create the primary surface
-	if (FAILED(dxInfo.lpdd->CreateSurface(&ddsd, &dxInfo.lpddsPrime, NULL))) return dxInfo;
+	if (FAILED(m_lpdd->CreateSurface(&ddsd, &m_lpddsPrime, NULL))) return;
 
 	// Create rectangles for the window and for the surface
-	SetRect(&dxInfo.windowedMode.surfaceRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
+	SetRect(&m_surfaceRect, 0, 0, m_nWidth, m_nHeight);
 
 	// Get the back buffer
 	if (bFullScreen)
 	{
 		ddsd.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
-		if (FAILED(dxInfo.lpddsPrime->GetAttachedSurface(&ddsd.ddsCaps, &dxInfo.lpddsSecond))) return dxInfo;
+		if (FAILED(m_lpddsPrime->GetAttachedSurface(&ddsd.ddsCaps, &m_lpddsSecond))) return;
 	}
 	else
 	{
 
 		// Create clipper
-		dxInfo.lpdd->CreateClipper(0, &dxInfo.windowedMode.lpddClip, NULL);
+		m_lpdd->CreateClipper(0, &m_lpddClip, NULL);
 
 		// Set clipper window
-		dxInfo.windowedMode.lpddClip->SetHWnd(0, hWnd);
+		m_lpddClip->SetHWnd(0, hWnd);
 
 		// Attach clipper
-		dxInfo.lpddsPrime->SetClipper(dxInfo.windowedMode.lpddClip);
+		m_lpddsPrime->SetClipper(m_lpddClip);
 
 		// Setup the effects to blt with
-		DD_INIT_STRUCT(dxInfo.windowedMode.bltFx);
-		dxInfo.windowedMode.bltFx.dwROP = SRCCOPY;
+		DD_INIT_STRUCT(m_bltFx);
+		m_bltFx.dwROP = SRCCOPY;
 
 		// Setup the backbuffer
 		DD_INIT_STRUCT(ddsd);
@@ -166,11 +172,11 @@ DXINFO FAST_CALL InitDirectX(
 		ddsd.dwWidth = nWidth;
 		ddsd.dwHeight = nHeight;
 
-		if (FAILED(dxInfo.lpdd->CreateSurface(&ddsd, &dxInfo.lpddsSecond, NULL)))
+		if (FAILED(m_lpdd->CreateSurface(&ddsd, &m_lpddsSecond, NULL)))
 		{
 			// Not enough video memory - use RAM
 			ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-			if (FAILED(dxInfo.lpdd->CreateSurface(&ddsd, &dxInfo.lpddsSecond, NULL))) return dxInfo;
+			if (FAILED(m_lpdd->CreateSurface(&ddsd, &m_lpddsSecond, NULL))) return;
 		}
 
 	}
@@ -178,54 +184,51 @@ DXINFO FAST_CALL InitDirectX(
 	// Black out screen
 	DrawFilledRect(0, 0, nWidth, nHeight, 0);
 
-	return dxInfo;
-
 }
 
 //------------------------------------------------------------------------
 // Kill the graphics engine
 //------------------------------------------------------------------------
-BOOL FAST_CALL KillGraphicsMode(VOID)
+BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 {
 
 	// Shut down direct draw, but only if we're using it
-	if( g_bUseDirectX)
+	if (m_bUseDirectX)
 	{
 		// Kill clipper
-		if (gDXInfo.windowedMode.lpddClip)
+		if (m_lpddClip)
 		{
-			if (FAILED(gDXInfo.windowedMode.lpddClip->Release())) return FALSE;;
-			gDXInfo.windowedMode.lpddClip = NULL;
+			if (FAILED(m_lpddClip->Release())) return FALSE;
+			m_lpddClip = NULL;
 		}
 
 		// Kill backbuffer
-		if (gDXInfo.lpddsSecond)
+		if (m_lpddsSecond)
 		{
-			if FAILED(gDXInfo.lpddsSecond->Release()) return FALSE;
-			gDXInfo.lpddsSecond = NULL;
+			if FAILED(m_lpddsSecond->Release()) return FALSE;
+			m_lpddsSecond = NULL;
 		}
 
 		// Kill primary surface
-		if(gDXInfo.lpddsPrime)
+		if(m_lpddsPrime)
 		{
-			if (FAILED(gDXInfo.lpddsPrime->Release())) return FALSE;
-			gDXInfo.lpddsPrime = NULL;
+			if (FAILED(m_lpddsPrime->Release())) return FALSE;
+			m_lpddsPrime = NULL;
 		}
 
 		// Kill direct draw
-		if(gDXInfo.lpdd)
+		if(m_lpdd)
 		{
-			if (FAILED(gDXInfo.lpdd->Release())) return FALSE;
-			gDXInfo.lpdd = NULL;
+			if (FAILED(m_lpdd->Release())) return FALSE;
+			m_lpdd = NULL;
 		}
 
 	}
-
 	else
 	{
 
 		// Kill back buffer
-		delete g_pBackBuffer;
+		delete m_pBackBuffer;
 
 	}
 
@@ -236,33 +239,33 @@ BOOL FAST_CALL KillGraphicsMode(VOID)
 //------------------------------------------------------------------------
 // Get DC of the screen
 //------------------------------------------------------------------------
-INLINE HDC OpenDC(VOID)
+INLINE HDC CDirectDraw::OpenDC(VOID)
 {
 
 	// Return locked DC, if existent
-	if (ghDCLocked)
+	if (m_hDCLocked)
 	{
-		return ghDCLocked;
+		return m_hDCLocked;
 	}
 
-	if (g_bUseDirectX)
+	if (m_bUseDirectX)
 	{
-		if (gDXInfo.lpdd)
+		if (m_lpdd)
 		{
 			HDC hdc = 0;
-			gDXInfo.lpddsSecond->GetDC(&hdc);
+			m_lpddsSecond->GetDC(&hdc);
 			return hdc;
 		}
 	}
 	else
 	{
-		if (g_pBackBuffer)
+		if (m_pBackBuffer)
 		{
-			return g_pBackBuffer->OpenDC();
+			return m_pBackBuffer->OpenDC();
 		}
 		else
 		{
-			return GetDC(ghWndMain);
+			return GetDC(m_hWndMain);
 		}
 	}
 
@@ -273,37 +276,37 @@ INLINE HDC OpenDC(VOID)
 //------------------------------------------------------------------------
 // Close the screen's DC
 //------------------------------------------------------------------------
-INLINE VOID CloseDC(
+INLINE VOID CDirectDraw::CloseDC(
 	CONST HDC hdc
 		)
 {
 
 	// Check if screen is locked
-	if (ghDCLocked)
+	if (m_hDCLocked)
 	{
 		return;
 	}
 
-	if (g_bUseDirectX)
+	if (m_bUseDirectX)
 	{
-		if (gDXInfo.lpdd && hdc)
+		if (m_lpdd && hdc)
 		{
-			gDXInfo.lpddsSecond->ReleaseDC(hdc);
+			m_lpddsSecond->ReleaseDC(hdc);
 		}
 	}
 	else
 	{
 		if (hdc)
 		{
-			if (g_pBackBuffer)
+			if (m_pBackBuffer)
 			{
 				// Don't have to release it
-				g_pBackBuffer->CloseDC(hdc);				
+				m_pBackBuffer->CloseDC(hdc);				
 			}
 			else
 			{
 				// Use GDI
-				ReleaseDC(ghWndMain, hdc);
+				ReleaseDC(m_hWndMain, hdc);
 			}
 		}
 	}
@@ -312,7 +315,7 @@ INLINE VOID CloseDC(
 //------------------------------------------------------------------------
 // Plot a pixel onto the screen
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawPixel(
+BOOL FAST_CALL CDirectDraw::DrawPixel(
 	CONST INT x,
 	CONST INT y,
 	CONST LONG clr
@@ -327,7 +330,7 @@ BOOL FAST_CALL DrawPixel(
 //------------------------------------------------------------------------
 // Draw a line on the screen
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawLine(
+BOOL FAST_CALL CDirectDraw::DrawLine(
 	CONST INT x1,
 	CONST INT y1,
 	CONST INT x2,
@@ -352,7 +355,7 @@ BOOL FAST_CALL DrawLine(
 //------------------------------------------------------------------------
 // Get the pixel at x, y
 //------------------------------------------------------------------------
-LONG FAST_CALL GetPixelColor(
+LONG FAST_CALL CDirectDraw::GetPixelColor(
 	CONST INT x,
 	CONST INT y
 		)
@@ -366,7 +369,7 @@ LONG FAST_CALL GetPixelColor(
 //------------------------------------------------------------------------
 // Draw a filled rectangle
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawFilledRect(
+BOOL FAST_CALL CDirectDraw::DrawFilledRect(
 	CONST INT x1,
 	CONST INT y1,
 	CONST INT x2,
@@ -392,25 +395,26 @@ BOOL FAST_CALL DrawFilledRect(
 //------------------------------------------------------------------------
 // Flip back buffer onto the screen
 //------------------------------------------------------------------------
-BOOL FAST_CALL Refresh(
+BOOL FAST_CALL CDirectDraw::Refresh(
 	CONST CGDICanvas *cnv
 		)
 {
-	if (g_bUseDirectX && gDXInfo.lpdd)
+
+	if (m_bUseDirectX && m_lpdd)
 	{
 
-		if (gDXInfo.bFullScreen)
+		if (m_bFullScreen)
 		{
 
 			if (cnv)
 			{
 				// Blt to a canvas
-				cnv->GetDXSurface()->BltFast(0, 0, gDXInfo.lpddsSecond, &gDXInfo.windowedMode.surfaceRect, NULL);
+				cnv->GetDXSurface()->BltFast(0, 0, m_lpddsSecond, &m_surfaceRect, NULL);
 			}
 			else
 			{
 				// Page flip
-				while (FAILED(gDXInfo.lpddsPrime->Flip(NULL, DDFLIP_WAIT)));
+				while (FAILED(m_lpddsPrime->Flip(NULL, DDFLIP_WAIT)));
 			}
 
 		}
@@ -418,35 +422,36 @@ BOOL FAST_CALL Refresh(
 		{
 
 			// Get the point of the window outside of the title bar and border
-			POINT ptPrimeBlt;
-			ptPrimeBlt.x = ptPrimeBlt.y = 0;
-			ClientToScreen(ghWndMain, &ptPrimeBlt);
+			POINT ptPrimeBlt = {0, 0};
+			ClientToScreen(m_hWndMain, &ptPrimeBlt);
 
 			// Now offset the top/left of the window rect by the distance from the
 			// title bar / border
-			SetRect(&gDXInfo.windowedMode.destRect, 0, 0, gDXInfo.nWidth, gDXInfo.nHeight);
-			OffsetRect(&gDXInfo.windowedMode.destRect, ptPrimeBlt.x, ptPrimeBlt.y);
+			SetRect(&m_destRect, 0, 0, m_nWidth, m_nHeight);
+			OffsetRect(&m_destRect, ptPrimeBlt.x, ptPrimeBlt.y);
 
 			if (cnv)
 			{
 				// Blt to a canvas
-				cnv->GetDXSurface()->BltFast(0, 0, gDXInfo.lpddsSecond, &gDXInfo.windowedMode.surfaceRect, DDBLTFAST_NOCOLORKEY);
+				cnv->GetDXSurface()->BltFast(0, 0, m_lpddsSecond, &m_surfaceRect, DDBLTFAST_NOCOLORKEY);
 			}	
 			else
 			{
 				// Blt to the screen
-				gDXInfo.lpddsPrime->Blt(&gDXInfo.windowedMode.destRect, gDXInfo.lpddsSecond, &gDXInfo.windowedMode.surfaceRect, DDBLT_WAIT | DDBLT_ROP, &gDXInfo.windowedMode.bltFx);
+				m_lpddsPrime->Blt(&m_destRect, m_lpddsSecond, &m_surfaceRect, DDBLT_WAIT | DDBLT_ROP, &m_bltFx);
 			}
+
 		}
+
 	}
-	else if (g_pBackBuffer)
+	else if (m_pBackBuffer)
 	{
 		// Blt offscreen canvas
-		HDC hdc = GetDC(ghWndMain);
-		HDC hdcBuffer = g_pBackBuffer->OpenDC();
-		BitBlt(hdc, 0, 0, g_pBackBuffer->GetWidth(), g_pBackBuffer->GetHeight(), hdcBuffer, 0, 0, SRCCOPY);
-		g_pBackBuffer->CloseDC(hdcBuffer);
-		ReleaseDC(ghWndMain, hdc);
+		HDC hdc = GetDC(m_hWndMain);
+		HDC hdcBuffer = m_pBackBuffer->OpenDC();
+		BitBlt(hdc, 0, 0, m_pBackBuffer->GetWidth(), m_pBackBuffer->GetHeight(), hdcBuffer, 0, 0, SRCCOPY);
+		m_pBackBuffer->CloseDC(hdcBuffer);
+		ReleaseDC(m_hWndMain, hdc);
 	}
 
 	return TRUE;
@@ -455,7 +460,7 @@ BOOL FAST_CALL Refresh(
 //------------------------------------------------------------------------
 // Draw text onto the screen
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawText(
+BOOL FAST_CALL CDirectDraw::DrawText(
 	CONST INT x,
 	CONST INT y,
 	CONST std::string strText,
@@ -559,7 +564,11 @@ BOOL FAST_CALL DrawText(
 //------------------------------------------------------------------------
 // Make a back buffer with GDI
 //------------------------------------------------------------------------
-CGDICanvas *FAST_CALL CreateCanvas(INT nWidth, INT nHeight, BOOL bUseDX)
+CGDICanvas *FAST_CALL CDirectDraw::CreateCanvas(
+	CONST INT nWidth,
+	CONST INT nHeight,
+	CONST BOOL bUseDX
+		)
 {
 
 	// Allocate a new canvas
@@ -568,13 +577,13 @@ CGDICanvas *FAST_CALL CreateCanvas(INT nWidth, INT nHeight, BOOL bUseDX)
 	if (pToRet)
 	{
 		// Get the screen's DC
-		CONST HDC hdc = GetDC(ghWndMain);
+		CONST HDC hdc = GetDC(m_hWndMain);
 		if (hdc)
 		{
 			// Create a blank canvas
 			pToRet->CreateBlank(hdc, nWidth, nHeight, bUseDX);
 			// Release the DC
-			ReleaseDC(ghWndMain, hdc);
+			ReleaseDC(m_hWndMain, hdc);
 		}
 	}
 
@@ -586,7 +595,7 @@ CGDICanvas *FAST_CALL CreateCanvas(INT nWidth, INT nHeight, BOOL bUseDX)
 //------------------------------------------------------------------------
 // Draw a canvas onto the back buffer
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawCanvas(
+BOOL FAST_CALL CDirectDraw::DrawCanvas(
 	CONST CGDICanvas *pCanvas,
 	CONST INT x,
 	CONST INT y,
@@ -599,7 +608,7 @@ BOOL FAST_CALL DrawCanvas(
 //------------------------------------------------------------------------
 // Draw a canvas with transparency
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawCanvasTransparent(
+BOOL FAST_CALL CDirectDraw::DrawCanvasTransparent(
 	CONST CGDICanvas *pCanvas,
 	CONST INT x,
 	CONST INT y,
@@ -612,7 +621,7 @@ BOOL FAST_CALL DrawCanvasTransparent(
 //------------------------------------------------------------------------
 // Draw a canvas with translucency
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawCanvasTranslucent(
+BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucent(
 	CONST CGDICanvas *pCanvas,
 	CONST INT x,
 	CONST INT y,
@@ -625,10 +634,10 @@ BOOL FAST_CALL DrawCanvasTranslucent(
 	if (pCanvas)
 	{
 		// If using DirectX
-		if (g_bUseDirectX)
+		if (m_bUseDirectX)
 		{
 			// Use DirectX
-			return pCanvas->BltTranslucent(gDXInfo.lpddsSecond, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
+			return pCanvas->BltTranslucent(m_lpddsSecond, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
 		}
 		else
 		{
@@ -650,7 +659,7 @@ BOOL FAST_CALL DrawCanvasTranslucent(
 //------------------------------------------------------------------------
 // Partially draw a canvas
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawCanvasPartial(
+BOOL FAST_CALL CDirectDraw::DrawCanvasPartial(
 	CONST CGDICanvas *pCanvas,
 	CONST INT destX,
 	CONST INT destY,
@@ -665,10 +674,10 @@ BOOL FAST_CALL DrawCanvasPartial(
 	if (pCanvas)
 	{
 		// If using DirectX
-		if (g_bUseDirectX)
+		if (m_bUseDirectX)
 		{
 			// Use DirectX
-			return pCanvas->BltPart(gDXInfo.lpddsSecond, destX, destY, srcX, srcY, width, height, lRasterOp);
+			return pCanvas->BltPart(m_lpddsSecond, destX, destY, srcX, srcY, width, height, lRasterOp);
 		}
 		else
 		{
@@ -690,7 +699,7 @@ BOOL FAST_CALL DrawCanvasPartial(
 //------------------------------------------------------------------------
 // Draw part of a canvas with transparency
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawCanvasTransparentPartial(
+BOOL FAST_CALL CDirectDraw::DrawCanvasTransparentPartial(
 	CONST CGDICanvas *pCanvas,
 	CONST INT destX,
 	CONST INT destY,
@@ -705,10 +714,10 @@ BOOL FAST_CALL DrawCanvasTransparentPartial(
 	if (pCanvas)
 	{
 		// If using DirectX
-		if (g_bUseDirectX)
+		if (m_bUseDirectX)
 		{
 			// Use DirectX
-			return pCanvas->BltTransparentPart(gDXInfo.lpddsSecond, destX, destY, srcX, srcY, width, height, crTransparentColor);
+			return pCanvas->BltTransparentPart(m_lpddsSecond, destX, destY, srcX, srcY, width, height, crTransparentColor);
 		}
 		else
 		{
@@ -730,13 +739,13 @@ BOOL FAST_CALL DrawCanvasTransparentPartial(
 //------------------------------------------------------------------------
 // Draw part of a canvas, using translucency
 //------------------------------------------------------------------------
-BOOL FAST_CALL DrawCanvasTranslucentPartial(CONST CONST CGDICanvas *pCanvas, CONST INT x, CONST INT y, CONST INT xSrc, CONST INT ySrc, CONST INT width, CONST INT height, CONST DOUBLE dIntensity, CONST LONG crUnaffectedColor, CONST LONG crTransparentColor)
+BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(CONST CONST CGDICanvas *pCanvas, CONST INT x, CONST INT y, CONST INT xSrc, CONST INT ySrc, CONST INT width, CONST INT height, CONST DOUBLE dIntensity, CONST LONG crUnaffectedColor, CONST LONG crTransparentColor)
 {
 	if (pCanvas)
 	{
-		if (g_bUseDirectX)
+		if (m_bUseDirectX)
 		{
-			return BOOL(pCanvas->BltTranslucentPart(gDXInfo.lpddsSecond, x, y, xSrc, ySrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor));
+			return BOOL(pCanvas->BltTranslucentPart(m_lpddsSecond, x, y, xSrc, ySrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor));
 		}
 		else
 		{
@@ -752,16 +761,26 @@ BOOL FAST_CALL DrawCanvasTranslucentPartial(CONST CONST CGDICanvas *pCanvas, CON
 //------------------------------------------------------------------------
 // Copy contents of screen to a canvas
 //------------------------------------------------------------------------
-BOOL FAST_CALL CopyScreenToCanvas(CONST CGDICanvas* pCanvas)
+BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(CONST CGDICanvas *pCanvas)
 {
 	if (pCanvas)
 	{
-		CONST HDC hdcSrc = OpenDC();
-		CONST HDC hdcDest = pCanvas->OpenDC();
-		CONST BOOL bRet = BitBlt(hdcDest, 0, 0, pCanvas->GetWidth(), pCanvas->GetHeight(), hdcSrc, 0, 0, SRCCOPY);
-		pCanvas->CloseDC(hdcDest);
-		CloseDC(hdcSrc);
-		return bRet;
+		if (m_bUseDirectX && pCanvas->usingDX())
+		{
+			// Use DirectX
+			RECT rect = {0, 0, m_nWidth, m_nHeight};
+			return pCanvas->GetDXSurface()->BltFast(0, 0, m_lpddsSecond, &rect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT);
+		}
+		else
+		{
+			// Use GDI
+			CONST HDC hdcSrc = OpenDC();
+			CONST HDC hdcDest = pCanvas->OpenDC();
+			CONST BOOL bRet = BitBlt(hdcDest, 0, 0, pCanvas->GetWidth(), pCanvas->GetHeight(), hdcSrc, 0, 0, SRCCOPY);
+			pCanvas->CloseDC(hdcDest);
+			CloseDC(hdcSrc);
+			return bRet;
+		}
 	}
 	return FALSE;
 }
@@ -769,7 +788,7 @@ BOOL FAST_CALL CopyScreenToCanvas(CONST CGDICanvas* pCanvas)
 //------------------------------------------------------------------------
 // Clear the screen to a color
 //------------------------------------------------------------------------
-VOID FAST_CALL ClearScreen(
+VOID FAST_CALL CDirectDraw::ClearScreen(
 	CONST LONG crColor
 		)
 {
@@ -781,15 +800,15 @@ VOID FAST_CALL ClearScreen(
 	RECT r = {0, 0, 0, 0};
 
 	// If using DirectX
-	if (g_bUseDirectX)
+	if (m_bUseDirectX)
 	{
-		r.right = gDXInfo.nWidth + 1;
-		r.bottom = gDXInfo.nHeight + 1;
+		r.right = m_nWidth + 1;
+		r.bottom = m_nHeight + 1;
 	}
 	else
 	{
-		r.right = g_pBackBuffer->GetWidth() + 1;
-		r.bottom = g_pBackBuffer->GetHeight() + 1;
+		r.right = m_pBackBuffer->GetWidth() + 1;
+		r.bottom = m_pBackBuffer->GetHeight() + 1;
 	}
 
 	// Create and select objects
@@ -815,10 +834,10 @@ VOID FAST_CALL ClearScreen(
 //------------------------------------------------------------------------
 // Unlock the screen
 //------------------------------------------------------------------------
-BOOL FAST_CALL UnlockScreen(VOID)
+BOOL FAST_CALL CDirectDraw::UnlockScreen(VOID)
 {
-	CONST HDC hdc = ghDCLocked;
-	ghDCLocked = NULL;
+	CONST HDC hdc = m_hDCLocked;
+	m_hDCLocked = NULL;
 	CloseDC(hdc);
 	return TRUE;
 }
@@ -826,8 +845,61 @@ BOOL FAST_CALL UnlockScreen(VOID)
 //------------------------------------------------------------------------
 // Lock the screen
 //------------------------------------------------------------------------
-BOOL FAST_CALL LockScreen(VOID)
+BOOL FAST_CALL CDirectDraw::LockScreen(VOID)
 {
-	ghDCLocked = OpenDC();
+	m_hDCLocked = OpenDC();
 	return TRUE;
+}
+
+//------------------------------------------------------------------------
+// Create a DirectDraw surface
+//------------------------------------------------------------------------
+LPDIRECTDRAWSURFACE7 FAST_CALL CDirectDraw::createSurface(
+	CONST INT width,
+	CONST INT height
+		)
+{
+
+	// Surface ptr to return
+	LPDIRECTDRAWSURFACE7 lpddsSurface = NULL;
+
+	// If we're using DirectX
+	if (m_bUseDirectX)
+	{
+
+		// Setup the struct
+		DDSURFACEDESC2 ddsd;
+		DD_INIT_STRUCT(ddsd);
+		ddsd.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
+		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY;
+		ddsd.dwWidth = width;
+		ddsd.dwHeight = height;
+
+		// Create the surface in VRAM
+		CONST HRESULT hr = m_lpdd->CreateSurface(&ddsd, &lpddsSurface, NULL);
+
+		// If we failed
+		if (FAILED(hr))
+		{
+
+			// No VRAM left, use RAM
+			ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
+			m_lpdd->CreateSurface(&ddsd, &lpddsSurface, NULL);
+
+		}
+
+	}
+
+	// Return the surface
+	return lpddsSurface;
+
+}
+
+//------------------------------------------------------------------------
+// Deconstructor
+//------------------------------------------------------------------------
+CDirectDraw::~CDirectDraw(VOID)
+{
+	// Kill graphics mode, just in case we're live
+	KillGraphicsMode();
 }

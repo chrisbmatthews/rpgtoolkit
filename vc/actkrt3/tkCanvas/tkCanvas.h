@@ -24,8 +24,10 @@
 //--------------------------------------------------------------------------
 // Types
 //--------------------------------------------------------------------------
+#if !defined(CNV_HANDLE)
 typedef INT CNV_HANDLE;			// Handle to a canvas
-#ifndef DOUBLE
+#endif
+#if !defined(DOUBLE)
 typedef double DOUBLE;
 #endif
 

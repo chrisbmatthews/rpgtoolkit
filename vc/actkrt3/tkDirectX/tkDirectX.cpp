@@ -11,7 +11,12 @@
 //------------------------------------------------------------------------
 // Inclusions
 //------------------------------------------------------------------------
-#include "tkDirectX.h"			// Stuff for this file
+#include "tkDirectX.h"				// Stuff for this file
+
+//------------------------------------------------------------------------
+// Globals
+//------------------------------------------------------------------------
+CDirectDraw *g_pDirectDraw = NULL;	// Main DirectDraw object
 
 //------------------------------------------------------------------------
 // Initiate DirectX
@@ -25,7 +30,13 @@ BOOL APIENTRY DXInitGfxMode(
 	CONST BOOL nFullScreen
 		)
 {
-	return InitGraphicsMode(HWND(hostHwnd), nScreenX, nScreenY, nUseDirectX, nColorDepth, nFullScreen);
+
+	// Create a new DirectDraw object
+	g_pDirectDraw = new CDirectDraw();
+
+	// Initialize the graphics mode
+	return g_pDirectDraw->InitGraphicsMode(HWND(hostHwnd), nScreenX, nScreenY, nUseDirectX, nColorDepth, nFullScreen);
+
 }
 
 //------------------------------------------------------------------------
@@ -35,7 +46,13 @@ BOOL APIENTRY DXKillGfxMode(
 	VOID
 		)
 {
-	return KillGraphicsMode();
+
+	// Kill DirectDraw
+	delete g_pDirectDraw;
+
+	// All's good
+	return TRUE;
+
 }
 
 //------------------------------------------------------------------------
@@ -47,7 +64,7 @@ BOOL APIENTRY DXDrawPixel(
 	CONST INT clr
 		)
 {
-	return DrawPixel(x, y, clr);
+	return g_pDirectDraw->DrawPixel(x, y, clr);
 }
 
 //------------------------------------------------------------------------
@@ -57,7 +74,7 @@ BOOL APIENTRY DXRefresh(
 	CONST CNV_HANDLE cnvHandle
 		)
 {
-	return Refresh(reinterpret_cast<CGDICanvas *>(cnvHandle));
+	return g_pDirectDraw->Refresh(reinterpret_cast<CGDICanvas *>(cnvHandle));
 }
 
 //------------------------------------------------------------------------
@@ -65,7 +82,7 @@ BOOL APIENTRY DXRefresh(
 //------------------------------------------------------------------------
 BOOL APIENTRY DXLockScreen(VOID)
 {
-	return LockScreen();
+	return g_pDirectDraw->LockScreen();
 }
 
 //------------------------------------------------------------------------
@@ -73,7 +90,7 @@ BOOL APIENTRY DXLockScreen(VOID)
 //------------------------------------------------------------------------
 BOOL APIENTRY DXUnlockScreen(VOID)
 {
-	return UnlockScreen();
+	return g_pDirectDraw->UnlockScreen();
 }
 
 //------------------------------------------------------------------------
@@ -86,7 +103,7 @@ BOOL APIENTRY DXDrawCanvas(
 	CONST INT lRasterOp
 		)
 {
-	return DrawCanvas(reinterpret_cast<CGDICanvas *>(cnv), x, y, lRasterOp);
+	return g_pDirectDraw->DrawCanvas(reinterpret_cast<CGDICanvas *>(cnv), x, y, lRasterOp);
 }
 
 //------------------------------------------------------------------------
@@ -99,7 +116,7 @@ BOOL APIENTRY DXDrawCanvasTransparent(
 	CONST INT crTransparentColor
 		)
 {
-	return DrawCanvasTransparent(reinterpret_cast<CGDICanvas *>(cnv), x, y, crTransparentColor);
+	return g_pDirectDraw->DrawCanvasTransparent(reinterpret_cast<CGDICanvas *>(cnv), x, y, crTransparentColor);
 }
 
 //------------------------------------------------------------------------
@@ -114,7 +131,7 @@ BOOL APIENTRY DXDrawCanvasTranslucent(
 	CONST INT crTransparentColor
 		)
 {
-	return DrawCanvasTranslucent(reinterpret_cast<CGDICanvas *>(cnv), x, y, dIntensity, crUnaffectedColor, crTransparentColor);
+	return g_pDirectDraw->DrawCanvasTranslucent(reinterpret_cast<CGDICanvas *>(cnv), x, y, dIntensity, crUnaffectedColor, crTransparentColor);
 }
 
 //------------------------------------------------------------------------
@@ -124,7 +141,7 @@ BOOL APIENTRY DXClearScreen(
 	CONST INT crColor
 		)
 {
-	ClearScreen(crColor);
+	g_pDirectDraw->ClearScreen(crColor);
 	return TRUE;
 }
 
@@ -145,7 +162,7 @@ BOOL APIENTRY DXDrawText(
 	CONST BOOL outlined
 		)
 {
-	return DrawText(x, y, strText, strTypeFace, size, clr, bold, italics, underline, centred, outlined);
+	return g_pDirectDraw->DrawText(x, y, strText, strTypeFace, size, clr, bold, italics, underline, centred, outlined);
 }
 
 //------------------------------------------------------------------------
@@ -162,7 +179,7 @@ BOOL APIENTRY DXDrawCanvasPartial(
 	CONST INT lRasterOp
 		)
 {
-	return DrawCanvasPartial(reinterpret_cast<CGDICanvas *>(cnv), destX, destY, srcX, srcY, width, height, lRasterOp);
+	return g_pDirectDraw->DrawCanvasPartial(reinterpret_cast<CGDICanvas *>(cnv), destX, destY, srcX, srcY, width, height, lRasterOp);
 }
 
 //------------------------------------------------------------------------
@@ -179,7 +196,7 @@ BOOL APIENTRY DXDrawCanvasTransparentPartial(
 	CONST INT crTrasparentColor
 		)
 {
-	return DrawCanvasTransparentPartial(reinterpret_cast<CGDICanvas *>(cnv), destX, destY, srcX, srcY, width, height, crTrasparentColor);
+	return g_pDirectDraw->DrawCanvasTransparentPartial(reinterpret_cast<CGDICanvas *>(cnv), destX, destY, srcX, srcY, width, height, crTrasparentColor);
 }
 
 //------------------------------------------------------------------------
@@ -189,7 +206,7 @@ BOOL APIENTRY DXCopyScreenToCanvas(
 	CONST CNV_HANDLE cnv
 		)
 {
-	return CopyScreenToCanvas(reinterpret_cast<CGDICanvas *>(cnv));
+	return g_pDirectDraw->CopyScreenToCanvas(reinterpret_cast<CGDICanvas *>(cnv));
 }
 
 //------------------------------------------------------------------------
@@ -208,5 +225,5 @@ BOOL APIENTRY DXDrawCanvasTranslucentPartial(
 	CONST INT crTransparentColor
 		)
 {
-	return DrawCanvasTranslucentPartial(reinterpret_cast<CGDICanvas *>(cnv), x, y, xSrc, ySrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor);
+	return g_pDirectDraw->DrawCanvasTranslucentPartial(reinterpret_cast<CGDICanvas *>(cnv), x, y, xSrc, ySrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor);
 }
