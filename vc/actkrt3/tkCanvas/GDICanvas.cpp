@@ -169,7 +169,9 @@ COLORREF FAST_CALL CGDICanvas::matchColor(CONST COLORREF rgb) CONST
 	m_lpddsSurface->Unlock(NULL);
 
 	// Set back old pixel
-	const_cast<CGDICanvas *>(this)->SetPixel(0, 0, rgbT);
+	m_lpddsSurface->GetDC(&hdc);	// Open the surface's DC
+	::SetPixel(hdc, 0, 0, rgbT);	// Set the old colour
+	m_lpddsSurface->ReleaseDC(hdc);	// Release the DC
 
 	// Return the result
 	return (colors[rgb] = toRet);
