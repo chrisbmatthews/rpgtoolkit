@@ -240,21 +240,6 @@ Private Function fightHasEnded(ByRef endType As Long) As Boolean
 
 End Function
 
-Public Sub checkMusic()
-
-    '====================================================================================
-    'Loop the music
-    '====================================================================================
-
-    On Error Resume Next
-    Dim theMusic As String
-    theMusic = CBGetGeneralString(GEN_MUSICPLAYING, 0, 0)
-    If theMusic <> "" Then
-        Call CBRpgCode("MediaPlay(""" & theMusic & """)")
-    End If
-
-End Sub
-
 Private Sub positionPlayers()
 
     '====================================================================================
@@ -1044,7 +1029,11 @@ Private Sub drawImageTransparent( _
     
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
-    Call CBCanvasLoadSizedImage(cnv, image)
+    If fileExists(image) Then
+        Call CBCanvasLoadSizedImage(cnv, image)
+    Else
+        Call CBCanvasFill(cnv, 0)
+    End If
     If lngColor = -1 Then
         Call CBCanvas2CanvasBltTransparent(cnv, destCnv, x, y, RGB(transR, transG, transB))
     Else
@@ -1069,7 +1058,11 @@ Private Sub drawImageTranslucent( _
     
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
-    Call CBCanvasLoadSizedImage(cnv, image)
+    If fileExists(image) Then
+        Call CBCanvasLoadSizedImage(cnv, image)
+    Else
+        Call CBCanvasFill(cnv, 0)
+    End If
     Call CBCanvas2CanvasBltTranslucent(cnv, destCnv, x, y, 0.5, -1, -1)
     Call CBDestroyCanvas(cnv)
 
@@ -1087,10 +1080,14 @@ Private Sub drawImage( _
     '====================================================================================
     'Draws an image on the canvas passed in
     '====================================================================================
-    
+
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
-    Call CBCanvasLoadSizedImage(cnv, image)
+    If fileExists(image) Then
+        Call CBCanvasLoadSizedImage(cnv, image)
+    Else
+        Call CBCanvasFill(cnv, 0)
+    End If
     Call CBCanvas2CanvasBlt(cnv, destCnv, x, y)
     Call CBDestroyCanvas(cnv)
 
@@ -1818,25 +1815,28 @@ End Function
 Private Sub cursorMoveSound()
     Dim theSound As String
     theSound = CBGetGeneralString(GEN_CURSOR_MOVESOUND, 0, 0)
-    If theSound <> "" Then
+    If fileExists(theSound) Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
+    Call CBRpgCode("Delay(0.1)")
 End Sub
 
 Private Sub cursorCancelSound()
     Dim theSound As String
     theSound = CBGetGeneralString(GEN_CURSOR_CANCELSOUND, 0, 0)
-    If theSound <> "" Then
+    If fileExists(theSound) Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
+    Call CBRpgCode("Delay(0.1)")
 End Sub
 
 Private Sub cursorSelSound()
     Dim theSound As String
     theSound = CBGetGeneralString(GEN_CURSOR_SELSOUND, 0, 0)
-    If theSound <> "" Then
+    If fileExists(theSound) Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
+    Call CBRpgCode("Delay(0.1)")
 End Sub
 
 '====================================================================================
@@ -1851,4 +1851,19 @@ Private Function isPressed(ParamArray keys() As Variant) As Boolean
             Exit Function
         End If
     Next keyIdx
+End Function
+
+'====================================================================================
+' Determine if a file exists
+'====================================================================================
+Private Function fileExists(ByVal file As String) As Boolean
+    On Error GoTo nonExistent
+    fileExists = True
+    Dim ff As Long
+    ff = FreeFile()
+    Open file For Input Access Read As ff
+    Close ff
+nonExistent:
+    fileExists = False
+    Resume Next
 End Function

@@ -471,7 +471,12 @@ Function isPressed(ByVal theKey As String) As Boolean
     On Error Resume Next
     
     isPressed = False
-    
+
+    If gGameState = GS_PAUSE Then
+        'Trans doesn't have focus!
+        Exit Function
+    End If
+
     'First check the joystick...
     Dim but(4) As Boolean
     Dim theDir As Long

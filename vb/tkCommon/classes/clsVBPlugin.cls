@@ -634,4 +634,8 @@ Public Sub CBFighterRemoveStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As
     transPlugin.CBFighterRemoveStatusEffect partyIdx, fightIdx, statusFile
 End Sub
 
+Public Sub CBCheckMusic()
+    Call checkMusic(True)
+End Sub
+
 #End If

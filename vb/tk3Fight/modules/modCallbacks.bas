@@ -672,7 +672,8 @@ Public Sub CBFightUseSpecialMove(ByVal sourcePartyIdx As Long, ByVal sourceFight
 End Sub
 
 Public Sub CBDoEvents()
-    transPlugin.CBDoEvents
+    Call transPlugin.CBCheckMusic
+    Call transPlugin.CBDoEvents
 End Sub
 
 Public Sub CBFighterAddStatusEffect(ByVal partyIdx As Long, ByVal fightIdx As Long, ByVal statusFile As String)
