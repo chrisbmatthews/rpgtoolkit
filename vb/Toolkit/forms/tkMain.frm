@@ -576,8 +576,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10AA6
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2531,13 +2531,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "24/09/2004"
+            TextSave        =   "17/10/2003"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   10980
-            TextSave        =   "11:34 PM"
+            TextSave        =   "3:26 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2550,7 +2550,6 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
-            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -3671,6 +3670,9 @@ End Sub
 Private Sub MDIForm_Load(): On Error Resume Next
 '=====================================================
 'Call added for isometrics, 3.0.4
+
+    lblAnimNewTBM.MousePointer = 99
+    lblAnimNewTBM.MouseIcon = Images.MouseLink()
 
     Call createIsoMask
     Call LocalizeForm(Me)
