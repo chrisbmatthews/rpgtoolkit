@@ -732,13 +732,13 @@ loadtileerr:
             Print #num, major               'Version
             Print #num, minor                'Minor version (ie 2.0)
             Print #num, detail             'Detail level- 1 is 32x32, 2 is 16x16
-            Print #num, 1        'Compression 1-on, 0-off
 
             Dim X As Integer, Y As Integer
             Dim occurances As Long, older As Long
             Dim starting As Byte
 
             #If compression = 0 Then         'If no compression was usd, save it normally, pixel by pixel.
+                Print #num, 0
                 If detail = 1 Or detail = 3 Or detail = 5 Then
                     For X = 1 To 32
                         For Y = 1 To 32
@@ -754,6 +754,7 @@ loadtileerr:
                 End If
 
             #ElseIf compression = 1 Then         'If there is compression, save it in bundles, count how many times pixels occur together, and write #of times, color of pixel
+                Print #num, 1
                 occurances = 1
                 older = tileMem(1, 1)
                 If detail = 1 Or detail = 3 Or detail = 5 Then
