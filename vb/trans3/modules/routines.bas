@@ -1,4 +1,4 @@
-Attribute VB_Name = "Routines"
+Attribute VB_Name = "transRoutines"
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
@@ -14,9 +14,6 @@ Public Sub openMainFile(ByVal file As String)
 
     Call openMain(file, mainMem)
     Call ChangeLanguage(resourcePath & m_LangFile)
-    If mainMem.mainDisableProtectReg = 1 Then
-        noCodeYN = False
-    End If
     
     'set gfx mode...
     If resX = 0 Then

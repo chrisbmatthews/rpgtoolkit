@@ -29,7 +29,7 @@ Public Sub closeSystems()
     'This flag added by cbm for 3.0.4
     gShuttingDown = True
     
-    Call StopMedia
+    Call stopMedia
     Call stopMenuPlugin
     Call stopFightPlugin
     Call EndPlugins
@@ -38,7 +38,7 @@ Public Sub closeSystems()
     Call destroyGraphics
     Call UnLoadFontsFromFolder(projectPath & fontPath)
     Call ClearAllThreads
-    Call KillMedia
+    Call killMedia
     Call DeletePakTemp
 
     Kill TempDir & "actkrt3.dll"
@@ -298,14 +298,14 @@ Public Sub mainLoop()
                     pendingItemMovement(cnt).direction = MV_IDLE
                     
                     'Isometric fix:
-                    pendingItemMovement(cnt).xOrig = itmPos(cnt).X
+                    pendingItemMovement(cnt).xOrig = itmPos(cnt).x
                     pendingItemMovement(cnt).yOrig = itmPos(cnt).Y
                 Next cnt
                 
                 'The pending movements have to be cleared *before* any programs are run,
                 'whereas the movement direction can only be cleared afterwards.
                 For cnt = 0 To UBound(pendingPlayerMovement)
-                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).X
+                    pendingPlayerMovement(cnt).xOrig = ppos(cnt).x
                     pendingPlayerMovement(cnt).yOrig = ppos(cnt).Y
                 Next cnt
 
@@ -321,7 +321,7 @@ Public Sub mainLoop()
 
                     ' !MODIFIED BY KSNiloc...
                     tempPos.l = Round(pendingPlayerMovement(selectedPlayer).lTarg)
-                    tempPos.X = Round(pendingPlayerMovement(selectedPlayer).xTarg)
+                    tempPos.x = Round(pendingPlayerMovement(selectedPlayer).xTarg)
                     tempPos.Y = Round(pendingPlayerMovement(selectedPlayer).yTarg)
                                    
                     pendingPlayerMovement(selectedPlayer).direction = MV_IDLE
@@ -378,6 +378,8 @@ End Sub
 Sub openSystems(Optional ByVal testingPRG As Boolean)
     On Error Resume Next
 
+    Call initActiveX
+
     Call initGraphics(testingPRG)
     Call DXClearScreen(0)
     Call DXRefresh
@@ -387,13 +389,13 @@ Sub openSystems(Optional ByVal testingPRG As Boolean)
     Call startMenuPlugin
     Call startFightPlugin
     Call AnimationInit
-    Call InitMedia
-    Call initActiveX
+    Call initMedia
     
-    Call setupmain(testingPRG)
+    Call setupMain(testingPRG)
     Call DXRefresh
 
     host.Visible = True
+    Call host.Show
     DoEvents
     
 End Sub
@@ -403,22 +405,21 @@ Private Sub initActiveX()
     '==================================
     'Registers plugin\ folder
     '==================================
-    
+
     On Error Resume Next
-    
-    Dim aFile As String
-    aFile = Dir(projectPath & plugPath & "*.*")
-    
-    Do Until aFile = ""
-        Dim fullPath As String
-        fullPath = App.path & "\" & projectPath & plugPath & aFile
-        Call ExecCmd("regsvr32 /s " & chr(34) & fullPath & chr(34))
-        aFile = Dir()
-    Loop
+
+    Dim a As Long
+    For a = 0 To UBound(mainMem.plugins)
+        If mainMem.plugins(a) <> "" Then
+            Dim fullPath As String
+            fullPath = projectPath & plugPath & mainMem.plugins(a)
+            Call ExecCmd("regsvr32 /s " & chr(34) & fullPath & chr(34))
+        End If
+    Next a
 
 End Sub
 
-Sub setupmain(Optional ByVal testingPRG As Boolean)
+Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 '==================================
 'EDITED: [Delano - 20/05/04]
 'Initialized #Gamespeed delay and cursor speed delay.
@@ -457,27 +458,16 @@ Sub setupmain(Optional ByVal testingPRG As Boolean)
     Dim charFile As String
     charFile$ = mainMem.initChar$
     
-    'Call tracestring("creating character " + projectPath$ + tempath$ + charFile$)
     If charFile$ <> "" Then
         'If a main character has been specified, load it. Else?
         Call CreateCharacter(projectPath$ + temPath$ + charFile$, 0)
     End If
     
-    'call tracestring("beginning plugins")
-    'call tracestring("done plugins")
-    
-    'Initial program
-    'call tracestring("Running startup program " + projectPath$ + prgpath$ + mainMem.startupPrg$)
-    
-    ' ! KSNiloc: Uncommented
     If Not testingPRG Then Call runProgram(projectPath$ + prgPath$ + mainMem.startupPrg)
-    'call tracestring("Done running startup program")
     
     'Initial board
     If loaded = 0 And (Not testingPRG) Then
-    
-        ' ! FIX BY KSNiloc....
-    
+
         scTopX = -1000
         scTopY = -1000
         lastRender.canvas = -1
@@ -488,11 +478,10 @@ Sub setupmain(Optional ByVal testingPRG As Boolean)
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)
         Call openItems
 
-        ' ! ADDED BY KSNiloc...
         launchBoardThreads boardList(activeBoardIndex).theData
 
         'Setup player position.
-        ppos(0).X = boardList(activeBoardIndex).theData.playerX
+        ppos(0).x = boardList(activeBoardIndex).theData.playerX
         ppos(0).Y = boardList(activeBoardIndex).theData.playerY
         ppos(0).l = boardList(activeBoardIndex).theData.playerLayer
         ppos(0).stance = "WALK_S"

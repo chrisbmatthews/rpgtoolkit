@@ -1,7 +1,6 @@
 VERSION 5.00
 Begin VB.Form frmWindowedHost 
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "Windowed Host"
    ClientHeight    =   2085
    ClientLeft      =   45
    ClientTop       =   285
@@ -13,7 +12,6 @@ Begin VB.Form frmWindowedHost
    ScaleHeight     =   139
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   190
-   ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
 End
 Attribute VB_Name = "frmWindowedHost"
@@ -44,12 +42,12 @@ Private Sub Form_LostFocus()
     gGameState = GS_PAUSE
 End Sub
 
-Private Sub Form_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
-    Call mouseDownEvent(X, Y, Shift, button)
+Private Sub Form_MouseDown(button As Integer, Shift As Integer, x As Single, Y As Single)
+    Call mouseDownEvent(x, Y, Shift, button)
 End Sub
 
-Private Sub Form_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single)
-    Call mouseMoveEvent(X, Y)
+Private Sub Form_MouseMove(button As Integer, Shift As Integer, x As Single, Y As Single)
+    Call mouseMoveEvent(x, Y)
 End Sub
 
 Private Sub Form_Resize()

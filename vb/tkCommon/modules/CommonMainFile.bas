@@ -11,6 +11,7 @@ Public mainfile As String                'filename
 Public mainNeedUpdate As Boolean
 
 ''''''''''''''''''''''project data'''''''''''''''''''''''''
+
 Public loadedMainFile As String
 
 Public Type TKMain
@@ -62,11 +63,11 @@ Public Type TKMain
 End Type
 
 
-Public Const COLOR16 As Byte = 0        '16-bit bolor
-Public Const COLOR24 As Byte = 1        '24-bit bolor
-Public Const COLOR32 As Byte = 2        '32-bit bolor
+Public Const COLOR16 As Byte = 0      '16-bit bolor
+Public Const COLOR24 As Byte = 1      '24-bit bolor
+Public Const COLOR32 As Byte = 2      '32-bit bolor
 
-Sub MainAddPlugin(ByRef theMain As TKMain, ByVal file As String)
+Public Sub MainAddPlugin(ByRef theMain As TKMain, ByVal file As String)
     'add a filename to the list of plugins...
     On Error Resume Next
     Dim t As Long
@@ -86,7 +87,7 @@ Sub MainAddPlugin(ByRef theMain As TKMain, ByVal file As String)
     theMain.plugins(oldSize + 1) = file
 End Sub
 
-Function MainGetNthPlugin(ByRef theMain As TKMain, ByVal idx As Long) As String
+Public Function MainGetNthPlugin(ByRef theMain As TKMain, ByVal idx As Long) As String
     'get the n-th plugin in the list
     On Error Resume Next
     Dim t As Long
@@ -104,7 +105,7 @@ Function MainGetNthPlugin(ByRef theMain As TKMain, ByVal idx As Long) As String
     Next t
 End Function
 
-Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
+Public Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
     'add a filename to the list of plugins...
     On Error Resume Next
     Dim t As Long, a As Long
@@ -193,282 +194,295 @@ Public Sub upgradeBattleSystem()
 
 End Sub
 
-Function openMain(ByVal file As String, ByRef theMain As TKMain) As Integer
+Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
+
     On Error Resume Next
-    'returns 1 or 0 if this file was marked registered
+
     Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long, t As Long
     num = FreeFile
-    If file$ = "" Then Exit Function
+    If file = "" Then Exit Sub
     
     Call MainClear(theMain)
-    
-    Dim toRet As Long
-    toRet = 0
-    
+
     mainNeedUpdate = False
-    theMain.mainResolution = 0
+    
+    With theMain
+    
+        .mainResolution = 0
    
-    file$ = PakLocate(file$)
+        file = PakLocate(file)
     
-    num = FreeFile
-    Open file$ For Binary As #num
-        Dim b As Byte
-        Get #num, 14, b
-        If b <> 0 Then
-            Close #num
-            GoTo ver2oldmain
-        End If
-    Close #num
+        num = FreeFile()
+        Open file For Binary As num
+            Dim b As Byte
+            Get num, 14, b
+            If b <> 0 Then
+                Close num
+                GoTo ver2oldMain
+            End If
+        Close num
+
+        loadedMainFile = file
+   
+        Open file For Binary As num
+
+            fileHeader = BinReadString(num)      'Filetype
+            If fileHeader <> "RPGTLKIT MAIN" Then
+                Close num
+                MsgBox "Unrecognised File Format! " & file, , "Open mainForm File"
+                Exit Sub
+            End If
     
-    loadedMainFile$ = file$
-    
-    Dim reg As Long, regCode As String
-    
-    Open file$ For Binary As #num
-        fileHeader$ = BinReadString(num)      'Filetype
-        If fileHeader$ <> "RPGTLKIT MAIN" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open mainForm File": Exit Function
-        majorVer = BinReadInt(num)         'Version
-        minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This Project was created with an unrecognised version of the Toolkit": Close #num: Exit Function
-        reg = BinReadInt(num)
-        toRet = reg
-        regCode$ = BinReadString(num)
-    
-        projectPath$ = BinReadString(num)
-        theMain.gameTitle = BinReadString(num)
-        theMain.mainScreenType = BinReadInt(num)
-        theMain.extendToFullScreen = BinReadInt(num)
-        theMain.mainResolution = BinReadInt(num)
-        
-        If minorVer < 3 Then
-            Call BinReadInt(num)    'old patallax value
-        End If
-        
-        theMain.mainDisableProtectReg = BinReadInt(num)
-        m_LangFile = BinReadString(num)
-        
-        theMain.startupPrg = BinReadString(num)
-        theMain.initBoard = BinReadString(num)
-        theMain.initChar = BinReadString(num)
-        
-        theMain.runTime = BinReadString(num)
-        theMain.runKey = BinReadInt(num)
-        theMain.menuKey = BinReadInt(num)
-        theMain.Key = BinReadInt(num)
-        'extended run time keys...
-        Dim cnt As Long
-        cnt = BinReadInt(num)
-        For t = 0 To cnt
-            theMain.runTimeKeys(t) = BinReadInt(num)
-            theMain.runTimePrg(t) = BinReadString(num)
-        Next t
-        
-        If minorVer >= 3 Then
-            theMain.menuPlugin = BinReadString(num)
-            theMain.fightPlugin = BinReadString(num)
-        Else
+            majorVer = BinReadInt(num)         'Version
+            minorVer = BinReadInt(num)         'Minor version (ie 2.0)
+            If majorVer <> major Then MsgBox "This Project was created with an unrecognised version of the Toolkit": Close #num: Exit Sub
+
             Call BinReadInt(num)
-            theMain.menuPlugin = "tk3menu.dll"
-            theMain.fightPlugin = "tk3fight.dll"
-        End If
-               
-        If minorVer <= 2 Then
-            Call BinReadLong(num)   'was multitask speed
-            Call BinReadInt(num)    'was v 1.4 memory protection
-        End If
-        theMain.fightgameYN = BinReadInt(num)
+            Call BinReadString(num)
+
+            projectPath = BinReadString(num)
+            .gameTitle = BinReadString(num)
+            .mainScreenType = BinReadInt(num)
+            .extendToFullScreen = BinReadInt(num)
+            .mainResolution = BinReadInt(num)
         
-        cnt = BinReadInt(num)
-        For t = 0 To cnt
-            theMain.enemy(t) = BinReadString(num)
-            theMain.skill(t) = BinReadInt(num)
-        Next t
+            If minorVer < 3 Then
+                Call BinReadInt(num)    'old patallax value
+            End If
         
-        theMain.fightType = BinReadInt(num)
-        theMain.chances = BinReadLong(num)
-        theMain.fprgYN = BinReadInt(num)
-        theMain.fightPrg = BinReadString(num)
+            .mainDisableProtectReg = BinReadInt(num)
+            m_LangFile = BinReadString(num)
         
-        If minorVer < 3 Then
-            Call BinReadInt(num)    'old fight style option
-        End If
+            .startupPrg = BinReadString(num)
+            .initBoard = BinReadString(num)
+            .initChar = BinReadString(num)
         
-        theMain.gameOverPrg = BinReadString(num)
-        'skin stuff...
-        theMain.skinButton = BinReadString(num)
-        theMain.skinWindow = BinReadString(num)
-        
-        'plugin stuff...
-        If minorVer <= 2 Then
-            cnt = BinReadInt(num)
-            Dim readin As Integer
-            For t = 0 To cnt
-                readin = BinReadInt(num)
-                If readin = 1 Then
-                    Call MainAddPlugin(theMain, "tkplug" + toString(t) + ".dll")
-                End If
-            Next t
-        Else
+            .runTime = BinReadString(num)
+            .runKey = BinReadInt(num)
+            .menuKey = BinReadInt(num)
+            .Key = BinReadInt(num)
+
+            'extended run time keys...
+            Dim cnt As Long
             cnt = BinReadInt(num)
             For t = 0 To cnt
-                Call MainAddPlugin(theMain, BinReadString(num))
+                .runTimeKeys(t) = BinReadInt(num)
+                .runTimePrg(t) = BinReadString(num)
             Next t
-        End If
         
-        'day/night stuff...
-        theMain.mainUseDayNight = BinReadInt(num)
-        theMain.mainDayNightType = BinReadInt(num)
-        theMain.mainDayLength = BinReadLong(num)
-    
-        If minorVer >= 3 Then
-            theMain.cursorMoveSound = BinReadString(num)
-            theMain.cursorSelectSound = BinReadString(num)
-            theMain.cursorCancelSound = BinReadString(num)
+            If minorVer >= 3 Then
+                .menuPlugin = BinReadString(num)
+                .fightPlugin = BinReadString(num)
+            Else
+                Call BinReadInt(num)
+                .menuPlugin = "tk3menu.dll"
+                .fightPlugin = "tk3fight.dll"
+            End If
+
+            If minorVer <= 2 Then
+                Call BinReadLong(num)   'was multitask speed
+                Call BinReadInt(num)    'was v 1.4 memory protection
+            End If
+
+            .fightgameYN = BinReadInt(num)
         
-            theMain.useJoystick = BinReadByte(num)
-            theMain.colordepth = BinReadByte(num)
-        End If
-    Close #num
-    
-    If minorVer <= 2 Then
-        'old version 2 mainfile
-        'move plugins into the project folder...
-        MkDir Mid$(projectPath$ + plugPath$, 1, Len(projectPath$ + plugPath$) - 1)
-        Dim pdir As String
-        Dim pfile As String
-        pfile = Dir$(plugPath$ + "*.*")
-        Do While pfile <> ""
-            Call FileCopy(plugPath$ + pfile, projectPath$ + plugPath$ + pfile)
-            pfile = Dir$
-        Loop
-    End If
-    
-    Call upgradeBattleSystem
-    openMain = toRet
-    
-    Exit Function
-ver2oldmain:
-    Open file$ For Input As #num
-        Input #num, fileHeader$        'Filetype
-        If fileHeader$ <> "RPGTLKIT mainForm" Then Close #num: GoTo openversion1main
-        Input #num, majorVer           'Version
-        Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Function
-        If minorVer <> minor Then
-            Dim user As Long
-            user = MsgBox("This file was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", 4, "Different Version")
-            If user = 7 Then Close #num: Exit Function 'selected no
-        End If
-        Input #num, reg          'registeredYN
-        toRet = reg
-        theMain.startupPrg$ = fread(num)      'start up program
-        theMain.runTime$ = fread(num)          'run time program
-        Call fread(num)     'use built in menu? 0-yes, 1-no
-        mainMem.menuPlugin = "tk3menu.dll"
-        theMain.runKey = fread(num)            'ascii code of run time key
-        theMain.menuKey = fread(num)           'ascii code of menu key
-        theMain.Key = fread(num)               'ascii code of general run key
-        theMain.initBoard$ = fread(num)        'initial board
-        theMain.initChar$ = fread(num)         'initial character
-        theMain.fightgameYN = fread(num)       'fighting in game? 0-yes, 1-no
-        Call fread(num)         'multitask speed (ms)
-        Call fread(num)     '1.4 memory protection 0- off, 1- on
-        For t = 0 To 500
-            theMain.enemy$(t) = fread(num)       'list of 500 enemy files 0-500
-            theMain.skill(t) = fread(num)        'list of enemy skill levels
-        Next t
-        theMain.fightType = fread(num)
-        theMain.chances = fread(num)
-        theMain.fprgYN = fread(num)                 'use alt fight program YN 0-no, 1-yes
-        theMain.fightPrg$ = fread(num)             'program to run for fighting.
-        Dim updatetype As Long
-        updatetype = fread(num)
-        theMain.gameTitle$ = fread(num)
-        theMain.mainScreenType = fread(num)    'screen mode 0=win, 1=full
-        Call fread(num)             'fighting style 0-default (ff style) 1-frontal view
-        theMain.gameOverPrg$ = fread(num)           'game over program
-        projectPath$ = fread(num)
-        theMain.skinButton$ = fread(num)      'skin's button graphic
-        theMain.skinWindow$ = fread(num)      'skin's window graphic
-        Dim targetPlatform As Long
-        targetPlatform = fread(num)    'target platform- 0=Win9x, 1=WinNT
-        targetPlatform = 0
-        For t = 0 To 50
-            theMain.runTimeKeys(t) = fread(num) 'extended run time key
-            theMain.runTimePrg$(t) = fread(num) 'extended run time programs
-        Next t
-        regCode$ = fread(num)            'reg code
-        theMain.extendToFullScreen = fread(num)
-        theMain.mainResolution = fread(num)         'resoltion
-        Dim numberOfPlugins As Long
-        numberOfPlugins = fread(num)   'number of plugins following.
-        If numberOfPlugins <> 0 Then
-            For t = 0 To numberOfPlugins - 1
-                Dim inr As Integer
-                inr = fread(num)      'use plugin yn?
-                If inr = 1 Then
-                    Call MainAddPlugin(theMain, "tkplug" + toString(t) + ".dll")
-                End If
+            cnt = BinReadInt(num)
+            For t = 0 To cnt
+                .enemy(t) = BinReadString(num)
+                .skill(t) = BinReadInt(num)
             Next t
-        End If
-        theMain.mainUseDayNight = fread(num)  'game is affected by day and night 0=no, 1=yes
-        theMain.mainDayNightType = fread(num) 'day/night type: 0=real world, 1=set time
-        theMain.mainDayLength = fread(num)              'day length, in minutes
-        theMain.mainDisableProtectReg = fread(num)   'disable protect registered files (0=no, 1=yes)
-        Call fread(num) 'old parallax value
-        m_LangFile = fread(num)
-    Close #num
-    openMain = toRet
+        
+            .fightType = BinReadInt(num)
+            .chances = BinReadLong(num)
+            .fprgYN = BinReadInt(num)
+            .fightPrg = BinReadString(num)
+        
+            If minorVer < 3 Then
+                Call BinReadInt(num)    'old fight style option
+            End If
+        
+            .gameOverPrg = BinReadString(num)
 
-    If minorVer <= 2 Then
-        'old version 2 mainfile
-        'move plugins into the project folder...
-        MkDir Mid$(projectPath$ + plugPath$, 1, Len(projectPath$ + plugPath$) - 1)
-        Dim pdir2 As String
-        Dim pfile2 As String
-        pfile2 = Dir$(plugPath$ + "*.*")
-        Do While pfile2 <> ""
-            Call FileCopy(plugPath$ + pfile2, projectPath$ + plugPath$ + pfile2)
-            pfile2 = Dir$
-        Loop
-    End If
-
-    Call upgradeBattleSystem
-    Exit Function
-
-openversion1main:
-    'OK, apparently we have a version 1 mainForm file.
-    updatetype = 2
-    theMain.fprgYN = 0
-    Dim pth As String, dummy As String, runky As String, gamfgt As String, fgtmain As String
+            'skin stuff...
+            .skinButton = BinReadString(num)
+            .skinWindow = BinReadString(num)
+        
+            'plugin stuff...
+            If minorVer <= 2 Then
+                cnt = BinReadInt(num)
+                Dim readin As Integer
+                For t = 0 To cnt
+                    readin = BinReadInt(num)
+                    If readin = 1 Then
+                        Call MainAddPlugin(theMain, "tkplug" & toString(t) & ".dll")
+                    End If
+                Next t
+            Else
+                cnt = BinReadInt(num)
+                For t = 0 To cnt
+                    Call MainAddPlugin(theMain, BinReadString(num))
+                Next t
+            End If
+        
+            'day/night stuff...
+            .mainUseDayNight = BinReadInt(num)
+            .mainDayNightType = BinReadInt(num)
+            .mainDayLength = BinReadLong(num)
     
-    pth$ = GetPath(file$)
-    theMain.menuPlugin = "tk3menu.dll"
-    Open file$ For Input As #num
-        Input #num, dummy$
-        theMain.startupPrg$ = fread(num)
-        theMain.runTime$ = fread(num)
-        runky$ = fread(num)
-        theMain.runKey = Asc(runky$)
-        theMain.initBoard$ = fread(num)
-        Input #num, dummy$
-        gamfgt$ = fread(num)
-        theMain.fightType = fread(num)
-        theMain.chances = fread(num)
-        fgtmain$ = fread(num)
-    Close #num
-    'and now we go after the mainForm fight file
-    Open pth$ + fgtmain$ For Input As #num
-        For t = 0 To 250
-            theMain.enemy$(t) = fread(num)             ' FIRST 500 STATEMENTS ARE ALTERNATING
-            theMain.skill(t) = fread(num)           ' ENEMY FILENAMES AND SKILLS
-        Next
-    Close #num
-    openMain = 0
-    Call upgradeBattleSystem
-End Function
+            If minorVer >= 3 Then
+                .cursorMoveSound = BinReadString(num)
+                .cursorSelectSound = BinReadString(num)
+                .cursorCancelSound = BinReadString(num)
+        
+                .useJoystick = BinReadByte(num)
+                .colordepth = BinReadByte(num)
+            End If
 
-Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
+        Close num
+    
+        If minorVer <= 2 Then
+            'old version 2 mainfile
+            'move plugins into the project folder...
+            MkDir Mid(projectPath & plugPath, 1, Len(projectPath & plugPath) - 1)
+            Dim pdir As String
+            Dim pfile As String
+            pfile = Dir(plugPath & "*.*")
+            Do While pfile <> ""
+                Call FileCopy(plugPath & pfile, projectPath & plugPath & pfile)
+                pfile = Dir
+            Loop
+        End If
+    
+        Call upgradeBattleSystem
+
+        Exit Sub
+
+ver2oldMain:
+
+        Open file For Input As num
+            Input #num, fileHeader        'Filetype
+            If fileHeader <> "RPGTLKIT mainForm" Then Close #num: GoTo openVersion1Main
+            Input #num, majorVer           'Version
+            Input #num, minorVer           'Minor version (ie 2.0)
+            If majorVer <> major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Sub
+            If minorVer <> minor Then
+                Dim user As VbMsgBoxResult
+                user = MsgBox("This file was created using Version " & str(majorVer) & "." & str(minorVer) & ".  You have version " & currentVersion & ". Opening this file may not work.  Continue?", 4, "Different Version")
+                If user = 7 Then Close #num: Exit Sub      'selected no
+            End If
+            Call fread(num)          'registeredYN
+            .startupPrg = fread(num)      'start up program
+            .runTime = fread(num)          'run time program
+            Call fread(num)     'use built in menu? 0-yes, 1-no
+            mainMem.menuPlugin = "tk3menu.dll"
+            .runKey = fread(num)            'ascii code of run time key
+            .menuKey = fread(num)           'ascii code of menu key
+            .Key = fread(num)               'ascii code of general run key
+            .initBoard = fread(num)        'initial board
+            .initChar = fread(num)         'initial character
+            .fightgameYN = fread(num)       'fighting in game? 0-yes, 1-no
+            Call fread(num)         'multitask speed (ms)
+            Call fread(num)     '1.4 memory protection 0- off, 1- on
+            For t = 0 To 500
+                .enemy(t) = fread(num)       'list of 500 enemy files 0-500
+                .skill(t) = fread(num)        'list of enemy skill levels
+            Next t
+            .fightType = fread(num)
+            .chances = fread(num)
+            .fprgYN = fread(num)                 'use alt fight program YN 0-no, 1-yes
+            .fightPrg = fread(num)             'program to run for fighting.
+            Call fread(num)
+            .gameTitle = fread(num)
+            .mainScreenType = fread(num)    'screen mode 0=win, 1=full
+            Call fread(num)             'fighting style 0-default (ff style) 1-frontal view
+            .gameOverPrg = fread(num)           'game over program
+            projectPath = fread(num)
+            .skinButton = fread(num)      'skin's button graphic
+            .skinWindow = fread(num)      'skin's window graphic
+            Dim targetPlatform As Long
+            targetPlatform = fread(num)    'target platform- 0=Win9x, 1=WinNT
+            targetPlatform = 0
+            For t = 0 To 50
+                .runTimeKeys(t) = fread(num) 'extended run time key
+                .runTimePrg(t) = fread(num) 'extended run time programs
+            Next t
+            Call fread(num)            'reg code
+            .extendToFullScreen = fread(num)
+            .mainResolution = fread(num)         'resoltion
+            Dim numberOfPlugins As Long
+            numberOfPlugins = fread(num)   'number of plugins following.
+            If numberOfPlugins <> 0 Then
+                For t = 0 To numberOfPlugins - 1
+                    Dim inr As Integer
+                    inr = fread(num)      'use plugin yn?
+                    If inr = 1 Then
+                        Call MainAddPlugin(theMain, "tkplug" & toString(t) & ".dll")
+                    End If
+                Next t
+            End If
+            .mainUseDayNight = fread(num)  'game is affected by day and night 0=no, 1=yes
+            .mainDayNightType = fread(num) 'day/night type: 0=real world, 1=set time
+            .mainDayLength = fread(num)              'day length, in minutes
+            .mainDisableProtectReg = fread(num)   'disable protect registered files (0=no, 1=yes)
+            Call fread(num) 'old parallax value
+            m_LangFile = fread(num)
+        Close num
+
+        If minorVer <= 2 Then
+            'old version 2 mainfile
+            'move plugins into the project folder...
+            MkDir Mid(projectPath & plugPath, 1, Len(projectPath & plugPath) - 1)
+            Dim pdir2 As String
+            Dim pfile2 As String
+            pfile2 = Dir(plugPath & "*.*")
+            Do While pfile2 <> ""
+                Call FileCopy(plugPath & pfile2, projectPath & plugPath & pfile2)
+                pfile2 = Dir
+            Loop
+        End If
+
+        Call upgradeBattleSystem
+
+        Exit Sub
+
+openVersion1Main:
+
+        'OK, apparently we have a version 1 mainForm file.
+
+        .fprgYN = 0
+        Dim pth As String
+    
+        pth = GetPath(file)
+        .menuPlugin = "tk3menu.dll"
+        Open file For Input As num
+            Call fread(num)
+            .startupPrg = fread(num)
+            .runTime = fread(num)
+            .runKey = Asc(fread(num))
+            .initBoard = fread(num)
+            Call fread(num)
+            Call fread(num)
+            .fightType = fread(num)
+            .chances = fread(num)
+            Dim fgtMain As String
+            fgtMain = fread(num)
+        Close num
+
+        'and now we go after the mainForm fight file
+        Open pth & fgtMain For Input As num
+            For t = 0 To 250
+                .enemy(t) = fread(num)             ' FIRST 500 STATEMENTS ARE ALTERNATING
+                .skill(t) = fread(num)             ' ENEMY FILENAMES AND SKILLS
+            Next
+        Close num
+
+        Call upgradeBattleSystem
+    
+    End With
+    
+End Sub
+
+Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     'saves mainForm file
     On Error Resume Next
     
@@ -545,8 +559,7 @@ Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     Close #num
 End Sub
 
-
-Sub MainClear(ByRef theMain As TKMain)
+Public Sub MainClear(ByRef theMain As TKMain)
     On Error Resume Next
     theMain.gameTitle = ""              'title of game
     theMain.mainScreenType = 0        'screen type 2=windowed, 1=optimal resolution (640x480), 0- actual window

@@ -125,7 +125,6 @@ Private Sub Form_Activate()
     If Tag = 1 Then
         End
     Else
-        Call LocalizeForm(Me)
         Visible = True
         DoEvents
     End If

@@ -24,7 +24,6 @@ Public currentDir As String                    'Current directory
 Public filename(1 To 5) As String              'Filename array
 Public savPath As String                       'saved games
 Public projectPath As String                   'project path
-Public noCodeYN As Boolean                     'did it have nocode?
 Public host As Form                            'host form object
 
 'Misc Constants
