@@ -634,17 +634,12 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
                 ' Put all the tokens into an array
                 ReDim numberUse(number) As Double, conjunctions(number) As String
-                ReDim nulled(number) As Boolean
+                ReDim nulled(number) As Boolean, bIsVar(number) As Boolean
                 For tokenIdx = 2 To number
                     ' Get the conjuction here
                     conjunctions(tokenIdx) = MathFunction(Text, tokenIdx)
                     ' Get the value of the token
-                    Dim bWasVar As Boolean
-                    bWasVar = False
-                    Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram, , bWasVar)
-                    If (bWasVar) Then
-                        valueList(tokenIdx) = "(" & valueList(tokenIdx) & ")"
-                    End If
+                    Call getValue(valueList(tokenIdx), lit, numberUse(tokenIdx), theProgram, , bIsVar(tokenIdx))
                     ' If this isn't the first token
                     If ((tokenIdx <> 2) And (tokenIdx <= (number - 2))) Then
                         ' Find a token
@@ -707,7 +702,11 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Dim build As String
                 For tokenIdx = 2 To number
                     If Not (nulled(tokenIdx)) Then
-                        build = build & numberUse(tokenIdx)
+                        If Not (bIsVar(tokenIdx)) Then
+                            build = build & numberUse(tokenIdx)
+                        Else
+                            build = build & "(" & numberUse(tokenIdx) & ")"
+                        End If
                         If (tokenIdx <> number) Then
                             build = build & conjunctions(tokenIdx)
                         End If
