@@ -1,4 +1,4 @@
-Attribute VB_Name = "autotiler"
+Attribute VB_Name = "modAutoTiler"
 '========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
@@ -11,20 +11,20 @@ Option Explicit
 ' AutoTiler initialization and constants, added by Shao, 09/24/2004
 '=========================================================================
 
-Global Const TD_N As Byte = 1
-Global Const TD_S As Byte = 2
-Global Const TD_W As Byte = 4
-Global Const TD_E As Byte = 8
-Global Const TD_NW As Byte = 16
-Global Const TD_NE As Byte = 32
-Global Const TD_SW As Byte = 64
-Global Const TD_SE As Byte = 128
+Public Const TD_N As Byte = 1
+Public Const TD_S As Byte = 2
+Public Const TD_W As Byte = 4
+Public Const TD_E As Byte = 8
+Public Const TD_NW As Byte = 16
+Public Const TD_NE As Byte = 32
+Public Const TD_SW As Byte = 64
+Public Const TD_SE As Byte = 128
 
-Global TileMorphs(0 To 255) As Integer 'each possible combination, most are unused
+Public TileMorphs(0 To 255) As Integer 'each possible combination, most are unused
 
-Global autoTilerSets() As String 'autotiler tilesets currently used
+Public autoTilerSets() As String 'autotiler tilesets currently used
 
-Sub SetupAutoTiler()
+Public Sub SetupAutoTiler()
     ReDim autoTilerSets(0)
     TileMorphs(TD_N Or TD_S Or TD_W Or TD_E Or TD_NE Or TD_SW Or TD_SE) = 1
     TileMorphs(TD_N Or TD_S Or TD_W Or TD_E Or TD_NW Or TD_SW Or TD_SE) = 2
@@ -74,5 +74,3 @@ Sub SetupAutoTiler()
     TileMorphs(0) = 51
     TileMorphs(TD_N Or TD_S Or TD_W Or TD_E Or TD_NW Or TD_NE Or TD_SW Or TD_SE) = 52
 End Sub
-
-
