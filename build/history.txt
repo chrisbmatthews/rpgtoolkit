@@ -1,13 +1,16 @@
-===================================================================================================
+=================================================================================================
 RPG TOOLKIT DEVELOPMENT SYSTEM, 3.0 HISTORY
-===================================================================================================
+=================================================================================================
 
-===================================================================================================
+=================================================================================================
 RPGToolkit Development System 3.0.6
 Grand Bug Fix List
-March 14, 2005
-Copyright 2005, Jonathan Hughes (Delano), Colin James Fitzpatrick, Christopher B. Matthews, et al.
-===================================================================================================
+April 4, 2005
+
+Contributions from Jonathan Hughes (Delano), Colin James Fitzpatrick
+
+RPGToolkit Copyright (c) 2003-2005 Christopher Matthews and Contributors (Xavier, Colin, John@aljo, Delano, Euix, Geoff, Sander, Occasionally_Correct, faero, Shao (With their respective copyrights, released as open source))
+=================================================================================================
 
 Toolkit Game Engine, trans3
 ===========================
@@ -61,6 +64,7 @@ Live
     * callPlayerSwap() needs to be written (suggestions?)
     * Plugins sometimes don't work
     * *The* windows 9x bug
+    * Alt-Tabbing out of a fullscreen game, the game cannot be reactivated
 
 Toolkit Editor, toolkit3
 ========================
@@ -105,13 +109,13 @@ Miscellaneous Items
 
 Corrected
 
-    * Update quick reference -- OC
-    * Crashes for some people during install
+    * Update quick reference
+    * Crashes for some people during install (may still cause problems)
     * Help files rewritten
 
-===================================================================================================
-- END 3.06
-===================================================================================================
+=================================================================================================
+- END 3.0.6
+=================================================================================================
 
 RPG Toolkit Development System 3.0.5
 Instructions and What's New
