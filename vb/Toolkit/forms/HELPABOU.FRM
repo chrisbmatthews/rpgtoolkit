@@ -102,7 +102,7 @@ Begin VB.Form helpAbout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Release 3.0.4 (August 2004)"
+      Caption         =   "Release 3.0.5 (December 2004)"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   9.75
