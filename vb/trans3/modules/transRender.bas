@@ -797,6 +797,10 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     'Will place the top left corner of the sprite frame at cornerX, cornerY:
     cornerX = centreX - spriteWidth \ 2
     cornerY = centreY - spriteHeight
+           
+    'Exit if sprite is off the board.
+    If cornerX > resX Or cornerY > resY Or _
+        cornerX + spriteWidth < 0 Or cornerY + spriteHeight < 0 Then Exit Sub
        
     Dim offsetX As Long, offsetY As Long
     'Offset on the sprite's frame from the top left corner (cornerX, cornerY)
@@ -1063,6 +1067,7 @@ Private Function renderItem(ByVal cnv As Long, _
     
     With itemPosition
     
+#If False Then
         'check if item is in viewable area...
         If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
             'Substituting for isoTopY = topY * 2 + 1
@@ -1081,6 +1086,7 @@ Private Function renderItem(ByVal cnv As Long, _
                 Exit Function
             End If
         End If
+#End If
         
         'Directional standing graphics for 3.0.5
         '===========================================
@@ -1572,14 +1578,14 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
 
     ' Set the dimensions the host window will be created with
     With host
-        .width = width * Screen.TwipsPerPixelX
-        .height = height * Screen.TwipsPerPixelY
-        .Top = (Screen.height - .height) \ 2
-        .Left = (Screen.width - .width) \ 2
+        .width = width * screen.TwipsPerPixelX
+        .height = height * screen.TwipsPerPixelY
+        .Top = (screen.height - .height) \ 2
+        .Left = (screen.width - .width) \ 2
         If Not (inFullScreenMode) Then
             ' If not in full screen mode, increase to account for window border
-            .width = .width + 6 * Screen.TwipsPerPixelX
-            .height = .height + 24 * Screen.TwipsPerPixelY
+            .width = .width + 6 * screen.TwipsPerPixelX
+            .height = .height + 24 * screen.TwipsPerPixelY
         End If
     End With
 
@@ -1654,12 +1660,12 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     useJoystick = JoyTest()
 
     ' Get screen width
-    screenWidth = Screen.height * (1 \ 0.75) ' (Colin: Is this a mistake!?)
-    screenHeight = Screen.height
+    screenWidth = screen.height * (1 \ 0.75) ' (Colin: Is this a mistake!?)
+    screenHeight = screen.height
 
     ' Get resolution x / y
-    resX = screenWidth \ Screen.TwipsPerPixelX
-    resY = screenHeight \ Screen.TwipsPerPixelY
+    resX = screenWidth \ screen.TwipsPerPixelX
+    resY = screenHeight \ screen.TwipsPerPixelY
 
     ' Start the message window with a "normal" translucency value
     g_dblWinIntensity = 0.5
@@ -1684,8 +1690,8 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     Call showScreen(screenWidth, screenHeight, testingPRG)
 
     ' Update screen width and height
-    screenWidth = screenWidth * Screen.TwipsPerPixelX
-    screenHeight = screenHeight * Screen.TwipsPerPixelY
+    screenWidth = screenWidth * screen.TwipsPerPixelX
+    screenHeight = screenHeight * screen.TwipsPerPixelY
 
 End Sub
 
