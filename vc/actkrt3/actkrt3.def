@@ -190,3 +190,4 @@ EXPORTS
 	initCounter			@251
 
 	CNVBltCanvasTranslucentPart @ 252
+	DXDrawCanvasTranslucentPartial	@ 253

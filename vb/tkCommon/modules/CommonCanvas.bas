@@ -12,17 +12,13 @@ Attribute VB_Name = "CommonCanvas"
 Option Explicit
 
 '=========================================================================
-' FreeImage image manipulation
+' Declarations
 '=========================================================================
 Private Declare Function IMGBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long) As Long
 Private Declare Function IMGGetWidth Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGGetHeight Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal filename As String) As Long
 Private Declare Function IMGFree Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
-
-'=========================================================================
-' Canvas manipulation
-'=========================================================================
 Private Declare Function CNVInit Lib "actkrt3.dll" () As Long
 Private Declare Function CNVShutdown Lib "actkrt3.dll" () As Long
 Private Declare Function CNVCreate Lib "actkrt3.dll" (ByVal hdcCompatable As Long, ByVal width As Long, ByVal height As Long, Optional ByVal useDX As Long = 1) As Long
@@ -45,17 +41,18 @@ Private Declare Function CNVShiftLeft Lib "actkrt3.dll" (ByVal handle As Long, B
 Private Declare Function CNVShiftRight Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftUp Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftDown Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
-Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
+Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
 Private Declare Function CNVCreateCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long) As Long
+Private Declare Function CNVBltCanvasTranslucentPart Lib "actkrt3.dll" (ByVal cnvSource As Long, ByVal cnvTarget As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
 Private Declare Sub CNVKillCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long, ByVal hCanvasHostDC As Long)
 
 '=========================================================================
 ' Member variables
 '=========================================================================
-Private canvasHost As Long      'This variable contains a handle to a device
-                                'context (created in initCanvasEngine) which
-                                'all other canvas' dc's are based upon.
+Private canvasHost As Long      ' This variable contains a handle to a device
+                                ' context (created in initCanvasEngine) which
+                                ' all other canvas' dc's are based upon.
 
 '=========================================================================
 ' Draw a background onto a canvas
@@ -134,6 +131,26 @@ Public Sub canvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal fo
         Call canvasCloseHDC(canvasID, hdc)
     End If
 End Sub
+
+'=========================================================================
+' Partially blt one canvas to another, using translucency
+'=========================================================================
+Public Function canvas2canvasBltTranslucentPartial(ByVal cnvSource As Long, ByVal cnvTarget As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
+
+    ' If both canvases exist
+    If ((canvasOccupied(cnvSource)) And (canvasOccupied(cnvTarget))) Then
+
+        ' Execute the blt
+        canvas2canvasBltTranslucentPartial = CNVBltCanvasTranslucentPart( _
+            cnvSource, cnvTarget, _
+            x, y, xSrc, ySrc, _
+            width, height, _
+            dIntensity, crUnaffectedColor, crTransparentColor _
+        )
+
+    End If
+
+End Function
 
 '=========================================================================
 ' Copy the screen onto a canvas

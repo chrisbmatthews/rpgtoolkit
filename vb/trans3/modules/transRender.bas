@@ -58,13 +58,16 @@ Public Declare Function DXDrawCanvasTransparent Lib "actkrt3.dll" (ByVal canvasI
 Public Declare Function DXDrawCanvasTranslucent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
 ' Draw part of a canvas on the screen
-Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 
 ' Draw part of a canvas onto the screen using transparency
-Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
+Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
 
 ' Copy the screen to a canvas
 Public Declare Function DXCopyScreenToCanvas Lib "actkrt3.dll" (ByVal canvasID As Long) As Long
+
+' Draw part of a canvas, using translucency
+Public Declare Function DXDrawCanvasTranslucentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
 #Else
 
@@ -311,6 +314,16 @@ Public Function DXDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As
 End Function
 
 '=========================================================================
+' Draw part of a canvas, using translucency
+'=========================================================================
+Public Function DXDrawCanvasTranslucentPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+
+    ' Draw to the back buffer
+    Call canvas2canvasBltTranslucentPartial(canvasID, m_cnvBack, x, y, xSrc, ySrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor)
+
+End Function
+
+'=========================================================================
 ' Draw a canavs transparently onto the screen
 '=========================================================================
 Public Function DXDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
@@ -333,20 +346,20 @@ End Function
 '=========================================================================
 ' Draw part of a canvas on the screen
 '=========================================================================
-Public Function DXDrawCanvasPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Public Function DXDrawCanvasPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 
     ' Draw to the back buffer
-    Call canvas2CanvasBltPartial(canvasID, m_cnvBack, x, y, xsrc, ysrc, width, height, rasterOp)
+    Call canvas2CanvasBltPartial(canvasID, m_cnvBack, x, y, xSrc, ySrc, width, height, rasterOp)
 
 End Function
 
 '=========================================================================
 ' Draw part of a canvas onto the screen using transparency
 '=========================================================================
-Public Function DXDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
+Public Function DXDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
 
     ' Draw to the back buffer
-    Call canvas2CanvasBltTransparentPartial(canvasID, m_cnvBack, x, y, xsrc, ysrc, width, height, crTranspColor)
+    Call canvas2CanvasBltTransparentPartial(canvasID, m_cnvBack, x, y, xSrc, ySrc, width, height, crTranspColor)
 
 End Function
 

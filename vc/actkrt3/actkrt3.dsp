@@ -284,18 +284,6 @@ SOURCE=.\tkCanvas\tkCanvas.cpp
 # End Source File
 # End Group
 # End Group
-# Begin Group "tkDirectX"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\tkDirectX\platform.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\tkDirectX\platform.h
-# End Source File
-# End Group
 # Begin Group "md5"
 
 # PROP Default_Filter ""
@@ -407,6 +395,34 @@ SOURCE=.\GUISystem\platform\transHost.cpp
 
 SOURCE=.\GUISystem\platform\transHost.h
 # End Source File
+# End Group
+# Begin Group "DirectX"
+
+# PROP Default_Filter ""
+# Begin Group "platform"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\tkDirectX\platform.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\tkDirectX\platform.h
+# End Source File
+# End Group
+# Begin Group "tkDirectX"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\tkDirectX\tkDirectX.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\tkDirectX\tkDirectX.h
+# End Source File
+# End Group
 # End Group
 # End Target
 # Begin Group "tkzip"
