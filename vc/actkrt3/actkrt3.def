@@ -185,3 +185,5 @@ EXPORTS
 
 	;rpgcode parser
 	RPGCGetMethodName	@234
+	RPGCParseAfter		@235
+	RPGCParseBefore		@236

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-//All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
+//All contents copyright 2004, KSNiloc and Woozy
 //All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 //Read LICENSE.txt for licensing info
 ///////////////////////////////////////////////////////////////////////////
@@ -12,6 +12,83 @@
 // Include the header file
 //////////////////////////////////////////////////////////////////////////
 #include "parser.h"		//contains stuff integral to this file
+
+//////////////////////////////////////////////////////////////////////////
+// Return content in text after startSymbol is located
+//////////////////////////////////////////////////////////////////////////
+int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer)
+{
+	
+	//Read the VB string
+	initVbString(pText);
+	
+	inlineString text = pText;			//Text we're operating on
+	inlineString symbol = startSymbol;	//Symbol we're looking for
+	inlineString part;					//A character
+	inlineString toRet;					//The thing we'll return
+	int t = 0;				 			//Loop control variables
+	int length = text.len();			//Length of text
+	bool foundIt = false;
+	int startAt;
+	for (t = 1; t <= length; t++)
+	{
+		//Find the start symbol
+		part = text.mid(t, 1);
+		if (part.contains(symbol))
+		{
+			startAt = t;
+			foundIt = true;
+		}
+	}
+
+	if(foundIt)
+	{
+		for (t = startAt + 1; t <= length; t++)
+		{
+			part = text.mid(t, 1);
+			toRet += part;
+		}
+	}
+
+	//Return what we found
+	return returnVbString(toRet, lengthBuffer);
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Return content from text until startSymbol is located
+//////////////////////////////////////////////////////////////////////////
+int APIENTRY RPGCParseBefore(char* pText, char* startSymbol, int &lengthBuffer)
+{
+	
+	//Read the VB string
+	initVbString(pText);
+	
+	inlineString text = pText;			//Text we're operating on
+	inlineString symbol = startSymbol;	//Symbol we're looking for
+	inlineString part;					//A character
+	inlineString toRet;					//The thing we'll return
+	int t = 0;				 			//Loop control variables
+	int length = text.len();			//Length of text
+	
+	for (t = 1; t <= length; t++)
+	{
+		//Find the start symbol
+		part = text.mid(t, 1);
+		if (part.contains(symbol))
+		{
+			//Found it
+			return returnVbString(toRet, lengthBuffer);
+			break;
+		}
+		else
+		{
+			toRet += part;
+		}
+	}
+
+	return returnVbString("", lengthBuffer);
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Get the name of a method
@@ -89,7 +166,7 @@ int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
         }
 		else
 		{
-            mName = mName + part;
+            mName += part;
         }
     }
 
@@ -101,7 +178,7 @@ int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
 //////////////////////////////////////////////////////////////////////////
 // Return a VB string
 //////////////////////////////////////////////////////////////////////////
-inline int returnVbString(inlineString &theString, int &lengthBuffer)
+inline int returnVbString(inlineString theString, int &lengthBuffer)
 {
 
 	/////////////////////////////////////////////////////////////////
@@ -120,7 +197,7 @@ inline int returnVbString(inlineString &theString, int &lengthBuffer)
 	memAdd = new(char[theString.len()]);
 
 	//copy the string into the memory
-	strcpy(memAdd, theString.value());
+	theString.newMem(memAdd);
 
 	//set the length buffer to the size in memory
 	lengthBuffer = sizeof(memAdd);

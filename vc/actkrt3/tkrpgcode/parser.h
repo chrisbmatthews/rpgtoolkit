@@ -24,6 +24,8 @@
 //////////////////////////////////////////////////////////////////////////
 // Prototypes
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY RPGCGetMethodName(char* pText);
 inline void initVbString(char* theString);
-inline int returnVbString(inlineString &theString, int &lengthBuffer);
+inline int returnVbString(inlineString theString, int &lengthBuffer);
+int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer);
+int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer);
+int APIENTRY RPGCParseBefore(char* pText, char* startSymbol, int &lengthBuffer);
