@@ -85,41 +85,51 @@ INLINE std::string CBoard::tile(
 	SHORT lut = 0;
 	SafeArrayGetElement(m_board, lutIndicies, LPVOID(&lut));
 
-	// Now, find the tile with that code
-	LONG tileIndices[] = {lut};
-	BSTR str = NULL;
-	SafeArrayGetElement(m_tileIndex, tileIndices, LPVOID(&str));
-
-	// Convert to ASCII
-	CONST INT len = SysStringLen(str);
-	LPSTR toRet = new CHAR[len + 1];
-	for (INT i = 0; i < len; i++)
+	if (!lut)
 	{
-		// Copy over
-		toRet[i] = str[i];
+		// No tile at this location (lut == 0).
+		CONST std::string nullStr;
+		return nullStr;
 	}
-
-	// Append NULL
-	toRet[len] = '\0';
-
-	// Create the return string
-	CONST std::string toRetStr = toRet;
-
-	// Clean up
-	delete [] toRet;
-
-	// Get the file's extension
-	CONST std::string strExt = util::upperCase(util::getExt(toRetStr));
-
-	// If it's an animated tile
-	if (strExt.compare("TAN") == 0)
+	else
 	{
-		// Use the first frame
-		return CTileAnim("tiles\\" + toRetStr).frame(1);
-	}
+		// Now, find the tile with that code
+		LONG tileIndices[] = {lut};
+		BSTR str = NULL;
+		SafeArrayGetElement(m_tileIndex, tileIndices, LPVOID(&str));
 
-	// Return the result
-	return toRetStr;
+		// Convert to ASCII
+		CONST INT len = SysStringLen(str);
+		LPSTR toRet = new CHAR[len + 1];
+		for (INT i = 0; i < len; i++)
+		{
+			// Copy over
+			toRet[i] = str[i];
+		}
+
+		// Append NULL
+		toRet[len] = '\0';
+
+		// Create the return string
+		CONST std::string toRetStr = toRet;
+
+		// Clean up
+		delete [] toRet;
+
+		// Get the file's extension
+		CONST std::string strExt = util::upperCase(util::getExt(toRetStr));
+
+		// If it's an animated tile
+		if (strExt.compare("TAN") == 0)
+		{
+			// Use the first frame
+			return CTileAnim("tiles\\" + toRetStr).frame(1);
+		}
+
+		// Return the result
+		return toRetStr;
+
+	} // if (lut == 0)
 
 }
 
@@ -166,47 +176,51 @@ VOID FAST_CALL CBoard::draw(
 			// For the y axis
 			for (INT k = 1; k <= nHeight; k++)
 			{
-
 				// Obtain some information
 				CONST INT x = j + topX;
 				CONST INT y = k + topY;
 				CONST std::string strTile = tile(x, y, i);
-				LPCSTR pstrTile = strTile.c_str();
-				CONST INT r = ambientRed(x, y, i) + aR;
-				CONST INT g = ambientGreen(x, y, i) + aG;
-				CONST INT b = ambientBlue(x, y, i) + aB;
-
-				// If there's a canvas
-				if (cnv != -1)
+				if (!strTile.empty())
 				{
+					// Tile exists at this location.
+					LPCSTR pstrTile = strTile.c_str();
+					CONST INT r = ambientRed(x, y, i) + aR;
+					CONST INT g = ambientGreen(x, y, i) + aG;
+					CONST INT b = ambientBlue(x, y, i) + aB;
 
-					// Set the tile onto it
-					GFXDrawTileCNV(
-						pstrTile,
-						j, k,
-						r, g, b,
-						cnv,
-						bIsometric,
-						nIsoEvenOdd
-					);
+					// If there's a canvas
+					if (cnv != -1)
+					{
 
-				}
+						// Set the tile onto it
+						GFXDrawTileCNV(
+							pstrTile,
+							j, k,
+							r, g, b,
+							cnv,
+							bIsometric,
+							nIsoEvenOdd
+						);
 
-				// If there's a mask canvas
-				if (maskCnv != -1)
-				{
+					}
 
-					// Draw the tile's mask
-					GFXDrawTileMaskCNV(
-						pstrTile,
-						j, k,
-						r, g, b,
-						maskCnv, 0,
-						bIsometric,
-						nIsoEvenOdd
-					);
+					// If there's a mask canvas
+					if (maskCnv != -1)
+					{
 
-				}
+						// Draw the tile's mask
+						GFXDrawTileMaskCNV(
+							pstrTile,
+							j, k,
+							r, g, b,
+							maskCnv, 0,
+							bIsometric,
+							nIsoEvenOdd
+						);
+
+					}
+
+				} // if (!strTile.empty())
 
 			} // for k
 
@@ -264,42 +278,47 @@ VOID FAST_CALL CBoard::drawHdc(
 				CONST INT x = j + topX;
 				CONST INT y = k + topY;
 				CONST std::string strTile = tile(x, y, i);
-				LPCSTR pstrTile = strTile.c_str();
-				CONST INT r = ambientRed(x, y, i) + aR;
-				CONST INT g = ambientGreen(x, y, i) + aG;
-				CONST INT b = ambientBlue(x, y, i) + aB;
-
-				// If there's a canvas
-				if (hdc != -1)
+				if (!strTile.empty())
 				{
+					// Tile exists at this location.
+					LPCSTR pstrTile = strTile.c_str();
+					CONST INT r = ambientRed(x, y, i) + aR;
+					CONST INT g = ambientGreen(x, y, i) + aG;
+					CONST INT b = ambientBlue(x, y, i) + aB;
 
-					// Set the tile onto it
-					GFXdrawtile(
-						pstrTile,
-						j, k,
-						r, g, b,
-						hdc,
-						bIsometric,
-						nIsoEvenOdd
-					);
+					// If there's a canvas
+					if (hdc != -1)
+					{
 
-				}
+						// Set the tile onto it
+						GFXdrawtile(
+							pstrTile,
+							j, k,
+							r, g, b,
+							hdc,
+							bIsometric,
+							nIsoEvenOdd
+						);
 
-				// If there's a mask canvas
-				if (maskHdc != -1)
-				{
+					}
 
-					// Draw the tile's mask
-					GFXdrawtilemask(
-						pstrTile,
-						j, k,
-						r, g, b,
-						maskHdc, 0,
-						bIsometric,
-						nIsoEvenOdd
-					);
+					// If there's a mask canvas
+					if (maskHdc != -1)
+					{
 
-				}
+						// Draw the tile's mask
+						GFXdrawtilemask(
+							pstrTile,
+							j, k,
+							r, g, b,
+							maskHdc, 0,
+							bIsometric,
+							nIsoEvenOdd
+						);
+
+					}
+
+				} // if (!strTile.empty())
 
 			} // for k
 
