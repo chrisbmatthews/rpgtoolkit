@@ -2083,8 +2083,8 @@ End Sub
 ' #Push() in pixel increments.
 '=========================================================================
 Private Sub chkUsePixelPush_Click()
-    If optPixelBased.value = True Then
-        If chkUsePixelPush.value = 1 Then
+    If (optPixelBased.value) Then
+        If (chkUsePixelPush.value) Then
             mainMem.pixelMovement = PIXEL_MOVEMENT_PIXEL_PUSH
         Else
             mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH
