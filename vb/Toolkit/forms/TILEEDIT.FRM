@@ -551,7 +551,7 @@ Public Sub isoChange( _
 
         'Show border of the isomirror in TkMainForm
         tkMainForm.isoMirror.BorderStyle = 1
-        tkMainForm.isoMirror.cls
+        tkMainForm.isoMirror.Cls
     End If
     
     'Update ISO variable
@@ -596,8 +596,8 @@ Public Sub Command1_Click(): On Error GoTo ErrorHandler
     openTileEditorDocs(indice).currentColor = -1
     'Update selected color Picturebox in TkMainForm
     Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, RGB(255, 255, 255))
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, (tkMainForm.selectedcolor.Width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, vbQBColor(7))
-    Call vbPicFillRect(tkMainForm.selectedcolor, (tkMainForm.selectedcolor.Width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, 100, 100, vbQBColor(7))
+    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, vbQBColor(7))
+    Call vbPicFillRect(tkMainForm.selectedcolor, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, 100, 100, vbQBColor(7))
     'Refresh
     Call vbPicRefresh(tkMainForm.selectedcolor)
 
@@ -1213,14 +1213,14 @@ End Sub
 '========================================================================
 Private Sub Form_Resize(): On Error Resume Next
     'Minimum size
-    If Me.Width < (6070 * xMod) And Me.WindowState = 0 Then Me.Width = 6070 * xMod
+    If Me.width < (6070 * xMod) And Me.WindowState = 0 Then Me.width = 6070 * xMod
     If Me.Height < 6070 And Me.WindowState = 0 Then Me.Height = 6070
     
     'Needed variables
     Dim tfWidth As Integer, tfHeight As Integer
     
     'Calculate size
-    tfWidth = (Me.Width - 200) / Screen.TwipsPerPixelX
+    tfWidth = (Me.width - 200) / Screen.TwipsPerPixelX
     tfWidth = (Round(tfWidth / 32) * 32) * Screen.TwipsPerPixelX
 
     'Calculate height
@@ -1228,24 +1228,24 @@ Private Sub Form_Resize(): On Error Resume Next
     tfHeight = (Round(tfHeight / 32) * 32) * Screen.TwipsPerPixelY
         
     'Only resize if the calculated size isn't the same as the current size
-    If tfWidth <> tileform.Width And tfHeight <> tileform.Height Then
+    If tfWidth <> tileform.width And tfHeight <> tileform.Height Then
         'Set size
         If tfWidth < tfHeight Then
-            tileform.Width = tfWidth
+            tileform.width = tfWidth
             tileform.Height = tfWidth
         Else
-            tileform.Width = tfHeight
+            tileform.width = tfHeight
             tileform.Height = tfHeight
         End If
     End If
     
-    tileform.Width = tileform.Height * xMod
+    tileform.width = tileform.Height * xMod
     
     'Reduce the width if it's bigger then the tileform
-    If (tileform.Width > Me.Width - 200) Then tileform.Width = tileform.Width - 960
+    If (tileform.width > Me.width - 200) Then tileform.width = tileform.width - 960
     
     'Set location
-    tileform.Left = ((Me.Width - tileform.Width) / 2) - Screen.TwipsPerPixelX * 4
+    tileform.Left = ((Me.width - tileform.width) / 2) - Screen.TwipsPerPixelX * 4
     tileform.Top = (Me.Height - tileform.Height) / 2 / 2 + Screen.TwipsPerPixelX * 3
     
     'Redraw
@@ -1321,13 +1321,13 @@ Private Sub highRedraw()
     On Error GoTo ErrorHandler
 
     'Clear tileform and mirrors in TkMainForm
-    tileform.cls
-    tkMainForm.mirror.cls
-    tkMainForm.isoMirror.cls
+    tileform.Cls
+    tkMainForm.mirror.Cls
+    tkMainForm.isoMirror.Cls
     
     'Tileform size in pixels
     Dim wwidth, hheight As Integer
-    wwidth = (tileform.Width) / Screen.TwipsPerPixelX
+    wwidth = (tileform.width) / Screen.TwipsPerPixelX
     hheight = (tileform.Height) / Screen.TwipsPerPixelY
     
     'Size of a pixel on the tileform
@@ -1390,7 +1390,7 @@ Private Sub drawGrid(): On Error Resume Next
     
     'Size of form in pixels.
     Dim tfWidth As Integer, tfHeight As Integer
-    tfWidth = (tileform.Width) / Screen.TwipsPerPixelX
+    tfWidth = (tileform.width) / Screen.TwipsPerPixelX
     tfHeight = (tileform.Height) / Screen.TwipsPerPixelY
 
     'Size of a pixel on the tileform
@@ -1450,7 +1450,7 @@ Private Sub tileform_MouseDown(Button As Integer, Shift As Integer, x As Single,
         
     'Tileform size in pixels
     Dim tfWidth As Integer, tfHeight As Integer
-    tfWidth = (tileform.Width) / Screen.TwipsPerPixelX
+    tfWidth = (tileform.width) / Screen.TwipsPerPixelX
     tfHeight = (tileform.Height) / Screen.TwipsPerPixelY
         
     'Size of a pixel on the tileform
@@ -1472,8 +1472,8 @@ Private Sub tileform_MouseDown(Button As Integer, Shift As Integer, x As Single,
     Select Case openTileEditorDocs(indice).tileMode
         Case 0, 3
 
-            'Undo
-            Call setUndo
+            'Save the tile - only do this at the start of a drag.
+            If (Not bDragBegin) Then Call setUndo
 
             'If the user wants to erase, set colorUse to -1 (Transparent)
             If openTileEditorDocs(indice).tileMode = 3 Then
@@ -1560,7 +1560,7 @@ Private Sub tileform_MouseMove(Button As Integer, Shift As Integer, x As Single,
     
     'Tileform size in pixels
     Dim tfWidth As Integer, tfHeight As Integer
-    tfWidth = (tileform.Width) / Screen.TwipsPerPixelX
+    tfWidth = (tileform.width) / Screen.TwipsPerPixelX
     tfHeight = (tileform.Height) / Screen.TwipsPerPixelY
         
     'Size of a pixel on the tileform
@@ -1653,8 +1653,8 @@ Private Sub tileform_MouseMove(Button As Integer, Shift As Integer, x As Single,
             End If
     End Select
     
-    Call tileform_MouseDown(Button, Shift, x, y)
     bDragBegin = True
+    Call tileform_MouseDown(Button, Shift, x, y)
     dragX1 = x
     dragY1 = y
 End Sub
@@ -1664,7 +1664,7 @@ End Sub
 '========================================================================
 Private Sub tileform_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Dim tfWidth As Integer, tfHeight As Integer
-    tfWidth = (tileform.Width) / Screen.TwipsPerPixelX
+    tfWidth = (tileform.width) / Screen.TwipsPerPixelX
     tfHeight = (tileform.Height) / Screen.TwipsPerPixelY
     
     Dim pixelWidth As Integer, pixelHeight As Integer
