@@ -5,15 +5,16 @@ Private rpgC As String
 
 Public Function CapitalizeRPGCode(ByVal txt As String) As String
 
- ' ! STILL UNDER CONSTRUCTION [KSNiloc]
+ If GetSetting("RPGToolkit3", "PRG Editor", "Cap", 1) = 0 Then
+  CapitalizeRPGCode = txt
+  Exit Function
+ End If
 
- CapitalizeRPGCode = txt
- Exit Function
+ 'Make the text avaliable around this module...
+ rpgC = txt
 
- 'Make the text accessable around this module...
- rpgC = LCaseOutsideQuotes(txt)
- 
  'Do it!
+ fR "AutoCommand"
  fR "AddPlayer"
  fR "AI"
  fR "AnimatedTiles"
@@ -264,15 +265,11 @@ Public Function CapitalizeRPGCode(ByVal txt As String) As String
  
 End Function
 
-Private Sub fR(ByVal old As String)
- 'fR = FastReplace
- 
- 'Since I'll be using replace a lot I don't want this to look messy.
- rpgC = Replace(rpgC, LCase(old), old, , , vbTextCompare)
- 
+Private Sub fR(ByVal Text As String)
+    rpgC = Replace(rpgC, Text, Text, , , vbTextCompare)
 End Sub
 
-Private Function LCaseOutsideQuotes(ByVal text As String) As String
+Private Function LCaseOutsideQuotes(ByVal Text As String) As String
 
     '======================================================================================
     'Convert characters not within quotes to lowercase
@@ -283,8 +280,8 @@ Private Function LCaseOutsideQuotes(ByVal text As String) As String
     Dim char As String
     Dim a As Long
     
-    For a = 1 To Len(text)
-        char = Mid(text, a, 1)
+    For a = 1 To Len(Text)
+        char = Mid(Text, a, 1)
         Select Case char
             Case """"
                 If ignore Then

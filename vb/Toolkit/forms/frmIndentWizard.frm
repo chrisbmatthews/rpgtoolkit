@@ -19,10 +19,10 @@ Begin VB.Form frmIndentWizard
       TabIndex        =   6
       Top             =   0
       Width           =   3135
-      _extentx        =   5530
-      _extenty        =   847
-      Object.width           =   3135
-      caption         =   "Indent Wizard"
+      _ExtentX        =   5530
+      _ExtentY        =   847
+      Object.Width           =   3135
+      Caption         =   "Indent Wizard"
    End
    Begin VB.Frame frmInfo 
       Appearance      =   0  'Flat
@@ -131,10 +131,10 @@ Begin VB.Form frmIndentWizard
       TabIndex        =   0
       Top             =   720
       Width           =   1455
-      _extentx        =   820
-      _extenty        =   873
-      Object.width           =   450
-      caption         =   "Indent"
+      _ExtentX        =   820
+      _ExtentY        =   873
+      Object.Width           =   450
+      Caption         =   "Indent"
    End
    Begin VB.Shape shpBorder 
       Height          =   3375
@@ -167,7 +167,11 @@ Private preventClose As Integer
 
 Private Sub cmdIndent_Click()
  If preventClose = 1 Then Exit Sub
- indentCode " "
+ If GetSetting("RPGToolkit3", "PRG Editor", "Tabs", 1) = 0 Then
+  indentCode " "
+ Else
+  indentCode vbTab
+ End If
 End Sub
 
 Private Sub Form_Activate()
@@ -188,6 +192,7 @@ Public Sub indentCode(ByVal ic As String)
 
  'Declarations...
  Dim rtf As RichTextBox
+ Dim noNext As Boolean
  Dim lines() As String
  Dim il As Long
  Dim Til As Long
@@ -201,7 +206,7 @@ Public Sub indentCode(ByVal ic As String)
  frmInfo.Visible = True
  
  'Indent the code...
- Set rtf = tkMainForm.activeForm.codeform
+ Set rtf = tkMainForm.activeForm.codeForm
  With rtf
   .Locked = True
   lblWait.Caption = "Splitting..."
@@ -213,10 +218,14 @@ Public Sub indentCode(ByVal ic As String)
    For b = 1 To il
     lines(a) = ic & lines(a)
    Next b
-   changePerOccurence Trim(lines(a)), "{", il, 1
-   If InStr(1, Trim(lines(a)), "}", vbTextCompare) > 0 Then
-    changePerOccurence Trim(lines(a)), "}", il, -1
-    If Trim(lines(a)) = "}" Then lines(a) = Right(lines(a), Len(lines(a)) - 1)
+   If Not noNext Then
+    changePerOccurence Trim(lines(a)), "{", il, 1
+   End If
+   noNext = False
+   If InStr(1, Trim(lines(a + 1)), "}", vbTextCompare) > 0 Then
+    changePerOccurence Trim(lines(a + 1)), "}", il, -1
+    changePerOccurence Trim(lines(a + 1)), "{", il, 1
+    noNext = True
    End If
    .Text = .Text & lines(a)
    If Not a = UBound(lines) Then .Text = .Text & vbCrLf
@@ -234,9 +243,8 @@ Public Sub indentCode(ByVal ic As String)
  If Not il = 0 Then
   frmCodeTip.showTip "RPGCode Error", _
   "The amount of opening, {, and closing, }, brackets in your " _
-  & "code are not equal. This not only has caused incorrect indentation " _
-  & "but it may cause errors in your program. Consider using the ""RPGCode" _
-  & " Checker"" to pinpoint these errors."
+  & "code are not equal. This not only has caused incorrect indentation, " _
+  & "but it may cause errors in your program."
  End If
 
  'Unload this form...

@@ -431,22 +431,22 @@ Private Sub cmdCopy_Click()
         If filename$(1) = "" Then Exit Sub
         
         'For the loop
-        Dim x, y As Integer
+        Dim X, Y As Integer
         
-        For x = 1 To 32
-            For y = 1 To 32
-                buftile(x, y) = tilemem(x, y)
-            Next y
-        Next x
+        For X = 1 To 32
+            For Y = 1 To 32
+                buftile(X, Y) = tilemem(X, Y)
+            Next Y
+        Next X
         
         Call openFromTileSet(projectPath$ + tilepath$ + tstFile$, idx)
         Call savetile(filename$(1))
         lstFiles.Refresh
-        For x = 1 To 32
-            For y = 1 To 32
-                tilemem(x, y) = buftile(x, y)
-            Next y
-        Next x
+        For X = 1 To 32
+            For Y = 1 To 32
+                tilemem(X, Y) = buftile(X, Y)
+            Next Y
+        Next X
     End If
 End Sub
 '========================================================================
@@ -488,27 +488,27 @@ Private Sub lstFiles_Click()
     f$ = lstFiles.filename
     t$ = nopath(f$)
     
-    For x = 1 To 32
-        For y = 1 To 32
-            buftile(x, y) = tilemem(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            buftile(X, Y) = tilemem(X, Y)
+        Next Y
+    Next X
     
     Call opentile2(projectPath$ + tilepath$ + f$)
     Call vbPicFillRect(pcbBrowse, 0, 0, 100, 100, vbQBColor(15))
-    For x = 0 To 31
-        For y = 0 To 31
-            col = tilemem(x + 1, y + 1)
+    For X = 0 To 31
+        For Y = 0 To 31
+            col = tilemem(X + 1, Y + 1)
                 If col = -1 Then col = vbQBColor(15)
-            Call vbPicPSet(pcbBrowse, x, y, col)
-        Next y
-    Next x
+            Call vbPicPSet(pcbBrowse, X, Y, col)
+        Next Y
+    Next X
 
-    For x = 1 To 32
-        For y = 1 To 32
-            tilemem(x, y) = buftile(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            tilemem(X, Y) = buftile(X, Y)
+        Next Y
+    Next X
 End Sub
 '========================================================================
 ' When you click in the Tileset list
@@ -519,27 +519,27 @@ Private Sub lstTileset_Click()
     lstFiles.ListIndex = -1
     idx = lstTileset.ListIndex + 1
     
-    For x = 1 To 32
-        For y = 1 To 32
-            buftile(x, y) = tilemem(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            buftile(X, Y) = tilemem(X, Y)
+        Next Y
+    Next X
 
     Call openFromTileSet(projectPath$ + tilepath$ + tstFile$, idx)
     Call vbPicFillRect(pcbBrowse, 0, 0, 100, 100, vbQBColor(15))
-    For x = 0 To 31
-        For y = 0 To 31
-            col = tilemem(x + 1, y + 1)
+    For X = 0 To 31
+        For Y = 0 To 31
+            col = tilemem(X + 1, Y + 1)
             If col = -1 Then col = vbQBColor(15)
-            Call vbPicPSet(pcbBrowse, x, y, col)
-        Next y
-    Next x
+            Call vbPicPSet(pcbBrowse, X, Y, col)
+        Next Y
+    Next X
     
-    For x = 1 To 32
-        For y = 1 To 32
-            tilemem(x, y) = buftile(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            tilemem(X, Y) = buftile(X, Y)
+        Next Y
+    Next X
 End Sub
 '========================================================================
 ' When the tabs are changed
@@ -586,7 +586,9 @@ Private Sub SSTab1_Click(PreviousTab As Integer)
             SSTab1.Tab = 0
         End If
     ElseIf SSTab1.Tab = 2 Then
+        Hide
         tilesetadd.Show vbModal
+        Show
     End If
 
     'If we go back the the manually editor, change the caption back
@@ -715,11 +717,11 @@ End Sub
 Sub backUpTile()
     On Error GoTo ErrorHandler
     
-    For x = 1 To 32
-        For y = 1 To 32
-            buftile(x, y) = tilemem(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            buftile(X, Y) = tilemem(X, Y)
+        Next Y
+    Next X
     
     publicTile.oldDetail = detail
 
@@ -800,21 +802,21 @@ Function compareTiles(f1$, f2$) As Boolean
     End If
     'both files exist.  now compare them
     opentile2 (projectPath$ + tilepath$ + f1$)
-    For x = 1 To 32
-        For y = 1 To 32
-            mybuf(x, y) = tilemem(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            mybuf(X, Y) = tilemem(X, Y)
+        Next Y
+    Next X
     opentile2 (projectPath$ + tilepath$ + f2$)
-    For x = 1 To 32
-        For y = 1 To 32
-            If Not (mybuf(x, y) = tilemem(x, y)) Then
+    For X = 1 To 32
+        For Y = 1 To 32
+            If Not (mybuf(X, Y) = tilemem(X, Y)) Then
                 'found difference
                 compareTiles = False
                 Exit Function
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     compareTiles = True
 
     Exit Function

@@ -30,6 +30,7 @@ Begin VB.UserControl TKTopBar
    Begin VB.Image CloseX 
       Height          =   255
       Left            =   18
+      MousePointer    =   99  'Custom
       Top             =   10
       Width           =   255
    End

@@ -1,391 +1,532 @@
 VERSION 5.00
+Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "richtx32.ocx"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.Form frmColoringOptions 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
    Caption         =   "Syntax Coloring Options"
-   ClientHeight    =   3255
+   ClientHeight    =   3495
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   4095
+   ClientWidth     =   4455
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3255
-   ScaleWidth      =   4095
+   ScaleHeight     =   3495
+   ScaleWidth      =   4455
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
+   Begin TabDlg.SSTab Tabs 
+      Height          =   2895
+      Left            =   120
+      TabIndex        =   3
+      Top             =   480
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   5106
+      _Version        =   393216
+      TabHeight       =   520
+      BackColor       =   0
+      TabCaption(0)   =   "Coloring"
+      TabPicture(0)   =   "frmSyntaxColor.frx":0000
+      Tab(0).ControlEnabled=   -1  'True
+      Tab(0).Control(0)=   "fraTab0"
+      Tab(0).Control(0).Enabled=   0   'False
+      Tab(0).ControlCount=   1
+      TabCaption(1)   =   "Misc"
+      TabPicture(1)   =   "frmSyntaxColor.frx":001C
+      Tab(1).ControlEnabled=   0   'False
+      Tab(1).Control(0)=   "fraTab1"
+      Tab(1).Control(0).Enabled=   0   'False
+      Tab(1).ControlCount=   1
+      TabCaption(2)   =   "Common"
+      TabPicture(2)   =   "frmSyntaxColor.frx":0038
+      Tab(2).ControlEnabled=   0   'False
+      Tab(2).Control(0)=   "fraTab2"
+      Tab(2).Control(0).Enabled=   0   'False
+      Tab(2).ControlCount=   1
+      Begin VB.Frame fraTab2 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   2295
+         Left            =   -74880
+         TabIndex        =   24
+         Top             =   480
+         Width           =   2655
+         Begin RichTextLib.RichTextBox codeForm 
+            Height          =   1575
+            Left            =   120
+            TabIndex        =   30
+            Top             =   600
+            Width           =   2415
+            _ExtentX        =   4260
+            _ExtentY        =   2778
+            _Version        =   393217
+            Enabled         =   -1  'True
+            ScrollBars      =   3
+            Appearance      =   0
+            TextRTF         =   $"frmSyntaxColor.frx":0054
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Courier New"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblNote2 
+            BackColor       =   &H00FFFFFF&
+            Caption         =   "Text to place at the start of each newly created program file:"
+            Height          =   495
+            Left            =   120
+            TabIndex        =   29
+            Top             =   120
+            Width           =   2415
+         End
+         Begin VB.Shape Shape4 
+            Height          =   2295
+            Left            =   0
+            Top             =   0
+            Width           =   2655
+         End
+      End
+      Begin VB.Frame fraTab1 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   2295
+         Left            =   -74880
+         TabIndex        =   23
+         Top             =   480
+         Width           =   2655
+         Begin VB.Frame Frame1 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            Caption         =   "Auto Indentor Style"
+            ForeColor       =   &H80000008&
+            Height          =   855
+            Left            =   120
+            TabIndex        =   26
+            Top             =   720
+            Width           =   2415
+            Begin VB.OptionButton optTabs 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               Caption         =   "Tabs"
+               ForeColor       =   &H80000008&
+               Height          =   255
+               Left            =   120
+               TabIndex        =   28
+               Top             =   480
+               Width           =   975
+            End
+            Begin VB.OptionButton optSpaces 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               Caption         =   "Spaces"
+               ForeColor       =   &H80000008&
+               Height          =   255
+               Left            =   120
+               TabIndex        =   27
+               Top             =   240
+               Value           =   -1  'True
+               Width           =   975
+            End
+         End
+         Begin VB.CheckBox chkCapital 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            Caption         =   "Capitalize command names"
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Left            =   120
+            TabIndex        =   25
+            Top             =   240
+            Value           =   1  'Checked
+            Width           =   2415
+         End
+         Begin VB.Shape Shape2 
+            Height          =   2295
+            Left            =   0
+            Top             =   0
+            Width           =   2655
+         End
+      End
+      Begin VB.Frame fraTab0 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   2295
+         Left            =   120
+         TabIndex        =   4
+         Top             =   480
+         Width           =   2655
+         Begin VB.PictureBox shpColorPreview 
+            Appearance      =   0  'Flat
+            BackColor       =   &H00FFFFFF&
+            FillStyle       =   0  'Solid
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Index           =   0
+            Left            =   1920
+            MousePointer    =   99  'Custom
+            ScaleHeight     =   225
+            ScaleWidth      =   585
+            TabIndex        =   10
+            Top             =   120
+            Width           =   615
+         End
+         Begin VB.PictureBox shpColorPreview 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Index           =   2
+            Left            =   1920
+            MousePointer    =   99  'Custom
+            ScaleHeight     =   225
+            ScaleWidth      =   585
+            TabIndex        =   9
+            Top             =   840
+            Width           =   615
+         End
+         Begin VB.PictureBox shpColorPreview 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Index           =   3
+            Left            =   1920
+            MousePointer    =   99  'Custom
+            ScaleHeight     =   225
+            ScaleWidth      =   585
+            TabIndex        =   8
+            Top             =   1200
+            Width           =   615
+         End
+         Begin VB.PictureBox shpColorPreview 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Index           =   4
+            Left            =   1920
+            MousePointer    =   99  'Custom
+            ScaleHeight     =   225
+            ScaleWidth      =   585
+            TabIndex        =   7
+            Top             =   1560
+            Width           =   615
+         End
+         Begin VB.PictureBox shpColorPreview 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Index           =   5
+            Left            =   1920
+            MousePointer    =   99  'Custom
+            ScaleHeight     =   225
+            ScaleWidth      =   585
+            TabIndex        =   6
+            Top             =   1920
+            Width           =   615
+         End
+         Begin VB.PictureBox shpColorPreview 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H80000008&
+            Height          =   255
+            Index           =   1
+            Left            =   1920
+            MousePointer    =   99  'Custom
+            ScaleHeight     =   225
+            ScaleWidth      =   585
+            TabIndex        =   5
+            Top             =   480
+            Width           =   615
+         End
+         Begin Toolkit.ctlBoldItalicUnderline BIU 
+            Height          =   255
+            Index           =   1
+            Left            =   1080
+            TabIndex        =   11
+            Top             =   480
+            Width           =   735
+            _ExtentX        =   1296
+            _ExtentY        =   450
+         End
+         Begin Toolkit.ctlBoldItalicUnderline BIU 
+            Height          =   255
+            Index           =   2
+            Left            =   1080
+            TabIndex        =   12
+            Top             =   840
+            Width           =   735
+            _ExtentX        =   1296
+            _ExtentY        =   450
+         End
+         Begin Toolkit.ctlBoldItalicUnderline BIU 
+            Height          =   255
+            Index           =   3
+            Left            =   1080
+            TabIndex        =   13
+            Top             =   1200
+            Width           =   735
+            _ExtentX        =   1296
+            _ExtentY        =   450
+         End
+         Begin Toolkit.ctlBoldItalicUnderline BIU 
+            Height          =   255
+            Index           =   4
+            Left            =   1080
+            TabIndex        =   14
+            Top             =   1560
+            Width           =   735
+            _ExtentX        =   1296
+            _ExtentY        =   450
+         End
+         Begin Toolkit.ctlBoldItalicUnderline BIU 
+            Height          =   255
+            Index           =   5
+            Left            =   1080
+            TabIndex        =   15
+            Top             =   1920
+            Width           =   735
+            _ExtentX        =   1296
+            _ExtentY        =   450
+         End
+         Begin Toolkit.ctlBoldItalicUnderline BIU 
+            Height          =   255
+            Index           =   0
+            Left            =   1080
+            TabIndex        =   16
+            Top             =   120
+            Width           =   735
+            _ExtentX        =   1296
+            _ExtentY        =   450
+         End
+         Begin VB.Shape Shape1 
+            Height          =   2295
+            Left            =   0
+            Top             =   0
+            Width           =   2655
+         End
+         Begin VB.Label lblColoringTypes 
+            BackStyle       =   0  'Transparent
+            Caption         =   "Commands"
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Index           =   0
+            Left            =   120
+            TabIndex        =   22
+            Top             =   120
+            Width           =   855
+         End
+         Begin VB.Label lblColoringTypes 
+            BackStyle       =   0  'Transparent
+            Caption         =   "Comments"
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Index           =   1
+            Left            =   120
+            TabIndex        =   21
+            Top             =   480
+            Width           =   855
+         End
+         Begin VB.Label lblColoringTypes 
+            BackStyle       =   0  'Transparent
+            Caption         =   "{ and }"
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Index           =   2
+            Left            =   120
+            TabIndex        =   20
+            Top             =   840
+            Width           =   855
+         End
+         Begin VB.Label lblColoringTypes 
+            BackStyle       =   0  'Transparent
+            Caption         =   "Labels"
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Index           =   3
+            Left            =   120
+            TabIndex        =   19
+            Top             =   1200
+            Width           =   855
+         End
+         Begin VB.Label lblColoringTypes 
+            BackStyle       =   0  'Transparent
+            Caption         =   "Parameters"
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Index           =   4
+            Left            =   120
+            TabIndex        =   18
+            Top             =   1560
+            Width           =   855
+         End
+         Begin VB.Label lblColoringTypes 
+            BackStyle       =   0  'Transparent
+            Caption         =   "Variables"
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   9
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Index           =   5
+            Left            =   120
+            TabIndex        =   17
+            Top             =   1920
+            Width           =   855
+         End
+      End
+   End
    Begin Toolkit.TKTopBar TopBar 
       Height          =   480
       Left            =   0
-      TabIndex        =   21
+      TabIndex        =   2
       Top             =   0
       Width           =   3735
       _ExtentX        =   6588
       _ExtentY        =   847
       Object.Width           =   3735
-      Caption         =   "Syntax Coloring Options"
+      Caption         =   "Program Editor Options"
    End
    Begin Toolkit.TKButton cmdDefault 
       Height          =   495
-      Left            =   2640
-      TabIndex        =   20
+      Left            =   3120
+      TabIndex        =   1
       Top             =   1320
-      Width           =   1335
+      Width           =   1215
       _ExtentX        =   3440
       _ExtentY        =   873
       Object.Width           =   1935
       Caption         =   "Default"
    End
-   Begin Toolkit.ctlBoldItalicUnderline BIU 
-      Height          =   255
-      Index           =   0
-      Left            =   1200
-      TabIndex        =   13
-      Top             =   960
-      Width           =   735
-      _ExtentX        =   1296
-      _ExtentY        =   450
-   End
-   Begin VB.Frame Blocks 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "Color and Style"
-      BeginProperty Font 
-         Name            =   "Trebuchet MS"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2535
-      Left            =   120
-      TabIndex        =   0
-      Top             =   600
-      Width           =   2300
-      Begin VB.PictureBox shpColorPreview 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   1
-         Left            =   1920
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   225
-         ScaleWidth      =   225
-         TabIndex        =   12
-         Top             =   720
-         Width           =   255
-      End
-      Begin VB.PictureBox shpColorPreview 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   5
-         Left            =   1920
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   225
-         ScaleWidth      =   225
-         TabIndex        =   11
-         Top             =   2160
-         Width           =   255
-      End
-      Begin VB.PictureBox shpColorPreview 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   4
-         Left            =   1920
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   225
-         ScaleWidth      =   225
-         TabIndex        =   10
-         Top             =   1800
-         Width           =   255
-      End
-      Begin VB.PictureBox shpColorPreview 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   3
-         Left            =   1920
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   225
-         ScaleWidth      =   225
-         TabIndex        =   9
-         Top             =   1440
-         Width           =   255
-      End
-      Begin VB.PictureBox shpColorPreview 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   2
-         Left            =   1920
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   225
-         ScaleWidth      =   225
-         TabIndex        =   8
-         Top             =   1080
-         Width           =   255
-      End
-      Begin VB.PictureBox shpColorPreview 
-         Appearance      =   0  'Flat
-         BackColor       =   &H00FFFFFF&
-         FillStyle       =   0  'Solid
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   0
-         Left            =   1920
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   225
-         ScaleWidth      =   225
-         TabIndex        =   7
-         Top             =   360
-         Width           =   255
-      End
-      Begin Toolkit.ctlBoldItalicUnderline BIU 
-         Height          =   255
-         Index           =   1
-         Left            =   1080
-         TabIndex        =   14
-         Top             =   720
-         Width           =   735
-         _ExtentX        =   1296
-         _ExtentY        =   450
-      End
-      Begin Toolkit.ctlBoldItalicUnderline BIU 
-         Height          =   255
-         Index           =   2
-         Left            =   1080
-         TabIndex        =   15
-         Top             =   1080
-         Width           =   735
-         _ExtentX        =   1296
-         _ExtentY        =   450
-      End
-      Begin Toolkit.ctlBoldItalicUnderline BIU 
-         Height          =   255
-         Index           =   3
-         Left            =   1080
-         TabIndex        =   16
-         Top             =   1440
-         Width           =   735
-         _ExtentX        =   1296
-         _ExtentY        =   450
-      End
-      Begin Toolkit.ctlBoldItalicUnderline BIU 
-         Height          =   255
-         Index           =   4
-         Left            =   1080
-         TabIndex        =   17
-         Top             =   1800
-         Width           =   735
-         _ExtentX        =   1296
-         _ExtentY        =   450
-      End
-      Begin Toolkit.ctlBoldItalicUnderline BIU 
-         Height          =   255
-         Index           =   5
-         Left            =   1080
-         TabIndex        =   18
-         Top             =   2160
-         Width           =   735
-         _ExtentX        =   1296
-         _ExtentY        =   450
-      End
-      Begin VB.Label lblColoringTypes 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Variables"
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   5
-         Left            =   120
-         TabIndex        =   6
-         Top             =   2160
-         Width           =   855
-      End
-      Begin VB.Label lblColoringTypes 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Parameters"
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   4
-         Left            =   120
-         TabIndex        =   5
-         Top             =   1800
-         Width           =   855
-      End
-      Begin VB.Label lblColoringTypes 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Labels"
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   3
-         Left            =   120
-         TabIndex        =   4
-         Top             =   1440
-         Width           =   855
-      End
-      Begin VB.Label lblColoringTypes 
-         BackStyle       =   0  'Transparent
-         Caption         =   "{ and }"
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   2
-         Left            =   120
-         TabIndex        =   3
-         Top             =   1080
-         Width           =   855
-      End
-      Begin VB.Label lblColoringTypes 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Comments"
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   1
-         Left            =   120
-         TabIndex        =   2
-         Top             =   720
-         Width           =   855
-      End
-      Begin VB.Label lblColoringTypes 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Commands"
-         BeginProperty Font 
-            Name            =   "Trebuchet MS"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   0
-         Left            =   120
-         TabIndex        =   1
-         Top             =   360
-         Width           =   855
-      End
-   End
    Begin Toolkit.TKButton cmdSave 
       Height          =   495
-      Left            =   2640
-      TabIndex        =   19
+      Left            =   3120
+      TabIndex        =   0
       Top             =   840
-      Width           =   1335
+      Width           =   1215
       _ExtentX        =   3440
       _ExtentY        =   873
       Object.Width           =   1935
       Caption         =   "Save"
    End
-   Begin VB.Shape Shape1 
-      Height          =   3255
+   Begin VB.Shape Shape3 
+      Height          =   3495
       Left            =   0
       Top             =   0
-      Width           =   4095
+      Width           =   4455
    End
 End
 Attribute VB_Name = "frmColoringOptions"
@@ -401,7 +542,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub cmdCancel_Click(): Unload Me: End Sub
+Private Sub cmdCancel_Click()
+    Unload Me
+End Sub
 
 Private Sub cmdOK_Click()
 
@@ -428,6 +571,11 @@ Private Sub cmdOK_Click()
  needsReColor = True
  programEditorCountDown = programEditorCount
  
+ 'Save other settings
+ SaveSetting "RPGToolkit3", "PRG Editor", "Cap", chkCapital.value
+ SaveSetting "RPGToolkit3", "PRG Editor", "Tabs", BooleanToLong(optTabs.value)
+ SaveSetting "RPGToolkit3", "PRG Editor", "Common", codeForm.Text
+ 
  'Unload this form...
  Unload Me
  
@@ -453,6 +601,9 @@ Private Sub cmdDefault_Click()
   BIU(a).Underline = False
  Next a
  
+ chkCapital.value = 1
+ optTabs.value = True
+ 
 End Sub
 
 Private Sub cmdSave_Click()
@@ -465,7 +616,14 @@ Private Sub Form_Activate()
  Set TopBar.theForm = Me
 End Sub
 
-Private Sub Form_Load(): updateColors: Form_Resize: End Sub
+Private Sub Form_Load(): On Error Resume Next
+    updateColors
+    chkCapital.value = GetSetting("RPGToolkit3", "PRG Editor", "Cap", 1)
+    If GetSetting("RPGToolkit3", "PRG Editor", "Tabs", 1) = 1 Then
+        optTabs.value = True
+    End If
+    codeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", "")
+End Sub
 
 Private Sub updateColors()
  
@@ -490,11 +648,6 @@ Private Sub updateColors()
    "SyntaxUnderline", CStr(a), 0)))
  Next a
  
-End Sub
-
-Private Sub Form_Resize()
- 'TopBar.Width = Me.ScaleWidth - (Me.ScaleWidth / 6)
- 'Corner.Left = TopBar.ScaleWidth - Corner.Width
 End Sub
 
 Private Sub lblOK_Click()
