@@ -920,12 +920,12 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     If (Not var) Then
         cmdName = UCase(GetCommandName(cLine))
     Else
+        'Parse the var
+        cLine = parseArray(cLine, prg)
         If (Right(cLine, 1) <> "!" And Right(cLine, 1) <> "$") Then
             'Assume object
             cLine = replace(replace(cLine & "!", "-", ""), " ", "")
         End If
-        'Parse the var
-        cLine = parseArray(cLine, prg)
     End If
 
     'Flag we're not in quotes
@@ -960,7 +960,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                 'Found a quote
                 ignore = (Not ignore)
                 spacesOK = False
-            
+
             Case Else
                 'Not a space, so they aren't okay anymore
                 spacesOK = False
