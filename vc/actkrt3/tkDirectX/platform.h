@@ -83,7 +83,8 @@ public:
 	// Create a surface
 	LPDIRECTDRAWSURFACE7 FAST_CALL createSurface(
 		CONST INT width,
-		CONST INT height
+		CONST INT height,
+		CONST LPBOOL bRam
 	) CONST;
 
 	// Kill the graphics mode
@@ -231,7 +232,9 @@ public:
 
 	// Determine whether we support a ROP
 	BOOL FAST_CALL supportsRop(
-		CONST LONG lRop
+		CONST LONG lRop,
+		CONST BOOL bLeftRam,
+		CONST BOOL bRightRam
 	) CONST;
 
 	// Obtain the screen's DC
@@ -286,8 +289,8 @@ private:
 	HINSTANCE m_hInstance;				// Handle of instance to app
 	HDC m_hDCLocked;					// HDC of locked surface
 	CGDICanvas *m_pBackBuffer;			// Non-DirectX backbuffer
-	BOOL m_bSrcAnd;						// SRCAND support?
-	BOOL m_bSrcPaint;					// SRCPAINT support?
+	BOOL m_bSrcAnd[4];					// SRCAND support?
+	BOOL m_bSrcPaint[4];				// SRCPAINT support?
 
 };
 

@@ -19,37 +19,40 @@
 CDirectDraw::CDirectDraw(VOID)
 {
 	// Initialize all members
-	m_bFullScreen = FALSE;
-	m_nColorDepth = 0;
-	m_nWidth = 0;
-	m_nHeight = 0;
-	m_lpdd = NULL;
-	m_lpddsPrime = NULL;
-	m_lpddsSecond = NULL;
-	m_lpddClip = NULL;
-	m_bUseDirectX = FALSE;
-	m_hWndMain = NULL;
-	m_hInstance = NULL;
-	m_hDCLocked = NULL;
-	m_pBackBuffer = NULL;
-	m_bSrcAnd = FALSE;
-	m_bSrcPaint = FALSE;
+	memset(this, 0, sizeof(CDirectDraw));
 }
 
 //------------------------------------------------------------------------
 // Determine whether we support a ROP
 //------------------------------------------------------------------------
 BOOL FAST_CALL CDirectDraw::supportsRop(
-	CONST LONG lRop
+	CONST LONG lRop,
+	CONST BOOL bLeftRam,
+	CONST BOOL bRightRam
 		) CONST
 {
+
+	// Determine which index to use
+	UINT idx = 0;
+	if (bLeftRam)
+	{
+		if (bRightRam) idx = 3;
+		else idx = 1;
+	}
+	else
+	{
+		if (bRightRam) idx = 2;
+		else idx = 0;
+	}
+
 	// Switch on the ROP
 	switch (lRop)
 	{
-		case SRCAND:	return m_bSrcAnd;
-		case SRCPAINT:	return m_bSrcPaint;
+		case SRCAND:	return m_bSrcAnd[idx];
+		case SRCPAINT:	return m_bSrcPaint[idx];
 		default:		return TRUE;
 	}
+
 }
 
 //------------------------------------------------------------------------
@@ -89,8 +92,22 @@ BOOL FAST_CALL CDirectDraw::InitGraphicsMode(
 		m_lpdd->GetCaps(&ddcA, &ddcB);
 
 		// Check raster operations
-		m_bSrcAnd = (ddcA.dwRops[5] & 0x80);		// SRCAND
-		m_bSrcPaint = (ddcA.dwRops[8] & 0x2000);	// SRCPAINT
+
+		// VRAM -> VRAM
+		m_bSrcAnd[0] = (ddcA.dwRops[5] & 0x80);
+		m_bSrcPaint[0] = (ddcA.dwRops[8] & 0x2000);
+
+		// RAM -> VRAM
+		m_bSrcAnd[1] = (ddcA.dwSVBRops[5] & 0x80);
+		m_bSrcPaint[1] = (ddcA.dwSVBRops[8] & 0x2000);
+
+		// VRAM -> RAM
+		m_bSrcAnd[2] = (ddcA.dwVSBRops[5] & 0x80);
+		m_bSrcPaint[2] = (ddcA.dwVSBRops[8] & 0x2000);
+
+		// RAM -> RAM
+		m_bSrcAnd[3] = (ddcA.dwSSBRops[5] & 0x80);
+		m_bSrcPaint[3] = (ddcA.dwSSBRops[8] & 0x2000);
 
 	}
 	else
@@ -895,7 +912,8 @@ BOOL FAST_CALL CDirectDraw::LockScreen(VOID)
 //------------------------------------------------------------------------
 LPDIRECTDRAWSURFACE7 FAST_CALL CDirectDraw::createSurface(
 	CONST INT width,
-	CONST INT height
+	CONST INT height,
+	CONST LPBOOL bRam
 		) CONST
 {
 
@@ -918,7 +936,7 @@ LPDIRECTDRAWSURFACE7 FAST_CALL CDirectDraw::createSurface(
 		CONST HRESULT hr = m_lpdd->CreateSurface(&ddsd, &lpddsSurface, NULL);
 
 		// If we failed
-		if (FAILED(hr))
+		if ((*bRam) = FAILED(hr))
 		{
 
 			// No VRAM left, use RAM

@@ -28,6 +28,7 @@ CGDICanvas::CGDICanvas(VOID)
 	m_hdcLocked = NULL;
 	m_hBitmap = NULL;
 	m_hOldBitmap = NULL;
+	m_bInRam = FALSE;
 }
 
 //--------------------------------------------------------------------------
@@ -160,7 +161,7 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 		{
 
 			// Create a DirectDraw surface
-			m_lpddsSurface = g_pDirectDraw->createSurface(width, height);
+			m_lpddsSurface = g_pDirectDraw->createSurface(width, height, &m_bInRam);
 			return;
 
 		}
@@ -517,12 +518,17 @@ INT FAST_CALL CGDICanvas::BltStretch(
 	CONST INT height,
 	CONST INT newWidth,
 	CONST INT newHeight,
-	CONST LONG lRasterOp
+	CONST LONG lRasterOp,
+	CONST BOOL bInRam
 		) CONST
 {
 
 	// If using DirectX
-	if (lpddsSurface && usingDX() && g_pDirectDraw->supportsRop(lRasterOp))
+	if	(
+			lpddsSurface &&
+			usingDX() &&
+			g_pDirectDraw->supportsRop(lRasterOp, m_bInRam, bInRam)
+		)
 	{
 
 		// Setup the rects
@@ -533,7 +539,23 @@ INT FAST_CALL CGDICanvas::BltStretch(
 		DDBLTFX bltFx;
 		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = lRasterOp;
-		return SUCCEEDED(lpddsSurface->Blt(&destRect, GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx));
+		CONST HRESULT hr = lpddsSurface->Blt(&destRect, GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx);
+
+		// If there was an error
+		if (FAILED(hr))
+		{
+
+			// Fall back to GDI
+			HDC hdc = NULL;
+			lpddsSurface->GetDC(&hdc);
+			CONST INT nToRet = BltStretch(hdc, x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp);
+			lpddsSurface->ReleaseDC(hdc);
+			return nToRet;
+
+		}
+
+		// All's good
+		return TRUE;
 
 	}
 	else if (lpddsSurface)
@@ -596,7 +618,7 @@ INT FAST_CALL CGDICanvas::BltStretch(
 	{
 
 		// Use DirectX
-		return BltStretch(cnv->GetDXSurface(), x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp);
+		return BltStretch(cnv->GetDXSurface(), x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp, cnv->m_bInRam);
 
 	}
 	else

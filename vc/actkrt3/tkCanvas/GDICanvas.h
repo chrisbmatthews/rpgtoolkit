@@ -344,7 +344,8 @@ public:
 		CONST INT height,
 		CONST INT newWidth,
 		CONST INT newHeight,
-		CONST LONG lRasterOp
+		CONST LONG lRasterOp,
+		CONST BOOL bInRam
 	) CONST;
 
 	INT FAST_CALL ShiftLeft(
@@ -437,6 +438,7 @@ private:
 	LPDIRECTDRAWSURFACE7 m_lpddsSurface;	// DirectDraw surface
 	HBITMAP m_hBitmap;						// Bitmap for GDI canvases
 	HBITMAP m_hOldBitmap;					// Old bitmap for GDI canvases
+	BOOL m_bInRam;							// In RAM?
 
 };
 
