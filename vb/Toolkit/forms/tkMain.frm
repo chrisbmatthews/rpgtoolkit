@@ -2611,7 +2611,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "5:00 PM"
+            TextSave        =   "5:08 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3815,6 +3815,8 @@ Public Sub newprojectmnu_Click(): On Error Resume Next
     Call newGame.Show(1)
     tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" & mainFile & ")"
     Call editmainfile.Show
+    Call tkMainForm.TreeView1.Nodes.Clear
+    Call tkMainForm.fillTree(vbNullString, projectPath)
 End Sub
 
 Public Sub newrpgcodemnu_Click(): On Error Resume Next
