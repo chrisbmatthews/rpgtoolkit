@@ -422,7 +422,7 @@ End Function
 '========================================================================
 Public Sub isoChange(ByVal isoCheck As Boolean)
     On Error Resume Next
-
+    
     'Here we change from normal to isometric mode.
     'If we have a .iso open, will drop into isometric mode.
     'If a .tst/.gph is open, will drop into normal mode.
@@ -463,7 +463,7 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
             Next y
         Next x
         
-        tkMainForm.isoMirror.BorderStyle = 0
+        tkMainForm.isoMirror.BorderStyle = 1
         'Unenable some stuff
         mnuRotate.Enabled = False
         cutcornermnu.Enabled = False
@@ -472,6 +472,10 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
         layer.Enabled = False
         lsrc.Enabled = False
         tkMainForm.cmdImport.Enabled = False
+        tkMainForm.Command15.Enabled = False
+        tkMainForm.Command16.Enabled = False
+        tkMainForm.Command18.Enabled = False
+        tkMainForm.Command19.Enabled = False
         'Make the normal tile preview picturebox in TkMainForm white
         Call vbPicFillRect(tkMainForm.mirror, 0, 0, 100, 100, vbQBColor(15))
     Else
@@ -495,14 +499,12 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
         publicTile.tileName$ = ""
         activeTile.Caption = LoadStringLoc(801, "Tile Editor") + "  (Untitled)"
         
-        tkMainForm.isoMirror.BorderStyle = 1
         isIsoTile = False
         xRange = 32
         theData.isometric = False
         xMod = 1
         
-        'tkMainForm.isoMirror.cls
-        
+        tkMainForm.isoMirror.BorderStyle = 1
         'Enable some stuff
         mnuRotate.Enabled = True
         cutcornermnu.Enabled = True
@@ -511,6 +513,12 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
         layer.Enabled = True
         lsrc.Enabled = True
         tkMainForm.cmdImport.Enabled = True
+        tkMainForm.Command15.Enabled = True
+        tkMainForm.Command16.Enabled = True
+        tkMainForm.Command18.Enabled = True
+        tkMainForm.Command19.Enabled = True
+        'MsgBox "Here"
+        tkMainForm.isoMirror.cls
     End If
     'Re-draw/size
     Call Form_Resize
@@ -951,15 +959,13 @@ Private Sub Form_Activate()
         xRange = 64
         xMod = 2
         isIsoTile = True
-        tkMainForm.isoMirror.BorderStyle = 0
     Else
         tkMainForm.tileIsoCheck.value = 0
         xRange = 32
         xMod = 1
         isIsoTile = False
-        tkMainForm.isoMirror.BorderStyle = 1
     End If
-        
+    
     tkMainForm.isoMirror.cls
     Call tileRedraw                                     '<-- New
     
@@ -1045,7 +1051,7 @@ Private Sub Form_Load()
     
     'Initial (non)isometric settings. (NEW for 3.0.4 by Delano)
     
-    isIsoTile = False
+    isIsoTile = True
     xRange = 32
     theData.isometric = False
     xMod = 1
