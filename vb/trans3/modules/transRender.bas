@@ -1997,8 +1997,8 @@ Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal testing
         .Top = (screen.height - .height) / 2
         .Left = (screen.Width - .Width) / 2
         If Not usingFullScreen Then
-            .Width = .Width + 20
-            .height = .height + 30
+            .Width = .Width + 6 * screen.TwipsPerPixelX
+            .height = .height + 22 * screen.TwipsPerPixelY
         End If
     End With
     DoEvents
