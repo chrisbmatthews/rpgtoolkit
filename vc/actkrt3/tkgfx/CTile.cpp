@@ -518,7 +518,6 @@ CTile &CTile::operator = (const CTile &rhs)
 
 }
 
-
 /////////////////////////////////////////////////
 // CTile::open
 //
@@ -558,7 +557,6 @@ VOID CTile::open(std::string strFilename, RGBSHADE rgb, INT nShadeType)
 	//New! createShading receives nSetType.
 	createShading(m_nCompatibleDC, rgb, nShadeType, nSetType);
 }
-
 
 ///////////////////////////////////////////////////////
 // CTile::createShading
@@ -730,7 +728,6 @@ VOID CTile::createShading(INT hdc, RGBSHADE rgb, INT nShadeType, INT nSetType)
 		{ 
 			// End new isometric tiles. Further fixes below though!
 			//=======================================================
-
 
 			//do isometric tile...
 			INT nQuality = 3;
@@ -955,7 +952,6 @@ VOID CTile::createShading(INT hdc, RGBSHADE rgb, INT nShadeType, INT nSetType)
 	} // Close if(!m_bIsometric)
 }
 
-
 /////////////////////////////////////////////////
 // CTile::prepAlpha
 //
@@ -986,7 +982,6 @@ VOID CTile::prepAlpha(VOID) /* Use VOID for paramless functions */
 	}
 }
 
-
 /////////////////////////////////////////////////
 // CTile::gdiDraw
 //
@@ -1016,7 +1011,6 @@ VOID CTile::gdiDraw(INT hdc, INT x, INT y)
 	}
 }
 
-
 /////////////////////////////////////////////////
 // CTile::cnvDraw
 //
@@ -1040,7 +1034,6 @@ VOID CTile::cnvDraw(CGDICanvas *pCanvas, INT x, INT y)
 	}
 }
 
-
 /////////////////////////////////////////////////
 // CTile::gdiDrawFG
 //
@@ -1063,7 +1056,6 @@ VOID CTile::gdiDrawFG(INT hdc, INT x, INT y)
 		m_pCnvForeground->Blt( HDC(hdc), x, y, m_nFgIdx, SRCPAINT );
 	}
 }
-
 
 /////////////////////////////////////////////////
 // CTile::gdiDrawAlpha
@@ -1111,7 +1103,6 @@ VOID CTile::cnvDrawAlpha(CGDICanvas* pCanvas, INT x, INT y)
 	}
 }
 
-
 /////////////////////////////////////////////////
 // CTile::gdiRenderAlpha
 //
@@ -1139,7 +1130,6 @@ VOID CTile::gdiRenderAlpha(INT hdc, INT x, INT y)
 
 }
 
-
 /////////////////////////////////////////////////
 // CTile::cnvRenderAlpha
 //
@@ -1165,7 +1155,6 @@ VOID CTile::cnvRenderAlpha(CGDICanvas* pCanvas, INT x, INT y)
 		m_pCnvMaskMask->Blt( pCanvas, x, y, m_nMaskIdx, SRCAND );
 	}
 }
-
 
 ///////////////////////////////////////////////////////
 // CTile::openTile (private)
@@ -1853,7 +1842,7 @@ VOID CTile::createIsometricMask(VOID) /* Use VOID for paramless functions */
 	}
 
 	// Colin says: copy the array over
-	CopyMemory(isoMaskCTile, smalltile, sizeof(smalltile));
+	memcpy(isoMaskCTile, smalltile, sizeof(smalltile));
 
 	return;
 }
