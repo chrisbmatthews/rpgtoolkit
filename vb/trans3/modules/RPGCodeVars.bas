@@ -625,7 +625,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             ' Check if we can evaluate using logic
             Dim dRes As Double
             logicEval = True
-            dRes = CDbl(evaluate(MidB$(Text, InStrB(1, oldText, equal) + 2), theProgram, logicEval))
+            dRes = CDbl(evaluate(MidB$(oldText, InStrB(1, oldText, equal) + 2), theProgram, logicEval))
 
             If Not (logicEval) Then
 

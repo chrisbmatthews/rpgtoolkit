@@ -373,7 +373,12 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
         ' Remove said sign from the text
         str = replace(str, signs(idx - 1), vbNullChar, , 1)
-        If (signs(idx - 1) = "=") Then signs(idx - 1) = "=="
+
+        If Not (didEvaluate) Then
+            If (signs(idx - 1) = "=") Then
+                signs(idx - 1) = "=="
+            End If
+        End If
 
     Loop
 
@@ -477,6 +482,15 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
         For idx = 0 To valueUb - 1
 
+            If (signs(idx) = "=") Then
+
+                ' Assignment operator
+                Call SetVariable(values(idx), CStr(numVal(idx + 1)), prg)
+                idx = idx + 1
+                If (idx = (valueUb - 1)) Then Exit For
+
+            End If
+
             Dim signSwitch As Boolean
             signSwitch = True
 
@@ -498,7 +512,6 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                     signSwitch = False
                     retval.num = 0
                     Call callObjectMethod(hClass, op & "(" & CStr(numVal(idx + 1)) & ")", prg, retval, op)
-                    numVal(idx + 1) = -retval.num
 
                 End If
 
@@ -525,6 +538,15 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
         ' Literal
 
         For idx = 0 To valueUb - 1
+
+            If (signs(idx) = "=") Then
+
+                ' Assignment operator
+                Call SetVariable(values(idx), CStr(strVal(idx + 1)), prg)
+                idx = idx + 1
+                If (idx = (valueUb - 1)) Then Exit For
+
+            End If
 
             ' Switch on the sign
             Select Case signs(idx)
