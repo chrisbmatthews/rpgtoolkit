@@ -153,8 +153,6 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     On Error Resume Next
 
-    If (LenB(Text) = 0) Then Exit Sub
-
     Dim parameterList(100) As String
     Dim destList(100) As String
 
@@ -939,6 +937,13 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
         splice$ = cLine$
         cType$ = GetCommandName$(splice$)   'get command name without extra info
         testText$ = UCase$(cType$)
+
+        If (LenB(testText) = 0) Then
+            ' No text!
+            DoSingleCommand = increment(theProgram)
+            errorKeep = theProgram
+            Exit Function
+        End If
 
         'check for redirects...
         If redirectExists(testText) Then
