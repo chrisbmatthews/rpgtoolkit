@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-//All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
+//All m_contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
 //All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 //Read LICENSE.txt for licensing info
 ///////////////////////////////////////////////////////////////////////////
@@ -19,16 +19,19 @@
 int inlineString::len()
 {
 	//just use standard string manipulation
-	return strlen(contents);
+	return strlen(m_contents);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 // Construct the string from an STL string
 ///////////////////////////////////////////////////////////////////////////
-inlineString::inlineString(std::string cFrom)
+inlineString::inlineString(std::string cFrom, int length)
 {
 	//cast the STL string to char* and copy that memory to this string
-	strcpy(contents, cFrom.c_str());
+	if (length <= 0) length = 1;
+	m_contents = new(char[length]);
+	m_length = length;
+	strcpy(m_contents, cFrom.c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -37,19 +40,36 @@ inlineString::inlineString(std::string cFrom)
 inlineString inlineString::mid(int start, int length)
 {
 
-	inlineString toRet;		//string to return
-	int pos = 0;			//position in string
-	int chrIdx = 0;			//character index
+	//check for potential error
+	if ((start + length) > m_length)
+	{
+		//overflow
+		if (start <= m_length)
+		{
+			//we can fix this
+			length = m_length - start + 1;
+		}
+		else
+		{
+			//not fixable (starting past end of string)
+			inlineString toRet = 1;
+			return toRet;
+		}
+	}
+
+	inlineString toRet(length);		//string to return
+	int pos = 0;					//position in string
+	int chrIdx = 0;					//character index
 
 	//set in the characters
 	for (chrIdx = (start - 1); chrIdx <= ((start - 1) + (length - 1)); chrIdx++)
 	{
-		toRet[pos] = (unsigned char)contents[chrIdx];
+		toRet[pos] = (unsigned char)m_contents[chrIdx];
 		pos++;
 	}
 
 	//set in the escape sequence (signals end of the string)
-	toRet[pos] = '/0';
+	toRet[pos] = (unsigned char)'/0';
 
 	//fill in the rest with NULL
 	for (chrIdx = pos; chrIdx <= len(); chrIdx++)
@@ -63,47 +83,72 @@ inlineString inlineString::mid(int start, int length)
 }
 
 ///////////////////////////////////////////////////////////////////////////
+// Get characters from the left of the string
+///////////////////////////////////////////////////////////////////////////
+inlineString inlineString::left(int length)
+{
+	return mid(1, length);
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Get characters from the right of the string
+///////////////////////////////////////////////////////////////////////////
+inlineString inlineString::right(int length)
+{
+	return mid(len() - length, length);
+}
+
+///////////////////////////////////////////////////////////////////////////
 // Copy string to new memory (ideal to use as return value)
 ///////////////////////////////////////////////////////////////////////////
 void inlineString::newMem(char* theNewMem)
 {
-	//Just copy over the contents array
-	strcpy(theNewMem, contents);
+	//Just copy over the m_contents array
+	strcpy(theNewMem, m_contents);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 // This is the class' constructor
 ///////////////////////////////////////////////////////////////////////////
-inlineString::inlineString()
+inlineString::inlineString(int length)
 {
 	//Set an initial value for the inlineString
-	strcpy(contents, "");
+	if (length <= 0) length = 1;
+	m_contents = new(char[length]);
+	m_length = length;
+	strcpy(m_contents, "");
 }
 
 ///////////////////////////////////////////////////////////////////////////
 // This constructor sets an initial value
 ///////////////////////////////////////////////////////////////////////////
-inlineString::inlineString(char* defaultVal)
+inlineString::inlineString(char* defaultVal, int length)
 {
 	//just copy the memory over
-	strcpy(contents, defaultVal);
+	if (length <= 0) length = 1;
+	m_contents = new(char[length]);
+	m_length = length;
+	strcpy(m_contents, defaultVal);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 // Construct from a character
 ///////////////////////////////////////////////////////////////////////////
-inlineString::inlineString(char defaultVal)
+inlineString::inlineString(char defaultVal, int length)
 {
 	//just copy the memory over
-	strcpy(contents, (char*)defaultVal);
+	if (length <= 0) length = 1;
+	m_contents = new(char[length]);
+	m_length = length;
+	strcpy(m_contents, (char*)defaultVal);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 // + another inlineString
 ///////////////////////////////////////////////////////////////////////////
-inlineString inlineString::operator + (inlineString &toAdd)
+inlineString& inlineString::operator + (inlineString &toAdd)
 {
-	inlineString toRet = (char*)this;
+	static inlineString toRet(m_contents, m_length);
 	strcat((char*)toRet, (char*)toAdd);
 	return toRet;
 }
@@ -111,9 +156,9 @@ inlineString inlineString::operator + (inlineString &toAdd)
 ///////////////////////////////////////////////////////////////////////////
 // + a pointer to a string
 ///////////////////////////////////////////////////////////////////////////
-inlineString inlineString::operator + (char* toAdd)
+inlineString& inlineString::operator + (char* toAdd)
 {
-	inlineString toRet = (char*)this;
+	static inlineString toRet(m_contents, m_length);
 	strcat((char*)toRet, toAdd);
 	return toRet;
 }
@@ -121,9 +166,9 @@ inlineString inlineString::operator + (char* toAdd)
 ///////////////////////////////////////////////////////////////////////////
 // + a character
 ///////////////////////////////////////////////////////////////////////////
-inlineString inlineString::operator + (char toAdd)
+inlineString& inlineString::operator + (char toAdd)
 {
-	inlineString toRet = (char*)this;
+	static inlineString toRet(m_contents, m_length);
 	strcat((char*)toRet, (char*)toAdd);
 	return toRet;
 }
@@ -133,7 +178,7 @@ inlineString inlineString::operator + (char toAdd)
 ///////////////////////////////////////////////////////////////////////////
 inlineString::operator = (char* text)
 {
-	strcpy(contents, text);
+	strcpy(m_contents, text);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -141,7 +186,7 @@ inlineString::operator = (char* text)
 ///////////////////////////////////////////////////////////////////////////
 inlineString::operator = (char text)
 {
-	strcpy(contents, (char*)text);
+	strcpy(m_contents, (char*)text);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -149,7 +194,7 @@ inlineString::operator = (char text)
 ///////////////////////////////////////////////////////////////////////////
 bool inlineString::contains(char* text)
 {
-	return (!(strcmp((char*)this, text)));
+	return (!(strcmp(m_contents, text)));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -157,7 +202,7 @@ bool inlineString::contains(char* text)
 ///////////////////////////////////////////////////////////////////////////
 bool inlineString::contains(inlineString text)
 {
-	return (!(strcmp((char*)this, (char*)text)));
+	return (!(strcmp(m_contents, (char*)text)));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -165,7 +210,7 @@ bool inlineString::contains(inlineString text)
 ///////////////////////////////////////////////////////////////////////////
 bool inlineString::contains(std::string text)
 {
-	return (!(strcmp((char*)this, text.c_str())));
+	return (!(strcmp(m_contents, text.c_str())));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -173,7 +218,7 @@ bool inlineString::contains(std::string text)
 ///////////////////////////////////////////////////////////////////////////
 inlineString::operator char*()
 {
-	return (char*)contents;
+	return m_contents;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -181,24 +226,24 @@ inlineString::operator char*()
 ///////////////////////////////////////////////////////////////////////////
 inlineString::operator std::string()
 {
-	std::string toRet = (char*)contents;
+	std::string toRet = m_contents;
 	return toRet;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-// Get a binary value from the contents array
+// Get a binary value from the m_contents array
 ///////////////////////////////////////////////////////////////////////////
 unsigned char& inlineString::operator [] (int pos)
 {
-	return (unsigned char&)contents[pos];
+	return (unsigned char&)m_contents[pos];
 }
 
 ///////////////////////////////////////////////////////////////////////////
 // + an STL string
 ///////////////////////////////////////////////////////////////////////////
-inlineString inlineString::operator + (std::string toAdd)
+inlineString& inlineString::operator + (std::string toAdd)
 {
-	inlineString toRet = (char*)this;
+	static inlineString toRet(m_contents, m_length);
 	strcat((char*)toRet, toAdd.c_str());
 	return toRet;
 }
@@ -209,7 +254,7 @@ inlineString inlineString::operator + (std::string toAdd)
 inlineString::operator = (std::string cFrom)
 {
 	//cast the STL string to char* and copy that memory to this string
-	strcpy(contents, cFrom.c_str());
+	strcpy(m_contents, cFrom.c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -217,7 +262,7 @@ inlineString::operator = (std::string cFrom)
 ///////////////////////////////////////////////////////////////////////////
 inlineString::operator += (char* toAdd)
 {
-	strcat((char*)this, toAdd);
+	strcat(m_contents, toAdd);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -225,7 +270,7 @@ inlineString::operator += (char* toAdd)
 ///////////////////////////////////////////////////////////////////////////
 inlineString::operator += (inlineString toAdd)
 {
-	strcat((char*)this, (char*)toAdd);
+	strcat(m_contents, (char*)toAdd);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -233,7 +278,7 @@ inlineString::operator += (inlineString toAdd)
 ///////////////////////////////////////////////////////////////////////////
 inlineString::operator += (std::string toAdd)
 {
-	strcat((char*)this, toAdd.c_str());
+	strcat(m_contents, toAdd.c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -241,5 +286,14 @@ inlineString::operator += (std::string toAdd)
 ///////////////////////////////////////////////////////////////////////////
 inlineString::operator += (char toAdd)
 {
-	strcat((char*)this, (char*)toAdd);
+	strcat(m_contents, (char*)toAdd);
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Deconstructor
+///////////////////////////////////////////////////////////////////////////
+inlineString::~inlineString()
+{
+	//delete the string
+	delete(m_contents);
 }
