@@ -661,7 +661,7 @@ Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX
     Call GFXDrawBoardCNV( _
         VarPtr(boardList(activeBoardIndex).theData), _
         cnv, cnvMask, _
-        0, topX, IIf(boardList(activeBoardIndex).theData.isIsometric = 1, topY * 2, topY), _
+        0, tX, IIf(boardList(activeBoardIndex).theData.isIsometric = 1, tY * 2, tY), _
         scTilesX, IIf(boardList(activeBoardIndex).theData.isIsometric = 1, scTilesY * 2, scTilesY), _
         boardList(activeBoardIndex).theData.bSizeX, _
         boardList(activeBoardIndex).theData.bSizeY, _
