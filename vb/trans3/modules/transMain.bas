@@ -536,10 +536,6 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     host.cursorHotSpotY = mainMem.hotSpotY
     host.mousePointer = mainMem.mouseCursor
 
-    ' Nulify top x/y vars
-    topX = 0
-    topY = 0
-
     ' Set default shop colors
     shopColors(0) = -1
 
@@ -575,6 +571,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     'm_renderTime = 0.4
     'm_renderCount = 10    'Don't set this too high or the system will take longer to settle.
 
+    'Need a better method than this! Either more accurate estimate, or write last gAvgTime to file.
     Dim i As Long
     m_renderTime = Timer()
     For i = 0 To 20
@@ -588,7 +585,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     ' Change the DirectX host's caption to the game's title (for windowed mode)
     If (LenB(mainMem.gameTitle)) Then
-        host.Caption = mainMem.gameTitle
+        host.Caption = mainMem.gameTitle & " [" & CStr(Round(1 / gAvgTime, 1)) & " fps (GS_M)]"
     End If
 
     If (LenB(mainMem.initChar)) Then
@@ -596,8 +593,19 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call CreateCharacter(projectPath & temPath & mainMem.initChar, 0)
     End If
 
-    ' Unless we're testing a program from the PRG editor, run the
-    ' startup program
+    'Set up these before the start program runs, in case movement occurs before the
+    'start board loads.
+    selectedPlayer = 0          'Set to use player 0 as walking graphics.
+    facing = SOUTH              'Start him facing south.
+
+    'Hide all players except the walking graphic one
+    For i = 0 To UBound(showPlayer)
+        showPlayer(i) = (i = selectedPlayer)
+        pPos(i).stance = "WALK_S"
+        pPos(i).loopFrame = -1
+    Next i
+
+    ' Unless we're testing a program from the PRG editor, run the startup program.
     If Not (testingPRG) Then
         Call runProgram(projectPath & prgPath & mainMem.startupPrg, , , True)
     End If
@@ -620,34 +628,17 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         Call openItems
         Call launchBoardThreads(boardList(activeBoardIndex).theData)
         
-        ' Set to use player 0 as walking graphics
-        selectedPlayer = 0
-
-        ' Setup player position
-        With pPos(selectedPlayer)
-            If (LenB(mainMem.initBoard)) Then
+        ' Setup player position, only if an initial board has been specified.
+        If (LenB(mainMem.initBoard)) Then
+            With pPos(selectedPlayer)
                 .x = boardList(activeBoardIndex).theData.playerX
                 .y = boardList(activeBoardIndex).theData.playerY
                 .l = boardList(activeBoardIndex).theData.playerLayer
-            End If
-            .stance = "WALK_S"
-            .frame = 0
-            pendingPlayerMovement(selectedPlayer).xOrig = .x
-            pendingPlayerMovement(selectedPlayer).yOrig = .y
-            pendingPlayerMovement(selectedPlayer).lOrig = .l
-            .loopFrame = -1
-            playerMem(selectedPlayer).loopSpeed = 1
-        End With
-
-        ' Hide all players except the walking graphic one
-        Dim pNum As Long
-        For pNum = 0 To UBound(showPlayer)
-            showPlayer(pNum) = (pNum = selectedPlayer)
-        Next pNum
-
-        ' Start him facing south
-        facing = SOUTH
-
-    End If
+                pendingPlayerMovement(selectedPlayer).xOrig = .x
+                pendingPlayerMovement(selectedPlayer).yOrig = .y
+                pendingPlayerMovement(selectedPlayer).lOrig = .l
+            End With
+        End If
+    End If 'Not SavedGame Or TestingPrg
 
 End Sub
