@@ -480,7 +480,7 @@ Public Function getRedirect(ByVal originalMethod As String) As String
         End If
         getRedirect = Mid$(getStr, 1, Length)
     Else
-        getRedirect = vbNullString
+        getRedirect = originalMethod
     End If
 
 End Function

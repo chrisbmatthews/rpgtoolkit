@@ -17,65 +17,40 @@ Option Explicit
 Public inWith() As String
 
 '=========================================================================
-' RPGCode Commands
+' Pop a heap off the stack
 '=========================================================================
-
 Public Sub CompilerPopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
-
     On Error Resume Next
-    
-    Dim use As String, dataUse As String, number As Long
-
-    retval.dataType = DT_VOID
-    retval.num = -1
-    
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    number = CountData(dataUse$)    'how many data elements are there?
-    If number Then
-        Call debugger("Error: Com_Pop_Piler must have 0 data elements!-- " + Text$)
+    Dim count As Long, paras() As parameters
+    paras = getParameters(Text, theProgram, count)
+    If (count <> 0) Then
+        Call debugger("Error: Com_Pop_Piler must have 0 data elements!-- " & Text)
         Exit Sub
     End If
-    
-    Dim value As String
-    value = PopCompileStack(theProgram)
-    
     retval.dataType = DT_LIT
-    retval.lit = value
+    retval.lit = PopCompileStack(theProgram)
 End Sub
 
-
-Sub CompilerEnterLocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
-    '#com_enterlocal_piler()
-    'enter a new local scope -- undocumented -- only called by internal compiler
-    
-    On Error Resume Next
-    'create a new local scope...
+'=========================================================================
+' Push a heap onto the stack
+'=========================================================================
+Public Sub CompilerEnterLocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+    ' Add a heap to the stack
     Call AddHeapToStack(theProgram)
 End Sub
 
-Sub AutoCommandRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
-    '#AutoCommand()
-    'tuns autocommand on for this program (means you dont' have to use #'s)
-    
-    'debugger "AutoCommand() is not required anymore-- " & text
-    
-    'theprogram.autoCommand = True
-End Sub
-
-
-Sub CompilerExitLocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
-    '#com_exitlocal_piler()
-    'exit a new local scope -- undocumented -- only called by internal compiler
-    
-    On Error Resume Next
-    'leave local scope...
+'=========================================================================
+' Remove a heap from the stack
+'=========================================================================
+Public Sub CompilerExitLocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+    ' Remove a heap from the stack
     Call RemoveHeapFromStack(theProgram)
 End Sub
 
-
-
-Sub CompilerPushRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+'=========================================================================
+' Push a variable onto the stack
+'=========================================================================
+Public Sub CompilerPushRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
     '#com_push_piler(a$!)
     'push a var onto the compiler stack (undocumented command-- only used by internal compiler)
     
@@ -111,9 +86,7 @@ Sub CompilerPushRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, By
     Call PushCompileStack(theProgram, toUse)
 End Sub
 
-
-
-Private Function formatDirectionString(directions As String) As String
+Private Function formatDirectionString(ByRef directions As String) As String
     'This function will take a direction string like this:
     'NNSEWW
     'and turn it into this: N,N,S,E,W,W
@@ -7749,14 +7722,13 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     Dim count As Long, itemNum As Long, paras() As parameters
     Dim low As Long, high As Long, direction As Long, restrict As Long
-    
-    count = CountData(Text)
-    paras = getParameters(Text, theProgram)
-    
+
+    paras = getParameters(Text, theProgram, count)
+
     If count <> 1 And count <> 2 Then
         Call debugger("Error: Wander() requires have 1 or 2 data elements!-- " & Text)
     End If
-    
+
     If paras(0).dataType = DT_LIT Then
         Select Case UCase$(paras(0).lit)
             Case "TARGET": If targetType = 1 Then itemNum = target
@@ -11621,10 +11593,10 @@ Public Sub IIfRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retva
 
     If (retval.usingReturnData And paras(1).dataType = DT_LIT) Then
         retval.dataType = DT_LIT
-        retval.lit = IIf(evaluate(paras(0).dat, prg) = 1, paras(1).lit, paras(2).lit)
+        retval.lit = IIf(evaluate(paras(0).dat, prg) <> 0, paras(1).lit, paras(2).lit)
     Else
         retval.dataType = DT_NUM
-        retval.num = IIf(evaluate(paras(0).dat, prg) = 1, paras(1).num, paras(2).num)
+        retval.num = IIf(evaluate(paras(0).dat, prg) <> 0, paras(1).num, paras(2).num)
     End If
 
 End Sub

@@ -852,7 +852,7 @@ End Sub
 '=========================================================================
 Public Function DoCommand(ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
     On Error GoTo error
-    DoCommand = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval)
+    DoCommand = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval, True)
     Exit Function
 error:
     theProgram.programPos = -1
@@ -874,7 +874,7 @@ End Function
 '=========================================================================
 ' Do any single command - attached to a program
 '=========================================================================
-Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN) As Long
+Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal bCorrectLine As Boolean) As Long
 
     ' Performs a command, and returns the new line number
     ' afterwards.  If it returns -1, then the program is done.
@@ -940,9 +940,15 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
 
     Else
 
-        splice$ = cLine$
-        cType$ = GetCommandName$(splice$)   'get command name without extra info
-        testText$ = UCase$(cType$)
+        splice = cLine
+
+        If Not (bCorrectLine) Then
+            cType = GetCommandName(splice)
+            testText = UCase$(cType)
+        Else
+            cType = theProgram.strCommands(theProgram.programPos)
+            testText = cType
+        End If
 
         If (LenB(testText) = 0) Then
             ' No text!
@@ -951,19 +957,18 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
         End If
 
-        'check for redirects...
-        If redirectExists(testText) Then
-            testText = getRedirect(testText)
-        End If
+        testText = getRedirect(testText)
 
-        If Left$(testText, 1) = "." Then testText = UCase$(GetWithPrefix() & testText)
+        If Left$(testText, 1) = "." Then
+            testText = UCase$(GetWithPrefix() & testText)
+        End If
 
         If testText <> "MWIN" Then
             'if the command is not a MWin command, then
             'check if we have just finished putting text
             'in the message window
             'if so, show the message window :)
-            If bFillingMsgBox Then
+            If (bFillingMsgBox) Then
                 bFillingMsgBox = False
                 Call renderRPGCodeScreen
             End If
@@ -2059,12 +2064,12 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Call GlobalRPG(splice$, theProgram, retval) 'init a global variable
             DoSingleCommand = increment(theProgram)
             Exit Function
-    
+
         Case "AUTOCOMMAND":
-            Call AutoCommandRPG(splice$, theProgram, retval) 'turn autocommand on or off
+            ' Silently obsolete
             DoSingleCommand = increment(theProgram)
             Exit Function
-    
+
         Case "CREATECURSORMAP":
             Call CreateCursorMapRPG(splice$, theProgram, retval) 'create cursor map
             DoSingleCommand = increment(theProgram)

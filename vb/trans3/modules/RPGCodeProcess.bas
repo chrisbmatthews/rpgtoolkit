@@ -450,6 +450,7 @@ Public Sub includeProgram(ByRef prg As RPGCodeProgram, ByRef strFile As String)
     ub = UBound(prg.program)
     backupPrg = prg
     ReDim Preserve backupPrg.program(ub + 2 + toInclude.Length)
+    ReDim Preserve backupPrg.strCommands(ub + 2 + toInclude.Length)
     prg = backupPrg
 
     ' Index variable
@@ -471,11 +472,12 @@ Public Sub includeProgram(ByRef prg As RPGCodeProgram, ByRef strFile As String)
     Next idx
 
     ' Prevent running of loose code
-    prg.program(prg.Length + 1) = "Stop()"
+    prg.program(prg.Length + 1) = "stop()"
 
     ' Add its code to the program
     For idx = 0 To UBound(toInclude.program)
         prg.program(prg.Length + 2 + idx) = toInclude.program(idx)
+        prg.strCommands(prg.Length + 2 + idx) = toInclude.strCommands(idx)
     Next idx
 
     ' Update the length of the program

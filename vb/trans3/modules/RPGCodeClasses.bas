@@ -81,6 +81,7 @@ Public Type RPGCodeProgram
     autoLocal As Boolean                    ' Force implicitly created variables to the local scope?
     classes As RPGCODE_CLASS_MAIN_DATA      ' Class stuff
     strict As Boolean                       ' Is the program strict?
+    strCommands() As String                 ' Commands found on lines
 End Type
 
 '=========================================================================
@@ -200,6 +201,9 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     classIdx = UBound(prg.classes.classes)
     On Error Resume Next
 
+    ' Redim the strCommands array
+    ReDim Preserve prg.strCommands(UBound(prg.program))
+
     ' Loop over each line
     For lineIdx = 0 To UBound(prg.program)
 
@@ -234,6 +238,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
             ' Get the command on this line
             cmd = UCase$(GetCommandName(prg.program(lineIdx)))
+            prg.strCommands(lineIdx) = cmd
 
         End If
 
