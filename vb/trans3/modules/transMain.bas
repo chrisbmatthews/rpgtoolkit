@@ -64,23 +64,23 @@ Public Sub Main()
 
     On Error Resume Next
 
-    'Init some misc stuff
+    ' Init some misc stuff
     Call initDefaults
 
-    'Get a main filename
+    ' Get a main filename
     Dim mainFile As String
     mainFile = getMainFilename()
 
-    'If we got one
+    ' If we got one
     If (mainFile <> "") Then
 
-        'Open the main file
+        ' Open the main file
         Call openMain(mainFile, mainMem)
 
-        'Startup
+        ' Startup
         Call openSystems
 
-        'Run game
+        ' Run game
         Call mainEventLoop(AddressOf gameLogic)
 
     End If
@@ -289,27 +289,36 @@ Public Sub gameLogic()
 
         Case GS_IDLE            'IDLE STATE
                                 '----------
-            Call checkMusic         ' Keep the music looping
-            Call scanKeys           ' Scan for important keys
-            Call updateGameTime     ' Update time game has been running for
-            
-            'C heck the player's queue to see if movement is about to start.
-            If LenB(pendingPlayerMovement(selectedPlayer).queue) <> 0 Then
+
+            ' Keep the music looping
+            Call checkMusic
+
+            ' Scan for important keys
+            Call scanKeys
+
+            ' Update time game has been running for
+            gameTime = (Timer() - initTime) + addTime
+
+            ' Check the player's queue to see if movement is about to start.
+            If (LenB(pendingPlayerMovement(selectedPlayer).queue) <> 0) Then
                 ' There is a queue.
                 gGameState = GS_MOVEMENT
             End If
 
-            If gGameState <> GS_MOVEMENT Then
+            If (gGameState <> GS_MOVEMENT) Then
                 ' Check we're not about to start moving again.
                 Call multiTaskNow
                 Call moveItems
             End If
 
-            Call renderNow          ' Render the scene
+            ' Render the scene
+            Call renderNow
 
         Case GS_PAUSE           'PAUSE STATE
                                 '-----------
-            Call checkMusic         ' Just keep the music looping
+
+            ' Just keep the music looping
+            Call checkMusic
 
         Case GS_MOVEMENT        'MOVEMENT STATE
                                 '--------------
@@ -324,9 +333,14 @@ Public Sub gameLogic()
                 gGameState = GS_DONEMOVE
             End If
 
-            Call multiTaskNow       ' Run rpgcode multitasking
-            Call movePlayers        ' Move players
-            Call moveItems          ' Move items
+            ' Run rpgcode multitasking
+            Call multiTaskNow
+
+            ' Move players
+            Call movePlayers
+
+            ' Move items
+            Call moveItems
 
             ' Re-render the scene
             Call renderNow(-1, True)
@@ -341,9 +355,9 @@ Public Sub gameLogic()
                     ' We'll create a temporary player position which is based on
                     ' the target location for that players' movement.
                     ' lets us test solid tiles, etc.
+
                     Dim tempPos As PLAYER_POSITION
                     tempPos = pPos(selectedPlayer)
-
                     tempPos.l = .lTarg
                     tempPos.x = .xTarg
                     tempPos.y = .yTarg
@@ -389,7 +403,7 @@ Public Sub gameLogic()
 
     End Select
 
-    ' Time a render.
+    ' Time a render
     If (gGameState = GS_MOVEMENT) Then
         renderTime = Timer() - renderTime
         renderPile = renderPile + renderTime
@@ -403,19 +417,45 @@ End Sub
 ' Open systems
 '=======================================================================
 Private Sub openSystems(Optional ByVal testingPRG As Boolean)
+
     On Error Resume Next
+
+    ' Register ActiveX components
     Call initActiveX
+
+    ' Initiate the event processor
     Call initEventProcessor
+
+    ' Initiate the graphics engine
     Call initGraphics(testingPRG)
+
+    ' Correct game paths
     Call correctPaths
+
+    ' Initiate plugins
     Call InitPlugins
+
+    ' Call Plugin_Initiate() in all plugins
     Call BeginPlugins
+
+    ' Initiate the menu plugin
     Call startMenuPlugin
+
+    ' Initiate the fight plugi
     Call startFightPlugin
+
+    ' Initiate the media engine
     Call initMedia
+
+    ' Clear the screen
     Call DXClearScreen(0)
+
+    ' Render the screen
     Call DXRefresh
+
+    ' Read settings from the main file
     Call setupMain(testingPRG)
+
 End Sub
 
 '=======================================================================
@@ -553,7 +593,6 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
             .loopFrame = -1
             playerMem(selectedPlayer).loopSpeed = 1
         End With
-
 
         ' Hide all players except the walking graphic one
         Dim pNum As Long

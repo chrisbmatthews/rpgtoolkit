@@ -488,15 +488,12 @@ Public Sub LoadState(ByVal file As String)
             Next t
             ReDim objHandleUsed(BinReadLong(num))
             For t = 0 To UBound(objHandleUsed)
-                If (BinReadByte(num) = 1) Then
-                    objHandleUsed(t) = True
-                Else
-                    objHandleUsed(t) = False
-                End If
+                objHandleUsed(t) = (BinReadByte(num) = 1)
             Next t
         End If
-        
+
         showPlayer(selectedPlayer) = True
+
     Close num
     initTime = Timer()
     addTime = gameTime

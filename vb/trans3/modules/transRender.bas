@@ -265,29 +265,33 @@ Public Sub checkScrollBounds()
 
     On Error Resume Next
 
+    ' Is the board isometric?
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
 
-        If topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX Then
+        ' Check topX
+        If (topX + isoTilesX + 0.5 >= boardList(activeBoardIndex).theData.bSizeX) Then _
             topX = boardList(activeBoardIndex).theData.bSizeX - isoTilesX - 0.5
-        End If
 
-        If (topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY Then
+        ' Check topY
+        If ((topY * 2 + 1) + isoTilesY >= boardList(activeBoardIndex).theData.bSizeY) Then _
             topY = (boardList(activeBoardIndex).theData.bSizeY - isoTilesY - 1) / 2
-        End If
 
     Else
-        'Original code
-        If topX + tilesX > boardList(activeBoardIndex).theData.bSizeX Then
-            topX = boardList(activeBoardIndex).theData.bSizeX - tilesX
-        End If
 
-        If topY + tilesY > boardList(activeBoardIndex).theData.bSizeY Then
+        ' Check topX
+        If topX + tilesX > boardList(activeBoardIndex).theData.bSizeX Then _
+            topX = boardList(activeBoardIndex).theData.bSizeX - tilesX
+
+        ' Check topY
+        If topY + tilesY > boardList(activeBoardIndex).theData.bSizeY Then _
             topY = boardList(activeBoardIndex).theData.bSizeY - tilesY
-        End If
     
     End If
 
+    ' Can't have x as less than 0
     If topX < 0 Then topX = 0
+
+    ' Can't have y as less than 0
     If topY < 0 Then topY = 0
 
 End Sub
@@ -297,9 +301,12 @@ End Sub
 '=========================================================================
 Private Function quickSortRnd(ByVal Left As Long, ByVal Right As Long) As Long
     On Error Resume Next
-    If (Rnd(1) * 2) = 1 Then
+    ' Randomize from 1 - 2
+    If ((Rnd(1) * 2) = 1) Then
+        ' Take the left number
         quickSortRnd = Left
     Else
+        ' Take the right number
         quickSortRnd = Right
     End If
 End Function
@@ -391,7 +398,7 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
             'End If
         End If
     Next layer
-    
+
 End Sub
 
 '=========================================================================
@@ -645,7 +652,7 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVa
 End Sub
 
 '=========================================================================
-' Render animated tiles (requires 5ms clock sync)
+' Render animated tiles
 '=========================================================================
 Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) As Boolean
 
@@ -665,12 +672,14 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
 
     Static timeStamp As Double
     If ((Timer() - timeStamp) > (5 / 1000)) Then
+        ' Update the time stamp and render
         timeStamp = Timer()
     Else
+        ' Skip the render
         Exit Function
     End If
 
-    If boardList(activeBoardIndex).theData.hasAnmTiles Then
+    If (boardList(activeBoardIndex).theData.hasAnmTiles) Then
         'there are animated tiles on this board...
         'cycle thru them...
         
@@ -754,20 +763,21 @@ End Function
 ' Determine if the board's background needs to be rendered
 '=========================================================================
 Private Function renderBackground() As Boolean
-
     On Error Resume Next
-    
-    If lastRenderedBackground <> boardList(activeBoardIndex).theData.brdBack Then
+    ' If we need to render the background
+    If (lastRenderedBackground <> boardList(activeBoardIndex).theData.brdBack) Then
+        ' Fill bkg will black
         Call CanvasFill(cnvBackground, 0)
-        If boardList(activeBoardIndex).theData.brdBack <> "" Then
+        ' If there's an image set
+        If (boardList(activeBoardIndex).theData.brdBack <> "") Then
+            ' Load the image, stretching to fit the board
             Call CanvasLoadFullPicture(cnvBackground, projectPath & bmpPath & boardList(activeBoardIndex).theData.brdBack, resX, resY)
         End If
-        renderBackground = True
+        ' Update the last rendered background
         lastRenderedBackground = boardList(activeBoardIndex).theData.brdBack
-    Else
-        renderBackground = False
+        ' Flag we rendered the backgrond
+        renderBackground = True
     End If
-
 End Function
 
 '=========================================================================
@@ -775,8 +785,11 @@ End Function
 '=========================================================================
 Public Sub renderCanvas(ByVal cnv As Long)
     On Error Resume Next
+    ' Black out screen
     Call DXClearScreen(0)
+    ' Render the canvas
     Call DXDrawCanvas(cnv, 0, 0)
+    ' Page flip
     Call DXRefresh
 End Sub
 
@@ -784,23 +797,24 @@ End Sub
 ' Render the board's scroll cache
 '=========================================================================
 Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long, ByVal tY As Long)
-
     On Error Resume Next
-
+    ' Create a new CBoardRender object
     Dim currentRender As New CBoardRender
+    ' With that object
     With currentRender
+        ' Set in the canvas
         .canvas = cnv
+        ' Set in the mask (should be -1)
         .canvasMask = cnvMask
+        ' Set in topX
         .topX = tX
+        ' Set in topY
         .topY = tY
+        ' Render the board
         Call .Render
     End With
-
+    ' Update the last render
     Set lastRender = currentRender
-
-    Call Unload(currentRender)
-    Set currentRender = Nothing
-
 End Sub
 
 '=========================================================================
@@ -1484,211 +1498,6 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
 End Sub
 
 '=========================================================================
-' Determine if an item is idle
-'=========================================================================
-Public Function isItemIdle(ByVal num As Long, Optional ByVal refresh As Boolean) As Boolean
-
-    On Error GoTo fin
-
-    Static timeStamps() As Double       'Time stamps of idleness
-    ReDim Preserve timeStamps((UBound(boardList(activeBoardIndex).theData.itmActivate)))  'Make one spot for each item
-
-    Static lastDir() As String          'Last direction
-    ReDim Preserve lastDir((UBound(boardList(activeBoardIndex).theData.itmActivate)))     'Make one spot for each item
-
-    Dim skipSecondCheck As Boolean      'Skip the second check?
-    Dim isIdle As Boolean               'Already idle?
-
-    If (refresh) Then
-        'Update time stamp
-        timeStamps(num) = Timer()
-    End If
-
-    With itmPos(num)
-
-        isIdle = (Left(UCase(.stance), 5) = "STAND")
-
-        If (lastDir(num) <> .stance) And (Not isIdle) Then
-            'Force time stamp update
-            timeStamps(num) = Timer()
-        End If
-
-        'Update lastDir()
-        lastDir(num) = .stance
-
-        If (isIdle) Then
-            'Skip the second if block
-            skipSecondCheck = True
-            If ((Timer() - timeStamps(num) >= itemMem(num).speed)) Then
-                If (itemHasIdlingGfx(itemMem(num), .stance)) Then
-                    'Increment the frame
-                    .frame = .frame + 1
-                End If
-                'Flag we're idle
-                isItemIdle = True
-            End If
-        End If
-
-        If (Not skipSecondCheck) Then
-            If ((Timer() - timeStamps(num)) >= itemMem(num).idleTime) Then
-                'It's been long enough-- now he's idle
-                Select Case UCase(.stance)
-                    Case "WALK_N": .stance = "STAND_N"
-                    Case "WALK_S": .stance = "STAND_S"
-                    Case "WALK_E": .stance = "STAND_E"
-                    Case "WALK_W": .stance = "STAND_W"
-                    Case "WALK_NW": .stance = "STAND_NW"
-                    Case "WALK_NE": .stance = "STAND_NE"
-                    Case "WALK_SW": .stance = "STAND_SW"
-                    Case "WALK_SE": .stance = "STAND_SE"
-                End Select
-                isItemIdle = True
-            End If
-        End If
-
-    End With
-
-    If (isItemIdle) Then
-        'Item was idle, update the time stamp
-        timeStamps(num) = Timer()
-    End If
-
-fin:
-End Function
-
-'=========================================================================
-' Determine if a player is idle
-'=========================================================================
-Public Function isPlayerIdle(ByVal num As Long, Optional ByVal refresh As Boolean) As Boolean
-
-    On Error GoTo fin
-
-    Static timeStamps(4) As Double   'Time stamps of idleness
-    Static lastDir(4) As String      'Last direction
-    Dim skipSecondCheck As Boolean   'Skip the second check?
-    Dim isIdle As Boolean            'Already idle?
-
-    If (refresh) Then
-        'Update time stamp
-        timeStamps(num) = Timer()
-    End If
-
-    With pPos(num)
-
-        isIdle = (Left(UCase(.stance), 5) = "STAND")
-
-        If (lastDir(num) <> .stance) And (Not isIdle) Then
-            'Force time stamp update
-            timeStamps(num) = Timer()
-        End If
-
-        'Update lastDir()
-        lastDir(num) = .stance
-
-        If (isIdle) Then
-            'Skip the second if block
-            skipSecondCheck = True
-            If ((Timer() - timeStamps(num) >= playerMem(num).speed)) Then
-                If (playerHasIdlingGfx(playerMem(num), .stance)) Then
-                    'Increment the frame
-                    .frame = .frame + 1
-                End If
-                'Flag we're idle
-                isPlayerIdle = True
-            End If
-        End If
-
-        If (Not skipSecondCheck) Then
-            If ((Timer() - timeStamps(num)) >= playerMem(num).idleTime) Then
-                'It's been long enough-- now he's idle
-                Select Case UCase(.stance)
-                    Case "WALK_N": .stance = "STAND_N"
-                    Case "WALK_S": .stance = "STAND_S"
-                    Case "WALK_E": .stance = "STAND_E"
-                    Case "WALK_W": .stance = "STAND_W"
-                    Case "WALK_NW": .stance = "STAND_NW"
-                    Case "WALK_NE": .stance = "STAND_NE"
-                    Case "WALK_SW": .stance = "STAND_SW"
-                    Case "WALK_SE": .stance = "STAND_SE"
-                End Select
-                isPlayerIdle = True
-            End If
-        End If
-
-    End With
-
-    If (isPlayerIdle) Then
-        'Player was idle, update the time stamp
-        timeStamps(num) = Timer()
-    End If
-
-fin:
-End Function
-
-'=========================================================================
-' Should we draw the next player frame?
-'=========================================================================
-Public Function playerShouldDrawFrame(ByVal num As Long) As Boolean
-
-    On Error GoTo fin
-
-    Static timeStamps(4) As Double      'Time stamps of movement
-    Static lastDir(4) As String         'Last direction
-
-    Dim forceIncrement As Boolean       'Force the incrementation?
-
-    If (lastDir(num) <> pPos(num).stance) Then
-        'We've changed directions!
-        forceIncrement = True
-    End If
-
-    'Grab current direction
-    lastDir(num) = pPos(num).stance
-
-    If ((Timer() - timeStamps(num) >= playerMem(num).speed) Or (forceIncrement)) Then
-        'Draw next frame
-        playerShouldDrawFrame = True
-        'Update time stamp
-        timeStamps(num) = Timer()
-    End If
-
-fin:
-End Function
-
-'=========================================================================
-' Should we draw the next item frame?
-'=========================================================================
-Public Function itemShouldDrawFrame(ByVal num As Long) As Boolean
-
-    On Error GoTo fin
-
-    Static timeStamps() As Double       'Time stamps of movement
-    ReDim Preserve timeStamps((UBound(boardList(activeBoardIndex).theData.itmActivate)))  'Make one spot for each item
-
-    Static lastDir() As String          'Last direction
-    ReDim Preserve lastDir((UBound(boardList(activeBoardIndex).theData.itmActivate)))     'Make one spot for each item
-
-    Dim forceIncrement As Boolean       'Force the incrementation?
-
-    If (lastDir(num) <> itmPos(num).stance) Then
-        'We've changed directions!
-        forceIncrement = True
-    End If
-
-    'Grab current direction
-    lastDir(num) = itmPos(num).stance
-
-    If ((Timer() - timeStamps(num) >= itemMem(num).speed) Or (forceIncrement)) Then
-        'Draw next frame
-        itemShouldDrawFrame = True
-        'Update time stamp
-        timeStamps(num) = Timer()
-    End If
-
-fin:
-End Function
-
-'=========================================================================
 ' Same as renderNow, but used while running RPGCode
 '=========================================================================
 Public Sub renderRPGCodeScreen()
@@ -2076,22 +1885,24 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
 
     On Error Resume Next
 
-    'Init the engine
+    ' Init the gfx engine
     Call InitTkGfx
+
+    ' Init the canvas engine
     Call initCanvasEngine
 
-    'Load resource images
+    ' Load resource images
     Call loadResPictures
 
-    'Test for joystick
+    ' Test for joystick
     useJoystick = JoyTest()
 
-    'Get screen width and height (in twips)
-    screenWidth = Screen.height * (1 / 0.75)
+    ' Get screen width
+    screenWidth = Screen.height * (1 / 0.75) ' (Colin: Is this a mistake!?)
     screenHeight = Screen.height
 
-    'Get resolution x/y
-    resX = (screenWidth) / Screen.TwipsPerPixelX
+    ' Get resolution x / y
+    resX = screenWidth / Screen.TwipsPerPixelX
     resY = screenHeight / Screen.TwipsPerPixelY
 
     'Get res from main file
@@ -2106,10 +1917,10 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
         screenHeight = 768
     End If
 
-    'Show the screen
+    ' Show the screen
     Call showScreen(screenWidth, screenHeight, testingPRG)
 
-    'Update screen width and height
+    ' Update screen width and height
     screenWidth = screenWidth * Screen.TwipsPerPixelX
     screenHeight = screenHeight * Screen.TwipsPerPixelY
 
@@ -2119,6 +1930,7 @@ End Sub
 ' Using DirectX?
 '=========================================================================
 Public Property Get usingDX() As Boolean
+    ' Return true
     usingDX = inDXMode
 End Property
 
@@ -2126,5 +1938,6 @@ End Property
 ' In full-screen mode?
 '=========================================================================
 Public Property Get usingFullScreen() As Boolean
+    ' Return whether we're in full screen mode
     usingFullScreen = inFullScreenMode
 End Property
