@@ -125,12 +125,14 @@ Public Sub LoadState(ByVal file As String)
     Dim fn As String
     Dim minorVer As Integer
 
-    'Clear some aesthetic settings:
+    'Clear some settings:
     facing = South
     For t = 0 To 4
         showPlayer(t) = False           'Hide the players. Individually shown in restorePlayer
+        pPos(t).loopFrame = -1
+        pendingPlayerMovement(t).queue = vbNullString
     Next t
-
+    
     Open file For Input Access Read As #num
         If fread(num) = "RPGTLKIT SAVE" Then
         
@@ -257,6 +259,9 @@ Public Sub LoadState(ByVal file As String)
                 pPos(t).x = fread(num)
                 pPos(t).y = fread(num)
                 pPos(t).l = fread(num)
+                pendingPlayerMovement(t).xOrig = pPos(t).x     'Players will jump around without these.
+                pendingPlayerMovement(t).yOrig = pPos(t).y
+                pendingPlayerMovement(t).lOrig = pPos(t).l
             Next t
             For t = 0 To 4
                 Input #num, playerMem(t).nextLevel 'next level for players
@@ -390,6 +395,9 @@ Public Sub LoadState(ByVal file As String)
             pPos(t).x = BinReadDouble(num)
             pPos(t).y = BinReadDouble(num)
             pPos(t).l = BinReadLong(num)
+            pendingPlayerMovement(t).xOrig = pPos(t).x     'Players will jump around without these.
+            pendingPlayerMovement(t).yOrig = pPos(t).y
+            pendingPlayerMovement(t).lOrig = pPos(t).l
         Next t
         For t = 0 To 4
             playerMem(t).nextLevel = BinReadLong(num) 'next level for players
