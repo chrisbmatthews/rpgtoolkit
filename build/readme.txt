@@ -7,7 +7,8 @@ i.	Prelude
 ii.	The System Is Not Bug Free
 iii.	Help Files
 iv.	Threading
-v.	Afterword
+v.	Game Over Program
+vi.	Afterword
 
 i. PRELUDE
 ----------------------------------------------------------------------
@@ -56,7 +57,12 @@ method func(i!)
 
 The general idea is simple: keep the time consuming stuff in the main process.
 
-v. AFTERWORD
+v. GAME OVER PROGRAM
+----------------------------------------------------------------------
+
+In order to allow creation of more powerful game over sequences, a complete reset will no longer occur after the program has finished. If this behaviour is desired, you should place a call to reset() at the end of the program.
+
+vi. AFTERWORD
 ----------------------------------------------------------------------
 
 It has been months in the making, and we're glad to finally release 3.0.6 to the world. This version marks prominent stability for the 3.x series; we're glad to be offering this, and we hope you enjoy using the software!
