@@ -214,138 +214,132 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     ' MWin("TEST") # System.Pause()
     c(2) = "#"
 
-    ' With the program
-    With thePrg
+    ' Open the file
+    Open file For Input Access Read As num
 
-        ' Open the file
-        Open file For Input Access Read As num
+        ' Dimension the .program() array...
+        ReDim thePrg.program(0)
 
-            ' Dimension the .program() array...
-            ReDim .program(0)
+        Do Until EOF(num)
 
-            Do Until EOF(num)
+            ' Read a line
+            theLine = stripComments(fread(num))
 
-                ' Read a line
-                Line Input #num, theLine
-                theLine = stripComments(theLine)
+            ' Trim up that line...
+            theLine = replaceOutsideQuotes(Trim$(theLine), vbTab, vbNullString)
 
-                ' Trim up that line...
-                theLine = replaceOutsideQuotes(Trim$(theLine), vbTab, vbNullString)
+            If (Right$(theLine, 1) = "_") Then
+                ' This line is actually only part of a line, let's get the
+                ' whole line...
 
-                If (Right$(theLine, 1) = "_") Then
-                    ' This line is actually only part of a line, let's get the
-                    ' whole line...
+                buildLine = Trim$(Mid$(theLine, 1, Len(theLine) - 1))
 
-                    buildLine = Trim$(Mid$(theLine, 1, Len(theLine) - 1))
+                done = False
+                Do Until done
+                    If Not EOF(num) Then
+                        buildTemp = replace(Trim$(stripComments(fread(num))), vbTab, vbNullString)
+                        Select Case Right$(buildTemp, 1)
+                            Case "_"
+                                buildTemp = _
+                                    Mid$(buildTemp, 1, Len(buildTemp) - 1)
+                            Case Else: done = True
+                        End Select
+                        buildLine = buildLine & " " & buildTemp
+                    Else
+                        done = True
+                    End If
+                Loop
 
-                    done = False
-                    Do Until done
-                        If Not EOF(num) Then
-                            Dim tmp As String
-                            Line Input #num, tmp
-                            buildTemp = replace(Trim$(stripComments(tmp)), vbTab, vbNullString)
-                            Select Case Right$(buildTemp, 1)
-                                Case "_"
-                                    buildTemp = Mid$(buildTemp, 1, Len(buildTemp) - 1)
-                                Case Else
-                                    done = True
-                            End Select
-                            buildLine = buildLine & " " & buildTemp
-                        Else
-                            done = True
-                        End If
-                    Loop
+                theLine = buildLine
 
-                    theLine = buildLine
-
-                End If
-
-                ' Remove prefixed #
-                If (Left$(theLine, 1) = "#") Then theLine = Right$(theLine, Len(theLine) - 1)
-
-                ' Read line if not comment
-                If (Not Left$(theLine, 1) = "*") And (Not Left$(theLine, 2) = "//") Then
-
-                    ' Split that sucker like it has NEVER been split before!
-                    lines() = multiSplit(theLine, c, uD, True)
-
-                    ' Now we're going to have some fun with the .program() array so
-                    ' make sure it'll enlarge itself...
-                    On Error GoTo enlargeProgram
-
-                    ' Add each line to the program...
-                    For a = 0 To (UBound(lines) + 1)
-
-                        If (a = UBound(lines) + 1) Then
-                            If (LenB(uD(UBound(lines))) <> 0) Then
-                                .program(p + a) = uD(UBound(lines))
-                            End If
-
-                        ElseIf (a = 0) Then
-                            .program(p + a) = lines(a)
-
-                        Else
-
-                            Select Case uD(a - 1)
-
-                                Case "{", "}"
-                                    .program(p + a) = uD(a - 1)
-                                    .program(p + a + 1) = lines(a)
-                                    p = p + 1
-
-                                Case "#"
-                                    If (Left$(lines(a), 1) = " ") Then
-                                        .program(p + a) = "#" & lines(a)
-                                    Else
-                                        .program(p + a - 1) = .program(p + a - 1) & "#" & lines(a)
-                                    End If
-
-                                Case Else
-                                    .program(p + a) = lines(a)
-
-                            End Select
-
-                        End If
-
-                    Next a
-
-                    ' Update p
-                    p = UBound(.program) + 1
-
-                End If
-
-                ' Update length of program
-                .Length = p
-
-            Loop ' (until end of file)
-
-        Close num
-
-        ' Now cycle over each line
-        For a = 0 To UBound(.program)
-            .program(a) = Trim$(replaceOutsideQuotes(.program(a), "#", vbNullString))
-            If (Left$(UCase$(Trim$(.program(a))), 6) = "METHOD") Then
-                ' It's a method
-                Call addMethodToPrg(GetMethodName(.program(a)), a, thePrg)
             End If
-        Next a
 
-        ' Splice up the classes
-        Call spliceUpClasses(thePrg)
+            ' Remove prefixed #
+            If (Left$(theLine, 1) = "#") Then theLine = Right$(theLine, Len(theLine) - 1)
 
-        ' Return the result
-        openProgram = thePrg
+            ' Read line if not comment
+            If (Not Left$(theLine, 1) = "*") And (Not Left$(theLine, 2) = "//") Then
 
-        Exit Function
+                ' Split that sucker like it has NEVER been split before!
+                lines() = multiSplit(theLine, c, uD, True)
+
+                ' Now we're going to have some fun with the .program() array so
+                ' make sure it'll enlarge itself...
+                On Error GoTo enlargeProgram
+
+                ' Add each line to the program...
+                For a = 0 To (UBound(lines) + 1)
+
+                    If (a = UBound(lines) + 1) Then
+                        If (LenB(uD(UBound(lines))) <> 0) Then
+                            thePrg.program(p + a) = uD(UBound(lines))
+                        End If
+
+                    ElseIf (a = 0) Then
+                        thePrg.program(p + a) = lines(a)
+
+                    Else
+
+                        Select Case uD(a - 1)
+
+                            Case "{", "}"
+                                thePrg.program(p + a) = uD(a - 1)
+                                thePrg.program(p + a + 1) = lines(a)
+                                p = p + 1
+
+                            Case "#"
+                                If Left$(lines(a), 1) = " " Then
+                                    thePrg.program(p + a) = uD(a - 1) & lines(a)
+                                Else
+                                    thePrg.program(p + a - 1) = _
+                                        thePrg.program(p + a - 1) & uD(a - 1) & lines(a)
+                                End If
+
+                            Case Else
+                                thePrg.program(p + a) = lines(a)
+
+                        End Select
+
+                    End If
+
+                Next a
+
+                ' Update p
+                p = UBound(thePrg.program) + 1
+
+            End If
+
+            ' Update length of program
+            thePrg.Length = p
+
+        Loop ' (until end of file)
+
+    Close num
+
+    ' Now cycle over each line
+    For a = 0 To UBound(thePrg.program)
+        thePrg.program(a) = Trim$(replaceOutsideQuotes(thePrg.program(a), "#", vbNullString))
+        If (Left$(UCase$(Trim$(thePrg.program(a))), 6) = "METHOD") Then
+            ' It's a method
+            Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
+        End If
+    Next a
+
+    ' Splice up the classes
+    Call spliceUpClasses(thePrg)
+
+    ' Return the result
+    openProgram = thePrg
+
+    Exit Function
 
 enlargeProgram:
-        ' Uh-oh! The array is too small. We can fix that...
-        ReDim Preserve .program(UBound(.program) + 1)
-        Resume
-
-    End With
+    ' Uh-oh! The array is too small. We can fix that...
+    ReDim Preserve thePrg.program(UBound(thePrg.program) + 1)
+    Resume
 
 End Function
+
 
 '=========================================================================
 ' Strip comments off a line

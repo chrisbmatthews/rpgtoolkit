@@ -362,7 +362,7 @@ Sub LocalRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
         'first check if it's in the local scope...
         If Not (litVarExists(useIt1, theProgram.heapStack(theProgram.currentHeapFrame))) Then
             'the numerical var doesn't exist in the local scope-- add it...
-            Call SetLitVar(useIt1, "", theProgram.heapStack(theProgram.currentHeapFrame))
+            Call SetLitVar(useIt1, vbNullString, theProgram.heapStack(theProgram.currentHeapFrame))
         End If
         'get value...
         a = getValue(useIt1, lit1, num1, theProgram)
@@ -3297,7 +3297,7 @@ End Function
 Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '#Include("file.prg")
     'include file in program
-    On Error GoTo erropenprginclude
+    On Error GoTo errOpenprgInclude
     
     Dim errorsA As Long
     Dim theLine As String
@@ -3360,47 +3360,47 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         'Retrieve the code from the program...
         tempPRG = openProgram(fileN)
 
-        With theProgram
+        ' Colin says: VB decided to mess up!!
+        Dim ub As Long
+        ub = UBound(theProgram.program)
+        ReDim Preserve errorKeep.program(ub + 2 + tempPRG.Length)
+        theProgram = errorKeep
 
-            For count = 0 To UBound(tempPRG.methods)
-                If (LenB(tempPRG.methods(count).name) <> 0) Then
-                    Call addMethodToPrg( _
-                                           tempPRG.methods(count).name, _
-                                           tempPRG.methods(count).line + .Length + 2, _
-                                           theProgram)
-                End If
-            Next count
+        For count = 0 To UBound(tempPRG.methods)
+            If (LenB(tempPRG.methods(count).name) <> 0) Then
+                Call addMethodToPrg( _
+                                        tempPRG.methods(count).name, _
+                                        tempPRG.methods(count).line + theProgram.Length + 2, _
+                                        theProgram)
+            End If
+        Next count
 
-            For count = 0 To UBound(tempPRG.classes.classes)
-                Call addClassToProgram(tempPRG.classes.classes(count), theProgram)
-            Next count
+        For count = 0 To UBound(tempPRG.classes.classes)
+            Call addClassToProgram(tempPRG.classes.classes(count), theProgram)
+        Next count
 
-            'Make the program large enough for the code we're adding...
-            ReDim Preserve .program(UBound(.program) + 2 + tempPRG.Length)
+        'Don't let any loose code in the .prg file be run...
+        theProgram.program(theProgram.Length + 1) = "Stop()"
 
-            'Don't let any loose code in the .prg file be run...
-            .program(.Length + 1) = "Stop()"
+        'Add each line from the included file to the main file...
+        For count = 0 To UBound(tempPRG.program)
+            theProgram.program(theProgram.Length + 2 + count) = tempPRG.program(count)
+        Next count
 
-            'Add each line from the included file to the main file...
-            For count = 0 To UBound(tempPRG.program)
-                .program(.Length + 2 + count) = tempPRG.program(count)
-            Next count
-
-            'Update the length of the program...
-            .Length = .Length + 2 + UBound(tempPRG.program)
-
-        End With
+        'Update the length of the program...
+        theProgram.Length = theProgram.Length + 2 + UBound(tempPRG.program)
 
         '====================================================================
         'End bug fix by KSNiloc
         '====================================================================
 
     End If
-Exit Sub
 
-erropenprginclude:
-errorsA = 1
-Resume Next
+    Exit Sub
+
+errOpenprgInclude:
+    errorsA = 1
+    Resume Next
 
 End Sub
 
@@ -9959,7 +9959,7 @@ Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
  Dim folder As String 'the path to the file
  Dim fullfolder As String 'the "full" path of the file
  Dim ff As Integer 'the file spot to be used
- Dim Temp As Variant 'temp variable
+ Dim Temp As Long 'temp variable
  Dim temp2 As Double
  Dim a As Long
  
@@ -10064,7 +10064,7 @@ Sub CloseFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
  ' ! MODIFIED BY KSNiloc...
  
  Dim file As String 'file to close
- Dim Temp As Variant 'temp variable
+ Dim Temp As Long 'temp variable
  Dim a As Long 'used for loops
  Dim temp2 As Double
  
@@ -10311,7 +10311,7 @@ Sub FileEOFRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
  ' ! MODIFIED BY KSNiloc...
  
  Dim file As String 'file to get input from
- Dim Temp As Variant 'temp variable
+ Dim Temp As Long 'temp variable
  Dim a As Long 'used for loops
  Dim temp2 As Double
 
