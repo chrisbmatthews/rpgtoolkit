@@ -535,14 +535,13 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     ' Check if a type was passed
     If (solveType <> DT_VOID) Then
+
         ' We'll pass the value out in a param
         noVar = True
-        Text = "x=" & Text
+        Text = "x = " & Text
         dType = solveType
-    End If
 
-    ' Pad the signs
-    Call padSigns(Text)
+    End If
 
     If Not (noVar) Then ' If there's a var
 
@@ -590,12 +589,12 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         Case "+", "-", "*", "/", "^", "&", "|", "`", "<<", ">>"
             ' Not a "real" conjuction
             noVar = True
-            Text = "x=" & Text
+            Text = "x = " & Text
             equal = "="
     End Select
 
     ' Remove the conjuction from the text
-    Text = replace(Text, equal, "=")
+    Text = replace(Text, equal, " = ", , 1)
 
     ' Get the number of tokens we have
     number = ValueNumber(Text)

@@ -28,24 +28,6 @@ Private m_mathSigns(26) As String
 Private m_compSigns(9) As String
 
 '=========================================================================
-' Pad a string's signs
-'=========================================================================
-Public Sub padSigns(ByRef str As String)
-
-    '// Passing string ByRef for performance related reasons
-
-    ' Pad the string
-    Dim i As Long
-    For i = 0 To UBound(m_mathSigns)
-        str = replace(str, m_mathSigns(i), " " & m_mathSigns(i) & " ")
-    Next i
-    For i = 0 To UBound(m_compSigns)
-        str = replace(str, m_compSigns(i), " " & m_compSigns(i) & " ")
-    Next i
-
-End Sub
-
-'=========================================================================
 ' Build the sign arrays
 '=========================================================================
 Public Sub buildSignArrays()
@@ -1179,17 +1161,28 @@ Public Function ParseRPGCodeCommand( _
                                 ' Divider
                                 Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "%", "`", "|", "&", "~"
 
-                                    If ((depth = 0) And (Not (ignore)) And (b >= startAt)) Then
+                                    If ((depth = 0) And (Not (ignore)) And (b > startAt)) Then
                                         ' We' ve found a space. This means that the name of the
                                         ' command is now to the right of us. Hence, it's between
                                         ' B and A.
 
                                         cN = Mid$(bT, b + 1, a - b)
 
-                                        Dim theInlineCommand As String
+                                        Dim theInlineCommand As String, bRunCmd As Boolean
                                         theInlineCommand = UCase$(GetCommandName(cN))
 
-                                        If (LenB(theInlineCommand)) Then
+                                        bRunCmd = (LenB(theInlineCommand) <> 0)
+
+                                        Select Case theInlineCommand
+
+                                            Case "WHILE", "IF", "UNTIL", _
+                                                 "MULTIRUN", "WITH", vbNullString
+                                                ' Don't run this command
+                                                bRunCmd = False
+
+                                        End Select
+
+                                        If (bRunCmd) Then
 
                                             ' Now let's execute this command
                                             oPP = prg.programPos
@@ -1211,7 +1204,7 @@ Public Function ParseRPGCodeCommand( _
                                             End If
 
                                         Else
-                                            ' Math-- don't touch
+                                            ' Don't touch
                                             v = cN
                                         End If
 

@@ -65,7 +65,7 @@ End Type
 '=========================================================================
 ' Call a method in a class
 '=========================================================================
-Public Sub callObjectMethod(ByVal hClass As Long, ByRef text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, ByVal methodName As String)
+Public Sub callObjectMethod(ByVal hClass As Long, ByRef Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, ByVal methodName As String)
 
     On Error Resume Next
 
@@ -100,7 +100,7 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByRef text As String, ByRef pr
     End If
 
     ' Call the method
-    Call MethodCallRPG(thePrefix & "::" & text, thePrefix & "::" & methodName, prg, retval, True, True)
+    Call MethodCallRPG(thePrefix & "::" & Text, thePrefix & "::" & methodName, prg, retval, True, True)
 
     ' Decrease the nestle
     Call decreaseNestle(prg)
@@ -113,7 +113,7 @@ End Sub
 '=========================================================================
 ' Pop up the rpgcode debugger
 '=========================================================================
-Public Sub debugger(ByRef text As String)
+Public Sub debugger(ByRef Text As String)
 
     On Error Resume Next
 
@@ -127,7 +127,7 @@ Public Sub debugger(ByRef text As String)
     Else
         If (debugYN = 1) Then
             Call debugWin.Show
-            debugWin.buglist.text = debugWin.buglist.text & text & vbNewLine
+            debugWin.buglist.Text = debugWin.buglist.Text & Text & vbNewLine
             Call processEvent
         End If
     End If
@@ -149,7 +149,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean, Optional ByVal doNotCheckForClasses As Boolean)
 
     On Error Resume Next
 
@@ -160,12 +160,12 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If (LenB(commandName) = 0) Then
-        mName = GetCommandName(text)   'get command name without extra info
+        mName = GetCommandName(Text)   'get command name without extra info
     Else
         mName = commandName
     End If
 
-    If QueryPlugins(mName, text, retval) Then
+    If QueryPlugins(mName, Text, retval) Then
         'Found the command in a plugin, don't waste time checking for a method!
         Exit Sub
     End If
@@ -182,7 +182,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
 
     If (theProgram.classes.insideClass And (Not doNotCheckForClasses)) Then
         If (isMethodMember(mName, topNestle(theProgram), theProgram)) Then
-            Call callObjectMethod(topNestle(theProgram), text, theProgram, retval, mName)
+            Call callObjectMethod(topNestle(theProgram), Text, theProgram, retval, mName)
             Exit Sub
         End If
     End If
@@ -195,7 +195,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     If foundIt = -1 Then
         'Method doesn't exist!
         If Not (noMethodNotFound) Then
-            Call debugger("Error: Method not found!-- " & text)
+            Call debugger("Error: Method not found!-- " & Text)
         End If
         Exit Sub
     Else
@@ -209,7 +209,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
                
         'Get parameters from calling line
-        dataUse$ = GetBrackets(text$)    'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
         Dim running As Long
         For pList = 1 To number
@@ -226,15 +226,15 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
         ReDim quotes(0) As Long
         Dim commaNum As Long
         commaNum = -1
-        For pList = 1 To Len(text)
+        For pList = 1 To Len(Text)
             Dim mtpl As String
-            mtpl = Mid$(text, pList, 1)
+            mtpl = Mid$(Text, pList, 1)
             If ((mtpl = ",") Or (mtpl = "(")) Then
                 commaNum = commaNum + 1
                 ReDim Preserve quotes(commaNum)
                 Dim adv As Long
-                For adv = pList + 1 To Len(text)
-                    If (Mid$(text, adv, 1) <> " ") Then
+                For adv = pList + 1 To Len(Text)
+                    If (Mid$(Text, adv, 1) <> " ") Then
                         quotes(commaNum) = adv
                         Exit For
                     End If
@@ -261,7 +261,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
             Else
                 Dim rl As String
                 rl = Right$(lit, 1)
-                If ((Mid$(text, quotes(pList - 1), 1) <> (""""))) _
+                If ((Mid$(Text, quotes(pList - 1), 1) <> (""""))) _
                  And (rl <> "!") And (rl <> "$") Then
                     If (lit <> parameterList(pList)) Then
                         dUse = lit
