@@ -116,10 +116,6 @@ SOURCE=.\actkrt3.h
 SOURCE=.\StdAfx.h
 # End Source File
 # End Group
-# Begin Group "Resource Files"
-
-# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-# End Group
 # Begin Group "tkgfx"
 
 # PROP Default_Filter ""
@@ -175,11 +171,6 @@ SOURCE=.\tkgfx\Tkgfx.h
 SOURCE=.\tkgfx\tkpluglocalfns.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\tkgfx\Tkgfx.def
-# PROP Exclude_From_Build 1
-# End Source File
 # End Group
 # Begin Group "tkimage"
 
@@ -204,11 +195,6 @@ SOURCE=.\tkimage\FreeImage.h
 SOURCE=.\tkimage\tkimage.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\tkimage\Tkimage.def
-# PROP Exclude_From_Build 1
-# End Source File
 # Begin Source File
 
 SOURCE=.\tkimage\FreeImage.lib
@@ -257,11 +243,6 @@ SOURCE=.\tkzip\zipoperate.h
 SOURCE=.\tkzip\zlib.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\tkzip\Tkzip.def
-# PROP Exclude_From_Build 1
-# End Source File
 # Begin Source File
 
 SOURCE=.\tkzip\zlib.lib
@@ -386,11 +367,6 @@ SOURCE=.\tkrpgcode\calculator.h
 SOURCE=.\tkrpgcode\tkrpgcode.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\tkrpgcode\tkrpgcode.def
-# PROP Exclude_From_Build 1
-# End Source File
 # End Group
 # Begin Group "audiere"
 
