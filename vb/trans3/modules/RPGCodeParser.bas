@@ -22,14 +22,6 @@ Public Type parameters
 End Type
 
 '=========================================================================
-' Allow comparison and assignment
-'=========================================================================
-
-' Set this to true to apply the difference between = and ==
-' WILL KILL TK2 CODE!!
-#Const COMP_AND_ASSIGN_COEXIST = True
-
-'=========================================================================
 ' Commonly used operators
 '=========================================================================
 Private m_mathSigns(22) As String
@@ -382,13 +374,11 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
         ' Remove said sign from the text
         str = replace(str, signs(idx - 1), vbNullChar, , 1)
 
-#If Not (COMP_AND_ASSIGN_COEXIST) Then
-        If Not (didEvaluate) Then
+        If ((Not (didEvaluate)) And (Not (prg.strict))) Then
             If (signs(idx - 1) = "=") Then
                 signs(idx - 1) = "=="
             End If
         End If
-#End If
 
     Loop
 
@@ -545,15 +535,11 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
         Next idx
 
-#If Not (COMP_AND_ASSIGN_COEXIST) Then
-        If Not (didEvaluate) Then
+        If ((Not (didEvaluate)) And (Not (prg.strict))) Then
             evaluate = -(numVal(valueUb) <> 0)
         Else
             evaluate = numVal(valueUb)
         End If
-#Else
-        evaluate = numVal(valueUb)
-#End If
 
     Else
 
@@ -586,17 +572,11 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
         Next idx
 
-#If Not (COMP_AND_ASSIGN_COEXIST) Then
-        If Not (didEvaluate) Then
+        If ((Not (didEvaluate)) And (Not (prg.strict))) Then
             evaluate = -((CLng(strVal(valueUb))) <> 0)
         Else
             evaluate = CLng(strVal(valueUb))
         End If
-#Else
-
-        evaluate = CLng(strVal(valueUb))
-
-#End If
 
     End If
 

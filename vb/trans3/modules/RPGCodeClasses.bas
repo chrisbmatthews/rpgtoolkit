@@ -85,6 +85,7 @@ Public Type RPGCodeProgram
     looping As Boolean                      ' Is a multitask program looping?
     autoLocal As Boolean                    ' Force implicitly created variables to the local scope?
     classes As RPGCODE_CLASS_MAIN_DATA      ' Class stuff
+    strict As Boolean                       ' Is the program strict?
 End Type
 
 '=========================================================================
@@ -233,9 +234,9 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
         If (LeftB$(LCase$(prg.program(lineIdx)), 12) = "global") Then
 
             ' Define a var
-            Dim constParts() As String, constDelimiters(0) As String, ud() As String
+            Dim constParts() As String, constDelimiters(0) As String, uD() As String
             constDelimiters(0) = " "
-            constParts = multiSplit(prg.program(lineIdx), constDelimiters, ud, True, True)
+            constParts = multiSplit(prg.program(lineIdx), constDelimiters, uD, True, True)
 
             ' Check for correct number of parts
             If (UBound(constParts) = 2) Then

@@ -192,7 +192,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     Dim theLine As String           ' Line read from file
     Dim c(2) As String              ' Delimiter array
     Dim lines() As String           ' Array of lines
-    Dim ud() As String              ' Delimters used
+    Dim uD() As String              ' Delimters used
     Dim a As Long                   ' Loop control variables
     Dim buildLine As String         ' Whole line we're building
     Dim buildTemp As String         ' To add to the whole line
@@ -285,6 +285,14 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 ' Remove this line
                 theLine = vbNullString
 
+            ElseIf (LCase$(LeftB$(theLine, 14) = "#strict")) Then
+
+                ' Put strictness in effect
+                openProgram.strict = True
+
+                ' Remove this line
+                theLine = vbNullString
+
             End If
 
             ' Remove prefixed #
@@ -294,7 +302,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             If ((LeftB$(theLine, 2) <> "*") And (LeftB$(theLine, 2) <> "//")) Then
 
                 ' Split that sucker like it has NEVER been split before!
-                lines() = multiSplit(theLine, c, ud, True)
+                lines() = multiSplit(theLine, c, uD, True)
 
                 ' Now we're going to have some fun with the .program() array so
                 ' make sure it'll enlarge itself...
@@ -304,8 +312,8 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 For a = 0 To (UBound(lines) + 1)
 
                     If (a = UBound(lines) + 1) Then
-                        If (LenB(ud(UBound(lines))) <> 0) Then
-                            openProgram.program(p + a) = ud(UBound(lines))
+                        If (LenB(uD(UBound(lines))) <> 0) Then
+                            openProgram.program(p + a) = uD(UBound(lines))
                         End If
 
                     ElseIf (a = 0) Then
@@ -313,19 +321,19 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
                     Else
 
-                        Select Case ud(a - 1)
+                        Select Case uD(a - 1)
 
                             Case "{", "}"
-                                openProgram.program(p + a) = ud(a - 1)
+                                openProgram.program(p + a) = uD(a - 1)
                                 openProgram.program(p + a + 1) = lines(a)
                                 p = p + 1
 
                             Case "#"
                                 If Left$(lines(a), 1) = " " Then
-                                    openProgram.program(p + a) = ud(a - 1) & lines(a)
+                                    openProgram.program(p + a) = uD(a - 1) & lines(a)
                                 Else
                                     openProgram.program(p + a - 1) = _
-                                        openProgram.program(p + a - 1) & ud(a - 1) & lines(a)
+                                        openProgram.program(p + a - 1) & uD(a - 1) & lines(a)
                                 End If
 
                             Case Else
