@@ -120,11 +120,7 @@ Public Function Fight( _
     'Load the bottom bar thingy
     cnvParty = CBCreateCanvas(resX, 100)
     menuGraphic = CBGetGeneralString(GEN_FIGHTMENUGRAPHIC, 0, 0)
-
-    'Call CBCanvasLoadSizedImage(cnvParty, menuGraphic)
-
-    'MrB exclsuive:
-    Call CBCanvasLoadSizedImage(cnvParty, "mwin2.gif")
+    Call CBCanvasLoadSizedImage(cnvParty, menuGraphic)
 
     'Run the fight
     Fight = mainLoop()
@@ -302,11 +298,13 @@ Private Sub loadPlayerSprites()
 
             If theAnim <> "" Then
 
-                Dim anim As Long
-                anim = CBCreateAnimation(theAnim)
                 If b = 0 Then
+                    Dim anim As Long
+                    anim = CBCreateAnimation(theAnim)
                     Players(a).width = CBAnimationSizeX(anim)
                     Players(a).height = CBAnimationSizeY(anim)
+                    Players(a).restMaxFrame = CBAnimationMaxFrames(anim)
+                    Call CBDestroyAnimation(anim)
                 End If
                 Players(a).animations(b) = theAnim
 
@@ -315,10 +313,8 @@ Private Sub loadPlayerSprites()
         Next b
 
         Players(a).handle = CBGetPlayerString(PLAYER_NAME, 0, a)
-        Players(a).restMaxFrame = CBAnimationMaxFrames(anim)
         Players(a).isPlayer = True
         Players(a).idx = a
-        Call CBDestroyAnimation(anim)
 
     Next a
 
@@ -355,12 +351,14 @@ Private Sub loadEnemySprites()
 
             If theAnim <> "" Then
 
-                Dim anim As Long
                 Enemies(a).animations(b) = theAnim
-                anim = CBCreateAnimation(theAnim)
                 If b = 0 Then
+                    Dim anim As Long
+                    anim = CBCreateAnimation(theAnim)
                     Enemies(a).width = CBAnimationSizeX(anim)
                     Enemies(a).height = CBAnimationSizeY(anim)
+                    Enemies(a).restMaxFrame = CBAnimationMaxFrames(anim)
+                    Call CBDestroyAnimation(anim)
                 End If
 
             End If
@@ -368,9 +366,7 @@ Private Sub loadEnemySprites()
         Next b
 
         Enemies(a).handle = CBGetEnemyString(ENE_NAME, a)
-        Enemies(a).restMaxFrame = CBAnimationMaxFrames(anim)
         Enemies(a).idx = a
-        Call CBDestroyAnimation(anim)
     
     Next a
 
@@ -384,23 +380,21 @@ Private Sub positionEnemies()
 
     On Error Resume Next
 
-    Const FOR_MRB = 64 - 20
-
     Dim a As Long
     For a = 0 To UBound(Enemies)
         Select Case a
             Case 0
                 Enemies(a).x = 30
-                Enemies(a).y = 30 + FOR_MRB
+                Enemies(a).y = 30
             Case 1
                 Enemies(a).x = 30 + (Enemies(a - 1).width + 30)
-                Enemies(a).y = 30 + FOR_MRB
+                Enemies(a).y = 30
             Case 2
                 Enemies(a).x = 30
-                Enemies(a).y = 30 + (Enemies(a - 2).height + 30) + FOR_MRB
+                Enemies(a).y = 30 + (Enemies(a - 2).height + 30)
             Case 3
                 Enemies(a).x = 30 + (Enemies(a - 1).width + 30)
-                Enemies(a).y = 30 + (Enemies(a - 3).height + 30) + FOR_MRB
+                Enemies(a).y = 30 + (Enemies(a - 3).height + 30)
         End Select
     Next a
 
@@ -556,7 +550,7 @@ Private Sub renderParty(ByVal cnv As Long)
                                      cnv, _
                                      curX + 75 + 2, 11 * 4 + FONT_SIZE + 7, _
                                      curX + 75 + 2 + width, 11 * 4 + FONT_SIZE + 15 + 7, _
-                                     RGB(255, 204, 0)) 'MrB exclusive
+                                     RGB(255, 0, 0))
         End If
         curX = curX + PLAYER_WIDTH
     Next a
@@ -954,36 +948,15 @@ Private Function showDamage(ByVal hp As Long, ByVal mp As Long, ByRef target As 
 
     mp = Abs(mp)
 
-    Dim newX As Double, newY As Double
-
     If mp <> 0 Then
-
-        'MrB exclusive:
-        If (target.isPlayer) Then
-
-            Call CBCanvasDrawText( _
-                                     work, CStr(mp), _
-                                     "Comic Sans MS", _
-                                     25, (target.x - 40 + 15) / 25 + 1, _
-                                     (target.y + 20 - 5) / 25 + 1, _
-                                     RGB(0, 255, 255), _
-                                     0, 0, 0, 0)
-
-        Else
-
-            Call enemyCenter(target, newX, newY)
-            newX = newX + 35
-            newY = newY + 35
-
-            Call CBCanvasDrawText( _
-                                     work, CStr(mp), _
-                                     "Comic Sans MS", _
-                                     25, newX / 25 + 1, _
-                                     newY / 25 + 1, _
-                                     RGB(0, 255, 255), _
-                                     0, 0, 0, 0)
-
-        End If
+    
+        Call CBCanvasDrawText( _
+                                 work, CStr(mp), _
+                                 "Comic Sans MS", _
+                                 25, target.x / 25 + 1, _
+                                 target.y / 25 + 1, _
+                                 RGB(0, 255, 255), _
+                                 0, 0, 0, 0)
 
         Call CBDrawCanvas(work, 0, 0)
         Call CBRefreshScreen
@@ -995,35 +968,7 @@ Private Function showDamage(ByVal hp As Long, ByVal mp As Long, ByRef target As 
 
     If hp > 0 Then
 
-        'MrB exclusive:
-        
-        If (Not target.isPlayer) Then
-
-            Call enemyCenter(target, newX, newY)
-            newX = newX + 35
-            newY = newY + 35
-
-            Call CBCanvasDrawText( _
-                                     work, CStr(hp), _
-                                     "Comic Sans MS", _
-                                     25, newX / 25 + 1, _
-                                     newY / 25 + 1, _
-                                     RGB(255, 255, 255), _
-                                     0, 0, 0, 0)
-                                     
-        Else
-
-            Call CBCanvasDrawText( _
-                                     work, CStr(hp), _
-                                     "Comic Sans MS", _
-                                     25, (target.x - 40 + 15) / 25 + 1, _
-                                     (target.y + 20 - 5) / 25 + 1, _
-                                     RGB(255, 255, 255), _
-                                     0, 0, 0, 0)
-
-        End If
-
-        'Call CBCanvasDrawText( _
+        Call CBCanvasDrawText( _
                                  work, CStr(hp), _
                                  "Comic Sans MS", _
                                  25, target.x / 25 + 1, _
@@ -1316,11 +1261,6 @@ Private Sub mainMenuScanKeys(ByRef player As Fighter)
 
 End Sub
 
-Private Sub enemyCenter(ByRef ene As Fighter, ByRef x As Double, ByRef y As Double)
-    x = ((ene.x + ene.width) + (ene.x)) / 2
-    y = ((ene.y + ene.height) + (ene.y)) / 2
-End Sub
-
 Private Sub characterSelect( _
                                ByRef chosenParty As Long, _
                                ByRef chosenFighter As Long, _
@@ -1374,16 +1314,10 @@ Private Sub characterSelect( _
         If target.isPlayer Then cursorY = cursorY + 10
 
         Call CBCanvas2CanvasBlt(oldCnv, cnv, 0, 0)
-        If (target.isPlayer) Then
-            Call CBCanvasDrawHand( _
-                                     cnv, _
-                                     target.x + 10, _
-                                     cursorY)
-        Else
-            Dim newX As Double, newY As Double
-            Call enemyCenter(target, newX, newY)
-            Call CBCanvasDrawHand(cnv, newX, newY)
-        End If
+        Call CBCanvasDrawHand( _
+                                 cnv, _
+                                 target.x + 10, _
+                                 cursorY)
 
         Call CBDrawCanvas(cnv, 0, 0)
         Call CBRefreshScreen
