@@ -1235,27 +1235,39 @@ Private Function isItemIdle(ByVal num As Long) As Boolean
     Static timeStamps() As Double       'Time stamps of idleness
     ReDim Preserve timeStamps(maxItem)  'Make one spot for each item
 
-    If (Left(UCase(itmPos(num).frame), 5) = "STAND") Then
-        'Item is already marked as idle
-        isItemIdle = True
-    End If
+    Dim skipSecondCheck As Boolean      'Skip the second check?
 
-    If ((Timer() - timeStamps(num)) >= itemMem(num).idleTime) Then
-        'It's been long enough-- now he's idle
-        With itmPos(num)
-            Select Case UCase(.stance)
-                Case "WALK_N": .stance = "STAND_N"
-                Case "WALK_S": .stance = "STAND_S"
-                Case "WALK_E": .stance = "STAND_E"
-                Case "WALK_W": .stance = "STAND_W"
-                Case "WALK_NW": .stance = "STAND_NW"
-                Case "WALK_NE": .stance = "STAND_NE"
-                Case "WALK_SW": .stance = "STAND_SW"
-                Case "WALK_SE": .stance = "STAND_SE"
-            End Select
-        End With
-        isItemIdle = True
-    End If
+    With itmPos(num)
+
+        If (Left(UCase(.stance), 5) = "STAND") Then
+            'Skip the second if block
+            skipSecondCheck = True
+            If ((Timer() - timeStamps(num) >= itemMem(num).speed)) Then
+                'Increment the frame
+                .frame = .frame + 1
+                'Flag we're idle
+                isItemIdle = True
+            End If
+        End If
+
+        If (Not skipSecondCheck) Then
+            If ((Timer() - timeStamps(num)) >= itemMem(num).idleTime) Then
+                'It's been long enough-- now he's idle
+                Select Case UCase(.stance)
+                    Case "WALK_N": .stance = "STAND_N"
+                    Case "WALK_S": .stance = "STAND_S"
+                    Case "WALK_E": .stance = "STAND_E"
+                    Case "WALK_W": .stance = "STAND_W"
+                    Case "WALK_NW": .stance = "STAND_NW"
+                    Case "WALK_NE": .stance = "STAND_NE"
+                    Case "WALK_SW": .stance = "STAND_SW"
+                    Case "WALK_SE": .stance = "STAND_SE"
+                End Select
+                isItemIdle = True
+            End If
+        End If
+        
+    End With
 
     If (isItemIdle) Then
         'Item was idle, update the time stamp
@@ -1272,28 +1284,39 @@ Private Function isPlayerIdle(ByVal num As Long) As Boolean
     On Error Resume Next
 
     Static timeStamps(4) As Double   'Time stamps of idleness
+    Dim skipSecondCheck As Boolean   'Skip the second check?
 
-    If (Left(UCase(pPos(num).frame), 5) = "STAND") Then
-        'Player is already marked as idle
-        isPlayerIdle = True
-    End If
+    With pPos(num)
 
-    If ((Timer() - timeStamps(num)) >= playerMem(num).idleTime) Then
-        'It's been long enough-- now he's idle
-        With pPos(num)
-            Select Case UCase(.stance)
-                Case "WALK_N": .stance = "STAND_N"
-                Case "WALK_S": .stance = "STAND_S"
-                Case "WALK_E": .stance = "STAND_E"
-                Case "WALK_W": .stance = "STAND_W"
-                Case "WALK_NW": .stance = "STAND_NW"
-                Case "WALK_NE": .stance = "STAND_NE"
-                Case "WALK_SW": .stance = "STAND_SW"
-                Case "WALK_SE": .stance = "STAND_SE"
-            End Select
-        End With
-        isPlayerIdle = True
-    End If
+        If (Left(UCase(.stance), 5) = "STAND") Then
+            'Skip the second if block
+            skipSecondCheck = True
+            If ((Timer() - timeStamps(num) >= playerMem(num).speed)) Then
+                'Increment the frame
+                .frame = .frame + 1
+                'Flag we're idle
+                isPlayerIdle = True
+            End If
+        End If
+
+        If (Not skipSecondCheck) Then
+            If ((Timer() - timeStamps(num)) >= playerMem(num).idleTime) Then
+                'It's been long enough-- now he's idle
+                Select Case UCase(.stance)
+                    Case "WALK_N": .stance = "STAND_N"
+                    Case "WALK_S": .stance = "STAND_S"
+                    Case "WALK_E": .stance = "STAND_E"
+                    Case "WALK_W": .stance = "STAND_W"
+                    Case "WALK_NW": .stance = "STAND_NW"
+                    Case "WALK_NE": .stance = "STAND_NE"
+                    Case "WALK_SW": .stance = "STAND_SW"
+                    Case "WALK_SE": .stance = "STAND_SE"
+                End Select
+                isPlayerIdle = True
+            End If
+        End If
+        
+    End With
 
     If (isPlayerIdle) Then
         'Player was idle, update the time stamp
