@@ -138,12 +138,15 @@ Public Function checkAbove(ByVal x As Long, ByVal y As Long, ByVal layer As Long
     Next lay
 End Function
 
-Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PENDING_MOVEMENT, _
-                                  ByVal currentPlayer As Long, ByVal currentItem As Long, _
+Private Function checkObstruction(ByRef pos As PLAYER_POSITION, _
+                                  ByRef pend As PENDING_MOVEMENT, _
+                                  ByVal currentPlayer As Long, _
+                                  ByVal currentItem As Long, _
+                                  ByRef staticTileType As Byte, _
                                   Optional ByVal startingMove As Boolean = False) As Long
 '============================================================================================
 '-Checks the current location and target co-ordinates against all player and item locations.
-'If the subject comes within a certain range of the object, the a SOLID tiletype is returned.
+'If the subject comes within a certain range of the object, the SOLID tiletype is returned.
 '-This is to be called every 1/4 tile (or less):
 '       - every frame for tile mvt
 '       - only at start for pixel mvt (since distances are so small).
@@ -153,15 +156,13 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
 '-Pixel mvt:This is only called at the start of a move (if .loopFrame = 0), and all items
 '           (both moving / stationary) are considered.
 '============================================================================================
-'Last edited for 3.0.5 by Delano : individual speed movement.
+'Last edited for 3.0.6 by Delano : tile mvt diagonal fix.
 'Called by EffectiveTileType, MoveItems, MovePlayers, PushItem, PushPlayer
 
     On Error Resume Next
 
     Dim i As Long, coordMatch As Boolean
     Dim variableType As RPGC_DT, paras As parameters
-
-    'Altered for pixel movement: test location.
 
     'Transform pixel isometrics.
     Dim posX As Double, posY As Double, xTarg As Double, yTarg As Double
@@ -198,9 +199,15 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     Abs(posX - tPosX) < 1 And _
                     pPos(i).l = pos.l Then
 
-                    'Call traceString("ChkObs:P:T:1")
-
                     checkObstruction = SOLID
+                    
+                    If (Not startingMove) And pendingPlayerMovement(i).direction = MV_IDLE Then
+                        'Player had started moving but this item is idle.
+                        'Change the staticTileType to force the loop through.
+                        staticTileType = SOLID
+                    End If
+
+                    'Call traceString("ChkObs:P:T:1")
                     Exit Function
 
                 End If
@@ -215,7 +222,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     pPos(i).l = pos.l And _
                     startingMove Then
 
-                    'Call traceString("ChkObs:P:T:2")
+                    Call traceString("ChkObs:P:T:2")
 
                     checkObstruction = SOLID
                     Exit Function
@@ -295,7 +302,14 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     itmPos(i).l = pos.l Then
 
                     coordMatch = Not (startingMove And pendingItemMovement(i).direction <> MV_IDLE)
-                 
+                                           
+                    If (Not startingMove) And pendingItemMovement(i).direction = MV_IDLE Then
+                        'Player had started moving but this item is idle.
+                        'Change the staticTileType to force the loop through.
+                        staticTileType = SOLID
+                    End If
+                        
+                    'Call traceString("ChkObs:I:T:1")
                 End If
 
                 'Only test targets if we're beginning movement.
@@ -308,6 +322,8 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     itmPos(i).l = pos.l And _
                     startingMove Then
                     coordMatch = True
+                    
+                    'Call traceString("ChkObs:I:T:2")
 
                 End If
 
@@ -624,7 +640,7 @@ Private Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal
         Exit Function
     End If
     
-    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
+    Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT, testStat As Byte
     testPos.x = x
     testPos.y = y
     testPos.l = l
@@ -632,7 +648,7 @@ Private Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal
     testPend.yTarg = y
        
     
-    If checkObstruction(testPos, testPend, -1, -1) = SOLID Then
+    If checkObstruction(testPos, testPend, -1, -1, testStat) = SOLID Then
         'Call programtest(testx, testy, testlayer, keycode, facing)
         typetile = SOLID
         'Exit Sub
@@ -1323,6 +1339,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                                         pendingItemMovement(itmIdx), _
                                         -1, _
                                         itmIdx, _
+                                        staticTileType(itmIdx), _
                                         True) _
                                         = SOLID Then
                                         
@@ -1397,7 +1414,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
 
 End Function
 
-Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) As Boolean: On Error Resume Next
+Private Function pushItem(ByVal itemNum As Long, ByRef staticTileType As Byte) As Boolean: On Error Resume Next
 '==========================================================
 'Pushes a single item a fraction of a total move.
 'Called by moveItems only.
@@ -1445,8 +1462,8 @@ Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) A
 
     'Now, check the new co-ords for blocking objects.
     If _
-        staticTileType = SOLID Or _
-        checkObstruction(testPos, testPend, -1, itemNum) = SOLID Then
+        checkObstruction(testPos, testPend, -1, itemNum, staticTileType) = SOLID Or _
+        staticTileType = SOLID Then
         'The new co-ords are blocked, or the target is permanently blocked.
         'All other tiletypes are evaluated to either NORMAL or UNDER, so
         'we don't need to any other checks.
@@ -1512,12 +1529,17 @@ Public Function movePlayers(Optional ByVal singlePlayer As Long = -1) As Boolean
                                         pendingPlayerMovement(playerIdx), _
                                         playerIdx, _
                                         -1, _
+                                        staticTileType(playerIdx), _
                                         True) _
                                         = SOLID) Then
 
                         staticTileType(playerIdx) = SOLID
 
                     End If
+                    
+Call traceString(" ")
+Call traceString("movePlayers: .dir=" & pendingPlayerMovement(playerIdx).direction & " static=" & staticTileType(playerIdx))
+                    
 
                     ' We can start movement!
                     pPos(playerIdx).loopFrame = 0
@@ -1546,7 +1568,8 @@ Call traceString("movePlayers: .loopSpeed = " & .loopSpeed & " gAvgTime = " & Ro
 
                 End If ' .direction <> MV_IDLE
 
-            End If ' .loopFrame = 0
+            End If ' .loopFrame < 0
+                    
 
             If (pendingPlayerMovement(playerIdx).direction <> MV_IDLE) Then
 
@@ -1608,7 +1631,7 @@ Call traceString("movePlayers: .loopSpeed = " & .loopSpeed & " gAvgTime = " & Ro
 
 End Function
 
-Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As Boolean
+Private Function pushPlayer(ByVal pNum As Long, ByRef staticTileType As Byte) As Boolean
 '=======================================================================================
 'Single push player sub. Tests the fractional position and copies to the player.
 'position if movement is possible.
@@ -1659,7 +1682,7 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
     'Now, check the new co-ords for blocking objects.
     If _
         staticTileType = SOLID Or _
-        checkObstruction(testPos, testPend, pNum, -1) = SOLID Then
+        checkObstruction(testPos, testPend, pNum, -1, staticTileType) = SOLID Then
         'The new co-ords are blocked, or the target is permanently blocked.
         'All other tiletypes are evaluated to either NORMAL or UNDER, so
         'we don't need to do any other checks.
