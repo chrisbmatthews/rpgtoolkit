@@ -317,7 +317,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         oldErrorHandler = errorBranch
 
         'Nullify error handler
-        errorBranch = ""
+        'errorBranch = ""
 
         Call runBlock(1, theProgram)
 
