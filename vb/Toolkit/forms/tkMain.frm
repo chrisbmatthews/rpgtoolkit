@@ -1,12 +1,12 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
    ClientHeight    =   8190
    ClientLeft      =   165
-   ClientTop       =   735
+   ClientTop       =   855
    ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
@@ -909,8 +909,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":19C2A
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2469,13 +2469,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "14/09/2003"
+            TextSave        =   "16/09/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   5054
-            TextSave        =   "7:20 PM"
+            Object.Width           =   5027
+            TextSave        =   "00:04"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3223,26 +3223,22 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X 
 'Added code for selection of isometric tiles.
 'Fixed problem where higher tile numbers could be selected.
 
-    Dim iMetric As Integer, tileNumber As Integer
+    Dim tileNumber As Integer
     Dim tilesWide As Integer, tilesHigh As Integer, tileX As Integer, tileY As Integer
     
-    If configfile.lastTileset$ = "" Then Exit Sub
-    
-    'Added:If the current tilset (configfile.lastTileset$) is isometric.
-    'Same return as for getTileInfo on a .iso.
-    If UCase$(GetExt(configfile.lastTileset$)) = "ISO" Then iMetric = 2
+    If configfile.lastTileset = "" Then Exit Sub
     
     'Determine the tile that has been clicked on by considering the
     'size of the form, the position of the scroller, and the type of
     'tileset.
     
-    If iMetric = 0 Then
-        'Not isometric.
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tileX = Int(X / 32)                                                        'x-tile clicked.
+    If UCase$(GetExt(configfile.lastTileset)) = "ISO" Then
+        'Isometric.
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)   'width of window.
+        tileX = Int(X / 64)                                                        'x-tile clicked.
     Else
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
-        tileX = Int(X / 64)
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)
+        tileX = Int(X / 32)
     End If
     
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
@@ -3252,12 +3248,12 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X 
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
     tileNumber = tileNumber + (tilesetScroller.value * tilesWide)       'Add the rows that have been scrolled.
     
-    'Fix:Check we've not selected a tile that isn't in the set.
+    'Check we've not selected a tile that isn't in the set.
     If tileNumber > tileset.tilesInSet Then Exit Sub
     
-    setFilename$ = tstFile$ + CStr(tileNumber)
+    setFilename = configfile.lastTileset & CStr(tileNumber)
     'inform the system that the set filename has changed. For loading into whichever editor is active.
-    Call activeForm.changeSelectedTile(setFilename$)
+    Call activeForm.changeSelectedTile(setFilename)
 
 End Sub
 
@@ -4179,8 +4175,7 @@ Private Sub tilesetScroller_Change(): On Error Resume Next
         If tstnum = 0 Then tstnum = 1
         
         'Added: Check the current tileset file.
-        iMetric = 0
-        If UCase$(GetExt(tstFile$)) = "ISO" Then iMetric = 2
+        If UCase$(GetExt(configfile.lastTileset)) = "ISO" Then iMetric = 2
         
         Call GFXInitScreen(640, 480)
         
