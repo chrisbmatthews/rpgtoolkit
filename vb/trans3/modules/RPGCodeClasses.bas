@@ -1666,6 +1666,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Length = Len(Text)
 
     ' Loop over each charater, forwards
+    spacesOK = True
     For a = (begin + 2) To Length
         ' Get a character
         char = Mid$(Text, a, 1)
@@ -1673,13 +1674,17 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
             Case "!", "$", " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "%", "`", "|", "&", "~"
                 ' Could be a public var
-                If (depth = 0 And (Not (ignore)) And (arrayDepth = 0)) Then
-                    Select Case char
-                        Case "!", "$": lngEnd = a
-                        Case Else: lngEnd = a - 1
-                    End Select
-                    var = True
-                    Exit For
+                If Not ((spacesOK) And (char = " ")) Then
+                    If (depth = 0 And (Not (ignore)) And (arrayDepth = 0)) Then
+                        Select Case char
+                            Case "!", "$": lngEnd = a
+                            Case Else: lngEnd = a - 1
+                        End Select
+                        var = True
+                        Exit For
+                    End If
+                Else
+                    spacesOK = False
                 End If
 
             Case "("
