@@ -128,6 +128,8 @@ Private Const WM_RBUTTONDOWN = &H204
 Private Const WM_RBUTTONUP = &H205
 Private Const WM_RBUTTONDBLCLK = &H206
 Private Const SC_CLOSE = &HF060&
+Private Const WM_ACTIVATE = &H6
+Private Const WA_INACTIVE = 0
 
 ' Hittest
 Private Const HTNOWHERE = 0
@@ -1345,7 +1347,7 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
          End Select
          ForceRefresh
       End If
-      
+
    Case WM_LBUTTONUP, WM_RBUTTONUP
       ISubclass_WindowProc = CallOldWindowProc(hwnd, iMsg, wParam, lParam)
       ReleaseCapture
@@ -1353,6 +1355,24 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
       
       If (m_iDraggingTab > 0) Then
          i = hitTestTab()
+
+        ' Check for double click
+        Static lngLastButton As Long, lngLastTime As Double
+        If (i = lngLastButton) Then
+            If ((timer() - lngLastTime) < 0.3) Then
+                Dim hWndChildInQuestion As Long, frm As Form
+                hWndChildInQuestion = m_hWndChild(lngLastButton)
+                For Each frm In Forms
+                    If (frm.hwnd = hWndChildInQuestion) Then
+                        frm.WindowState = IIf(frm.WindowState <> 0, 0, 2)
+                        Exit For
+                    End If
+                Next frm
+            End If
+        End If
+        lngLastButton = i
+        lngLastTime = timer()
+
          'If (i <> m_iDraggingTab) Then
             ' We've dragged somewhere else:
             'Debug.Print "Drag:", m_iDraggingTab, i
@@ -1416,6 +1436,7 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
          
          lMsg = (lParam And &H7FFF0000) \ &H10000 ' hiword = mouse message
          Select Case lMsg
+
          Case WM_LBUTTONDOWN
             ' in drag
             i = hitTestTab()
