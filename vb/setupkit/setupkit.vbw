@@ -6,4 +6,6 @@ CommonBinaryIO = 110, 145, 793, 669, C
 CommonPaths = 176, 232, 859, 756, C
 CommonDialogs = 132, 174, 815, 698, C
 CommonVB6Compat = 0, 0, 683, 524, C
-statusbar = 88, 116, 771, 640, C, 154, 203, 837, 727, C
+CommonTKPlugin = 198, 261, 881, 785, 
+clsVbPlugin = 0, 0, 0, 0, C
+statusbar = 0, 0, 0, 0, C, 66, 87, 749, 611, C
