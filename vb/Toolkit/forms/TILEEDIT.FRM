@@ -1733,9 +1733,11 @@ ErrorHandler:
 End Sub
 
 '========================================================================
-' Opens the file
+' Opens the file. Called by TkMainForm.OpenFile only.
+' If we have .tst/.iso, we have received the tile number also (e.g. /path/default.tst123).
+' Path is passed also.
 '========================================================================
-Public Sub openFile(ByVal file As String): On Error Resume Next
+Public Sub openFile(ByVal tileName As String): On Error Resume Next
 
     Set activeTile = Me
 
@@ -1746,48 +1748,29 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     Call ChDir(currentDir)
     ignoreDeactivate = True
     
-    If tag <> 1 Then Call checkSave      'Check if a tile is already open and needs saving.
+    'If tag <> 1 Then Call checkSave      'Check if a tile is already open and needs saving.
     openTileEditorDocs(indice).tileNeedUpdate = False
     
-    Dim antiPath As String
-    filename(1) = file
-    antiPath = absNoPath(file)
+    Dim antiPath As String, file As String
+    'If we have a .gph, will pass through unaffected.
+    file = tilesetFilename(tileName)
+    antiPath = RemovePath(file)
     
-    Call FileCopy(filename(1), projectPath & tilePath & antiPath)
+    Call FileCopy(file, projectPath & tilePath & antiPath)
 
     Dim whichType As String
-    whichType = GetExt(filename(1))
+    whichType = UCase$(GetExt(file))
     
-    If UCase(whichType) = "ISO" Then
+    If whichType = "ISO" Then
         'Set the mode to isometric.
         activeTile.isoChange (True)
     Else
         activeTile.isoChange (False)
     End If
     
-    If UCase(whichType) = "TST" Or UCase(whichType) = "ISO" Then
-        'Yipes! we've selected an archive!
-    
-        tstnum = 0
-        
-        configfile.lastTileset = antiPath
-        tstFile = antiPath
+    If whichType = "TST" Or whichType = "ISO" Then
 
-        Call Hide
-        Call redrawAllTiles
-        Call tilesetForm.Show(vbModal)             'Show the tileset browser.
-        Call Show
-        Set activeTile = Me
-        DoEvents
-
-        'setFilename created in tilesetform. Contains the tilenumber.
-        If setFilename = "" Then
-            useLockIndice = False
-            Call redrawAllTiles
-            Exit Sub
-        End If
-
-        Call openFromTileSet(projectPath & tilePath & tilesetFilename(setFilename), getTileNum(setFilename))
+        Call openFromTileSet(projectPath & tilePath & antiPath, getTileNum(tileName))
 
         If detail = 2 Or detail = 4 Or detail = 6 Then
             'only 32x32 tiles allowed
@@ -1797,7 +1780,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         
         'Now we need to rearrange the pixels in the tilemem from 32x32 to 62x32
         
-        If UCase(whichType$) = "ISO" Then
+        If whichType = "ISO" Then
             Dim xCount As Byte, yCount As Byte, x As Integer, y As Integer
             xCount = 1: yCount = 1
         
@@ -1830,7 +1813,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
                     End If
                 Next yy
             Next xx
-        End If '(whichtype$ = "ISO")
+        End If '(whichtype = "ISO")
         
         Call highRedraw
         

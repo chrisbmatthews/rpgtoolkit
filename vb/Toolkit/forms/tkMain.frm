@@ -2562,13 +2562,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "12/19/2004"
+            TextSave        =   "20/12/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "5:18 PM"
+            TextSave        =   "12:33"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3071,11 +3071,31 @@ Public Sub openFile(ByVal fName As String)
     
     Select Case ex
 
-        Case "GPH", "TST", "ISO"
+        Case "GPH"
             Set frm = New tileedit
             Call frm.Show
             Set activeTile = frm
             Call activeTile.openFile(fName)
+            
+        Case "TST", "ISO"
+        
+            'Information for the tileset browser.
+            tstnum = 0
+            tstFile = RemovePath(fName)
+            configfile.lastTileset = tstFile
+            
+            Call FileCopy(fName, projectPath & tilePath & tstFile)
+            
+            'Show the tileset browser.
+            Call tilesetForm.Show(vbModal)
+            
+            'Load only if a tile has been selected.
+            If setFilename <> vbNullString Then
+                Set frm = New tileedit
+                Call frm.Show
+                Set activeTile = frm
+                Call activeTile.openFile(projectPath & tilePath & setFilename)
+            End If
 
         Case "BRD"
             Set frm = New boardedit
@@ -4223,10 +4243,11 @@ Private Sub ToolsTopBar_mouseDown(Button As Integer, Shift As Integer, x As Sing
 End Sub
 
 Private Sub TreeView1_DblClick(): On Error Resume Next
-    If fileExists(projectPath$ + TreeView1.SelectedItem.fullPath) Then
-        Call tkMainForm.openFile(projectPath$ + TreeView1.SelectedItem.fullPath)
+    If fileExists(projectPath & TreeView1.SelectedItem.fullPath) Then
+        popButton(0).value = 0
+        'Call rightbar.SetFocus
+        Call tkMainForm.openFile(projectPath & TreeView1.SelectedItem.fullPath)
     End If
-    Call rightbar.SetFocus
     ignoreFocus = False
 End Sub
 
