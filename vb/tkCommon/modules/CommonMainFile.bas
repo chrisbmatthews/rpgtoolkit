@@ -16,6 +16,9 @@ Option Explicit
 '=========================================================================
 Public Const MAX_GAMESPEED = 4        'highest gamespeed settings
 
+'=========================================================================
+' Public variables
+'=========================================================================
 Public mainFile As String             'main filename (redundant?)
 Public mainNeedUpdate As Boolean      'main file needs update?
 Public loadedMainFile As String       'main file that is loaded
