@@ -93,7 +93,7 @@ Public Function wndProc( _
             Dim ps As PAINTSTRUCT
             Call BeginPaint(hwnd, ps)
             If (Not runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
-                Call renderNow
+                Call renderNow(-1, True)
             ElseIf (runningProgram) And (Not fightInProgress) And (Not bInMenu) Then
                 Call renderRPGCodeScreen
             End If
