@@ -311,7 +311,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 inStruct = False
             End If
 
-        ElseIf (inClass And (scope <> "") And (prg.program(lineIdx) <> "") And (Right(prg.program(lineIdx), 1) <> ":")) Then
+        ElseIf (inClass And (scope <> "") And (prg.program(lineIdx) <> "") And (Right(prg.program(lineIdx), 1) <> ":") And (depth = 1)) Then
             If (InStr(1, prg.program(lineIdx), "(")) Then
                 ' Found a method
                 If (Not inStruct) Then
@@ -358,7 +358,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
         End If
 
-        If (inClass) Then
+        If ((inClass) And (depth = 1)) Then
 
             Select Case LCase(Trim(prg.program(lineIdx)))
 
