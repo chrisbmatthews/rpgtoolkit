@@ -1338,6 +1338,8 @@ Private Sub characterSelect( _
                 ElseIf pos = 1 Then
                     If CBGetFighterHP(ENEMY_PARTY, 0) > 0 Then
                         pos = 0
+                    ElseIf CBGetFighterHP(ENEMY_PARTY, 2) > 0 Then
+                        pos = 2
                     End If
                 ElseIf pos = 3 Then
                     If CBGetFighterHP(ENEMY_PARTY, 2) > 0 Then
