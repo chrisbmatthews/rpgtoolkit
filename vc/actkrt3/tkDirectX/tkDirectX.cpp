@@ -25,7 +25,7 @@ BOOL APIENTRY DXInitGfxMode(
 	CONST BOOL nFullScreen
 		)
 {
-	return InitGraphicsMode(HWND(hostHwnd), nScreenX, nScreenY, bool(nUseDirectX), nColorDepth, bool(nFullScreen));
+	return InitGraphicsMode(HWND(hostHwnd), nScreenX, nScreenY, nUseDirectX, nColorDepth, nFullScreen);
 }
 
 //------------------------------------------------------------------------
@@ -145,7 +145,7 @@ BOOL APIENTRY DXDrawText(
 	CONST BOOL outlined
 		)
 {
-	return DrawText(x, y, strText, strTypeFace, size, clr, bool(bold), bool(italics), bool(underline), bool(centred), bool(outlined));
+	return DrawText(x, y, strText, strTypeFace, size, clr, bold, italics, underline, centred, outlined);
 }
 
 //------------------------------------------------------------------------

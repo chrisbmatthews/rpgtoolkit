@@ -31,7 +31,7 @@ INT APIENTRY CNVCreateCanvasHost(
 
     // Create a windows class
     CONST WNDCLASSEX wnd = {
-		sizeof(wnd),
+		sizeof(WNDCLASSEX),
 		CS_OWNDC,
 		DefWindowProc,
 		NULL,
@@ -161,7 +161,7 @@ BOOL APIENTRY CNVDestroy(
 {
 
 	// Cast to a CGDICanvas pointer
-	CGDICanvas *const pCnv = reinterpret_cast<CGDICanvas *>(cnv);
+	CGDICanvas *CONST pCnv = reinterpret_cast<CGDICanvas *>(cnv);
 
 	// Remove the canvas from the list
 	m_canvases.remove(pCnv);
@@ -308,7 +308,7 @@ BOOL APIENTRY CNVExists(
 	std::list<CGDICanvas *>::iterator itr = m_canvases.begin();
 
 	// Obtain a pointer to the canvas
-	const CGDICanvas *pCnv = reinterpret_cast<CGDICanvas *>(cnv);
+	CONST CGDICanvas *pCnv = reinterpret_cast<CGDICanvas *>(cnv);
 
 	// Iterate over the canvas list
 	for (; itr != m_canvases.end(); itr++)

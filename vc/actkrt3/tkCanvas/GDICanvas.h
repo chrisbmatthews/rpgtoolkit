@@ -49,7 +49,9 @@ struct COLOR24
 #if !defined(DOUBLE)
 typedef double DOUBLE;
 #endif
+#if !defined(STATIC)
 #define STATIC static
+#endif
 
 //--------------------------------------------------------------------------
 // Definition of the CGDICanvas class
