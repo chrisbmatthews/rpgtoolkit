@@ -83,7 +83,7 @@ Public Function GetMethodName(ByVal Text As String, ByRef thePrg As RPGCodeProgr
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -412,7 +412,7 @@ Public Function Evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 

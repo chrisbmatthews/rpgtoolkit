@@ -346,7 +346,7 @@ Sub animDelay(ByVal sec As Double)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -409,7 +409,7 @@ Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As Long, 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -516,7 +516,7 @@ Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, ByVal x 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -567,7 +567,7 @@ Public Function animGetMaxFrame(ByRef theAnim As TKAnimation) As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 

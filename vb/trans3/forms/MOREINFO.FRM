@@ -21,8 +21,9 @@ Begin VB.Form moreinfo
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   2130
-   ScaleWidth      =   7650
+   ScaleHeight     =   142
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   510
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1909"
    Begin VB.CommandButton Command1 

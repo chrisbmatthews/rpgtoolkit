@@ -32,8 +32,8 @@ Global Const DSTINVERT = &H550009       ' (DWORD) dest = (NOT dest)
 Global Const BLACKNESS = &H42&  ' (DWORD) dest = BLACK
 Global Const WHITENESS = &HFF0062       ' (DWORD) dest = WHITE
 
-Declare Function BitBlt Lib "gdi32" (ByVal hDestDC&, ByVal x&, ByVal y&, ByVal nWidth&, ByVal nHeight&, ByVal hSrcDC&, ByVal xsrc&, ByVal ysrc&, ByVal dwrop&) As Long
-Declare Function SetPixelV& Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long)
+Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal dwrop As Long) As Long
+Declare Function SetPixelV Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
 Public Declare Function GetPixel Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
 Public Declare Function SetBkColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
 Public Declare Function FillRgn Lib "gdi32" (ByVal hdc As Long, ByVal hRgn As Long, ByVal hBrush As Long) As Long
@@ -82,7 +82,7 @@ Public Declare Function FrameRgn Lib "gdi32" (ByVal hdc As Long, ByVal hRgn As L
 Public Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
 Public Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hwndParent&, ByVal hWndChildAfter&, ByVal lpClassName$, ByVal lpWindowName$) As Long
 
-Public Sub VBHdcFillRect(ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
+Public Sub vbHdcFillRect(ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     On Error Resume Next
     Dim pen As Long, l As Long, brush As Long, m As Long
     pen = CreatePen(0, 1, crColor)
@@ -97,6 +97,29 @@ Public Sub VBHdcFillRect(ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, 
     r.Top = y1
     Call FillRect(hdc, r, brush)
     
+    Call SelectObject(hdc, m)
+    Call SelectObject(hdc, l)
+    Call DeleteObject(brush)
+    Call DeleteObject(pen)
+End Sub
+
+'=========================================================================
+' Fill a box on an HDC
+'=========================================================================
+Public Sub hdcFillBox(ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
+    Dim pen As Long, l As Long, brush As Long, m As Long
+    pen = CreatePen(0, 1, crColor)
+    l = SelectObject(hdc, pen)
+    brush = CreateSolidBrush(crColor)
+    m = SelectObject(hdc, brush)
+    Dim theRegion As RECT
+    With theRegion
+        .Bottom = y2 + 1
+        .Right = x2 + 1
+        .Left = x1
+        .Top = y1
+    End With
+    Call FillRect(hdc, theRegion, brush)
     Call SelectObject(hdc, m)
     Call SelectObject(hdc, l)
     Call DeleteObject(brush)

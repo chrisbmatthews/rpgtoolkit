@@ -48,6 +48,7 @@ Begin VB.Form endform
    Begin VB.CommandButton Command1 
       Appearance      =   0  'Flat
       Caption         =   "OK"
+      Default         =   -1  'True
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25

@@ -5,8 +5,14 @@ Attribute VB_Name = "CommonSpecialMove"
 'Read LICENSE.txt for licensing info
 '=========================================================================
 
+'========================================================================='
+' RPGToolkit special move file format (*.spc)
 '=========================================================================
-' Procedures for the special move file type
+
+'=========================================================================
+'EDITED [KSNiloc] [Augest 31, 2004]
+'----------------------------------
+' + Improvement: openSpecialMove --> function
 '=========================================================================
 
 Option Explicit
@@ -37,11 +43,13 @@ End Type
 '=========================================================================
 ' Open a special move
 '=========================================================================
-Public Sub openSpecialMove(ByVal file As String, ByRef theMove As TKSpecialMove)
+Public Function openSpecialMove(ByVal file As String) As TKSpecialMove
 
     On Error Resume Next
     
-    If file$ = "" Then Exit Sub
+    If file$ = "" Then Exit Function
+    
+    Dim theMove As TKSpecialMove
     
     Call SpecialMoveClear(theMove)
     file$ = PakLocate(file$)
@@ -63,10 +71,10 @@ Public Sub openSpecialMove(ByVal file As String, ByRef theMove As TKSpecialMove)
     
     Open file For Binary Access Read As num
         fileHeader$ = BinReadString(num)      'Filetype
-        If fileHeader$ <> "RPGTLKIT SPLMOVE" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Special Move": Exit Sub
+        If fileHeader$ <> "RPGTLKIT SPLMOVE" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Special Move": Exit Function
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This Move was created with an unrecognised version of the Toolkit", , "Unable to open Special Move": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Move was created with an unrecognised version of the Toolkit", , "Unable to open Special Move": Close #num: Exit Function
     
         theMove.smname$ = BinReadString(num)     'name
         theMove.smFP = BinReadLong(num)      'fp
@@ -79,19 +87,20 @@ Public Sub openSpecialMove(ByVal file As String, ByRef theMove As TKSpecialMove)
         theMove.smAnimation$ = BinReadString(num)
         theMove.smDescription$ = BinReadString(num)
     Close #num
-    Exit Sub
+    openSpecialMove = theMove
+    Exit Function
     
 ver2oldmove:
     Open file$ For Input As #num
         Input #num, fileHeader$        'Filetype
-        If fileHeader$ <> "RPGTLKIT SPLMOVE" Then Close #num: Exit Sub
+        If fileHeader$ <> "RPGTLKIT SPLMOVE" Then Close #num: Exit Function
         Input #num, majorVer           'Version
         Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This Special Move was created with an unrecognised version of the Toolkit", , "Unable to open Special Move": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Special Move was created with an unrecognised version of the Toolkit", , "Unable to open Special Move": Close #num: Exit Function
         If minorVer <> minor Then
             Dim user As Long
             user = MsgBox("This file was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
-            If user = 7 Then Close #num: Exit Sub     'selected no
+            If user = 7 Then Close #num: Exit Function 'selected no
         End If
         theMove.smname$ = fread(num)   'name
         theMove.smFP = fread(num)        'fp
@@ -104,7 +113,8 @@ ver2oldmove:
         theMove.smAnimation$ = fread(num)
         theMove.smDescription$ = fread(num)
     Close #num
-End Sub
+    openSpecialMove = theMove
+End Function
 
 '=========================================================================
 ' Save a special move
@@ -138,6 +148,7 @@ Public Sub saveSpecialMove(ByVal file As String, ByRef theMove As TKSpecialMove)
         Call BinWriteString(num, theMove.smAnimation)
         Call BinWriteString(num, theMove.smDescription)
     Close num
+
 End Sub
 
 '=========================================================================

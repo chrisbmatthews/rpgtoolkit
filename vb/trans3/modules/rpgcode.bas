@@ -534,7 +534,7 @@ Sub SmartStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -550,7 +550,7 @@ Sub AnimatedTilesRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -617,7 +617,7 @@ Sub GiveExpRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -631,7 +631,7 @@ Sub KillAllRedirectsRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -668,7 +668,7 @@ Sub ParallaxRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -784,7 +784,7 @@ Sub PlayerStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -894,7 +894,7 @@ Sub ItemStepRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -935,7 +935,7 @@ Sub AddPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1054,10 +1054,10 @@ Sub applyStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt1$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
     
-    Dim hand As Long, filen As Long
+    Dim hand As Long, fileN As Long
     hand = getValue(useIt1$, lit1$, num1, theProgram)
-    filen = getValue(useIt2$, lit2$, num2, theProgram)
-    If hand = 0 Or filen = 0 Then
+    fileN = getValue(useIt2$, lit2$, num2, theProgram)
+    If hand = 0 Or fileN = 0 Then
         Call debugger("Error: ApplyStatus requires lit, lit!-- " + Text$)
     Else
         Dim theOne As Long, t As Long
@@ -1105,7 +1105,7 @@ Sub applyStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1135,12 +1135,12 @@ Sub BreakRPG(Text$, ByRef theProgram As RPGCodeProgram)
     '#Break()
     'opens debugger and breaks.
     On Error GoTo errorhandler
-    debugging = True
+'    debugging = True
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1153,7 +1153,7 @@ Sub CallPlayerSwapRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1170,7 +1170,7 @@ Sub CharacterSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1217,7 +1217,7 @@ Sub GameSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1264,7 +1264,7 @@ Sub checkButtonRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1284,7 +1284,7 @@ Sub clearButtons()
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1297,7 +1297,7 @@ Sub clearbuttonsRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1414,7 +1414,7 @@ Sub DestroyItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1543,7 +1543,7 @@ Sub DrawCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1604,7 +1604,7 @@ Sub DrawEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1634,7 +1634,7 @@ Sub EraseItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1734,7 +1734,7 @@ Sub FillCircleRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1787,7 +1787,7 @@ Sub FillRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1824,7 +1824,7 @@ Sub FontRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1852,7 +1852,7 @@ Sub FontSizeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1866,7 +1866,7 @@ Sub ForceRedrawRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1964,7 +1964,7 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -2009,7 +2009,7 @@ Sub GetBoardTileRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2079,7 +2079,7 @@ Sub GetBoardTileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2110,7 +2110,7 @@ Sub GetColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2134,7 +2134,7 @@ Sub GetCornerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2221,7 +2221,7 @@ Sub getDPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2247,7 +2247,7 @@ Sub GetFontSizeRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2334,7 +2334,7 @@ Sub getFPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2359,7 +2359,7 @@ Sub GetGPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2449,7 +2449,7 @@ Sub GetHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2534,7 +2534,7 @@ Sub getLevelRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2619,7 +2619,7 @@ Sub GetMaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2706,7 +2706,7 @@ Sub GetMaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2758,7 +2758,7 @@ Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2786,7 +2786,7 @@ Sub GetResRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2942,7 +2942,7 @@ Sub GetSmpRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2968,7 +2968,7 @@ Sub giveGpRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3055,7 +3055,7 @@ Sub GiveHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3075,7 +3075,7 @@ Sub GiveItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 0 Then
         Call debugger("Error: GiveItem data type must be literal!-- " + Text$)
     Else
-        Call inv.addItem(lit, 1)
+        Call inv.addItem(lit)
     End If
 End Sub
 
@@ -3165,7 +3165,7 @@ Sub GiveSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3198,7 +3198,7 @@ Sub GoDosRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3213,7 +3213,7 @@ Sub Gone(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3282,7 +3282,7 @@ Sub HPRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3399,7 +3399,7 @@ Function inBounds(ByVal value As Long, ByVal low As Long, ByVal up As Long) As L
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -3457,23 +3457,23 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         'Declarations...
         Dim tempPRG As RPGCodeProgram
-        Dim filen As String
+        Dim fileN As String
         Dim count As Long
 
         'Get a location for the tricky file...
         If Not pakFileRunning Then
-            filen = projectPath & prgPath & lit
+            fileN = projectPath & prgPath & lit
         Else
-            filen = PakLocate(prgPath & lit)
+            fileN = PakLocate(prgPath & lit)
         End If
         
-        If Not fileExists(filen) Then
-            debugger "Error: File " & filen & " does not exist!"
+        If Not fileExists(fileN) Then
+            debugger "Error: File " & fileN & " does not exist!"
             Exit Sub
         End If
         
         'Retrieve the code from the program...
-        tempPRG = openProgram(filen)
+        tempPRG = openProgram(fileN)
         
         With theProgram
         
@@ -3524,7 +3524,7 @@ Sub innRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3609,7 +3609,7 @@ Sub ItalicsRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3661,7 +3661,7 @@ Sub itemCountRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3710,7 +3710,7 @@ Sub ItemLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3748,7 +3748,7 @@ Sub ItemWalkSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3807,7 +3807,7 @@ Public Sub KillRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3930,7 +3930,7 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3964,7 +3964,7 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 Call RestoreCharacter(playerFile$(t), t, False)
             End If
         Next t
-        Call openBoard(currentBoard$, boardList(activeBoardIndex).theData)
+        Call openBoard(currentBoard, boardList(activeBoardIndex).theData)
         'clear non-persistent threads...
         Call ClearNonPersistentThreads
         lastRender.canvas = -1
@@ -3982,7 +3982,7 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4022,7 +4022,7 @@ Sub MainFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4074,7 +4074,7 @@ Sub MaxHPRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4126,7 +4126,7 @@ Sub MaxSmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4172,7 +4172,7 @@ Sub MemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4235,7 +4235,7 @@ Sub MidiPlayRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4257,7 +4257,7 @@ Sub MidiRestRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4299,7 +4299,7 @@ Sub mouseClickRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4329,7 +4329,7 @@ Sub mouseMoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4371,7 +4371,7 @@ Sub MoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4404,7 +4404,7 @@ Sub Mp3PauseRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4423,7 +4423,7 @@ Sub MWinClsRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4493,7 +4493,7 @@ Sub MWinSizeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4581,7 +4581,7 @@ Sub Over(ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4635,7 +4635,7 @@ Sub PathFindRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4676,7 +4676,7 @@ Sub PlayAviRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4709,7 +4709,7 @@ Sub PlayAviSmallRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4759,7 +4759,7 @@ Sub PostureRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4812,7 +4812,7 @@ Sub prg(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4852,7 +4852,7 @@ Sub PrintRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -4890,7 +4890,7 @@ Sub Prompt(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RE
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5018,7 +5018,7 @@ Sub PushItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
 'Begin error handling code:
 errorhandler:
 
-    Call HandleError
+    
     Resume Next
     
 End Sub
@@ -5160,7 +5160,7 @@ Sub PushRPG(Text$, ByRef theProgram As RPGCodeProgram)
 'Begin error handling code:
 errorhandler:
 
-    Call HandleError
+    
     Resume Next
     
 End Sub
@@ -5223,7 +5223,7 @@ Sub PutItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5327,7 +5327,7 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5408,7 +5408,7 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5446,7 +5446,7 @@ Sub RandomRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5564,7 +5564,7 @@ Sub RemoveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5582,10 +5582,10 @@ Sub removeStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     useIt1$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
-    Dim hand As Long, filen As Long, ex As String, theHandle As String, theOne As Long, t As Long
+    Dim hand As Long, fileN As Long, ex As String, theHandle As String, theOne As Long, t As Long
     hand = getValue(useIt1$, lit1$, num1, theProgram)
-    filen = getValue(useIt2$, lit2$, num2, theProgram)
-    If hand = 0 Or filen = 0 Then
+    fileN = getValue(useIt2$, lit2$, num2, theProgram)
+    If hand = 0 Or fileN = 0 Then
         Call debugger("Error: RemoveStatus requires lit, lit!-- " + Text$)
     Else
         theHandle$ = ""
@@ -5640,7 +5640,7 @@ Sub removeStatusRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5670,7 +5670,7 @@ Sub ResetRPG(ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5712,7 +5712,7 @@ Sub RestorePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5842,7 +5842,7 @@ Sub RestoreScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5900,7 +5900,7 @@ Sub ReturnMethodRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -5915,7 +5915,7 @@ Sub ReturnRPG(ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -6022,7 +6022,7 @@ Public Sub RPGCodeRPG(ByVal Text As String, _
     'Exit Sub
 'Begin error handling code:
 'errorhandler:
-'    Call HandleError
+'
 '    Resume Next
 
     '========================================================================
@@ -6064,7 +6064,7 @@ Sub RunRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -6151,7 +6151,7 @@ Sub SaveRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -6255,7 +6255,7 @@ Sub ScanRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -6359,7 +6359,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     
     'aa = Timer 'Measure the time it takes to open a board.
     
-    Call openBoard(projectPath$ + brdPath$ + targetBoardName$, boardList(activeBoardIndex).theData)
+    Call openBoard(projectPath$ & brdPath$ & targetBoardName$, boardList(activeBoardIndex).theData)
     
     'Clear non-persistent threads...
     Call ClearNonPersistentThreads
@@ -6397,7 +6397,7 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -6530,7 +6530,7 @@ Sub setConstants()
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -6888,7 +6888,7 @@ Sub SetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -6916,7 +6916,7 @@ Sub ShowRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7039,7 +7039,7 @@ Function SkipMethodRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -7110,7 +7110,7 @@ Sub SmpRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7123,7 +7123,7 @@ Sub SoundRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7161,7 +7161,7 @@ Sub SourceHandleRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7202,7 +7202,7 @@ Sub SourceLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7237,7 +7237,7 @@ Sub SqrtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_R
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7338,7 +7338,7 @@ Sub StanceRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7389,7 +7389,7 @@ Sub StartRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7426,7 +7426,7 @@ Sub StaticTextRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7452,7 +7452,7 @@ Sub TakeGPRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7472,13 +7472,13 @@ Sub TakeItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 0 Then
         Call debugger("Error: TakeItem data type must be literal!-- " + Text$)
     Else
-        Call inv.removeItem(lit, 1)
+        Call inv.removeItem(lit)
     End If
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7549,7 +7549,7 @@ Sub TargetHandleRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7604,7 +7604,7 @@ Sub TargetLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7682,7 +7682,7 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7713,7 +7713,7 @@ Sub TextSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7776,7 +7776,7 @@ Sub TileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7820,7 +7820,7 @@ Sub UnderlineRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -7951,7 +7951,7 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
     'View a board
     'Backup board graphics:
     On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
+    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num2 As Double, num3 As Double
     Dim oldtX As Double, oldtY As Double
     oldtX = topX: oldtY = topY
     use$ = Text$
@@ -7969,8 +7969,8 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
         useIt3$ = "1"
     End If
     
-    Dim b As Long, c As Long, brd As String, hdc As Long
-    a = getValue(useIt$, lit$, num, theProgram)
+    Static b As Long, c As Long, brd As String
+    a = getValue(useIt$, lit$, num2, theProgram)
     b = getValue(useIt2$, lit$, num2, theProgram)
     c = getValue(useIt3$, lit$, num3, theProgram)
     If a = 0 Or b = 1 Or c = 1 Then
@@ -7979,18 +7979,18 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
         brd$ = addExt(lit$, ".brd")
         Dim boardTemp As TKBoard
         boardTemp = boardList(activeBoardIndex).theData
-        Call openBoard(projectPath$ + brdPath$ + brd$, boardList(activeBoardIndex).theData)
+        Call openBoard(projectPath$ & brdPath$ & brd$, boardList(activeBoardIndex).theData)
         lastRender.canvas = -1
         ChDir (projectPath$)
         If pakFileRunning Then
             Call ChangeDir(PakTempPath$)
-            a = GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, 0, 0, 0, 0)
+            Call GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, 0, 0, 0, 0)
             Call ChangeDir(currentDir$)
         Else
-            a = GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, 0, 0, 0, 0)
+            Call GFXDrawBoardCNV(cnvRPGCodeScreen, -1, 0, num2 - 1, num3 - 1, tilesX, tilesY, boardList(activeBoardIndex).theData.Bsizex, boardList(activeBoardIndex).theData.Bsizey, boardList(activeBoardIndex).theData.Bsizel, 0, 0, 0, 0)
             'a = GFXdrawboard(brdpath$ + brd$, 0, num2 - 1, num3 - 1, 0, 0, 0, tilesX, tilesY, vbpichdc(mainForm.boardform))
         End If
-        boardList(activeBoardIndex).theData = boardTemp
+        'boardList(activeBoardIndex).theData = boardTemp
         ChDir (currentDir$)
         Call renderRPGCodeScreen
         topX = oldtX: topY = oldtY
@@ -7998,7 +7998,7 @@ Sub ViewBrd(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8029,7 +8029,7 @@ Sub WaitRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_R
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8354,7 +8354,7 @@ Sub WalkSpeedRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8475,7 +8475,7 @@ Sub WanderRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8505,7 +8505,7 @@ Sub WavRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8515,18 +8515,11 @@ Sub WavStopRPG(Text$, ByRef theProgram As RPGCodeProgram)
     On Error GoTo errorhandler
     
     Call TKAudiereStop(fgDevice)
-    
-    mediaContainer.soundfx.Command = "stop"
-    mediaContainer.soundfx.Command = "close"
-    'Call StopMCI("soundfx")
-    
-    'wFlags% = SND_ASYNC
-    'x% = sndPlaySound("stop__.wav", wFlags%)
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8623,7 +8616,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -8672,7 +8665,7 @@ Sub BitmapRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8709,7 +8702,7 @@ Sub BoldRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8765,7 +8758,7 @@ Sub Branch(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8776,8 +8769,62 @@ Public Sub CallShopRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
     On Error Resume Next
 
-    Dim paras() As parameters
+    Dim paras() As parameters           'parsed parameters
+    Dim forSale As New clsInventory     'items for sale at the shop
+    Dim itmNum As Long                  'current item
+    Dim error As Boolean                'error occured?
+
+    'Flag to not add .itm to items passed in (we'll handle it)
+    forSale.appendItmExtension = False
+
+    'Grab the items passed in
     paras() = GetParameters(Text, theProgram)
+
+    'Loop over each item
+    For itmNum = 0 To UBound(paras)
+        If paras(itmNum).dataType <> DT_LIT Then
+            Call debugger("Error: Literal data elements required-- " & paras(itmNum).dat)
+            error = True
+        End If
+        If paras(itmNum).lit <> "" Then
+            paras(itmNum).lit = addExt(paras(itmNum).lit, ".itm")
+            If Not fileExists(projectPath & itmPath & paras(itmNum).lit) Then
+                Call debugger("Error: Item not found-- " & paras(itmNum).lit)
+                error = True
+            End If
+            If Not error Then
+                'No errors-- add the item
+                Call forSale.addItem(paras(itmNum).lit)
+            End If
+        End If
+    Next itmNum
+
+    If error Then
+        'Errors occured
+        Call debugger("CallShop() did not execute correctly-- " & Text)
+        Call Unload(forSale)
+        Set forSale = Nothing
+        Exit Sub
+    End If
+
+    'Construct a shop
+    Dim theShop As New clsShop
+    With theShop
+        .saleItems = forSale    'items for sale
+        .playerItems = inv      'current inventory
+        .money = GPCount        'money to spend
+        Call .Show              'show the shop
+        GPCount = .money        'update money
+        inv = .playerItems      'update player inventory
+    End With
+
+    'Destroy the objects
+    Call Unload(theShop)
+    Call Unload(forSale)
+
+    'Set the objects to null
+    Set theShop = Nothing
+    Set forSale = Nothing
 
 End Sub
 
@@ -8812,7 +8859,7 @@ Sub CastIntRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8848,7 +8895,7 @@ Sub CastLitRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8882,7 +8929,7 @@ Sub CastNumRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8915,7 +8962,7 @@ Sub Change(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8954,7 +9001,7 @@ Sub CharAtRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8967,7 +9014,7 @@ Sub clearBufferRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -8983,7 +9030,7 @@ Sub ClearRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9018,7 +9065,7 @@ Sub ColorRGB(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9045,7 +9092,7 @@ Sub ColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9071,7 +9118,7 @@ Sub KillThreadRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9105,7 +9152,7 @@ Sub ThreadSleepRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9139,7 +9186,7 @@ Sub DebugRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9170,7 +9217,7 @@ Sub DelayRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9206,30 +9253,28 @@ Sub done(Text$, ByRef theProgram As RPGCodeProgram)
     'Ends program without redrawing screen.
     'Do nothing
     On Error GoTo errorhandler
-    Unload dbwin
+    'Unload dbwin
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
-Sub Dos(Text$, ByRef theProgram As RPGCodeProgram)
+Sub Dos(ByVal Text$, ByRef theProgram As RPGCodeProgram)
     '#Dos()
     'Return to OS (Windows)
     On Error GoTo errorhandler
     gGameState = GS_QUIT
     
     Call closeSystems
-   
-    endform.Show 1
-    End
+    Call showEndForm(True)
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9271,7 +9316,7 @@ Sub drainAllRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9320,7 +9365,7 @@ Sub DrawLineRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9370,7 +9415,7 @@ Sub DrawRectRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9383,7 +9428,7 @@ Sub EmptyRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9392,12 +9437,12 @@ Sub EndRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'End prg or function block.
     'Do nothing.
     On Error GoTo errorhandler
-    Unload dbwin
+    'Unload dbwin
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9464,7 +9509,7 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
             Exit Sub
         End If
 
-        If Not (CanPlayerUse(projectPath$ & itmPath$ & inv.fileNames(theOne), theOne)) Then
+        If Not (CanPlayerUse(theOne, openItem(projectPath$ & itmPath$ & inv.fileNames(theOne)))) Then
             Call debugger("Error: Player cannot use specified item!-- " & Text$)
             Exit Sub
         End If
@@ -9479,7 +9524,7 @@ Sub EquipRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9523,7 +9568,7 @@ Sub ErasePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9671,7 +9716,7 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9733,7 +9778,7 @@ Sub FightEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9767,7 +9812,7 @@ Sub FightRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9803,7 +9848,7 @@ Sub WinColorRGB(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9831,7 +9876,7 @@ Sub WinColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -9859,7 +9904,7 @@ Sub WinGraphic(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -10035,7 +10080,7 @@ Sub attackAllRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -10266,7 +10311,7 @@ Sub WipeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -10323,7 +10368,7 @@ Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -10395,7 +10440,7 @@ Sub earthquakeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -11128,7 +11173,6 @@ Public Function SwitchCase( _
 
     'Error handling
     On Error Resume Next
-    handleErrors = False
 
     With RPGCodeSwitchCase
         
@@ -11258,7 +11302,6 @@ Public Function SwitchCase( _
     End With
 
 resumeErrorHandling:
-    handleErrors = True
 
 '=============================================================================
 'Error handling
@@ -11486,7 +11529,7 @@ Public Sub cursorMapHand( _
     End If
 
     If cd = 0 Then
-        canvas_host.hand.Picture = canvas_host.handBackup.Picture
+        Call BitBlt(handHDC, 0, 0, 32, 32, handBackupHDC, 0, 0, SRCPAINT)
         Exit Sub
     End If
 
@@ -11506,7 +11549,7 @@ Public Sub cursorMapHand( _
     End If
 
     If LCase(paras(0).lit) = "default" Then
-        canvas_host.hand.Picture = canvas_host.handBackup.Picture
+        Call BitBlt(handHDC, 0, 0, 32, 32, handBackupHDC, 0, 0, SRCPAINT)
         Exit Sub
     End If
 
@@ -11516,14 +11559,14 @@ Public Sub cursorMapHand( _
 
     If cd = 2 Then
         If paras(1).num = 1 Then
-            DrawSizedImage fface, 0, 0, 32, 32, canvas_host.hand.hdc
+            DrawSizedImage fface, 0, 0, 32, 32, handHDC
         ElseIf paras(1).num = 0 Then
-            DrawImage fface, 0, 0, canvas_host.hand.hdc
+            drawImage fface, 0, 0, handHDC
         Else
             debugger "CursorMapHand()'s second data element must be 1 or 0-- " & Text
         End If
     Else
-        DrawSizedImage fface, 0, 0, 32, 32, canvas_host.hand.hdc
+        DrawSizedImage fface, 0, 0, 32, 32, handHDC
     End If
 
 End Sub
@@ -11533,6 +11576,8 @@ Public Sub mousePointer( _
                            ByRef prg As RPGCodeProgram _
                                                          )
 
+    Call debugger("MousePointer() is not functional-- " & Text)
+
     '=========================================================================
     'Changes mouse pointer [KSNiloc]
     '=========================================================================
@@ -11541,6 +11586,8 @@ Public Sub mousePointer( _
     'MousePointer(Default)
     'MousePointer(None)
 
+    #If oldCode = 1 Then
+    
     On Error Resume Next
 
     Dim countDat As Long
@@ -11572,7 +11619,7 @@ Public Sub mousePointer( _
                 Exit Sub
             ElseIf LCase(paras(0).lit) = "none" Then
                 host.mousePointer = 99
-                host.mouseIcon = canvas_host.noCursor.Picture
+                'host.mouseIcon = image_host.noCursor.Picture
                 Exit Sub
             End If
             
@@ -11599,6 +11646,8 @@ Public Sub mousePointer( _
             debugger "MousePointer() can have either zero or one data elements--" & Text
 
     End Select
+    
+    #End If
 
 End Sub
 

@@ -36,7 +36,7 @@ Sub HandleError()
     'Exit Sub
 'Begin error handling code:
 'errorhandler:
-'    Call HandleError
+'
 '    Resume Next
 End Sub
 

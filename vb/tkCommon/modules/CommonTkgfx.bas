@@ -204,7 +204,7 @@ Public Sub drawTileCNV(ByVal cnv As Long, ByVal file As String, ByVal x As Doubl
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 

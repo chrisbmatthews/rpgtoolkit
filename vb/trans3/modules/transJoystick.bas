@@ -319,7 +319,7 @@ Function joyDirection(ByRef buttonOnOff() As Boolean) As Integer
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -369,7 +369,7 @@ Function numWithin(ByVal num1 As Double, ByVal low As Double, ByVal high As Doub
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 

@@ -94,7 +94,7 @@ Function addToTileSet(ByVal file As String) As Integer: On Error GoTo errorhandl
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -158,7 +158,7 @@ Function calcInsertionPoint(ByRef ts As tilesetHeader, ByVal num As Long) As Lon
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -255,7 +255,7 @@ Function getTileNum(ByVal file As String) As Long: On Error GoTo errorhandler
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -315,11 +315,11 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
             For yy = 1 To 32
             
                 'Store the tilemem temporarily.
-                buftile(xx, yy) = tilemem(xx, yy)
+                bufTile(xx, yy) = tileMem(xx, yy)
             
                 If isoMaskBmp(xx, yy) = RGB(0, 0, 0) Then
                     'If the pixel isn't masked (is black), move the pixel.
-                    tilemem(xCount, yCount) = tilemem(xx, yy)
+                    tileMem(xCount, yCount) = tileMem(xx, yy)
                     
 'Call traceString("tilemem(" & xCount & ", " & yCount & ") = TileMem(" & xx & ", " & yy & ") = " & isoTileMem(xx, yy))
                     
@@ -357,25 +357,25 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
                     'RGB values to file.
                         For xx = 1 To 32
                             For yy = 1 To 32
-                                If tilemem(xx, yy) = -1 Then
+                                If tileMem(xx, yy) = -1 Then
                                 'If a transparent pixel, set a specific RGB combination.
                                     rr = 0
                                     gg = 1
                                     bb = 2
                                 Else
                                 'Calculate the RGB values from the colour value.
-                                    rr = red(tilemem(xx, yy))
-                                    gg = green(tilemem(xx, yy))
-                                    bb = blue(tilemem(xx, yy))
+                                    rr = red(tileMem(xx, yy))
+                                    gg = green(tileMem(xx, yy))
+                                    bb = blue(tileMem(xx, yy))
                                 End If
                             
                             'Convert the values to strings and write them to file as 3
                             'sequential bytes.
-                                rrr = chr$(rr)
+                                rrr = Chr$(rr)
                             Put #num, Offset, rrr
-                                ggg = chr$(gg)
+                                ggg = Chr$(gg)
                             Put #num, Offset + 1, ggg
-                                bbb = chr$(bb)
+                                bbb = Chr$(bb)
                             Put #num, Offset + 2, bbb
                             
                             Offset = Offset + 3
@@ -388,21 +388,21 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
                         For xx = 1 To 16
                             For yy = 1 To 16
                         
-                                If tilemem(xx, yy) = -1 Then
+                                If tileMem(xx, yy) = -1 Then
                                     rr = 0
                                     gg = 1
                                     bb = 2
                                 Else
-                                    rr = red(tilemem(xx, yy))
-                                    gg = green(tilemem(xx, yy))
-                                    bb = blue(tilemem(xx, yy))
+                                    rr = red(tileMem(xx, yy))
+                                    gg = green(tileMem(xx, yy))
+                                    bb = blue(tileMem(xx, yy))
                                 End If
                             
-                                rrr = chr$(rr)
+                                rrr = Chr$(rr)
                             Put #num, Offset, rrr
-                                ggg = chr$(gg)
+                                ggg = Chr$(gg)
                             Put #num, Offset + 1, ggg
-                                bbb = chr$(bb)
+                                bbb = Chr$(bb)
                             Put #num, Offset + 2, bbb
                             
                             Offset = Offset + 3
@@ -418,12 +418,12 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
                         For xx = 1 To 32
                             For yy = 1 To 32
                         
-                                If tilemem(xx, yy) = -1 Then
+                                If tileMem(xx, yy) = -1 Then
                                 'If transparent, set the value as 255.
-                                    rrr = chr$(255)
+                                    rrr = Chr$(255)
                                 Else
                                 'Convert the RGB value to a string.
-                                    rrr = chr$(tilemem(xx, yy))
+                                    rrr = Chr$(tileMem(xx, yy))
                                 End If
                             
                             'Write the colour string to file.
@@ -439,10 +439,10 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
                         For xx = 1 To 16
                             For yy = 1 To 16
                         
-                                If tilemem(xx, yy) = -1 Then
-                                    rrr = chr$(255)
+                                If tileMem(xx, yy) = -1 Then
+                                    rrr = Chr$(255)
                                 Else
-                                    rrr = chr$(tilemem(xx, yy))
+                                    rrr = Chr$(tileMem(xx, yy))
                                 End If
                             
                             Put #num, Offset, rrr
@@ -463,7 +463,7 @@ Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
         'Restore the tilemem from the buffer.
         For xx = 1 To 64
             For yy = 1 To 32
-                tilemem(xx, yy) = buftile(xx, yy)
+                tileMem(xx, yy) = bufTile(xx, yy)
             Next yy
         Next xx
     End If
@@ -532,10 +532,10 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo e
                             'Convert the strings to numbers.
                             If Asc(rrr) = 0 And Asc(ggg) = 1 And Asc(bbb) = 2 Then
                                 'Transparent colour.
-                                tilemem(xx, yy) = -1
+                                tileMem(xx, yy) = -1
                             Else
                                 'Set the colour value of the RGB components.
-                                tilemem(xx, yy) = RGB(Asc(rrr), Asc(ggg), Asc(bbb))
+                                tileMem(xx, yy) = RGB(Asc(rrr), Asc(ggg), Asc(bbb))
                             End If
                         Next yy
                     Next xx
@@ -554,9 +554,9 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo e
                             
                             If Asc(rrr) = 0 And Asc(ggg) = 1 And Asc(bbb) = 2 Then
                                 'Transparent colour.
-                                tilemem(xx, yy) = -1
+                                tileMem(xx, yy) = -1
                             Else
-                                tilemem(xx, yy) = RGB(Asc(rrr), Asc(ggg), Asc(bbb))
+                                tileMem(xx, yy) = RGB(Asc(rrr), Asc(ggg), Asc(bbb))
                             End If
                             
                         Next yy
@@ -574,9 +574,9 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo e
                             
                             If Asc(rrr) = 255 Then
                                 'Transparent colour.
-                                tilemem(xx, yy) = -1
+                                tileMem(xx, yy) = -1
                             Else
-                                tilemem(xx, yy) = Asc(rrr)
+                                tileMem(xx, yy) = Asc(rrr)
                             End If
                             
                         Next yy
@@ -594,9 +594,9 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo e
                             
                             If Asc(rrr) = 255 Then
                                 'Transparent colour.
-                                tilemem(xx, yy) = -1
+                                tileMem(xx, yy) = -1
                             Else
-                                tilemem(xx, yy) = Asc(rrr)
+                                tileMem(xx, yy) = Asc(rrr)
                             End If
                             
                         Next yy
@@ -609,7 +609,7 @@ Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error GoTo e
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -641,7 +641,7 @@ Function tilesetFilename(ByVal file As String) As String: On Error GoTo errorhan
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 

@@ -105,7 +105,7 @@ Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal re
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 

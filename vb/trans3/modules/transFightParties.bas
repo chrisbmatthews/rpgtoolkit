@@ -294,7 +294,7 @@ Public Sub doUseItem(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long,
     End If
        
     'remove this item from inventory...
-    Call inv.removeItem(itemFile, 1)
+    Call inv.removeItem(itemFile)
         
     'the plugin will run rpgcode if required
     'and it will run an animation if required
@@ -309,15 +309,15 @@ End Sub
 Public Sub doUseSpecialMove(ByVal sourcePartyIdx As Long, ByVal sourceFightIdx As Long, ByVal targetPartyIdx As Long, ByVal targetFightIdx As Long, ByVal moveFile As String)
 
     On Error Resume Next
-    
+
     'only do the attack if the source has HP left...
     If (getPartyMemberHP(sourcePartyIdx, sourceFightIdx) <= 0) Then
         Exit Sub
     End If
-       
+
     'now use the move...
     Dim theMove As TKSpecialMove
-    Call openSpecialMove(projectPath$ + spcPath$ + moveFile, theMove)
+    theMove = openSpecialMove(projectPath$ & spcPath$ & moveFile)
     
     Dim hp As Double, smp As Double, sourceSMP As Double
     

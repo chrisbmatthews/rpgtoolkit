@@ -159,19 +159,19 @@ Attribute VB_Exposed = False
 
 Sub infofill()
     On Error GoTo errorhandler
-    cplayers.Clear
+    cplayers.clear
     For t = 0 To 4
-        cplayers.AddItem (playerListAr$(t))
+        cplayers.addItem (playerListAr$(t))
     Next t
-    oplayers.Clear
+    oplayers.clear
     For t = 0 To 25
-        oplayers.AddItem (otherPlayersHandle$(t))
+        oplayers.addItem (otherPlayersHandle$(t))
     Next t
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -181,18 +181,18 @@ Sub skin()
     On Error Resume Next
     If mainMem.skinWindow$ <> "" Then
         Call vbFrmAutoRedraw(pswap, True)
-        If PakFileRunning Then
+        If pakFileRunning Then
             f$ = PakLocate(bmpPath$ + mainMem.skinWindow$)
             'pswap.Picture = LoadPicture(F$)
-            Call DrawImage(f$, 0, 0, vbFrmHDC(pswap))
+            Call drawImage(f$, 0, 0, vbFrmHDC(pswap))
         Else
             'pswap.Picture = LoadPicture(projectPath$ + bmppath$ + mainMem.skinWindow$)
-            Call DrawImage(projectPath$ + bmpPath$ + mainMem.skinWindow$, 0, 0, vbFrmHDC(pswap))
+            Call drawImage(projectPath$ + bmpPath$ + mainMem.skinWindow$, 0, 0, vbFrmHDC(pswap))
         End If
         Call vbFrmRefresh(pswap)
     End If
     If mainMem.skinButton$ <> "" Then
-        If PakFileRunning Then
+        If pakFileRunning Then
             f$ = PakLocate(bmpPath$ + mainMem.skinButton$)
             Command1.Picture = LoadPicture(f$)
             Command2.Picture = LoadPicture(f$)
@@ -221,7 +221,7 @@ Private Sub Command1_Click()
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -244,7 +244,7 @@ Private Sub Command2_Click()
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -256,7 +256,7 @@ Private Sub Command3_Click()
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -286,7 +286,7 @@ Private Sub Form_Load()
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 

@@ -21,6 +21,13 @@ Public screenHeight As Integer  'height, in twips
 Public resX As Long
 Public resY As Long             'x and y resolutions
 
+Private Const HAND_RESOURCE_ID = 101    'Location of cursor hand
+Private Const ENDFORM_RESOURCE_ID = 102 'Location of end form background
+
+Public handHDC As Long                  'HDC to the cursor hand
+Public handBackupHDC As Long            'HDC to an unaltered cursor hand
+Public endFormBackgroundHDC As Long     'HDC to end form background
+
 Public globalCanvasHeight As Long
 Public globalCanvasWidth As Long
 
@@ -375,6 +382,26 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
             End If
         End If
     Next lll
+End Sub
+
+'=========================================================================
+' Load pictures from resources
+'=========================================================================
+Private Sub loadResPictures()
+    handHDC = CreateCompatibleDC(0)
+    handBackupHDC = CreateCompatibleDC(0)
+    endFormBackgroundHDC = CreateCompatibleDC(0)
+    Call SelectObject(handHDC, LoadResPicture(HAND_RESOURCE_ID, vbResBitmap).handle)
+    Call SelectObject(handBackupHDC, LoadResPicture(HAND_RESOURCE_ID, vbResBitmap).handle)
+    Call SelectObject(endFormBackgroundHDC, LoadResPicture(ENDFORM_RESOURCE_ID, vbResBitmap).handle)
+End Sub
+
+'=========================================================================
+' Kill pictures that were loaded from resources
+'=========================================================================
+Private Sub killResPictures()
+    Call DeleteDC(handHDC)
+    Call DeleteDC(handBackupHDC)
 End Sub
 
 '=========================================================================
@@ -1388,6 +1415,7 @@ Public Sub destroyGraphics()
     Call CloseCanvasEngine
     Call GFXKill
     Call DXKillGfxMode
+    Call killResPictures
 End Sub
 
 '=========================================================================
@@ -1909,17 +1937,18 @@ Private Sub showScreen(ByVal Width As Long, ByVal height As Long, Optional ByVal
     Dim fullScreen As Long
     If Not testingPRG Then
         fullScreen = mainMem.extendToFullScreen
+        transGUI.bShowEndForm = True
     Else
         fullScreen = 0
-        endform.Tag = 1
+        transGUI.bShowEndForm = False
     End If
 
     If fullScreen = 0 Then
         inFullScreenMode = False
-        host.style = 1
+        host.style = windowed
     Else
         inFullScreenMode = True
-        host.style = 0
+        host.style = fullScreen
     End If
 
     'Set the dimensions the host window will be created with
@@ -1994,7 +2023,10 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     
     'Init the engine
     Call InitTkGfx
-    Call InitCanvasEngine
+    Call initCanvasEngine
+    
+    'Load resource images
+    Call loadResPictures
 
     'Test for joystick
     useJoystick = JoyTest()

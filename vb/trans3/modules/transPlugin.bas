@@ -162,7 +162,7 @@ Function CBGetHwnd() As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -193,7 +193,7 @@ Sub BeginPlugins()
 'Begin error handling code:
 errorhandler:
     'call tracestring("BeginPlugins error")
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -228,7 +228,7 @@ Sub EndPlugins()
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -376,7 +376,7 @@ Sub generateCallbacks(cbList() As Long)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 Sub InitPlugins()
@@ -401,7 +401,7 @@ Sub InitPlugins()
 'Begin error handling code:
 errorhandler:
     'call tracestring("Initplugins error")
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -463,7 +463,7 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -509,7 +509,7 @@ Sub CBRpgCode(ByVal rpgcodeCommand As String)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -528,7 +528,7 @@ Function CBGetString(ByVal varname As String) As String
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -547,7 +547,7 @@ Function CBGetNumerical(ByVal varname As String) As Double
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -562,7 +562,7 @@ Sub CBSetString(ByVal varname As String, ByVal newValue As String)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -577,7 +577,7 @@ Sub CBSetNumerical(ByVal varname As String, ByVal newValue As Double)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -592,7 +592,7 @@ Function CBGetScreenDC() As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -607,7 +607,7 @@ Function CBGetScratch1DC() As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -622,7 +622,7 @@ Function CBGetScratch2DC() As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -637,7 +637,7 @@ Function CBGetMwinDC() As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -651,7 +651,7 @@ Sub CBPopupMwin()
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -665,7 +665,7 @@ Sub CBHideMwin()
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -680,7 +680,7 @@ Sub CBLoadEnemy(ByVal file As String, ByVal eneSlot As Long)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -755,7 +755,7 @@ Function CBGetEnemyNum(ByVal infoCode As Long, ByVal eneSlot As Long) As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -810,7 +810,7 @@ Function CBGetEnemyString(ByVal infoCode As Long, ByVal eneSlot As Long) As Stri
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -873,7 +873,7 @@ Sub CBSetEnemyNum(ByVal infoCode As Long, ByVal newValue As Long, ByVal eneSlot 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -920,7 +920,7 @@ Sub CBSetEnemyString(ByVal infoCode As Long, ByVal newValue As String, ByVal ene
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1044,7 +1044,7 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1151,7 +1151,7 @@ Function CBGetPlayerString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1239,7 +1239,7 @@ Sub CBSetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal newVal 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1327,7 +1327,7 @@ Sub CBSetPlayerString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal newV
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1442,7 +1442,7 @@ Function CBGetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVa
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1582,7 +1582,7 @@ Function CBGetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal p
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1634,7 +1634,7 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
             Call checkMusic
             Exit Sub
         Case 9:
-            Call openBoard(projectPath$ + brdPath$ + newVal, boardList(activeBoardIndex).theData)
+            Call openBoard(projectPath$ & brdPath$ & newVal, boardList(activeBoardIndex).theData)
             'clear non-persistent threads...
             Call ClearNonPersistentThreads
             lastRender.canvas = -1
@@ -1678,7 +1678,7 @@ Sub CBSetGeneralString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pla
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1791,7 +1791,7 @@ Sub CBSetGeneralNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal player
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -1812,7 +1812,7 @@ Function CBGetCommandName(ByVal rpgcodeCommand As String) As String
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1830,7 +1830,7 @@ Function CBGetBrackets(ByVal rpgcodeCommand As String) As String
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1848,7 +1848,7 @@ Function CBCountBracketElements(ByVal rpgcodeCommand As String) As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1865,7 +1865,7 @@ Function CBGetBracketElement(ByVal rpgcodeCommand As String, ByVal elemNum As Lo
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1891,7 +1891,7 @@ Function CBGetStringElementValue(ByVal rpgcodeCommand As String) As String
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1917,7 +1917,7 @@ Function CBGetNumElementValue(ByVal rpgcodeCommand As String) As Double
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1939,7 +1939,7 @@ Function CBGetElementType(ByVal rpgcodeCommand As String) As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -1953,7 +1953,7 @@ Sub CBDebugMessage(ByVal message As String)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2034,7 +2034,7 @@ Function CBGetPathString(ByVal infoCode As Long) As String
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -2043,12 +2043,12 @@ Sub CBLoadSpecialMove(ByVal file As String)
     'load a special move
     'callback 33
     On Error GoTo errorhandler
-    Call openSpecialMove(projectPath$ + spcPath$ + file, specialMoveMem)
+    specialMoveMem = openSpecialMove(projectPath$ & spcPath$ & file)
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2086,7 +2086,7 @@ Function CBGetSpecialMoveString(ByVal infoCode As Long) As String
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -2124,7 +2124,7 @@ Function CBGetSpecialMoveNum(ByVal infoCode As Long) As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -2143,7 +2143,7 @@ Sub CBLoadItem(ByVal file As String, ByVal itmSlot As Long)
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2206,7 +2206,7 @@ Function CBGetItemString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal i
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -2294,7 +2294,7 @@ Function CBGetItemNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal itmS
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -2437,7 +2437,7 @@ Function CBGetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal ar
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -2553,7 +2553,7 @@ Function CBGetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -2692,7 +2692,7 @@ Sub CBSetBoardNum(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arrayPo
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -2795,7 +2795,7 @@ Sub CBSetBoardString(ByVal infoCode As Long, ByVal arrayPos1 As Long, ByVal arra
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -3071,7 +3071,6 @@ Function CBDrawHand(ByVal pointx As Long, ByVal pointy As Long) As Long
     cnv = CreateCanvas(32, 32)
     Call CanvasFill(cnv, RGB(255, 0, 0))
     Call CanvasDrawHand(cnv, 32, 10)
-    '-10 added by KSNiloc...
     Call DXDrawCanvasTransparent(cnv, pointx - 32 - 10, pointy - 10, RGB(255, 0, 0))
     Call DestroyCanvas(cnv)
     CBDrawHand = 1

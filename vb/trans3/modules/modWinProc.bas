@@ -16,28 +16,14 @@ Option Explicit
 ' Win32 structures
 '=========================================================================
 
-'Rectangle
-Private Type RECT
-    Left As Long
-    Top As Long
-    Right As Long
-    Bottom As Long
-End Type
-
 'Region to re-paint
-Private Type PAINTSTRUCT
+Public Type PAINTSTRUCT
     hdc As Long
     fErase As Long
     rcPaint As RECT
     fRestore As Long
     fIncUpdate As Long
     rgbReserved(32) As Byte
-End Type
-
-'Any x/y position
-Private Type POINTAPI
-    x As Long
-    y As Long
 End Type
 
 'WinProc message
@@ -80,6 +66,7 @@ Public Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
 Public Declare Function UnregisterClass Lib "user32" Alias "UnregisterClassA" (ByVal lpClassName As String, ByVal hInstance As Long) As Long
 Public Declare Function DestroyWindow Lib "user32" (ByVal hwnd As Long) As Long
 Public Declare Sub PostQuitMessage Lib "user32" (ByVal nExitCode As Long)
+Public Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hdc As Long) As Long
 
 '=========================================================================
 ' Event handler
@@ -90,8 +77,6 @@ Public Function WndProc( _
                            ByVal wParam As Long, _
                            ByVal lParam As Long _
                                                   ) As Long
-
-    'This procecure handles events in the DirectX host window
 
     Static prevGameState As GAME_LOGIC_STATE    'Previous game state
 
@@ -112,8 +97,7 @@ Public Function WndProc( _
             'Window was closed-- bail!
             If Not gShuttingDown Then
                 Call closeSystems
-                Call endform.Show(vbModal)
-                End
+                Call showEndForm(True)
             End If
 
         Case WM_CHAR
@@ -153,14 +137,14 @@ End Function
 '=========================================================================
 ' Get low word
 '=========================================================================
-Private Function LoWord(ByRef LongIn As Long) As Integer
+Public Function LoWord(ByRef LongIn As Long) As Integer
    Call CopyMemory(LoWord, LongIn, 2)
 End Function
 
 '=========================================================================
 ' Get high word
 '=========================================================================
-Private Function HiWord(ByRef LongIn As Long) As Integer
+Public Function HiWord(ByRef LongIn As Long) As Integer
    Call CopyMemory(HiWord, ByVal (VarPtr(LongIn) + 2), 2)
 End Function
 
@@ -182,8 +166,7 @@ Public Sub processEvent()
         If message.message = WM_QUIT Then
             'It was-- quit
             Call closeSystems
-            Call endform.Show(vbModal)
-            End
+            Call showEndForm(True)
         Else
             'It wasn't, send the message to WinProc
             Call TranslateMessage(message)

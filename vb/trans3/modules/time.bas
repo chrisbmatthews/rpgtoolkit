@@ -75,7 +75,7 @@ Public Function DetermineLightLevel() As Integer
     Exit Function
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 

@@ -658,14 +658,14 @@ ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
-Public Sub openFile(file$)
+Public Sub openFile(ByVal file$)
     On Error Resume Next
     'Call checkSave
     activeSpecialMove.Show
     filename$(1) = file$
     antiPath$ = absNoPath(file$)
     FileCopy filename$(1), projectPath$ + spcPath$ + antiPath$
-    Call openSpecialMove(filename$(1), specialMoveList(activeSpecialMoveIndex).theData)
+    specialMoveList(activeSpecialMoveIndex).theData = openSpecialMove(filename$(1))
     spfile$ = antiPath$
     activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") + "  (" + antiPath$ + ")"
     Call infofill

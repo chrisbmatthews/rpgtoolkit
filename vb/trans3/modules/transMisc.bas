@@ -360,13 +360,10 @@ End Sub
 '=========================================================================
 ' Dertermines if a player is able to use an item
 '=========================================================================
-Public Function CanPlayerUse(ByVal file As String, ByVal num As Long) As Boolean
+Public Function CanPlayerUse(ByVal num As Long, ByRef anItem As TKItem) As Boolean
 
     On Error Resume Next
-
-    Dim anItem As TKItem
-    anItem = openItem(file$)
-    
+   
     Dim okAll As Long
     okAll = 0
     If anItem.usedBy = 0 Then
@@ -405,7 +402,7 @@ Public Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     End If
     
     'Put the equipment back in the item list:
-    Call inv.addItem(playerEquip(equipNum, playerNum), 1)
+    Call inv.addItem(playerEquip(equipNum, playerNum))
     playerEquip$(equipNum, playerNum) = ""
     equipList$(equipNum, playerNum) = "" 'What is equipped on each player (handle)
     
@@ -461,7 +458,7 @@ Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file 
     aFile = projectPath & itmPath & file
     anItem = openItem(aFile)
 
-    Call inv.removeItem(file, 1)
+    Call inv.removeItem(file)
     playerEquip(equipNum, playerNum) = file
     equipList(equipNum, playerNum) = anItem.itemName
 

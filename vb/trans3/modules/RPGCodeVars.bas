@@ -21,7 +21,6 @@ Public globalHeap As Long                  'the ID of the global heap
 '=========================================================================
 ' Declarations for the actkrt3.dll variable exports
 '=========================================================================
-
 Public Declare Function RPGCInit Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCShutdown Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCCreateHeap Lib "actkrt3.dll" () As Long
@@ -45,7 +44,6 @@ Public Declare Function RPGCEvaluate Lib "actkrt3.dll" (ByVal equation As String
 '=========================================================================
 ' Declarations for the actkrt3.dll redirection exports
 '=========================================================================
-
 Declare Function RPGCSetRedirect Lib "actkrt3.dll" (ByVal methodOrig As String, ByVal methodTarget As String) As Long
 Declare Function RPGCRedirectExists Lib "actkrt3.dll" (ByVal methodToCheck As String) As Long
 Declare Function RPGCGetRedirect Lib "actkrt3.dll" (ByVal methodToGet As String, ByVal pstrToVal As String) As Long
@@ -224,7 +222,7 @@ Public Function isEquation( _
     ' return - was it an equation? (out)
     '======================================================================================
 
-    On Error GoTo error
+    On Error Resume Next
 
     'Declarations...
     Dim parts() As String
@@ -286,9 +284,9 @@ Public Function isEquation( _
     For a = 1 To UBound(parts)
         Select Case dataType(parts(a))
             Case 0, 3
-                If Not dt = DT_NUM Then Err.Raise 0
+                If Not dt = DT_NUM Then Error 0
             Case 1, 2
-                If Not dt = DT_LIT Then Err.Raise 0
+                If Not dt = DT_LIT Then Error 0
         End Select
     Next a
  
@@ -296,12 +294,6 @@ Public Function isEquation( _
  
     'If we made it here then it's an equation...
     isEquation = True
- 
-    Exit Function
- 
-error:
-    HandleError
-    Resume Next
 
 wrongType:
 End Function
@@ -443,15 +435,15 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
         Case DT_COMMAND:
             'if it's a command, run the command
             'and return the value it produces...
-            Dim retVal As RPGCODE_RETURN
+            Dim retval As RPGCODE_RETURN
             Dim oldPos As Long
             oldPos = theProgram.programPos
-            Call DoSingleCommand(Text$, theProgram, retVal)
+            Call DoSingleCommand(Text$, theProgram, retval)
             theProgram.programPos = oldPos
-            If retVal.dataType = DT_LIT Then
-                getValue = getValue(retVal.lit, lit$, num, theProgram)
+            If retval.dataType = DT_LIT Then
+                getValue = getValue(retval.lit, lit$, num, theProgram)
             Else
-                getValue = getValue(str$(retVal.num), lit$, num, theProgram)
+                getValue = getValue(str$(retval.num), lit$, num, theProgram)
             End If
             
         Case DT_EQUATION
@@ -472,7 +464,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -656,7 +648,7 @@ Public Function variType(ByVal var As String, ByVal heapID As Long) As Long
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -872,7 +864,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -887,7 +879,6 @@ Public Function initVarSystem() As Boolean
     bRPGCStarted = True
     initVarSystem = bRPGCStarted
     globalHeap = RPGCCreateHeap()
-    'Call RPGCEvaluate("1 + 1")
 
     Exit Function
     

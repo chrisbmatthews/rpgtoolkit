@@ -1,24 +1,46 @@
 Attribute VB_Name = "transMultimedia"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'============================================================
-'TK Multimedia Engine
-'============================================================
+'=========================================================================
+' TK Multimedia Engine
+'=========================================================================
+
+'=========================================================================
+'EDITED [KSNiloc] [Augest 31, 2004]
+'----------------------------------
+' + Remove dependencies on forms
+' + Added support for video
+' + Privatized some things
+'=========================================================================
 
 Option Explicit
 
-Public musicPlaying As String    'current song playing
-Public fgDevice As Long          'foreground music device
-Private bkgDevice As Long        'background music device
+'=========================================================================
+' Public variables
+'=========================================================================
+Public musicPlaying As String            'current song playing
+Public fgDevice As Long                  'foreground music device
 
+'=========================================================================
+' Member variables
+'=========================================================================
+Private bkgDevice As Long                'background music device (audiere)
+
+'=========================================================================
+' Member constants
+'=========================================================================
+Private Const SFX_DEVICE = "sfxDevive"   'sound effect device (MCI)
+Private Const MID_DEVICE = "midDevice"   'music device (MCI)
+
+'=========================================================================
+' Checks to make sure the correct music is playing
+'=========================================================================
 Public Sub checkMusic(Optional ByVal forceNow As Boolean)
-
-    '============================================================
-    'Checks to make sure the correct music is playing
-    '============================================================
-
+    
     On Error Resume Next
 
     If Not (forceNow) Then
@@ -48,11 +70,10 @@ Public Sub checkMusic(Optional ByVal forceNow As Boolean)
 
 End Sub
 
+'=========================================================================
+' Sets up audiere
+'=========================================================================
 Public Sub initMedia()
-
-    '============================================================
-    'Sets up audiere
-    '============================================================
 
     On Error Resume Next
     
@@ -62,11 +83,10 @@ Public Sub initMedia()
 
 End Sub
 
+'=========================================================================
+' Checks if media is playing
+'=========================================================================
 Public Function isMediaPlaying(ByVal file As String) As Boolean
-
-    '============================================================
-    'Checks if media is playing
-    '============================================================
 
     On Error Resume Next
 
@@ -79,13 +99,11 @@ Public Function isMediaPlaying(ByVal file As String) As Boolean
     Select Case ex
 
         Case "MID" Or "MIDI" Or "WAV" Or "MLP"
-            pos = mediaContainer.media.Position
-            le = mediaContainer.media.Length
-            If pos < le Then
-                isMediaPlaying = True
-            End If
+            'Ask MCI
+            isMediaPlaying = IsPlayingMCI(MID_DEVICE)
 
-        Case "MP3" Or "MOD" Or "IT" Or "XM" Or "S3M" Or "669" Or "AMF" Or "AMS" Or "DBM" Or "DSM" Or "FAR" Or "MED" Or "MDL" Or "MTM" Or "NST" Or "OKT" Or "PTM" Or "STM" Or "ULT" Or "UMX" Or "WOW"
+        Case "MP3" Or "MOD" Or "IT" Or "XM" Or "S3M" Or "669" Or "AMF" Or "AMS" Or "DBM" Or "DSM" Or "FAR" Or "MED" Or "MDL" Or "MTM" Or "NST" Or "OKT" Or "PTM" Or "STM" Or "ULT" Or "UMX" Or "WOW" Or "MID" Or "MIDI" Or "WAV" Or "MLP"
+            'Ask Audiere
             If (TKAudiereIsPlaying(bkgDevice)) Then
                 isMediaPlaying = True
             End If
@@ -94,11 +112,10 @@ Public Function isMediaPlaying(ByVal file As String) As Boolean
 
 End Function
 
+'=========================================================================
+' Kill Audiere
+'=========================================================================
 Public Sub killMedia()
-
-    '============================================================
-    'Kill Audiere
-    '============================================================
 
     On Error Resume Next
     
@@ -108,15 +125,14 @@ Public Sub killMedia()
     
 End Sub
 
+'=========================================================================
+' Play a media file
+'=========================================================================
 Public Sub playMedia(ByVal file As String)
-
-    '============================================================
-    'Play a media file
-    '============================================================
 
     On Error Resume Next
 
-    'stop everything...
+    'stop everything
     Call stopMedia
 
     file = PakLocate(file)
@@ -127,17 +143,10 @@ Public Sub playMedia(ByVal file As String)
     Select Case ex
 
         Case "MID" Or "MIDI" Or "MPL"
-            'use mm control
-            With mediaContainer.media
-                .Notify = False
-                .Wait = True
-                .Shareable = False
-                .filename = file
-                .Command = "Open"
-                .Command = "Play"
-            End With
+            'Play through MCI
+            Call PlayMCI(file, MID_DEVICE)
 
-        Case "MP3" Or "MOD" Or "IT" Or "XM" Or "S3M" Or "669" Or "AMF" Or "AMS" Or "DBM" Or "DSM" Or "FAR" Or "MED" Or "MDL" Or "MTM" Or "NST" Or "OKT" Or "PTM" Or "STM" Or "ULT" Or "UMX" Or "WOW"
+        Case "MP3" Or "MOD" Or "IT" Or "XM" Or "S3M" Or "669" Or "AMF" Or "AMS" Or "DBM" Or "DSM" Or "FAR" Or "MED" Or "MDL" Or "MTM" Or "NST" Or "OKT" Or "PTM" Or "STM" Or "ULT" Or "UMX" Or "WOW" Or "MID" Or "MIDI" Or "WAV" Or "MLP"
             'play through audiere
             Call TKAudierePlay(bkgDevice, file, 1, 0)
             
@@ -145,11 +154,10 @@ Public Sub playMedia(ByVal file As String)
 
 End Sub
 
+'=========================================================================
+' Play a sound effect
+'=========================================================================
 Public Sub playSoundFX(ByVal file As String)
-
-    '============================================================
-    'Play a sound effect
-    '============================================================
 
     On Error Resume Next
 
@@ -159,55 +167,40 @@ Public Sub playSoundFX(ByVal file As String)
     Dim extension As String
     extension = UCase(extension)
 
-    With mediaContainer.soundfx
+    Call StopMCI(SFX_DEVICE)
 
-        .Notify = False
-        .Wait = True
-        .Shareable = False
-        .Command = "stop"
-        .Command = "close"
+    Select Case extension
 
-        Select Case extension
+        Case "MID" Or "MIDI" Or "MPL"
+            'play through MCI
+            Call PlayMCI(file, SFX_DEVICE)
 
-            Case "MID" Or "MIDI" Or "MPL"
-                'use mm control
-                .filename = file
-                .Command = "Open"
-                .Command = "Play"
+        Case "MP3" Or "MOD" Or "IT" Or "XM" Or "S3M" Or "669" Or "AMF" Or "AMS" Or "DBM" Or "DSM" Or "FAR" Or "MED" Or "MDL" Or "MTM" Or "NST" Or "OKT" Or "PTM" Or "STM" Or "ULT" Or "UMX" Or "WOW" Or "MID" Or "MIDI" Or "WAV" Or "MLP"
+            'play through audiere
+            Call TKAudierePlay(fgDevice, file, 0, 0)
 
-            Case "MP3" Or "MOD" Or "IT" Or "XM" Or "S3M" Or "669" Or "AMF" Or "AMS" Or "DBM" Or "DSM" Or "FAR" Or "MED" Or "MDL" Or "MTM" Or "NST" Or "OKT" Or "PTM" Or "STM" Or "ULT" Or "UMX" Or "WOW"
-                'play through audiere
-                Call TKAudierePlay(fgDevice, file, 0, 0)
-
-        End Select
-
-    End With
+    End Select
 
 End Sub
 
+'=========================================================================
+' Stop all multimedia
+'=========================================================================
 Public Sub stopMedia()
-
-    '============================================================
-    'Stop all multimedia
-    '============================================================
 
     On Error Resume Next
 
-    With mediaContainer.media
-        .Command = "Stop"
-        .Command = "Close"
-    End With
-
+    Call StopMCI(MID_DEVICE)
+    Call StopMCI(SFX_DEVICE)
     Call TKAudiereStop(fgDevice)
     Call TKAudiereStop(bkgDevice)
 
 End Sub
 
+'=========================================================================
+' Play a video file
+'=========================================================================
 Public Sub playVideo(ByVal file As String, Optional ByVal windowed As Boolean)
-
-    '============================================================
-    'Play a video file
-    '============================================================
 
     On Error Resume Next
 

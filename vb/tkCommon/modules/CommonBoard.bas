@@ -1,28 +1,54 @@
 Attribute VB_Name = "Commonboard"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
+'=========================================================================
 'Requires CommonBinaryIO.bas
 'Requires CommonTileAnm.bas
+'=========================================================================
+
+'=========================================================================
+'EDITED [KSNiloc] [Augest 31, 2004]
+'----------------------------------
+' + Bug fix: memory leak when loading boards
+'   Cause: arrays were constantly enlarged, but memory was never freed
+' + Improvement: using same loop control variable where possible in
+'   opening routine
+'=========================================================================
+
+'========================================================================='
+' RPGToolkit board file format (*.brd)
+'=========================================================================
 
 Option Explicit
 
-'Gobals and routines for the board editor.
-
-'to store animated tile data for the board
+'=========================================================================
+' An animated tile
+'=========================================================================
 Public Type TKBoardAnimTile
-    theTile As TKTileAnm    'the animation
+    theTile As TKTileAnm
     x As Long
     y As Long
     layer As Long
 End Type
 
+'=========================================================================
+' Member variables
+'=========================================================================
 Private lastAnm As TKTileAnm    'last opened anm file
 Private lastAnmFile As String   'last opened anm file name
 
-''''''''''''''''''''''board data'''''''''''''''''''''''''
+'=========================================================================
+' Member constants
+'=========================================================================
+Private Const FILE_HEADER = "RPGTLKIT BOARD"
 
+'=========================================================================
+' A RPGToolkit board
+'=========================================================================
 Public Type TKBoard
     Bsizex As Integer            'board size x
     Bsizey As Integer            'board size y
@@ -63,7 +89,6 @@ Public Type TKBoard
     activationType(500) As Integer 'activation type- 0-step on, 1- conditional (activation key)
     enterPrg As String           'program to run on entrance''''''''''''''''''
     bgPrg As String              'background program
-    
     itmName() As String        'filenames of items
     itmX() As Double          'x coord
     itmY() As Double          'y coord
@@ -76,15 +101,12 @@ Public Type TKBoard
     itmActivationType() As Integer  'activation type- 0-step on, 1- conditional (activation key)
     itemProgram() As String         'program to run when item is touched.
     itemMulti() As String           'multitask program for item
-
     playerX As Integer           'player x ccord
     playerY As Integer           'player y coord
     playerLayer As Integer       'player layer coord
     brdSavingYN As Integer       'can player save on board? 0-yes, 1-no
     isIsometric As Byte         'is it an isometric board? (0- no, 1-yes)
-
     threads() As String
-    
     'volatile (not in the file or anything)
     hasAnmTiles As Boolean  'does board have anim tiles?
     animatedTile() As TKBoardAnimTile 'animated tiles associated with this board
@@ -93,7 +115,9 @@ Public Type TKBoard
     anmTileLUTInsertIdx As Long    'index of LUT table insertion
 End Type
 
-'document type for board editor
+'=========================================================================
+' A board editor document
+'=========================================================================
 Public Type boardDoc
     boardName As String     'filename
     boardNeedUpdate As Boolean
@@ -131,17 +155,20 @@ Public Type boardDoc
     theData As TKBoard
 End Type
 
-'array of boards used in the MDI children
-Public boardList() As boardDoc
-Public boardListOccupied() As Boolean
+'=========================================================================
+' List of board documents
+'=========================================================================
+Public boardList() As boardDoc         'list of board documents
+Public boardListOccupied() As Boolean  'position used?
+Public currentBoard As String          'current board
+Public multiList() As String           'list of 10 multitask programs
+Public multiOpen() As Integer          'are the multitask programs open? 0-n, 1-y
+Public tilesX As Double                'tiles screen can hold on x
+Public tilesY As Double                'tiles screen can hold on y
 
-Public currentBoard As String    'current board
-
-Public multiList() As String      'list of 10 multitask programs
-Public multiOpen() As Integer     'are the multitask programs open? 0-n, 1-y
-
-Public tilesX As Double, tilesY As Double
-
+'=========================================================================
+' Enlarge item related arrays
+'=========================================================================
 Public Sub dimensionItemArrays()
    
     With boardList(activeBoardIndex).theData
@@ -180,7 +207,10 @@ needsDim:
 
 End Sub
 
-Sub BoardAddTileAnmRef(ByRef theBoard As TKBoard, ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal layer As Long)
+'=========================================================================
+' Add an animated tile to the board
+'=========================================================================
+Public Sub BoardAddTileAnmRef(ByRef theBoard As TKBoard, ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal layer As Long)
     On Error Resume Next
     'add a reference to an animated tile to this board
     
@@ -206,7 +236,10 @@ Sub BoardAddTileAnmRef(ByRef theBoard As TKBoard, ByVal file As String, ByVal x 
     theBoard.anmTileInsertIdx = theBoard.anmTileInsertIdx + 1
 End Sub
 
-Sub BoardAddTileAnmLUTRef(ByRef theBoard As TKBoard, ByVal idx As Long)
+'=========================================================================
+' Add an animated tile to the look up table (LUT)
+'=========================================================================
+Public Sub BoardAddTileAnmLUTRef(ByRef theBoard As TKBoard, ByVal idx As Long)
     On Error Resume Next
     'add a reference to an animated tile to this board
     
@@ -224,7 +257,10 @@ Sub BoardAddTileAnmLUTRef(ByRef theBoard As TKBoard, ByVal idx As Long)
     theBoard.anmTileLUTInsertIdx = theBoard.anmTileLUTInsertIdx + 1
 End Sub
 
-Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByRef l As Integer, ByRef theBoard As TKBoard) As Long
+'=========================================================================
+' Find the number of consective tiles
+'=========================================================================
+Public Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByRef l As Integer, ByRef theBoard As TKBoard) As Long
     'find the number of consecutive identical tiles there are
     'starting at x, y, l
     'return 1 if there's only the one, else return the number of consecutive tiles
@@ -282,7 +318,10 @@ Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByRef l As
     BoardFindConsecutive = count
 End Function
 
-Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLayer As Integer, ByRef theBoard As TKBoard)
+'=========================================================================
+' Resize the board
+'=========================================================================
+Public Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLayer As Integer, ByRef theBoard As TKBoard)
     'resize the board-- retain the current tiles
     On Error Resume Next
     Dim sizex As Long, sizey As Long, sizeLayer As Long
@@ -343,7 +382,10 @@ Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLayer As 
     theBoard.Bsizel = sizeLayer
 End Sub
 
-Function BoardTileInLUT(ByVal filename As String, ByRef theBoard As TKBoard) As Long
+'=========================================================================
+' Find a file in the look up table
+'=========================================================================
+Public Function BoardTileInLUT(ByVal filename As String, ByRef theBoard As TKBoard) As Long
     'return the index in the LUT where filename exists
     On Error Resume Next
     
@@ -387,7 +429,10 @@ Function BoardTileInLUT(ByVal filename As String, ByRef theBoard As TKBoard) As 
     End If
 End Function
 
-Sub boardSize(ByVal fName As String, ByRef x As Long, ByRef y As Long)
+'=========================================================================
+' Change a board's size
+'=========================================================================
+Public Sub boardSize(ByVal fName As String, ByRef x As Long, ByRef y As Long)
     'give board x, y size
     On Error Resume Next
     Dim fileOpen As String, xx As Long, yy As Long, num As Long
@@ -455,9 +500,10 @@ ver2oldboard:
     x = xx: y = yy
 End Sub
 
+'=========================================================================
+' Clear a board structure
+'=========================================================================
 Public Sub BoardClear(ByRef theBoard As TKBoard)
-
-    'Clear a TKBoard structure
 
     On Error Resume Next
 
@@ -547,21 +593,23 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
     End With
 End Sub
 
-Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
+'=========================================================================
+' Save a board to file
+'=========================================================================
+Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
 
-    'Saves board currently in memory
     On Error Resume Next
+
     Dim num As Long, t As Long, l As Long, x As Long, y As Long
-    
-    num = FreeFile
-    Dim majVer As Integer
-    Dim minVer As Integer
-    majVer = 2
-    minVer = 2
-    
-    Kill filen$
-    
-    Open filen$ For Binary As #num
+
+    num = FreeFile()
+
+    Const majVer = 2
+    Const minVer = 2
+
+    Call Kill(filename)
+
+    Open filename For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT BOARD")    'Filetype
         Call BinWriteInt(num, major)
         Call BinWriteInt(num, 2)    'Minor version (ie 2.2 new type, allowing large boards)
@@ -645,7 +693,7 @@ Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
         
         Call BinWriteInt(num, UBound(theBoard.programName))  'number of programs on the board...
         For t = 0 To UBound(theBoard.programName)
-            Call BinWriteString(num, theBoard.programName(t)) 'Board program filenames
+            Call BinWriteString(num, theBoard.programName(t)) 'Board program filenameames
             Call BinWriteInt(num, theBoard.progX(t))   'program x
             Call BinWriteInt(num, theBoard.progY(t))   'program y
             Call BinWriteInt(num, theBoard.progLayer(t)) 'program layer
@@ -663,7 +711,7 @@ Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
         Call dimensionItemArrays
         Call BinWriteInt(num, UBound(theBoard.itmName))   'number of items on the board...
         For t = 0 To UBound(theBoard.itmName)
-            Call BinWriteString(num, theBoard.itmName(t))   'filenames of items
+            Call BinWriteString(num, theBoard.itmName(t))   'filenameames of items
             Call BinWriteInt(num, theBoard.itmX(t))     'x coord
             Call BinWriteInt(num, theBoard.itmY(t))     'y coord
             Call BinWriteInt(num, theBoard.itmLayer(t)) 'layer coord
@@ -680,15 +728,19 @@ Sub saveboard(ByVal filen As String, ByRef theBoard As TKBoard)
         Call BinWriteByte(num, theBoard.isIsometric)
 
         For t = 0 To UBound(theBoard.threads)
-            If Not theBoard.threads(t) = "" Then
-                BinWriteString num, theBoard.threads(t)
+            If theBoard.threads(t) <> "" Then
+                Call BinWriteString(num, theBoard.threads(t))
             End If
         Next t
-        
-    Close #num
+
+    Close num
+
 End Sub
 
-Public Sub openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
+'=========================================================================
+' Open a board
+'=========================================================================
+Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
 
     On Error GoTo loadBrdErr
 
@@ -728,10 +780,10 @@ Public Sub openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
             If fileHeader$ <> "RPGTLKIT BOARD" Then Close #num: GoTo Ver1Board
             majorVer = BinReadInt(num)       'Version
             minorVer = BinReadInt(num)      'Minor version (ie 2.0)
-            If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit " + fileOpen, , "Unable to open tile": Exit Sub
+            If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit " + fileOpen, , "Unable to open tile": Exit Function
             If minorVer > 2 Then
                 user = MsgBox("This board was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
-                If user = 7 Then Close #num: Exit Sub     'selected no
+                If user = 7 Then Close #num: Exit Function 'selected no
             End If
             If minorVer <> 2 Then
                 Close #num
@@ -937,7 +989,7 @@ exitTheFor:
 
         Close num
 
-        Exit Sub
+        Exit Function
 
 ver2oldboard:
 
@@ -946,10 +998,10 @@ ver2oldboard:
             If fileHeader$ <> "RPGTLKIT BOARD" Then Close #num: GoTo Ver1Board
             Input #num, majorVer       'Version
             Input #num, minorVer       'Minor version (ie 2.0)
-            If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit", , "Unable to open tile": Close #num: Exit Sub
+            If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit", , "Unable to open tile": Close #num: Exit Function
             If minorVer > 2 Then
                 user = MsgBox("This board was created using Version " + str$(majorVer) + "." + str$(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
-                If user = 7 Then Close #num: Exit Sub     'selected no
+                If user = 7 Then Close #num: Exit Function 'selected no
             End If
         
             Input #num, regYN       'Is it registered?
@@ -1039,7 +1091,7 @@ ver2oldboard:
             .BoardBackgroundNight$ = fread(num) 'Fighting background at night
         Close num
 
-        Exit Sub
+        Exit Function
 
 Ver1Board:
 
@@ -1058,7 +1110,7 @@ Ver1Board:
             If errorsA = 1 Then
                 errorsA = 0
                 Call MsgBox("Unable to open selected filename", "Board editor")
-                Exit Sub
+                Exit Function
             End If
             For y = 1 To 11
                 For x = 1 To 19
@@ -1111,30 +1163,37 @@ Ver1Board:
         
     End With
 
-    Exit Sub
+    Exit Function
 
 loadBrdErr:
     errorsA = 1
     Resume Next
 
-End Sub
+End Function
 
-Function BoardGetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByRef theBoard As TKBoard) As String
-    'get the board's tile filename at x, y, layer
+'=========================================================================
+' Get a tile
+'=========================================================================
+Public Function BoardGetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByRef theBoard As TKBoard) As String
     On Error Resume Next
     BoardGetTile = theBoard.tileIndex(theBoard.board(x, y, layer))
 End Function
 
-Sub BoardInit(ByRef theBoard As TKBoard)
-    'set initial array sizes...
+'=========================================================================
+' Initiate a board
+'=========================================================================
+Public Sub BoardInit(ByRef theBoard As TKBoard)
     On Error Resume Next
     ReDim theBoard.tileIndex(5)
     Call BoardSetSize(19, 11, 8, theBoard)
     Call dimensionItemArrays
 End Sub
 
-Sub BoardSetSize(ByVal sizex As Integer, ByVal sizey As Integer, ByVal sizeLayer As Integer, ByRef theBoard As TKBoard)
-    'resize the board-- do not maintin current contents.
+'=========================================================================
+' Size a board losing its current contents
+'=========================================================================
+Public Sub BoardSetSize(ByVal sizex As Integer, ByVal sizey As Integer, ByVal sizeLayer As Integer, ByRef theBoard As TKBoard)
+
     On Error Resume Next
     
     ReDim theBoard.board(sizex, sizey, sizeLayer)
@@ -1148,9 +1207,11 @@ Sub BoardSetSize(ByVal sizex As Integer, ByVal sizey As Integer, ByVal sizeLayer
     theBoard.Bsizel = sizeLayer
 End Sub
 
-Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByVal ttype As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef theBoard As TKBoard)
-    'set a tile on the board at x, y, layer
-    'with a specified tile type and r,g,b shade
+'=========================================================================
+' Set RGB value of tile
+'=========================================================================
+Public Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByVal ttype As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef theBoard As TKBoard)
+
     On Error Resume Next
     
     'first scan the look up table for filenames...
@@ -1200,9 +1261,11 @@ Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integ
     theBoard.ambientblue(x - 1, y - 1, layer - 1) = b
 End Sub
 
-Sub BoardSetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByRef theBoard As TKBoard)
-    'set a tile on the board at x, y, layer
-    'with a specified tile type and r,g,b shade
+'=========================================================================
+' Set a tile on the board
+'=========================================================================
+Public Sub BoardSetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByRef theBoard As TKBoard)
+
     On Error Resume Next
     
     'first scan the look up table for filenames...

@@ -19,6 +19,7 @@ Attribute VB_Exposed = False
 
 '=========================================================================
 ' Item management system
+' Status: A+
 '=========================================================================
 
 Option Explicit
@@ -36,6 +37,8 @@ End Type
 ' Member variables
 '=========================================================================
 Private m_items() As invItem
+Private m_appendExtension As Boolean
+Private m_differentTypes As Long
 
 '=========================================================================
 ' Item file names
@@ -68,6 +71,20 @@ Public Property Get quantities(ByVal pos As Long) As Long
 End Property
 
 '=========================================================================
+' Append extension?
+'=========================================================================
+Public Property Let appendItmExtension(ByVal append As Boolean)
+    m_appendExtension = append
+End Property
+
+'=========================================================================
+' How many different types of items are in this inventory?
+'=========================================================================
+Public Property Get differentTypes() As Long
+    differentTypes = m_differentTypes
+End Property
+
+'=========================================================================
 ' Current size of inventory
 '=========================================================================
 Public Property Get upperBound() As Long
@@ -80,6 +97,8 @@ End Property
 Private Sub Class_Initialize()
     'Create positions for 501 items (time saver)
     ReDim m_items(500)
+    'Add .itm to items passed in
+    m_appendExtension = True
 End Sub
 
 '=========================================================================
@@ -87,13 +106,13 @@ End Sub
 '=========================================================================
 Public Sub addItem( _
                       ByVal file As String, _
-                      ByVal quantity As Long _
-                                               )
+                      Optional ByVal quantity As Long = 1 _
+                                                           )
 
     On Error Resume Next
 
     'Make sure we have a .itm extension on the file
-    file = addExt(file, ".itm")
+    If m_appendExtension Then file = addExt(file, ".itm")
 
     Dim theOne As Long  'the position
     Dim itmNum As Long  'current item number
@@ -113,6 +132,8 @@ Public Sub addItem( _
         'Just increase the amount of that item
         m_items(theOne).number = m_items(theOne).number + quantity
     Else
+
+        m_differentTypes = m_differentTypes + 1
 
         'Find an open position
         For itmNum = 0 To UBound(m_items)
@@ -145,13 +166,13 @@ End Sub
 '=========================================================================
 Public Sub removeItem( _
                          ByVal file As String, _
-                         ByVal quantity As Long _
-                                                  )
+                         Optional ByVal quantity As Long = 1 _
+                                                               )
 
     On Error Resume Next
 
     'Make sure we have a .itm extension
-    file = addExt(file, ".itm")
+    If m_appendExtension Then file = addExt(file, ".itm")
 
     Dim theOne As Long  'the position
     Dim itmNum As Long  'current item number
@@ -169,6 +190,7 @@ Public Sub removeItem( _
 
     'If we found it
     If theOne <> -1 Then
+        m_differentTypes = m_differentTypes - 1
         With m_items(theOne)
             'Take away the items
             .number = .number - quantity

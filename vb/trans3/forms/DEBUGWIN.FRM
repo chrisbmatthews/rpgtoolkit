@@ -58,19 +58,19 @@ keyShiftState = Shift
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
 Private Sub Form_Load()
     On Error GoTo errorhandler
     Call LocalizeForm(Me)
-    debugwin.top = screen.height - debugwin.height
-    debugwin.left = screen.width - debugwin.width
+    debugwin.Top = Screen.height - debugwin.height
+    debugwin.Left = Screen.Width - debugwin.Width
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub

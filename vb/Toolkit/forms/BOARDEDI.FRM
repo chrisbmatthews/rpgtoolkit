@@ -511,7 +511,7 @@ Private Type udtTileType
 End Type
 
 ' Scrolling object
-Private scroll As New clsScrollBoard
+Private Scroll As New clsScrollBoard
 
 '========================================================================
 ' get tiletype details (color, name) returned as UDT
@@ -1494,7 +1494,7 @@ Public Sub DrawBackground()
         Call vbPicAutoRedraw(boardedit, True)
         
         ' draw image to form
-        Call DrawImage(Temp$, X, Y, vbFrmHDC(boardedit))
+        Call drawImage(Temp$, X, Y, vbFrmHDC(boardedit))
         
         ' refresh form
         Call vbFrmRefresh(boardedit)
@@ -1511,7 +1511,7 @@ Public Sub DrawBackground()
         ext = extention(boardList(activeBoardIndex).theData.brdBack$)
         
         ' draw image to picture box
-        Call DrawImage(Temp$, X, Y, vbPicHDC(boardform))
+        Call drawImage(Temp$, X, Y, vbPicHDC(boardform))
         
     End If
     
@@ -1892,10 +1892,10 @@ Public Sub openFile(file$): On Error Resume Next
     antiPath$ = absNoPath(file$)
     
     ' copy board to directory
-    FileCopy filename$(1), projectPath$ + brdPath$ + antiPath$
+    FileCopy filename$(1), projectPath$ & brdPath$ & antiPath$
     
     ' open board
-    Call openboard(filename$(1), boardList(activeBoardIndex).theData)
+    Call openBoard(filename$(1), boardList(activeBoardIndex).theData)
     
     ' redraw board
     Call boardRedraw
@@ -2037,7 +2037,7 @@ Public Sub saveFile(): On Error Resume Next
     End If
         
     ' save board
-    Call saveboard(projectPath$ + brdPath$ + filename$(2), boardList(activeBoardIndex).theData)
+    Call saveBoard(projectPath$ + brdPath$ + filename$(2), boardList(activeBoardIndex).theData)
     
     ' update form caption
     activeBoard.Caption = LoadStringLoc(802, "Board Editor") + " (" + filename$(2) + ")"
@@ -2867,8 +2867,8 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
 
     Call hideAllTools
     
-    Call Unload(scroll)
-    Set scroll = Nothing
+    Call Unload(Scroll)
+    Set Scroll = Nothing
     
 End Sub
 
@@ -2924,7 +2924,7 @@ Private Sub HScroll1_Change(): On Error Resume Next
         boardList(activeBoardIndex).topX = HScroll1.value - 1
         
         ' shift to left
-        Call scroll.shiftLeft
+        Call Scroll.shiftLeft
         
         Call boardRedraw
         
@@ -2938,7 +2938,7 @@ Private Sub HScroll1_Change(): On Error Resume Next
         boardList(activeBoardIndex).topX = HScroll1.value - 1
         
         ' shift to right
-        Call scroll.shiftRight
+        Call Scroll.shiftRight
         
         Call boardRedraw
         
@@ -3186,7 +3186,7 @@ Private Sub savebrdasmnu_click(): On Error Resume Next
     End If
     
     ' save board
-    Call saveboard(filename$(1), boardList(activeBoardIndex).theData)
+    Call saveBoard(filename$(1), boardList(activeBoardIndex).theData)
     
     ' set filename
     boardList(activeBoardIndex).boardName$ = antiPath$
@@ -3217,7 +3217,7 @@ Private Sub savebrdmnu_Click(): On Error Resume Next
     If filename$(2) = "" Then savebrdasmnu_click: Exit Sub
     
     ' save board
-    Call saveboard(projectPath$ + brdPath$ + filename$(2), boardList(activeBoardIndex).theData)
+    Call saveBoard(projectPath$ + brdPath$ + filename$(2), boardList(activeBoardIndex).theData)
     
     ' update form caption
     activeBoard.Caption = LoadStringLoc(802, "Board Editor") + " (" + filename$(2) + ")"
@@ -3576,7 +3576,7 @@ Private Sub VScroll1_Change(): On Error Resume Next
     
         boardList(activeBoardIndex).topY = VScroll1.value - 1
         
-        Call scroll.shiftUp
+        Call Scroll.shiftUp
     
         Call boardRedraw
         
@@ -3588,7 +3588,7 @@ Private Sub VScroll1_Change(): On Error Resume Next
     
         boardList(activeBoardIndex).topY = VScroll1.value - 1
         
-        Call scroll.shiftDown
+        Call Scroll.shiftDown
         
         Call boardRedraw
         

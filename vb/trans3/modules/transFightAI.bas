@@ -224,7 +224,7 @@ Private Function enemyCanDoSM(ByRef theEnemy As TKEnemy, ByRef moveArray() As St
     
     For t = 0 To UBound(theEnemy.eneSpecialMove)
         If theEnemy.eneSpecialMove(t) <> "" Then
-            Call openSpecialMove(projectPath$ + spcPath$ + theEnemy.eneSpecialMove(t), move)
+            move = openSpecialMove(projectPath$ & spcPath$ & theEnemy.eneSpecialMove(t))
             If move.smSMP <= getEnemySMP(theEnemy) Then
                 'we can do it...
                 moveArray(idx) = theEnemy.eneSpecialMove(t)

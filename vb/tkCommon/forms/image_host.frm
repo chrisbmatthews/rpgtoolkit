@@ -15,6 +15,57 @@ Begin VB.Form image_host
    ScaleWidth      =   312
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin VB.PictureBox noCursor 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   240
+      Left            =   1320
+      Picture         =   "image_host.frx":0000
+      ScaleHeight     =   16
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   16
+      TabIndex        =   2
+      Top             =   360
+      Visible         =   0   'False
+      Width           =   240
+   End
+   Begin VB.PictureBox hand 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   480
+      Left            =   0
+      Picture         =   "image_host.frx":014A
+      ScaleHeight     =   32
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   32
+      TabIndex        =   1
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   480
+   End
+   Begin VB.PictureBox handBackup 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   480
+      Left            =   480
+      Picture         =   "image_host.frx":0E14
+      ScaleHeight     =   32
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   32
+      TabIndex        =   0
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   480
+   End
    Begin PicClip.PictureClip PicClip 
       Left            =   1200
       Top             =   1200

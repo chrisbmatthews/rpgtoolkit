@@ -45,9 +45,9 @@ Sub DBFillCodeWindow()
     On Error GoTo errorhandler
     Dim prognum As Long, t As Long
     If DBWinFilled = False Or program(prognum).Length <> DBWinLength Then
-        dbwin.codewin.Clear
+        dbwin.codewin.clear
         For t = 0 To program(prognum).Length
-            dbwin.codewin.AddItem (program(prognum).program$(t))
+            dbwin.codewin.addItem (program(prognum).program$(t))
         Next t
         DBWinLength = program(prognum).Length
         DBWinFilled = True
@@ -64,11 +64,11 @@ Sub DBFillWatchWindow()
     'fills watch window with values...
     On Error GoTo errorhandler
     
-    dbwin.watchlist.Clear
+    dbwin.watchlist.clear
     Dim t As Long, l As String, n As Double, a As Long, valu As String
     For t = 0 To 100
         If DBWatchVars$(t) <> "" Then
-            a = GetIndependentVariable(DBWatchVars$(t), l$, n)
+            a = getIndependentVariable(DBWatchVars$(t), l$, n)
             If a = 0 Then
                 'numerical
                 valu$ = str$(n)
@@ -76,9 +76,9 @@ Sub DBFillWatchWindow()
                 'literal
                 valu$ = l$
             End If
-            dbwin.watchlist.AddItem (DBWatchVars$(t) + "     " + valu$)
+            dbwin.watchlist.addItem (DBWatchVars$(t) + "     " + valu$)
         Else
-            dbwin.watchlist.AddItem ("")
+            dbwin.watchlist.addItem ("")
         End If
     Next t
 
@@ -150,15 +150,15 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub DBSaveProgram(ByVal file As String, ByVal pnum As Long)
+Sub DBSaveProgram(ByVal file As String, ByVal pNum As Long)
     'save the current program pnum in file$
     On Error Resume Next
     Dim num As Long, t As Long
     num = FreeFile
     Open file$ For Output As #num
-        For t = 0 To program(pnum).Length
+        For t = 0 To program(pNum).Length
 'FIXIT: Print method has no Visual Basic .NET equivalent and will not be upgraded.         FixIT90210ae-R7593-R67265
-            Print #num, program(pnum).program$(t)
+            Print #num, program(pNum).program$(t)
         Next t
     Close #num
 End Sub
@@ -175,7 +175,7 @@ Sub DebugBox(ByRef theProgram As RPGCodeProgram)
     Dim bDone As Boolean, a As String
     If debugging Then
         bDone = False
-        dbwin.Show
+        'dbwin.Show
         Call DBFillCodeWindow
         Call DBFillWatchWindow
         If DBMethodStep = True Then

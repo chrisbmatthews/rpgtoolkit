@@ -180,7 +180,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     Else
         'Alright! we found this method!
         'increment calldepth(total number of calls)
-        DBCallDepth = DBCallDepth + 1
+        'DBCallDepth = DBCallDepth + 1
         
         'Now pass variables.
         theProgram.programPos = foundIt
@@ -283,14 +283,14 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Call RemoveHeapFromStack(theProgram)
         
         'decrement call depth
-        DBCallDepth = DBCallDepth - 1
+        'DBCallDepth = DBCallDepth - 1
 
     End If
 
     Exit Sub
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Sub
 
@@ -699,7 +699,7 @@ Public Function runItmYN(ByVal itmNum As Long) As Boolean
     Exit Function
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -782,7 +782,7 @@ Public Function runprgYN(ByVal prgnum As Long) As Boolean
     Exit Function
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -801,10 +801,7 @@ Public Sub runProgram( _
     If Trim(Right(file, 1)) = "\" Then Exit Sub
     
     runningProgram = True
-    DBCallDepth = 0
-    DBWinFilled = False
-    DBWinLength = 0
-    
+   
     Call hideMsgBox
     Call setConstants
     Call clearButtons
@@ -961,11 +958,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
     retval.dataType = DT_VOID
     
     'call tracestring("Execute: " + cline$)
-    
-    If debugYN = 1 Then
-        Call DebugBox(theProgram)
-    End If
-    
+       
     Dim splice As String, cType As String, testText As String
 
     splice$ = cLine$
@@ -1569,7 +1562,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
     
         'TBD: callshop
         Case "CALLSHOP":
-            Call callShopRPG(splice$, theProgram) 'call shop window
+            Call CallShopRPG(splice$, theProgram) 'call shop window
             DoSingleCommand = -1
             Exit Function
     
@@ -2387,6 +2380,6 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
 
 'Begin error handling code:
 errorhandler:
-      Call HandleError
+      
     Resume Next
 End Function

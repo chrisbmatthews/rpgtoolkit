@@ -62,10 +62,10 @@ Public Function linkIso(ByVal linkBoard As String) As Boolean
     If Not fileExists(linkBoard) Then
         Exit Function
     End If
-    Dim TestBoard As TKBoard
-    Call openBoard(linkBoard$, TestBoard)
     lastRender.canvas = -1
-    If TestBoard.isIsometric = 1 Then
+    Dim aBoard As TKBoard
+    Call openBoard(linkBoard, aBoard)
+    If aBoard.isIsometric = 1 Then
         linkIso = True
     End If
 End Function

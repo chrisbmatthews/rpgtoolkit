@@ -146,7 +146,7 @@ Function checkAbove(ByVal x As Long, ByVal y As Long, ByVal layer As Long) As Lo
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -221,7 +221,7 @@ Function checkObstruction(ByVal x As Double, ByVal y As Double, ByVal l As Long,
 
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 End Function
 
@@ -619,7 +619,7 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     
     Call ClearNonPersistentThreads
     
-    Call openBoard(projectPath$ + brdPath$ + targetBoard$, boardList(activeBoardIndex).theData)
+    Call openBoard(projectPath$ & brdPath$ & targetBoard$, boardList(activeBoardIndex).theData)
     lastRender.canvas = -1
     scTopX = -1000
     scTopY = -1000
@@ -2068,7 +2068,7 @@ Function TestBoard(ByVal file As String, ByVal testX As Long, ByVal testY As Lon
     End If
 
     Dim aBoard As TKBoard
-    Call openBoard(file$, aBoard)
+    Call openBoard(file, aBoard)
     lastRender.canvas = -1
     If testX > aBoard.Bsizex Or testY > aBoard.Bsizey Or testL > aBoard.Bsizel Then
         TestBoard = -1

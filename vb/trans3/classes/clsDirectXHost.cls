@@ -31,125 +31,48 @@ Attribute VB_Exposed = False
 Option Explicit
 
 '=========================================================================
-' Win32 Structures
+' Member constants
 '=========================================================================
-
-'Window class structure (Ex)
-Private Type WNDCLASSEX
-    cbSize As Long
-    style As Long
-    lpfnWndProc As Long
-    cbClsextra As Long
-    cbWndExtra As Long
-    hInstance As Long
-    hIcon As Long
-    hCursor As Long
-    hbrBackground As Long
-    lpszMenuName As String
-    lpszClassName As String
-    hIconSm As Long
-End Type
-
-'Window creation structure
-Private Type CREATESTRUCT
-    lpCreateParams As Long
-    hInstance As Long
-    hMenu As Long
-    hwndParent As Long
-    cy As Long
-    cx As Long
-    y As Long
-    x As Long
-    style As Long
-    lpszName As String
-    lpszClass As String
-    ExStyle As Long
-End Type
-
-'=========================================================================
-' Win32 APIs
-'=========================================================================
-Private Declare Function RegisterClassEx Lib "user32" Alias "RegisterClassExA" (pcWndClassEx As WNDCLASSEX) As Integer
-Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hwndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
-Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
-Private Declare Function LoadIcon Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As String) As Long
-Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As String) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Long) As Long
-Private Declare Function UnregisterClass Lib "user32" Alias "UnregisterClassA" (ByVal lpClassName As String, ByVal hInstance As Long) As Long
-Private Declare Function DestroyWindow Lib "user32" (ByVal hwnd As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
-Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-
-'=========================================================================
-' Win32 Constants
-'=========================================================================
-Private Const CS_BYTEALIGNCLIENT = &H1000
-Private Const CS_BYTEALIGNWINDOW = &H2000
-Private Const CS_CLASSDC = &H40
-Private Const CS_DBLCLKS = &H8
-Private Const CS_HREDRAW = &H2
-Private Const CS_INSERTCHAR = &H2000
-Private Const CS_KEYCVTWINDOW = &H4
-Private Const CS_NOCLOSE = &H200
-Private Const CS_NOKEYCVT = &H100
-Private Const CS_NOMOVECARET = &H4000
-Private Const CS_OWNDC = &H20
-Private Const CS_PARENTDC = &H80
-Private Const CS_PUBLICCLASS = &H4000
-Private Const CS_SAVEBITS = &H800
-Private Const CS_VREDRAW = &H1
-Private Const WS_VISIBLE = &H10000000
-Private Const WS_OVERLAPPED = &H0&
-Private Const WS_CAPTION = &HC00000
-Private Const WS_SYSMENU = &H80000
-Private Const WS_THICKFRAME = &H40000
-Private Const WS_MINIMIZEBOX = &H20000
-Private Const WS_MAXIMIZEBOX = &H10000
-Private Const WS_OVERLAPPEDWINDOW = (WS_OVERLAPPED Or WS_CAPTION Or WS_SYSMENU)
-Private Const IDI_APPLICATION = 32512&
-Private Const IDC_ARROW = 32512&
-Private Const BLACK_BRUSH = 4
 Private Const WINDOWS_CLASS = "DirectXHost"
-Private Const WS_POPUP = &H80000000
-Private Const IDC_NO = 32648&
-Private Const WS_CHILD = &H40000000
-Private Const BS_PUSHBUTTON = &H0&
 
 '=========================================================================
 ' Member variables
 '=========================================================================
-Private m_created As Boolean
-Private m_hwnd As Long
-Private m_createHeight As Long
-Private m_createWidth As Long
-Private m_createCaption As String
-Private m_createStyle As Long
-Private m_createX As Long
-Private m_createY As Long
-Private m_buttonHwnd As Long
+Private m_created As Boolean        'window created?
+Private m_createHeight As Long      'height to create window with
+Private m_createWidth As Long       'width to create window with
+Private m_createCaption As String   'caption to create window with
+Private m_createStyle As Long       'style to create window with
+Private m_createX As Long           'x position window should start at
+Private m_createY As Long           'y position window should start at
+
+'=========================================================================
+' Member enumerations
+'=========================================================================
+Public Enum STYLE_ENUM
+    fullScreen = 0
+    windowed = 1
+End Enum
 
 '=========================================================================
 ' Window's handle
 '=========================================================================
-Public Property Get hwnd() As Long
-    hwnd = m_hwnd
-End Property
+Public hwnd As Long
 
 '=========================================================================
 ' Window's device context
 '=========================================================================
 Public Property Get hdc() As Long
-    hdc = GetDC(m_hwnd)
+    hdc = GetDC(hwnd)
 End Property
 
 '=========================================================================
-' Style: 0 - fullscreen; 1 - windowed
+' Style of window
 '=========================================================================
-Public Property Let style(ByVal newValue As Long)
-    If newValue = 0 Then
+Public Property Let style(ByVal newValue As STYLE_ENUM)
+    If newValue = fullScreen Then
         m_createStyle = WS_POPUP
-    ElseIf newValue = 1 Then
+    ElseIf newValue = windowed Then
         m_createStyle = WS_OVERLAPPEDWINDOW Or WS_MINIMIZEBOX
     End If
 End Property
@@ -161,7 +84,7 @@ Public Property Let Caption(ByVal newValue As String)
     If Not m_created Then
         m_createCaption = newValue
     Else
-        Call SetWindowText(m_hwnd, newValue)
+        Call SetWindowText(hwnd, newValue)
     End If
 End Property
 
@@ -230,7 +153,7 @@ End Property
 ' Show the console
 '=========================================================================
 Public Sub Show()
-    Call ShowWindow(m_hwnd, 10)
+    Call ShowWindow(hwnd, 10)
 End Sub
 
 '=========================================================================
@@ -245,7 +168,7 @@ Public Sub Create()
     With wnd
         .cbSize = Len(wnd) 'callback size == length of the structure
         .style = CS_DBLCLKS Or CS_OWNDC Or CS_VREDRAW Or CS_HREDRAW 'style of window
-        .lpfnWndProc = getAddress(AddressOf WndProc) 'Address of WinProc
+        .lpfnwndproc = getAddress(AddressOf WndProc) 'Address of WinProc
         .hInstance = App.hInstance 'instance of owning application
         If fileExists("icon.ico") Then
             .hIcon = LoadIcon(0, "icon.ico")
@@ -270,7 +193,7 @@ Public Sub Create()
 
     'Create window ex shows the window we just made
     Dim cs As CREATESTRUCT
-    m_hwnd = vbCreateWindow( _
+    hwnd = vbCreateWindow( _
                                0, _
                                WINDOWS_CLASS, _
                                m_createCaption, _
@@ -301,7 +224,7 @@ Public Sub mainEventLoop()
 
     Dim message As msg
     Do While True
-        If PeekMessage(message, m_hwnd, 0, 0, PM_REMOVE) Then
+        If PeekMessage(message, host.hwnd, 0, 0, PM_REMOVE) Then
             'There was a message, check if it's WinProc asking
             'to leave this loop...
             If message.message = WM_QUIT Then
@@ -318,20 +241,7 @@ Public Sub mainEventLoop()
 
     'Clean up
     Call closeSystems
-    Call endform.Show(vbModal)
+    Call showEndForm(True)
 
 End Sub
 
-'=========================================================================
-' Used to retrieve address of a procedure
-'=========================================================================
-Private Function getAddress(ByVal address As Long) As Long
-    getAddress = address
-End Function
-
-'=========================================================================
-' Create a window
-'=========================================================================
-Private Function vbCreateWindow(ByVal dwExStyleFlags As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyleFlags As Long, ByVal xPos As Long, ByVal yPos As Long, ByVal xWidth As Long, ByVal yHeight As Long, ByVal hwndParent As Long, ByVal hMenu As Long, ByVal hInst As Long, ByRef lpParam As CREATESTRUCT) As Long
-    vbCreateWindow = CreateWindowEx(dwExStyleFlags, lpClassName, lpWindowName, dwStyleFlags, xPos, yPos, xWidth, yHeight, hwndParent, hMenu, hInst, lpParam)
-End Function

@@ -496,7 +496,7 @@ Public Function CountProjectFiles() As Integer
     Exit Function
 'Begin error handling code:
 errorhandler:
-    Call HandleError
+    
     Resume Next
 
 End Function

@@ -1,16 +1,42 @@
 Attribute VB_Name = "CommonCanvas"
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'toolkit graphics engine
-'DEPENDS: CommonImage => FreeImage library
-' CommonVB6Compat.bas
-' CommonTkCanvas.bas
+'=========================================================================
+' Canvas (backbuffer) engine
+'=========================================================================
+
 Option Explicit
 
-Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
-    'load background, sized
+'=========================================================================
+' FreeImage image manipulation
+'=========================================================================
+Private Declare Function IMGBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long) As Long
+Private Declare Function IMGGetWidth Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
+Private Declare Function IMGGetHeight Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
+Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal filename As String) As Long
+
+'=========================================================================
+' GDI HDC manipulation
+'=========================================================================
+Public Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
+Public Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+ 
+'=========================================================================
+' Member variables
+'=========================================================================
+Private canvasHost As Long      'The canvasHost is merely a DC. This is all
+                                'the form was used for, so it makes much
+                                'more sense to just store the DC in a
+                                'variable.
+
+'=========================================================================
+' Draw a background onto a canvas
+'=========================================================================
+Public Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim bkg As TKBackground
@@ -22,8 +48,10 @@ Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal 
     End If
 End Sub
 
-Function CanvasBltAnd(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
-    'blt the contents of a canvas onto a picturebox (SRCAND)
+'=========================================================================
+' Blt a canvas onto a picture box (SRCAND)
+'=========================================================================
+Public Function CanvasBltAnd(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
@@ -40,8 +68,10 @@ Function CanvasBltAnd(ByVal canvasID As Long, ByVal destX As Long, ByVal destY A
     End If
 End Function
 
-Function Canvas2CanvasBlt(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-    'blt the contents of a canvas onto another canvas
+'=========================================================================
+' Copy one canvas to another
+'=========================================================================
+Public Function Canvas2CanvasBlt(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
     On Error Resume Next
     If CanvasOccupied(canvasSource) And CanvasOccupied(canvasDest) Then
         Canvas2CanvasBlt = CNVBltCanvas(canvasSource, canvasDest, destX, destY, rasterOp)
@@ -50,43 +80,39 @@ Function Canvas2CanvasBlt(ByVal canvasSource As Long, ByVal canvasDest As Long, 
     End If
 End Function
 
-Sub CanvasDrawHand(ByVal canvasID As Long, ByVal pointx As Long, ByVal pointy As Long)
-    'draw a hand cursor pointing to ointx, pointy
+'=========================================================================
+' Draw a hand on a canvas
+'=========================================================================
+Public Sub CanvasDrawHand(ByVal canvasID As Long, ByVal pointx As Long, ByVal pointy As Long)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Dim c As Long
-        c = CreateCanvas(32, 32)
-        
-        'get hand graphoc...
-        Dim hdc2 As Long
-        hdc2 = CanvasOpenHDC(c)
-        Call BitBlt(hdc2, 0, 0, 32, 32, vbPicHDC(canvas_host.hand), 0, 0, SRCCOPY)
-        Call CanvasCloseHDC(c, hdc2)
-        
-        'now copy it...
-        Call Canvas2CanvasBltTransparent(c, canvasID, pointx - 32, pointy - 10, RGB(255, 0, 0))
-               
-        Call DestroyCanvas(c)
+        Dim cnv As Long, hdc As Long
+        cnv = CreateCanvas(32, 32)
+        hdc = CanvasOpenHDC(cnv)
+        Call BitBlt(hdc, 0, 0, 32, 32, handHDC, 0, 0, SRCCOPY)
+        Call CanvasCloseHDC(cnv, hdc)
+        Call Canvas2CanvasBltTransparent(cnv, canvasID, pointx - 32, pointy - 10, RGB(255, 0, 0))
+        Call DestroyCanvas(cnv)
     End If
 End Sub
 
-Sub CanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, Optional ByVal Bold As Boolean = False, Optional ByVal Italics As Boolean = False, Optional ByVal Underline As Boolean = False, Optional ByVal centred As Boolean = False, Optional ByVal outlined As Boolean = False)
-    'draw text to a canvas...
+'=========================================================================
+' Draw text onto a canvas
+'=========================================================================
+Public Sub CanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, Optional ByVal Bold As Boolean = False, Optional ByVal Italics As Boolean = False, Optional ByVal Underline As Boolean = False, Optional ByVal centred As Boolean = False, Optional ByVal outlined As Boolean = False)
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
-                
         Call drawGDIText(Text, x, y, crColor, size, size, font, Bold, Italics, Underline, hdc, centred, outlined)
-                
         Call CanvasCloseHDC(canvasID, hdc)
     End If
-    
 End Sub
 
-Function CanvasGetScreen(ByVal canvasID As Long) As Long
-    'copy screen into canvas
+'=========================================================================
+' Copy the screen onto a canvas
+'=========================================================================
+Public Function CanvasGetScreen(ByVal canvasID As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         CanvasGetScreen = DXCopyScreenToCanvas(canvasID)
@@ -95,8 +121,10 @@ Function CanvasGetScreen(ByVal canvasID As Long) As Long
     End If
 End Function
 
-Function Canvas2CanvasBltPartial(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-    'blt the contents of a canvas onto another canvas
+'=========================================================================
+' Partially copy one canvas onto another one
+'=========================================================================
+Public Function Canvas2CanvasBltPartial(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
     On Error Resume Next
     If CanvasOccupied(canvasSource) And CanvasOccupied(canvasDest) Then
         Canvas2CanvasBltPartial = CNVBltPartCanvas(canvasSource, canvasDest, destX, destY, srcX, srcY, Width, height, rasterOp)
@@ -105,8 +133,10 @@ Function Canvas2CanvasBltPartial(ByVal canvasSource As Long, ByVal canvasDest As
     End If
 End Function
 
-Function Canvas2CanvasBltTransparentPartial(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Width As Long, ByVal height As Long, Optional ByVal crColor As Long) As Long
-    'blt the contents of a canvas onto another canvas
+'=========================================================================
+' Transparently copy part of a canvas onto another one
+'=========================================================================
+Public Function Canvas2CanvasBltTransparentPartial(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Width As Long, ByVal height As Long, Optional ByVal crColor As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasSource) And CanvasOccupied(canvasDest) Then
         Canvas2CanvasBltTransparentPartial = CNVBltTransparentPartCanvas(canvasSource, canvasDest, destX, destY, srcX, srcY, Width, height, crColor)
@@ -115,8 +145,10 @@ Function Canvas2CanvasBltTransparentPartial(ByVal canvasSource As Long, ByVal ca
     End If
 End Function
 
-Function Canvas2CanvasBltTransparent(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, Optional ByVal crColor As Long) As Long
-    'blt the contents of a canvas onto another canvas
+'=========================================================================
+' Transparenly copy a canvas to another one
+'=========================================================================
+Public Function Canvas2CanvasBltTransparent(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, Optional ByVal crColor As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasSource) And CanvasOccupied(canvasDest) Then
         Canvas2CanvasBltTransparent = CNVBltCanvasTransparent(canvasSource, canvasDest, destX, destY, crColor)
@@ -125,8 +157,10 @@ Function Canvas2CanvasBltTransparent(ByVal canvasSource As Long, ByVal canvasDes
     End If
 End Function
 
-Function Canvas2CanvasBltTranslucent(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
-    'blt the contents of a canvas onto another canvas
+'=========================================================================
+' Translucently copy a canvas to another one
+'=========================================================================
+Public Function Canvas2CanvasBltTranslucent(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
     On Error Resume Next
     If CanvasOccupied(canvasSource) And CanvasOccupied(canvasDest) Then
         Call CNVBltCanvasTranslucent(canvasSource, canvasDest, destX, destY, dIntensity, crUnaffectedColor, crTransparentColor)
@@ -137,35 +171,30 @@ Function Canvas2CanvasBltTranslucent(ByVal canvasSource As Long, ByVal canvasDes
     End If
 End Function
 
-Sub CanvasSetPicture(ByVal canvasID As Long, picclp As PictureClip)
-    'set the pixxlp picture into the canvas...
-    On Error Resume Next
-End Sub
-
-Sub CanvasBox(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-    'fill a box on the canvas with a color.
+'=========================================================================
+' Draw a box on a canvas
+'=========================================================================
+Public Sub CanvasBox(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-    Dim rgn As Long, brush As Long, hdc As Long, A As Long
+    Dim rgn As Long, brush As Long, hdc As Long
         rgn = CreateRectRgn(x1, y1, x2 + 1, y2 + 1)
         brush = CreateSolidBrush(crColor)
-        
         hdc = CanvasOpenHDC(canvasID)
-        A = FrameRgn(hdc, rgn, brush, 1, 1)
+        Call FrameRgn(hdc, rgn, brush, 1, 1)
         Call CanvasCloseHDC(canvasID, hdc)
-        
         Call DeleteObject(rgn)
         Call DeleteObject(brush)
     End If
 End Sub
 
-Sub CanvasDrawFilledEllipse(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-    'draw an ellipse inside the rectangle defined.
+'=========================================================================
+' Draw a filled ellipse on a canvas
+'=========================================================================
+Public Sub CanvasDrawFilledEllipse(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     On Error Resume Next
-    
     Dim hdc As Long, pen As Long, l As Long, brush As Long, m As Long
     hdc = CanvasOpenHDC(canvasID)
-    
     pen = CreatePen(0, 1, crColor)
     l = SelectObject(hdc, pen)
     brush = CreateSolidBrush(crColor)
@@ -175,29 +204,31 @@ Sub CanvasDrawFilledEllipse(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 A
     Call SelectObject(hdc, l)
     Call DeleteObject(brush)
     Call DeleteObject(pen)
-
     Call CanvasCloseHDC(canvasID, hdc)
 End Sub
 
-Sub CanvasDrawEllipse(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-    'draw an ellipse inside the rectangle defined.
+'=========================================================================
+' Draw an ellipse on a canvas
+'=========================================================================
+Public Sub CanvasDrawEllipse(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        Dim rgn As Long, brush As Long, hdc As Long, A As Long
+        Dim rgn As Long, brush As Long, hdc As Long
         rgn = CreateEllipticRgn(x1, y1, x2 + 1, y2 + 1)
         brush = CreateSolidBrush(crColor)
         hdc = CanvasOpenHDC(canvasID)
-        A = FrameRgn(hdc, rgn, brush, 1, 1)
+        Call FrameRgn(hdc, rgn, brush, 1, 1)
         Call CanvasCloseHDC(canvasID, hdc)
         Call DeleteObject(rgn)
         Call DeleteObject(brush)
     End If
 End Sub
 
-Function CanvasMaskBltStretch(ByVal canvasIDSource As Long, ByVal canvasIDMask As Long, ByVal destX As Long, ByVal destY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destPicHdc As Long) As Long
-    'blt the contents of a canvas onto a picturebox (SRCCOPY)
+'=========================================================================
+' Stretch a mask over a canvas
+'=========================================================================
+Public Function CanvasMaskBltStretch(ByVal canvasIDSource As Long, ByVal canvasIDMask As Long, ByVal destX As Long, ByVal destY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasIDSource) Then
         Dim W As Long, h As Long, hdcMask As Long, hdcSource As Long
         W = GetCanvasWidth(canvasIDSource)
@@ -231,14 +262,14 @@ Function CanvasMaskBltStretch(ByVal canvasIDSource As Long, ByVal canvasIDMask A
     End If
 End Function
 
-Sub CanvasDrawLine(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-    'fill a box on the canvas with a color.
+'=========================================================================
+' Draw a line on a canvas
+'=========================================================================
+Public Sub CanvasDrawLine(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
-        Dim hdc As Long, brush As Long, m As Long
+        Dim hdc As Long, brush As Long, point As POINTAPI, m As Long
         hdc = CanvasOpenHDC(canvasID)
-        Dim point As POINTAPI
         brush = CreatePen(0, 1, crColor)
         m = SelectObject(hdc, brush)
         Call MoveToEx(hdc, x1, y1, point)
@@ -249,10 +280,10 @@ Sub CanvasDrawLine(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, B
     End If
 End Sub
 
-Sub CanvasLoadFullPicture(ByVal canvasID As Long, ByVal file As String, ByVal minX As Long, ByVal minY As Long)
-    'load a picture, resize the canvas to fit the picture
-    'minX and minY are the MINIMUM dimensions to use.
-    'if both are set to -1, then it will just resize regardless.
+'=========================================================================
+' Load a picture onto a canvas and resize *the canvas*
+'=========================================================================
+Public Sub CanvasLoadFullPicture(ByVal canvasID As Long, ByVal file As String, ByVal minX As Long, ByVal minY As Long)
     On Error Resume Next
     If CanvasOccupied(canvasID) And fileExists(file) Then
         Dim img As Long, sizex As Long, sizey As Long
@@ -283,8 +314,10 @@ Sub CanvasLoadFullPicture(ByVal canvasID As Long, ByVal file As String, ByVal mi
     End If
 End Sub
 
-Sub CanvasFillBox(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-    'fill a box on the canvas with a color.
+'=========================================================================
+' Fill a box on a canvas
+'=========================================================================
+Public Sub CanvasFillBox(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long, pen As Long, l As Long, brush As Long, m As Long
@@ -293,27 +326,27 @@ Sub CanvasFillBox(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, By
         l = SelectObject(hdc, pen)
         brush = CreateSolidBrush(crColor)
         m = SelectObject(hdc, brush)
-        
-        Dim r As RECT
-        r.Bottom = y2 + 1
-        r.Right = x2 + 1
-        r.Left = x1
-        r.Top = y1
-        Call FillRect(hdc, r, brush)
-        
+        Dim theRegion As RECT
+        With theRegion
+            .Bottom = y2 + 1
+            .Right = x2 + 1
+            .Left = x1
+            .Top = y1
+        End With
+        Call FillRect(hdc, theRegion, brush)
         Call SelectObject(hdc, m)
         Call SelectObject(hdc, l)
         Call DeleteObject(brush)
         Call DeleteObject(pen)
-        
         Call CanvasCloseHDC(canvasID, hdc)
     End If
 End Sub
 
-Function CanvasMaskBlt(ByVal canvasIDSource As Long, ByVal canvasIDMask As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
-    'blt the contents of a canvas onto a picturebox (SRCCOPY)
+'=========================================================================
+' Blt a mask over a canvas
+'=========================================================================
+Public Function CanvasMaskBlt(ByVal canvasIDSource As Long, ByVal canvasIDMask As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasIDSource) Then
         Dim hdcMask As Long, hdcSource As Long
         hdcMask = CanvasOpenHDC(canvasIDMask)
@@ -337,17 +370,19 @@ Function CanvasMaskBlt(ByVal canvasIDSource As Long, ByVal canvasIDMask As Long,
     End If
 End Function
 
-Sub CanvasFill(ByVal canvasID As Long, ByVal crColor As Long)
-    'fill the cavas with a color.
+'=========================================================================
+' Fill a canvas with a color
+'=========================================================================
+Public Sub CanvasFill(ByVal canvasID As Long, ByVal crColor As Long)
     On Error Resume Next
-    
     Call CanvasFillBox(canvasID, 0, 0, GetCanvasWidth(canvasID), GetCanvasHeight(canvasID), crColor)
 End Sub
 
-Function CanvasGetPixel(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) As Long
-    'get pixel on the canvas.
+'=========================================================================
+' Get a pixel on a canvas
+'=========================================================================
+Public Function CanvasGetPixel(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         CanvasGetPixel = CNVGetPixel(canvasID, x, y)
     Else
@@ -355,19 +390,12 @@ Function CanvasGetPixel(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long
     End If
 End Function
 
-Function CanvasLoadPicture(ByVal canvasID As Long, ByVal filename As String) As Long
-    'load a picture
+'=========================================================================
+' Load a picture onto a canvas
+'=========================================================================
+Public Function CanvasLoadPicture(ByVal canvasID As Long, ByVal filename As String) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) And fileExists(filename) Then
-        'tempCanvas = CNVCreate(vbFrmHDC(canvas_host), GetCanvasWidth(canvasID), GetCanvasHeight(canvasID), 1)
-        'hdc = CanvasOpenHDC(tempCanvas)
-        'Call DrawImage(filename, 0, 0, hdc)
-        'a = IMGDraw(filename, 0, 0, hdc)
-        'Call CanvasCloseHDC(tempCanvas, hdc)
-        'Call Canvas2CanvasBlt(tempCanvas, canvasID, 0, 0)
-        'Call DestroyCanvas(tempCanvas)
-        
-        Dim hdc As Long
         Call drawImageCNV(filename, 0, 0, canvasID)
         CanvasLoadPicture = 0
     Else
@@ -375,8 +403,10 @@ Function CanvasLoadPicture(ByVal canvasID As Long, ByVal filename As String) As 
     End If
 End Function
 
-Sub CanvasLoadSizedPicture(ByVal canvasID As Long, ByVal file As String)
-    'load a sized picture (fit into canvas)
+'=========================================================================
+' Load a picture onto a canvas and resize *the picture*
+'=========================================================================
+Public Sub CanvasLoadSizedPicture(ByVal canvasID As Long, ByVal file As String)
     On Error Resume Next
     If CanvasOccupied(canvasID) And fileExists(file) Then
         Dim hdc As Long
@@ -386,43 +416,22 @@ Sub CanvasLoadSizedPicture(ByVal canvasID As Long, ByVal file As String)
     End If
 End Sub
 
-Sub CanvasRefresh(ByVal canvasID As Long)
-    'refresh canvas
-    On Error Resume Next
-    'If CANVAS_USE_GDI = 0 Then
-    '    If CanvasOccupied(canvasID) Then
-    '        'hostForms(canvasID).Line (0, 0)-(100, 100), RGB(255, 0, 0)
-    '        Call vbFrmRefresh(hostForms(canvasID))
-    '    End If
-    'End If
-End Sub
-
-Function CanvasSetPixel(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
-    'set pixel into the canvas.
+'=========================================================================
+' Set a pixel on a canvas
+'=========================================================================
+Public Function CanvasSetPixel(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        'CanvasSetPixel = SetPixelV(CanvasHDC(canvasID), x, y, crColor)
         CanvasSetPixel = CNVSetPixel(canvasID, x, y, crColor)
     Else
         CanvasSetPixel = -1
     End If
 End Function
 
-Sub CanvasShow(ByVal canvasID As Long)
-    On Error Resume Next
-    If CanvasOccupied(canvasID) Then
-        canvas_host.Show
-        canvas_host.Width = GetCanvasWidth(canvasID) * Screen.TwipsPerPixelX
-        canvas_host.height = GetCanvasHeight(canvasID) * Screen.TwipsPerPixelY
-        Call vbFrmAutoRedraw(canvas_host, False)
-        canvas_host.Top = 0
-        canvas_host.Left = 0
-        Call CanvasBlt(canvasID, 0, 0, vbFrmHDC(canvas_host))
-    End If
-End Sub
-
-Function CanvasTransBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal canvasDestY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal sourceHDC As Long, ByVal crTranscolor As Long) As Long
-    'blt a picture into the canvas...
+'=========================================================================
+' Transparently blt a picture box into a canvas
+'=========================================================================
+Public Function CanvasTransBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal canvasDestY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal sourceHDC As Long, ByVal crTranscolor As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim cHdc As Long
@@ -444,8 +453,10 @@ Function CanvasTransBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, B
     End If
 End Function
 
-Function CanvasStretchBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal canvasDestY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal sourceHDC As Long) As Long
-    'blt a picture into the canvas...
+'=========================================================================
+' Blt a resized picture box into a canvas
+'=========================================================================
+Public Function CanvasStretchBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal canvasDestY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal sourceHDC As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
@@ -463,8 +474,10 @@ Function CanvasStretchBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long,
     End If
 End Function
 
-Function CanvasBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal canvasDestY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal sourceHDC As Long) As Long
-    'blt a picture into the canvas...
+'=========================================================================
+' Blt a picture box into a canvas
+'=========================================================================
+Public Function CanvasBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal canvasDestY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal sourceHDC As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
@@ -483,33 +496,26 @@ Function CanvasBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal 
     End If
 End Function
 
-
-Function CanvasTransBlt2(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal destPicHdc As Long, ByVal crTranscolor As Long) As Long
-    'blt the contents of a canvas onto a picturebox using transparency
+'=========================================================================
+' Blt a canvas onto a picture box transparently
+'=========================================================================
+Public Function CanvasTransBlt2(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal destPicHdc As Long, ByVal crTranscolor As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim cHdc As Long
         cHdc = CanvasOpenHDC(canvasID)
-        'CanvasTransBlt2 = TransparentBlt(destPicHdc, _
-                                        destX, destY, _
-                                        newWidth, newHeight, _
-                                        chdc, _
-                                        sourceX, sourceY, _
-                                        sourceWidth, sourceHeight, _
-                                        crTranscolor)
-        'If CanvasTransBlt = 0 Then
-            CanvasTransBlt2 = GFXBitBltTransparent(destPicHdc, destX, destY, newWidth, newHeight, cHdc, sourceX, sourceY, red(crTranscolor), green(crTranscolor), blue(crTranscolor))
-        'End If
+        CanvasTransBlt2 = GFXBitBltTransparent(destPicHdc, destX, destY, newWidth, newHeight, cHdc, sourceX, sourceY, red(crTranscolor), green(crTranscolor), blue(crTranscolor))
         Call CanvasCloseHDC(canvasID, cHdc)
     Else
         CanvasTransBlt2 = -1
     End If
 End Function
 
-Function CanvasStretchBlt2(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal destPicHdc As Long) As Long
-    'blt the contents of a canvas onto a picturebox (SRCCOPY)
+'=========================================================================
+' Blt a canvas (resized) onto a picture box
+'=========================================================================
+Public Function CanvasStretchBlt2(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
@@ -526,10 +532,11 @@ Function CanvasStretchBlt2(ByVal canvasID As Long, ByVal newWidth As Long, ByVal
     End If
 End Function
 
-Function CanvasBlt2(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal Width As Long, ByVal height As Long, ByVal destPicHdc As Long) As Long
-    'blt the contents of a canvas onto a picturebox (SRCCOPY)
+'=========================================================================
+' Blt a canvas onto a picture box
+'=========================================================================
+Public Function CanvasBlt2(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal Width As Long, ByVal height As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
@@ -547,27 +554,28 @@ Function CanvasBlt2(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As 
     End If
 End Function
 
-Function CanvasTransBlt(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long, ByVal crTranscolor As Long) As Long
-    'blt the contents of a canvas onto a picturebox using transparency
+'=========================================================================
+' Transparently render a canvas onto a picture box
+'=========================================================================
+Public Function CanvasTransBlt(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long, ByVal crTranscolor As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim cHdc As Long, W As Long, h As Long
         W = GetCanvasWidth(canvasID)
         h = GetCanvasHeight(canvasID)
         cHdc = CanvasOpenHDC(canvasID)
-        'If CanvasTransBlt = 0 Then
-            CanvasTransBlt = GFXBitBltTransparent(destPicHdc, destX, destY, W, h, cHdc, 0, 0, red(crTranscolor), green(crTranscolor), blue(crTranscolor))
-        'End If
+        CanvasTransBlt = GFXBitBltTransparent(destPicHdc, destX, destY, W, h, cHdc, 0, 0, red(crTranscolor), green(crTranscolor), blue(crTranscolor))
         Call CanvasCloseHDC(canvasID, cHdc)
     Else
         CanvasTransBlt = -1
     End If
 End Function
 
-Function CanvasStretchBlt(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
-    'blt the contents of a canvas onto a picturebox (SRCCOPY)
+'=========================================================================
+' Reder a canvas (resized) onto a picture box
+'=========================================================================
+Public Function CanvasStretchBlt(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
@@ -584,25 +592,21 @@ Function CanvasStretchBlt(ByVal canvasID As Long, ByVal newWidth As Long, ByVal 
     End If
 End Function
 
-Function GetCanvas(canvasID As Long) As Form
-    'obtain the canvas object
+'=========================================================================
+' Get height of a canavs
+'=========================================================================
+Public Function GetCanvasHeight(ByVal canvasID As Long) As Long
     On Error Resume Next
-    
-End Function
-
-Function GetCanvasHeight(ByVal canvasID As Long) As Long
-    'obtain canvas heigth, in pixels
-    On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         GetCanvasHeight = CNVGetHeight(canvasID)
     End If
 End Function
 
-Function CanvasBlt(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
-    'blt the contents of a canvas onto a picturebox (SRCCOPY)
+'=========================================================================
+' Render a canvas onto a picture box
+'=========================================================================
+Public Function CanvasBlt(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
@@ -618,12 +622,11 @@ Function CanvasBlt(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As L
     End If
 End Function
 
-
-Function CanvasOpenHDC(ByVal canvasID As Long) As Long
-    'return the hDC of a canvas
-    '-1 if canvas does not exist
+'=========================================================================
+' Get a canvas' HDC
+'=========================================================================
+Public Function CanvasOpenHDC(ByVal canvasID As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         CanvasOpenHDC = CNVOpenHDC(canvasID)
     Else
@@ -631,12 +634,11 @@ Function CanvasOpenHDC(ByVal canvasID As Long) As Long
     End If
 End Function
 
-Function CanvasLock(ByVal canvasID As Long) As Long
-    'lock the canvas so getting the hdc is quick
-    'MUST unlock after done!
-    '-1 if canvas does not exist
+'=========================================================================
+' Lock a canavs (disable rendering, but draw fast)
+'=========================================================================
+Public Function CanvasLock(ByVal canvasID As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         CanvasLock = CNVLock(canvasID)
     Else
@@ -644,13 +646,11 @@ Function CanvasLock(ByVal canvasID As Long) As Long
     End If
 End Function
 
-
-Function CanvasUnlock(ByVal canvasID As Long) As Long
-    'unlock the canvas so getting the hdc is quick
-    'MUST unlock after done!
-    '-1 if canvas does not exist
+'=========================================================================
+' Unlock a canvas (enables rendering, but is slower)
+'=========================================================================
+Public Function CanvasUnlock(ByVal canvasID As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         CanvasUnlock = CNVUnlock(canvasID)
     Else
@@ -658,11 +658,11 @@ Function CanvasUnlock(ByVal canvasID As Long) As Long
     End If
 End Function
 
-Function CanvasCloseHDC(ByVal canvasID As Long, ByVal hdc As Long) As Long
-    'return the hDC of a canvas
-    '-1 if canvas does not exist
+'=========================================================================
+' Close a canvas' HDC (saving the changes)
+'=========================================================================
+Public Function CanvasCloseHDC(ByVal canvasID As Long, ByVal hdc As Long) As Long
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         CanvasCloseHDC = CNVCloseHDC(canvasID, hdc)
     Else
@@ -670,76 +670,94 @@ Function CanvasCloseHDC(ByVal canvasID As Long, ByVal hdc As Long) As Long
     End If
 End Function
 
+'=========================================================================
+' Get width of a canvas
+'=========================================================================
 Function GetCanvasWidth(ByVal canvasID As Long) As Long
-    'obtain canvas width, in pixels
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         GetCanvasWidth = CNVGetWidth(canvasID)
     End If
 End Function
 
-Sub CloseCanvasEngine()
-    'destroy graphics engine
+'=========================================================================
+' Shut down the canvas engine
+'=========================================================================
+Public Sub CloseCanvasEngine()
     On Error Resume Next
-    
+    Call DeleteDC(canvasHost)
     Call CNVShutdown
-    
-    'close freeimage lib
     Call CloseImage
 End Sub
 
-Function CreateCanvas(ByVal Width As Long, ByVal height As Long, Optional ByVal bUseDX As Boolean = True) As Long
-    'create a new off-screen canvas.
-    'width, height- specify size, in pixels.
-    'returns the ID of the off-screen canvas
-    'or -1 if it cannot create it.
+'=========================================================================
+' Create a canvas
+'=========================================================================
+Public Function CreateCanvas(ByVal Width As Long, ByVal height As Long, Optional ByVal bUseDX As Boolean = True) As Long
     On Error Resume Next
-
-    'Added by KSNiloc...
-    bUseDX = True
-    
-    Dim dx As Long
-    If bUseDX Then
-        dx = 1
-    Else
-        dx = 0
-    End If
-    
     If Width <> 0 And height <> 0 Then
-        CreateCanvas = CNVCreate(vbFrmHDC(canvas_host), Width, height, dx)
+        CreateCanvas = CNVCreate(canvasHost, Width, height, 1)
     Else
         CreateCanvas = -1
     End If
 End Function
 
-Sub DestroyCanvas(ByVal canvasID As Long)
-    'destroy a canvas...
+'=========================================================================
+' Destroy a canvas
+'=========================================================================
+Public Sub DestroyCanvas(ByVal canvasID As Long)
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
         Call CNVDestroy(canvasID)
     End If
 End Sub
 
-Sub InitCanvasEngine(Optional ByVal bUseGdi As Boolean = False)
-    'init graphics engine
-    'specify if we should use pure gdi routines
-    '(not everything is implemented with pure gdi)
-    
+'=========================================================================
+' Initiate the canvas engine
+'=========================================================================
+Public Sub initCanvasEngine()
+
     On Error Resume Next
-    
+
+    'Create an HDC for the canvases
+    canvasHost = CreateCompatibleDC(0)
+
     Call CNVInit
-            
-    'init freeimage library
     Call InitImage
+
 End Sub
 
-Sub SetCanvasSize(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long)
-    'resize the canvas.
+'=========================================================================
+' Resize a canvas
+'=========================================================================
+Public Sub SetCanvasSize(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     On Error Resume Next
-    
     If CanvasOccupied(canvasID) Then
-        Call CNVResize(canvasID, vbFrmHDC(canvas_host), newWidth, newHeight)
+        Call CNVResize(canvasID, canvasHost, newWidth, newHeight)
     End If
 End Sub
+
+'=========================================================================
+' Draw an image onto a canvas
+'=========================================================================
+Public Sub drawImageCNV( _
+                           ByVal filename As String, _
+                           ByVal x As Long, _
+                           ByVal y As Long, _
+                           ByVal cnv As Long _
+                                               )
+
+    On Error Resume Next
+
+    'Get the canvas' HDC
+    Dim hdc As Long
+    hdc = CanvasOpenHDC(cnv)
+    
+    'Draw the image onto the canvas
+    Call drawImage(filename, x, y, hdc)
+    
+    'Close the canvas' HDC
+    Call CanvasCloseHDC(cnv, hdc)
+    
+End Sub
+
