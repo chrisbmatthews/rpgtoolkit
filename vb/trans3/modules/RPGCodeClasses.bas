@@ -1259,10 +1259,12 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         End If
         ' Write in the data
         g_objects(hClass).strInstancedFrom = UCase$(theClass)
-        hClass = VarPtr(g_objects(hClass))
-        g_objects(hClass).hClass = hClass
+        Dim address As Long
+        address = VarPtr(g_objects(hClass))
+        g_objects(hClass).hClass = address
         ' Clear the object
         Call clearObject(g_objects(hClass), prg)
+        hClass = address
         ' Call the constructor(s)
         Dim i As Long, cls As RPGCODE_CLASS
         cls = getClass(hClass, prg)
@@ -1331,10 +1333,7 @@ End Function
 '=========================================================================
 ' Splice up a line for object things
 '=========================================================================
-Public Function spliceForObjects( _
-    ByVal Text As String, _
-    ByRef prg As RPGCodeProgram _
-        ) As String
+Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgram) As String
 
     On Error Resume Next
 
