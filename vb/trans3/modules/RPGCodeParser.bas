@@ -321,7 +321,7 @@ Public Function Evaluate(ByVal text As String, ByRef theProgram As RPGCodeProgra
     If equ = "" Then
         'If only one value was passed, check if it equals 1
         equ = ">="
-        val2 = "0"
+        val2 = "1"
     End If
 
     Dim lit1 As String, lit2 As String, num1 As Double, num2 As Double
