@@ -1740,10 +1740,10 @@ Public Sub ForceRedrawRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgr
     '#ForceRedraw() - forces a render.
     '==============================================================================
     On Error Resume Next
-    
-    Call renderNow(-1, True)                 'Force render.
+
+    Call renderNow(cnvRPGCodeScreen, True)                 'Force render.
     Call renderRPGCodeScreen
-    
+
 End Sub
 
 Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
