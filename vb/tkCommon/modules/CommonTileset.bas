@@ -226,7 +226,7 @@ Public Sub insertIntoTileSet(ByVal file As String, ByVal number As Long)
             
                 If isoMaskBmp(x, y) = RGB(0, 0, 0) Then
                     'If the pixel isn't masked (is black), move the pixel.
-                    lTile(xCount, yCount) = lTile(x, y)
+                    lTile(xCount, yCount) = tileMem(x, y)
                     
                     'Increment the entry in the ltile array.
                     yCount = yCount + 1
