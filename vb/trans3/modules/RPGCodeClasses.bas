@@ -27,6 +27,7 @@ Public objHandleUsed() As Boolean           ' This handle used?
 Private Type RPGCODE_CLASS_INSTANCE
     hClass As Long                          ' Handle to this class
     strInstancedFrom As String              ' It was instanced from this class
+    objClass As Object                      ' For internal class use only
 End Type
 
 '=========================================================================
@@ -73,7 +74,7 @@ Public Type RPGCodeProgram
     methods() As RPGCodeMethod              ' Methods in this program
     programPos As Long                      ' Current position in program
     included(50) As String                  ' Included files
-    length As Long                          ' Length of program
+    Length As Long                          ' Length of program
     heapStack() As Long                     ' Stack of local heaps
     currentHeapFrame As Long                ' Current heap frame
     boardNum As Long                        ' The corresponding board index of the program (default to 0)
@@ -84,6 +85,32 @@ Public Type RPGCodeProgram
     autoLocal As Boolean                    ' Force implicitly created variables to the local scope?
     classes As RPGCODE_CLASS_MAIN_DATA      ' Class stuff
 End Type
+
+'=========================================================================
+' Check if something is an internal class
+'=========================================================================
+Public Function isInternalClass(ByVal theClass As String, ByRef theObject As Object) As Boolean
+
+    ' Capitalize theClass
+    theClass = UCase$(theClass)
+
+    ' Assume it is
+    isInternalClass = True
+
+    ' Switch on internal classes
+    Select Case theClass
+
+    '    Case "BOOL"
+    '        ' It's a boolean
+    '        Set theObject = New CRPGCodeBool
+
+        Case Else
+            ' It's not an internal class
+            isInternalClass = False
+
+    End Select
+
+End Function
 
 '=========================================================================
 ' Check a method override name
@@ -540,7 +567,7 @@ End Sub
 '=========================================================================
 ' Add a method to a scope
 '=========================================================================
-Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = vbNullString, Optional ByVal needNotExist As Boolean)
+Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = vbNullString, Optional ByVal needNotExist As Boolean, Optional ByVal internalClass As Boolean)
 
     On Error Resume Next
 
@@ -555,24 +582,33 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
         Exit Sub
     End If
 
-    ' Get the method's name
-    origName = GetMethodName(Text)
-    If (LenB(overrideName) = 0) Then
-        methodName = UCase$(theClass) & "::" & UCase$(origName)
+    If (Not internalClass) Then
+
+        ' Get the method's name
+        origName = GetMethodName(Text)
+        If (LenB(overrideName) = 0) Then
+            methodName = UCase$(theClass) & "::" & UCase$(origName)
+        Else
+            methodName = overrideName & "::" & UCase$(origName)
+        End If
+
+        ' Get line method starts on
+        theLine = getMethodLine(methodName, prg)
+
+        ' Check if we errored out
+        If ((theLine = -1) And (Not needNotExist)) Then
+            Call debugger("Could not find method " & origName & " -- " & Text)
+            Exit Sub
+        ElseIf ((theLine <> -1) And (needNotExist)) Then
+            Call debugger("Interfaces should not implement methods -- will be implemented by the inheriting class -- " & Text)
+            Exit Sub
+        End If
+
     Else
-        methodName = overrideName & "::" & UCase$(origName)
-    End If
 
-    ' Get line method starts on
-    theLine = getMethodLine(methodName, prg)
+        ' Use the text passed in
+        origName = Text
 
-    ' Check if we errored out
-    If ((theLine = -1) And (Not needNotExist)) Then
-        Call debugger("Could not find method " & origName & " -- " & Text)
-        Exit Sub
-    ElseIf ((theLine <> -1) And (needNotExist)) Then
-        Call debugger("Interfaces should not implement methods -- will be implemented by the inheriting class -- " & Text)
-        Exit Sub
     End If
 
     ' Make pos void
@@ -958,12 +994,13 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
 
     Dim hClass As Long              ' Handle to use
     Dim retval As RPGCODE_RETURN    ' Return value
+    Dim obj As Object               ' An object
 
     ' Return -1 on error
     hClass = -1
 
     ' Check if we can instance this class
-    If (canInstanceClass(theClass, prg)) Then
+    If ((canInstanceClass(theClass, prg)) Or (isInternalClass(theClass, obj))) Then
         ' Create a new handle
         hClass = newHandle()
         ' Make sure we have enough room in the instances array
@@ -974,8 +1011,21 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         ' Write in the data
         classes(hClass).strInstancedFrom = UCase$(theClass)
         classes(hClass).hClass = hClass
-        Call clearObject(classes(hClass), prg)
-        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
+        ' If (obj Is Nothing) Then
+            ' Clear the object
+            Call clearObject(classes(hClass), prg)
+            ' Call the constructor
+            Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
+        ' Else
+            ' Make a class structure for this class
+            ' Dim theClass As RPGCODE_CLASS
+            ' Call obj.CreateClassStruct(theClass, prg)
+            ' Call addClassToProgram(theClass, prg)
+            ' Save the object
+            ' Set classes(hClass).objClass = obj
+            ' Call the constructor
+            ' Call obj.Construct(hClass, constructParams, prg)
+        ' End If
     End If
 
     ' Return a handle to the class
@@ -1056,7 +1106,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Dim var As Boolean              ' Variable?
     Dim outside As Boolean          ' Calling from outside class?
     Dim cmdName As String           ' Command's name
-    Dim length As Long              ' Length of the text
+    Dim Length As Long              ' Length of the text
     Dim a As Long                   ' Loop var
 
     ' Get location of first ->
@@ -1069,10 +1119,10 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     End If
 
     ' Get the length of the text
-    length = Len(Text)
+    Length = Len(Text)
 
     ' Loop over each charater, forwards
-    For a = (begin + 2) To length
+    For a = (begin + 2) To Length
         ' Get a character
         char = Mid$(Text, a, 1)
         Select Case char
@@ -1209,11 +1259,17 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         ' Check if we're to release
         If (cmdName = "RELEASE") Then
 
-            Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retval, "~" & classes(hClass).strInstancedFrom)
-            Call clearObject(classes(hClass), prg)
+            If (classes(hClass).objClass Is Nothing) Then
+                Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retval, "~" & classes(hClass).strInstancedFrom)
+                Call clearObject(classes(hClass), prg)
+            Else
+                Call classes(hClass).objClass.Deconstruct
+            End If
+
             Call killHandle(hClass)
             classes(hClass).hClass = 0
             classes(hClass).strInstancedFrom = vbNullString
+            Set classes(hClass).objClass = Nothing
 
         ElseIf (cmdName = "GETTYPE") Then
 
@@ -1254,7 +1310,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         End If
     End If
 
-    If ((lngEnd = length) And (start = 1)) Then
+    If ((lngEnd = Length) And (start = 1)) Then
         ' Return NULL
         spliceForObjects = vbNullString
     Else

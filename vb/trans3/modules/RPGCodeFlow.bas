@@ -88,18 +88,58 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByVal Text As String, ByRef pr
     Call getVariable("this!", lit, oldThis, prg)
     Call SetVariable("this!", CStr(hClass), prg, True)
 
-    ' Class name to call under
-    Dim thePrefix As String
+    If (classes(hClass).objClass Is Nothing) Then
 
-    ' Check for overridden name
-    thePrefix = checkOverrideName(theClass, methodName)
-    If (LenB(thePrefix) = 0) Then
-        ' Didn't find one
-        thePrefix = theClass.strName
+        ' Class name to call under
+        Dim thePrefix As String
+
+        ' Check for overridden name
+        thePrefix = checkOverrideName(theClass, methodName)
+        If (LenB(thePrefix) = 0) Then
+            ' Didn't find one
+            thePrefix = theClass.strName
+        End If
+
+        ' Call the method
+        Call MethodCallRPG(thePrefix & "::" & Text, thePrefix & "::" & methodName, prg, retval, True, True)
+
+    Else
+
+        ' Check if it's an operator
+        If (UCase$(Left$(methodName, 8)) = "OPERATOR") Then
+            ' It is, take the ninth character (the sign)
+            Dim theSign As String
+            theSign = Mid$(methodName, 9, 1)
+            ' Get its parameter
+            Dim value As String
+            If (LenB(GetBrackets(Text)) <> 0) Then
+                ' Param
+                Dim paras() As parameters
+                paras = GetParameters(Text, prg)
+                Select Case paras(0).dataType
+                    Case DT_LIT: value = paras(0).lit
+                    Case DT_NUM: value = CStr(paras(0).num)
+                End Select
+            Else
+                ' No param
+                value = vbNullString
+            End If
+
+            ' Call the method
+            ' Call classes(hClass).objClass.Operator(theSign, value, prg, retval)
+
+        Else
+
+            ' Parse all params
+            Dim params() As parameters
+            params = GetParameters(Text, prg)
+
+            ' Call the method
+            ' Call CallByName(classes(hClass).objClass, methodName, VbMethod, params, prg, retval)
+
+        End If
+
     End If
-
-    ' Call the method
-    Call MethodCallRPG(thePrefix & "::" & Text, thePrefix & "::" & methodName, prg, retval, True, True)
 
     ' Decrease the nestle
     Call decreaseNestle(prg)
@@ -2376,6 +2416,11 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
 
         Case "PLAYERSTANCE"
             Call PlayerStanceRPG(splice, theProgram)
+            DoSingleCommand = increment(theProgram)
+            Exit Function
+
+        Case "DRAWCANVASTRANSPARENT"
+            Call DrawCanvasTransparentRPG(splice, theProgram)
             DoSingleCommand = increment(theProgram)
             Exit Function
 

@@ -116,7 +116,7 @@ Public Sub ClearNonPersistentThreads()
     Dim retval As RPGCODE_RETURN    'unused rpgcode return value
 
     For c = 0 To UBound(Threads)
-        If (Threads(c).bPersistent = False) Then
+        If (Not Threads(c).bPersistent) Then
             Call TellThread(c, "Unload()", retval, True)
             Threads(c).filename = vbNullString
             Threads(c).thread.programPos = -1

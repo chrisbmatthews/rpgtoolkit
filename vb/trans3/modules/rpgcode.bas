@@ -11982,21 +11982,120 @@ Public Sub NewRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retva
         Call debugger("New() requires at least one data element-- " & Text)
         Exit Sub
     End If
-    Dim paras() As parameters, a As Long, construct() As String
+    Dim paras() As parameters, a As Long, Construct() As String
     paras() = GetParameters(Text, prg)
-    ReDim construct(0)
+    ReDim Construct(0)
     For a = 1 To UBound(paras)
-        ReDim Preserve construct(a - 1)
+        ReDim Preserve Construct(a - 1)
         If (paras(a).dataType = DT_LIT) Then
-            construct(a - 1) = """" & paras(a).lit & """"
+            Construct(a - 1) = """" & paras(a).lit & """"
         Else
-            construct(a - 1) = CStr(paras(a).num)
+            Construct(a - 1) = CStr(paras(a).num)
         End If
     Next a
     retval.dataType = DT_NUM
-    retval.num = createRPGCodeObject(paras(0).lit, prg, construct(), (UBound(paras) = 0))
+    retval.num = createRPGCodeObject(paras(0).lit, prg, Construct(), (UBound(paras) = 0))
     If (retval.num = -1) Then
         Call debugger("Error creating object-- " & Text)
     End If
 End Sub
 
+'=========================================================================
+' DrawCanvasTransparent(cnv!, x!, y!, r!, g!, b!,
+'  [, width!, height! [, destCnv!]])
+'=========================================================================
+Public Sub DrawCanvasTransparentRPG(ByRef Text As String, ByRef prg As RPGCodeProgram)
+
+    ' First, parse the parameters passed to us
+    Dim paras() As parameters
+    paras = GetParameters(Text, prg)
+
+    ' Is everything good?
+    Dim allIsGood As Boolean
+    allIsGood = True
+
+    ' Check for correct number of params
+    If ((UBound(paras) <> 5) Or (UBound(paras) <> 7) Or (UBound(paras) <> 8)) Then
+
+        ' Make sure types are correct
+        Dim idx As Long
+        For idx = 0 To UBound(paras)
+            If (paras(idx).dataType <> DT_NUM) Then
+                ' All's not good
+                allIsGood = False
+                Exit For
+            End If
+        Next idx
+
+    Else
+
+        ' All's not good
+        allIsGood = False
+
+    End If
+
+    ' Did everything turn out alright?
+    If (Not allIsGood) Then
+        ' Tell the user
+        Call debugger("DrawCanvasTransparent() requires num, num, num, num, num, num [, num, num [, num]]")
+        ' Bail
+        Exit Sub
+    End If
+
+    ' Declare variables for the coming blt
+    Dim x As Long, y As Long, width As Long, transpColor As Long
+    Dim height As Long, cnvSource As Long
+
+    ' In all cases, record x, y, r, g, b and the canvas
+    cnvSource = CLng(paras(0).num)
+    x = CLng(paras(1).num)
+    y = CLng(paras(2).num)
+    transpColor = RGB(CInt(paras(3).num), CInt(paras(4).num), CInt(paras(5).num))
+
+    ' If we only have six params, just finish this now
+    If (UBound(paras) = 5) Then
+
+        ' Draw the canvas
+        Call DXDrawCanvasTransparent(cnvSource, x, y, transpColor)
+
+        ' Bail
+        Exit Sub
+
+    ElseIf (UBound(paras) = 7) Then
+
+        ' Read width and height
+        width = CLng(paras(6).num)
+        height = CLng(paras(7).num)
+
+    End If
+
+    ' Create an intermidiate canvas
+    Dim cnv As Long
+    cnv = CreateCanvas(width, height)
+
+    ' Get its DC
+    Dim hCnvDC As Long
+    hCnvDC = CanvasOpenHDC(cnv)
+
+    ' Stretch the canvas
+    Call CanvasStretchBlt(cnvSource, width, height, 0, 0, hCnvDC)
+
+    ' Close its DC
+    Call CanvasCloseHDC(cnv, hCnvDC)
+
+    If (UBound(paras) = 7) Then
+
+        ' Blt to the screen
+        Call DXDrawCanvasTransparent(cnv, x, y, transpColor)
+
+    Else
+
+        ' Blt to another canvas
+        Call Canvas2CanvasBltTransparent(cnv, CLng(paras(8).num), x, y, transpColor)
+
+    End If
+
+    ' Destroy said canvas
+    Call DestroyCanvas(cnv)
+
+End Sub
