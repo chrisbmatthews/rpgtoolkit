@@ -28,7 +28,12 @@ Public runningProgram As Boolean        'is a program running?
 Public wentToNewBoard As Boolean        'did we go to a new board in the program?
 Public methodReturn As RPGCODE_RETURN   'return value for method calls
 Public preErrorPos As Long              'position before an error occured
-Public disregardLooping As Boolean      'disregard being in a loop
+
+'Public disregardLooping As Boolean     'disregard being in a loop -> now using multiRunStatus
+Public multiRunStatus As Long           'sim.   0 = not running
+                                        '       1 = running
+                                        '       2 = running + movement occured
+
 Public bFillingMsgBox As Boolean        'filling message box?
 Public shopColors(1) As Long            'colors used in shop
 
@@ -93,8 +98,8 @@ Public Sub debugger(ByVal Text As String)
 
     If (Not checkErrorHandling()) Then
         If (debugYN = 1) Then
-            Call debugwin.Show
-            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
+            Call debugWin.Show
+            debugWin.buglist.Text = debugWin.buglist.Text & Text & vbCrLf
             Call processEvent
         End If
     End If
@@ -399,17 +404,26 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
         End If '(.programName$(t) <> "")
     Next t
 
-    If usingPixelMovement() Then
-        'If we're using pixel movement then round item
-        'coordinates and backup the old ones
-        ReDim tempItems(maxItem) As PLAYER_POSITION
-        For t = 0 To maxItem
-            tempItems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
-        Next t
-    End If
+    'If usingPixelMovement() Then
+    '    'If we're using pixel movement then round item
+    '    'coordinates and backup the old ones
+    '    ReDim tempItems(maxItem) As PLAYER_POSITION
+    '    For t = 0 To maxItem
+    '        tempItems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
+    '    Next t
+    'End If
+    
+    ReDim tempItems(maxItem) As PLAYER_POSITION
 
     'Ouch.  Now test for items:
     For t = 0 To maxItem
+    
+        tempItems(t) = itmPos(t)
+        
+        If usingPixelMovement() Then
+            tempItems(t) = roundCoords(itmPos(t), pendingItemMovement(t).direction)
+        End If
+    
         If itemMem(t).BoardYN = 1 Then  'yeah, it's a board item
             If boardList(activeBoardIndex).theData.itmName$(t) <> "" Then
                 runIt = 1
@@ -418,10 +432,16 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                     'we step on it.
                     
                     If Not (usingPixelMovement) Then
-                        If _
+                        'If _
                                 itmPos(t).x = Int(passPos.x) _
                             And itmPos(t).y = Int(passPos.y) _
                             And itmPos(t).l = passPos.l Then
+                            
+                        If _
+                                Abs(itmPos(t).x - passPos.x) < 1 _
+                            And Abs(itmPos(t).y - passPos.y) < movementSize _
+                            And itmPos(t).l = passPos.l Then
+                            
                             
                             toRet = runItmYN(t)
                         End If
@@ -451,6 +471,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                     xx = pos.x: yy = pos.y
                     
                     'Edit: now using passPos rather than the pos from RoundCoords()
+                    
                     Select Case UCase(pos.stance)
                         Case "WALK_N"
                             xx = pos.x
@@ -472,9 +493,15 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                             xx = -Int(-passPos.x) - 1
                             yy = -Int(-passPos.y)
                             
-                        End Select
+                    End Select
 
                     If tempItems(t).x = xx And tempItems(t).y = yy And tempItems(t).l = pos.l Then
+                    
+                    'If _
+                        Abs(tempItems(t).x - xx) <= 1 And _
+                        Abs(tempItems(t).y - yy) <= 1 And _
+                        tempItems(t).l = pos.l Then
+                    
                         If (lastKeyPressed() = mainMem.Key) Then
                             'yes, we pressed the right key
                             toRet = runItmYN(t)
@@ -896,7 +923,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
     End If
     errorKeep = theProgram
 
-    If (isMultiTasking() And theProgram.looping) And (Not disregardLooping) Then Exit Function
+    If (isMultiTasking() And theProgram.looping) And (multiRunStatus = 0) Then Exit Function
 
     'Parse this line like it has never been parsed before... [KSNiloc]
     rpgcodeCommand = spliceForObjects(rpgcodeCommand, theProgram)
@@ -1892,7 +1919,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
             Exit Function
     
         Case "ITEMLOCATION":
-            Call ItemLocationRPG(splice$, theProgram)   'get item location
+            Call ItemLocationRPG(splice$, theProgram) 'get item location
             DoSingleCommand = increment(theProgram)
             Exit Function
     
