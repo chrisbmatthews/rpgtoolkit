@@ -164,7 +164,7 @@ Public Property Let mousePointer(ByRef newValue As String)
     ' Create a DC and bitmap for the mask
     Dim hMaskDc As Long, hMaskBmp As Long
     hMaskDc = CreateCompatibleDC(hCompatibleDc)
-    hMaskBmp = CreateBitmap(32, 32, 1, 1, 0&)
+    hMaskBmp = CreateBitmap(32, 32, 1, 1, Null)
 
     ' Select the mask bitmap into the DC
     Call SelectObject(hMaskDc, hMaskBmp)
