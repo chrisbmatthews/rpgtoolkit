@@ -71,11 +71,9 @@ BOOL APIENTRY DXDrawPixel(
 //------------------------------------------------------------------------
 // Flip the backbuffer onto the screen
 //------------------------------------------------------------------------
-BOOL APIENTRY DXRefresh(
-	CONST CNV_HANDLE cnvHandle
-		)
+BOOL APIENTRY DXRefresh(VOID)
 {
-	return g_pDirectDraw->Refresh(reinterpret_cast<CGDICanvas *>(cnvHandle));
+	return g_pDirectDraw->Refresh();
 }
 
 //------------------------------------------------------------------------

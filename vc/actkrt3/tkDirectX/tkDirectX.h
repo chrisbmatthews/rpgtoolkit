@@ -58,7 +58,7 @@ BOOL APIENTRY DXDrawPixel(
 );
 
 BOOL APIENTRY DXRefresh(
-	CONST CNV_HANDLE cnvHandle = NULL
+	VOID
 );
 
 BOOL APIENTRY DXLockScreen(

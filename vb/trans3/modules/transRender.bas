@@ -16,7 +16,7 @@ Option Explicit
 '=========================================================================
 Public Declare Function DXInitGfxMode Lib "actkrt3.dll" (ByVal hwnd As Long, ByVal nScreenX As Long, ByVal nScreenY As Long, ByVal nUseDirectX As Long, ByVal nColorDepth As Long, ByVal nFullScreen As Long) As Long
 Public Declare Function DXKillGfxMode Lib "actkrt3.dll" () As Long
-Public Declare Function DXRefresh Lib "actkrt3.dll" (Optional ByVal cnv As Long) As Long
+Public Declare Function DXRefresh Lib "actkrt3.dll" () As Long
 Public Declare Function DXLockScreen Lib "actkrt3.dll" () As Long
 Public Declare Function DXUnlockScreen Lib "actkrt3.dll" () As Long
 Public Declare Function DXDrawPixel Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long

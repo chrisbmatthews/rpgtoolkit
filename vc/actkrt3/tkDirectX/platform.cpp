@@ -171,6 +171,7 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 		ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
 		ddsd.dwBackBufferCount = 1;		// Make a *real* backbuffer
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP;
+		m_pRefresh = RefreshFullScreen;
 	}
 	else
 	{
@@ -178,6 +179,7 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 		if (FAILED(m_lpdd->SetCooperativeLevel(hWnd,DDSCL_NORMAL))) return;
 		ddsd.dwFlags = DDSD_CAPS;
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;	// This will be the primary surface
+		m_pRefresh = RefreshWindowed;
 	}
 
 	// Create the primary surface
@@ -438,66 +440,25 @@ BOOL FAST_CALL CDirectDraw::DrawFilledRect(
 //------------------------------------------------------------------------
 // Flip back buffer onto the screen
 //------------------------------------------------------------------------
-BOOL FAST_CALL CDirectDraw::Refresh(
-	CONST CGDICanvas *cnv
-		)
+BOOL FAST_CALL CDirectDraw::RefreshFullScreen(VOID)
 {
-
-	if (m_bUseDirectX && m_lpdd)
-	{
-
-		if (m_bFullScreen)
-		{
-
-			if (cnv)
-			{
-				// Blt to a canvas
-				cnv->GetDXSurface()->BltFast(0, 0, m_lpddsSecond, &m_surfaceRect, 0);
-			}
-			else
-			{
-				// Page flip
-				while (FAILED(m_lpddsPrime->Flip(NULL, DDFLIP_WAIT)));
-			}
-
-		}
-		else
-		{
-
-			// Get the point of the window outside of the title bar and border
-			POINT ptPrimeBlt = {0, 0};
-			ClientToScreen(m_hWndMain, &ptPrimeBlt);
-
-			// Now offset the top/left of the window rect by the distance from the
-			// title bar / border
-			SetRect(&m_destRect, 0, 0, m_nWidth, m_nHeight);
-			OffsetRect(&m_destRect, ptPrimeBlt.x, ptPrimeBlt.y);
-
-			if (cnv)
-			{
-				// Blt to a canvas
-				cnv->GetDXSurface()->BltFast(0, 0, m_lpddsSecond, &m_surfaceRect, DDBLTFAST_NOCOLORKEY);
-			}	
-			else
-			{
-				// Blt to the screen
-				m_lpddsPrime->Blt(&m_destRect, m_lpddsSecond, &m_surfaceRect, DDBLT_WAIT | DDBLT_ROP, &m_bltFx);
-			}
-
-		}
-
-	}
-	else if (m_pBackBuffer)
-	{
-		// Blt offscreen canvas
-		HDC hdc = GetDC(m_hWndMain);
-		HDC hdcBuffer = m_pBackBuffer->OpenDC();
-		BitBlt(hdc, 0, 0, m_pBackBuffer->GetWidth(), m_pBackBuffer->GetHeight(), hdcBuffer, 0, 0, SRCCOPY);
-		m_pBackBuffer->CloseDC(hdcBuffer);
-		ReleaseDC(m_hWndMain, hdc);
-	}
-
+	// Just flip
+	while (FAILED(m_lpddsPrime->Flip(NULL, DDFLIP_WAIT)));
 	return TRUE;
+}
+BOOL FAST_CALL CDirectDraw::RefreshWindowed(VOID)
+{
+	// Get the point of the window outside of the title bar and border
+	POINT ptPrimeBlt = {0, 0};
+	ClientToScreen(m_hWndMain, &ptPrimeBlt);
+
+	// Now offset the top/left of the window rect by the distance from the
+	// title bar / border
+	SetRect(&m_destRect, 0, 0, m_nWidth, m_nHeight);
+	OffsetRect(&m_destRect, ptPrimeBlt.x, ptPrimeBlt.y);
+
+	// Blt to the screen
+	return SUCCEEDED(m_lpddsPrime->Blt(&m_destRect, m_lpddsSecond, &m_surfaceRect, DDBLT_WAIT | DDBLT_ROP, &m_bltFx));
 }
 
 //------------------------------------------------------------------------

@@ -118,9 +118,9 @@ public:
 	);
 
 	// Flip the backbuffer to the primary surface
-	BOOL FAST_CALL Refresh(
-		CONST CGDICanvas *cnv = NULL
-	);
+	BOOL FAST_CALL Refresh(VOID) { return (this->*m_pRefresh)(); }
+	BOOL FAST_CALL RefreshFullScreen(VOID);
+	BOOL FAST_CALL RefreshWindowed(VOID);
 
 	// Draw text on the screen
 	BOOL FAST_CALL DrawText(
@@ -291,6 +291,7 @@ private:
 	CGDICanvas *m_pBackBuffer;			// Non-DirectX backbuffer
 	BOOL m_bSrcAnd[4];					// SRCAND support?
 	BOOL m_bSrcPaint[4];				// SRCPAINT support?
+	BOOL (FAST_CALL CDirectDraw::*m_pRefresh) (VOID);
 
 };
 
