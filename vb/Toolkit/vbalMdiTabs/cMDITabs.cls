@@ -1253,9 +1253,16 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
       End If
       
    Case WM_NCPAINT
+
+      ' Warning: illogical place for this, but nothing better now
+      Call tkMainForm.drawBackground ' Draw the background image
+
+      ' Call VB's window procedure
       ISubclass_WindowProc = CallOldWindowProc(hwnd, iMsg, wParam, lParam)
-      drawTabs hwnd, wParam
-   
+
+      ' Draw the tabs
+      Call drawTabs(hwnd, wParam)
+
    Case WM_MOUSEMOVE
       ISubclass_WindowProc = CallOldWindowProc(hwnd, iMsg, wParam, lParam)
       
