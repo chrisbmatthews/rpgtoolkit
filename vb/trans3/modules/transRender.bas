@@ -199,9 +199,6 @@ Public renderRenderNowCanvasTranslucent As Boolean
 ' Canvas used for the mouse pointer
 Public cnvMousePointer As Long
 
-' Back buffer canvas
-Private m_backCnv As Long
-
 '=========================================================================
 ' A player render
 '=========================================================================
@@ -251,20 +248,20 @@ Public Sub DXRefresh()
     ' Compute mouse y position
     y = mouseMoveY - host.cursorHotSpotY
 
-    ' Get the mouse pointer canvas' HDC
-    hdc = CNVOpenHDC(cnvMousePointer)
-
     ' Get the window's HDC
     xdc = GetDC(host.hwnd)
+
+    ' Get the mouse pointer canvas' HDC
+    hdc = CNVOpenHDC(cnvMousePointer)
 
     ' Blt the mouse onto the window
     Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
 
-    ' Release the window's DC
-    Call ReleaseDC(host.hwnd, xdc)
-
     ' Close the canvas' HDC
     Call CNVCloseHDC(cnvMousePointer, hdc)
+
+    ' Release the window's DC
+    Call ReleaseDC(host.hwnd, xdc)
 
     '=====================================================================
 
@@ -1317,7 +1314,6 @@ Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     Call CanvasFill(cnvRenderNow, TRANSP_COLOR)
     cnvMousePointer = CreateCanvas(32, 32)
     Call CanvasFill(cnvMousePointer, TRANSP_COLOR)
-    m_backCnv = CreateCanvas(width, height)
     globalCanvasHeight = height
     globalCanvasWidth = width
 End Sub
@@ -1351,7 +1347,6 @@ Private Sub destroyCanvases()
     Next t
     Call DestroyCanvas(cnvRenderNow)
     Call DestroyCanvas(cnvMousePointer)
-    Call DestroyCanvas(m_backCnv)
 End Sub
 
 '========================================================================='

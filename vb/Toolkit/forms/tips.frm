@@ -160,6 +160,10 @@ End Sub
 
 Private Sub Form_Load()
     On Error Resume Next
+    If (LenB(Command) <> 0) Then
+        Call Unload(Me)
+        Exit Sub
+    End If
     If configfile.tipsOnOff = 1 Then
         Check1.value = 0
     Else
