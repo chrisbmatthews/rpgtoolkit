@@ -176,7 +176,7 @@ End Sub
 '=========================================================================
 Public Sub FlushKB()
     On Error Resume Next
-    Do Until (getKey() = "")
+    Do Until (LenB(getKey()) = 0)
         Call processEvent
     Loop
 End Sub
@@ -232,7 +232,7 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
     
     If keyWaitState = -1 Then
         'If a button has still not been pressed, return nothing.
-        getKey = ""
+        getKey = vbNullString
         Exit Function
     End If
     
@@ -273,13 +273,13 @@ Public Function getAsciiKey() As String
     
     If keyAsciiState = -1 Then
         'If a button has still not been pressed, return nothing.
-        getAsciiKey = ""
+        getAsciiKey = vbNullString
         Exit Function
     End If
     
     Dim returnVal As String
     'Get a string of the key number.
-    returnVal = Chr(keyAsciiState)
+    returnVal = Chr$(keyAsciiState)
     
     getAsciiKey = returnVal
 
@@ -347,7 +347,7 @@ Public Function WaitForKey() As String
     
     Dim returnVal As String
     'Get a string of the key number.
-    returnVal = Chr(keyWaitState)
+    returnVal = Chr$(keyWaitState)
     
     'Check the key for common keys.
     If keyWaitState = 13 Then returnVal$ = "ENTER"
@@ -355,7 +355,7 @@ Public Function WaitForKey() As String
     If keyWaitState = 40 Then returnVal$ = "DOWN"
     If keyWaitState = 37 Then returnVal$ = "LEFT"
     If keyWaitState = 39 Then returnVal$ = "RIGHT"
-    If keyShiftState = 1 Then returnVal$ = UCase(returnVal)
+    If keyShiftState = 1 Then returnVal$ = UCase$(returnVal)
     'Might want to add numberpad here too.
     
     WaitForKey = returnVal
@@ -601,7 +601,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     'Check custom plugins to see if they request an input.
     Dim plugName As String
     For Index = 0 To UBound(mainMem.plugins)
-        If mainMem.plugins(Index) <> "" Then
+        If (LenB(mainMem.plugins(Index)) <> 0) Then
             'If there is a plugin in this slot, get the name.
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(Index))
             
@@ -613,7 +613,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     Next Index
     
     'Check the menu plugin.
-    If mainMem.menuPlugin <> "" Then
+    If (LenB(mainMem.menuPlugin) <> 0) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
@@ -622,7 +622,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     End If
     
     'Check the fight plugin.
-    If mainMem.fightPlugin <> "" Then
+    If (LenB(mainMem.fightPlugin) <> 0) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
@@ -660,7 +660,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
         'Check extended runtime keys...
         For Index = 0 To 50
             If UCase$(Chr$(keyCode)) = UCase$(Chr$(mainMem.runTimeKeys(Index))) Then
-                If mainMem.runTimePrg$(Index) <> "" Then
+                If (LenB(mainMem.runTimePrg$(Index)) <> 0) Then
                 
                     Call runProgram(projectPath & prgPath & mainMem.runTimePrg$(Index))
                     Exit Sub
@@ -682,7 +682,7 @@ End Sub
 '=========================================================================
 ' Handles mouse down events
 '=========================================================================
-Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Integer, ByVal button As Integer)
+Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As Integer, ByVal Button As Integer)
 
     On Error GoTo fin
 
@@ -696,32 +696,32 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
 
     'Check custom plugins to see if they request an input.
     For Index = 0 To UBound(mainMem.plugins)
-        If mainMem.plugins(Index) <> "" Then
+        If (LenB(mainMem.plugins(Index)) <> 0) Then
             'If there is a plugin in this slot, get the name.
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(Index))
             
             If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
                 'If an input is requested, return that input to the plugin.
-                Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
+                Call PLUGEventInform(plugName, -1, x, y, Button, Shift, "", INPUT_MOUSEDOWN)
             End If
         End If
     Next Index
 
     'Check the menu plugin.
-    If mainMem.menuPlugin <> "" Then
+    If (LenB(mainMem.menuPlugin) <> 0) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
-            Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
+            Call PLUGEventInform(plugName, -1, x, y, Button, Shift, "", INPUT_MOUSEDOWN)
         End If
     End If
 
     'Check the fight plugin.
-    If mainMem.fightPlugin <> "" Then
+    If (LenB(mainMem.fightPlugin) <> 0) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
-            Call PLUGEventInform(plugName, -1, x, y, button, Shift, "", INPUT_MOUSEDOWN)
+            Call PLUGEventInform(plugName, -1, x, y, Button, Shift, "", INPUT_MOUSEDOWN)
         End If
     End If
 

@@ -109,7 +109,7 @@ Public Function checkAbove(ByVal x As Long, ByVal y As Long, ByVal layer As Long
     Dim uptile As String
     For lay = layer + 1 To boardList(activeBoardIndex).theData.bSizeL
         uptile$ = BoardGetTile(x, y, lay, boardList(activeBoardIndex).theData)
-        If uptile$ <> "" Then
+        If (LenB(uptile$) <> 0) Then
         
             checkAbove = 1
             Exit Function
@@ -391,7 +391,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                 
             End If 'coordMatch
             
-        End If '.itemname <> ""
+        End If
         
     Next i
 
@@ -490,8 +490,7 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
     If Score(x1, y1) <> 0 Then
         'We found a path
                 
-        toRet$ = ""
-            
+        toRet$ = vbNullString
         
         sx = x1
         sy = y1
@@ -529,7 +528,7 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
                 
                 'Lucky 19023 =)
                 Error 19023
-                PathFind = ""
+                PathFind = vbNullString
                 Exit Function
             End If
             
@@ -612,7 +611,7 @@ Public Function PathFind(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
         
     Else
         'We didn't
-        PathFind = ""
+        PathFind = vbNullString
     End If
 End Function
 
@@ -672,24 +671,24 @@ Private Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boo
     'Called by CheckEdges only.
     '=====================================
     'EDITED: [Isometrics - Delano 3/05/04]
-    
+
     On Error Resume Next
-    
+
     'Screen co-ords held in temporary varibles in case true variables altered.
     Dim topXtemp As Double 'Isometric fix. Were Longs, but topX could be decimal.
     Dim topYtemp As Double 'Not passed to any functions, so should be ok.
     topXtemp = topX
     topYtemp = topY
-        
+
     Dim targetBoard As String
     targetBoard$ = boardList(activeBoardIndex).theData.dirLink$(thelink)
-        
-    If targetBoard$ = "" Then
+
+    If (LenB(targetBoard$) = 0) Then
         'no link exists...
         TestLink = False
         Exit Function
     End If
-    
+
     'If link present, check to see if it's a program, and run if so, then exit.
     Dim ex As String
     ex$ = GetExt(targetBoard$)
@@ -698,21 +697,21 @@ Private Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boo
         TestLink = True
         Exit Function
     End If
-    
+
     Dim testX As Long
     Dim testY As Long
     Dim testLayer As Long
     testX = pPos(playerNum).x
     testY = pPos(playerNum).y
     testLayer = pPos(playerNum).l
-    
+
     'Isometric addition: sprites jump when moving to new boards.
     'Y has to remain even or odd during transition, rather than just moving to the bottom row.
     'New function: linkIso, to check if the target board is iso. If so, sends to different co-ords.
-    
+
     Dim targetX As Long 'Target board dimensions
     Dim targetY As Long
-    
+
     If thelink = MV_NORTH Then
         'Get dimensions of target board.
         Call boardSize(projectPath & brdPath & targetBoard$, targetX, targetY)
@@ -1704,22 +1703,22 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
             If checkScrollSouth(pNum) Then Call scrollUp(moveFraction)
         Case MV_EAST
             testPos.stance = "walk_e"
-            If checkScrollEast(pNum) Then Call scrollLeft(moveFraction)
+            If checkScrollEast(pNum) Then Call scrollLeft$(moveFraction)
         Case MV_WEST
             testPos.stance = "walk_w"
-            If checkScrollWest(pNum) Then Call scrollRight(moveFraction)
+            If checkScrollWest(pNum) Then Call scrollRight$(moveFraction)
         Case MV_NE
             testPos.stance = "walk_ne"
-            Call scrollDownLeft(moveFraction, checkScrollEast(pNum), checkScrollNorth(pNum))
+            Call scrollDownLeft$(moveFraction, checkScrollEast(pNum), checkScrollNorth(pNum))
         Case MV_NW
             testPos.stance = "walk_nw"
-            Call scrollDownRight(moveFraction, checkScrollWest(pNum), checkScrollNorth(pNum))
+            Call scrollDownRight$(moveFraction, checkScrollWest(pNum), checkScrollNorth(pNum))
         Case MV_SE
             testPos.stance = "walk_se"
-            Call scrollUpLeft(moveFraction, checkScrollEast(pNum), checkScrollSouth(pNum))
+            Call scrollUpLeft$(moveFraction, checkScrollEast(pNum), checkScrollSouth(pNum))
         Case MV_SW
             testPos.stance = "walk_sw"
-            Call scrollUpRight(moveFraction, checkScrollWest(pNum), checkScrollSouth(pNum))
+            Call scrollUpRight$(moveFraction, checkScrollWest(pNum), checkScrollSouth(pNum))
         
     End Select
     
@@ -1798,7 +1797,7 @@ Public Sub setQueuedMovements(ByRef queue As String, ByRef path As String): On E
     
     For element = 0 To UBound(smallArray)
     
-        smallArray(element) = UCase$(Trim(smallArray(element)))
+        smallArray(element) = UCase$(Trim$(smallArray(element)))
     
         Select Case smallArray(element)
     

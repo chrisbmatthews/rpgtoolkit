@@ -121,7 +121,7 @@ Public Sub addItem( _
 
     'See if the player already has one of this item
     For itmNum = 0 To UBound(m_items)
-        If UCase(m_items(itmNum).file) = UCase(file) Then
+        If UCase$(m_items(itmNum).file) = UCase$(file) Then
             'Found it!
             theOne = itmNum
             Exit For
@@ -137,7 +137,7 @@ Public Sub addItem( _
 
         'Find an open position
         For itmNum = 0 To UBound(m_items)
-            If m_items(itmNum).file = "" Then
+            If (LenB(m_items(itmNum).file) = 0) Then
                 'Found one!
                 theOne = itmNum
                 Exit For
@@ -181,7 +181,7 @@ Public Sub removeItem( _
 
     'Search for the item in the inventory
     For itmNum = 0 To UBound(m_items)
-        If UCase(m_items(itmNum).file) = UCase(file) Then
+        If UCase$(m_items(itmNum).file) = UCase$(file) Then
             'Found it!
             theOne = itmNum
             Exit For
@@ -196,9 +196,9 @@ Public Sub removeItem( _
             .number = .number - quantity
             'If there are none left, remove all info
             If .number <= 0 Then
-                .file = ""
+                .file = vbNullString
                 .number = 0
-                .handle = ""
+                .handle = vbNullString
             End If
         End With
     End If

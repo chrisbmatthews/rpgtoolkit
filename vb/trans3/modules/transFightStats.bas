@@ -164,7 +164,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     Next t
     
     'rpgcode program:
-    If thePlayer.charLevelUpRPGCode$ <> "" Then
+    If (LenB(thePlayer.charLevelUpRPGCode$) <> 0) Then
         target = num
         targetType = 0
         Source = num

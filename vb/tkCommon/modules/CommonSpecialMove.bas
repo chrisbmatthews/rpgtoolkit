@@ -47,7 +47,7 @@ Public Function openSpecialMove(ByVal file As String) As TKSpecialMove
 
     On Error Resume Next
     
-    If file$ = "" Then Exit Function
+    If (LenB(file$) = 0) Then Exit Function
     
     Dim theMove As TKSpecialMove
     
@@ -126,7 +126,7 @@ Public Sub saveSpecialMove(ByVal file As String, ByRef theMove As TKSpecialMove)
     Dim num As Long
     num = FreeFile()
 
-    If file = "" Then Exit Sub
+    If (LenB(file) = 0) Then Exit Sub
     
     #If isToolkit = 1 Then
         specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
@@ -155,14 +155,14 @@ End Sub
 ' Clear a special move
 '=========================================================================
 Public Sub SpecialMoveClear(ByRef theMove As TKSpecialMove)
-    theMove.smname = ""
+    theMove.smname = vbNullString
     theMove.smFP = 0
     theMove.smSMP = 0
-    theMove.smPrg = ""
+    theMove.smPrg = vbNullString
     theMove.smtargSMP = 0
     theMove.smBattle = 0
     theMove.smMenu = 0
-    theMove.smStatusEffect = ""
-    theMove.smAnimation = ""
-    theMove.smDescription = ""
+    theMove.smStatusEffect = vbNullString
+    theMove.smAnimation = vbNullString
+    theMove.smDescription = vbNullString
 End Sub

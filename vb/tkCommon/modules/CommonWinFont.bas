@@ -164,7 +164,7 @@ Public Function isToolkitFont(ByVal filename As String) As Boolean
     num = FreeFile()
     filename = PakLocate(filename)
     Open filename For Input As num
-        If UCase(fread(num)) = "RPGTLKIT FONT" Then
+        If UCase$(fread(num)) = "RPGTLKIT FONT" Then
             isToolkitFont = True
         End If
     Close num
@@ -177,7 +177,7 @@ Public Sub LoadFontsFromFolder(ByVal folderName As String)
     On Error Resume Next
     Dim a As String
     a = Dir(folderName & "*.*")
-    Do Until a = ""
+    Do Until (LenB(a) = 0)
         If Not isToolkitFont(folderName + a) Then
             Call AddFontResource(folderName & a)
         End If
@@ -192,7 +192,7 @@ Public Sub UnLoadFontsFromFolder(ByVal folderName As String)
     On Error Resume Next
     Dim a As String
     a = Dir(folderName & "*.*")
-    Do Until a = ""
+    Do Until (LenB(a) = 0)
         If Not isToolkitFont(folderName + a) Then
             Call RemoveFontResource(folderName & a)
         End If

@@ -70,12 +70,12 @@ Public Sub checkMusic(Optional ByVal forceNow As Boolean)
     Dim boardMusic As String
     boardMusic = projectPath & mediaPath & boardList(activeBoardIndex).theData.boardMusic
 
-    If (boardMusic = "") Then
+    If (LenB(boardMusic) = 0) Then
 
         Call stopMedia
-        musicPlaying = ""
+        musicPlaying = vbNullString
 
-    ElseIf (UCase(boardMusic) = UCase(musicPlaying)) Then
+    ElseIf (UCase$(boardMusic) = UCase$(musicPlaying)) Then
 
         If (Not isMediaPlaying(boardMusic)) Then
             Call playMedia(boardMusic)
@@ -112,7 +112,7 @@ Public Function isMediaPlaying(ByVal file As String) As Boolean
 
     'Get extension
     Dim ext As String
-    ext = UCase(GetExt(file))
+    ext = UCase$(GetExt(file))
 
     If (isPlayedByMCI(ext)) Then
         isMediaPlaying = IsPlayingMCI(MID_DEVICE)
@@ -147,7 +147,7 @@ Public Sub playMedia(ByVal file As String)
 
     'Get extension
     Dim ext As String
-    ext = UCase(GetExt(file))
+    ext = UCase$(GetExt(file))
 
     If (isPlayedByMCI(ext)) Then
         Call PlayMCI(file, MID_DEVICE)
@@ -198,7 +198,7 @@ Public Sub playSoundFX(ByVal file As String)
 
     'Get extension
     Dim ext As String
-    ext = UCase(GetExt(file))
+    ext = UCase$(GetExt(file))
 
     If (isPlayedByMCI(ext)) Then
         Call PlayMCI(file, SFX_DEVICE)

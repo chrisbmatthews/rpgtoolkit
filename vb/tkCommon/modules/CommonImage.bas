@@ -51,7 +51,7 @@ Public Sub DrawSizedImage( _
 
     On Error Resume Next
 
-    If UCase(commonRoutines.extention(filename)) = "TBM" Then
+    If UCase$(commonRoutines.extention(filename)) = "TBM" Then
         'Tile bitmap
         Dim tbm As TKTileBitmap
         Call OpenTileBitmap(filename, tbm)
@@ -82,7 +82,7 @@ Public Sub drawImage( _
 
     On Error Resume Next
 
-    If UCase(GetExt(filename)) = "TBM" Then
+    If UCase$(GetExt(filename)) = "TBM" Then
         'Tile bitmap
         Dim tbm As TKTileBitmap
         Call OpenTileBitmap(filename, tbm)

@@ -104,10 +104,10 @@ Function LoadStringLoc(ByVal tagID As Long, ByVal equivStringOptional As String)
     'be accessed)'
     On Error Resume Next
     Dim idx As Long
-    If m_LangFile <> "" Then
+    If LenB(m_LangFile) <> 0 Then
         If tagID = 1010 Then
             'none string
-            If m_LangNoneString <> "" Then
+            If LenB(m_LangNoneString) <> 0 Then
                 LoadStringLoc = m_LangNoneString
                 Exit Function
             End If
@@ -138,7 +138,7 @@ Function ObtainToolTipFromTag(ByVal tagID As Long, ByVal dbfile As String) As St
         Else
         End If
     Else
-        ObtainToolTipFromTag = ""
+        ObtainToolTipFromTag = vbNullString
     End If
 End Function
 
@@ -149,13 +149,13 @@ Sub ChangeLanguage(ByVal file As String)
     Dim frm As VB.Form
 
     'use toolkit lang files
-    m_LangNoneString = ""
+    m_LangNoneString = vbNullString
     
     Call OpenLanguage(file, m_LangTable)
     If file <> "default" Then
         m_LangFile = RemovePath(file)
     Else
-        m_LangFile = ""
+        m_LangFile = vbNullString
     End If
     If file <> "default" Then
         'ok
@@ -182,7 +182,7 @@ Sub LocalizeForm(frm As VB.Form)
     On Error Resume Next
     Dim ctl As VB.Control
     
-    If m_LangFile = "" Then
+    If (LenB(m_LangFile) = 0) Then
         'didn't mount db-- leave as english text
         Exit Sub
     End If
@@ -192,7 +192,7 @@ Sub LocalizeForm(frm As VB.Form)
         idx = LangIndexOfTag(Int(frm.Tag), m_LangTable)
         If idx <> -1 Then
             frm.Caption = m_LangTable.theTable(idx).Caption
-            If frm.Caption = " " Then frm.Caption = ""
+            If frm.Caption = " " Then frm.Caption = vbNullString
         End If
     End If
     
@@ -201,9 +201,9 @@ Sub LocalizeForm(frm As VB.Form)
             idx = LangIndexOfTag(Int(ctl.Tag), m_LangTable)
             If idx <> -1 Then
                 ctl.Caption = m_LangTable.theTable(idx).Caption
-                If ctl.Caption = " " Then ctl.Caption = ""
+                If ctl.Caption = " " Then ctl.Caption = vbNullString
                 ctl.ToolTipText = m_LangTable.theTable(idx).toolTip
-                If ctl.ToolTipText = " " Then ctl.ToolTipText = ""
+                If ctl.ToolTipText = " " Then ctl.ToolTipText = vbNullString
             End If
         End If
     Next ctl
@@ -265,7 +265,7 @@ Function ObtainCaptionFromTag(ByVal tagID As Long, ByVal dbfile As String) As St
             Case DB_LangName:
                 ObtainCaptionFromTag = "English"
             Case Else:
-                ObtainCaptionFromTag = ""
+                ObtainCaptionFromTag = vbNullString
         End Select
     End If
 End Function
@@ -318,34 +318,34 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     Dim Caption As String
     Dim toolTip As String
     tagID = 0
-    Caption = ""
-    toolTip = ""
+    Caption = vbNullString
+    toolTip = vbNullString
     
     Dim Temp As String
     'TagID
     Dim t As Long, part As String, idx As Long
     For t = 1 To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = " " Or part$ = Chr$(9) Then
+        If part$ = " " Or part$ = vbTab Then
             'ok, we're starting in on the caption tag...
-            tagID = Int(Temp)
-            Temp = ""
+            tagID = CInt(Temp)
+            Temp = vbNullString
             idx = t
             Exit For
         Else
-            Temp = Temp + part$
+            Temp = Temp & part$
         End If
     Next t
        
     'gobble up whitespace...
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = Chr$(9) Then
+        If part$ = vbTab Then
             'tab. This means next entry is coming...
             idx = t + 1
             Exit For
         End If
-        If part$ <> " " And part$ <> Chr$(9) Then
+        If part$ <> " " And part$ <> vbTab Then
             'found start of new block
             idx = t
             Exit For
@@ -357,18 +357,18 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     firstOccur = True
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = Chr$(9) Then
+        If part$ = vbTab Then
             'next entry, please!
             idx = t
             Exit For
         End If
-        If part$ = Chr$(34) Then
+        If part$ = ("""") Then
             If firstOccur = True Then
                 firstOccur = False
             Else
                 'found end of caption tag.
                 Caption = Temp
-                Temp = ""
+                Temp = vbNullString
                 idx = t + 1
                 Exit For
             End If
@@ -377,19 +377,19 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
                 t = t + 1
                 part$ = Mid$(line, t, 1)
             End If
-            Temp = Temp + part$
+            Temp = Temp & part$
         End If
     Next t
     
     'gobble up whitespace...
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = Chr$(9) Then
+        If part$ = vbTab Then
             'tab. This means next entry is coming...
             idx = t + 1
             Exit For
         End If
-        If part$ <> " " And part$ <> Chr$(9) Then
+        If part$ <> " " And part$ <> vbTab Then
             'found start of new block
             idx = t
             Exit For
@@ -400,13 +400,13 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
     firstOccur = True
     For t = idx To Len(line)
         part$ = Mid$(line, t, 1)
-        If part$ = Chr$(34) Then
+        If part$ = ("""") Then
             If firstOccur = True Then
                 firstOccur = False
             Else
                 'found end of tooltip tag.
                 toolTip = Temp
-                Temp = ""
+                Temp = vbNullString
                 idx = t + 1
                 Exit For
             End If
@@ -415,7 +415,7 @@ Function ParseLangEntry(ByVal line As String) As LangEntry
                 t = t + 1
                 part$ = Mid$(line, t, 1)
             End If
-            Temp = Temp + part$
+            Temp = Temp & part$
         End If
     Next t
     

@@ -39,7 +39,7 @@ Private cursorMapTablesSize As Long 'number of entires in that list
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
-Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional ByVal initialValue As String = "") As String
+Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional ByVal initialValue As String = vbNullString) As String
     'text prompt dialog.
     'title - title string of dialog
     'text - question in dialog
@@ -97,12 +97,12 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
         'first check the joystick...
         Dim keyb As String
         keyb = getAsciiKey()
-        If keyb <> "" Then
+        If LenB(keyb) <> 0 Then
             If Asc(LCase$(keyb)) >= 32 Then
                 textBoxContents = textBoxContents + LCase$(keyb)
             End If
             If Asc(keyb) = 8 Then
-                If textBoxContents <> "" Then
+                If LenB(textBoxContents) <> 0 Then
                     textBoxContents = Mid$(textBoxContents, 1, Len(textBoxContents) - 1)
                 End If
             End If
@@ -120,7 +120,7 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
         If isPressed("ESC") Or isPressed("BUTTON2") Then
             'cancel
             Call playSoundFX(projectPath & mediaPath & mainMem.cursorCancelSound)
-            ShowPromptDialog = ""
+            ShowPromptDialog = vbNullString
             done = True
         End If
     Loop
@@ -199,7 +199,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         If SaveFileDialog(dlg, host.hwnd) Then
             ShowFileDialog = dlg.strSelectedFileNoPath
         Else
-            ShowFileDialog = ""
+            ShowFileDialog = vbNullString
         End If
         
         ChDir (oldpath)
@@ -222,7 +222,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     'obtain files...
     Dim a As String
     a = Dir(path + ext)
-    Do While a <> ""
+    Do While LenB(a) <> 0
         Files(count) = a
         count = count + 1
         If count > UBound(Files) Then
@@ -301,12 +301,12 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         'first check the joystick...
         Dim keyb As String
         keyb = getAsciiKey()
-        If keyb <> "" Then
+        If LenB(keyb) <> 0 Then
             If Asc(LCase$(keyb)) >= 32 Then
-                textBoxContents = textBoxContents + LCase$(keyb)
+                textBoxContents = textBoxContents & LCase$(keyb)
             End If
             If Asc(keyb) = 8 Then
-                If textBoxContents <> "" Then
+                If LenB(textBoxContents) <> 0 Then
                     textBoxContents = Mid$(textBoxContents, 1, Len(textBoxContents) - 1)
                 End If
             End If
@@ -346,7 +346,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
             done = True
         End If
         If isPressed("ENTER") Then
-            If textBoxContents = "" Then
+            If (LenB(textBoxContents) = 0) Then
                 Call playSoundFX(projectPath & mediaPath & mainMem.cursorSelectSound)
                 ShowFileDialog = Files(cursorNum + topFile)
                 done = True
@@ -359,7 +359,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
         If isPressed("ESC") Or isPressed("BUTTON2") Then
             'cancel
             Call playSoundFX(projectPath & mediaPath & mainMem.cursorCancelSound)
-            ShowFileDialog = ""
+            ShowFileDialog = vbNullString
             done = True
         End If
     Loop
@@ -521,7 +521,7 @@ Function max3(ByVal x As Long, ByVal y As Long, ByVal z As Long) As Long
     End If
 End Function
 
-Public Function MBox(ByVal Text As String, Optional ByVal title As String = "", Optional ByVal mBoxType As Long = MBT_OK, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = "") As Integer
+Public Function MBox(ByVal Text As String, Optional ByVal title As String = vbNullString, Optional ByVal mBoxType As Long = MBT_OK, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = vbNullString) As Integer
     'calls the mbox function (pops up an eqivalent to mwin.)
     On Error Resume Next
 
@@ -550,7 +550,7 @@ Public Function MBox(ByVal Text As String, Optional ByVal title As String = "", 
     End Select
 End Function
 
-Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = "") As Long
+Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional ByVal textColor As Long = vbWhite, Optional ByVal bgColor As Long = 0, Optional ByVal bgPic As String = vbNullString) As Long
     On Error Resume Next
     'display a message box.
     'text is the question
@@ -563,11 +563,11 @@ Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional 
     Dim subStrings As Long
     Dim t As Long
     'seperate the string on the newline character
-    subStrings = countSubStrings(Text, Chr$(10))
+    subStrings = countSubStrings(Text, vbLf)
     
     ReDim textlist(subStrings) As String
     For t = 0 To subStrings - 1
-        textlist(t) = getSubString(Text, Chr$(10), t)
+        textlist(t) = getSubString(Text, vbLf, t)
     Next t
     
     Dim maxWidth As Long
@@ -595,7 +595,7 @@ Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional 
     
     cnv = CreateCanvas(width, textSize * (subStrings + UBound(options) + 3))
     Call CanvasFill(cnv, bgColor)
-    If bgPic <> "" Then
+    If LenB(bgPic) <> 0 Then
         Call CanvasLoadSizedPicture(cnv, bgPic)
     End If
     
@@ -667,10 +667,10 @@ Private Function countSubStrings( _
 
     'count the numbver of substrings contained in the string
     'seperated by stringSeperator
-    
+
     On Error Resume Next
-    
-    If theString = "" Then
+
+    If (LenB(theString) = 0) Then
         countSubStrings = 0
     Else
         Dim parse() As String

@@ -129,8 +129,8 @@ Private Function APIString2VBString(ByVal str As String) As String
     On Error Resume Next
     Dim part As String, stringPos As Integer
     For stringPos = 0 To Len(str)
-        part = Mid(str, stringPos, 1)
-        If part = Chr(0) Then
+        part = Mid$(str, stringPos, 1)
+        If part = vbNullChar Then
             Exit For
         Else
             APIString2VBString = APIString2VBString & part
@@ -167,7 +167,7 @@ Public Function ColorDialog(Optional ByVal returnNegOnCancel As Boolean = True) 
         .flags = CC_ANYCOLOR Or CC_RGBINIT  ' allow any color, use rgbResult as default selection
         .lCustData = 0  ' not needed
         .lpfnHook = 0  ' not needed
-        .lpTemplateName = ""  ' not needed
+        .lpTemplateName = vbNullString  ' not needed
     End With
 
     ' Open the Choose Color box.  If the user chooses a color, set Form1's
@@ -199,12 +199,12 @@ Private Function DialogFilterToAPIFilter(ByVal filter As String) As String
     On Error Resume Next
     Dim toRet As String, t As Integer, part As String
     For t = 0 To Len(filter)
-        part = Mid(filter, t, 1)
-        If part = "|" Then part = Chr(0)
+        part = Mid$(filter, t, 1)
+        If part = "|" Then part = vbNullChar
         toRet = toRet & part
     Next t
-    toRet = toRet & Chr(0)
-    toRet = toRet & Chr(0)
+    toRet = toRet & vbNullChar
+    toRet = toRet & vbNullChar
     DialogFilterToAPIFilter = toRet
 End Function
 

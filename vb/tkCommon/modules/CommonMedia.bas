@@ -50,8 +50,8 @@ Private Function APIString2VBString(ByVal str As String) As String
     On Error Resume Next
     Dim part As String, stringPos As Integer
     For stringPos = 0 To Len(str)
-        part = Mid(str, stringPos, 1)
-        If part = Chr(0) Then
+        part = Mid$(str, stringPos, 1)
+        If part = vbNullChar Then
             Exit For
         Else
             APIString2VBString = APIString2VBString & part
@@ -86,7 +86,7 @@ Public Function IsPlayingMCI(Optional ByVal strIdentifier As String = "defDevice
     On Error Resume Next
     Dim returnStr As String * 255
     Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
-    IsPlayingMCI = (Not (Left(returnStr, 7) = "stopped"))
+    IsPlayingMCI = (Not (Left$(returnStr, 7) = "stopped"))
 End Function
 
 '=========================================================================
@@ -96,15 +96,15 @@ Public Sub PlayMCI(DriveDirFile As String, Optional ByVal strIdentifier As Strin
     On Error Resume Next
     Dim returnStr As String * 255, returnLen As Long
     Dim shortPath As String
-    shortPath = space(Len(DriveDirFile))
+    shortPath = space$(Len(DriveDirFile))
     returnLen = GetShortPathName(DriveDirFile, shortPath, Len(shortPath))
     If returnLen > Len(DriveDirFile) Then 'not a long filename
         shortPath = DriveDirFile
     Else                          'it is a long filename
-        shortPath = Left(shortPath, returnLen) 'x is the length of the return buffer
+        shortPath = Left$(shortPath, returnLen) 'x is the length of the return buffer
     End If
     Call mciSendString("close " & strIdentifier, returnStr, 255, 0) 'just in case
-    Call mciSendString("open " & Chr(34) & shortPath & Chr(34) & " alias " & strIdentifier, returnStr, 255, 0)
+    Call mciSendString("open " & ("""") & shortPath & ("""") & " alias " & strIdentifier, returnStr, 255, 0)
     Call mciSendString("play " & strIdentifier, returnStr, 255, 0)
 End Sub
 
@@ -119,7 +119,7 @@ Public Sub SetPositionMCI(ByVal newPos As Long, Optional ByVal strIdentifier As 
         newPos = theLen
     End If
     Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
-    If Left(returnStr, 7) = "playing" Then
+    If Left$(returnStr, 7) = "playing" Then
         Call mciSendString("stop " & strIdentifier, returnStr, 255, 0)
     End If
     Call mciSendString("seek " & strIdentifier & " to " & CStr(newPos), returnStr, 0, 0)
@@ -133,12 +133,12 @@ Public Sub StopMCI(Optional ByVal strIdentifier As String = "defDevice")
     On Error Resume Next
     Dim returnStr As String * 255
     Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
-    If Left(returnStr, 7) = "playing" Then
+    If Left$(returnStr, 7) = "playing" Then
         Call mciSendString("stop " & strIdentifier, returnStr, 255, 0)
     End If
-    returnStr = space(255)
+    returnStr = space$(255)
     Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
-    If Left(returnStr, 7) = "stopped" Then
+    If Left$(returnStr, 7) = "stopped" Then
         Call mciSendString("close " & strIdentifier, returnStr, 255, 0)
     End If
 End Sub

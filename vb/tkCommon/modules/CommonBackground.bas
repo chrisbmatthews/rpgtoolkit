@@ -38,24 +38,24 @@ End Type
 Public Sub BackgroundClear(ByRef theBkg As TKBackground)
     On Error Resume Next
     With theBkg
-        .image = ""
-        .bkgMusic = ""
-        .bkgSelWav = ""
-        .bkgChooseWav = ""
-        .bkgReadyWav = ""
-        .bkgCantDoWav = ""
+        .image = vbNullString
+        .bkgMusic = vbNullString
+        .bkgSelWav = vbNullString
+        .bkgChooseWav = vbNullString
+        .bkgReadyWav = vbNullString
+        .bkgCantDoWav = vbNullString
     End With
 End Sub
 
 '=========================================================================
 ' Draw a background
 '=========================================================================
-Public Sub DrawBackground(ByRef theBkg As TKBackground, ByVal X As Long, ByVal Y As Long, ByVal width As Long, ByVal height As Long, ByVal hdc As Long)
+Public Sub DrawBackground(ByRef theBkg As TKBackground, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal hdc As Long)
     On Error Resume Next
     Dim file As String
     file = PakLocate(projectPath & bmpPath & theBkg.image)
     If fileExists(file) Then
-        Call DrawSizedImage(file, X, Y, width, height, hdc)
+        Call DrawSizedImage(file, x, y, width, height, hdc)
     End If
 End Sub
 
@@ -66,7 +66,7 @@ Public Sub saveBackground(ByVal file As String, ByRef theBkg As TKBackground)
 
     On Error Resume Next
 
-    If file$ = "" Then Exit Sub
+    If (LenB(file$) = 0) Then Exit Sub
     
     #If isToolkit = 1 Then
         bkgList(activeBkgIndex).needUpdate = False
@@ -103,7 +103,7 @@ Public Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
     Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long
 
     num = FreeFile
-    If file$ = "" Then Exit Sub
+    If (LenB(file$) = 0) Then Exit Sub
     #If isToolkit = 1 Then
         bkgList(activeBkgIndex).needUpdate = False
     #End If
@@ -111,8 +111,6 @@ Public Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
     Call BackgroundClear(theBkg)
 
     file = PakLocate(file)
-
-    num = FreeFile()
 
     Open file$ For Binary Access Read As num
         Dim b As Byte
@@ -144,7 +142,7 @@ Public Sub openBackground(ByVal file As String, ByRef theBkg As TKBackground)
 ver2bkg:
         'open background (ver 2)
 
-        Dim X As Long, Y As Long, user As Long
+        Dim x As Long, y As Long, user As Long
 
         Dim tbm As TKTileBitmap
 
@@ -161,11 +159,11 @@ ver2bkg:
                 user = MsgBox("This Background was created using Version " + CStr(majorVer) + "." + CStr(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
                 If user = 7 Then Close num: Exit Sub     'selected no
             End If
-            For X = 1 To 19
-                For Y = 1 To 11
-                    tbm.tiles(X - 1, Y - 1) = fread(num)
-                Next Y
-            Next X
+            For x = 1 To 19
+                For y = 1 To 11
+                    tbm.tiles(x - 1, y - 1) = fread(num)
+                Next y
+            Next x
 
             .bkgMusic = fread(num)
             .bkgSelWav = fread(num)
@@ -175,13 +173,13 @@ ver2bkg:
 
             Call fread(num)
 
-            For X = 1 To 19
-                For Y = 1 To 11
-                    tbm.redS(X - 1, Y - 1) = fread(num)
-                    tbm.greenS(X - 1, Y - 1) = fread(num)
-                    tbm.blueS(X - 1, Y - 1) = fread(num)
-                Next Y
-            Next X
+            For x = 1 To 19
+                For y = 1 To 11
+                    tbm.redS(x - 1, y - 1) = fread(num)
+                    tbm.greenS(x - 1, y - 1) = fread(num)
+                    tbm.blueS(x - 1, y - 1) = fread(num)
+                Next y
+            Next x
 
             Dim tbmName As String
             tbmName$ = replace(RemovePath(file$), ".", "_") + ".tbm"

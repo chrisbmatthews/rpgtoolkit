@@ -118,7 +118,7 @@ Public Sub ClearNonPersistentThreads()
     For c = 0 To UBound(Threads)
         If (Threads(c).bPersistent = False) Then
             Call TellThread(c, "Unload()", retval, True)
-            Threads(c).filename = ""
+            Threads(c).filename = vbNullString
             Threads(c).thread.programPos = -1
             Threads(c).thread.threadID = -1
             ReDim Threads(c).thread.program(10)
@@ -153,7 +153,7 @@ Public Sub ClearAllThreads()
 
     For c = 0 To UBound(Threads)
         Call TellThread(c, "Unload()", retval, True)
-        Threads(c).filename = ""
+        Threads(c).filename = vbNullString
         Threads(c).thread.programPos = -1
         Threads(c).thread.threadID = -1
         ReDim Threads(c).thread.program(0)
@@ -179,7 +179,7 @@ Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean,
     'search for a free persistent thread slot
     For c = 0 To UBound(Threads)
         With Threads(c)
-            If (.filename = "") Then
+            If (LenB(.filename) = 0) Then
                 'this is a thread that has been halted, thus it's slot is free
                 .thread = openProgram(file)
                 .filename = file
@@ -218,7 +218,7 @@ Private Sub ExecuteAllThreads()
     'Run threads without loops (maybe using Branch)
     Dim c As Long
     For c = 0 To UBound(Threads)
-        If Threads(c).filename <> "" Then
+        If (LenB(Threads(c).filename) <> 0) Then
             If Threads(c).bIsSleeping Then
                 'thread is asleep
                 'time to wake up?
@@ -280,7 +280,7 @@ Public Sub InitThreads()
     ReDim Threads(10)
     Dim c As Long
     For c = 0 To UBound(Threads)
-        Threads(c).filename = ""
+        Threads(c).filename = vbNullString
         Threads(c).thread.programPos = -1
         Threads(c).thread.boardNum = -1
         Threads(c).bIsSleeping = False
@@ -297,7 +297,7 @@ Public Sub KillThread(ByVal threadID As Long)
     On Error Resume Next
     Dim retval As RPGCODE_RETURN
     Call TellThread(threadID, "Unload()", retval, True)
-    Threads(threadID).filename = ""
+    Threads(threadID).filename = vbNullString
     Threads(threadID).thread.programPos = -1
     Threads(threadID).thread.threadID = -1
     ReDim Threads(threadID).thread.program(10)
@@ -310,7 +310,7 @@ End Sub
 Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
     On Error Resume Next
     Dim shortName As String
-    shortName = UCase(GetCommandName(rpgcodeCommand))
+    shortName = UCase$(GetCommandName(rpgcodeCommand))
     Call MethodCallRPG(rpgcodeCommand, shortName, Threads(threadID).thread, retval, noMethodNotFound)
 End Sub
 
@@ -351,12 +351,12 @@ Public Sub launchBoardThreads(ByRef board As TKBoard)
     On Error Resume Next
     Dim retval As RPGCODE_RETURN, a As Long, id As Long
     For a = 0 To UBound(Threads)
-        If (Threads(a).bPersistent) And (Threads(a).filename <> "") Then
+        If (Threads(a).bPersistent) And (LenB(Threads(a).filename) <> 0) Then
             Call TellThread(a, "EnterNewBoard()", retval, True)
         End If
     Next a
     For a = 0 To UBound(board.Threads)
-        If board.Threads(a) <> "" Then
+        If (LenB(board.Threads(a)) <> 0) Then
             id = CreateThread(projectPath & prgPath & board.Threads(a), False)
             Call CBSetNumerical("Threads[" & CStr(a) & "]!", id)
         End If
@@ -550,7 +550,7 @@ Private Sub incrementThreadLoop(ByVal num As Long)
         Dim prg As RPGCodeProgram
         prg = .prg
 
-        Select Case LCase(GetCommandName(prg.program(prg.programPos)))
+        Select Case LCase$(GetCommandName(prg.program(prg.programPos)))
 
             Case "openblock"
                 .depth = .depth + 1

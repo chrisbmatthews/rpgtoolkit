@@ -28,8 +28,8 @@ Public Sub showMenu(Optional ByVal requestedMenu As Long = MNU_MAIN)
 
     ' Quit if we're already showing the menu
     If ((bInMenu) Or (fightInProgress)) Then Exit Sub
-   
-    If mainMem.menuPlugin <> "" Then
+
+    If LenB(mainMem.menuPlugin) <> 0 Then
     
         Dim isMenuPlugin As Long
         Dim plugName As String
@@ -64,7 +64,7 @@ End Sub
 '=========================================================================
 Public Sub startMenuPlugin()
     On Error Resume Next
-    If mainMem.menuPlugin <> "" Then
+    If LenB(mainMem.menuPlugin) <> 0 Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         If isVBPlugin(plugName) Then
@@ -80,7 +80,7 @@ End Sub
 '=========================================================================
 Public Sub stopMenuPlugin()
     On Error Resume Next
-    If mainMem.menuPlugin <> "" Then
+    If (LenB(mainMem.menuPlugin) <> 0) Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         If isVBPlugin(plugName) Then

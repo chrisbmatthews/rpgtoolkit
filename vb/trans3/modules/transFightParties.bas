@@ -122,28 +122,30 @@ End Function
 ' Create an enemy party
 '=========================================================================
 Public Sub CreateEnemyParty(ByRef party As FighterParty, ByRef enemies() As TKEnemy)
+
     On Error Resume Next
+
     Call CreateParty(party, UBound(enemies), True)
-    
+
     party.isPlayerControlled = False
-    
+
     Dim t As Long
     Dim u As Long
-    
+
     'calculate gp reward level
     Dim gp As Long
     For t = 0 To UBound(enemies)
         gp = gp + enemies(t).eneGP
     Next t
     party.gp = gp
-    
+
     'determine win program...
     For t = 0 To UBound(enemies)
-        If enemies(t).eneRPGCode <> "" Then
+        If (LenB(enemies(t).eneRPGCode) <> 0) Then
             party.winProgram = enemies(t).eneRPGCode
         End If
     Next t
-    
+
     For t = 0 To UBound(enemies)
         party.fighterList(t).isPlayer = False
         party.fighterList(t).enemy = enemies(t)
@@ -152,6 +154,7 @@ Public Sub CreateEnemyParty(ByRef party As FighterParty, ByRef enemies() As TKEn
         Call EnemyClearAllStatus(party.fighterList(t).enemy)
         Call EnemyClearAllStatus(enemies(t))
     Next t
+
 End Sub
 
 '=========================================================================
@@ -191,7 +194,7 @@ Public Sub CreatePlayerParty(ByRef party As FighterParty, ByRef players() As TKP
     
     party.gp = gp
     party.isPlayerControlled = True
-    party.winProgram = ""
+    party.winProgram = vbNullString
     
     Dim t As Long
     Dim u As Long
@@ -371,7 +374,7 @@ End Sub
 '=========================================================================
 ' Apply a status effect to a fighter
 '=========================================================================
-Public Sub invokeStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByRef theEffect As TKStatusEffect, Optional ByVal statusFile As String = "")
+Public Sub invokeStatus(ByVal partyIdx As Long, ByVal fightIdx As Long, ByRef theEffect As TKStatusEffect, Optional ByVal statusFile As String = vbNullString)
 
     On Error Resume Next
 

@@ -91,7 +91,7 @@ End Type
 Public Function checkOverrideName(ByRef theClass As RPGCODE_CLASS, ByVal theMethod As String) As String
 
     ' Capitalize theMethod
-    theMethod = UCase(Trim(theMethod))
+    theMethod = UCase$(Trim$(theMethod))
 
     ' Loop variables
     Dim scopeIdx As Long, idx As Long
@@ -112,7 +112,7 @@ Public Function checkOverrideName(ByRef theClass As RPGCODE_CLASS, ByVal theMeth
             ' Found the method
             If (scope.methods(idx).name = theMethod) Then
                 ' Check for an override
-                If (scope.methods(idx).override <> "") Then
+                If (LenB(scope.methods(idx).override) <> 0) Then
                     ' Return this
                     checkOverrideName = scope.methods(idx).override
                 End If
@@ -155,7 +155,7 @@ Public Sub addClassToProgram(ByRef theClass As RPGCODE_CLASS, ByRef prg As RPGCo
             ' Already in program
             Exit Sub
 
-        ElseIf (prg.classes.classes(idx).strName = "") Then
+        ElseIf (LenB(prg.classes.classes(idx).strName) = 0) Then
             ' Free space
             If (pos = -1) Then
                 pos = idx
@@ -201,7 +201,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     ' Loop over each line
     For lineIdx = 0 To UBound(prg.program)
 
-        cmd = UCase(GetCommandName(prg.program(lineIdx)))
+        cmd = UCase$(GetCommandName(prg.program(lineIdx)))
         methodHere = False
 
         If (opening And inClass And (cmd = "OPENBLOCK")) Then
@@ -229,12 +229,12 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                             End If
                         End If
                         Dim toInherit As String
-                        toInherit = Trim(parts(inheritIdx))
+                        toInherit = Trim$(parts(inheritIdx))
                         If (Not canInstanceClass(toInherit, prg)) Then
                             Call debugger("Base class " & toInherit & " not found-- " & prg.program(lineIdx))
                         Else
                             ' Make toInherit caps
-                            toInherit = UCase(toInherit)
+                            toInherit = UCase$(toInherit)
                             ' Loop over every class it could be
                             Dim idx As Long, theClass As RPGCODE_CLASS
                             For idx = 0 To UBound(prg.classes.classes)
@@ -303,7 +303,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 End If
                 inClass = False
                 inStruct = False
-                scope = ""
+                scope = vbNullString
             End If
 
         ElseIf ((cmd = "CLASS" Or cmd = "STRUCT" Or cmd = "INTERFACE") And (Not inClass)) Then
@@ -323,8 +323,8 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
             ' Split up the line
             chars(0) = ":"
             chars(1) = ","
-            parts() = multiSplit(UCase(prg.program(lineIdx)), chars, delimiters, False)
-            prg.classes.classes(classIdx).strName = GetMethodName(Trim(parts(0)))
+            parts() = multiSplit(UCase$(prg.program(lineIdx)), chars, delimiters, False)
+            prg.classes.classes(classIdx).strName = GetMethodName(Trim$(parts(0)))
 
             If (cmd = "STRUCT") Then
                 ' It's a structure, default to public visibility
@@ -340,7 +340,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 inStruct = False
             End If
 
-        ElseIf (inClass And (scope <> "") And (prg.program(lineIdx) <> "") And (Right(prg.program(lineIdx), 1) <> ":") And (depth = 1)) Then
+        ElseIf (inClass And (LenB(scope) <> 0) And (LenB(prg.program(lineIdx)) <> 0) And (Right$(prg.program(lineIdx), 1) <> ":") And (depth = 1)) Then
             If (InStr(1, prg.program(lineIdx), "(")) Then
                 ' Found a method
                 If (Not inStruct) Then
@@ -349,7 +349,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                     methodCheckIdx = lineIdx
                     Do
                         methodCheckIdx = methodCheckIdx + 1
-                        If (prg.program(methodCheckIdx) <> "") Then
+                        If (LenB(prg.program(methodCheckIdx)) <> 0) Then
                             If (prg.program(methodCheckIdx) = "{") Then
                                 ' The method's body is right here
                                 Dim mName As String
@@ -397,7 +397,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
         If ((inClass) And ((depth = 1) Or (depth = 0))) Then
 
-            Select Case LCase(Trim(prg.program(lineIdx)))
+            Select Case LCase$(Trim$(prg.program(lineIdx)))
 
                 Case "private:"
                     ' Found start of private scope
@@ -427,7 +427,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
             ' Make sure this line isn't run
             If (Not methodHere) Then
-                prg.program(lineIdx) = ""
+                prg.program(lineIdx) = vbNullString
             End If
 
         End If
@@ -452,27 +452,27 @@ Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS
     Dim idx As Long                 ' Loop var
 
     ' Set toParse to the text passed in
-    toParse = Trim(theVar)
+    toParse = Trim$(theVar)
 
     ' Grab the variable's type (! or $)
-    variableType = Right(toParse, 1)
+    variableType = Right$(toParse, 1)
     If (variableType <> "!" And variableType <> "$") Then
         ' It's an object
-        variableType = ""
+        variableType = vbNullString
     End If
 
     ' See where the first [ is
     start = InStr(1, toParse, "[")
 
     ' Grab the variable's name
-    variableName = Mid(toParse, 1, start - 1)
+    variableName = Mid$(toParse, 1, start - 1)
 
     ' Find the last ]
     tEnd = InStr(1, StrReverse(toParse), "]")
     tEnd = Len(toParse) - tEnd + 1
 
     ' Just keep what's inbetween the two
-    toParse = Mid(toParse, start + 1, tEnd - start - 1)
+    toParse = Mid$(toParse, start + 1, tEnd - start - 1)
 
     ' Split it at '][' (bewteen elements)
     parseArrayD() = Split(toParse, "][")
@@ -499,11 +499,11 @@ Private Sub addVarToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_S
     Dim pos As Long         ' Position we're using
 
     ' Make theVar all caps
-    origName = Trim(theVar)
-    theVar = Trim(UCase(theVar))
+    origName = Trim$(theVar)
+    theVar = Trim$(UCase$(theVar))
 
     ' Default to ! if no type def character
-    If (Right(theVar, 1) <> "!" And Right(theVar, 1) <> "$") Then
+    If (Right$(theVar, 1) <> "!" And Right$(theVar, 1) <> "$") Then
         ' Add the !
         theVar = theVar & "!"
     End If
@@ -517,7 +517,7 @@ Private Sub addVarToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_S
             Call debugger("Illegal redefinition of variable " & origName)
             Exit Sub
 
-        ElseIf (scope.strVars(idx) = "") Then
+        ElseIf (LenB(scope.strVars(idx)) = 0) Then
             If (pos = -1) Then
                 ' Free position!
                 pos = idx
@@ -540,7 +540,7 @@ End Sub
 '=========================================================================
 ' Add a method to a scope
 '=========================================================================
-Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = "", Optional ByVal needNotExist As Boolean)
+Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef scope As RPGCODE_CLASS_SCOPE, Optional ByVal overrideName As String = vbNullString, Optional ByVal needNotExist As Boolean)
 
     On Error Resume Next
 
@@ -550,17 +550,17 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
     Dim idx As Long             ' Loop variable
     Dim pos As Long             ' Pos we're using
 
-    If (Text = "") Then
+    If (LenB(Text) = 0) Then
         ' No text, no method, no wasted time
         Exit Sub
     End If
 
     ' Get the method's name
     origName = GetMethodName(Text)
-    If (overrideName = "") Then
-        methodName = UCase(theClass) & "::" & UCase(origName)
+    If (LenB(overrideName) = 0) Then
+        methodName = UCase$(theClass) & "::" & UCase$(origName)
     Else
-        methodName = overrideName & "::" & UCase(origName)
+        methodName = overrideName & "::" & UCase$(origName)
     End If
 
     ' Get line method starts on
@@ -580,12 +580,12 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
 
     ' Find an open position
     For idx = 0 To UBound(scope.methods)
-        If (scope.methods(idx).name = UCase(origName)) Then
+        If (scope.methods(idx).name = UCase$(origName)) Then
             ' Illegal redifinition
             Call debugger("Illegal redefinition of method " & origName & " -- " & Text)
             Exit Sub
 
-        ElseIf (scope.methods(idx).name = "") Then
+        ElseIf (LenB(scope.methods(idx).name) = 0) Then
             If (pos = -1) Then
                 ' Found a spot
                 pos = idx
@@ -602,7 +602,7 @@ Private Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByR
 
     ' Add in the data
     scope.methods(pos).line = theLine
-    scope.methods(pos).name = UCase(origName)
+    scope.methods(pos).name = UCase$(origName)
     scope.methods(pos).override = overrideName
 
 End Sub
@@ -619,11 +619,11 @@ Private Function removeClassName(ByVal Text As String) As String
 
     For idx = 1 To Len(Text)
         ' Get a character
-        char = Mid(Text, idx, 2)
+        char = Mid$(Text, idx, 2)
         ' Check if it's the scope operator
         If (char = "::") Then
             ' Found it
-            removeClassName = Mid(Text, idx + 2)
+            removeClassName = Mid$(Text, idx + 2)
             Exit Function
         End If
     Next idx
@@ -701,7 +701,7 @@ Private Function canInstanceClass(ByVal theClass As String, ByRef prg As RPGCode
 
     ' Loop over each class we can instance
     For idx = 0 To UBound(prg.classes.classes)
-        If (prg.classes.classes(idx).strName = UCase(theClass)) Then
+        If (prg.classes.classes(idx).strName = UCase$(theClass)) Then
             ' Yes, we can
             canInstanceClass = True
             Exit Function
@@ -732,7 +732,7 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
     End If
 
     ' Make the var all caps
-    var = Trim(UCase(var))
+    var = Trim$(UCase$(var))
 
     ' For each scope
     For scopeIdx = 0 To 1
@@ -782,7 +782,7 @@ Public Function isMethodMember(ByVal methodName As String, ByVal hClass As Long,
     End If
 
     ' Make the method name all caps
-    methodName = Trim(UCase(methodName))
+    methodName = Trim$(UCase$(methodName))
 
     ' For each scope
     For scopeIdx = 0 To 1
@@ -924,7 +924,7 @@ Private Sub clearObject(ByRef object As RPGCODE_CLASS_INSTANCE, ByRef prg As RPG
 
     ' Clear values
     debugYN = 0
-    oldError = ""
+    oldError = vbNullString
 
     ' For each scope
     For scopeIdx = 0 To 1
@@ -972,7 +972,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
             ReDim Preserve classes(hClass)
         End If
         ' Write in the data
-        classes(hClass).strInstancedFrom = UCase(theClass)
+        classes(hClass).strInstancedFrom = UCase$(theClass)
         classes(hClass).hClass = hClass
         Call clearObject(classes(hClass), prg)
         Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
@@ -997,7 +997,7 @@ Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef x(
         If (depth <= UBound(size)) Then
             Call getVarsFromArray(depth + 1, size(), x(), scope, prefix, postFix)
         Else
-            theVar = ""
+            theVar = vbNullString
             For dimIdx = 0 To UBound(size)
                 theVar = theVar & "[" & CStr(x(dimIdx)) & "]"
             Next dimIdx
@@ -1024,7 +1024,7 @@ Private Function createParams(ByRef params() As String, ByVal noParams As Boolea
         For idx = 0 To UBound(params)
             createParams = createParams & params(idx) & ","
         Next idx
-        createParams = Left(createParams, Len(createParams) - 1)
+        createParams = Left$(createParams, Len(createParams) - 1)
     End If
 
     ' Finish the return string
@@ -1070,7 +1070,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     ' Loop over each charater, forwards
     For a = (begin + 2) To Len(Text)
         ' Get a character
-        char = Mid(Text, a, 1)
+        char = Mid$(Text, a, 1)
         Select Case char
 
             Case "!", "$", "-"
@@ -1109,7 +1109,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                 ' Leaving array
                 arrayDepth = arrayDepth - 1
 
-            Case Chr(34)
+            Case ("""")
                 ' Found a quote
                 ignore = (Not ignore)
 
@@ -1117,13 +1117,13 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Next a
 
     ' Record the method's command line
-    cLine = ParseRPGCodeCommand(Trim(Mid(Text, begin + 2, lngEnd - begin - 1)), prg)
+    cLine = ParseRPGCodeCommand(Trim$(Mid$(Text, begin + 2, lngEnd - begin - 1)), prg)
     If (Not var) Then
-        cmdName = UCase(GetCommandName(cLine))
+        cmdName = UCase$(GetCommandName(cLine))
     Else
         ' Parse the var
         cLine = parseArray(cLine, prg)
-        If (Right(cLine, 1) <> "!" And Right(cLine, 1) <> "$") Then
+        If (Right$(cLine, 1) <> "!" And Right$(cLine, 1) <> "$") Then
             ' Assume object
             cLine = cLine & "!"
         End If
@@ -1144,10 +1144,10 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     ' Loop over each charater, backwards
     For a = (begin - 1) To 1 Step -1
         ' Get a character
-        char = Mid(Text, a, 1)
+        char = Mid$(Text, a, 1)
         If ((spacesOK) And (char = " ")) Then
             ' Alter char
-            char = ""
+            char = vbNullString
             ' Flag spaces are no longer okay
             spacesOK = False
         End If
@@ -1161,7 +1161,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                     Exit For
                 End If
 
-            Case Chr(34)
+            Case ("""")
                 ' Found a quote
                 ignore = (Not ignore)
                 spacesOK = False
@@ -1182,11 +1182,11 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     Next a
 
     ' Record the object
-    object = parseArray(UCase(Trim(Mid(Text, start, begin - start))), prg)
-    If (object = "") Then object = GetWithPrefix()
+    object = parseArray(UCase$(Trim$(Mid$(Text, start, begin - start))), prg)
+    If (LenB(object) = 0) Then object = GetWithPrefix()
 
     ' Get its handle
-    If (Right(object, 1) <> "!" And Right(object, 1) <> "$") Then
+    If (Right$(object, 1) <> "!" And Right$(object, 1) <> "$") Then
         ' Append an !
         Call getValue(object & "!", object, hClassDbl, prg)
     Else
@@ -1208,7 +1208,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             Call clearObject(classes(hClass), prg)
             Call killHandle(hClass)
             classes(hClass).hClass = 0
-            classes(hClass).strInstancedFrom = ""
+            classes(hClass).strInstancedFrom = vbNullString
         Else
 
             If (isMethodMember(cmdName, hClass, prg, outside)) Then
@@ -1220,7 +1220,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                 If (retval.dataType = DT_NUM) Then
                     value = " " & CStr(retval.num)
                 ElseIf (retval.dataType = DT_LIT) Then
-                    value = " " & Chr(34) & retval.lit & Chr(34)
+                    value = " """ & retval.lit & ("""")
                 ElseIf (retval.dataType = DT_REFERENCE) Then
                     value = " " & retval.ref
                 End If
@@ -1247,10 +1247,10 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     value = replace(value, ",", ".")
 
     ' Complete the return string
-    spliceForObjects = Mid(Text, 1, start - 1) & value & Mid(Text, lngEnd + 1)
+    spliceForObjects = Mid$(Text, 1, start - 1) & value & Mid$(Text, lngEnd + 1)
 
     If ((lngEnd = Len(Text)) And (start = 1)) Then
-        spliceForObjects = ""
+        spliceForObjects = vbNullString
     Else
         ' Recurse, passing in the running text
         spliceForObjects = spliceForObjects(spliceForObjects, prg)

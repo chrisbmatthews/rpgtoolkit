@@ -59,7 +59,7 @@ Public Sub CreatePakTemp()
     On Error Resume Next
 
     PakTempPath = TempDir() & "TKCACHE\"
-    projectPath = ""
+    projectPath = vbNullString
     
     Call MkDir(PakTempPath)
     Call MkDir(PakTempPath & tilePath)
@@ -98,11 +98,10 @@ Public Sub DeletePakTemp()
     On Error Resume Next
     
     'Get the location of the temp directory
-    If PakTempPath = "" Then
+    If (LenB(PakTempPath) = 0) Then
         PakTempPath = TempDir() & "TKCache\"
     End If
 
-    'Kill it all!!! (:P)
     Call deletePath(PakTempPath$ & tilePath$)
     Call deletePath(PakTempPath$ & brdPath$)
     Call deletePath(PakTempPath$ & temPath$)
@@ -119,7 +118,7 @@ Public Sub DeletePakTemp()
     Call deletePath(PakTempPath$ & plugPath$)
     Call deletePath(PakTempPath)
     
-    PakTempPath = ""
+    PakTempPath = vbNullString
     
     If runningAsEXE Then
         Call Kill(TempDir & "actkrt3.dll")
@@ -138,7 +137,7 @@ Public Sub deletePath(ByVal path As String)
     
     Dim aFile As String
     aFile = Dir(path & "*.*")
-    Do While aFile <> ""
+    Do While (LenB(aFile) <> 0)
         Call Kill(path & aFile)
         aFile = Dir()
     Loop

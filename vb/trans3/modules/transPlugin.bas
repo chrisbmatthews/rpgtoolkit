@@ -176,7 +176,7 @@ Sub BeginPlugins()
     'call tracestring("In BeginPlugins")
     Dim t As Long
     For t = 0 To UBound(mainMem.plugins)
-        If mainMem.plugins(t) <> "" Then
+        If LenB(mainMem.plugins(t)) <> 0 Then
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
 
@@ -213,7 +213,7 @@ Sub EndPlugins()
     
     Dim t As Long
     For t = 0 To UBound(mainMem.plugins)
-        If mainMem.plugins(t) <> "" Then
+        If LenB(mainMem.plugins(t)) <> 0 Then
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(t))
             ' ! MODIFIED BY KSNiloc...
@@ -387,9 +387,7 @@ Sub InitPlugins()
     'determine if game actually uses plugins...
     On Error GoTo errorhandler
     'call tracestring("In InitPlugins")
-    
-    Call testPlugins
-    
+      
     'first, set up the callbacks...
     ReDim cbList(255) As Long
     Call generateCallbacks(cbList())
@@ -418,7 +416,7 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
     Dim t As Long
     Dim aa As Long
     For t = 0 To UBound(mainMem.plugins)
-        If mainMem.plugins(t) <> "" Then
+        If LenB(mainMem.plugins(t)) <> 0 Then
             Dim tt As Long
            
             Dim plugName As String
@@ -435,7 +433,7 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
 
                 ' ! MODIFIED BY KSNiloc...
                 If isVBPlugin(plugName) Then
-                    aa = VBPlugin(plugName).Query(LCase(mName))
+                    aa = VBPlugin(plugName).Query(LCase$(mName))
                 Else
                     aa = PLUGQuery(plugName, LCase$(mName$))
                 End If
@@ -469,34 +467,6 @@ errorhandler:
     
     Resume Next
 End Function
-
-Sub testPlugins()
-    'tests plugins.  cals functionptr on them to see if they work.
-    On Error GoTo plugerr
-    
-    Dim pe As Long
-    pe = 0
-    
-    Dim t As Long
-    Dim aa As Long
-    For t = 0 To UBound(mainMem.plugins)
-        If mainMem.plugins(t) <> "" Then
-            'If pe = 1 Or a <> 1 Then
-            '    mainMem.mainUsePlugin(0) = 0
-            '    pe = 0
-            '    Call debugger("Error initialising tkplug0.dll!")
-            'End If
-        End If
-    Next t
-    
-    Exit Sub
-    
-plugerr:
-    pe = 1
-    Resume Next
-End Sub
-
-
 
 Sub CBRpgCode(ByVal rpgcodeCommand As String)
     'callback to run rpgcode command
@@ -1124,16 +1094,16 @@ Function CBGetPlayerString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal
             CBGetPlayerString = playerMem(playerSlot).accessoryName$(arrayPos)
             Exit Function
         Case 16:
-            CBGetPlayerString = "" 'playerMem(playerSlot).swipeWav$
+            CBGetPlayerString = vbNullString 'playerMem(playerSlot).swipeWav$
             Exit Function
         Case 17:
-            CBGetPlayerString = "" 'playerMem(playerSlot).defendWav$
+            CBGetPlayerString = vbNullString 'playerMem(playerSlot).defendWav$
             Exit Function
         Case 18:
-            CBGetPlayerString = "" 'playerMem(playerSlot).smWav$
+            CBGetPlayerString = vbNullString 'playerMem(playerSlot).smWav$
             Exit Function
         Case 19:
-            CBGetPlayerString = "" 'playerMem(playerSlot).deadWav$
+            CBGetPlayerString = vbNullString 'playerMem(playerSlot).deadWav$
             Exit Function
         Case 20:
             CBGetPlayerString = playerMem(playerSlot).charLevelUpRPGCode$
@@ -3013,29 +2983,29 @@ Function CBCanvasHeight(ByVal canvasID As Long) As Long
 End Function
 
 
-Function CBCanvasDrawLine(ByVal canvasID As Long, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal crColor As Long) As Long
+Function CBCanvasDrawLine(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long) As Long
     'callback 67
     'draw a line to a canvas
     On Error Resume Next
-    Call CanvasDrawLine(canvasID, X1, Y1, X2, Y2, crColor)
+    Call CanvasDrawLine(canvasID, x1, y1, x2, y2, crColor)
     CBCanvasDrawLine = 1
 End Function
 
 
-Function CBCanvasDrawRect(ByVal canvasID As Long, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal crColor As Long) As Long
+Function CBCanvasDrawRect(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long) As Long
     'callback 68
     'draw a rect to a canvas
     On Error Resume Next
-    Call CanvasBox(canvasID, X1, Y1, X2, Y2, crColor)
+    Call CanvasBox(canvasID, x1, y1, x2, y2, crColor)
     CBCanvasDrawRect = 1
 End Function
 
 
-Function CBCanvasFillRect(ByVal canvasID As Long, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal crColor As Long) As Long
+Function CBCanvasFillRect(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long) As Long
     'callback 69
     'draw a filled rect to a canvas
     On Error Resume Next
-    Call CanvasFillBox(canvasID, X1, Y1, X2, Y2, crColor)
+    Call CanvasFillBox(canvasID, x1, y1, x2, y2, crColor)
     CBCanvasFillRect = 1
 End Function
 
@@ -3097,12 +3067,12 @@ Function CBFileDialog(ByVal initialPath As String, ByVal fileFilter As String) A
     On Error Resume Next
     
     Dim toadd As String
-    If GetExt(fileFilter) = "" Then
+    If (LenB(GetExt(fileFilter)) = 0) Then
         toadd = "*"
     Else
         toadd = GetExt(fileFilter)
     End If
-    fileFilter = "*." + toadd
+    fileFilter = "*." & toadd
     CBFileDialog = ShowFileDialog(initialPath, fileFilter)
 End Function
 
@@ -3125,7 +3095,7 @@ Function CBGetSpecialMoveListEntry(ByVal idx As Long) As String
     On Error Resume Next
     
     If idx > UBound(specialMoveList) Then
-        CBGetSpecialMoveListEntry = ""
+        CBGetSpecialMoveListEntry = vbNullString
     Else
         CBGetSpecialMoveListEntry = specialMoveList(idx)
     End If

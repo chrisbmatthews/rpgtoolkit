@@ -32,7 +32,7 @@ Sub saveTileAnm(ByVal file As String, ByRef theAnm As TKTileAnm)
     On Error Resume Next
     Dim num As Long, t As Long
     num = FreeFile
-    If file = "" Then Exit Sub
+    If (LenB(file) = 0) Then Exit Sub
     
     #If isToolkit = 1 Then
         tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
@@ -59,7 +59,7 @@ Sub openTileAnm(ByVal file As String, ByRef theAnm As TKTileAnm)
     'save animated tile
     On Error Resume Next
     
-    If file = "" Then Exit Sub
+    If (LenB(file) = 0) Then Exit Sub
         
     Call TileAnmClear(theAnm)
     file = PakLocate(file)
@@ -97,7 +97,7 @@ Function TileAnmFrameCount(ByRef theAnm As TKTileAnm) As Long
     Dim cnt As Long
         
     For t = 0 To UBound(theAnm.animTileFrame)
-        If TileAnmGet(theAnm, t) <> "" Then
+        If (LenB(TileAnmGet(theAnm, t)) <> 0) Then
             cnt = t
         End If
     Next t
@@ -166,7 +166,7 @@ Function TileAnmGet(ByRef theAnm As TKTileAnm, ByVal nFrameNum As Long) As Strin
     On Error Resume Next
     
     If (nFrameNum > theAnm.animTileFrames) Then
-        TileAnmGet = ""
+        TileAnmGet = vbNullString
         Exit Function
     Else
         TileAnmGet = theAnm.animTileFrame(nFrameNum)
@@ -194,13 +194,13 @@ Sub TileAnmInsert(ByVal theFile As String, ByRef theAnm As TKTileAnm, ByVal nFra
     End If
     
     #If isToolkit = 0 Then
-        If theFile <> "" And pakFileRunning Then
+        If (LenB(theFile) <> 0) And pakFileRunning Then
             'do check for pakfile system
             Dim ex As String
             Dim Temp As String
             Temp = theFile
             ex$ = GetExt(Temp$)
-            If Left(UCase$(ex$), 3) = "TST" Then
+            If Left$(UCase$(ex$), 3) = "TST" Then
                 Temp$ = tilesetFilename(Temp$)
             End If
             Call PakLocate(tilePath & Temp$)

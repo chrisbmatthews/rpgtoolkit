@@ -39,7 +39,7 @@ Sub openStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
     'open status effect file
     On Error Resume Next
     
-    If file$ = "" Then Exit Sub
+    If (LenB(file$) = 0) Then Exit Sub
     
     Call StatusClear(theEffect)
     file$ = PakLocate(file$)
@@ -118,14 +118,14 @@ Sub saveStatus(ByVal file As String, ByRef theEffect As TKStatusEffect)
     On Error Resume Next
     Dim num As Long
     num = FreeFile
-    If file = "" Then Exit Sub
+    If (LenB(file) = 0) Then Exit Sub
     
     #If isToolkit = 1 Then
         statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     #End If
     
     Kill file
-    Open file$ For Binary As #num
+    Open file$ For Binary Access Write As #num
         Call BinWriteString(num, "RPGTLKIT STATUSE")    'Filetype
         Call BinWriteInt(num, major)               'Version
         Call BinWriteInt(num, 2)                'Minor version
@@ -148,7 +148,7 @@ End Sub
 Sub StatusClear(ByRef theEffect As TKStatusEffect)
     'clear the status effect
     On Error Resume Next
-    theEffect.statusName = ""         'name of status effect
+    theEffect.statusName = vbNullString         'name of status effect
     theEffect.statusRounds = 0 'rounds until effect is removed (0= until end of fight)
     'effects:  1=y, 0=n
     theEffect.nStatusSpeed = 0 'speed charge time y/n
@@ -159,7 +159,7 @@ Sub StatusClear(ByRef theEffect As TKStatusEffect)
     theEffect.nStatusSMP = 0   'remove smp y/n
     theEffect.nStatusSMPAmount = 0  'amount of smp
     theEffect.nStatusRPGCode = 0 'run rpgcode y/n
-    theEffect.sStatusRPGCode = ""    'rpgcode program to run
+    theEffect.sStatusRPGCode = vbNullString    'rpgcode program to run
 End Sub
 
 

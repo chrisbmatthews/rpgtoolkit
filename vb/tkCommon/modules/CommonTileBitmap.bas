@@ -58,7 +58,7 @@ Sub DrawTileBitmap(ByVal hdc As Long, ByVal maskhdc As Long, ByVal x As Long, By
     yy = y / 32 + 1
     For x = 0 To theTileBmp.sizex - 1
         For y = 0 To theTileBmp.sizey - 1
-            If theTileBmp.tiles(x, y) <> "" Then
+            If (LenB(theTileBmp.tiles(x, y)) <> 0) Then
                 If hdc <> -1 Then
                     Call drawTile(hdc, tilePath & theTileBmp.tiles(x, y), x + xx, y + yy, theTileBmp.redS(x, y), theTileBmp.greenS(x, y), theTileBmp.blueS(x, y), False, True, False, False)
                 End If
@@ -91,7 +91,7 @@ Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long,
     yy = y / 32 + 1
     For x = 0 To theTileBmp.sizex - 1
         For y = 0 To theTileBmp.sizey - 1
-            If theTileBmp.tiles(x, y) <> "" Then
+            If (LenB(theTileBmp.tiles(x, y)) <> 0) Then
                 If cnv <> -1 Then
                 
                     'Ambient levels determined in renderAnimationFrame *before*

@@ -84,7 +84,7 @@ Public Sub MainAddPlugin(ByRef theMain As TKMain, ByVal file As String)
     On Error Resume Next
     Dim t As Long
     For t = 0 To UBound(theMain.plugins)
-        If theMain.plugins(t) = "" Then
+        If (LenB(theMain.plugins(t)) = 0) Then
             theMain.plugins(t) = file
             Exit Sub
         End If
@@ -104,7 +104,7 @@ Public Function MainGetNthPlugin(ByRef theMain As TKMain, ByVal idx As Long) As 
     On Error Resume Next
     Dim t As Long, cnt As Long
     For t = 0 To UBound(theMain.plugins)
-        If theMain.plugins(t) <> "" Then
+        If (LenB(theMain.plugins(t)) <> 0) Then
             If cnt = idx Then
                 MainGetNthPlugin = theMain.plugins(t)
                 Exit Function
@@ -126,11 +126,11 @@ Public Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
                 If isVBPlugin(projectPath & plugPath & theMain.plugins(t)) Then
                     For a = 0 To UBound(vbPlugins)
                         If vbPlugins(a).filename = projectPath & plugPath & theMain.plugins(t) Then
-                            vbPlugins(a).filename = ""
+                            vbPlugins(a).filename = vbNullString
                         End If
                     Next a
                 End If
-                theMain.plugins(t) = ""
+                theMain.plugins(t) = vbNullString
                 Exit Sub
             Else
                 Dim l As Long
@@ -138,13 +138,13 @@ Public Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
                 If isVBPlugin(projectPath & plugPath & theMain.plugins(l)) Then
                     For a = 0 To UBound(vbPlugins)
                         If vbPlugins(a).filename = projectPath & plugPath & theMain.plugins(l) Then
-                            vbPlugins(a).filename = ""
+                            vbPlugins(a).filename = vbNullString
                         End If
                     Next a
                 End If
                     theMain.plugins(l - 1) = theMain.plugins(l)
                 Next l
-                theMain.plugins(UBound(theMain.plugins)) = ""
+                theMain.plugins(UBound(theMain.plugins)) = vbNullString
                 Exit Sub
             End If
         End If
@@ -186,7 +186,7 @@ Private Sub upgradeBattleSystem()
 
                     'It's trans3 and the DLL is supposed to already be registered
                     'but it's not-- make it happen
-                    Call ExecCmd("regsvr32 /s " & chr(34) & fullPath & chr(34))
+                    Call ExecCmd("regsvr32 /s " & ("""") & fullPath & (""""))
 
                     'Now setup the plugin for usage
                     Call setupVBPlugin(fullPath)
@@ -204,7 +204,7 @@ Private Sub upgradeBattleSystem()
                     If (vbPlugins(a).filename = fullPath) Then
                         Call Unload(vbPlugins(a).obj)
                         Set vbPlugins(a).obj = Nothing
-                        vbPlugins(a).filename = ""
+                        vbPlugins(a).filename = vbNullString
                         Exit For
                     End If
                 Next a
@@ -224,7 +224,7 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
     On Error Resume Next
 
     Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long, t As Long
-    If file = "" Then Exit Sub
+    If (LenB(file) = 0) Then Exit Sub
 
     num = FreeFile()
 
@@ -375,7 +375,7 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                     If (BinReadByte(num) = 1) Then
                         .mouseCursor = "TK DEFAULT"
                     Else
-                        .mouseCursor = ""
+                        .mouseCursor = vbNullString
                     End If
                 Else
                     .mouseCursor = "TK DEFAULT"
@@ -398,11 +398,11 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
         If minorVer <= 2 Then
             'old version 2 mainfile
             'move plugins into the project folder...
-            MkDir Mid(projectPath & plugPath, 1, Len(projectPath & plugPath) - 1)
+            MkDir Mid$(projectPath & plugPath, 1, Len(projectPath & plugPath) - 1)
             Dim pdir As String
             Dim pfile As String
             pfile = Dir(plugPath & "*.*")
-            Do While pfile <> ""
+            Do While (LenB(pfile) <> 0)
                 Call FileCopy(plugPath & pfile, projectPath & plugPath & pfile)
                 pfile = Dir
             Loop
@@ -484,11 +484,11 @@ ver2oldMain:
         If minorVer <= 2 Then
             'old version 2 mainfile
             'move plugins into the project folder...
-            MkDir Mid(projectPath & plugPath, 1, Len(projectPath & plugPath) - 1)
+            MkDir Mid$(projectPath & plugPath, 1, Len(projectPath & plugPath) - 1)
             Dim pdir2 As String
             Dim pfile2 As String
             pfile2 = Dir(plugPath & "*.*")
-            Do While pfile2 <> ""
+            Do While (LenB(pfile2) <> 0)
                 Call FileCopy(plugPath & pfile2, projectPath & plugPath & pfile2)
                 pfile2 = Dir
             Loop
@@ -544,7 +544,7 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     
     Dim num As Long, t As Long
     num = FreeFile
-    If file$ = "" Then Exit Sub
+    If (LenB(file$) = 0) Then Exit Sub
     
     Call Kill(file)
     
@@ -630,47 +630,47 @@ End Sub
 Public Sub MainClear(ByRef theMain As TKMain)
     On Error Resume Next
     With theMain
-        .gameTitle = ""              'title of game
+        .gameTitle = vbNullString              'title of game
         .mainScreenType = 0        'screen type 2=windowed, 1=optimal resolution (640x480), 0- actual window
         .extendToFullScreen = 0    'extend screen to maximum extents (0=no, 1=yes)
         .mainResolution = 0        'resolution to use for optimal res 0=640x480, 1=800x600, 2=1024x768
         .mainDisableProtectReg = 0 'disable protect registered files (0=no, 1=yes)
-        .startupPrg = ""            'start up program
-        .initBoard = ""              'initial board
-        .initChar = ""               'initial character
-        .runTime = ""                'run time program
+        .startupPrg = vbNullString            'start up program
+        .initBoard = vbNullString              'initial board
+        .initChar = vbNullString               'initial character
+        .runTime = vbNullString                'run time program
         .runKey = 0                'ascii code of run time key
         .menuKey = 0               'ascii code of menu key
         .Key = 0                   'ascii code of general run key
         Dim t As Long
         For t = 0 To UBound(.runTimeKeys)
             .runTimeKeys(t) = 0      '50 extended run time keys
-            .runTimePrg(t) = ""        '50 extended run time programs
+            .runTimePrg(t) = vbNullString        '50 extended run time programs
         Next t
-        .menuPlugin = ""
-        .fightPlugin = ""
+        .menuPlugin = vbNullString
+        .fightPlugin = vbNullString
         .fightgameYN = 0           'fighting in game? 0-yes, 1-no
         For t = 0 To UBound(.enemy)
-            .enemy(t) = ""             'list of 500 enemy files 0-500
+            .enemy(t) = vbNullString             'list of 500 enemy files 0-500
             .skill(t) = 0           'list of enemy skill levels
         Next t
         .fightType = 0             'fight type: 0-random, 1- planned
         .chances = 0                  'chances of getting in fight (1 in x ) OR number of steps to take
         .fprgYN = 0                'use alt fight program YN 0-no, 1-yes
-        .fightPrg = ""               'program to run for fighting.
-        .gameOverPrg = ""            'game over program
-        .skinButton = ""             'skin's button graphic
-        .skinWindow = ""             'skin's window graphic
+        .fightPrg = vbNullString               'program to run for fighting.
+        .gameOverPrg = vbNullString            'game over program
+        .skinButton = vbNullString             'skin's button graphic
+        .skinWindow = vbNullString             'skin's window graphic
         ReDim .plugins(4)
         For t = 0 To UBound(.plugins)
-            .plugins(t) = ""
+            .plugins(t) = vbNullString
         Next t
         .mainUseDayNight = 0       'game is affected by day and night 0=no, 1=yes
         .mainDayNightType = 0      'day/night type: 0=real world, 1=set time
         .mainDayLength = 0            'day length, in minutes
-        .cursorMoveSound = ""
-        .cursorSelectSound = ""
-        .cursorCancelSound = ""
+        .cursorMoveSound = vbNullString
+        .cursorSelectSound = vbNullString
+        .cursorCancelSound = vbNullString
         .useJoystick = 1
         .mouseCursor = "TK DEFAULT"
         .pixelMovement = 0

@@ -96,7 +96,7 @@ End Function
 #If (isToolkit = 0) Then
 Public Function itemHasIdlingGfx(ByRef item As TKItem, ByVal theGfx As String) As Boolean
     With item
-        Select Case UCase(theGfx)
+        Select Case UCase$(theGfx)
             Case "STAND_N": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_N)
             Case "STAND_S": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_S)
             Case "STAND_W": itemHasIdlingGfx = .hasIdleGfx(ITEM_WALK_W)
@@ -118,7 +118,7 @@ Public Function itemGetStanceAnm(ByVal stance As String, ByRef theItem As TKItem
     On Error Resume Next
 
     Dim toRet As String
-    stance = UCase(stance)
+    stance = UCase$(stance)
 
     With theItem
 
@@ -126,44 +126,44 @@ Public Function itemGetStanceAnm(ByVal stance As String, ByRef theItem As TKItem
 
             Case "STAND_S":
                 toRet = .standingGfx(ITEM_WALK_S)
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_S)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_S)
             Case "STAND_N":
                 toRet = .standingGfx(ITEM_WALK_N)
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_N)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_N)
             Case "STAND_E":
                 toRet = .standingGfx(ITEM_WALK_E)
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_E)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_E)
             Case "STAND_W":
                 toRet = .standingGfx(ITEM_WALK_W)
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_W)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_W)
             Case "STAND_NW":
                 toRet = .standingGfx(ITEM_WALK_NW)
-                If toRet = "" Then
+                If LenB(toRet) = 0 Then
                     toRet = .standingGfx(ITEM_WALK_W)
                 End If
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_NW)
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_W)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_NW)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_W)
             Case "STAND_NE":
                 toRet = .standingGfx(ITEM_WALK_NE)
-                If toRet = "" Then
+                If LenB(toRet) = 0 Then
                     toRet = .standingGfx(ITEM_WALK_E)
                 End If
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_NE)
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_E)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_NE)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_E)
             Case "STAND_SW":
                 toRet = .standingGfx(ITEM_WALK_SW)
-                If toRet = "" Then
+                If LenB(toRet) = 0 Then
                     toRet = .standingGfx(ITEM_WALK_W)
                 End If
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_SW)
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_W)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_SW)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_W)
             Case "STAND_SE":
                 toRet = .standingGfx(ITEM_WALK_SE)
-                If toRet = "" Then
+                If LenB(toRet) = 0 Then
                     toRet = .standingGfx(ITEM_WALK_E)
                 End If
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_SE)
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_E)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_SE)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_E)
 
             Case "WALK_S":
                 toRet = .gfx(ITEM_WALK_S)
@@ -175,22 +175,22 @@ Public Function itemGetStanceAnm(ByVal stance As String, ByRef theItem As TKItem
                 toRet = .gfx(ITEM_WALK_W)
             Case "WALK_NW":
                 toRet = .gfx(ITEM_WALK_NW)
-                If toRet = "" Then
+                If LenB(toRet) = 0 Then
                     toRet = .gfx(ITEM_WALK_W)
                 End If
             Case "WALK_NE":
                 toRet = .gfx(ITEM_WALK_NE)
-                If toRet = "" Then
+                If LenB(toRet) = 0 Then
                     toRet = .gfx(ITEM_WALK_E)
                 End If
             Case "WALK_SW":
                 toRet = .gfx(ITEM_WALK_SW)
-                If toRet = "" Then
+                If LenB(toRet) = 0 Then
                     toRet = .gfx(ITEM_WALK_W)
                 End If
             Case "WALK_SE":
                 toRet = .gfx(ITEM_WALK_SE)
-                If toRet = "" Then
+                If LenB(toRet) = 0 Then
                     toRet = .gfx(ITEM_WALK_E)
                 End If
             Case "REST":    'The item stance REST has been depreciated into
@@ -198,7 +198,7 @@ Public Function itemGetStanceAnm(ByVal stance As String, ByRef theItem As TKItem
                             'upon opening.
 
                 toRet = .standingGfx(ITEM_WALK_S)
-                If toRet = "" Then toRet = .gfx(ITEM_WALK_S)
+                If LenB(toRet) = 0 Then toRet = .gfx(ITEM_WALK_S)
             Case Else:
                 'it's a custom stance
                 'search the custom stances...
@@ -223,7 +223,7 @@ Public Function itemGetCustomHandleIdx(ByRef theItem As TKItem, ByVal idx As Lon
     On Error Resume Next
     Dim cnt As Long, t As Long
     For t = 0 To UBound(theItem.customGfxNames)
-        If theItem.customGfxNames(t) <> "" Then
+        If (LenB(theItem.customGfxNames(t)) <> 0) Then
             If cnt = idx Then
                 itemGetCustomHandleIdx = t
                 Exit Function
@@ -244,7 +244,7 @@ Public Sub itemAddCustomGfx(ByRef theItem As TKItem, ByVal handle As String, ByV
     'search for empty slot...
     Dim t As Long
     For t = 0 To UBound(theItem.customGfxNames)
-        If theItem.customGfxNames(t) = "" Then
+        If (LenB(theItem.customGfxNames(t)) = 0) Then
             theItem.customGfxNames(t) = handle
             theItem.customGfx(t) = anim
             Exit Sub
@@ -278,8 +278,8 @@ Public Sub ItemClear(ByRef theItem As TKItem)
     With theItem
         .speed = 0.01
         .idleTime = 3
-        .itemName = ""
-        .itmDescription = ""
+        .itemName = vbNullString
+        .itmDescription = vbNullString
         .EquipYN = 0
         .MenuYN = 0
         .BoardYN = 0
@@ -287,7 +287,7 @@ Public Sub ItemClear(ByRef theItem As TKItem)
         .usedBy = 0
         Dim t As Long
         For t = 0 To 50
-            .itmChars(t) = ""
+            .itmChars(t) = vbNullString
         Next t
         .buyPrice = 0
         .sellPrice = 0
@@ -295,31 +295,31 @@ Public Sub ItemClear(ByRef theItem As TKItem)
         For t = 0 To 7
             .itemArmor(t) = 0
         Next t
-        .accessory = ""
+        .accessory = vbNullString
         .equipHP = 0
         .equipDP = 0
         .equipFP = 0
         .equipSM = 0
-        .prgEquip = ""
-        .prgRemove = ""
+        .prgEquip = vbNullString
+        .prgRemove = vbNullString
         .mnuHPup = 0
         .mnuSMup = 0
-        .mnuUse = ""
+        .mnuUse = vbNullString
         .fgtHPup = 0
         .fgtSMup = 0
-        .fgtUse = ""
-        .itmAnimation = ""
-        .itmPrgOnBoard = ""
-        .itmPrgPickUp = ""
+        .fgtUse = vbNullString
+        .itmAnimation = vbNullString
+        .itmPrgOnBoard = vbNullString
+        .itmPrgPickUp = vbNullString
         .itmSizeType = 1
         For t = 0 To UBound(.gfx)
-            .gfx(t) = ""
+            .gfx(t) = vbNullString
         Next t
         For t = 0 To UBound(.standingGfx)
-            .standingGfx(t) = ""
+            .standingGfx(t) = vbNullString
         Next t
         For t = 0 To UBound(.customGfx)
-            .customGfx(t) = ""
+            .customGfx(t) = vbNullString
         Next t
         ReDim .customGfx(5)
         ReDim .customGfxNames(5)
@@ -334,8 +334,8 @@ Public Function openItem(ByVal file As String) As TKItem
     'opens item file
     On Error Resume Next
     Dim num As Long
-    num = FreeFile
-    If file$ = "" Then Exit Function
+    num = FreeFile()
+    If (LenB(file$) = 0) Then Exit Function
     
     Dim theItem As TKItem
     
@@ -344,7 +344,7 @@ Public Function openItem(ByVal file As String) As TKItem
     #If isToolkit = 1 Then
         itemList(activeItemIndex).itemNeedUpdate = False
     #End If
-    theItem.itmAnimation$ = ""
+    theItem.itmAnimation$ = vbNullString
     theItem.itmSizeType = 0
        
     Dim tbm As TKTileBitmap
@@ -355,12 +355,12 @@ Public Function openItem(ByVal file As String) As TKItem
     'set us up for conversion of old-style embedded tiles
     'we'll take embedded tiles and spit them out as a tileset.
     'thus making them external...
-    Dim X As Long, Y As Long
-    For X = 0 To 32
-        For Y = 0 To 32
-            bufTile(X, Y) = tileMem(X, Y)
-        Next Y
-    Next X
+    Dim x As Long, y As Long
+    For x = 0 To 32
+        For y = 0 To 32
+            bufTile(x, y) = tileMem(x, y)
+        Next y
+    Next x
     Dim oldDetail As Long
     oldDetail = detail
     detail = 1
@@ -464,13 +464,13 @@ Public Function openItem(ByVal file As String) As TKItem
             End If
             #If (isToolkit = 0) Then
                 For t = 0 To UBound(theItem.standingGfx)
-                    theItem.hasIdleGfx(t) = (theItem.standingGfx(t) <> "")
+                    theItem.hasIdleGfx(t) = (LenB(theItem.standingGfx(t)) <> 0)
                 Next t
             #End If
             If (minorVer < 6) Then
                 'REST has been depreciated-- move REST graphic to STAND_S
                 theItem.standingGfx(ITEM_WALK_S) = theItem.gfx(ITEM_REST)
-                theItem.gfx(ITEM_REST) = ""
+                theItem.gfx(ITEM_REST) = vbNullString
             End If
             Dim cnt As Long
             cnt = BinReadLong(num)
@@ -482,14 +482,14 @@ Public Function openItem(ByVal file As String) As TKItem
             Next t
         Else
             'old version 2 item (convert the gfx to animations and tile bitmaps)
-            For X = 0 To 15
-                For Y = 0 To 1
-                    itmwalkGfx(X, Y) = BinReadString(num)
-                Next Y
-            Next X
-            For Y = 0 To 1
-                itmrestGfx(Y) = BinReadString(num)
-            Next Y
+            For x = 0 To 15
+                For y = 0 To 1
+                    itmwalkGfx(x, y) = BinReadString(num)
+                Next y
+            Next x
+            For y = 0 To 1
+                itmrestGfx(y) = BinReadString(num)
+            Next y
             
             Call AnimationClear(anm)
             anm.animSizeX = 32
@@ -498,47 +498,47 @@ Public Function openItem(ByVal file As String) As TKItem
             Dim xx As Long, walkFix As String
             xx = 0
             walkFix$ = "S"
-            For X = 0 To 15
+            For x = 0 To 15
                 Dim anmName As String, tbmName As String
                 anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
                 anmName$ = projectPath & miscPath & anmName$
                 
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(X) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(x) + ".tbm"
                 tbmName$ = projectPath & bmpPath & tbmName$
                 
                 Call TileBitmapClear(tbm)
                 Call TileBitmapResize(tbm, 1, 2)
-                For Y = 0 To 1
-                    tbm.tiles(0, Y) = itmwalkGfx(X, Y)
-                Next Y
+                For y = 0 To 1
+                    tbm.tiles(0, y) = itmwalkGfx(x, y)
+                Next y
                 Call SaveTileBitmap(tbmName$, tbm)
                 anm.animFrame(xx) = RemovePath(tbmName$)
             
-                If X = 3 Then
+                If x = 3 Then
                     walkFix$ = "E"
                     Call saveAnimation(anmName$, anm)
                     theItem.gfx(ITEM_WALK_S) = RemovePath(anmName$)
                     xx = -1
                 End If
-                If X = 7 Then
+                If x = 7 Then
                     walkFix$ = "N"
                     Call saveAnimation(anmName$, anm)
                     theItem.gfx(ITEM_WALK_E) = RemovePath(anmName$)
                     xx = -1
                 End If
-                If X = 11 Then
+                If x = 11 Then
                     walkFix$ = "W"
                     Call saveAnimation(anmName$, anm)
                     theItem.gfx(ITEM_WALK_N) = RemovePath(anmName$)
                     xx = -1
                 End If
-                If X = 15 Then
+                If x = 15 Then
                     Call saveAnimation(anmName$, anm)
                     theItem.gfx(ITEM_WALK_W) = RemovePath(anmName$)
                     xx = -1
                 End If
                 xx = xx + 1
-            Next X
+            Next x
             
             Call AnimationClear(anm)
             anm.animSizeX = 32
@@ -552,9 +552,9 @@ Public Function openItem(ByVal file As String) As TKItem
             tbmName$ = projectPath & bmpPath & tbmName$
             Call TileBitmapClear(tbm)
             Call TileBitmapResize(tbm, 1, 2)
-            For Y = 0 To 1
-                tbm.tiles(0, Y) = itmrestGfx(Y)
-            Next Y
+            For y = 0 To 1
+                tbm.tiles(0, y) = itmrestGfx(y)
+            Next y
             Call SaveTileBitmap(tbmName$, tbm)
             anm.animFrame(0) = RemovePath(tbmName$)
             Call saveAnimation(anmName$, anm)
@@ -614,27 +614,27 @@ ver2olditem:
                 Input #num, test    'test first byte
                 If test = -2 Then
                     'empty item...
-                    itmwalkGfx$(t - 1, 0) = ""
-                    itmwalkGfx$(t - 1, 1) = ""
+                    itmwalkGfx$(t - 1, 0) = vbNullString
+                    itmwalkGfx$(t - 1, 1) = vbNullString
                 Else
-                    For X = 1 To 32
-                        For Y = 1 To 32
-                            If X = 1 And Y = 1 Then
-                                tileMem(X, Y) = test
+                    For x = 1 To 32
+                        For y = 1 To 32
+                            If x = 1 And y = 1 Then
+                                tileMem(x, y) = test
                             Else
-                                tileMem(X, Y) = fread(num)
+                                tileMem(x, y) = fread(num)
                             End If
-                        Next Y
-                    Next X
+                        Next y
+                    Next x
                     If Not (bCreated) Then
                         Call createNewTileSet(tstName$)
-                        itmwalkGfx$(t - 1, 0) = ""
+                        itmwalkGfx$(t - 1, 0) = vbNullString
                         itmwalkGfx$(t - 1, 1) = RemovePath(tstName$) + CStr(tstPos)
                         tstPos = tstPos + 1
                         bCreated = True
                     Else
                         Call addToTileSet(tstName$)
-                        itmwalkGfx$(t - 1, 0) = ""
+                        itmwalkGfx$(t - 1, 0) = vbNullString
                         itmwalkGfx$(t - 1, 1) = RemovePath(tstName$) + CStr(tstPos)
                         tstPos = tstPos + 1
                     End If
@@ -644,27 +644,27 @@ ver2olditem:
             Input #num, test    'test first byte
             If test = -2 Then
                 'empty item...
-                itmrestGfx$(0) = ""
-                itmrestGfx$(1) = ""
+                itmrestGfx$(0) = vbNullString
+                itmrestGfx$(1) = vbNullString
             Else
-                For X = 1 To 32
-                    For Y = 1 To 32
-                        If X = 1 And Y = 1 Then
-                            tileMem(X, Y) = test
+                For x = 1 To 32
+                    For y = 1 To 32
+                        If x = 1 And y = 1 Then
+                            tileMem(x, y) = test
                         Else
-                            tileMem(X, Y) = fread(num)
+                            tileMem(x, y) = fread(num)
                         End If
-                    Next Y
-                Next X
+                    Next y
+                Next x
                 If Not (bCreated) Then
                     Call createNewTileSet(tstName$)
-                    itmrestGfx$(0) = ""
+                    itmrestGfx$(0) = vbNullString
                     itmrestGfx$(1) = RemovePath(tstName$) + CStr(tstPos)
                     tstPos = tstPos + 1
                     bCreated = True
                 Else
                     Call addToTileSet(tstName$)
-                    itmrestGfx$(0) = ""
+                    itmrestGfx$(0) = vbNullString
                     itmrestGfx$(1) = RemovePath(tstName$) + CStr(tstPos)
                     tstPos = tstPos + 1
                 End If
@@ -697,46 +697,46 @@ ver2olditem:
         anm.animPause = 0.167
         xx = 0
         walkFix$ = "S"
-        For X = 0 To 15
+        For x = 0 To 15
             anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
             anmName$ = projectPath & miscPath & anmName$
             
-            tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(X) + ".tbm"
+            tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(x) + ".tbm"
             tbmName$ = projectPath & bmpPath & tbmName$
             
             Call TileBitmapClear(tbm)
             Call TileBitmapResize(tbm, 1, 2)
-            For Y = 0 To 1
-                tbm.tiles(0, Y) = itmwalkGfx(X, Y)
-            Next Y
+            For y = 0 To 1
+                tbm.tiles(0, y) = itmwalkGfx(x, y)
+            Next y
             Call SaveTileBitmap(tbmName$, tbm)
             anm.animFrame(xx) = RemovePath(tbmName$)
         
-            If X = 3 Then
+            If x = 3 Then
                 walkFix$ = "E"
                 Call saveAnimation(anmName$, anm)
                 theItem.gfx(ITEM_WALK_S) = RemovePath(anmName$)
                 xx = -1
             End If
-            If X = 7 Then
+            If x = 7 Then
                 walkFix$ = "N"
                 Call saveAnimation(anmName$, anm)
                 theItem.gfx(ITEM_WALK_E) = RemovePath(anmName$)
                 xx = -1
             End If
-            If X = 11 Then
+            If x = 11 Then
                 walkFix$ = "W"
                 Call saveAnimation(anmName$, anm)
                 theItem.gfx(ITEM_WALK_N) = RemovePath(anmName$)
                 xx = -1
             End If
-            If X = 15 Then
+            If x = 15 Then
                 Call saveAnimation(anmName$, anm)
                 theItem.gfx(ITEM_WALK_W) = RemovePath(anmName$)
                 xx = -1
             End If
             xx = xx + 1
-        Next X
+        Next x
         
         Call AnimationClear(anm)
         anm.animSizeX = 32
@@ -750,9 +750,9 @@ ver2olditem:
         tbmName$ = projectPath & bmpPath & tbmName$
         Call TileBitmapClear(tbm)
         Call TileBitmapResize(tbm, 1, 2)
-        For Y = 0 To 1
-            tbm.tiles(0, Y) = itmrestGfx(Y)
-        Next Y
+        For y = 0 To 1
+            tbm.tiles(0, y) = itmrestGfx(y)
+        Next y
         Call SaveTileBitmap(tbmName$, tbm)
         anm.animFrame(0) = RemovePath(tbmName$)
         Call saveAnimation(anmName$, anm)
@@ -763,11 +763,11 @@ ver2olditem:
     
     Close #num
 
-    For X = 0 To 32
-        For Y = 0 To 32
-            tileMem(X, Y) = bufTile(X, Y)
-        Next Y
-    Next X
+    For x = 0 To 32
+        For y = 0 To 32
+            tileMem(x, y) = bufTile(x, y)
+        Next y
+    Next x
 
     detail = oldDetail
 
@@ -781,7 +781,7 @@ Public Sub saveItem(ByVal file As String, ByRef theItem As TKItem)
     On Error Resume Next
     
     Dim num As Long, t As Long
-    If file$ = "" Then Exit Sub
+    If (LenB(file$) = 0) Then Exit Sub
     
     num = FreeFile()
     

@@ -93,7 +93,7 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByVal Text As String, ByRef pr
 
     ' Check for overridden name
     thePrefix = checkOverrideName(theClass, methodName)
-    If (thePrefix = "") Then
+    If (LenB(thePrefix) = 0) Then
         ' Didn't find one
         thePrefix = theClass.strName
     End If
@@ -119,7 +119,7 @@ Public Sub debugger(ByVal Text As String)
     If (Not checkErrorHandling()) Then
         If (debugYN = 1) Then
             Call debugwin.Show
-            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
+            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbNewLine
             Call processEvent
         End If
     End If
@@ -130,7 +130,7 @@ End Sub
 ' Checks if the user has error handling in place
 '=========================================================================
 Private Function checkErrorHandling() As Boolean
-    If (errorBranch <> "") Then
+    If (LenB(errorBranch) <> 0) Then
         checkErrorHandling = True
         errorKeep.program(0) = errorKeep.program(0) & "*ERROR CHECKING FLAG"
         If (errorBranch <> "Resume Next") Then
@@ -164,7 +164,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     Dim mName As String, includeFile As String, methodName As String, oldPos As Long, foundIt As Long
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
-    If commandName$ = "" Then
+    If (LenB(commandName$) = 0) Then
         mName = GetCommandName(Text)   'get command name without extra info
     Else
         mName = commandName
@@ -178,10 +178,10 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     includeFile = ParseBefore(mName, ".")
     methodName = ParseAfter(mName, ".")
 
-    If methodName <> "" Then
+    If (LenB(methodName) <> 0) Then
         'include file...
         includeFile = addExt(includeFile, ".prg")
-        Call IncludeRPG("include(" & Chr$(34) & includeFile & Chr$(34) & ")", theProgram)
+        Call IncludeRPG("include(""" & includeFile & """)", theProgram)
         mName = methodName
     End If
 
@@ -232,12 +232,12 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Dim commaNum As Long
         commaNum = -1
         For pList = 1 To Len(Text)
-            If ((Mid(Text, pList, 1) = ",") Or (Mid(Text, pList, 1) = "(")) Then
+            If ((Mid$(Text, pList, 1) = ",") Or (Mid$(Text, pList, 1) = "(")) Then
                 commaNum = commaNum + 1
                 ReDim Preserve quotes(commaNum)
                 Dim adv As Long
                 For adv = pList + 1 To Len(Text)
-                    If (Mid(Text, adv, 1) <> " ") Then
+                    If (Mid$(Text, adv, 1) <> " ") Then
                         quotes(commaNum) = adv
                         Exit For
                     End If
@@ -262,8 +262,8 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             If (dataG = 0) Then
                 dUse$ = CStr(num)
             Else
-                If ((Mid(Text, quotes(pList - 1), 1) <> Chr(34))) _
-                 And (Right(lit, 1) <> "!") And (Right(lit, 1) <> "$") Then
+                If ((Mid$(Text, quotes(pList - 1), 1) <> (""""))) _
+                 And (Right$(lit, 1) <> "!") And (Right$(lit, 1) <> "$") Then
                     If (lit <> parameterList(pList)) Then
                         dUse = lit
                     Else
@@ -281,7 +281,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
                 End If
             End If
             
-            If Right(destList$(pList), 1) <> "!" And Right(destList$(pList), 1) <> "$" Then
+            If Right$(destList$(pList), 1) <> "!" And Right$(destList$(pList), 1) <> "$" Then
                 destList$(pList) = destList$(pList) & "!"
             End If
 
@@ -295,7 +295,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         'find the spot where the pointer list is first empty...
         theOne = 1
         For se = 1 To 100
-            If pointer$(se) = "" Then
+            If (LenB(pointer$(se)) = 0) Then
                 theOne = se
                 Exit For
             End If
@@ -306,7 +306,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         topList = theOne
         For t = 1 To number
             For se = theOne To 100
-                If pointer$(se) = "" Then
+                If (LenB(pointer$(se)) = 0) Then
                     pointer$(se) = replace(destList$(t), " ", "")
                     correspPointer$(se) = replace(parameterList$(t), " ", "")
                     topList = se
@@ -326,7 +326,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         oldErrorHandler = errorBranch
 
         'Nullify error handler
-        'errorBranch = ""
+        'errorBranch = vbNullString
 
         Call runBlock(1, theProgram)
 
@@ -342,8 +342,8 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         For t = 1 To number
             For se = theOne To topList
                 If UCase$(pointer$(se)) = UCase$(destList$(t)) Then
-                    pointer$(se) = ""
-                    correspPointer$(se) = ""
+                    pointer$(se) = vbNullString
+                    correspPointer$(se) = vbNullString
                     se = 100
                 End If
             Next se
@@ -459,7 +459,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                 End If 'boardIso
                 
             End If '(.activationType(t) = 0)
-        End If '(.programName$(t) <> "")
+        End If
     Next t
 
     'Ouch.  Now test for items:
@@ -507,7 +507,7 @@ Public Function programTest(ByRef passPos As PLAYER_POSITION) As Boolean
                     End If
                     
                 End If '(.itmActivationType(t) = 0)
-            End If '(.itmName$(t) <> "")
+            End If
         End If '(.BoardYN = 1)
     Next t
 
@@ -526,7 +526,7 @@ Public Sub moveToStartOfBlock(ByRef prg As RPGCodeProgram)
 
     Dim done As Boolean
     Do Until done
-        Select Case LCase(GetCommandName(prg.program(prg.programPos)))
+        Select Case LCase$(GetCommandName(prg.program(prg.programPos)))
             
             Case "openblock"
                 done = True
@@ -555,7 +555,7 @@ Public Function runBlock( _
 
     Do Until done
 
-        Select Case LCase(GetCommandName(prg.program(prg.programPos)))
+        Select Case LCase$(GetCommandName(prg.program(prg.programPos)))
 
             Case "openblock"
                 depth = depth + 1
@@ -632,7 +632,7 @@ Public Function runItmYN(ByVal itmNum As Long) As Boolean
         End If
     End If
     If runIt = 1 Then
-        If boardList(activeBoardIndex).theData.itemProgram$(t) <> "" And UCase$(boardList(activeBoardIndex).theData.itemProgram$(t)) <> "NONE" Then
+        If LenB(boardList(activeBoardIndex).theData.itemProgram$(t)) <> 0 And UCase$(boardList(activeBoardIndex).theData.itemProgram$(t)) <> "NONE" Then
             Call runProgram(projectPath$ & prgPath$ & boardList(activeBoardIndex).theData.itemProgram$(t))
             toRet = True
         Else
@@ -769,7 +769,7 @@ Public Sub runProgram( _
 
     On Error GoTo runPrgErr
     
-    If Trim(Right(file, 1)) = "\" Then Exit Sub
+    If Trim$(Right$(file, 1)) = "\" Then Exit Sub
     
     runningProgram = True
    
@@ -804,7 +804,7 @@ Public Sub runProgram( _
        
     theProgram.programPos = 0
     theProgram.boardNum = boardNum
-    errorBranch = ""
+    errorBranch = vbNullString
 
     Dim mainRetVal As RPGCODE_RETURN
     mainRetVal.usingReturnData = True
@@ -842,10 +842,10 @@ Public Sub runProgram( _
     runningProgram = False
     Call stopWaitingForInput
 
-    If nextProgram <> "" Then
+    If (LenB(nextProgram) <> 0) Then
         Dim oldNextProgram As String
         oldNextProgram = nextProgram
-        nextProgram = ""
+        nextProgram = vbNullString
         Call runProgram(oldNextProgram, theProgram.boardNum, setSourceAndTarget)
     End If
 
@@ -893,7 +893,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
    
     Dim checkIt As String
     checkIt = replace(replace(replace _
-        (LCase(rpgcodeCommand), " ", "" _
+        (LCase$(rpgcodeCommand), " ", "" _
         ), vbTab, ""), "#", "")
 
     If checkIt = "onerrorresumenext" Then ' On Error Resume Next
@@ -906,9 +906,9 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
 
-    ElseIf Left(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
-        onError "OnError(" & Right(checkIt, Len(checkIt) - InStr(1, _
-            LCase(rpgcodeCommand), "goto", vbTextCompare) - 1) & ")", theProgram
+    ElseIf Left$(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
+        onError "OnError(" & Right$(checkIt, Len(checkIt) - InStr(1, _
+            LCase$(rpgcodeCommand), "goto", vbTextCompare) - 1) & ")", theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
 
@@ -943,7 +943,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
         testText = getRedirect(testText)
     End If
 
-    If Left(testText, 1) = "." Then testText = UCase(GetWithPrefix() & testText)
+    If Left$(testText, 1) = "." Then testText = UCase$(GetWithPrefix() & testText)
 
     If testText <> "MWIN" Then
         'if the command is not a MWin command, then

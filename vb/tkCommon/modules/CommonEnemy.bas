@@ -65,8 +65,8 @@ Public Type TKEnemy
     eneMaxSMP As Long              'max smp
     eneFileName As String          'filename
     status(10) As FighterStatus    'status effects on this enemy
-    X As Long                      'x pos of enemy in a fight
-    Y As Long                      'y pos of enemy in a fight
+    x As Long                      'x pos of enemy in a fight
+    y As Long                      'y pos of enemy in a fight
 End Type
 
 '=========================================================================
@@ -87,7 +87,7 @@ Public Sub EnemyClearAllStatus(ByRef theEnemy As TKEnemy)
     Dim t As Long
     For t = 0 To UBound(theEnemy.status)
         theEnemy.status(t).roundsLeft = 0
-        theEnemy.status(t).statusFile = ""
+        theEnemy.status(t).statusFile = vbNullString
     Next t
 End Sub
 
@@ -107,13 +107,13 @@ Public Sub EnemyAddStatus(ByVal statusFile As String, ByRef theEnemy As TKEnemy)
     clearSlot = -1
     'check if the fighter already has this status effect...
     For t = 0 To UBound(theEnemy.status)
-        If UCase(theEnemy.status(t).statusFile) = UCase(statusFile) Then
+        If UCase$(theEnemy.status(t).statusFile) = UCase$(statusFile) Then
             'already have it...
             'just reset the rounds left...
             theEnemy.status(t).roundsLeft = theEffect.statusRounds
             Exit Sub
         End If
-        If theEnemy.status(t).statusFile = "" Then
+        If (LenB(theEnemy.status(t).statusFile) = 0) Then
             If clearSlot = -1 Then
                 clearSlot = t
             End If
@@ -138,10 +138,10 @@ Public Sub EnemyRemoveStatus(ByVal statusFile As String, ByRef theEnemy As TKEne
     Dim t As Long
     'check if the fighter already has this status effect...
     For t = 0 To UBound(theEnemy.status)
-        If UCase(theEnemy.status(t).statusFile) = UCase(statusFile) Then
+        If UCase$(theEnemy.status(t).statusFile) = UCase$(statusFile) Then
             'already have it...
             theEnemy.status(t).roundsLeft = 0
-            theEnemy.status(t).statusFile = ""
+            theEnemy.status(t).statusFile = vbNullString
             Exit Sub
         End If
     Next t
@@ -157,7 +157,7 @@ Public Function enemyGetStanceAnm(ByVal stance As String, ByRef theEnemy As TKEn
     Dim toRet As String
     
     stance = UCase$(stance)
-    If stance = "" Then stance = "REST"
+    If (LenB(stance) = 0) Then stance = "REST"
 
     Select Case stance
         Case "FIGHT", "ATTACK":
@@ -193,7 +193,7 @@ Public Sub enemyAddCustomGfx(ByRef theEnemy As TKEnemy, ByVal handle As String, 
     'search for empty slot...
     Dim t As Long, tt As Long
     For t = 0 To UBound(theEnemy.customGfxNames)
-        If theEnemy.customGfxNames(t) = "" Then
+        If (LenB(theEnemy.customGfxNames(t)) = 0) Then
             theEnemy.customGfxNames(t) = handle
             theEnemy.customGfx(t) = anim
             Exit Sub
@@ -221,7 +221,7 @@ Public Function enemyGetCustomHandleIdx(ByRef theEnemy As TKEnemy, ByVal idx As 
     Dim t As Long
     
     For t = 0 To UBound(theEnemy.customGfxNames)
-        If theEnemy.customGfxNames(t) <> "" Then
+        If (LenB(theEnemy.customGfxNames(t)) <> 0) Then
             If cnt = idx Then
                 enemyGetCustomHandleIdx = t
                 Exit Function
@@ -238,12 +238,12 @@ End Function
 Public Sub saveEnemy(ByVal file As String, ByRef theEnemy As TKEnemy)
 
     On Error Resume Next
-    
-    Dim num As Long, X As Long, Y As Long, t As Long
+
+    Dim num As Long, x As Long, y As Long, t As Long
     num = FreeFile()
-    If file = "" Then Exit Sub
-    
-    Open file For Binary As #num
+    If (LenB(file) = 0) Then Exit Sub
+
+    Open file For Binary Access Write As num
         Call BinWriteString(num, FILE_HEADER)   'Filetype
         Call BinWriteInt(num, 2)               'Version
         Call BinWriteInt(num, 1)               'Minor version (ie 2.1 = Version 3.0 file  2.0-- version 2 file)
@@ -295,13 +295,13 @@ Public Function openEnemy(ByVal file As String) As TKEnemy
 
     On Error Resume Next
 
-    Dim num As Long, X As Long, Y As Long, t As Long, user As Long
+    Dim num As Long, x As Long, y As Long, t As Long, user As Long
     Dim fileHeader As String, majorVer As Long, minorVer As Long
 
     Dim theEnemy As TKEnemy
 
     num = FreeFile()
-    If file$ = "" Then Exit Function
+    If (LenB(file$) = 0) Then Exit Function
     #If isToolkit = 1 Then
         enemylist(activeEnemyIndex).eneNeedUpdate = False
     #End If
@@ -421,11 +421,11 @@ ver2oldEnemy:
             Dim eneSizeX As Long, eneSizeY As Long
             eneSizeX = fread(num)       'size horizontally
             eneSizeY = fread(num)       'size vertically
-            For X = 1 To 19
-                For Y = 1 To 7
-                    enemyGraphic$(X, Y) = fread(num) 'Enemy graphics filenames
-                Next Y
-            Next X
+            For x = 1 To 19
+                For y = 1 To 7
+                    enemyGraphic$(x, y) = fread(num) 'Enemy graphics filenames
+                Next y
+            Next x
             'create tile bitmap...
             Dim tbmName As String, anmName As String
             tbmName$ = replace(RemovePath(file$), ".", "_") & "_rest" & ".tbm"
@@ -433,11 +433,11 @@ ver2oldEnemy:
             Dim tbm As TKTileBitmap
             Call TileBitmapClear(tbm)
             Call TileBitmapResize(tbm, eneSizeX, eneSizeY)
-            For X = 1 To eneSizeX
-                For Y = 1 To eneSizeY
-                    tbm.tiles(X - 1, Y - 1) = enemyGraphic(X, Y)
-                Next Y
-            Next X
+            For x = 1 To eneSizeX
+                For y = 1 To eneSizeY
+                    tbm.tiles(x - 1, y - 1) = enemyGraphic(x, y)
+                Next y
+            Next x
             Call SaveTileBitmap(tbmName$, tbm)
             anmName = replace(RemovePath(file), ".", "_") & "_rest" & ".anm"
             anmName = projectPath & miscPath & anmName
@@ -487,7 +487,7 @@ Public Sub EnemyClear(ByRef theEnemy As TKEnemy)
 
     On Error Resume Next
 
-    theEnemy.eneName = ""
+    theEnemy.eneName = vbNullString
     theEnemy.eneHP = 0
     theEnemy.eneSMP = 0
     theEnemy.eneFP = 0
@@ -497,42 +497,42 @@ Public Sub EnemyClear(ByRef theEnemy As TKEnemy)
     theEnemy.eneSneakUp = 0
     theEnemy.eneSizeX = 1
     theEnemy.eneSizeY = 1
-    Dim X As Long, Y As Long
-    For X = 0 To 19
-        For Y = 0 To 7
-            theEnemy.enemyGraphic(X, Y) = ""
-        Next Y
-    Next X
+    Dim x As Long, y As Long
+    For x = 0 To 19
+        For y = 0 To 7
+            theEnemy.enemyGraphic(x, y) = vbNullString
+        Next y
+    Next x
     ReDim theEnemy.eneSpecialMove(100)
     ReDim theEnemy.eneWeakness(100)
     ReDim theEnemy.eneStrength(100)
-    For X = 0 To 100
-        theEnemy.eneSpecialMove(X) = ""
-        theEnemy.eneWeakness(X) = ""
-        theEnemy.eneStrength(X) = ""
-    Next X
+    For x = 0 To 100
+        theEnemy.eneSpecialMove(x) = vbNullString
+        theEnemy.eneWeakness(x) = vbNullString
+        theEnemy.eneStrength(x) = vbNullString
+    Next x
     theEnemy.eneAI = 0
     theEnemy.eneUseRPGCode = 0
-    theEnemy.eneRPGCode = ""
+    theEnemy.eneRPGCode = vbNullString
     theEnemy.eneExp = 0
     theEnemy.eneGP = 0
-    theEnemy.eneWinPrg = ""
-    theEnemy.eneRunPrg = ""
-    theEnemy.eneSwipeSound = ""
-    theEnemy.eneSMSound = ""
-    theEnemy.eneHitSound = ""
-    theEnemy.eneDieSound = ""
-    theEnemy.eneFightAnm = ""
-    theEnemy.eneDefAnm = ""
-    theEnemy.eneSPCAnm = ""
-    theEnemy.eneDieAnm = ""
+    theEnemy.eneWinPrg = vbNullString
+    theEnemy.eneRunPrg = vbNullString
+    theEnemy.eneSwipeSound = vbNullString
+    theEnemy.eneSMSound = vbNullString
+    theEnemy.eneHitSound = vbNullString
+    theEnemy.eneDieSound = vbNullString
+    theEnemy.eneFightAnm = vbNullString
+    theEnemy.eneDefAnm = vbNullString
+    theEnemy.eneSPCAnm = vbNullString
+    theEnemy.eneDieAnm = vbNullString
 
     Dim t As Long
     For t = 0 To UBound(theEnemy.gfx)
-        theEnemy.gfx(t) = ""
+        theEnemy.gfx(t) = vbNullString
     Next t
     For t = 0 To UBound(theEnemy.customGfx)
-        theEnemy.customGfx(t) = ""
+        theEnemy.customGfx(t) = vbNullString
     Next t
     ReDim theEnemy.customGfx(5)
     ReDim theEnemy.customGfxNames(5)

@@ -27,9 +27,9 @@ Public Sub ChangeDir(ByVal newDir As String)
     Dim p As String
     Dim dr As String
     p = GetPath(newDir)
-    dr = Mid(p, 1, 2)
-    If Mid(dr, 2, 1) = ":" Then
-        dr = Mid(p, 1, 3)
+    dr = Mid$(p, 1, 2)
+    If Mid$(dr, 2, 1) = ":" Then
+        dr = Mid$(p, 1, 3)
         Call ChDrive(dr$)
     End If
     Call ChDir(newDir)
@@ -91,11 +91,11 @@ Public Function GetExt(ByVal inFile As String) As String
     Next t
     'step 2: check if extention wasn't found...
     If theloc = 0 Then
-        GetExt = ""
+        GetExt = vbNullString
         Exit Function
     End If
     'step 3: extract extention after the '.'
-    theext$ = ""
+    theext$ = vbNullString
     For t = theloc + 1 To Len(inFile)
         part$ = Mid$(inFile, t, 1)
         theext$ = theext & part$
@@ -120,11 +120,11 @@ Public Function GetPath(ByVal inFile As String) As String
     Next t
     'step 2: check if path wasn't found...
     If theloc = 0 Then
-        GetPath = ""
+        GetPath = vbNullString
         Exit Function
     End If
     'step 3: extract path before the '/' or '\'
-    thept$ = ""
+    thept$ = vbNullString
     For t = 1 To theloc
         part$ = Mid$(inFile, t, 1)
         thept$ = thept & part$
@@ -154,12 +154,12 @@ Public Function GetPathNoSlash(ByVal inFile As String) As String
     
     'step 2: check if path wasn't found...
     If theloc = 0 Then
-        GetPathNoSlash = ""
+        GetPathNoSlash = vbNullString
         Exit Function
     End If
     
     'step 3: extract path before the '/' or '\'
-    thept$ = ""
+    thept$ = vbNullString
     For t = 1 To theloc - 1
         part$ = Mid$(inFile, t, 1)
         thept$ = thept & part$
@@ -194,7 +194,7 @@ Public Function RemovePath(ByVal inFile As String) As String
     End If
     
     'step 3: extract filename after the '/' or '\'
-    thefn$ = ""
+    thefn$ = vbNullString
     For t = theloc + 1 To Len(inFile)
         part$ = Mid$(inFile, t, 1)
         thefn$ = thefn & part$
@@ -207,9 +207,6 @@ End Function
 ' Determine if a file exists
 '=========================================================================
 Public Function fileExists(ByVal file As String) As Boolean
-
-On Local Error Resume Next
-
+    On Local Error Resume Next
     fileExists = (GetAttr(file) And vbDirectory) = 0
-    
 End Function

@@ -121,7 +121,7 @@ Public Property Let mousePointer(ByVal newValue As String)
         Call Kill(theFile)
         Call SavePicture(LoadResPicture(103, vbResBitmap), theFile)
         newValue = theFile
-    ElseIf (newValue = "") Then
+    ElseIf (LenB(newValue) = 0) Then
         Exit Property
     Else
         newValue = projectPath & bmpPath & newValue
@@ -129,7 +129,7 @@ Public Property Let mousePointer(ByVal newValue As String)
     hdc = CanvasOpenHDC(cnvMousePointer)
     Call DrawSizedImage(newValue, 0, 0, 32, 32, hdc)
     Call CanvasCloseHDC(cnvMousePointer, hdc)
-    If (theFile <> "") Then Call Kill(theFile)
+    If (LenB(theFile) <> 0) Then Call Kill(theFile)
 End Property
 
 '=========================================================================

@@ -407,7 +407,7 @@ Public Function BoardTileInLUT(ByVal filename As String, ByRef theBoard As TKBoa
         'we have to add it to the lookup table...
         'first, find an empty slot...
         For t = 1 To UBound(theBoard.tileIndex)
-            If theBoard.tileIndex(t) = "" Then
+            If (LenB(theBoard.tileIndex(t)) = 0) Then
                 'found a position!
                 theBoard.tileIndex(t) = LCase$(filename)
                 BoardTileInLUT = t
@@ -521,52 +521,52 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
                 Next layer
             Next y
         Next x
-        .brdBack = ""
-        .borderBack = ""
+        .brdBack = vbNullString
+        .borderBack = vbNullString
         .brdColor = RGB(255, 255, 255)
         .borderColor = 0
         .ambientEffect = 0
         For t = 0 To 4
-            .dirLink(t) = ""
+            .dirLink(t) = vbNullString
         Next t
         .boardSkill = 0
-        .boardBackground = ""
+        .boardBackground = vbNullString
         .fightingYN = 0
         For t = 0 To 10
             .brdConst(t) = 0
         Next t
-        .boardMusic = ""
+        .boardMusic = vbNullString
         For t = 0 To 8
-            .boardTitle(t) = ""
+            .boardTitle(t) = vbNullString
         Next t
         For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
-            .programName(t) = ""
+            .programName(t) = vbNullString
             .progX(t) = 0
             .progY(t) = 0
             .progLayer(t) = 0
-            .progGraphic(t) = ""
+            .progGraphic(t) = vbNullString
             .progActivate(t) = 0
-            .progVarActivate(t) = ""
-            .progDoneVarActivate(t) = ""
-            .activateInitNum(t) = ""
-            .activateDoneNum(t) = ""
+            .progVarActivate(t) = vbNullString
+            .progDoneVarActivate(t) = vbNullString
+            .activateInitNum(t) = vbNullString
+            .activateDoneNum(t) = vbNullString
             .activationType(t) = 0
         Next t
-        .enterPrg = ""
-        .bgPrg = ""
+        .enterPrg = vbNullString
+        .bgPrg = vbNullString
         For t = 0 To UBound(.itemMulti)
-            .itmName(t) = ""
+            .itmName(t) = vbNullString
             .itmX(t) = 0
             .itmY(t) = 0
             .itmLayer(t) = 0
             .itmActivate(t) = 0
-            .itmVarActivate(t) = ""
-            .itmDoneVarActivate(t) = ""
-            .itmActivateInitNum(t) = ""
-            .itmActivateDoneNum(t) = ""
+            .itmVarActivate(t) = vbNullString
+            .itmDoneVarActivate(t) = vbNullString
+            .itmActivateInitNum(t) = vbNullString
+            .itmActivateDoneNum(t) = vbNullString
             .itmActivationType(t) = 0
-            .itemProgram(t) = ""
-            .itemMulti(t) = ""
+            .itemProgram(t) = vbNullString
+            .itemMulti(t) = vbNullString
         Next t
         .playerX = 0
         .playerY = 0
@@ -578,7 +578,7 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
         .BoardDayNight = 0
         .BoardNightBattleOverride = 0
         .BoardSkillNight = 0
-        .BoardBackgroundNight = ""
+        .BoardBackgroundNight = vbNullString
         .isIsometric = 0
         ReDim .animatedTile(10)
         ReDim .anmTileLUTIndices(10)
@@ -810,7 +810,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                 Temp$ = .tileIndex(t)
             
                 'scan for animated tiles
-                If Temp$ <> "" Then
+                If LenB(Temp$) <> 0 Then
                     ex$ = GetExt(Temp$)
                     If UCase$(ex$) = "TAN" Then
                         Call BoardAddTileAnmLUTRef(theBoard, t)
@@ -822,11 +822,11 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                     Dim pakFileRunning As Boolean
                 #End If
             
-                If Temp$ <> "" And pakFileRunning Then
+                If LenB(Temp$) <> 0 And pakFileRunning Then
                     'do check for pakfile system
                     'ex$ = GetExt(temp$)
                     'ex$ = Left$(ex$, 3)
-                    If Left(UCase$(ex$), 3) = "TST" Then
+                    If Left$(UCase$(ex$), 3) = "TST" Then
                         'numof = getTileNum(temp$)
                         Temp$ = tilesetFilename(Temp$)
                     End If
@@ -957,7 +957,7 @@ exitTheFor:
                 .itmActivationType(t) = BinReadInt(num)  'activation type- 0-step on, 1- conditional (activation key)
                 .itemProgram(t) = BinReadString(num)    'program to run when item is touched.
                 .itemMulti(t) = BinReadString(num)     'multitask program for item
-                If .itmName(t) <> "" Then
+                If LenB(.itmName(t)) <> 0 Then
                     t = t + 1
                     Call dimensionItemArrays
                 End If
@@ -1122,7 +1122,7 @@ Ver1Board:
             For y = 1 To 11
                 For x = 1 To 19
                     Temp$ = fread(num)
-                    If Temp$ = "VOID" Then Temp$ = ""
+                    If Temp$ = "VOID" Then Temp$ = vbNullString
                     Temp$ = pth & Temp$
                     Call BoardSetTile(x, y, 1, Temp$, theBoard)
                 Next x
@@ -1235,7 +1235,7 @@ Public Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer A
         'we have to add it to the lookup table...
         'first, find an empty slot...
         For t = 1 To UBound(theBoard.tileIndex)
-            If theBoard.tileIndex(t) = "" Then
+            If (LenB(theBoard.tileIndex(t)) = 0) Then
                 'found a position!
                 theBoard.tileIndex(t) = LCase$(filename)
                 theBoard.board(x - 1, y - 1, layer - 1) = t
@@ -1288,7 +1288,7 @@ Public Sub BoardSetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As I
         'we have to add it to the lookup table...
         'first, find an empty slot...
         For t = 1 To UBound(theBoard.tileIndex)
-            If theBoard.tileIndex(t) = "" Then
+            If (LenB(theBoard.tileIndex(t)) = 0) Then
                 'found a position!
                 theBoard.tileIndex(t) = LCase$(filename)
                 theBoard.board(x, y, layer) = t

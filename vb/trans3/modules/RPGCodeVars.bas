@@ -68,7 +68,7 @@ End Function
 Private Function isNumber(ByVal num As String) As Boolean
     On Error GoTo error
     Dim ret As Double
-    If (isOperator(Right(num, 1))) Then Exit Function
+    If (isOperator(Right$(num, 1))) Then Exit Function
     ret = CDbl(num)
     isNumber = True
 error:
@@ -124,26 +124,26 @@ Private Function evaluate(ByVal Text As String) As Double
     For idx = 1 To Len(Text)
 
         'Grab a character
-        char = Mid(Text, idx, 1)
+        char = Mid$(Text, idx, 1)
         
         'Grab two
-        twoChars = Mid(Text, idx, 2)
+        twoChars = Mid$(Text, idx, 2)
 
         'Set valid flag to false
         isValid = False
 
         'If we haven't started a number yet, and it's a ".",
         'change it to a "0."
-        If ((num = "") And (char = ".")) Then char = "0."
+        If ((LenB(num) = 0) And (char = ".")) Then char = "0."
 
         'If char is -, and we don't have a number, then check the
         'next char, to see if it will form a number
-        If ((num = "") And (char = "-")) Then
+        If ((LenB(num) = 0) And (char = "-")) Then
             'See if adding it to the next character will make
             'a valid number
             isValid = ( _
-                          isNumber(char & Mid(Text, idx + 1, 1)) And _
-                          (Mid(Text, idx - 1, 1) <> ")") _
+                          isNumber(char & Mid$(Text, idx + 1, 1)) And _
+                          (Mid$(Text, idx - 1, 1) <> ")") _
                                                            )
         Else
             'Else, check if adding this character to the current
@@ -158,17 +158,17 @@ Private Function evaluate(ByVal Text As String) As Double
             num = num & char
             If (char = "-") Then
                 'If it was a negative sign, then remove it
-                Text = Mid(Text, 1, idx - 1) & "0" & Mid(Text, idx + 1)
+                Text = Mid$(Text, 1, idx - 1) & "0" & Mid$(Text, idx + 1)
             End If
         Else
             'If we have a number, then we've reached its end
-            If (num <> "") Then
+            If (LenB(num) <> 0) Then
                 'Record the token
                 tokenIdx = tokenIdx + 1
                 ReDim Preserve tokens(tokenIdx)
                 tokens(tokenIdx) = CDbl(num)
                 'Set running num to nothing
-                num = ""
+                num = vbNullString
             End If
             'Try other things
             If (char = "(") Then            'Opening Bracket
@@ -295,7 +295,7 @@ Public Function dataType( _
 
     'Check right most character for type character (! or $)
     If dType = -1 Then
-        part = Right(Trim(replaceOutsideQuotes(Text, vbTab, "")), 1)
+        part = Right$(Trim$(replaceOutsideQuotes(Text, vbTab, "")), 1)
         If part = "$" Then
             dType = DT_LIT
         ElseIf part = "!" Then
@@ -363,7 +363,7 @@ Public Function getRedirect(ByVal originalMethod As String) As String
         End If
         getRedirect = Mid$(getStr, 1, Length)
     Else
-        getRedirect = ""
+        getRedirect = vbNullString
     End If
 
 End Function
@@ -379,7 +379,7 @@ Public Function getRedirectName(ByVal Index As Long) As String
     Dim Length As Long
     max = RPGCCountRedirects()
     If Index > max - 1 Or Index < 0 Then
-        getRedirectName = ""
+        getRedirectName = vbNullString
     Else
         Dim inBuf As String * 4024
         Length = RPGCGetRedirectName(Index, inBuf)
@@ -393,7 +393,7 @@ End Function
 '=========================================================================
 Public Sub killRedirect(ByVal methodName As String)
     On Error Resume Next
-    methodName = UCase(replace(methodName, "#", ""))
+    methodName = UCase$(replace(methodName, "#", ""))
     Call RPGCKillRedirect(methodName)
 End Sub
 
@@ -429,8 +429,8 @@ Public Function isEquation( _
     litOrNum = DT_VOID
  
     'Make sure we were passed data...
-    lineText = Trim(lineText)
-    If lineText = "" Then Exit Function
+    lineText = Trim$(lineText)
+    If (LenB(lineText) = 0) Then Exit Function
 
     'Populate the tSigns() array...
     tSigns(0) = "+"
@@ -443,7 +443,6 @@ Public Function isEquation( _
     tSigns(7) = "&"
     tSigns(8) = "`"
     tSigns(9) = "%"
-    
 
     'Retrieve the text sans math signs...
     parts() = multiSplit(lineText, tSigns, uD, True)
@@ -535,7 +534,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
 
     ' Get the destination variable and remove unwanted characters
     Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", ""), " ", ""), vbTab, ""), theProgram)
-    If (Right(Destination, 1) <> "!" And Right(Destination, 1) <> "$") Then
+    If (Right$(Destination, 1) <> "!" And Right$(Destination, 1) <> "$") Then
         ' Append a "!"
         Destination = Destination & "!"
         ' Get value of the destination
@@ -629,7 +628,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             For tokenIdx = 2 To number
                 build = build & numberUse(tokenIdx) & MathFunction(Text, tokenIdx)
             Next tokenIdx
-            build = Mid(build, 1, Len(build) - 2)
+            build = Mid$(build, 1, Len(build) - 2)
 
             ' Now actually evaluate the quation
             Dim dRes As Double
@@ -676,7 +675,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             ' Get the tokens
             ReDim litUse(number) As String
             For tokenIdx = 2 To number
-                Call getValue(Trim(valueList(tokenIdx)), litUse(tokenIdx), num, theProgram)
+                Call getValue(Trim$(valueList(tokenIdx)), litUse(tokenIdx), num, theProgram)
             Next tokenIdx
 
             ' Combine the tokens
@@ -695,7 +694,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 ' If this class handles =
                 If (isMethodMember("operator=", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
                     ' Call the method
-                    Call callObjectMethod(hClass, "operator=(" & Chr(34) & res & Chr(34) & ")", theProgram, retval, "operator=")
+                    Call callObjectMethod(hClass, "operator=(""" & res & """)", theProgram, retval, "operator=")
                     ' Leave this procedure
                     Exit Sub
                 End If
@@ -758,7 +757,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
 
             ' Check if text is in quotes
             For p = 1 To Length
-                If Mid(Text, p, 1) = Chr(34) Then
+                If Mid$(Text, p, 1) = ("""") Then
                     checkIt = True
                     Exit For
                 End If
@@ -767,14 +766,14 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
             If (checkIt) Then
                 ' It is!
                 For p = 1 To Length
-                    If Mid(Text, p, 1) = Chr(34) Then
+                    If Mid$(Text, p, 1) = ("""") Then
                         newPos = p
                         Exit For
                     End If
                 Next p
                 For p = (newPos + 1) To (Length)
-                    part = Mid(Text, p, 1)
-                    If (part = Chr(34)) Or (part = "") Then
+                    part = Mid$(Text, p, 1)
+                    If ((part = ("""")) Or (LenB(part) = 0)) Then
                         lit = sendText
                         getValue = DT_LIT
                         Exit Function
@@ -785,8 +784,8 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
             Else
                 ' Try for an object
                 Dim noArray As String
-                noArray = Mid(Text, 1, InStr(1, Text, "[") - 1)
-                If (noArray <> "") Then
+                noArray = Mid$(Text, 1, InStr(1, Text, "[") - 1)
+                If (LenB(noArray) <> 0) Then
                     ' Use stuff before "["
                     Call getVariable(noArray & "!", litA, numA, theProgram)
                 Else
@@ -839,9 +838,7 @@ End Function
 ' Determine if a literal variable exists
 '=========================================================================
 Public Function litVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
-    On Error Resume Next
-    Dim r As Long
-    If varname <> "" Then
+    If (LenB(varname) <> 0) Then
         litVarExists = (RPGCLitExists(UCase$(varname), heapID) = 1)
     End If
 End Function
@@ -871,7 +868,7 @@ Public Function GetNumName(ByVal Index As Integer, ByVal heapID As Long) As Stri
     Dim max As Long, Length As Long
     max = RPGCCountNum(heapID)
     If Index > max - 1 Or Index < 0 Then
-        GetNumName = ""
+        GetNumName = vbNullString
     Else
         Dim inBuf As String * 4024
         Length = RPGCGetNumName(Index, inBuf, heapID)
@@ -888,7 +885,7 @@ Public Function GetLitName(ByVal Index As Integer, ByVal heapID As Long) As Stri
     Dim max As Long, Length As Long
     max = RPGCCountLit(heapID)
     If Index > max - 1 Or Index < 0 Then
-        GetLitName = ""
+        GetLitName = vbNullString
     Else
         Dim inBuf As String * 4024
         Length = RPGCGetLitName(Index, inBuf, heapID)
@@ -908,7 +905,7 @@ End Sub
 ' Determine if a numerical variable exists
 '=========================================================================
 Public Function numVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
-    If varname <> "" Then
+    If (LenB(varname) <> 0) Then
         numVarExists = (RPGCNumExists(UCase$(varname), heapID) = 1)
     End If
 End Function
@@ -1090,7 +1087,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
     On Error Resume Next
 
     ' Clean up the variable's name
-    varname = Trim(LCase(varname))
+    varname = Trim$(LCase$(varname))
 
     ' Check for reserved dynamically updating variables
     Select Case varname
@@ -1129,7 +1126,7 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
     varType = variType(theVar, globalHeap)
     getVariable = varType
 
-    If ((Right(theVar, 1) <> "!") And (Right(theVar, 1) <> "$")) Then
+    If ((Right$(theVar, 1) <> "!") And (Right$(theVar, 1) <> "$")) Then
         ' Append a "!"
         theVar = theVar & "!"
         ' Get value of the destination
@@ -1272,6 +1269,6 @@ Public Function GetLitVar(ByVal varname As String, ByVal heapID As Long) As Stri
         Length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
         GetLitVar = Mid$(getStr, 1, Length)
     Else
-        GetLitVar = ""
+        GetLitVar = vbNullString
     End If
 End Function

@@ -110,7 +110,7 @@ Public Sub enemyAttack(ByVal partyIdx As Long, ByVal fightIdx As Long)
         ene = parties(partyIdx).fighterList(fightIdx).enemy
         
         'Check if there is an AI program
-        If ene.eneRPGCode <> "" Then
+        If (LenB(ene.eneRPGCode) <> 0) Then
             'Yep-- there is
 
             Dim a As Long, b As Long
@@ -155,7 +155,7 @@ Public Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighter
     
     If fightInProgress Then
         'yup-- send it
-        If mainMem.fightPlugin <> "" Then
+        If (LenB(mainMem.fightPlugin) <> 0) Then
             Dim code As Long
             code = INFORM_SOURCE_ATTACK
             
@@ -175,13 +175,13 @@ End Sub
 '=========================================================================
 ' Inform the plugin of a stat being removed
 '=========================================================================
-Public Sub fightInformRemoveStat(ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal amountLost As Long, ByVal toSMP As Boolean, Optional ByVal msg As String = "")
+Public Sub fightInformRemoveStat(ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal amountLost As Long, ByVal toSMP As Boolean, Optional ByVal msg As String = vbNullString)
 
     On Error Resume Next
     
     If fightInProgress Then
         'yup-- send it
-        If mainMem.fightPlugin <> "" Then
+        If (LenB(mainMem.fightPlugin) <> 0) Then
             Dim code As Long
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -216,7 +216,7 @@ Public Sub fightInformItemUse(ByVal sourcePartyIndex As Long, ByVal sourceFighte
     
     If fightInProgress Then
         'yup-- send it
-        If mainMem.fightPlugin <> "" Then
+        If (LenB(mainMem.fightPlugin) <> 0) Then
             Const code = INFORM_SOURCE_ITEM
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -238,7 +238,7 @@ Public Sub fightInformSpecialMove(ByVal sourcePartyIndex As Long, ByVal sourceFi
     
     If fightInProgress Then
         'yup-- send it
-        If mainMem.fightPlugin <> "" Then
+        If (LenB(mainMem.fightPlugin) <> 0) Then
             Const code = INFORM_SOURCE_SMP
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -261,7 +261,7 @@ Public Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
 
     If fightInProgress Then
         'yup-- send it
-        If mainMem.fightPlugin <> "" Then
+        If (LenB(mainMem.fightPlugin) <> 0) Then
             Const code = INFORM_SOURCE_PARTY_DEFEATED
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -284,7 +284,7 @@ Public Sub fightInformCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
     
     If fightInProgress Then
         'yup-- send it
-        If mainMem.fightPlugin <> "" Then
+        If (LenB(mainMem.fightPlugin) <> 0) Then
             Const code = INFORM_SOURCE_CHARGED
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
@@ -326,7 +326,7 @@ Public Sub fightTick()
                         'check for enemy status effects...
                         For S = 0 To UBound(parties(t).fighterList(u).enemy.status)
                             If parties(t).fighterList(u).enemy.status(S).roundsLeft > 0 And _
-                                parties(t).fighterList(u).enemy.status(S).statusFile <> "" Then
+                                LenB(parties(t).fighterList(u).enemy.status(S).statusFile) <> 0 Then
                                 Call openStatus(projectPath & statusPath & parties(t).fighterList(u).enemy.status(S).statusFile, status)
                                 
                                 'now apply the effects of the status...
@@ -334,7 +334,7 @@ Public Sub fightTick()
                                 
                                 parties(t).fighterList(u).enemy.status(S).roundsLeft = parties(t).fighterList(u).enemy.status(S).roundsLeft - 1
                                 If parties(t).fighterList(u).enemy.status(S).roundsLeft = 0 Then
-                                    parties(t).fighterList(u).enemy.status(S).statusFile = ""
+                                    parties(t).fighterList(u).enemy.status(S).statusFile = vbNullString
                                 End If
                             End If
                         Next S
@@ -350,7 +350,7 @@ Public Sub fightTick()
                         'check for player status effects...
                         For S = 0 To UBound(parties(t).fighterList(u).player.status)
                             If parties(t).fighterList(u).player.status(S).roundsLeft > 0 And _
-                                parties(t).fighterList(u).player.status(S).statusFile <> "" Then
+                                LenB(parties(t).fighterList(u).player.status(S).statusFile) <> 0 Then
                                 Call openStatus(projectPath & statusPath & parties(t).fighterList(u).player.status(S).statusFile, status)
                                 
                                 'now apply the effects of the status...
@@ -358,7 +358,7 @@ Public Sub fightTick()
                                 
                                 parties(t).fighterList(u).player.status(S).roundsLeft = parties(t).fighterList(u).player.status(S).roundsLeft - 1
                                 If parties(t).fighterList(u).player.status(S).roundsLeft = 0 Then
-                                    parties(t).fighterList(u).player.status(S).statusFile = ""
+                                    parties(t).fighterList(u).player.status(S).statusFile = vbNullString
                                 End If
                             End If
                         Next S
@@ -431,7 +431,7 @@ Private Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     End If
     
     For t = 0 To UBound(playerListAr)
-        If playerListAr(t) <> "" Then
+        If LenB(playerListAr(t)) <> 0 Then
             Call giveExperience(exp, playerMem(t))
         End If
     Next t
@@ -439,7 +439,7 @@ Private Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     GPCount = GPCount + gp
     
     'run rpgcode program, if any
-    If rewardPrg <> "" Then
+    If LenB(rewardPrg) <> 0 Then
         Call runProgram(projectPath & prgPath & rewardPrg)
     End If
 End Sub
@@ -449,14 +449,12 @@ End Sub
 '=========================================================================
 Public Sub gameOver()
     On Error Resume Next
-    
     Dim retval As RPGCODE_RETURN
     Dim theProgram As RPGCodeProgram
     Call InitRPGCodeProcess(theProgram)
     theProgram.boardNum = -1
     Call CanvasGetScreen(cnvRPGCodeScreen)
-    
-    If mainMem.gameOverPrg = "" Then
+    If (LenB(mainMem.gameOverPrg) = 0) Then
         Call DXClearScreen(0)
         Call DXDrawText(1, 1, "Game Over...", "Arial", 48, RGB(255, 255, 255), 1, 0, 0, 0, 0)
         Call WaitForKey
@@ -495,13 +493,13 @@ Public Sub runFight( _
     ReDim eParty(num) As TKEnemy
     For t = 0 To num - 1
         eParty(t) = enemyMem(t)
-        If enemyMem(t).eneRunPrg <> "" Then
+        If LenB(enemyMem(t).eneRunPrg) <> 0 Then
             strRunProgram = enemyMem(t).eneRunPrg
         End If
         If enemyMem(t).eneRun = 0 Then
             canrun = 0
         End If
-        If enemyMem(t).eneWinPrg <> "" Then
+        If LenB(enemyMem(t).eneWinPrg) <> 0 Then
             strRewardProgram = enemyMem(t).eneWinPrg
         End If
     Next t
@@ -510,14 +508,14 @@ Public Sub runFight( _
     'create player party...
     cnt = 0
     For t = 0 To UBound(playerMem)
-        If playerFile(t) <> "" Then
+        If LenB(playerFile(t)) <> 0 Then
             cnt = cnt + 1
         End If
     Next t
     ReDim pParty(cnt) As TKPlayer
     cnt = 0
     For t = 0 To UBound(playerMem)
-        If playerFile(t) <> "" Then
+        If LenB(playerFile(t)) <> 0 Then
             pParty(cnt) = playerMem(t)
             cnt = cnt + 1
         End If
@@ -532,7 +530,7 @@ Public Sub runFight( _
     boardList(activeBoardIndex).theData.boardMusic = back.bkgMusic
     Call checkMusic(True)
 
-    If mainMem.fightPlugin <> "" Then
+    If (LenB(mainMem.fightPlugin) <> 0) Then
 
         Dim isFightPlugin As Long
         Dim plugName As String
@@ -594,7 +592,7 @@ Private Function getEnemy(ByVal skill As Long) As String
         If mainMem.skill(t) = skill Then total = total + 1
     Next t
     If total = 0 Then
-        getEnemy = ""
+        getEnemy = vbNullString
         Exit Function
     End If
     
@@ -613,7 +611,7 @@ Private Function getEnemy(ByVal skill As Long) As String
             End If
         End If
     Next t
-    getEnemy = ""
+    getEnemy = vbNullString
 End Function
 
 '=========================================================================
@@ -628,7 +626,7 @@ Public Sub skilledFight(ByVal skill As Long, ByVal bkg As String)
     numEne = Int(Rnd(1) * 4) + 1
     For t = 0 To numEne - 1
         enemies(t) = getEnemy(skill)
-        If enemies(t) = "" Then
+        If LenB(enemies(t)) = 0 Then
             Call MBox(LoadStringLoc(829, "No Enemies of skill ") & CStr(skill) & LoadStringLoc(830, " found!!!"), LoadStringLoc(831, "Can't Fight"), 0, menuColor, projectPath & bmpPath & mainMem.skinWindow$, projectPath & bmpPath & mainMem.skinButton$)
             Exit Sub
         End If
@@ -641,7 +639,7 @@ End Sub
 '=========================================================================
 Public Sub startFightPlugin()
     On Error Resume Next
-    If mainMem.fightPlugin <> "" Then
+    If (LenB(mainMem.fightPlugin) <> 0) Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         If Not isVBPlugin(plugName) Then
@@ -657,7 +655,7 @@ End Sub
 '=========================================================================
 Public Sub stopFightPlugin()
     On Error Resume Next
-    If mainMem.fightPlugin <> "" Then
+    If (LenB(mainMem.fightPlugin) <> 0) Then
         Dim plugName As String
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         If isVBPlugin(plugName) Then

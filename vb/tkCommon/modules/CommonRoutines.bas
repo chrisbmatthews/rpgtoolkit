@@ -70,7 +70,7 @@ Option Explicit
         Dim t As Long
         Do Until done
             t = t + 1
-            TabStrip1.Tabs.item(t).Caption = LoadStringLoc(TabStrip1.Tabs.item(t).tag, TabStrip1.Tabs.item(t).Caption)
+            TabStrip1.Tabs.item(t).Caption = LoadStringLoc(TabStrip1.Tabs.item(t).Tag, TabStrip1.Tabs.item(t).Caption)
         Loop
         Exit Sub
 tabErr:
@@ -85,7 +85,7 @@ tabErr:
         On Error Resume Next
         Dim withoutPath As String
         withoutPath = noPath(file)
-        absNoPath = Mid(withoutPath, 2, Len(withoutPath) - 1)
+        absNoPath = Mid$(withoutPath, 2, Len(withoutPath) - 1)
     End Function
 
     Public Sub clearGame()
@@ -93,7 +93,7 @@ tabErr:
         'Clears all open main file data
         '=======================================================
         On Error Resume Next
-        projectPath = ""
+        projectPath = vbNullString
         editmainfile.clearAll
         Call Unload(editmainfile)
     End Sub
@@ -103,20 +103,20 @@ tabErr:
         'Creates all project folders
         '=======================================================
         On Error Resume Next
-        MkDir Mid(theProjectPath & tilePath, 1, Len(theProjectPath & tilePath) - 1)
-        MkDir Mid(theProjectPath & brdPath, 1, Len(theProjectPath & brdPath) - 1)
-        MkDir Mid(theProjectPath & temPath, 1, Len(theProjectPath & temPath) - 1)
-        MkDir Mid(theProjectPath & spcPath, 1, Len(theProjectPath & spcPath) - 1)
-        MkDir Mid(theProjectPath & bkgPath, 1, Len(theProjectPath & bkgPath) - 1)
-        MkDir Mid(theProjectPath & mediaPath, 1, Len(theProjectPath & mediaPath) - 1)
-        MkDir Mid(theProjectPath & prgPath, 1, Len(theProjectPath & prgPath) - 1)
-        MkDir Mid(theProjectPath & fontPath, 1, Len(theProjectPath & fontPath) - 1)
-        MkDir Mid(theProjectPath & itmPath, 1, Len(theProjectPath & itmPath) - 1)
-        MkDir Mid(theProjectPath & enePath, 1, Len(theProjectPath & enePath) - 1)
-        MkDir Mid(theProjectPath & bmpPath, 1, Len(theProjectPath & bmpPath) - 1)
-        MkDir Mid(theProjectPath & statusPath, 1, Len(theProjectPath & statusPath) - 1)
-        MkDir Mid(theProjectPath & miscPath, 1, Len(theProjectPath & miscPath) - 1)
-        MkDir Mid(theProjectPath & plugPath, 1, Len(theProjectPath & plugPath) - 1)
+        MkDir Mid$(theProjectPath & tilePath, 1, Len(theProjectPath & tilePath) - 1)
+        MkDir Mid$(theProjectPath & brdPath, 1, Len(theProjectPath & brdPath) - 1)
+        MkDir Mid$(theProjectPath & temPath, 1, Len(theProjectPath & temPath) - 1)
+        MkDir Mid$(theProjectPath & spcPath, 1, Len(theProjectPath & spcPath) - 1)
+        MkDir Mid$(theProjectPath & bkgPath, 1, Len(theProjectPath & bkgPath) - 1)
+        MkDir Mid$(theProjectPath & mediaPath, 1, Len(theProjectPath & mediaPath) - 1)
+        MkDir Mid$(theProjectPath & prgPath, 1, Len(theProjectPath & prgPath) - 1)
+        MkDir Mid$(theProjectPath & fontPath, 1, Len(theProjectPath & fontPath) - 1)
+        MkDir Mid$(theProjectPath & itmPath, 1, Len(theProjectPath & itmPath) - 1)
+        MkDir Mid$(theProjectPath & enePath, 1, Len(theProjectPath & enePath) - 1)
+        MkDir Mid$(theProjectPath & bmpPath, 1, Len(theProjectPath & bmpPath) - 1)
+        MkDir Mid$(theProjectPath & statusPath, 1, Len(theProjectPath & statusPath) - 1)
+        MkDir Mid$(theProjectPath & miscPath, 1, Len(theProjectPath & miscPath) - 1)
+        MkDir Mid$(theProjectPath & plugPath, 1, Len(theProjectPath & plugPath) - 1)
     End Sub
 
     Public Function resolve(ByVal theDirectory As String) As String
@@ -125,7 +125,7 @@ tabErr:
         '=======================================================
         On Error Resume Next
         resolve = theDirectory
-        If Right(resolve, 1) <> "\" Then
+        If Right$(resolve, 1) <> "\" Then
             resolve = resolve & "\"
         End If
     End Function
@@ -157,29 +157,29 @@ tabErr:
 
         On Error Resume Next
 
-        Dim X As Single, Y As Single
+        Dim x As Single, y As Single
 
         If detail = 2 Or detail = 4 Or detail = 6 Then
-            For X = 1 To 16
-                For Y = 1 To 16
-                    If tileMem(X, Y) = -1 Then
-                        tileMem(X, Y) = -1
+            For x = 1 To 16
+                For y = 1 To 16
+                    If tileMem(x, y) = -1 Then
+                        tileMem(x, y) = -1
                     Else
-                        tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
+                        tileMem(x, y) = GFXGetDOSColor(tileMem(x, y))
                     End If
-                Next Y
-            Next X
+                Next y
+            Next x
         ElseIf detail = 3 Or detail = 5 Then
-            For X = 1 To 32
-                For Y = 1 To 32
-                    If tileMem(X, Y) = -1 Then
-                        tileMem(X, Y) = -1
+            For x = 1 To 32
+                For y = 1 To 32
+                    If tileMem(x, y) = -1 Then
+                        tileMem(x, y) = -1
                     Else
-                        tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
+                        tileMem(x, y) = GFXGetDOSColor(tileMem(x, y))
                     End If
-                Next Y
-                Call vbPicFillRect(colordepth.status, 0, 0, (X / 32) * 100, 10, vbQBColor(9))
-            Next X
+                Next y
+                Call vbPicFillRect(colordepth.status, 0, 0, (x / 32) * 100, 10, vbQBColor(9))
+            Next x
             detail = 1
         End If
 
@@ -227,21 +227,21 @@ tabErr:
 
         On Error Resume Next
 
-        Dim X As Long, Y As Long, xx As Long, yy As Long
+        Dim x As Long, y As Long, xx As Long, yy As Long
         Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
-        For X = 1 To 32
-            For Y = 1 To 32
-                xx = (X * 10) - 9
-                yy = (Y * 10) - 9
-                If tileMem(X, Y) <> -1 Then
+        For x = 1 To 32
+            For y = 1 To 32
+                xx = (x * 10) - 9
+                yy = (y * 10) - 9
+                If tileMem(x, y) <> -1 Then
                     If detail = 1 Then
-                        Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tileMem(X, Y))
+                        Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tileMem(x, y))
                     ElseIf detail = 3 Or detail = 5 Then
-                        Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tileMem(X, Y)))
+                        Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tileMem(x, y)))
                     End If
                 End If
-            Next Y
-        Next X
+            Next y
+        Next x
         openTileEditorDocs(activeTile.indice).grid = 0
 
     End Sub
@@ -267,29 +267,29 @@ tabErr:
         If detail = 4 Then detail = 3
         If detail = 6 Then detail = 5
 
-        Dim X As Long, Y As Long
+        Dim x As Long, y As Long
         Dim xx As Long, yy As Long
 
-        For X = 1 To 16
-            For Y = 1 To 16
-                bufferTile(X, Y) = tileMem(X, Y)
-                tileMem(X, Y) = -1
-            Next Y
-        Next X
+        For x = 1 To 16
+            For y = 1 To 16
+                bufferTile(x, y) = tileMem(x, y)
+                tileMem(x, y) = -1
+            Next y
+        Next x
 
         'Increase detail
         xx = 1: yy = 1
-        For X = 1 To 16
-            For Y = 1 To 16
-                tileMem(xx, yy) = bufferTile(X, Y)
-                tileMem(xx, yy + 1) = bufferTile(X, Y)
-                tileMem(xx + 1, yy) = bufferTile(X, Y)
-                tileMem(xx + 1, yy + 1) = bufferTile(X, Y)
+        For x = 1 To 16
+            For y = 1 To 16
+                tileMem(xx, yy) = bufferTile(x, y)
+                tileMem(xx, yy + 1) = bufferTile(x, y)
+                tileMem(xx + 1, yy) = bufferTile(x, y)
+                tileMem(xx + 1, yy + 1) = bufferTile(x, y)
                 yy = yy + 2
-            Next Y
+            Next y
             yy = 1
             xx = xx + 2
-        Next X
+        Next x
 
     End Sub
 
@@ -300,22 +300,22 @@ tabErr:
 
         On Error Resume Next
 
-        Dim X As Long, Y As Long, xx As Long, yy As Long
+        Dim x As Long, y As Long, xx As Long, yy As Long
     
         Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
-        For X = 1 To 16
-            For Y = 1 To 16
-                xx = (X * 20) - 19
-                yy = (Y * 20) - 19
-                If tileMem(X, Y) <> -1 Then
+        For x = 1 To 16
+            For y = 1 To 16
+                xx = (x * 20) - 19
+                yy = (y * 20) - 19
+                If tileMem(x, y) <> -1 Then
                     If detail = 2 Then
-                        Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tileMem(X, Y))
+                        Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tileMem(x, y))
                     ElseIf detail = 4 Or detail = 6 Then
-                        Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tileMem(X, Y)))
+                        Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tileMem(x, y)))
                     End If
                 End If
-            Next Y
-        Next X
+            Next y
+        Next x
         openTileEditorDocs(activeTile.indice).grid = 0
 
     End Sub
@@ -327,12 +327,12 @@ tabErr:
         On Error Resume Next
         Dim workOn As String, running As String, col As Long, Length As Long, part As String
         workOn = file
-        running = ""
+        running = vbNullString
         col = 1
         Length = Len(file)
         Do While part <> "." And col <= Length + 1
             running = running & part
-            part = Mid(workOn, col, 1)
+            part = Mid$(workOn, col, 1)
             col = col + 1
         Loop
         noExtention = running
@@ -353,24 +353,24 @@ tabErr:
         Length = Len(a)
         'first, see if there IS a path:
         For t = 1 To Length
-            part = Mid(a, t, 1)
+            part = Mid$(a, t, 1)
             If part = ":" Or part = "\" Then aPath = 1
         Next t
         If aPath = 0 Then noPath = a$: Exit Function
         'Now see if the path terminates with a \ or a :
         For t = 1 To Length
-            part = Mid(a, t, 1)
+            part = Mid$(a, t, 1)
             If part = ":" Or part = "\" Then term = part
         Next t
         If term = ":" Then
             'if it terminates with a :, then the filename is right after :
             For t = 1 To Length
-                part = Mid(a, t, 1)
+                part = Mid$(a, t, 1)
                 pathUse = pathUse & part
                 If part = ":" Then
-                    path = ""
+                    path = vbNullString
                     For ll = t To Length
-                        part = Mid(a, ll, 1)
+                        part = Mid$(a, ll, 1)
                         path = path & part
                     Next ll
                     noPath = path
@@ -381,13 +381,13 @@ tabErr:
             lastOne = 1
             'If it terminates with a "\" then we've got problems.  where is the last one at?
             For t = 1 To Length
-                part = Mid(a, t, 1)
+                part = Mid$(a, t, 1)
                 If part = "\" Then lastOne = t
             Next t
             'Now let's scoop out the path"
-            pathUse = ""
+            pathUse = vbNullString
             For t = lastOne To Length
-                part = Mid(a, t, 1)
+                part = Mid$(a, t, 1)
                 pathUse = pathUse & part
             Next t
             noPath = pathUse
@@ -401,7 +401,7 @@ tabErr:
         '=======================================================
         On Error Resume Next
         If Not fileExists(file) Then Exit Sub
-        projectPath = ""
+        projectPath = vbNullString
         Call openMain(file, mainMem)
         oldpath = currentDir & "\" & projectPath
     End Sub
@@ -418,7 +418,7 @@ tabErr:
         filenm = file
         filename(1) = filenm
         Dim ex As String
-        ex = UCase(extention(filenm$))
+        ex = UCase$(extention(filenm$))
     
         If ex = "TST" Or ex = "ISO" Then
 
@@ -437,7 +437,7 @@ tabErr:
 
         End If
     
-        Dim X As Long, Y As Long, xx As Long, yy As Long
+        Dim x As Long, y As Long, xx As Long, yy As Long
         Dim loopIt As Long, times As Long, tileerror As Integer
 
         Dim num As Long
@@ -465,17 +465,17 @@ tabErr:
 
             If comp = 0 Then 'super-old gph
                 If detail = 1 Or detail = 3 Or detail = 5 Then
-                    For X = 1 To 32
-                        For Y = 1 To 32
-                            openTileEditorDocs(activeTile.indice).tileMem(X, Y) = fread(num) 'Pixel by pixel
-                        Next Y
-                    Next X
+                    For x = 1 To 32
+                        For y = 1 To 32
+                            openTileEditorDocs(activeTile.indice).tileMem(x, y) = fread(num) 'Pixel by pixel
+                        Next y
+                    Next x
                 ElseIf detail = 2 Or detail = 4 Or detail = 6 Then
-                    For X = 1 To 16
-                        For Y = 1 To 16
-                            openTileEditorDocs(activeTile.indice).tileMem(X, Y) = fread(num)
-                        Next Y
-                    Next X
+                    For x = 1 To 16
+                        For y = 1 To 16
+                            openTileEditorDocs(activeTile.indice).tileMem(x, y) = fread(num)
+                        Next y
+                    Next x
                 End If
 
             ElseIf comp = 1 Then    'If compression is used, pixel 'bundles' come in pairs of two.
@@ -532,7 +532,7 @@ Version1Tile:
                 Line Input #num, tile
                     For xx = 1 To 16
                         Dim part As String
-                        part = Mid(tile, xx, 1)
+                        part = Mid$(tile, xx, 1)
                         Dim theValue As Long
                         theValue = Asc(part)
                         theValue = theValue - 33
@@ -586,20 +586,20 @@ loadtileerr:
         Length = Len(Text)
         'first, see if there IS a path:
         For t = 1 To Length
-            part = Mid(Text, t, 1)
+            part = Mid$(Text, t, 1)
             If part = ":" Or part = "\" Then aPath = 1
         Next t
-        If aPath = 0 Then pathOf = ""
+        If aPath = 0 Then pathOf = vbNullString
         'Now see if the path terminates with a \ or a :
         For t = 1 To Length
-            part = Mid(Text, t, 1)
+            part = Mid$(Text, t, 1)
             If part = ":" Or part = "\" Then term = part
         Next t
-        pathUse = ""
+        pathUse = vbNullString
         If term = ":" Then
             'if it terminates with a :, then the filename is right after :
             For t = 1 To Length
-                part = Mid(Text, t, 1)
+                part = Mid$(Text, t, 1)
                 pathUse = pathUse & part
                 If part = ":" Then pathOf = pathUse
             Next t
@@ -607,13 +607,13 @@ loadtileerr:
             lastOne = 1
             'If it terminates with a "\" then we've got problems.  where is the last one at?
             For t = 1 To Length
-                part = Mid(Text, t, 1)
+                part = Mid$(Text, t, 1)
                 If part = "\" Then lastOne = t
             Next t
             'Now let's scoop out the path
-            pathUse = ""
+            pathUse = vbNullString
             For t = 1 To lastOne
-                part = Mid(Text, t, 1)
+                part = Mid$(Text, t, 1)
                 pathUse = pathUse & part
             Next t
             pathOf = pathUse
@@ -644,7 +644,7 @@ loadtileerr:
         Dim extension As String
         'Note: extention will only return 3 letters, GetExt returns everything after the "."
         'this includes the tileset index number on open tiles.
-        extension = UCase(extention(filename(1)))
+        extension = UCase$(extention(filename(1)))
     
         If extension = "TST" Or extension = "ISO" Then      'Added.
             Call insertIntoTileSet(tilesetFilename(filenm), getTileNum(filenm$))
@@ -659,24 +659,24 @@ loadtileerr:
             Print #num, minor                'Minor version (ie 2.0)
             Print #num, detail             'Detail level- 1 is 32x32, 2 is 16x16
 
-            Dim X As Integer, Y As Integer
+            Dim x As Integer, y As Integer
             Dim occurances As Long, older As Long
             Dim starting As Byte
 
             #If compression = 0 Then         'If no compression was usd, save it normally, pixel by pixel.
                 Print #num, 0
                 If detail = 1 Or detail = 3 Or detail = 5 Then
-                    For X = 1 To 32
-                        For Y = 1 To 32
-                            Print #num, tileMem(X, Y) 'Pixel by pixel
-                        Next Y
-                    Next X
+                    For x = 1 To 32
+                        For y = 1 To 32
+                            Print #num, tileMem(x, y) 'Pixel by pixel
+                        Next y
+                    Next x
                 ElseIf detail = 2 Or detail = 4 Or detail = 6 Then
-                    For X = 1 To 16
-                        For Y = 1 To 16
-                            Print #num, tileMem(X, Y)
-                        Next Y
-                    Next X
+                    For x = 1 To 16
+                        For y = 1 To 16
+                            Print #num, tileMem(x, y)
+                        Next y
+                    Next x
                 End If
 
             #ElseIf compression = 1 Then         'If there is compression, save it in bundles, count how many times pixels occur together, and write #of times, color of pixel
@@ -684,38 +684,38 @@ loadtileerr:
                 occurances = 1
                 older = tileMem(1, 1)
                 If detail = 1 Or detail = 3 Or detail = 5 Then
-                    For X = 1 To 32
-                        For Y = 1 To 32
-                            If Not (X = 1 And Y = 1) Then
-                                If tileMem(X, Y) = older Then
+                    For x = 1 To 32
+                        For y = 1 To 32
+                            If Not (x = 1 And y = 1) Then
+                                If tileMem(x, y) = older Then
                                     occurances = occurances + 1
                                 Else
                                     Print #num, occurances    'how many times it occurred.
                                     Print #num, older         'what color it is
-                                    older = tileMem(X, Y)
+                                    older = tileMem(x, y)
                                     occurances = 1
                                 End If
                             End If
-                        Next Y
-                    Next X
+                        Next y
+                    Next x
                     Print #num, occurances
                     Print #num, older
                 ElseIf detail = 2 Or detail = 4 Or detail = 6 Then
-                    For X = 1 To 16
-                        For Y = 1 To 16
-                            If Not (X = 1 And Y = 1) Then
-                                If tileMem(X, Y) = older Then
+                    For x = 1 To 16
+                        For y = 1 To 16
+                            If Not (x = 1 And y = 1) Then
+                                If tileMem(x, y) = older Then
                                     occurances = occurances + 1
                                 Else
                                     Print #num, occurances    'how many times it occurred.
                                     Print #num, older         'what color it is
-                                    older = tileMem(X, Y)
+                                    older = tileMem(x, y)
                                     occurances = 1
                                     starting = 0
                                 End If
                             End If
-                        Next Y
-                    Next X
+                        Next y
+                    Next x
                     Print #num, occurances
                     Print #num, older
                 End If
@@ -801,22 +801,22 @@ loadtileerr:
 
         On Error Resume Next
 
-        Dim X As Integer, Y As Integer
+        Dim x As Integer, y As Integer
     
         If openTileEditorDocs(activeTile.indice).oldDetail = 4 Or openTileEditorDocs(activeTile.indice).oldDetail = 6 Then
-            For X = 1 To 16
-                For Y = 1 To 16
-                    If tileMem(X, Y) = -1 Then tileMem(X, Y) = vbQBColor(15)
-                    tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
-                Next Y
-            Next X
+            For x = 1 To 16
+                For y = 1 To 16
+                    If tileMem(x, y) = -1 Then tileMem(x, y) = vbQBColor(15)
+                    tileMem(x, y) = GFXGetDOSColor(tileMem(x, y))
+                Next y
+            Next x
         ElseIf openTileEditorDocs(activeTile.indice).oldDetail = 3 Or openTileEditorDocs(activeTile.indice).oldDetail = 5 Then
-            For X = 1 To 32
-                For Y = 1 To 32
-                    If tileMem(X, Y) = -1 Then tileMem(X, Y) = vbQBColor(15)
-                    tileMem(X, Y) = GFXGetDOSColor(tileMem(X, Y))
-                Next Y
-            Next X
+            For x = 1 To 32
+                For y = 1 To 32
+                    If tileMem(x, y) = -1 Then tileMem(x, y) = vbQBColor(15)
+                    tileMem(x, y) = GFXGetDOSColor(tileMem(x, y))
+                Next y
+            Next x
         End If
 
     End Sub
@@ -862,10 +862,10 @@ loadtileerr:
         'For each character in the string...
         For a = 1 To Len(txt)
 
-            c = Mid(txt, a, 1) 'Get the charater
+            c = Mid$(txt, a, 1) 'Get the charater
             ret(UBound(ret)) = ret(UBound(ret)) & c
 
-            If c = """" Then
+            If (c = ("""")) Then
                 If ignoreQuotes Then
                     ignore = (Not ignore)
                 End If
@@ -877,7 +877,7 @@ loadtileerr:
                     'It's a delimiter...
                     If c = chars(b) Then
                         'Take it off the ret() array...
-                        ret(UBound(ret)) = Left(ret(UBound(ret)), _
+                        ret(UBound(ret)) = Left$(ret(UBound(ret)), _
                         Len(ret(UBound(ret))) - 1)
                         'Put it in the ud() array...
                         uD(UBound(ret)) = c
@@ -890,10 +890,10 @@ loadtileerr:
             End If
 
         Next a 'Onto the next character
- 
+
         'Make sure the last array element isn't empty...
-        If ret(UBound(ret)) = "" Then ReDim Preserve ret(UBound(ret) - 1)
- 
+        If (LenB(ret(UBound(ret))) = 0) Then ReDim Preserve ret(UBound(ret) - 1)
+
         'Pass back the data...
         multiSplit = ret()
         usedDelimiters = uD()
@@ -908,7 +908,7 @@ loadtileerr:
 
         On Error Resume Next
 
-        projectPath = ""
+        projectPath = vbNullString
         mainMem.mainResolution = 0
 
         Call openMain(file, mainMem)
@@ -992,5 +992,5 @@ Public Function extention(ByVal file As String) As String: On Error Resume Next
     'Split the file.
     strArray() = Split(file, ".")
     'Last element will be the extension. Take the first 3 letters.
-    extention = Left(strArray(UBound(strArray)), 3)
+    extention = Left$(strArray(UBound(strArray)), 3)
 End Function

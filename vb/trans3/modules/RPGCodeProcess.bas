@@ -31,7 +31,7 @@ Public Function getMethodLine(ByVal name As String, ByRef prg As RPGCodeProgram)
     Dim idx As Long                 ' For for loops
 
     ' Make name all caps
-    name = Trim(UCase(name))
+    name = Trim$(UCase$(name))
 
     ' Cycle through all methods in the program
     For idx = 0 To UBound(prg.methods)
@@ -59,7 +59,7 @@ Public Sub addMethodToPrg(ByVal name As String, ByVal line As Long, ByRef prg As
     Dim space As Long               ' Space for entry
 
     ' Make name all caps
-    name = Trim(UCase(name))
+    name = Trim$(UCase$(name))
 
     ' Make space invalid
     space = -1
@@ -69,7 +69,7 @@ Public Sub addMethodToPrg(ByVal name As String, ByVal line As Long, ByRef prg As
         If (prg.methods(idx).name = name) Then
             ' Already in program
             Exit Sub
-        ElseIf (prg.methods(idx).name = "") Then
+        ElseIf (LenB(prg.methods(idx).name) = 0) Then
             ' If we haven't found a space
             If (space = -1) Then
                 ' This is an empty space
@@ -162,7 +162,7 @@ Public Sub ClearRPGCodeProcess(ByRef thePrg As RPGCodeProgram)
         thePrg.heapStack(t) = 0
     Next t
     For t = 0 To UBound(thePrg.included)
-        thePrg.included(t) = ""
+        thePrg.included(t) = vbNullString
     Next t
 skipheap:
     thePrg.currentHeapFrame = -1
@@ -226,22 +226,22 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             theLine = stripComments(fread(num))
 
             ' Trim up that line...
-            theLine = replaceOutsideQuotes(Trim(theLine), vbTab, "")
+            theLine = replaceOutsideQuotes(Trim$(theLine), vbTab, "")
 
-            If (Right(theLine, 1) = "_") Then
+            If (Right$(theLine, 1) = "_") Then
                 ' This line is actually only part of a line, let's get the
                 ' whole line...
 
-                buildLine = Trim(Mid(theLine, 1, Len(theLine) - 1))
+                buildLine = Trim$(Mid$(theLine, 1, Len(theLine) - 1))
 
                 done = False
                 Do Until done
                     If Not EOF(num) Then
-                        buildTemp = replace(Trim(stripComments(fread(num))), vbTab, "")
-                        Select Case Right(buildTemp, 1)
+                        buildTemp = replace(Trim$(stripComments(fread(num))), vbTab, "")
+                        Select Case Right$(buildTemp, 1)
                             Case "_"
                                 buildTemp = _
-                                    Mid(buildTemp, 1, Len(buildTemp) - 1)
+                                    Mid$(buildTemp, 1, Len(buildTemp) - 1)
                             Case Else: done = True
                         End Select
                         buildLine = buildLine & " " & buildTemp
@@ -255,10 +255,10 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             End If
 
             ' Remove prefixed #
-            If (Left(theLine, 1) = "#") Then theLine = Right(theLine, Len(theLine) - 1)
+            If (Left$(theLine, 1) = "#") Then theLine = Right$(theLine, Len(theLine) - 1)
 
             ' Read line if not comment
-            If (Not Left(theLine, 1) = "*") And (Not Left(theLine, 2) = "//") Then
+            If (Not Left$(theLine, 1) = "*") And (Not Left$(theLine, 2) = "//") Then
 
                 ' Split that sucker like it has NEVER been split before!
                 lines() = multiSplit(theLine, c, uD, True)
@@ -271,7 +271,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 For a = 0 To (UBound(lines) + 1)
 
                     If (a = UBound(lines) + 1) Then
-                        If (uD(UBound(lines)) <> "") Then
+                        If (LenB(uD(UBound(lines))) <> 0) Then
                             thePrg.program(p + a) = uD(UBound(lines))
                         End If
 
@@ -288,7 +288,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                                 p = p + 1
 
                             Case "#"
-                                If Left(lines(a), 1) = " " Then
+                                If Left$(lines(a), 1) = " " Then
                                     thePrg.program(p + a) = uD(a - 1) & lines(a)
                                 Else
                                     thePrg.program(p + a - 1) = _
@@ -318,8 +318,8 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
     ' Now cycle over each line
     For a = 0 To UBound(thePrg.program)
-        thePrg.program(a) = Trim(replaceOutsideQuotes(thePrg.program(a), "#", ""))
-        If (Left(UCase(Trim(thePrg.program(a))), 6) = "METHOD") Then
+        thePrg.program(a) = Trim$(replaceOutsideQuotes(thePrg.program(a), "#", ""))
+        If (Left$(UCase$(Trim$(thePrg.program(a))), 6) = "METHOD") Then
             ' It's a method
             Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
         End If
@@ -343,18 +343,18 @@ End Function
 '=========================================================================
 ' Strip comments off a line
 '=========================================================================
-Public Function stripComments(ByVal text As String) As String
+Public Function stripComments(ByVal Text As String) As String
     Dim a As Long, char As String, ignore As Boolean
-    For a = 1 To Len(text)
-        char = Mid(text, a, 2)
-        If (Left(char, 1) = Chr(34)) Then
+    For a = 1 To Len(Text)
+        char = Mid$(Text, a, 2)
+        If (Left$(char, 1) = ("""")) Then
             ignore = (Not ignore)
         ElseIf (char = "//") And (Not ignore) Then
-            stripComments = Mid(text, 1, a - 1)
+            stripComments = Mid$(Text, 1, a - 1)
             Exit Function
         End If
     Next a
-    stripComments = text
+    stripComments = Text
 End Function
 
 '=========================================================================

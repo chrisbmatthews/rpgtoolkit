@@ -26,7 +26,7 @@ Public Function BinReadString(ByVal fileNum As Integer) As String
     On Error Resume Next
     Dim theString As String
     Dim part As String * 1
-    theString = ""
+    theString = vbNullString
     Dim bDone As Boolean
     bDone = False
     Do Until bDone
@@ -121,8 +121,8 @@ Public Function BinWriteString(ByVal fileNum As Integer, ByVal theString As Stri
     Dim Length As Long, t As Long
     Length = Len(theString)
     For t = 1 To Length
-        part = Mid(theString, t, 1)
+        part = Mid$(theString, t, 1)
         Put fileNum, , part
     Next t
-    Put fileNum, , Chr$(0)
+    Put fileNum, , vbNullChar
 End Function

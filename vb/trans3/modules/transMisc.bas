@@ -45,7 +45,7 @@ Public Function determineSpecialMoves(ByVal handle As String, ByRef fileList() A
     For t = 0 To UBound(playerMem(cnum).smlist)
         Dim ignore As Long
         ignore = 0
-        If playerMem(cnum).smlist$(t) <> "" Then
+        If (LenB(playerMem(cnum).smlist$(t)) <> 0) Then
             'Now check if the player can use it yet:
             'First check exp.
             a = getIndependentVariable(playerMem(cnum).experienceVar$, l$, expl)
@@ -70,7 +70,7 @@ Public Function determineSpecialMoves(ByVal handle As String, ByRef fileList() A
             
             If ignore <> 1 Then
                 'now check conditioned var
-                If playerMem(cnum).spcVar$(t) <> "" Then
+                If (LenB(playerMem(cnum).spcVar$(t)) <> 0) Then
                     a = getIndependentVariable(playerMem(cnum).spcVar$(t), txt$, nn)
                     If a = 0 Then
                         'numerical
@@ -268,10 +268,10 @@ Public Sub openItems()
             End If
 
             'If we should, and there is a program, then open it!
-            If (runIt) And (.itmName(itemNum) <> "") Then
+            If (runIt) And (LenB(.itmName(itemNum)) <> 0) Then
                 itemMem(itemNum) = openItem(projectPath & itmPath & .itmName(itemNum))
                 itemMem(itemNum).bIsActive = True
-                If .itemMulti(itemNum) <> "" Then
+                If (LenB(.itemMulti(itemNum)) <> 0) Then
                     multiPrg = .itemMulti(itemNum)
                 Else
                     multiPrg = itemMem(itemNum).itmPrgOnBoard
@@ -303,7 +303,7 @@ Public Function GetSpacedElement(ByVal Text As String, ByVal eleeNum As Long) As
     element = 0
     For p = 1 To Length + 1
         part$ = Mid$(Text$, p, 1)
-        If part$ = Chr$(34) Then
+        If part$ = ("""") Then
             'A quote
             If ignore = 0 Then
                 ignore = 1
@@ -318,7 +318,7 @@ Public Function GetSpacedElement(ByVal Text As String, ByVal eleeNum As Long) As
                     GetSpacedElement = returnVal$
                     Exit Function
                 Else
-                    returnVal$ = ""
+                    returnVal$ = vbNullString
                 End If
             Else
                 returnVal$ = returnVal & part$
@@ -401,7 +401,7 @@ Public Function CanPlayerUse(ByVal num As Long, ByRef anItem As TKItem) As Boole
     Else
         Dim ll As Long
         For ll = 0 To UBound(anItem.itmChars)
-            If anItem.itmChars$(ll) <> "" Then
+            If (LenB(anItem.itmChars$(ll)) <> 0) Then
                 If UCase$(anItem.itmChars$(ll)) = UCase$(playerListAr$(num)) Then
                     okAll = 1
                 End If
@@ -417,21 +417,21 @@ End Function
 Public Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
 
     On Error Resume Next
-    
+
     Dim anItem As TKItem
-    
-    If playerEquip$(equipNum, playerNum) = "" Then Exit Sub
-    
+
+    If (LenB(playerEquip$(equipNum, playerNum)) = 0) Then Exit Sub
+
     anItem = openItem(projectPath & itmPath & playerEquip$(equipNum, playerNum))
-    If anItem.prgRemove$ <> "" Then
+    If (LenB(anItem.prgRemove$) <> 0) Then
         Call runProgram(projectPath & prgPath & anItem.prgRemove$)
     End If
-    
+
     'Put the equipment back in the item list:
     Call inv.addItem(playerEquip(equipNum, playerNum))
-    playerEquip$(equipNum, playerNum) = ""
-    equipList$(equipNum, playerNum) = "" 'What is equipped on each player (handle)
-    
+    playerEquip$(equipNum, playerNum) = vbNullString
+    equipList$(equipNum, playerNum) = vbNullString 'What is equipped on each player (handle)
+
     Dim HPa As Long
     Dim SMa As Long
     Dim DPa As Long
@@ -520,7 +520,7 @@ Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file 
     'Run equip program:
     targetType = TYPE_PLAYER
     target = playerNum
-    If anItem.prgEquip <> "" Then
+    If (LenB(anItem.prgEquip) <> 0) Then
         Call runProgram(projectPath & prgPath & anItem.prgEquip)
     End If
 

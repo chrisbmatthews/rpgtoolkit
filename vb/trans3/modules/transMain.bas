@@ -72,7 +72,7 @@ Public Sub Main()
     mainFile = getMainFilename()
 
     ' If we got one
-    If (mainFile <> "") Then
+    If (LenB(mainFile) <> 0) Then
 
         ' Open the main file
         Call openMain(mainFile, mainMem)
@@ -122,24 +122,24 @@ Private Function getMainFilename() As String
 
     On Error Resume Next
 
-    If (Command <> "") Then
+    If (LenB(Command) <> 0) Then
 
         Dim args() As String
         args() = Split(Command, " ")
 
         If (UBound(args) = 0) Then
 
-            If (LCase(GetExt(Command)) = "tpk") Then
+            If (LCase$(GetExt(Command)) = "tpk") Then
 
                 Call setupPakSystem(TempDir & Command)
                 Call Kill(PakFileMounted)
                 Call ChDir(currentDir)
                 getMainFilename = "main.gam"
-                projectPath = ""
+                projectPath = vbNullString
                 errorBranch = "Resume Next"
                 savPath = GetSetting("TK3 EXE HOST", "Settings", "Save Path", "")
                 Call DeleteSetting("TK3 EXE HOST", "Settings", "Save Path")
-                If savPath = "" Then
+                If (LenB(savPath) = 0) Then
                     savPath = "Saved\"
                 Else
                     runningAsEXE = True
@@ -178,7 +178,7 @@ Private Function getMainFilename() As String
             Dim dlg As FileDialogInfo
             With dlg
                 .strDefaultFolder = gamPath$
-                .strSelectedFile = ""
+                .strSelectedFile = vbNullString
                 .strTitle = "Open Main File"
                 .strDefaultExt = "gam"
                 .strFileTypes = "Supported Files|*.gam;*.tpk|RPG Toolkit Main File (*.gam)|*.gam|RPG Toolkit PakFile (*.tpk)|*.tpk|All files(*.*)|*.*"
@@ -193,10 +193,10 @@ Private Function getMainFilename() As String
             Dim whichType As String
             whichType = GetExt(loadedMainFile)
 
-            If (UCase(whichType) = "TPK") Then
+            If (UCase$(whichType) = "TPK") Then
                 Call setupPakSystem(loadedMainFile)
                 getMainFilename = "main.gam"
-                projectPath = ""
+                projectPath = vbNullString
             Else
                 getMainFilename = loadedMainFile
             End If
@@ -218,7 +218,7 @@ Private Sub correctPaths()
 
     ' If we're running from a single file, the project is in this directory
     If ((runningAsEXE) Or (pakFileRunning)) Then
-        projectPath = ""
+        projectPath = vbNullString
         currentDir = TempDir() & "TKCache\"
     End If
 
@@ -241,7 +241,7 @@ Private Sub initGame()
     MWinSize = 90
     mainMem.mainScreenType = 2
     savPath = "Saved\"
-    Call MkDir(Mid(savPath, 1, Len(savPath) - 1))
+    Call MkDir(Mid$(savPath, 1, Len(savPath) - 1))
     ReDim boardList(0)
     ReDim boardListOccupied(0)
     boardListOccupied(0) = True
@@ -465,16 +465,16 @@ Private Sub initActiveX()
     On Error Resume Next
     Dim a As Long
     For a = 0 To UBound(mainMem.plugins)
-        If (mainMem.plugins(a) <> "") Then
+        If (LenB(mainMem.plugins(a)) <> 0) Then
             Dim fullPath As String
             fullPath = projectPath & plugPath & mainMem.plugins(a)
-            Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
+            Call ExecCmd("regsvr32 /s " & ("""") & fullPath & (""""))
         End If
     Next a
     fullPath = projectPath & plugPath & mainMem.menuPlugin
-    Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
+    Call ExecCmd("regsvr32 /s " & ("""") & fullPath & (""""))
     fullPath = projectPath & plugPath & mainMem.fightPlugin
-    Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
+    Call ExecCmd("regsvr32 /s " & ("""") & fullPath & (""""))
 End Sub
 
 '=======================================================================
@@ -484,16 +484,16 @@ Private Sub closeActiveX()
     On Error Resume Next
     Dim a As Long
     For a = 0 To UBound(mainMem.plugins)
-        If (mainMem.plugins(a) <> "") Then
+        If (LenB(mainMem.plugins(a)) <> 0) Then
             Dim fullPath As String
             fullPath = projectPath & plugPath & mainMem.plugins(a)
-            Call ExecCmd("regsvr32 /s /u " & Chr(34) & fullPath & Chr(34))
+            Call ExecCmd("regsvr32 /s /u " & ("""") & fullPath & (""""))
         End If
     Next a
     fullPath = projectPath & plugPath & mainMem.menuPlugin
-    Call ExecCmd("regsvr32 /s /u " & Chr(34) & fullPath & Chr(34))
+    Call ExecCmd("regsvr32 /s /u " & ("""") & fullPath & (""""))
     fullPath = projectPath & plugPath & mainMem.fightPlugin
-    Call ExecCmd("regsvr32 /s /u " & Chr(34) & fullPath & Chr(34))
+    Call ExecCmd("regsvr32 /s /u " & ("""") & fullPath & (""""))
 End Sub
 
 '=======================================================================
@@ -546,11 +546,11 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     Call LoadFontsFromFolder(projectPath & fontPath)
 
     ' Change the DirectX host's caption to the game's title (for windowed mode)
-    If (mainMem.gameTitle <> "") Then
+    If (LenB(mainMem.gameTitle) <> 0) Then
         host.Caption = mainMem.gameTitle
     End If
 
-    If (mainMem.initChar <> "") Then
+    If (LenB(mainMem.initChar) <> 0) Then
         ' If a main character has been specified, load it
         Call CreateCharacter(projectPath & temPath & mainMem.initChar, 0)
     End If

@@ -250,7 +250,7 @@ Private Sub createItemDisplay(ByVal theCanvas As Long, ByVal theType As SHOP_TYP
         ReDim m_itemStrcutures(.upperBound())
         For itmNum = 0 To .upperBound()
             Text = .handles(itmNum)
-            If Text <> "" Then
+            If (LenB(Text) <> 0) Then
                 m_indices(curLine) = itmNum
                 m_itemStrcutures(curLine) = openItem(projectPath & itmPath & .fileNames(itmNum))
                 curLine = curLine + 1
@@ -318,7 +318,7 @@ Private Sub updateItemInfo(ByVal pos As Long)
     cnv = CreateCanvas(172, 399)
     Call CanvasFill(cnv, TRANSP_COLOR)
     With item(pos)
-        If .itemName <> "" Then
+        If (LenB(.itemName) <> 0) Then
             Call CanvasDrawText(cnv, .itemName, fontName, 25, 1, 1, 0, , , True)
             Call CanvasDrawText(cnv, .itmDescription, fontName, 20, 1, (3 * 25 - 25) / 20, 0)
             If .MenuYN = 1 Then
@@ -372,7 +372,7 @@ Private Function processTransaction(ByVal pos As Long, ByVal theType As SHOP_TYP
             theCost = .sellPrice
         End If
         Call FlushKB
-        If MBox("Are you sure you want to " & theWord & " a " & Chr(10) & .itemName & " for " & theCost & " GP?", "Transaction Confirmation", MBT_YESNO) = MBR_YES Then
+        If MBox("Are you sure you want to " & theWord & " a " & vbLf & .itemName & " for " & theCost & " GP?", "Transaction Confirmation", MBT_YESNO) = MBR_YES Then
             If theType = Buy Then
                 If money < theCost Then
                     Call FlushKB
@@ -433,7 +433,7 @@ Private Sub shopMenuScanKeys(ByVal baseCanvas As Long, ByVal theType As SHOP_TYP
             Call cursorDelay
             Exit Do
         ElseIf isPressed("ENTER") Or isPressed("SPACE") Or isPressed("RIGHT") Then
-            If Trim(handles(pos)) <> "" Then
+            If (LenB(Trim$(handles(pos))) <> 0) Then
                 If processTransaction(pos, theType) Then
                     Call CanvasFill(cnv, 0)
                     If theType = Buy Then
