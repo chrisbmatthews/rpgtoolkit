@@ -18,56 +18,46 @@ Attribute VB_Name = "CommonTileDoc"
 Option Explicit
 
 Public Type tileDoc
-    tileName As String            'filename
-    tileneedupdate As Boolean
-    tilemode As Integer  'current drawing mode in tile editor (0-draw, 1-capture color, 2-fill)
-    transparentLayer As Integer     'is layering done transparently
-    angle As Integer
-    lightLength As Integer   'publictile.angle of light source
+    tileName As String              'Filename
+    tileneedupdate As Boolean       'Needs the tile to be updated?
+    tilemode As Integer             'Current drawing mode in Tile Editor
+    transparentLayer As Integer     'Is layering done transparently
+    angle As Integer                'Angle of light ("light" form)
+    lightLength As Integer          'Length of light ("light" form)
     grabx1 As Integer
     graby1 As Integer
     grabx2 As Integer
     graby2 As Integer
-    currentColor As Long         'currently selected tile color
-    oldDetail As Integer            'detail before color conversion
-    grid As Integer                 'publictile.grid on off (tile)
-    
-    '!NEW! More undo's
-    Undotile(32, 32) As Long     'Tile undo 1 (was already here)
-    Undotile1(32, 32) As Long    'Tile undo 2
-    Undotile2(32, 32) As Long    'Tile undo 3
-    Undotile3(32, 32) As Long    'Tile undo 4
-    Undotile4(32, 32) As Long    'Tile undo 5
-    Undotile5(32, 32) As Long    'Tile undo 6
-    Undotile6(32, 32) As Long    'Tile undo 7
-    Undotile7(32, 32) As Long    'Tile undo 8
+    currentColor As Long            'Currently selected color in Tile Editor
+    oldDetail As Integer            'Detail before color conversion
+    grid As Integer                 'Grid on/off
+    Undotile(64, 32) As Long        'Undo variable
     
     'Added for 3.0.4
-    isometric As Boolean
+    isometric As Boolean            'Is isometric mode on/off
     
-    captureColor As Long         'capture color on.off
-    transpcolor As Long          'transparent color in tile grabber
-    getTransp As Long            'get tranp on.off (grabber)
-    bAllowExtraTst As Boolean       'allow selecting one past the end in tileset editor? y/n
-    changeColor As Long
+    captureColor As Long            'Capture color
+    transpcolor As Long             'Transparent color in Tile Grabber
+    getTransp As Long               'Get tranp (Tile Grabber)
+    bAllowExtraTst As Boolean       'Allow selecting one past the end in tileset editor? y/n
+    changeColor As Long             'For the change color function
     
-    'data
-    detail As Byte  'detail level of tile
-
+    'Data
+    detail As Byte                  'Detail level of tile
     tilemem(64, 32) As Long         '!Alteration for .iso. Increasing tilemem to 64x32.
 End Type
 
-Public publicTile As tileDoc
+Public publicTile As tileDoc        'Main data
 
-Public detail As Byte  'detail level of tile
+Public detail As Byte               'Detail level of tile
 
-Public tilemem(64, 32) As Long  '!Aleration for .iso. Increasing tilemem to 64x32.
+Public tilemem(64, 32) As Long      '!Aleration for .iso. Increasing tilemem to 64x32.
 
 
 '=======================================
 'Variables added by Woozy for 3.0.4
 '!NEW! Used for some effects
-Public tilepreview(32, 32) As Long
+Public tilepreview(64, 32) As Long
 
 '!NEW! Used to see what current undo we're on
 Public currentundo As Long
