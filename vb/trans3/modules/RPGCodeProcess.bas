@@ -417,9 +417,11 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                         End If
 
                     ElseIf (a = 0) Then
-                        openProgram.program(p + a) = lines(a)
+                        openProgram.program(p + a) = Trim$(lines(a))
 
                     Else
+
+                        lines(a) = Trim$(lines(a))
 
                         Select Case uD(a - 1)
 
