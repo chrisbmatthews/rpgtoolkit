@@ -11,11 +11,11 @@ View the history.txt for a list of changes for this version.
 
 There have some imporant changes to the toolkit in this version that will require users to reset some values in certain game files if you are upgrading. These changes won't prevent you running any games, but not making them may produce results that appear to be bugs.
 
-1. Gamespeed()
+1. gameSpeed()
 --------------
 As you may have read, the movement system has been overhauled for this release, and you can now assign players and items individual speeds. You can set each character a speed value (in fractions of a second) in the Graphics window of that character (we recommend 0.05 to 0.2s for normal movement).
 
-As a result, you no longer need to use the Gamespeed() RPGCode command, but you *can* still use it to control the overall speed of the characters (for instance, as a menu option or a runtime program). From 3.0.5, possible Gamespeed() values range from -4 to +4, where negative values decrease and positive increase speed. It is therefore recommended that you set any initial Gamespeed() calls to 0 (or remove them) so that you observe the "true" speed of the characters.
+As a result, you no longer need to use the gameSpeed() RPGCode command, but you *can* still use it to control the overall speed of the characters (for instance, as a menu option or a runtime program). From 3.0.5, possible gameSpeed() values range from -4 to +4, where negative values decrease and positive increase speed. It is therefore recommended that you set any initial gameSpeed() calls to 0 (or remove them) so that you observe the "true" speed of the characters.
 
 2. Animation Transparencies
 ---------------------------
