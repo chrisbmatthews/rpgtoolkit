@@ -1,8 +1,8 @@
 Attribute VB_Name = "transRender"
 '=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' All contents copyright 2003, 2004, Christopher Matthews or Contributors
+' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+' Read LICENSE.txt for licensing info
 '=========================================================================
 
 '=========================================================================
@@ -10,6 +10,13 @@ Attribute VB_Name = "transRender"
 '=========================================================================
 
 Option Explicit
+
+'=========================================================================
+' Constants
+'=========================================================================
+
+' Use a canvas as a back buffer?
+#Const USE_BACK_CANVAS = True ' [ Leave this true ]
 
 '=========================================================================
 ' Declarations
@@ -30,8 +37,16 @@ Public Declare Function DXLockScreen Lib "actkrt3.dll" () As Long
 ' Unlock the screen, releasing its DC
 Public Declare Function DXUnlockScreen Lib "actkrt3.dll" () As Long
 
+#If Not (USE_BACK_CANVAS) Then
+
 ' Plot a pixel on the screen
 Public Declare Function DXDrawPixel Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
+
+' Black out the screen
+Public Declare Function DXClearScreen Lib "actkrt3.dll" (ByVal crColor As Long) As Long
+
+' Draw text onto the screen
+Public Declare Function DXDrawText Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
 
 ' Render a canvas to the screen
 Public Declare Function DXDrawCanvas Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
@@ -42,17 +57,24 @@ Public Declare Function DXDrawCanvasTransparent Lib "actkrt3.dll" (ByVal canvasI
 ' Draw a canavs translucently onto the screen
 Public Declare Function DXDrawCanvasTranslucent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
-' Black out the screen
-Public Declare Function DXClearScreen Lib "actkrt3.dll" (ByVal crColor As Long) As Long
-
-' Draw text onto the screen
-Public Declare Function DXDrawText Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
-
 ' Draw part of a canvas on the screen
 Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 
 ' Draw part of a canvas onto the screen using transparency
 Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
+
+#Else
+
+' Render a canvas to the screen
+Private Declare Function DXRenderCanvas Lib "actkrt3.dll" Alias "DXDrawCanvas" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+
+' Draw a canavs transparently onto the screen
+Public Declare Function DXRenderCanvasTransparent Lib "actkrt3.dll" Alias "DXDrawCanvasTransparent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
+
+' Draw a canavs translucently onto the screen
+Public Declare Function DXRenderCanvasTranslucent Lib "actkrt3.dll" Alias "DXDrawCanvasTranslucent" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+
+#End If
 
 ' Copy the screen to a canvas
 Public Declare Function DXCopyScreenToCanvas Lib "actkrt3.dll" (ByVal canvasID As Long) As Long
@@ -199,6 +221,13 @@ Public renderRenderNowCanvasTranslucent As Boolean
 ' Canvas used for the mouse pointer
 Public cnvMousePointer As Long
 
+#If (USE_BACK_CANVAS) Then
+
+' Back canvas
+Private m_cnvBack As Long
+
+#End If
+
 '=========================================================================
 ' A player render
 '=========================================================================
@@ -228,10 +257,96 @@ Private Type POINTAPI
     y As Long                   ' Y coord
 End Type
 
+#If (USE_BACK_CANVAS) Then
+
+'=========================================================================
+' Plot a pixel on the screen
+'=========================================================================
+Public Function DXDrawPixel(ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
+
+    ' Draw to the back buffer
+    Call canvasSetPixel(m_cnvBack, x, y, crColor)
+
+End Function
+
+'=========================================================================
+' Black out the screen
+'=========================================================================
+Public Function DXClearScreen(ByVal crColor As Long) As Long
+
+    ' Draw to the back buffer
+    Call canvasFill(m_cnvBack, crColor)
+
+End Function
+
+'=========================================================================
+' Draw text onto the screen
+'=========================================================================
+Public Function DXDrawText(ByVal x As Long, ByVal y As Long, ByVal strText As String, ByVal strTypeFace As String, ByVal size As Long, ByVal clr As Long, ByVal Bold As Long, ByVal Italics As Long, ByVal Underline As Long, ByVal centred As Long, ByVal outlined As Long) As Long
+
+    ' Draw to the back buffer
+    Call canvasDrawText(m_cnvBack, strText, strTypeFace, size, x, y, clr, Bold, Italics, Underline, centred, outlined)
+
+End Function
+
+'=========================================================================
+' Render a canvas to the screen
+'=========================================================================
+Public Function DXDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+
+    ' Draw to the back buffer
+    Call canvas2CanvasBlt(canvasID, m_cnvBack, x, y, rasterOp)
+
+End Function
+
+'=========================================================================
+' Draw a canavs transparently onto the screen
+'=========================================================================
+Public Function DXDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
+
+    ' Draw to the back buffer
+    Call canvas2CanvasBltTransparent(canvasID, m_cnvBack, x, y, crTranspColor)
+
+End Function
+
+'=========================================================================
+' Draw a canavs translucently onto the screen
+'=========================================================================
+Public Function DXDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+
+    ' Draw to the back buffer
+    Call canvas2CanvasBltTranslucent(canvasID, m_cnvBack, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
+
+End Function
+
+'=========================================================================
+' Draw part of a canvas on the screen
+'=========================================================================
+Public Function DXDrawCanvasPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+
+    ' Draw to the back buffer
+    Call canvas2CanvasBltPartial(canvasID, m_cnvBack, x, y, xsrc, ysrc, width, height, rasterOp)
+
+End Function
+
+'=========================================================================
+' Draw part of a canvas onto the screen using transparency
+'=========================================================================
+Public Function DXDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
+
+    ' Draw to the back buffer
+    Call canvas2CanvasBltTransparentPartial(canvasID, m_cnvBack, x, y, xsrc, ysrc, width, height, crTranspColor)
+
+End Function
+
+#End If
+
 '=========================================================================
 ' Flip the back buffer onto the screen
 '=========================================================================
 Public Sub DXRefresh()
+
+#If Not (USE_BACK_CANVAS) Then
 
     ' Make the flip
     Call DXFlip
@@ -259,6 +374,19 @@ Public Sub DXRefresh()
 
     ' Release the window's DC
     Call ReleaseDC(host.hwnd, xdc)
+
+#Else
+
+    ' Draw the back buffer
+    Call DXRenderCanvas(m_cnvBack, 0, 0)
+
+    ' Draw the cursor
+    Call DXRenderCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
+
+    ' Flip the back buffer onto the screen
+    Call DXFlip
+
+#End If
 
 End Sub
 
@@ -1270,6 +1398,9 @@ End Function
 '=========================================================================
 Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     On Error Resume Next
+    #If (USE_BACK_CANVAS) Then
+        m_cnvBack = createCanvas(width, height)
+    #End If
     cnvScrollCache = createCanvas(width * 2, height * 2)
     scTilesX = width * 2 \ 32
     scTilesY = height * 2 \ 32
@@ -1307,10 +1438,10 @@ End Sub
 '=========================================================================
 Private Sub destroyCanvases()
     On Error Resume Next
+    #If (USE_BACK_CANVAS) Then
+        Call destroyCanvas(m_cnvBack)
+    #End If
     Call destroyCanvas(cnvScrollCache)
-    'If Not usingDX() Then
-    '    Call DestroyCanvas(cnvScrollCacheMask)
-    'End If
     Call destroyCanvas(cnvBackground)
     Dim t As Long
     For t = 0 To UBound(cnvPlayer)
@@ -1510,6 +1641,8 @@ End Function
 '=========================================================================
 Public Sub renderRPGCodeScreen()
 
+#If Not (USE_BACK_CANVAS) Then
+
     ' Lay down the RPGCode screen
     Call DXDrawCanvas(cnvRPGCodeScreen, 0, 0)
 
@@ -1545,6 +1678,25 @@ Public Sub renderRPGCodeScreen()
 
     ' Release the window's DC
     Call ReleaseDC(host.hwnd, xdc)
+
+#Else
+
+    ' Lay down the RPGCode screen
+    Call DXRenderCanvas(cnvRPGCodeScreen, 0, 0)
+
+    ' Draw the message box if it's being shown
+    If (bShowMsgBox) Then
+        ' Draw the messsage window
+        Call DXRenderCanvasTranslucent(cnvMsgBox, (tilesX * 32 - 600) * 0.5, 0, , fontColor)
+    End If
+
+    ' Draw the cursor
+    Call DXRenderCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
+
+    ' Flip the back buffer onto the screen
+    Call DXFlip
+
+#End If
 
 End Sub
 
