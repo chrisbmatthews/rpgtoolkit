@@ -6,23 +6,28 @@ Attribute VB_Name = "transThreads"
 '=========================================================================
 
 '=========================================================================
-' RPGCode threading procedures
-' Status: B
+' Threading procedures
+'=========================================================================
+
+'=========================================================================
+' Handles user started threads (through the Thread() command), threads
+' set on a board, and item multitask programs
 '=========================================================================
 
 Option Explicit
 
 '=========================================================================
-' Misc declarations
+' Structure definitions
 '=========================================================================
 
-Public Type RPGCODE_THREAD                         'RPGCode thread data structure
+Private Type RPGCODE_THREAD                        'RPGCode thread data structure
     filename As String                             '  Name of program
     bPersistent As Boolean                         '  True if this thread should persist after leaving this board
     thread As RPGCodeProgram                       '  The actual program
     bIsSleeping As Boolean                         '  Is thread sleeping?
     sleepStartTime As Long                         '  Time when thread was put to sleep
     sleepDuration As Double                        '  Duration of sleep
+    itemNum As Long                                '  Item number (-1 if not an item)
 End Type
 
 Public Enum THREAD_LOOP_TYPE                       'Thread loop enumeration
@@ -32,40 +37,73 @@ Public Enum THREAD_LOOP_TYPE                       'Thread loop enumeration
     TYPE_FOR = 4                                   '  For()
 End Enum
 
+Private Type threadLoop                            'Thread loop structure
+    start As Long                                  '  Line loop starts on
+    depth As Long                                  '  Depth in loop
+    over As Boolean                                '  Loop over?
+    condition As String                            '  Condition to end loop
+    increment As String                            '  Incrementation equation
+    type As THREAD_LOOP_TYPE                       '  Type of thread loop
+    prg As RPGCodeProgram                          '  PRG hosting the loop
+    end As Boolean                                 '  Loop ended?
+End Type
+
+Private Type threadAnimation                       'Thread animation structure
+    anm As TKAnimation                             '  Loaded animations
+    x As Long                                      '  X position of these animations
+    y As Long                                      '  Y position of these animations
+    frame As Long                                  '  Current frame of these animations
+    persistent As Boolean                          '  Animation run from a persistent thread?
+End Type
+
 '=========================================================================
 ' Thread looping declarations
 '=========================================================================
-Private loopStart() As Long                        'Line loop starts on
-Private loopDepth() As Long                        'Depth in loop
-Private loopOver() As Boolean                      'Loop over?
-Private loopCondition() As String                  'Condition to end loop
-Private loopIncrement() As String                  'Incrementation equation
-Private loopType() As THREAD_LOOP_TYPE             'Type of thread loop
-Private currentlyLooping As Long                   'Thread that is current looping
-Private loopPRG() As RPGCodeProgram                'PRG hosting the loop
-Private loopEnd() As Boolean                       'Loop ended?
+Private threadLoops() As threadLoop                'All thread loops
 
 '=========================================================================
 ' Animation declarations
 '=========================================================================
-Private multitaskAnimations() As TKAnimation       'loaded animations
-Private multitaskAnimationX() As Long              'x position of these animations
-Private multitaskAnimationY() As Long              'y position of these animations
-Private multitaskAnimationFrame() As Long          'current frame of these animations
-Private multitaskCurrentlyAnimating As Long        'current index in array
-Private multitaskAnimationPersistent() As Boolean  'are these animations persistent?
-Private lastAnimRender As Long                     'last animation render
+Private threadAnimations() As threadAnimation      'All thread animations
+Private multitaskCurrentlyAnimating As Long        'Current index in array
+Private lastAnimRender As Long                     'Last animation render
 
 '=========================================================================
-' Game state declarations
+' Thread action declarations
 '=========================================================================
-Public GS_LOOPING As Boolean                       'Are we looping?
-Public GS_ANIMATING As Boolean                     'Are we animating?
+Private threadLooping As Boolean                   'Are we looping?
+Private threadAnimating As Boolean                 'Are we animating?
 
 '=========================================================================
 ' All threads
 '=========================================================================
-Public Threads() As RPGCODE_THREAD                 'Running threads
+Public Threads() As RPGCODE_THREAD                 'All running threads
+Private m_multiTasking As Boolean                  'Multitasking now?
+
+'=========================================================================
+' Read-only pointer to m_multiTasking
+'=========================================================================
+Public Property Get isMultiTasking() As Boolean
+    isMultiTasking = m_multiTasking
+End Property
+
+'=========================================================================
+' Run a line from threads
+'=========================================================================
+Public Sub multiTaskNow()
+
+    On Error Resume Next
+
+    'Flag we're multitasking
+    m_multiTasking = True
+
+    'Run all threads
+    Call ExecuteAllThreads
+
+    'Flag we're no longer multitasking
+    m_multiTasking = False
+
+End Sub
 
 '=========================================================================
 ' Clear all non-presistent threads
@@ -89,15 +127,15 @@ Public Sub ClearNonPersistentThreads()
         End If
     Next c
 
-    For c = 0 To UBound(multitaskAnimations)
-        If Not multitaskAnimationPersistent(c) Then
+    For c = 0 To UBound(threadAnimations)
+        If Not threadAnimations(c).persistent Then
             Call ceaseMultitaskAnimation(c)
         End If
     Next c
 
-    For c = 0 To UBound(loopPRG)
-        If Not Threads(loopPRG(c).threadID).bPersistent Then
-            Call endThreadLoop(c)
+    For c = 0 To UBound(threadLoops)
+        If Not Threads(threadLoops(c).prg.threadID).bPersistent Then
+            Call endThreadLoop(c, False)
         End If
     Next c
 
@@ -133,7 +171,7 @@ End Sub
 '=========================================================================
 ' Create a thread
 '=========================================================================
-Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean) As Long
+Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean, Optional ByVal itemNum As Long = -1) As Long
 
     Dim c As Long       'for loop control variables
     Dim size As Long    'size of threads() array
@@ -148,6 +186,7 @@ Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean)
                 .bPersistent = bPersistent
                 .thread.threadID = c
                 .bIsSleeping = False
+                .itemNum = itemNum
                 CreateThread = c
                 Exit Function
             End If
@@ -163,6 +202,7 @@ Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean)
         .bPersistent = bPersistent
         .thread.threadID = c
         .bIsSleeping = False
+        .itemNum = itemNum
     End With
     CreateThread = size
 
@@ -171,11 +211,11 @@ End Function
 '=========================================================================
 ' Execute all threads
 '=========================================================================
-Public Sub ExecuteAllThreads()
+Private Sub ExecuteAllThreads()
 
     On Error Resume Next
-    
-    'persistent threads...
+
+    'Run threads without loops (maybe using Branch)
     Dim c As Long
     For c = 0 To UBound(Threads)
         If Threads(c).filename <> "" Then
@@ -191,25 +231,39 @@ Public Sub ExecuteAllThreads()
                 Call ExecuteThread(Threads(c).thread)
             End If
         End If
+        Call processEvent
     Next c
+
+    'Run threads that use loops (like While)
+    Call handleThreadLooping
 
 End Sub
 
 '=========================================================================
 ' Execute a thread
 '=========================================================================
-Public Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
-
-    If theProgram.programPos = -1 Or theProgram.programPos = -2 Then
-        ExecuteThread = False
-    Else
+Private Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
+    If (Not ((theProgram.programPos = -1) Or (theProgram.programPos = -2))) Then
+        Dim itemNum As Long
+        itemNum = Threads(theProgram.threadID).itemNum
+        If (itemNum <> -1) Then
+            If (Not itemMem(itemNum).bIsActive) Then
+                'Item is not active
+                Exit Function
+            End If
+            'Since it's an item program, set target and source
+            target = itemNum
+            Source = itemNum
+            targetType = TYPE_ITEM
+            sourceType = TYPE_ITEM
+        End If
         Dim retval As RPGCODE_RETURN
         theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval)
-        If theProgram.programPos = -1 Or theProgram.programPos = -2 Then
+        If (theProgram.programPos = -1) Or (theProgram.programPos = -2) Then
             'clear the program
             Call ClearRPGCodeProcess(theProgram)
-            ExecuteThread = False
         Else
+            'Complete success!
             ExecuteThread = True
         End If
     End If
@@ -294,36 +348,27 @@ End Sub
 ' Launch a board's threads
 '=========================================================================
 Public Sub launchBoardThreads(ByRef board As TKBoard)
-    On Error GoTo skip
-    Dim a As Long, id As Long
-    For a = 0 To UBound(board.Threads)
-        id = CreateThread(projectPath & prgPath & board.Threads(a), False)
-        Call CBSetNumerical("Threads[" & CStr(a) & "]!", id)
-    Next a
-skip:
-    On Error GoTo skipAgain
-    Dim retval As RPGCODE_RETURN
+    On Error Resume Next
+    Dim retval As RPGCODE_RETURN, a As Long, id As Long
     For a = 0 To UBound(Threads)
-        If Threads(a).bPersistent Then
+        If (Threads(a).bPersistent) And (Threads(a).filename <> "") Then
             Call TellThread(a, "EnterNewBoard()", retval, True)
         End If
     Next a
-skipAgain:
+    For a = 0 To UBound(board.Threads)
+        If board.Threads(a) <> "" Then
+            id = CreateThread(projectPath & prgPath & board.Threads(a), False)
+            Call CBSetNumerical("Threads[" & CStr(a) & "]!", id)
+        End If
+    Next a
 End Sub
 
 '=========================================================================
 ' End all thread loops
 '=========================================================================
-Public Sub endAllThreadLoops()
-    ReDim loopStart(0)
-    ReDim loopDepth(0)
-    ReDim loopType(0)
-    ReDim loopPRG(0)
-    ReDim loopEnd(0)
-    ReDim loopOver(0)
-    ReDim loopCondition(0)
-    ReDim loopIncrement(0)
-    GS_LOOPING = False
+Private Sub endAllThreadLoops()
+    ReDim threadLoops(0)
+    threadLooping = False
 End Sub
 
 '=========================================================================
@@ -336,38 +381,33 @@ Public Sub startThreadLoop( _
                               Optional ByVal increment As String _
                                                                    )
 
-    'Make sure our array is dimensioned...
+    'Make sure our array is dimensioned
     On Error GoTo error
     Dim ub As Long
-    ub = UBound(loopStart)
+    ub = UBound(threadLoops)
     ub = ub + 1
 
-    'Enlarge the arrays...
-    ReDim Preserve loopStart(ub)
-    ReDim Preserve loopDepth(ub)
-    ReDim Preserve loopType(ub)
-    ReDim Preserve loopPRG(ub)
-    ReDim Preserve loopEnd(ub)
-    ReDim Preserve loopOver(ub)
-    ReDim Preserve loopCondition(ub)
-    ReDim Preserve loopIncrement(ub)
+    'Enlarge the array
+    ReDim Preserve threadLoops(ub)
 
-    'Setup the loop...
+    'Setup the loop
     Call moveToStartOfBlock(prg)
-    loopStart(ub) = prg.programPos
-    loopType(ub) = ttype
-    loopPRG(ub) = prg
-    loopCondition(ub) = condition
-    loopIncrement(ub) = increment
+    With threadLoops(ub)
+        .start = prg.programPos
+        .type = ttype
+        .prg = prg
+        .condition = condition
+        .increment = increment
+        .prg.looping = True
+    End With
 
-    'Flag we're looping...
-    GS_LOOPING = True
-    loopPRG(ub).looping = True
-    
+    'Flag we're looping
+    threadLooping = True
+
     Exit Sub
-    
+
 error:
-    ReDim loopStart(0)
+    ReDim threadLoops(0)
     Resume
 
 End Sub
@@ -375,88 +415,123 @@ End Sub
 '=========================================================================
 ' End a thread loop
 '=========================================================================
-Private Sub endThreadLoop(ByVal num As Long)
+Private Sub endThreadLoop(ByVal num As Long, ByVal force As Boolean)
 
-    loopEnd(num) = True
-    If loopOver(num) Then
-        loopPRG(num).looping = False
-        Exit Sub
-    End If
+    With threadLoops(num)
 
-    Select Case loopType(num)
+        'Flag we've reached the end
+        .end = True
 
-        Case TYPE_IF
-            loopPRG(num).looping = False
+        'If the loop is over
+        If (.over) Then
+            .prg.looping = False
+            Exit Sub
+        End If
 
-        Case TYPE_WHILE
-            If Evaluate(loopCondition(num), loopPRG(num)) = 1 Then
-                loopPRG(num).programPos = loopStart(num)
-                loopEnd(num) = False
-            Else
-                loopPRG(num).looping = False
-            End If
-            
-        Case TYPE_UNTIL
-            If Evaluate(loopCondition(num), loopPRG(num)) = 0 Then
-                loopPRG(num).programPos = loopStart(num)
-                loopEnd(num) = False
-            Else
-                loopPRG(num).looping = False
-            End If
+        'If we should force its end
+        If (force) Then
+            .prg.looping = False
+            Exit Sub
+        End If
 
-        Case TYPE_FOR
-            Dim oPP As Long
-            Dim rV As RPGCODE_RETURN
-            oPP = loopPRG(num).programPos
-            loopPRG(num).programPos = DoSingleCommand(loopIncrement(num), loopPRG(num), rV)
-            loopPRG(num).programPos = oPP
-            If Evaluate(loopCondition(num), loopPRG(num)) = 1 Then
-                loopPRG(num).programPos = loopStart(num)
-                loopEnd(num) = False
-            Else
-                loopPRG(num).looping = False
-            End If
+        'Switch on the type of loop
+        Select Case .type
 
-    End Select
+            Case TYPE_IF                'IF STATEMENT
+                                        '------------
+                .prg.looping = False
+
+            Case TYPE_WHILE             'WHILE LOOP
+                                        '----------
+                If Evaluate(.condition, .prg) = 1 Then
+                    .prg.programPos = .start
+                    .end = False
+                Else
+                    .prg.looping = False
+                End If
+
+            Case TYPE_UNTIL             'UNTIL LOOP
+                                        '----------
+                If Evaluate(.condition, .prg) = 0 Then
+                    .prg.programPos = .start
+                    .end = False
+                Else
+                    .prg.looping = False
+                End If
+
+            Case TYPE_FOR               'FOR LOOP
+                                        '--------
+                Dim oPP As Long
+                Dim rV As RPGCODE_RETURN
+                oPP = .prg.programPos
+                .prg.programPos = DoSingleCommand(.increment, .prg, rV)
+                .prg.programPos = oPP
+                If Evaluate(.condition, .prg) = 1 Then
+                    .prg.programPos = .start
+                    .end = False
+                Else
+                    .prg.looping = False
+                End If
+
+        End Select '(.type)
+
+    End With '(threadLoops(num))
 
 End Sub
 
 '=========================================================================
 ' Handle thread looping
 '=========================================================================
-Public Sub handleThreadLooping()
+Private Sub handleThreadLooping(Optional ByVal runAll As Boolean = True)
 
     On Error Resume Next
-    
-    Dim a As Long
-    For a = 1 To UBound(loopPRG)
-        If Not loopEnd(a) Then Exit For
-        If a = UBound(loopPRG) Then
-            GS_LOOPING = False
+
+    Dim threadIdx As Long               'Thread index
+    Static currentlyLooping As Long     'Last run thread
+
+    If (Not threadLooping) Then
+        'Blah, there aren't even any looping threads!
+        Exit Sub
+    End If
+
+    If (runAll) Then
+        'Run all the threads
+        For threadIdx = 1 To UBound(threadLoops)
+            Call handleThreadLooping(False)
+            Call processEvent
+        Next threadIdx
+        Exit Sub
+    End If
+
+    'See if there are threads to run
+    For threadIdx = 1 To UBound(threadLoops)
+        If (Not threadLoops(threadIdx).end) Then
+            'This thread is alive and kicking!
+            Exit For
+        End If
+        If (threadIdx = UBound(threadLoops)) Then
+            'No running threads!
+            threadLooping = False
             Exit Sub
         End If
-    Next a
+    Next threadIdx
 
-    Dim done As Boolean
-    Do Until done
-    
+    'Find a thread to run
+    Do
         currentlyLooping = currentlyLooping + 1
-        If Not currentlyLooping > UBound(loopPRG) Then
-            If Not loopEnd(currentlyLooping) Then
-                done = True
+        If (Not currentlyLooping > UBound(threadLoops)) Then
+            If (Not threadLoops(currentlyLooping).end) Then
+                'Found a thread to run
+                Exit Do
             End If
         Else
             currentlyLooping = 0
         End If
-        
     Loop
 
-    If Not Threads(loopPRG(currentlyLooping).threadID).bIsSleeping Then
-        Dim ogbm As Boolean
-        ogbm = isMultiTasking()
-        gbMultiTasking = True
+    If (Not Threads(threadLoops(currentlyLooping).prg.threadID).bIsSleeping) Then
+        'This thread is awake, execute it
         Call incrementThreadLoop(currentlyLooping)
-        gbMultiTasking = ogbm
     End If
 
 End Sub
@@ -466,41 +541,53 @@ End Sub
 '=========================================================================
 Private Sub incrementThreadLoop(ByVal num As Long)
 
-    Dim prg As RPGCodeProgram
-    Dim rV As RPGCODE_RETURN
-    prg = loopPRG(num)
+    With threadLoops(num)
 
-    Select Case LCase(GetCommandName(prg.program(prg.programPos)))
+        Dim prg As RPGCodeProgram
+        prg = .prg
 
-        Case "openblock"
-            loopDepth(num) = loopDepth(num) + 1
-            prg.programPos = increment(prg)
-            
-        Case "closeblock"
-            loopDepth(num) = loopDepth(num) - 1
-            prg.programPos = increment(prg)
+        Select Case LCase(GetCommandName(prg.program(prg.programPos)))
 
-        Case "end"
-            loopOver(num) = True
-            prg.programPos = increment(prg)
-            
-        Case Else
-
-            If Not loopOver(num) Then
-                prg.looping = False
-                prg.programPos = DoCommand(prg, rV)
-                prg.looping = True
-            Else
+            Case "openblock"
+                .depth = .depth + 1
                 prg.programPos = increment(prg)
-            End If
 
-    End Select
+            Case "closeblock"
+                .depth = .depth - 1
+                prg.programPos = increment(prg)
 
-    'Don't let us lock up...
-    Call processEvent
+            Case "end"
+                .over = True
+                prg.programPos = increment(prg)
 
-    loopPRG(num) = prg
-    If loopDepth(num) = 0 Then Call endThreadLoop(num)
+            Case Else
+
+                If (Not .over) Then
+                    prg.looping = False
+                    Call ExecuteThread(prg)
+                    prg.looping = True
+                Else
+                    prg.programPos = increment(prg)
+                End If
+
+        End Select
+
+        'Don't let us lock up
+        Call processEvent
+
+        .prg = prg
+
+        If (.depth = 0) Then
+            'We're at the end of the loop
+            Call endThreadLoop(num, False)
+        End If
+
+        If (prg.programPos = -1) Or (prg.programPos = -2) Then
+            'We're at the end of the program
+            Call endThreadLoop(num, True)
+        End If
+
+    End With
 
 End Sub
 
@@ -509,17 +596,17 @@ End Sub
 '=========================================================================
 Public Function startMultitaskAnimation(ByVal x As Long, ByVal y As Long, ByRef prg As RPGCodeProgram) As Double
 
-    'Make sure our array is dimensioned...
+    'Make sure our array is dimensioned
     On Error GoTo dimensionArray
     Dim ub As Long
-    ub = UBound(multitaskAnimations)
+    ub = UBound(threadAnimations)
 
-    'Next make sure this same animation isn't already multitasking...
+    'Next make sure this same animation isn't already multitasking
     Dim a As Long
     For a = 1 To ub
-        If multitaskAnimations(a).animFile = animationMem.animFile Then
-            If multitaskAnimationX(a) = x Then
-                If multitaskAnimationY(a) = y Then
+        If threadAnimations(a).anm.animFile = animationMem.animFile Then
+            If threadAnimations(a).x = x Then
+                If threadAnimations(a).y = y Then
                     'Already loaded!
                     Exit Function
                 End If
@@ -527,19 +614,19 @@ Public Function startMultitaskAnimation(ByVal x As Long, ByVal y As Long, ByRef 
         End If
     Next a
 
-    ReDim Preserve multitaskAnimations(ub + 1)
-    ReDim Preserve multitaskAnimationFrame(ub + 1)
-    ReDim Preserve multitaskAnimationX(ub + 1)
-    ReDim Preserve multitaskAnimationY(ub + 1)
-    ReDim Preserve multitaskAnimationPersistent(ub + 1)
+    'Enlarge the array
+    ReDim Preserve threadAnimations(ub + 1)
 
-    multitaskAnimationPersistent(ub + 1) = Threads(prg.threadID).bPersistent
-    multitaskAnimations(ub + 1) = animationMem
-    multitaskAnimationX(ub + 1) = x
-    multitaskAnimationY(ub + 1) = y
+    'Setup the animation
+    With threadAnimations(ub + 1)
+        .persistent = Threads(prg.threadID).bPersistent
+        .anm = animationMem
+        .x = x
+        .y = y
+    End With
 
     'Flag we're animating
-    GS_ANIMATING = True
+    threadAnimating = True
 
     'Return animation ID
     startMultitaskAnimation = ub + 1
@@ -547,7 +634,7 @@ Public Function startMultitaskAnimation(ByVal x As Long, ByVal y As Long, ByRef 
     Exit Function
 
 dimensionArray:
-    ReDim multitaskAnimations(0)
+    ReDim threadAnimations(0)
     Resume
 
 End Function
@@ -561,29 +648,26 @@ Public Sub ceaseMultitaskAnimation(ByVal pos As Long)
 
     Dim a As Long
 
-    If Not UBound(multitaskAnimations) = pos Then
-        For a = pos To UBound(multitaskAnimations) - 1
-            multitaskAnimations(a) = multitaskAnimations(a + 1)
-            multitaskAnimationFrame(a) = multitaskAnimationFrame(a + 1)
-            multitaskAnimationX(a) = multitaskAnimationX(a + 1)
-            multitaskAnimationY(a) = multitaskAnimationY(a + 1)
+    If UBound(threadAnimations) <> pos Then
+        For a = pos To UBound(threadAnimations) - 1
+            threadAnimations(a).anm = threadAnimations(a + 1).anm
+            threadAnimations(a).frame = threadAnimations(a + 1).frame
+            threadAnimations(a).x = threadAnimations(a + 1).x
+            threadAnimations(a).y = threadAnimations(a + 1).y
         Next a
     End If
 
-    ReDim Preserve multitaskAnimationFrame(UBound(multitaskAnimations) - 1)
-    ReDim Preserve multitaskAnimationX(UBound(multitaskAnimations) - 1)
-    ReDim Preserve multitaskAnimationY(UBound(multitaskAnimations) - 1)
-    ReDim Preserve multitaskAnimationPersistent(UBound(multitaskAnimations) - 1)
-    ReDim Preserve multitaskAnimations(UBound(multitaskAnimations) - 1)
+    'Shrink the array
+    ReDim Preserve threadAnimations(UBound(threadAnimations) - 1)
 
-    If UBound(multitaskAnimations) = 0 Then
+    If UBound(threadAnimations) = 0 Then
         'We're no longer animating
-        GS_ANIMATING = False
+        threadAnimating = False
 
     ElseIf multitaskCurrentlyAnimating = pos Then
         'The one we removed was queued up!
         multitaskCurrentlyAnimating = multitaskCurrentlyAnimating + 1
-        If multitaskCurrentlyAnimating >= UBound(multitaskAnimations) Then
+        If multitaskCurrentlyAnimating >= UBound(threadAnimations) Then
             multitaskCurrentlyAnimating = 1
         End If
 
@@ -595,13 +679,9 @@ End Sub
 '=========================================================================
 ' End all multitasking animations
 '=========================================================================
-Public Sub ceaseAllMultitaskingAnimations()
-    ReDim multitaskAnimations(0)
-    ReDim multitaskAnimationFrame(0)
-    ReDim multitaskAnimationX(0)
-    ReDim multitaskAnimationY(0)
-    ReDim multitaskAnimationPersistent(0)
-    GS_ANIMATING = False
+Private Sub ceaseAllMultitaskingAnimations()
+    ReDim threadAnimations(0)
+    threadAnimating = False
 End Sub
 
 '=========================================================================
@@ -615,11 +695,11 @@ Public Sub renderMultiAnimations( _
                                                                                      )
 
     'If we're not animating, just exit
-    If Not GS_ANIMATING Then
+    If (Not threadAnimating) Then
         Exit Sub
     End If
 
-    If renderAll Then
+    If (renderAll) Then
 
         'Check if we should increment frames
         Dim incrementFrame As Boolean
@@ -630,7 +710,7 @@ Public Sub renderMultiAnimations( _
 
         'Recurse for each loaded anim
         Dim thisAnim As Long
-        For thisAnim = 1 To UBound(multitaskAnimations)
+        For thisAnim = 1 To UBound(threadAnimations)
             Call renderMultiAnimations(cnvTarget, False, True, Not incrementFrame)
             Call processEvent
         Next thisAnim
@@ -648,10 +728,10 @@ Public Sub renderMultiAnimations( _
 
         'First see what we are to do
         num = multitaskCurrentlyAnimating
-        frame = multitaskAnimationFrame(num)
-        anim = multitaskAnimations(num)
-        x = multitaskAnimationX(num)
-        y = multitaskAnimationY(num)
+        frame = threadAnimations(num).frame
+        anim = threadAnimations(num).anm
+        x = threadAnimations(num).x
+        y = threadAnimations(num).y
 
         'Draw the frame onto a canvas
         Dim cnv As Long
@@ -693,12 +773,12 @@ Public Sub renderMultiAnimations( _
                     frame = 0
                 End If
                 'This animation has had its turn
-                multitaskAnimationFrame(num) = frame
+                threadAnimations(num).frame = frame
                 num = num + 1
             End If
 
             'Make sure the next animation isn't greater than the total animations
-            If num > UBound(multitaskAnimations) Then num = 1
+            If num > UBound(threadAnimations) Then num = 1
             multitaskCurrentlyAnimating = num
 
             'Update last render time stamp
@@ -714,5 +794,5 @@ End Sub
 ' Returns if we need to render multitasking animations
 '=========================================================================
 Public Property Get multiAnimRender() As Boolean
-    multiAnimRender = (Not ((Not (Timer() - lastAnimRender >= (50 / 1000))) Or (Not GS_ANIMATING)))
+    multiAnimRender = (Not ((Not (Timer() - lastAnimRender >= (50 / 1000))) Or (Not threadAnimating)))
 End Property

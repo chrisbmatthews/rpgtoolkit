@@ -16,8 +16,6 @@ Option Explicit
 ' Integral rpgcode variables
 '=========================================================================
 
-Public program() As RPGCodeProgram      'item multitask programs
-Public gbMultiTasking As Boolean        'the the current set of commands runing under mutlitasking?
 Public nextProgram As String            'program to run after current one finishes
 Public lineNum As Long                  'line number of message window
 Public mwinLines As Long                'number of lines in the message window
@@ -60,23 +58,16 @@ Public Type activeButton                'setButton() structure
 End Type
 
 '=========================================================================
-' Read-only pointer to gbMultiTasking
-'=========================================================================
-Public Property Get isMultiTasking() As Boolean
-    isMultiTasking = gbMultiTasking
-End Property
-
-'=========================================================================
 ' Pops up the rpgcode debugger
 '=========================================================================
-Public Sub debugger(ByVal text As String)
+Public Sub debugger(ByVal Text As String)
 
     On Error Resume Next
 
     If Not checkErrorHandling() Then
         If debugYN = 1 Then
             Call debugwin.Show
-            debugwin.buglist.text = debugwin.buglist.text & text & vbCrLf
+            debugwin.buglist.Text = debugwin.buglist.Text & Text & vbCrLf
             Call processEvent
         Else
             Call Unload(debugwin)
@@ -116,7 +107,7 @@ End Function
 '=========================================================================
 ' Handle a custom method call
 '=========================================================================
-Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
+Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
 
     On Error Resume Next
 
@@ -127,12 +118,12 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If commandName$ = "" Then
-        mName = GetCommandName(text)   'get command name without extra info
+        mName = GetCommandName(Text)   'get command name without extra info
     Else
         mName = commandName
     End If
 
-    If QueryPlugins(mName, text, retval) Then
+    If QueryPlugins(mName, Text, retval) Then
         'Found the command in a plugin, don't waste time checking for a method!
         Exit Sub
     End If
@@ -163,7 +154,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
     If foundIt = -1 Then
         'Method doesn't exist!
         If (Not noMethodNotFound) Then
-            Call debugger("Error: Method not found!-- " & text$)
+            Call debugger("Error: Method not found!-- " & Text$)
         End If
         Exit Sub
     Else
@@ -177,7 +168,7 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
         Dim dataUse As String, number As Long, pList As Long, number2 As Long
         
         'Get parameters from calling line
-        dataUse$ = GetBrackets(text$)    'Get text inside brackets (parameter list)
+        dataUse$ = GetBrackets(Text$)    'Get text inside brackets (parameter list)
         number = CountData(dataUse$)        'how many data elements are there?
         For pList = 1 To number
             parameterList$(pList) = GetElement(dataUse$, pList)
@@ -240,20 +231,18 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
 
         'set up method return value...
         methodReturn = retval
-        
-        Dim aa As Long
+
         'OK- data is passed.  Now run the method:
         theProgram.programPos = increment(theProgram)
-    
+
         'Store current error handling thing-a-ma-jigy
         Dim oldErrorHandler As String
         oldErrorHandler = errorBranch
 
-        Dim ogbm As Boolean
-        ogbm = isMultiTasking()
-        gbMultiTasking = False
-        aa = runBlock(1, theProgram)
-        gbMultiTasking = ogbm
+        'Nullify error handler
+        errorBranch = ""
+
+        Call runBlock(1, theProgram)
 
         'Restore error handler
         errorBranch = oldErrorHandler
@@ -273,71 +262,12 @@ Public Sub MethodCallRPG(ByVal text As String, ByVal commandName As String, ByRe
                 End If
             Next se
         Next t
-        
-        'kill the local scope...
+
+        'kill the local scope
         Call RemoveHeapFromStack(theProgram)
-        
-        'decrement call depth
-        'DBCallDepth = DBCallDepth - 1
 
     End If
 
-End Sub
-
-'=========================================================================
-' Run a line from item programs and threads
-'=========================================================================
-Public Sub multiTaskNow()
-
-    On Error Resume Next
-
-    'Flag we're multitasking
-    gbMultiTasking = True
-
-    'Open item programs
-    Call openMulti
-    
-    'Run all threads
-    Call ExecuteAllThreads
-
-    'Run all item programs
-    Dim t As Long
-    For t = 0 To UBound(multiList)
-        If multiList(t) <> "" Then
-            target = t
-            targetType = TYPE_ITEM
-            Source = t
-            sourceType = TYPE_ITEM
-            If Not ExecuteThread(program(t + 1)) Then
-                multiList(t) = ""
-            End If
-        End If
-    Next t
-
-    'Run thread loops
-    If (gGameState <> GS_PAUSE) And (GS_LOOPING) Then
-        Call handleThreadLooping
-    End If
-
-    'Flag we're no longer multitasking
-    gbMultiTasking = False
-
-End Sub
-
-'=========================================================================
-' Make sure all item programs are open
-'=========================================================================
-Public Sub openMulti()
-    On Error Resume Next
-    Dim t As Long
-    For t = 0 To UBound(multiList)
-        If multiList(t) <> "" Then
-            If Not multiOpen(t) Then
-                program(t + 1) = openProgram(projectPath & prgPath & multiList(t))
-                multiOpen(t) = True
-            End If
-        End If
-    Next t
 End Sub
 
 '=========================================================================
@@ -671,7 +601,6 @@ Public Function runItmYN(ByVal itmNum As Long) As Boolean
             If runIt = 0 Then
                 'it is no longer active-- remove it
                 itemMem(itmNum).bIsActive = False
-                multiList$(itmNum) = ""
             End If
         End If
     End If

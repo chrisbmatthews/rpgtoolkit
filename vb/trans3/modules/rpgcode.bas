@@ -3975,12 +3975,6 @@ Sub MainFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
         lit$ = addExt(lit$, ".gam")
         lit$ = gamPath & lit$
         Call EmptyRPG("", theProgram)
-        For num = 0 To 11
-            Dim t As Long
-            For t = 0 To UBound(program(num).program)
-                program(num).program$(t) = ""
-            Next t
-        Next num
         Call setupMain
     End If
 
@@ -5553,15 +5547,11 @@ End Sub
 Sub ResetRPG(ByRef theProgram As RPGCodeProgram)
     '#Reset
     'Resets the game
-    On Error GoTo errorhandler
+    On Error Resume Next
     Call DXClearScreen(0)
     Call DXRefresh
-    
     Call EmptyRPG("", theProgram)
     Dim num As Long
-    For num = 0 To 11
-        ReDim program(num).program(100)
-    Next num
     For num = 0 To 4
         playerListAr$(num) = ""
         playerFile$(num) = ""
@@ -5572,12 +5562,6 @@ Sub ResetRPG(ByRef theProgram As RPGCodeProgram)
     'Call openMainFile(loadedMainFile$)
     Call setupMain
     Call runProgram(projectPath & prgPath & mainMem.startupPrg)
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
 

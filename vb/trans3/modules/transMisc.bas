@@ -204,6 +204,7 @@ Public Sub openItems()
     Dim checkIt As RPGC_DT              'data type of conditional variable
     Dim valueTestNum As Double          'numerical test value
     Dim valueTestLit As String          'literal test value
+    Dim multiPrg As String              'the multitasking program
 
     ReDim pendingItemMovement(maxItem)  'pending item movements
     ReDim lastItemRender(maxItem)       'last item renders
@@ -264,18 +265,18 @@ Public Sub openItems()
                 runIt = True
             End If
 
-            'If we should and there is a program then open it!
+            'If we should, and there is a program, then open it!
             If (runIt) And (.itmName(itemNum) <> "") Then
                 itemMem(itemNum) = openItem(projectPath & itmPath & .itmName(itemNum))
                 itemMem(itemNum).bIsActive = True
-                If boardList(activeBoardIndex).theData.itemMulti(itemNum) <> "" Then
-                    multiList(itemNum) = .itemMulti(itemNum)
+                If .itemMulti(itemNum) <> "" Then
+                    multiPrg = .itemMulti(itemNum)
                 Else
-                    multiList(itemNum) = itemMem(itemNum).itmPrgOnBoard
+                    multiPrg = itemMem(itemNum).itmPrgOnBoard
                 End If
+                Call CreateThread(projectPath & prgPath & multiPrg, False, itemNum)
             Else
                 itemMem(itemNum).bIsActive = False
-                multiList(itemNum) = ""
             End If
 
         End With
