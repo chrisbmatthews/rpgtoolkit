@@ -100,6 +100,7 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
+      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -364,6 +365,7 @@ Begin VB.Form rpgcodeedit
       End
       Begin VB.Menu mnuTutorial 
          Caption         =   "Tutorial"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuhistorytxt 
          Caption         =   "History.txt"

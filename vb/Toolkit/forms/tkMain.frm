@@ -672,8 +672,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   55
             Top             =   0
             Width           =   1815
-            _extentx        =   3201
-            _extenty        =   8070
+            _ExtentX        =   3201
+            _ExtentY        =   8070
          End
       End
       Begin VB.Label lblNew 
@@ -2607,13 +2607,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "20/03/2005"
+            TextSave        =   "4/3/2005"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "17:39"
+            TextSave        =   "1:22 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2621,6 +2621,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel5 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   2
+            Enabled         =   0   'False
             TextSave        =   "NUM"
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -2793,6 +2794,7 @@ Begin VB.MDIForm tkMainForm
       End
       Begin VB.Menu tutorialmnu 
          Caption         =   "Tutorial"
+         Visible         =   0   'False
       End
       Begin VB.Menu historytxtmnu 
          Caption         =   "History.txt"

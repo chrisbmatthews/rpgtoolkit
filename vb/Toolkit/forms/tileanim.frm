@@ -299,6 +299,7 @@ Begin VB.Form tileanim
       End
       Begin VB.Menu mnututorial 
          Caption         =   "Tutorial"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuhistorytxt 
          Caption         =   "History.txt"

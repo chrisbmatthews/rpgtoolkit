@@ -1282,6 +1282,7 @@ Begin VB.Form characteredit
       End
       Begin VB.Menu mnututorial 
          Caption         =   "Tutorial"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuhistorytxt 
          Caption         =   "History.txt"

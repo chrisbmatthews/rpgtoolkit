@@ -331,6 +331,7 @@ Begin VB.Form editstatus
       End
       Begin VB.Menu mnuTutorial 
          Caption         =   "Tutorial"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuhistorytxt 
          Caption         =   "History.txt"

@@ -164,6 +164,7 @@ Begin VB.Form animationeditor
       End
       Begin VB.Menu mnuTutorial 
          Caption         =   "Tutorial"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuHistorytxt 
          Caption         =   "History.txt"
