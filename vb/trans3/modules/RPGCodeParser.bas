@@ -20,6 +20,7 @@ Private Declare Sub RPGCParseAfter Lib "actkrt3.dll" (ByVal Text As Long, ByVal 
 Private Declare Sub RPGCParseBefore Lib "actkrt3.dll" (ByVal Text As Long, ByVal endSymbol As Long)
 Private Declare Sub RPGCGetVarList Lib "actkrt3.dll" (ByVal Text As Long, ByVal number As Long)
 Private Declare Function RPGCStringContains Lib "actkrt3.dll" (ByVal theString As Long, ByVal theChar As Long) As Long
+Private Declare Sub RPGCParseWithin Lib "actkrt3.dll" (ByVal Text As Long, ByVal startSymbol As Long, ByVal endSymbol As Long)
 
 '=========================================================================
 ' Member variables
@@ -335,43 +336,8 @@ End Function
 ' Return the content in text between the start and end symbols
 '=========================================================================
 Public Function ParseWithin(ByVal Text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
-
-    On Error Resume Next
-
-    Dim Length As Integer
-    Dim t As Integer
-    Dim l As Integer
-    Dim part As String
-    Dim toRet As String
-    Dim ignoreDepth As Integer
-    
-    Length = Len(Text)
-    'find opening symbol...
-    For t = 1 To Length
-        part = Mid(Text, t, 1)
-        If part = startSymbol Then
-            'founf start symbol.
-            'now locate end symbol...
-            For l = t + 1 To Length
-                part = Mid(Text, l, 1)
-                If part = startSymbol Then
-                    ignoreDepth = ignoreDepth + 1
-                ElseIf part = endSymbol Then
-                    If ignoreDepth = 0 Then
-                        ParseWithin = toRet
-                        Exit Function
-                    End If
-                    ignoreDepth = ignoreDepth - 1
-                Else
-                    toRet = toRet & part
-                End If
-            Next l
-            ParseWithin = toRet
-            Exit Function
-        End If
-    Next t
-    
-    ParseWithin = ""
+    Call RPGCParseWithin(StrPtr(Text), StrPtr(startSymbol), StrPtr(endSymbol))
+    ParseWithin = m_lastStr
 End Function
 
 '=========================================================================

@@ -31,6 +31,57 @@ int APIENTRY RPGCStringContains(VB_STRING pText, VB_STRING theChar)
 }
 
 //////////////////////////////////////////////////////////////////////////
+// Return the content in text between the start and end symbols
+//////////////////////////////////////////////////////////////////////////
+void APIENTRY RPGCParseWithin(VB_STRING pText, VB_STRING startSymbol, VB_STRING endSymbol)
+{
+	inlineString text = initVbString(pText);				//Text we're operating on
+	inlineString symbolStart(initVbString(startSymbol), 1); //Starting symbol
+	inlineString symbolEnd(initVbString(endSymbol), 1);		//Ending symbol
+
+	int length = text.len();
+	int t = 0;												//For loop
+	int l = 0;												//For loop
+	int ignoreDepth = 0;									//Ignore
+	inlineString part(1);									//Character
+	inlineString toRet;										//The stuff we'll return
+	
+	for (t = 1; t <= length; t++)
+	{
+		part = text.mid(t, 1);
+		if (part == symbolStart)
+		{
+			//Found starting symbol, now get end symbol
+			for (l = t + 1; l <= length; l++)
+			{
+				part = text.mid(l, 1);
+				if (part == symbolStart)
+				{
+					ignoreDepth++;
+				}
+				else if (part == symbolEnd)
+				{
+					if (ignoreDepth == 0)
+					{
+						//Return what we found
+						returnVbString(toRet);
+						return;
+					}
+					ignoreDepth--;
+				}
+				else
+				{
+					toRet += part;
+				}
+			}
+		}
+	}
+
+	//Return what we found (If we got here, the 2 symbols weren't found)
+	returnVbString("");	
+}
+
+//////////////////////////////////////////////////////////////////////////
 // Get the variable at number in an equation
 //////////////////////////////////////////////////////////////////////////
 void APIENTRY RPGCGetVarList(VB_STRING pText, int number)
