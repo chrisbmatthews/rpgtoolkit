@@ -20,6 +20,21 @@
 //-------------------------------------------------------------------
 #define CTILE_COMMONCANVAS
 #define TILE_CACHE_SIZE 256
+#if !defined(INLINE) && !defined(FAST_CALL)
+#	if defined(_MSC_VER)
+#		define INLINE __inline		// VC++ prefers the __inline keyword
+#		define FAST_CALL __fastcall
+#	else
+#		define INLINE inline
+#		define FAST_CALL			// Register (fast) calls are specific to VC++
+#	endif
+#endif
+#if !defined(DOUBLE)
+typedef double DOUBLE;
+#endif
+#if !defined(STATIC)
+#define STATIC static
+#endif
 
 //-------------------------------------------------------------------
 // Inclusions
@@ -74,73 +89,73 @@ class CTile
 		);
 
 		// Assignment operator
-		CTile &operator=(
+		CTile &FAST_CALL operator=(
 			CONST CTile &rhs
 		);
 
 		// Open a tile
-		VOID open(
+		VOID FAST_CALL open(
 			CONST std::string strFilename,
 			CONST RGBSHADE rgb,
 			CONST INT nShadeType
 		);
 
 		// Draw the tile
-		VOID gdiDraw(
+		VOID FAST_CALL gdiDraw(
 			CONST INT hdc,
 			CONST INT x,
 			CONST INT y
 		);
 
 		// Draw the tile in the foreground
-		VOID gdiDrawFG(
+		VOID FAST_CALL gdiDrawFG(
 			CONST INT hdc,
 			CONST INT x,
 			CONST INT y
 		);
 
 		// Draw the tile to a canvas
-		VOID cnvDraw(
+		VOID FAST_CALL cnvDraw(
 			CGDICanvas *pCanvas,
 			CONST INT x,
 			CONST INT y
 		);
 
 		// Draw the tile's alpha portion
-		VOID gdiDrawAlpha(
+		VOID FAST_CALL gdiDrawAlpha(
 			CONST INT hdc,
 			CONST INT x,
 			CONST INT y
 		);
 
 		// Render the tile's alpha's portion
-		VOID gdiRenderAlpha(
+		VOID FAST_CALL gdiRenderAlpha(
 			CONST INT hdc,
 			CONST INT x,
 			CONST INT y
 		);
 
 		// Draw the tile's alpha portion to a canvas
-		VOID cnvDrawAlpha(
+		VOID FAST_CALL cnvDrawAlpha(
 			CGDICanvas *pCanvas,
 			CONST INT x,
 			CONST INT y
 		);
 
 		// Render the tile's alpha portion to a canvas
-		VOID cnvRenderAlpha(
+		VOID FAST_CALL cnvRenderAlpha(
 			CGDICanvas *pCanvas,
 			CONST INT x,
 			CONST INT y
 		);
 
 		// Prepare the tile's alpha portion
-		VOID prepAlpha(
+		VOID FAST_CALL prepAlpha(
 			VOID
 		);
 
 		// Create a shading mask for this tile
-		VOID createShading(
+		VOID FAST_CALL createShading(
 			CONST INT hdc,
 			CONST RGBSHADE rgb,
 			CONST INT nShadeType,
@@ -148,7 +163,7 @@ class CTile
 		);
 
 		// Check if this tile is shaded in a certain manor
-		BOOL isShadedAs(
+		BOOL FAST_CALL isShadedAs(
 			CONST RGBSHADE rgb,
 			CONST INT nShadeType
 		);
@@ -163,12 +178,12 @@ class CTile
 		BOOL isIsometric(VOID) { return m_bIsometric; }
 
 		// Get a color from the dos palette of doom
-		static UINT getDOSColor(
+		STATIC UINT FAST_CALL getDOSColor(
 			CONST UCHAR cColor
 		);
 
 		// Kill all canvases used
-		static VOID KillPools(
+		STATIC VOID FAST_CALL KillPools(
 			VOID
 		);
 
@@ -176,34 +191,34 @@ class CTile
 	private:
 
 		// Create an isometric mask
-		VOID createIsometricMask(
+		VOID FAST_CALL createIsometricMask(
 			VOID
 		);
 
 		// Open a tile
-		INT openTile(
+		INT FAST_CALL openTile(
 			CONST std::string strFilename
 		);
 
 		// Open a tile from a set
-		INT openFromTileSet(
+		INT FAST_CALL openFromTileSet(
 			CONST std::string strFilename,
 			CONST INT number
 		);
 
 		// Get the tileset's header
-		tilesetHeader getTilesetInfo(
+		tilesetHeader FAST_CALL getTilesetInfo(
 			CONST std::string strFilename
 		);
 
 		// Calculate the insertation position
-		long calcInsertionPoint(
+		LONG FAST_CALL calcInsertionPoint(
 			CONST INT idx,
 			CONST INT number
 		);
 
 		// Increase this tile's detail
-		VOID increaseDetail(
+		VOID FAST_CALL increaseDetail(
 			VOID
 		);
 
@@ -229,21 +244,21 @@ class CTile
 		INT m_nCompatibleDC;
 
 		// Canvas pools used for tiles
-		static CCanvasPool *m_pCnvForeground;
-		static CCanvasPool *m_pCnvAlphaMask;
-		static CCanvasPool *m_pCnvMaskMask;
-		static CCanvasPool *m_pCnvForegroundIso;
-		static CCanvasPool *m_pCnvAlphaMaskIso;
-		static CCanvasPool *m_pCnvMaskMaskIso;
+		STATIC CCanvasPool *m_pCnvForeground;
+		STATIC CCanvasPool *m_pCnvAlphaMask;
+		STATIC CCanvasPool *m_pCnvMaskMask;
+		STATIC CCanvasPool *m_pCnvForegroundIso;
+		STATIC CCanvasPool *m_pCnvAlphaMaskIso;
+		STATIC CCanvasPool *m_pCnvMaskMaskIso;
 
 		// Has the iso mask been created?
-		static BOOL bCTileCreateIsoMaskOnce;
+		STATIC BOOL bCTileCreateIsoMaskOnce;
 
 		// The iso mask
-		static LONG isoMaskCTile[64][32];
+		STATIC LONG isoMaskCTile[64][32];
 
 		// DOS palette
-		static CONST UINT g_pnDosPalette[];
+		STATIC CONST UINT g_pnDosPalette[];
 
 		// Indices into canvas pools
 		INT m_nFgIdx, m_nAlphaIdx, m_nMaskIdx;
