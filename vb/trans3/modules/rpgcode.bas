@@ -5731,36 +5731,34 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
     End If
 End Sub
 
-
-Sub SaveRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#Save (filename$)
-    'Save progress.
-    On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    num = CountData(dataUse$)        'how many data elements are there?
-    If num <> 1 Then
-        Call debugger("Warning: Save has more than 1 data element!-- " + Text$)
-    End If
-    useIt$ = GetElement(dataUse$, 1)
-    If LenB(useIt$) = 0 Then
-        Call debugger("Error: Save has no data element!-- " + Text$)
+'==============================================================================
+' Save gamestate: #Save(filename$)
+'==============================================================================
+Public Sub SaveRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram): On Error Resume Next
+    
+    Dim paras() As parameters, count As Long
+    
+    paras = getParameters(Text, theProgram, count)
+    
+    'Check parameters...
+    If count <> 1 Then
+        Call debugger("Error: Save() requires one data element!-- " & Text)
         Exit Sub
     End If
-    a = getValue(useIt$, lit$, num, theProgram)
-    If a = 0 Then
-        Call debugger("Error: Save data type must be literal!-- " + Text$)
-    Else
-        lit$ = addExt(lit$, ".sav")
-        Call SaveState(savPath & lit$)
-    End If
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
     
-    Resume Next
+    If paras(0).dataType <> DT_LIT Then
+        Call debugger("Error: Save() requires a literal data element!-- " & Text)
+        Exit Sub
+    End If
+        
+    'If progressive saving has not been disabled ( = 0).
+    If boardList(activeBoardIndex).theData.brdSavingYN = 0 Then
+    
+        'Save the requested file; add .sav if required.
+        Call SaveState(savPath & addExt(paras(0).lit, ".sav"))
+    
+    End If
+    
 End Sub
 
 Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
