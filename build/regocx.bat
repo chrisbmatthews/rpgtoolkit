@@ -4,7 +4,7 @@ echo.
 echo RPGToolkit, Version 3 :: RegOcx
 echo -------------------------------
 echo.
-echo This file will register two components used
+echo This file will register three components used
 echo by the RPGToolkit, Version 3 editor. This may fix
 echo problems with the code editor, or editor in its
 echo entirety, opening. The chances, however, aren't that
@@ -17,10 +17,12 @@ echo with insufficient capabilities). Regardless of your
 echo situation, running this file can do no harm, so you
 echo might as well try.
 echo.
+echo Registering Microsoft's Common Controls...
+rundll32 mscomctl.ocx, DllRegisterServer
 echo Registering the "SSTab" ActiveX control...
-regsvr32 /s TABCTL32.OCX
+rundll32 tabctl32.ocx, DllRegisterServer
 echo Registering the "Rich Text Box" ActiveX control...
-regsvr32 /s richtx32.ocx
+rundll32 richtx32.ocx, DllRegisterServer
 echo.
 echo Done!
 echo.
