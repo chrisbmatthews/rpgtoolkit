@@ -19,8 +19,8 @@ As a result, you no longer need to use the gameSpeed() RPGCode command, but you 
 ---------------------------
 As the result of a bug, it may be required to reset the transparent colour in every frame of every animation, if you find that players appear with their image background colour.
 
-3. RPGCode
-----------
+3. Object Oriented Programming
+------------------------------
 The "RGPCode OOP Overview" showed several pieces of code like this:
 
 method CTest::function(obj)
