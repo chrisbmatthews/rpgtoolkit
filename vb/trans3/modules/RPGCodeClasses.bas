@@ -1175,6 +1175,8 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                     value = " " & CStr(retVal.num)
                 ElseIf (retVal.dataType = DT_LIT) Then
                     value = " " & Chr(34) & retVal.lit & Chr(34)
+                ElseIf (retVal.dataType = DT_REFERNCE) Then
+                    value = " " & retVal.ref
                 End If
 
             Else

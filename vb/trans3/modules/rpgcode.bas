@@ -5615,7 +5615,7 @@ Public Sub ReturnMethodRPG(ByVal Text As String, ByRef theProgram As RPGCodeProg
             End If
         End If
         ' Write it in
-        methodReturn.dataType = DT_REFERNCE
+        methodReturn.dataType = DT_REFERENCE
         methodReturn.ref = toRef
         ' Leave now
         Exit Sub

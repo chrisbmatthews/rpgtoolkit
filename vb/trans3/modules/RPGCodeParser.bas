@@ -1003,6 +1003,7 @@ Public Function ParseRPGCodeCommand( _
                                                 Select Case rV.dataType
                                                     Case DT_NUM: v = " " & CStr(rV.num)
                                                     Case DT_LIT: v = " " & Chr(34) & rV.lit & Chr(34)
+                                                    Case DT_REFERENCE: v = " " & rV.ref
                                                 End Select
                                             Else
                                                 'Wait/Get command-- don't add quotes!
@@ -1252,7 +1253,7 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
             Call callObjectMethod(hClass, "operator[](" & CStr(arrayElements(0).num) & ")", prg, retVal, "operator[]")
         End If
         ' Make sure we got a reference
-        If (retVal.dataType <> DT_REFERNCE) Then
+        If (retVal.dataType <> DT_REFERENCE) Then
             Call debugger("Overloaded [] operator must return a reference to a variable-- " & variable)
             Exit Function
         End If
