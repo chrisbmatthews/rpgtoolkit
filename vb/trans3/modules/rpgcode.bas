@@ -7261,67 +7261,70 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub TileTypeRPG(Text$, ByRef theProgram As RPGCodeProgram)
-    '#TileType(1,2,"type",layer)
-    'Set tile type.
-    'Layer is assumed to be 1
-    On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = Text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    number = CountData(dataUse$)        'how many data elements are there?
-    Dim useIt4 As String, num4 As Double, xx As Long, yy As Long, typea As Long, lay As Long, theX As Long, theY As Long, theLay As Long, lie As String
-    useIt1$ = GetElement(dataUse$, 1)
-    useIt2$ = GetElement(dataUse$, 2)
-    useIt3$ = GetElement(dataUse$, 3)
-    useIt4$ = GetElement(dataUse$, 4)
-    If number < 4 Then useIt4$ = "1"
+Public Sub tileTypeRPG(ByRef strText As String, ByRef prg As RPGCodeProgram)
 
-    xx = getValue(useIt$, lit$, num1, theProgram)
-    yy = getValue(useIt2$, lit$, num2, theProgram)
-    typea = getValue(useIt3$, lit1$, num3, theProgram)
-    lay = getValue(useIt4$, lie$, num4, theProgram)
-    ' If xx = 1 Or yy = 1 Or lay = 1 Or typea = 0 Then
-    '     Call debugger("Error: TileType data type must be num, num, lit, num!-- " + Text$)
-    ' Else
-        theX = inBounds(num1, 1, boardList(activeBoardIndex).theData.bSizeX)
-        theY = inBounds(num2, 1, boardList(activeBoardIndex).theData.bSizeY)
-        theLay = inBounds(num4, 1, boardList(activeBoardIndex).theData.bSizeL)
-        Select Case UCase$(lit1$)
-            Case "NORMAL":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 0
-            Case "SOLID":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 1
-            Case "UNDER":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 2
-            Case "NS":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 3
-            Case "EW":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 4
-            Case "STAIRS1":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 11
-            Case "STAIRS2":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 12
-            Case "STAIRS3":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 13
-            Case "STAIRS4":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 14
-            Case "STAIRS5":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 15
-            Case "STAIRS6":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 16
-            Case "STAIRS7":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 17
-            Case "STAIRS8":
-                boardList(activeBoardIndex).theData.tiletype(theX, theY, theLay) = 18
-        End Select
-    ' End If
+    ' tileType(x!, y!, "type", z!)
+    ' Set tile type
+    ' Layer is assumed to be 1
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    ' Get the parameters
+    Dim paras() As parameters, lngCount As Long
+    paras = getParameters(strText, prg, lngCount)
+
+    ' Check for correct count
+    If (lngCount <> 3 And lngCount <> 4) Then
+        Call debugger("tileType() requires three or four parameters-- " & strText)
+        Exit Sub
+    End If
+
+    If (lngCount = 3) Then
+        ' Redim array
+        ReDim Preserve paras(3)
+        paras(3).num = 1
+        paras(3).dataType = DT_NUM ' Redundant, but for clarity
+    End If
+
+    ' And correct types
+    If ( _
+        paras(0).dataType <> DT_NUM Or _
+        paras(1).dataType <> DT_NUM Or _
+        paras(2).dataType <> DT_LIT Or _
+        paras(3).dataType <> DT_NUM _
+            ) Then
+        Call debugger("tileType() requires num, num, lit, num-- " & strText)
+        Exit Sub
+    End If
+
+    ' Set the tile type
+    Select Case UCase$(paras(2).lit)
+        Case "NORMAL"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 0
+        Case "SOLID"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 1
+        Case "UNDER"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 2
+        Case "NS"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 3
+        Case "EW"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 4
+        Case "STAIRS1"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 11
+        Case "STAIRS2"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 12
+        Case "STAIRS3"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 13
+        Case "STAIRS4"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 14
+        Case "STAIRS5"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 15
+        Case "STAIRS6"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 16
+        Case "STAIRS7"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 17
+        Case "STAIRS8"
+            boardList(activeBoardIndex).theData.tiletype(paras(0).num, paras(1).num, paras(3).num) = 18
+    End Select
+
 End Sub
 
 Sub UnderArrowRPG(Text$, ByRef theProgram As RPGCodeProgram)
