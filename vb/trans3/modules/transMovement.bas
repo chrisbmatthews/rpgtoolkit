@@ -1775,7 +1775,7 @@ Public Sub setQueuedMovements(ByRef queue As MOVEMENT_QUEUE, ByRef strPath As St
 
     ' Number of movements to add to queue will be larger if in pixel movement
     Dim lngQueueSize As Long
-    If mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH Then
+    If (mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH) Then
         lngQueueSize = 1 / movementSize
     Else
         lngQueueSize = 1
