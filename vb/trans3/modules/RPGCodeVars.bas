@@ -425,7 +425,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
     If (allowEquations) Then
 
         ' Create an array of signs
-        Dim signs(13) As String
+        Dim signs(15) As String
         signs(0) = "+"
         signs(1) = "-"
         signs(2) = "/"
@@ -440,6 +440,8 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
         signs(11) = "="
         signs(12) = "<<"
         signs(13) = ">>"
+        signs(14) = "<"
+        signs(15) = ">"
 
         ' Replace '-' with '+'
         Text = replace(Text, "-", "+")
