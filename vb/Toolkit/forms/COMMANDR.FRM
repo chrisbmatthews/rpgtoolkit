@@ -25,7 +25,16 @@ Begin VB.Form commandRef
    ScaleWidth      =   6255
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1208"
-   Begin VB.CommandButton Command1 
+   Begin VB.CommandButton cmdInsert 
+      Caption         =   "Insert"
+      Height          =   375
+      Left            =   5040
+      TabIndex        =   3
+      Top             =   600
+      Width           =   1095
+   End
+   Begin VB.CommandButton cmdOK 
+      Cancel          =   -1  'True
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
@@ -67,6 +76,23 @@ Begin VB.Form commandRef
       Top             =   120
       Width           =   4815
    End
+   Begin VB.Label lblCommands 
+      Caption         =   "0 of 0"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   5040
+      TabIndex        =   4
+      Top             =   1200
+      Width           =   1095
+   End
 End
 Attribute VB_Name = "commandRef"
 Attribute VB_GlobalNameSpace = False
@@ -81,48 +107,82 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub Command1_Click()
-    On Error Resume Next
-    Call Unload(commandRef)
+Private commandData() As String
+
+Private Sub cmdInsert_Click(): On Error Resume Next
+'=========================================================================
+'Copy the selected command text into the open program editor.
+'=========================================================================
+    If commands.ListIndex <> 0 Then
+        'First line is just the description!
+        activeRPGCode.codeForm.SelText = commands.list(commands.ListIndex) & vbCrLf
+    End If
 End Sub
 
-Private Sub commands_Click()
-    On Error Resume Next
-    Dim whichOne As Long, num As Long, cnt As Long, dest As String, dest2 As String
-    whichOne = commands.ListIndex + 1
-    num = FreeFile()
-    Open helpPath$ + ObtainCaptionFromTag(DB_QuickRefFile, resourcePath$ + m_LangFile) For Input As #num
-        Do While Not EOF(num)
-            If UCase$(fread(num)) = ":DESCR" Then
-                cnt = cnt + 1
-                If cnt = whichOne Then
-                    dest = fread(num)
-                    cnt = cnt + 1
-                    dest2 = fread(num)
-                End If
-            End If
-        Loop
-    Close num
-    description.Text = dest & vbCrLf & dest2
+Private Sub cmdOK_Click(): On Error Resume Next
+    Unload commandRef
 End Sub
 
-Private Sub Form_Load()
-    On Error GoTo errref
+Private Sub commands_Click(): On Error Resume Next
+'=========================================================================
+'Selecting a command in the window.
+'=========================================================================
+    description.Text = commandData(commands.ListIndex + 1, 0) & vbCrLf & commandData(commands.ListIndex + 1, 1)
+    lblCommands.Caption = CStr(commands.ListIndex) & " of " & CStr(commands.ListCount - 1)
+End Sub
+
+Private Sub commands_DblClick(): On Error Resume Next
+    Call cmdInsert_Click
+End Sub
+
+Private Sub Form_Load(): On Error Resume Next
+'=========================================================================
+'Form Load
+'=========================================================================
+    Dim file As String, num As Long, line As String
+    
     ' Call LocalizeForm(Me)
-    Dim num As Long
-    num = FreeFile()
-    Open helpPath$ + ObtainCaptionFromTag(DB_QuickRefFile, resourcePath$ + m_LangFile) For Input As #num
-        Do Until EOF(num)
-            If UCase$(fread(num)) = ":COMMAND" Then
-                commands.AddItem fread(num)
-            End If
-        Loop
-    Close #num
-    commands.ListIndex = 0
-    Exit Sub
-
-errref:
-    MsgBox LoadStringLoc(961, "Reference File Not Found!"), , LoadStringLoc(962, "Command Reference")
-
+    file = helpPath & ObtainCaptionFromTag(DB_QuickRefFile, resourcePath & m_LangFile)
+    ChDir (currentDir)
+    
+    'Loop over the lines in the help file.
+    'When a ":COMMAND" is encountered, the next line is the command - add it to the list box.
+    If fileExists(file) Then
+        num = FreeFile
+        Open file For Input As num
+        
+            'Total number of commands in the list - at the top of the list under ":COUNT" line.
+            Do Until EOF(num)
+            
+                line = UCase$(fread(num))
+            
+                If line = ":COUNT" Then
+                    'Redim the data array to hold the commands.
+                    'This If will be called before any commands are read!
+                    ReDim commandData(CLng(fread(num)), 1)
+                    
+                ElseIf line = ":COMMAND" Then
+                
+                    'The next line is the command for the list.
+                    commands.AddItem fread(num)
+                    
+                    If UCase$(fread(num)) = ":DESCR" Then
+                        If commands.ListCount > UBound(commandData) Then
+                            ReDim Preserve commandData(commands.ListCount, 1)
+                        End If
+                        'The next two lines are the descriptions.
+                        commandData(commands.ListCount, 0) = fread(num)
+                        commandData(commands.ListCount, 1) = fread(num)
+                    End If
+                End If
+            Loop
+        Close num
+        'Set the list box to the top.
+        commands.ListIndex = 0
+        lblCommands.Caption = CStr(commands.ListIndex) & " of " & CStr(commands.ListCount - 1)
+    Else
+        MsgBox LoadStringLoc(961, "Reference File Not Found!"), , LoadStringLoc(962, "Command Reference")
+        Unload commandRef
+    End If
+    
 End Sub
-
