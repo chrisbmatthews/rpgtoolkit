@@ -1,5 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////
-//All contents copyright 2004, KSNiloc and Woozy
+//All contents copyright 2004 Colin James Fitzpatrick (KSNiloc)
+//and Sander Knape (Woozy)
 //All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 //Read LICENSE.txt for licensing info
 ///////////////////////////////////////////////////////////////////////////
@@ -21,25 +22,23 @@ CBOneParamStr setLastString;	//set the last parser string
 //////////////////////////////////////////////////////////////////////////
 // Return content in text after startSymbol is located
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCParseAfter(char* pText, char* startSymbol)
+void APIENTRY RPGCParseAfter(VB_STRING pText, VB_STRING startSymbol)
 {
-	
-	//Read the VB string
-	initVbString(pText);
-	
-	inlineString text = pText;			//Text we're operating on
-	inlineString part(1);				//A character
-	inlineString toRet;					//The thing we'll return
-	int t = 0;				 			//Loop control variables
-	int length = text.len();			//Length of text
-	bool foundIt = false;				//found symbol yet?
-	int startAt = 0;					//char to start looking
+
+	inlineString text = initVbString(pText);			//Text we're operating on
+	inlineString part(1);								//A character
+	inlineString toRet;									//The thing we'll return
+	inlineString symbol = initVbString(startSymbol);	//symbol we're looking for
+	int t = 0;				 							//Loop control variables
+	int length = text.len();							//Length of text
+	bool foundIt = false;								//found symbol yet?
+	int startAt = 0;									//char to start looking
 
 	for (t = 1; t <= length; t++)
 	{
 		//Find the start symbol
 		part = text.mid(t, 1);
-		if (part == startSymbol)
+		if (part == symbol)
 		{
 			startAt = t;
 			foundIt = true;
@@ -62,27 +61,25 @@ void APIENTRY RPGCParseAfter(char* pText, char* startSymbol)
 //////////////////////////////////////////////////////////////////////////
 // Return content from text until startSymbol is located
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCParseBefore(char* pText, char* startSymbol)
+void APIENTRY RPGCParseBefore(VB_STRING pText, VB_STRING startSymbol)
 {
 
-	//Read the VB string
-	initVbString(pText);
-
-	inlineString text = pText;			//Text we're operating on
-	inlineString part(1);				//A character
-	inlineString toRet;					//The thing we'll return
-	int t = 0;				 			//Loop control variables
-	int length = text.len();			//Length of text
+	inlineString text = initVbString(pText);			//Text we're operating on
+	inlineString part(1);								//A character
+	inlineString toRet;									//The thing we'll return
+	inlineString symbol = initVbString(startSymbol);	//Symbol we're looking for
+	int t = 0;				 							//Loop control variables
+	int length = text.len();							//Length of text
 
 	for (t = 1; t <= length; t++)
 	{
 		//Find the start symbol
 		part = text.mid(t, 1);
-		if (part == startSymbol)
+		if (part == symbol)
 		{
 			//Found it
 			returnVbString(toRet);
-			break;
+			return;
 		}
 		else
 		{
@@ -96,18 +93,15 @@ void APIENTRY RPGCParseBefore(char* pText, char* startSymbol)
 //////////////////////////////////////////////////////////////////////////
 // Get the name of a method
 //////////////////////////////////////////////////////////////////////////
-void APIENTRY RPGCGetMethodName(char* pText)
+void APIENTRY RPGCGetMethodName(VB_STRING pText)
 {
 
-	//read the VB string
-	initVbString(pText);
-
-	inlineString text = pText;		//Text we're operating on
-	inlineString part(1);			//A character
-	inlineString mName;				//Name of the method
-	int t = 0;				 		//Loop control variables
-	int startHere = 0;				//Where to start
-	int length = text.len();		//Length of text
+	inlineString text = initVbString(pText);	//Text we're operating on
+	inlineString part(1);						//A character
+	inlineString mName;							//Name of the method
+	int t = 0;				 					//Loop control variables
+	int startHere = 0;							//Where to start
+	int length = text.len();					//Length of text
 
     for (t = 1; t <= length; t++)
 	{
@@ -191,40 +185,50 @@ void APIENTRY RPGCInitParser(int setStringAddress)
 //////////////////////////////////////////////////////////////////////////
 inline void returnVbString(inlineString theString)
 {
-	BSTR theBString = Char2BSTR((char*)theString);
-	BSTR theBSTR = SysAllocString(theBString);
-	MessageBox(NULL, theBSTR, NULL, NULL);
-	setLastString(theBSTR);
-	SysFreeString(theBSTR);
+
+	//First change the char* string to vb string format
+	VB_STRING pVbString = charToVbString((char*)theString);
+
+	//Let the system know of its existence
+	VB_STRING theVbString = SysAllocString(pVbString);
+
+	//Set the string
+	setLastString(theVbString);
+
+	//Make the system forget about it
+	SysFreeString(theVbString);
+
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Init a VB string
 //////////////////////////////////////////////////////////////////////////
-inline void initVbString(char* theString)
+inline char* initVbString(VB_STRING theString)
 {
-	theString = (char*)(BSTR)theString;
+	//change the vb string to char*
+	return vbStringToChar(theString);
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Convert a pointer to a string to a BSTR
+// Convert a pointer to a string to a vb string
 //////////////////////////////////////////////////////////////////////////
-inline BSTR Char2BSTR(char* stringPointer)
+inline VB_STRING charToVbString(char* stringPointer)
 {
 
 	//get the length of the string passed in
 	int len = strlen(stringPointer);
 
-	//prepare a BSTR string to return (one byte longer than char*
-	//because BSTR strings know their own length)
-	unsigned short* bstrRet = new unsigned short[len + 1];
+	//prepare a vb string string to return (one byte longer than char*
+	//because vb string strings know their own length)
+	VB_STRING bstrRet = new unsigned short[len + 1];
 
 	//loop over each character
 	for (int chrIdx = 0; chrIdx < len; chrIdx++)
 	{
 
 		//set in the character
-		bstrRet[chrIdx] = stringPointer[chrIdx];
+		char part = stringPointer[chrIdx];
+		bstrRet[chrIdx] = part;
 
 		//set in the escape sequence (will be overwritten if
 		//this is not the last character)
@@ -238,7 +242,83 @@ inline BSTR Char2BSTR(char* stringPointer)
 		bstrRet[0] = 0;
 	}
 
-	//return the BSTR
+	//return the vb string
 	return bstrRet;
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Convert a vb string to a pointer to a string
+//////////////////////////////////////////////////////////////////////////
+inline char* vbStringToChar(VB_STRING theVbString)
+{
+
+	//get the length of the vb string
+	int len = vbStringGetLen(theVbString);
+
+	//create a pointer to a string to return
+	char* pstrRet = new char[len + 1];
+
+	//set the string to "" (nothing)
+	strcpy(pstrRet, "");
+
+	//loop over each character
+	for (int chrIdx = 0; chrIdx < len; chrIdx++)
+	{
+
+		//set in the character
+		unsigned int part = theVbString[chrIdx];
+		pstrRet[chrIdx] = part;
+
+		//set in the escape sequence (will be overwritten if
+		//this is not the last character)
+		pstrRet[chrIdx + 1] = '\0';
+
+	}
+
+	//return the pointer to a string
+	return pstrRet;
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Get length of a VB string
+//////////////////////////////////////////////////////////////////////////
+inline int vbStringGetLen(VB_STRING theVbString)
+{
+
+	int len = 0;		//length to return
+	int pos = 0;		//position in string
+	bool done = false;	//done?
+
+	//if we don't have a string, then its length is 0
+	if (theVbString == NULL) 
+		return 0;
+
+	//until we're done
+	while (!done)
+	{
+
+		//get a part of the string
+		unsigned int part = theVbString[pos];
+
+		if (part == 0)
+		{
+			//no part-- end of string
+			return len;
+		}
+		else
+		{
+			//part-- increase length
+			len++;
+		}
+
+		//both cases, increment position
+		pos++;
+
+	}
+
+	//error out
+	return 0;
 
 }

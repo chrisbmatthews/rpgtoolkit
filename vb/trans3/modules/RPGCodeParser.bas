@@ -16,9 +16,9 @@ Option Compare Text
 ' Member declarations
 '=========================================================================
 Private Declare Sub RPGCInitParser Lib "actkrt3.dll" (ByVal setLastParseStringAddress As Long)
-Private Declare Sub RPGCGetMethodName Lib "actkrt3.dll" (ByVal text As String)
-Private Declare Sub RPGCParseAfter Lib "actkrt3.dll" (ByVal text As String, ByVal startSymbol As String)
-Private Declare Sub RPGCParseBefore Lib "actkrt3.dll" (ByVal text As String, ByVal endSymbol As String)
+Private Declare Sub RPGCGetMethodName Lib "actkrt3.dll" (ByVal text As Long)
+Private Declare Sub RPGCParseAfter Lib "actkrt3.dll" (ByVal text As Long, ByVal startSymbol As Long)
+Private Declare Sub RPGCParseBefore Lib "actkrt3.dll" (ByVal text As Long, ByVal endSymbol As Long)
 
 '=========================================================================
 ' Member variables
@@ -54,7 +54,7 @@ End Sub
 ' Returns the name of the method from a method delcaration
 '=========================================================================
 Public Function GetMethodName(ByVal text As String) As String
-    Call RPGCGetMethodName(text)
+    Call RPGCGetMethodName(StrPtr(text))
     GetMethodName = m_lastStr
 End Function
 
@@ -62,7 +62,7 @@ End Function
 ' Return content in text after startSymbol is located
 '=========================================================================
 Public Function ParseAfter(ByVal text As String, ByVal startSymbol As String) As String
-    Call RPGCParseAfter(text, startSymbol)
+    Call RPGCParseAfter(StrPtr(text), StrPtr(startSymbol))
     ParseAfter = m_lastStr
 End Function
 
@@ -70,7 +70,7 @@ End Function
 ' Return content from text until startSymbol is located
 '=========================================================================
 Public Function ParseBefore(ByVal text As String, ByVal endSymbol As String) As String
-    Call RPGCParseBefore(text, endSymbol, size)
+    Call RPGCParseBefore(StrPtr(text), StrPtr(endSymbol))
     ParseBefore = m_lastStr
 End Function
 
