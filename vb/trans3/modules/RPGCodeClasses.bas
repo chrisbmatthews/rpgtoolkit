@@ -300,12 +300,12 @@ Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS
     parseArrayD() = Split(toParse, "][")
 
     'Add the vars
-    ReDim X(UBound(parseArrayD)) As Long
+    ReDim x(UBound(parseArrayD)) As Long
     ReDim size(UBound(parseArrayD)) As Long
     For idx = 0 To UBound(size)
         size(idx) = CLng(parseArrayD(idx))
     Next idx
-    Call getVarsFromArray(0, size(), X(), scope, variableName, variableType)
+    Call getVarsFromArray(0, size(), x(), scope, variableName, variableType)
 
 End Sub
 
@@ -789,24 +789,24 @@ End Function
 '=========================================================================
 ' Grab vars from an array
 '=========================================================================
-Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef X() As Long, ByRef scope As RPGCODE_CLASS_SCOPE, ByVal prefix As String, ByVal postFix As String)
+Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef x() As Long, ByRef scope As RPGCODE_CLASS_SCOPE, ByVal prefix As String, ByVal postFix As String)
 
     On Error Resume Next
 
     Dim dimIdx As Long      'Dimension index
     Dim theVar As String    'The variable
 
-    For X(depth) = 0 To size(depth)
+    For x(depth) = 0 To size(depth)
         If (depth <= UBound(size)) Then
-            Call getVarsFromArray(depth + 1, size(), X(), scope, prefix, postFix)
+            Call getVarsFromArray(depth + 1, size(), x(), scope, prefix, postFix)
         Else
             theVar = ""
             For dimIdx = 0 To UBound(size)
-                theVar = theVar & "[" & CStr(X(dimIdx)) & "]"
+                theVar = theVar & "[" & CStr(x(dimIdx)) & "]"
             Next dimIdx
             Call addVarToScope(prefix & theVar & postFix, scope)
         End If
-    Next X(depth)
+    Next x(depth)
 
 End Sub
 
@@ -842,6 +842,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
     On Error Resume Next
 
+    Dim inArray As Boolean          'In an array?
     Dim value As String             'Value of function
     Dim retval As RPGCODE_RETURN    'Return value
     Dim begin As Long               'Char to begin at
@@ -877,7 +878,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
             Case "!", "$", "-"
                 'Could be a public var
-                If (depth = 0) Then
+                If (depth = 0 And (Not ignore) And (Not inArray)) Then
                     lngEnd = a
                     var = True
                     Exit For
@@ -898,6 +899,14 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
                         Exit For
                     End If
                 End If
+
+            Case "["
+                'Entering array
+                inArray = True
+
+            Case "]"
+                'Leaving array
+                inArray = False
 
             Case Chr(34)
                 'Found a quote
