@@ -852,14 +852,6 @@ Public Sub useRedo()
 
     'Things are still as they were (setup wise)
 
-    For X = 1 To xRange
-        For Y = 1 To 32
-            bufundo(X, Y) = tileMem(X, Y)
-            tileMem(X, Y) = publicTile.undoTile(X, Y)
-            publicTile.undoTile(X, Y) = bufundo(X, Y)
-        Next Y
-    Next X
-
     'Redraw!
     Call tileRedraw
 

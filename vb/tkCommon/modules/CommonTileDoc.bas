@@ -22,8 +22,8 @@ Public Type tileDoc
     currentColor As Long            'Currently selected tile color
     oldDetail As Integer            'Detail before color conversion
     grid As Integer                 'Grid on/off (tile)
-    
-    Undotile(64, 32) As Long        'Tile undo (EDIT for 3.0.4 by Woozy)
+
+    undoTile() As Long              'Tile undo
     
     captureColor As Long            'Capture color on/off
     transpcolor As Long             'Transparent color in tile grabber
@@ -75,7 +75,7 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
     On Error Resume Next
     
     Dim xCount As Integer, yCount As Integer
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     
     If quality = ISODETAIL Then
         'Tile doesn't need rotating or deforming. Can draw it straight off.
@@ -90,12 +90,12 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
         'The isoMaskBmp is created by the function below and loaded in tkMain Form_load so as
         'to be available to all editors.
 
-        For x = 1 To 64
-            For y = 1 To 32
-                If isoMaskBmp(x, y) = RGB(0, 0, 0) Then
+        For X = 1 To 64
+            For Y = 1 To 32
+                If isoMaskBmp(X, Y) = RGB(0, 0, 0) Then
                     'Unmasked pixel - use the next pixel in tilemem.
                     'Set it to the (x - 1)'th and (y -1)'th pixels!!
-                    Call vbPicPSet(pic, x - 1 + xLoc, y - 1 + yLoc, tileMem(xCount, yCount))
+                    Call vbPicPSet(pic, X - 1 + xLoc, Y - 1 + yLoc, tileMem(xCount, yCount))
 
                     'Increment the tilemem entry.
                     yCount = yCount + 1
@@ -106,8 +106,8 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
 
                 'Else This is a masked pixel: Do nothing!
                 End If
-            Next y
-        Next x
+            Next Y
+        Next X
 
         Exit Sub
 
@@ -117,20 +117,20 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
     
     Call tstToIsometric(quality)
     
-    For x = 0 To 64
-        For y = 0 To 32
-            If buftile(x, y) <> -1 Then
-                Call vbPicPSet(pic, x + xLoc, y + yLoc, buftile(x, y))
+    For X = 0 To 64
+        For Y = 0 To 32
+            If buftile(X, Y) <> -1 Then
+                Call vbPicPSet(pic, X + xLoc, Y + yLoc, buftile(X, Y))
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
 End Sub
 
 
 
 
-Function getIsoX(ByVal x As Long, ByVal y As Long) As Long
+Function getIsoX(ByVal X As Long, ByVal Y As Long) As Long
     'convert a 2d x coord to the corresponding isometric coord in a tile
     'starts from 0
     
@@ -139,8 +139,8 @@ Function getIsoX(ByVal x As Long, ByVal y As Long) As Long
     toRet = 0
     
     Dim tX As Long, tY As Long, xx As Long, yy As Long
-    tX = x
-    tY = y
+    tX = X
+    tY = Y
     
     xx = 62 + (tX) * 2 - (tY) * 2
     yy = (tX) + (tY)
@@ -150,7 +150,7 @@ Function getIsoX(ByVal x As Long, ByVal y As Long) As Long
 End Function
 
 
-Function getIsoY(ByVal x As Long, ByVal y As Long) As Long
+Function getIsoY(ByVal X As Long, ByVal Y As Long) As Long
     'convert a 2d y coord to the corresponding isometric coord in a tile
     'starts from 0
     
@@ -158,8 +158,8 @@ Function getIsoY(ByVal x As Long, ByVal y As Long) As Long
     Dim toRet As Long, tX As Long, tY As Long, xx As Long, yy As Long
     toRet = 0
     
-    tX = x
-    tY = y
+    tX = X
+    tY = Y
     
     xx = 62 + (tX) * 2 - (tY) * 2
     yy = (tX) + (tY)
@@ -178,14 +178,14 @@ Public Sub createIsoMask(): On Error Resume Next
 '================================================
     
     'First, we make tilemem a black tile:
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     
-    For x = 0 To 64
-        For y = 0 To 32
-            tileMem(x, y) = RGB(0, 0, 0)
-            isoMaskBmp(x, y) = RGB(255, 255, 255)   'Initialize the mask.
-        Next y
-    Next x
+    For X = 0 To 64
+        For Y = 0 To 32
+            tileMem(X, Y) = RGB(0, 0, 0)
+            isoMaskBmp(X, Y) = RGB(255, 255, 255)   'Initialize the mask.
+        Next Y
+    Next X
     
     'Now, pass it through the tst to iso conversion - this operates on tilemem and
     'creates an isometric tile in the buffer tile.
@@ -195,22 +195,22 @@ Public Sub createIsoMask(): On Error Resume Next
     'Now we create the mask from the tile. The tile is offset and is slightly too wide
     'so we copy in halves. And erase tilemem while we're at it.
     
-    For x = 0 To 32
-        For y = 0 To 32
-            isoMaskBmp(x + 1, y + 1) = buftile(x, y)
-            tileMem(x, y) = -1
-        Next y
-    Next x
+    For X = 0 To 32
+        For Y = 0 To 32
+            isoMaskBmp(X + 1, Y + 1) = buftile(X, Y)
+            tileMem(X, Y) = -1
+        Next Y
+    Next X
     
     '2nd half. Note x-index!
     
-    For x = 33 To 64
-        For y = 0 To 32
+    For X = 33 To 64
+        For Y = 0 To 32
             'Insert into x, not x + 1!
-            isoMaskBmp(x, y + 1) = buftile(x, y)
-            tileMem(x, y) = -1
-        Next y
-    Next x
+            isoMaskBmp(X, Y + 1) = buftile(X, Y)
+            tileMem(X, Y) = -1
+        Next Y
+    Next X
     
 End Sub
 
@@ -223,25 +223,25 @@ Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resum
 
     quality = 3
     ReDim IsoTile(128, 64) As Long
-    Dim x As Long, y As Long, tX As Long, tY As Long
+    Dim X As Long, Y As Long, tX As Long, tY As Long
     Dim crColor As Long, crColor2 As Long, col As Long
     Dim r1 As Long, g1 As Long, b1 As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     Dim ra As Long, ga As Long, ba As Long
     Dim tempx As Long, tempy As Long
     
-    For x = 0 To 128
-        For y = 0 To 64
-            IsoTile(x, y) = -1
-        Next y
-    Next x
+    For X = 0 To 128
+        For Y = 0 To 64
+            IsoTile(X, Y) = -1
+        Next Y
+    Next X
     
     'texture map into 128x64 isometric tile...
     For tX = 0 To 31 Step 1
         For tY = 0 To 31 Step 1
             crColor = tileMem(tX + 1, tY + 1)
-            x = 62 + (tX) * 2 - (tY) * 2
-            y = (tX) + (tY)
+            X = 62 + (tX) * 2 - (tY) * 2
+            Y = (tX) + (tY)
         
             crColor = tileMem(tX + 1, tY + 1)
             crColor2 = tileMem(tX + 2, tY + 1)
@@ -258,17 +258,17 @@ Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resum
                 ga = (g2 - g1) / 4
                 ba = (b2 - b1) / 4
             
-                For tempx = x To x + 4
+                For tempx = X To X + 4
                     col = RGB(r1, g1, b1)
                     
-                    IsoTile(tempx, y) = col
+                    IsoTile(tempx, Y) = col
                     r1 = r1 + ra
                     g1 = g1 + ga
                     b1 = b1 + ba
                 Next tempx
             Else
-                For tempx = x To x + 4
-                    IsoTile(tempx, y) = crColor
+                For tempx = X To X + 4
+                    IsoTile(tempx, Y) = crColor
                 Next tempx
             End If
         Next tY
@@ -285,10 +285,10 @@ Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resum
         
         Dim xx As Long, yy As Long
         xx = 0: yy = 0
-        For x = 0 To 128 Step 2
-            For y = 0 To 64
-                c1 = IsoTile(x, y)
-                c2 = IsoTile(x + 1, y)
+        For X = 0 To 128 Step 2
+            For Y = 0 To 64
+                c1 = IsoTile(X, Y)
+                c2 = IsoTile(X + 1, Y)
                 
                 If c1 <> -1 And c2 <> -1 Then
                     r1 = red(c1): g1 = green(c1): b1 = blue(c1)
@@ -301,17 +301,17 @@ Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resum
                     medTile(xx, yy) = c1
                 End If
                 yy = yy + 1
-            Next y
+            Next Y
             xx = xx + 1
             yy = 0
-        Next x
+        Next X
         
         'now shrink on y...
         xx = 0: yy = 0
-        For x = 0 To 64
-            For y = 0 To 64 Step 2
-                c1 = medTile(x, y)
-                c2 = medTile(x, y + 1)
+        For X = 0 To 64
+            For Y = 0 To 64 Step 2
+                c1 = medTile(X, Y)
+                c2 = medTile(X, Y + 1)
                 
                 If c1 <> -1 And c2 <> -1 Then
                     r1 = red(c1): g1 = green(c1): b1 = blue(c1)
@@ -324,16 +324,16 @@ Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resum
                     smalltile(xx, yy) = c1
                 End If
                 yy = yy + 1
-            Next y
+            Next Y
             xx = xx + 1
             yy = 0
-        Next x
+        Next X
     Else
         xx = 0: yy = 0
-        For x = 0 To 128 Step 2
-            For y = 0 To 64 Step 2
-                c1 = IsoTile(x, y)
-                c2 = IsoTile(x + 1, y)
+        For X = 0 To 128 Step 2
+            For Y = 0 To 64 Step 2
+                c1 = IsoTile(X, Y)
+                c2 = IsoTile(X + 1, Y)
                 
                 If c1 <> -1 And c2 <> -1 And (quality = 2) Then
                     r1 = red(c1): g1 = green(c1): b1 = blue(c1)
@@ -346,18 +346,18 @@ Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resum
                     smalltile(xx, yy) = c1
                 End If
                 yy = yy + 1
-            Next y
+            Next Y
             xx = xx + 1
             yy = 0
-        Next x
+        Next X
     End If
 
     'Store it in the buffer.
-    For x = 0 To 64
-        For y = 0 To 32
-            buftile(x, y) = smalltile(x, y)
-        Next y
-    Next x
+    For X = 0 To 64
+        For Y = 0 To 32
+            buftile(X, Y) = smalltile(X, Y)
+        Next Y
+    Next X
 
     'We now have a 63x32 isometric tile, buftile, which we can either draw or use for the
     'mask.
