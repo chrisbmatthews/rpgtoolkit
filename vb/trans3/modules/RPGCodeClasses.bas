@@ -861,6 +861,9 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
         End If
     End If
 
+    'Internationalize
+    value = replace(value, ",", ".")
+
     'Complete the return string
     spliceForObjects = Mid(text, 1, start - 1) & value & Mid(text, lngEnd + 1)
     If (Trim(spliceForObjects) = "0") Then
