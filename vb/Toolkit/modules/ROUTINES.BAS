@@ -241,7 +241,7 @@ Public Function green(ByVal longColor As Long) As Long
     'Returns green from the color passed in
     '=======================================================
     On Error Resume Next
-    green = Int(longColor - blue(longColor) / 256)
+    green = Int((longColor - blue(longColor) * 65536) / 256)
 End Function
 
 Public Sub highredrawLIGHT()
@@ -746,7 +746,7 @@ Public Sub saveProgram(ByVal file As String)
     Dim num As Long
     num = FreeFile
     Open file For Output As num
-        Print #num, activeRPGCode.codeForm.Text
+        Print #num, activeRPGCode.codeform.Text
     Close num
 End Sub
 
