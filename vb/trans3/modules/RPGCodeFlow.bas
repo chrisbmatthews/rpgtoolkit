@@ -821,6 +821,7 @@ Public Sub runProgram( _
 
     Dim theProgram As RPGCodeProgram
     theProgram = openProgram(file)
+    errorKeep = theProgram  ' Update stack for initial garbage collection
     lineNum = 1
     theProgram.threadID = -1
 
