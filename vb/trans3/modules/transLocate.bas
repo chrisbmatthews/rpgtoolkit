@@ -142,37 +142,49 @@ Public Sub incrementPosition( _
             Select Case pend.direction
 
                 Case MV_NE
-                    .x = .x
                     .y = .y - moveFraction
+                    If .y < pend.yTarg Then .y = pend.yTarg     'We need x,y as FRACTIONs
 
                 Case MV_NW
                     .x = .x - moveFraction
-                    .y = .y
+                    If .x < pend.xTarg Then .x = pend.xTarg
 
                 Case MV_SE
                     .x = .x + moveFraction
-                    .y = .y
+                    If .x > pend.xTarg Then .x = pend.xTarg
 
                 Case MV_SW
-                    .x = .x
                     .y = .y + moveFraction
+                    If .y > pend.yTarg Then .y = pend.yTarg
 
                 Case MV_NORTH
                     .x = .x - moveFraction
                     .y = .y - moveFraction
+                    
+                    If .x < pend.xTarg Then .x = pend.xTarg
+                    If .y < pend.yTarg Then .y = pend.yTarg
 
                 Case MV_SOUTH
                     .x = .x + moveFraction
                     .y = .y + moveFraction
-
+                    
+                    If .x > pend.xTarg Then .x = pend.xTarg
+                    If .y > pend.yTarg Then .y = pend.yTarg
+                    
                 Case MV_EAST
                     .x = .x + moveFraction
                     .y = .y - moveFraction
+                    
+                    If .x > pend.xTarg Then .x = pend.xTarg
+                    If .y < pend.yTarg Then .y = pend.yTarg
 
                 Case MV_WEST
                     .x = .x - moveFraction
                     .y = .y + moveFraction
-
+                    
+                    If .x < pend.xTarg Then .x = pend.xTarg
+                    If .y > pend.yTarg Then .y = pend.yTarg
+                    
             End Select
 
             'Invert!
@@ -185,18 +197,30 @@ Public Sub incrementPosition( _
                 Case MV_NE
                     .x = .x + moveFraction
                     .y = .y - moveFraction
+                    
+                    If .x > pend.xTarg Then .x = pend.xTarg 'We need x,y as FRACTIONs
+                    If .y < pend.yTarg Then .y = pend.yTarg
 
                 Case MV_NW
                     .x = .x - moveFraction
                     .y = .y - moveFraction
+                    
+                    If .x < pend.xTarg Then .x = pend.xTarg
+                    If .y < pend.yTarg Then .y = pend.yTarg
 
                 Case MV_SE
                     .x = .x + moveFraction
                     .y = .y + moveFraction
+                    
+                    If .x > pend.xTarg Then .x = pend.xTarg
+                    If .y > pend.yTarg Then .y = pend.yTarg
 
                 Case MV_SW
                     .x = .x - moveFraction
                     .y = .y + moveFraction
+                    
+                    If .x < pend.xTarg Then .x = pend.xTarg
+                    If .y > pend.yTarg Then .y = pend.yTarg
 
                 Case MV_NORTH
                     .y = .y - moveFraction
