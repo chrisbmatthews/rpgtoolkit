@@ -27,7 +27,7 @@ int APIENTRY RPGCStringContains(VB_STRING pText, VB_STRING theChar)
 	inlineString text = initVbString(pText);				//Text we're operating on
 	inlineString symbol(initVbString(theChar));				//Symbol we need
 	symbol.resize(symbol.len());
-	return (int)(strstr(text,symbol));
+	return (int)(strstr(text,symbol) != NULL);
 }
 
 //////////////////////////////////////////////////////////////////////////
