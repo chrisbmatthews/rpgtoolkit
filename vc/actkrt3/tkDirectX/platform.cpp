@@ -492,7 +492,7 @@ inline bool Refresh()
 
 			//now offset the top/left of the window rect by the distance from the
 			//title bar / border
-			SetRect(&dxInfo.windowedMode.destRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
+			SetRect(&gDXInfo.windowedMode.destRect, 0, 0, gDXInfo.nWidth, gDXInfo.nHeight);
 			OffsetRect(&gDXInfo.windowedMode.destRect, ptPrimeBlt.x, ptPrimeBlt.y);
 
 			//Blt onto the window
