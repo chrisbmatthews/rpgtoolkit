@@ -281,7 +281,7 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
 
     ' Declare a variable to work on
     Dim str As String
-    str = Trim$(Text)
+    str = Trim$(ParseRPGCodeCommand(Text, prg))
 
     ' Check for logic
     Dim logic(3) As String
@@ -497,6 +497,10 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                 ' Assignment operator
                 Call SetVariable(values(idx), CStr(numVal(idx + 1)), prg)
                 idx = idx + 1
+                Dim x As Long
+                For x = idx To valueUb
+                    typeVal(x) = getValue(values(x), strVal(x), numVal(x), prg)
+                Next x
                 If (idx = valueUb) Then Exit For
 
             End If
@@ -562,6 +566,10 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram, Opti
                 ' Assignment operator
                 Call SetVariable(values(idx), CStr(strVal(idx + 1)), prg)
                 idx = idx + 1
+                Dim y As Long
+                For y = idx To valueUb
+                    typeVal(y) = getValue(values(y), strVal(y), numVal(y), prg)
+                Next y
                 If (idx = valueUb) Then Exit For
 
             End If
