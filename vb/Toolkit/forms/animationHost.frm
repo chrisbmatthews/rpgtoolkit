@@ -1,51 +1,65 @@
 VERSION 5.00
 Begin VB.Form animationHost 
-   BorderStyle     =   1  'Fixed Single
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
+   BorderStyle     =   0  'None
    Caption         =   "Animation"
-   ClientHeight    =   3195
-   ClientLeft      =   45
-   ClientTop       =   330
-   ClientWidth     =   4785
+   ClientHeight    =   3540
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   4455
    Icon            =   "animationHost.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3195
-   ScaleWidth      =   4785
+   ScaleHeight     =   3540
+   ScaleWidth      =   4455
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton Command8 
+   Begin VB.PictureBox Command8 
       Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   375
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   442
       Left            =   240
+      MousePointer    =   99  'Custom
       Picture         =   "animationHost.frx":0CCA
-      Style           =   1  'Graphical
-      TabIndex        =   1
+      ScaleHeight     =   405
+      ScaleWidth      =   435
+      TabIndex        =   2
       Top             =   2640
-      Width           =   375
+      Width           =   465
+   End
+   Begin Toolkit.TKTopBar topBar 
+      Height          =   480
+      Left            =   0
+      TabIndex        =   1
+      Top             =   0
+      Width           =   3885
+      _ExtentX        =   6853
+      _ExtentY        =   847
+      Object.Width           =   3885
+      Caption         =   "Animation"
    End
    Begin VB.PictureBox arena 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   2655
-      Left            =   240
-      ScaleHeight     =   177
+      Left            =   120
+      ScaleHeight     =   175
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   281
+      ScaleWidth      =   279
       TabIndex        =   0
-      Top             =   240
+      Top             =   480
       Width           =   4215
+   End
+   Begin VB.Shape shape 
+      Height          =   3255
+      Left            =   0
+      Top             =   0
+      Width           =   4455
    End
 End
 Attribute VB_Name = "animationHost"
@@ -67,7 +81,7 @@ Public Sub playAnimation(ByVal file As String)
     
     Dim anm As TKAnimation
     Call openAnimation(file, anm)
-    
+       
     arena.width = anm.animSizeX * Screen.TwipsPerPixelX
     arena.height = anm.animSizeY * Screen.TwipsPerPixelY
     
@@ -75,7 +89,13 @@ Public Sub playAnimation(ByVal file As String)
     Command8.Left = arena.Left
     
     Me.width = arena.width + 700
+    If Me.width < 2000 Then Me.width = 2000
     Me.height = arena.height + Command8.height + 830
+       
+    shape.width = Me.width
+    shape.height = Me.height
+    
+    TopBar.width = Me.width - 50
     
     DoEvents
     
@@ -109,4 +129,7 @@ Private Sub Form_Activate()
     End If
 End Sub
 
-
+Private Sub Form_Load()
+    Set TopBar.theForm = Me
+    Command8.MouseIcon = Images.MouseLink()
+End Sub
