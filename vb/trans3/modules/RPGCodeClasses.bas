@@ -1190,11 +1190,11 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     If (LenB(object) = 0) Then object = GetWithPrefix()
 
     ' Get its handle
-    If (Right$(object, 1) <> "!" And Right$(object, 1) <> "$") Then
-        ' Append an !
+    If ((Right$(object, 1) <> "!") And (Right$(object, 1) <> "$")) Then
+        ' Append an "!"
         Call getValue(object & "!", object, hClassDbl, prg)
     Else
-        ' ! already found
+        ' "!" already found
         Call getValue(object, object, hClassDbl, prg)
     End If
 
@@ -1208,11 +1208,18 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
         ' Check if we're to release
         If (cmdName = "RELEASE") Then
+
             Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retval, "~" & classes(hClass).strInstancedFrom)
             Call clearObject(classes(hClass), prg)
             Call killHandle(hClass)
             classes(hClass).hClass = 0
             classes(hClass).strInstancedFrom = vbNullString
+
+        ElseIf (cmdName = "GETTYPE") Then
+
+            ' Return type of object
+            value = classes(hClass).strInstancedFrom
+
         Else
 
             If (isMethodMember(cmdName, hClass, prg, outside)) Then

@@ -624,7 +624,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                         Dim tdc As String, prevToken As String
                         prevToken = valueList(tokenIdx + toFind)
                         tdc = Right$(prevToken, 1)
-                        If (tdc <> "$") Then
+                        If ((tdc <> "$") And (tdc <> "!")) Then
                             ' Append a "!"
                             prevToken = prevToken & "!"
                             ' Get its value
