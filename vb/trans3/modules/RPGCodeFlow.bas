@@ -160,14 +160,13 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     theMethod.lngParams = number
     ReDim theMethod.dtParams(number - 1)
     ReDim theMethod.classTypes(number - 1)
-    Dim i As Long, bTryAgain As Boolean
+    Dim i As Long
     For i = 1 To number
         theMethod.dtParams(i - 1) = params(i - 1).dataType
         If (theMethod.dtParams(i - 1) = DT_NUM) Then
             If (isObject(params(i - 1).num)) Then
                 theMethod.classTypes(i - 1) = objectType(params(i - 1).num)
                 theMethod.dtParams(i - 1) = DT_OTHER
-                bTryAgain = True
             End If
         End If
     Next i
@@ -201,27 +200,17 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     Dim foundIt As Long, t As Long
     theMethod.name = mName
+    Debug.Assert mName <> "DELIMENUMBER"
     foundIt = getMethodLine(theMethod, theProgram, i)
 
     If (foundIt = -1) Then
 
-        If (bTryAgain) Then
-            For i = 1 To number
-                theMethod.dtParams(i - 1) = params(i - 1).dataType
-            Next i
-            foundIt = getMethodLine(theMethod, theProgram, i)
+        ' Method doesn't exist!
+        If Not (noMethodNotFound) Then
+            Call debugger("Error: Method not found!-- " & Text)
         End If
 
-        If (foundIt = -1) Then
-
-            ' Method doesn't exist!
-            If Not (noMethodNotFound) Then
-                Call debugger("Error: Method not found!-- " & Text)
-            End If
-
-            Exit Sub
-
-        End If
+        Exit Sub
 
     End If
 
@@ -245,54 +234,58 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
         If (theMethod.dtParams(i - 1) = DT_OTHER) Then
 
-            ' Check for an appropriate constructor
-            Dim ctor As RPGCodeMethod
-            ctor.name = theMethod.classTypes(i - 1) & "::" & theMethod.classTypes(i - 1)
-            ctor.lngParams = 1
-            ReDim ctor.dtParams(0)
-            ReDim ctor.classTypes(0)
-            Dim bIsObject As Boolean
-            bIsObject = isObject(params(i - 1).num)
-            If (bIsObject) Then
-                ctor.dtParams(0) = DT_OTHER
-                ctor.classTypes(0) = objectType(params(i - 1).num)
-                ' Make sure left and right types are inequal (because the copy
-                ' constructor should get the actual object, not a copy)
-                If (theMethod.classTypes(i - 1) = ctor.classTypes(0)) Then
-                    ' We cannot call this method as we'll recurse to our end
-                    ctor.dtParams(0) = DT_VOID
+            If Not (theMethod.bIsReference(i - 1)) Then
+
+                ' Check for an appropriate constructor
+                Dim ctor As RPGCodeMethod
+                ctor.name = theMethod.classTypes(i - 1) & "::" & theMethod.classTypes(i - 1)
+                ctor.lngParams = 1
+                ReDim ctor.dtParams(0)
+                ReDim ctor.classTypes(0)
+                Dim bIsObject As Boolean
+                bIsObject = isObject(params(i - 1).num)
+                If (bIsObject) Then
+                    ctor.dtParams(0) = DT_OTHER
+                    ctor.classTypes(0) = objectType(params(i - 1).num)
+                    ' Make sure left and right types are inequal (because the copy
+                    ' constructor should get the actual object, not a copy)
+                    If (theMethod.classTypes(i - 1) = ctor.classTypes(0)) Then
+                        ' We cannot call this method as we'll recurse to our end
+                        ctor.dtParams(0) = DT_VOID
+                    End If
+                Else
+                    ctor.dtParams(0) = params(i - 1).dataType
                 End If
-            Else
-                ctor.dtParams(0) = params(i - 1).dataType
-            End If
 
-            If (ctor.dtParams(0) <> DT_VOID) Then
+                If (ctor.dtParams(0) <> DT_VOID) Then
 
-                If (getMethodLine(ctor, theProgram) <> -1) Then
+                    If (getMethodLine(ctor, theProgram) <> -1) Then
 
-                    ' Call this constructor
-                    Dim cParams(0) As String
-                    If (bIsObject) Then
-                        cParams(0) = CStr(params(i - 1).num)
-                    Else
-                        If (params(i - 1).dataType = DT_LIT) Then
-                            cParams(0) = """" & params(i - 1).lit & """"
-                        Else
+                        ' Call this constructor
+                        Dim cParams(0) As String
+                        If (bIsObject) Then
                             cParams(0) = CStr(params(i - 1).num)
+                        Else
+                            If (params(i - 1).dataType = DT_LIT) Then
+                                cParams(0) = """" & params(i - 1).lit & """"
+                            Else
+                                cParams(0) = CStr(params(i - 1).num)
+                            End If
                         End If
+
+                        dUse = CStr(createRPGCodeObject(theMethod.classTypes(i - 1), theProgram, cParams, False, heap))
+
                     End If
 
-                    dUse = CStr(createRPGCodeObject(theMethod.classTypes(i - 1), theProgram, cParams, False, heap))
+                Else
 
-                End If
+                    If Not (bFromCopyConstructor) Then
 
-            Else
+                        ' Make a copy of the object
+                        dUse = CStr(copyObject(params(i - 1).num, theProgram))
+                        Call markForCollection(heap, CLng(dUse))
 
-                If Not (bFromCopyConstructor) Then
-
-                    ' Make a copy of the object
-                    dUse = CStr(copyObject(params(i - 1).num, theProgram))
-                    Call markForCollection(heap, CLng(dUse))
+                    End If
 
                 End If
 
@@ -563,6 +556,9 @@ Public Function runBlock(ByVal runCommands As Long, ByRef prg As RPGCodeProgram,
     Dim retval As RPGCODE_RETURN
     Dim done As Boolean
     Dim depth As Long
+    Dim heap As GARBAGE_HEAP
+    heap = g_garbageHeap
+    ReDim g_garbageHeap.lngGarbage(0)
 
     Do
         prg.programPos = increment(prg)
@@ -592,8 +588,8 @@ Public Function runBlock(ByVal runCommands As Long, ByRef prg As RPGCodeProgram,
 
                 If (runCommands) Then
                     ' Garbage collect
-                    Call garbageCollect(g_garbageHeap)
                     Call DoSingleCommand(prg.program(prg.programPos), prg, retval, True)
+                    Call garbageCollect(g_garbageHeap)
                 Else
                     prg.programPos = increment(prg)
                 End If
@@ -610,6 +606,7 @@ Public Function runBlock(ByVal runCommands As Long, ByRef prg As RPGCodeProgram,
 
     Loop
 
+    g_garbageHeap = heap
     runBlock = prg.programPos
 
 End Function

@@ -196,6 +196,7 @@ Public Sub addMethodToPrg(ByVal strName As String, ByVal strDeclaration As Strin
     brackets = GetBrackets(strDeclaration)
     theMethod.lngParams = CountData(brackets)
     ReDim theMethod.dtParams(theMethod.lngParams - 1)
+    ReDim theMethod.bIsReference(theMethod.lngParams - 1)
     ReDim theMethod.classTypes(theMethod.lngParams - 1)
     ReDim theMethod.paramNames(theMethod.lngParams)
     For i = 0 To theMethod.lngParams - 1
@@ -216,6 +217,8 @@ Public Sub addMethodToPrg(ByVal strName As String, ByVal strDeclaration As Strin
             theMethod.paramNames(i + 1) = objType(1)
             If (RightB$(theMethod.paramNames(i + 1), 2) <> "!") Then
                 theMethod.paramNames(i + 1) = theMethod.paramNames(i + 1) & "!"
+            Else
+                theMethod.bIsReference(i) = True
             End If
         End If
     Next i

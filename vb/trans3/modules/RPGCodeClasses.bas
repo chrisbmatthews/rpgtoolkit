@@ -37,7 +37,8 @@ Public Type RPGCodeMethod
     lngParams As Long                       ' Count of params
     paramNames() As String                  ' Names of parameters
     classTypes() As String                  ' Types of classes required for parameters
-    bIsPureVirtual As Boolean               ' Is this method pure, virtual?
+    bIsReference() As Boolean               ' Takes a reference?
+    bIsPureVirtual As Boolean               ' Is this method pure virtual?
     strDeclaration As String                ' Declaration line
 End Type
 
@@ -1368,7 +1369,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
     ' Check if we can instance this class
     If (LenB(cls.strName)) Then
 
-        If Not (cls.bIsAbstract) Then
+        If (Not (cls.bIsAbstract)) And (Not (cls.isInterface)) Then
 
             ' Create a new handle
             hClass = newHandle()
@@ -1381,15 +1382,15 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
 
             ' Write in the data
             g_objects(hClass).strInstancedFrom = UCase$(theClass)
-            Dim address As Long
-            address = VarPtr(g_objects(hClass))
-            g_objects(hClass).hClass = address
+            Dim lngAddress As Long
+            lngAddress = VarPtr(g_objects(hClass))
+            g_objects(hClass).hClass = lngAddress
 
             ' Clear the object
             Call clearObject(g_objects(hClass), prg)
 
             ' Record the class' address
-            hClass = address
+            hClass = lngAddress
 
             ' Call the constructor(s)
             Dim i As Long
