@@ -38,12 +38,12 @@ Public obj As Object
 '============================================================
 
 Public Property Get version() As String: On Error Resume Next
-    'The plugin's version
+    ' The plugin's version
     version = obj.Plugin_Version
 End Property
 
 Public Property Get description() As String: On Error Resume Next
-   'The plugin's description
+   ' The plugin's description
     description = obj.Plugin_Description
 End Property
 
@@ -54,20 +54,18 @@ End Property
 #If isToolkit = 0 Then
 
 Public Sub Initialize(): On Error Resume Next
-    'Calls Plugin_Initialize
+    ' Calls Plugin_Initialize
     obj.Plugin_Initialize
 End Sub
 
 Public Sub Terminate(): On Error Resume Next
-    'Calls Plugin_Terminate
+    ' Calls Plugin_Terminate
     obj.Plugin_Terminate
 End Sub
 
 Public Function Query(ByVal commandName As String) As Long: On Error Resume Next
-    'Querys a plugin to see if it can do a command
-    If (obj.RPGCode_Query(commandName)) Then
-        Query = 1
-    End If
+    ' Querys a plugin to see if it can do a command
+    Query = -(obj.RPGCode_Query(commandName))
 End Function
 
 Public Function Execute( _
@@ -81,32 +79,28 @@ Public Function Execute( _
     On Error Resume Next
 
     ' Executes an RPGCode command using a plugin
-    If (obj.RPGCode_Execute(commandLine, retValDT, retValLit, retValNum, usingReturnData)) Then
-        Execute = 1
-    End If
+    Execute = -(obj.RPGCode_Execute(commandLine, retValDT, retValLit, retValNum, usingReturnData))
 
 End Function
 
 Public Function fight(ByVal enemyCount As Long, ByVal skilllevel As Long, ByVal backgroundFile As String, ByVal canrun As Long) As Long: On Error Resume Next
-    'Runs a battle system
+    ' Runs a battle system
     fight = obj.fight(enemyCount, skilllevel, backgroundFile, canrun)
 End Function
 
 Public Function fightInform(ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal sourceHPLost As Long, ByVal sourceSMPLost As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal strMessage As String, ByVal attackCode As Long) As Long
-    'Informs a battle system
+    ' Informs a battle system
     fightInform = obj.fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, sourceHPLost, sourceSMPLost, targetHPLost, targetSMPLost, strMessage, attackCode)
 End Function
 
 Public Function menu(ByVal requestedMenu As Long) As Long: On Error Resume Next
-    'Opens a menu system
+    ' Opens a menu system
     menu = obj.menu(requestedMenu)
 End Function
 
 Public Function plugType(ByVal requestedFeature As Long) As Long: On Error Resume Next
-    'Detects what this plugin does
-    If (obj.plugType(requestedFeature)) Then
-        plugType = 1
-    End If
+    ' Detects what this plugin does
+    plugType = -(obj.plugType(requestedFeature))
 End Function
 
 '============================================================
