@@ -287,11 +287,12 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Button9 {66833FEA-8583-11D1-B16A-00C0F0283628} 
             Key             =   "website"
-            Object.ToolTipText     =   "Go To Awesome Computing Website"
+            Object.ToolTipText     =   "Go To The RPGToolkit Homepage"
             Object.Tag             =   "1396"
             ImageIndex      =   7
          EndProperty
          BeginProperty Button10 {66833FEA-8583-11D1-B16A-00C0F0283628} 
+            Object.Visible         =   0   'False
             Key             =   "chat"
             Object.ToolTipText     =   "Chat"
             Object.Tag             =   "2034"
@@ -301,7 +302,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   3
          EndProperty
          BeginProperty Button12 {66833FEA-8583-11D1-B16A-00C0F0283628} 
-            Enabled         =   0   'False
+            Object.Visible         =   0   'False
             Key             =   "configTk"
             Object.ToolTipText     =   "Config"
             ImageIndex      =   10
@@ -437,8 +438,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -1592,6 +1593,7 @@ Begin VB.MDIForm tkMainForm
                Appearance      =   0  'Flat
                AutoRedraw      =   -1  'True
                BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
                BeginProperty Font 
                   Name            =   "MS Sans Serif"
                   Size            =   8.25
@@ -1604,9 +1606,9 @@ Begin VB.MDIForm tkMainForm
                ForeColor       =   &H80000008&
                Height          =   480
                Left            =   150
-               ScaleHeight     =   30
+               ScaleHeight     =   32
                ScaleMode       =   3  'Pixel
-               ScaleWidth      =   30
+               ScaleWidth      =   32
                TabIndex        =   167
                Top             =   270
                Width           =   480
@@ -1632,7 +1634,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.PictureBox currenttileIso 
                Appearance      =   0  'Flat
                AutoRedraw      =   -1  'True
-               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
                BeginProperty Font 
                   Name            =   "MS Sans Serif"
                   Size            =   8.25
@@ -1645,9 +1647,9 @@ Begin VB.MDIForm tkMainForm
                ForeColor       =   &H80000008&
                Height          =   480
                Left            =   720
-               ScaleHeight     =   30
+               ScaleHeight     =   32
                ScaleMode       =   3  'Pixel
-               ScaleWidth      =   62
+               ScaleWidth      =   64
                TabIndex        =   164
                Top             =   270
                Width           =   960
@@ -1847,7 +1849,6 @@ Begin VB.MDIForm tkMainForm
             Begin VB.PictureBox isoMirror 
                Appearance      =   0  'Flat
                AutoRedraw      =   -1  'True
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
                ForeColor       =   &H80000008&
                Height          =   480
@@ -2604,13 +2605,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "05/02/2005"
+            TextSave        =   "06/02/2005"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "17:35"
+            TextSave        =   "15:28"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3361,8 +3362,7 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x 
             Call activeForm.changeSelectedTile(setFilename)
         Case Else
             'It's not a form that uses the tile browser, so load it in the tile editor.
-            Dim newTile As Form
-            Set newTile = New tileedit
+            Dim newTile As New tileedit
             Set activeTile = newTile
             activeTile.Show
             Call activeTile.openFile(projectPath & tilePath & setFilename)
