@@ -22,10 +22,23 @@
 #define TAB "	"							//the tab key
 
 //////////////////////////////////////////////////////////////////////////
+// Types
+//////////////////////////////////////////////////////////////////////////
+typedef void (__stdcall* CBOneParamStr)(BSTR);
+
+//////////////////////////////////////////////////////////////////////////
 // Prototypes
 //////////////////////////////////////////////////////////////////////////
+
+//for vb strings
 inline void initVbString(char* theString);
-inline int returnVbString(inlineString theString, int &lengthBuffer);
-int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer);
-int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer);
-int APIENTRY RPGCParseBefore(char* pText, char* startSymbol, int &lengthBuffer);
+inline void returnVbString(inlineString theString);
+
+//for BSTRs
+inline BSTR CharToBSTR(char* stringPointer);
+
+//exports
+void APIENTRY RPGCInitParser(int setStringAddress);
+void APIENTRY RPGCGetMethodName(char* pText);
+void APIENTRY RPGCParseAfter(char* pText, char* startSymbol);
+void APIENTRY RPGCParseBefore(char* pText, char* startSymbol);

@@ -11,12 +11,17 @@
 //////////////////////////////////////////////////////////////////////////
 // Include the header file
 //////////////////////////////////////////////////////////////////////////
-#include "parser.h"		//contains stuff integral to this file
+#include "parser.h"				//contains stuff integral to this file
+
+//////////////////////////////////////////////////////////////////////////
+// Globals
+//////////////////////////////////////////////////////////////////////////
+CBOneParamStr setLastString;	//set the last parser string
 
 //////////////////////////////////////////////////////////////////////////
 // Return content in text after startSymbol is located
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer)
+void APIENTRY RPGCParseAfter(char* pText, char* startSymbol)
 {
 	
 	//Read the VB string
@@ -50,14 +55,14 @@ int APIENTRY RPGCParseAfter(char* pText, char* startSymbol, int &lengthBuffer)
 	}
 
 	//Return what we found
-	return returnVbString(toRet, lengthBuffer);
+	returnVbString(toRet);
 
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Return content from text until startSymbol is located
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY RPGCParseBefore(char* pText, char* startSymbol, int &lengthBuffer)
+void APIENTRY RPGCParseBefore(char* pText, char* startSymbol)
 {
 
 	//Read the VB string
@@ -76,7 +81,7 @@ int APIENTRY RPGCParseBefore(char* pText, char* startSymbol, int &lengthBuffer)
 		if (part == startSymbol)
 		{
 			//Found it
-			return returnVbString(toRet, lengthBuffer);
+			returnVbString(toRet);
 			break;
 		}
 		else
@@ -85,13 +90,13 @@ int APIENTRY RPGCParseBefore(char* pText, char* startSymbol, int &lengthBuffer)
 		}
 	}
 
-	return returnVbString("", lengthBuffer);
+	returnVbString("");
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Get the name of a method
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
+void APIENTRY RPGCGetMethodName(char* pText)
 {
 
 	//read the VB string
@@ -169,40 +174,24 @@ int APIENTRY RPGCGetMethodName(char* pText, int &lengthBuffer)
     }
 
 	//return what we found
-	return returnVbString(mName, lengthBuffer);
+	returnVbString(mName);
 
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Initiate the parser
+//////////////////////////////////////////////////////////////////////////
+void APIENTRY RPGCInitParser(int setStringAddress)
+{
+	setLastString = (CBOneParamStr)setStringAddress;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Return a VB string
 //////////////////////////////////////////////////////////////////////////
-inline int returnVbString(inlineString theString, int &lengthBuffer)
+inline void returnVbString(inlineString theString)
 {
-
-	/////////////////////////////////////////////////////////////////
-	//theString is the string to return
-	//lengthBuffer is the var to use as the length buffer
-	//returns address of string (what you should use as return value)
-	/////////////////////////////////////////////////////////////////
-
-	//create a static variable to hold the address of the string
-	static char* memAdd;
-
-	//if we previously had a value, delete it now
-	if (memAdd) delete memAdd;
-
-	//allocate some memory for the string
-	memAdd = new(char[theString.len()]);
-
-	//copy the string into the memory
-	theString.newMem(memAdd);
-
-	//set the length buffer to the size in memory
-	lengthBuffer = sizeof(memAdd);
-
-	//return the address to the string
-	return (int)memAdd;
-
+	setLastString(CharToBSTR((char*)theString));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -211,4 +200,41 @@ inline int returnVbString(inlineString theString, int &lengthBuffer)
 inline void initVbString(char* theString)
 {
 	theString = (char*)(BSTR)theString;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Convert a pointer to a string to a BSTR
+//////////////////////////////////////////////////////////////////////////
+inline BSTR CharToBSTR(char* stringPointer)
+{
+
+	//get the length of the string passed in
+	int len = strlen(stringPointer);
+
+	//prepare a BSTR string to return (one byte longer than char*
+	//because BSTR strings know their own length)
+	unsigned short* bstrRet = new unsigned short[len + 1];
+
+	//loop over each character
+	for (int chrIdx = 0; chrIdx < len; chrIdx++)
+	{
+
+		//set in the character
+		bstrRet[chrIdx] = stringPointer[chrIdx];
+
+		//set in the escape sequence (will be overwritten if
+		//this is not the last character)
+		bstrRet[chrIdx + 1] = '\0';
+
+	}
+
+	if (len == 0) 
+	{
+		//if the string had no length, then just set it to nothing
+		bstrRet[0] = 0;
+	}
+
+	//return the BSTR
+	return bstrRet;
+
 }
