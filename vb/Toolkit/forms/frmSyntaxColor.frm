@@ -54,6 +54,7 @@ Begin VB.Form frmColoringOptions
       TabPicture(1)   =   "frmSyntaxColor.frx":0028
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "fraTab1"
+      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Common"
       TabPicture(2)   =   "frmSyntaxColor.frx":0044
@@ -80,7 +81,6 @@ Begin VB.Form frmColoringOptions
             _ExtentX        =   4260
             _ExtentY        =   2778
             _Version        =   393217
-            Enabled         =   -1  'True
             ScrollBars      =   3
             Appearance      =   0
             TextRTF         =   $"frmSyntaxColor.frx":0060

@@ -40,6 +40,7 @@ Begin VB.Form frmTutorial
       _ExtentX        =   7011
       _ExtentY        =   6588
       _Version        =   393217
+      Enabled         =   -1  'True
       ReadOnly        =   -1  'True
       ScrollBars      =   2
       Appearance      =   0

@@ -164,7 +164,7 @@ Public Sub indentCode(ByVal ic As String)
     frmInfo.Visible = True
 
     ' Indent the code
-    With activeRPGCode.CodeForm
+    With activeRPGCode.codeForm
         .Locked = True
         lblWait.Caption = "Splitting..."
         lines = Split(.Text, vbNewLine)

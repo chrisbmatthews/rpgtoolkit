@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form editmainfile 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Project Properties (Untitled)"
@@ -86,17 +86,17 @@ Begin VB.Form editmainfile
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "actionframe"
+      Tab(2).Control(0)=   "prgframe"
       Tab(2).Control(0).Enabled=   0   'False
-      Tab(2).Control(1)=   "prgframe"
+      Tab(2).Control(1)=   "actionframe"
       Tab(2).Control(1).Enabled=   0   'False
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
       Tab(3).ControlEnabled=   0   'False
-      Tab(3).Control(0)=   "Picture7"
+      Tab(3).Control(0)=   "fightframe"
       Tab(3).Control(0).Enabled=   0   'False
-      Tab(3).Control(1)=   "fightframe"
+      Tab(3).Control(1)=   "Picture7"
       Tab(3).Control(1).Enabled=   0   'False
       Tab(3).ControlCount=   2
       TabCaption(4)   =   "Graphics"
@@ -116,19 +116,19 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Frame3"
+      Tab(5).Control(0)=   "Label24"
       Tab(5).Control(0).Enabled=   0   'False
       Tab(5).Control(1)=   "daynightcheckbox"
       Tab(5).Control(1).Enabled=   0   'False
-      Tab(5).Control(2)=   "Label24"
+      Tab(5).Control(2)=   "Frame3"
       Tab(5).Control(2).Enabled=   0   'False
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
       Tab(6).ControlEnabled=   0   'False
-      Tab(6).Control(0)=   "Picture13"
+      Tab(6).Control(0)=   "Frame1"
       Tab(6).Control(0).Enabled=   0   'False
-      Tab(6).Control(1)=   "Frame1"
+      Tab(6).Control(1)=   "Picture13"
       Tab(6).Control(1).Enabled=   0   'False
       Tab(6).ControlCount=   2
       Begin VB.PictureBox Picture13 

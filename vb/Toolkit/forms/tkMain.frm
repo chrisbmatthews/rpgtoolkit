@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MsComCtl.ocx"
-Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
@@ -15,9 +15,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   12135
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   8775
+      ScaleHeight     =   5910
       ScaleWidth      =   2730
       TabIndex        =   88
       Top             =   360
@@ -195,8 +195,8 @@ Begin VB.MDIForm tkMainForm
       Left            =   0
       TabIndex        =   1
       Top             =   0
-      Width           =   15240
-      _ExtentX        =   26882
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
@@ -385,9 +385,9 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   8430
-      Left            =   3825
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   465
+      ScaleHeight     =   5910
       ScaleWidth      =   3510
       TabIndex        =   56
       Top             =   360
@@ -437,8 +437,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -625,9 +625,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   2010
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   -1350
+      ScaleHeight     =   5910
       ScaleWidth      =   1815
       TabIndex        =   53
       Top             =   360
@@ -696,9 +696,9 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   8430
+      Height          =   5910
       Left            =   0
-      ScaleHeight     =   8430
+      ScaleHeight     =   5910
       ScaleWidth      =   975
       TabIndex        =   11
       Top             =   360
@@ -1358,11 +1358,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   10
-      Top             =   8790
+      Top             =   6270
       Visible         =   0   'False
-      Width           =   15240
+      Width           =   11880
       Begin VB.Frame frmBoardExtras 
          BorderStyle     =   0  'None
          Caption         =   "Frame8"
@@ -2404,9 +2404,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   14865
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   11505
+      ScaleHeight     =   5910
       ScaleWidth      =   375
       TabIndex        =   3
       Top             =   360
@@ -2462,9 +2462,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8430
-      Left            =   7335
-      ScaleHeight     =   8430
+      Height          =   5910
+      Left            =   3975
+      ScaleHeight     =   5910
       ScaleWidth      =   4800
       TabIndex        =   2
       Top             =   360
@@ -2581,22 +2581,22 @@ Begin VB.MDIForm tkMainForm
       Height          =   255
       Left            =   0
       TabIndex        =   0
-      Top             =   10455
-      Width           =   15240
-      _ExtentX        =   26882
+      Top             =   7935
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "12/20/2004"
+            TextSave        =   "12/21/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   10954
-            TextSave        =   "12:31 PM"
+            Object.Width           =   5027
+            TextSave        =   "10:59 AM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
