@@ -711,10 +711,7 @@ End Function
 '=========================================================================
 ' Get the command name in the text passed in
 '=========================================================================
-Public Function GetCommandName( _
-                                  ByVal splice As String, _
-                                  ByRef thePrg As RPGCodeProgram _
-                                                                   ) As String
+Public Function GetCommandName(ByVal splice As String) As String
 
     On Error Resume Next
 
@@ -728,28 +725,22 @@ Public Function GetCommandName( _
     For p = 1 To Length
         part = Mid$(splice, p, 1)
         If part <> " " And part <> "#" And part <> Chr(9) Then
-            If thePrg.autoCommand Then
-
-                If part$ = "*" Then
-                    GetCommandName = "*"
-                    Exit Function
+            If part$ = "*" Then
+                GetCommandName = "*"
+                Exit Function
                 
-                ElseIf part$ = ":" Then
-                    GetCommandName = "LABEL"
-                    Exit Function
+            ElseIf part$ = ":" Then
+                GetCommandName = "LABEL"
+                Exit Function
                 
-                ElseIf part$ = "@" Then
-                    GetCommandName = "@"
-                    Exit Function
-                End If
-                
-                foundIt = p
-                starting = p - 1
-                Exit For
-            Else
-                foundIt = 0
-                Exit For
+            ElseIf part$ = "@" Then
+                GetCommandName = "@"
+                Exit Function
             End If
+                
+            foundIt = p
+            starting = p - 1
+            Exit For
 
         ElseIf part = "#" Then
             starting = p
@@ -905,7 +896,7 @@ Public Function ParseRPGCodeCommand( _
     'parsers (heh...)
 
     'Some things don't require parsing
-    Select Case UCase(GetCommandName(line, prg))
+    Select Case UCase(GetCommandName(line))
         Case "@", "*", "", "LABEL", "OPENBLOCK", "CLOSEBLOCK", "REDIRECT", "METHOD"
             ParseRPGCodeCommand = line
             Exit Function
@@ -927,13 +918,13 @@ Public Function ParseRPGCodeCommand( _
     Dim varExp As Boolean       'Variable expression?
 
     'Check if we have a variable expression
-    varExp = (GetCommandName(line, prg) = "VAR")
+    varExp = (GetCommandName(line) = "VAR")
 
     'Get the text to operate on
     If (varExp) Then
         bT = line
     Else
-        prefix = LCase(GetCommandName(line, prg))
+        prefix = LCase(GetCommandName(line))
         bT = " " & GetBrackets(line)
     End If
 

@@ -198,7 +198,7 @@ Public Sub showEndForm(Optional ByVal endProgram As Boolean = True)
                                              )
 
         Dim okHwnd As Long, moreInfoHwnd As Long
-        okHwnd = CreateWindowEx(0, "button", "OK", WS_VISIBLE Or WS_CHILD Or BS_DEFPUSHBUTTON, 253, 10, 70, 22, endFormHwnd, 100, App.hInstance, 0)
+        okHwnd = CreateWindowEx(0, "button", "OK", WS_VISIBLE Or WS_CHILD Or BS_PUSHBUTTON, 253, 10, 70, 22, endFormHwnd, 100, App.hInstance, 0)
         moreInfoHwnd = CreateWindowEx(0, "button", "More Info", WS_VISIBLE Or WS_CHILD Or BS_PUSHBUTTON, 253, 40, 70, 22, endFormHwnd, 101, App.hInstance, 0)
 
         Call SetFocus(okHwnd)

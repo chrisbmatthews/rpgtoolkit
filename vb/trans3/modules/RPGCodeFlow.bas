@@ -119,7 +119,7 @@ End Function
 '=========================================================================
 Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
 
-    On Error GoTo errorhandler
+    On Error Resume Next
 
     Dim parameterList(100) As String
     Dim destList(100) As String
@@ -128,7 +128,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     Dim t As Long, test As String, itis As String, canDoIt As Boolean
     
     If commandName$ = "" Then
-        mName = GetCommandName(Text, theProgram)   'get command name without extra info
+        mName = GetCommandName(Text)   'get command name without extra info
     Else
         mName = commandName
     End If
@@ -152,7 +152,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     'Now to find that method name
     foundIt = -1
     For t = 0 To theProgram.Length
-        test$ = GetCommandName$(theProgram.program$(t), theProgram)  'get command name without extra info
+        test$ = GetCommandName$(theProgram.program$(t))  'get command name without extra info
         If UCase$(test$) = "METHOD" Then
             itis$ = GetMethodName(theProgram.program$(t))
             If UCase$(itis$) = UCase$(mName$) Then
@@ -239,19 +239,25 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             Next se
         Next t
 
-        
         'set up method return value...
         methodReturn = retval
         
         Dim aa As Long
         'OK- data is passed.  Now run the method:
         theProgram.programPos = increment(theProgram)
-        
+    
+        'Store current error handling thing-a-ma-jigy
+        Dim oldErrorHandler As String
+        oldErrorHandler = errorBranch
+
         Dim ogbm As Boolean
         ogbm = isMultiTasking()
         gbMultiTasking = False
         aa = runBlock(theProgram.program$(foundIt), 1, theProgram)
         gbMultiTasking = ogbm
+
+        'Restore error handler
+        errorBranch = oldErrorHandler
 
         theProgram.programPos = oldPos
     
@@ -277,11 +283,6 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
 '=========================================================================
@@ -543,7 +544,7 @@ Public Sub moveToStartOfBlock(ByRef prg As RPGCodeProgram)
 
     Dim done As Boolean
     Do Until done
-        Select Case LCase(GetCommandName(prg.program(prg.programPos), prg))
+        Select Case LCase(GetCommandName(prg.program(prg.programPos)))
             
             Case "openblock"
                 done = True
@@ -573,7 +574,7 @@ Public Function runBlock( _
     
     Do Until done
                
-        Select Case LCase(GetCommandName(prg.program(prg.programPos), prg))
+        Select Case LCase(GetCommandName(prg.program(prg.programPos)))
 
             Case "openblock"
                 depth = depth + 1
@@ -952,7 +953,7 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
     Dim splice As String, cType As String, testText As String
 
     splice$ = cLine$
-    cType$ = GetCommandName$(splice$, theProgram)   'get command name without extra info
+    cType$ = GetCommandName$(splice$)   'get command name without extra info
     testText$ = UCase$(cType$)
 
     'check for redirects...

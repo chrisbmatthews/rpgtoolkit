@@ -65,7 +65,7 @@ Public GS_ANIMATING As Boolean                     'Are we animating?
 '=========================================================================
 ' All threads
 '=========================================================================
-Public threads() As RPGCODE_THREAD                 'Running threads
+Public Threads() As RPGCODE_THREAD                 'Running threads
 
 '=========================================================================
 ' Clear all non-presistent threads
@@ -75,17 +75,17 @@ Public Sub ClearNonPersistentThreads()
     On Error Resume Next
     
     Dim c As Long                   'for loop control variable
-    Dim retVal As RPGCODE_RETURN    'unused rpgcode return value
+    Dim retval As RPGCODE_RETURN    'unused rpgcode return value
     
-    For c = 0 To UBound(threads)
-        If (threads(c).bPersistent = False) Then
-            Call TellThread(c, "Unload()", retVal, True)
-            threads(c).filename = ""
-            threads(c).thread.programPos = -1
-            threads(c).thread.threadID = -1
-            ReDim threads(c).thread.program(10)
-            threads(c).bIsSleeping = False
-            Call ClearRPGCodeProcess(threads(c).thread)
+    For c = 0 To UBound(Threads)
+        If (Threads(c).bPersistent = False) Then
+            Call TellThread(c, "Unload()", retval, True)
+            Threads(c).filename = ""
+            Threads(c).thread.programPos = -1
+            Threads(c).thread.threadID = -1
+            ReDim Threads(c).thread.program(10)
+            Threads(c).bIsSleeping = False
+            Call ClearRPGCodeProcess(Threads(c).thread)
         End If
     Next c
 
@@ -96,7 +96,7 @@ Public Sub ClearNonPersistentThreads()
     Next c
 
     For c = 0 To UBound(loopPRG)
-        If Not threads(loopPRG(c).threadID).bPersistent Then
+        If Not Threads(loopPRG(c).threadID).bPersistent Then
             Call endThreadLoop(c)
         End If
     Next c
@@ -111,19 +111,19 @@ Public Sub ClearAllThreads()
     On Error Resume Next
 
     Dim c As Long                   'for loop control variable
-    Dim retVal As RPGCODE_RETURN    'unused rpgcode return value
+    Dim retval As RPGCODE_RETURN    'unused rpgcode return value
 
-    For c = 0 To UBound(threads)
-        Call TellThread(c, "Unload()", retVal, True)
-        threads(c).filename = ""
-        threads(c).thread.programPos = -1
-        threads(c).thread.threadID = -1
-        ReDim threads(c).thread.program(0)
-        threads(c).bIsSleeping = False
-        Call ClearRPGCodeProcess(threads(c).thread)
+    For c = 0 To UBound(Threads)
+        Call TellThread(c, "Unload()", retval, True)
+        Threads(c).filename = ""
+        Threads(c).thread.programPos = -1
+        Threads(c).thread.threadID = -1
+        ReDim Threads(c).thread.program(0)
+        Threads(c).bIsSleeping = False
+        Call ClearRPGCodeProcess(Threads(c).thread)
     Next c
 
-    ReDim threads(0)
+    ReDim Threads(0)
 
     Call ceaseAllMultitaskingAnimations
     Call endAllThreadLoops
@@ -139,8 +139,8 @@ Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean)
     Dim size As Long    'size of threads() array
 
     'search for a free persistent thread slot
-    For c = 0 To UBound(threads)
-        With threads(c)
+    For c = 0 To UBound(Threads)
+        With Threads(c)
             If (.filename = "") Then
                 'this is a thread that has been halted, thus it's slot is free
                 .thread = openProgram(file)
@@ -155,9 +155,9 @@ Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean)
     Next c
 
     'need a free slot...
-    size = UBound(threads)
-    ReDim Preserve threads(size * 2)
-    With threads(size)
+    size = UBound(Threads)
+    ReDim Preserve Threads(size * 2)
+    With Threads(size)
         .thread = openProgram(file)
         .filename = file
         .bPersistent = bPersistent
@@ -177,18 +177,18 @@ Public Sub ExecuteAllThreads()
     
     'persistent threads...
     Dim c As Long
-    For c = 0 To UBound(threads)
-        If threads(c).filename <> "" Then
-            If threads(c).bIsSleeping Then
+    For c = 0 To UBound(Threads)
+        If Threads(c).filename <> "" Then
+            If Threads(c).bIsSleeping Then
                 'thread is asleep
                 'time to wake up?
-                If threads(c).sleepStartTime + threads(c).sleepDuration <= Timer Then
+                If Threads(c).sleepStartTime + Threads(c).sleepDuration <= Timer Then
                     'wake up!
-                    threads(c).bIsSleeping = False
-                    Call ExecuteThread(threads(c).thread)
+                    Threads(c).bIsSleeping = False
+                    Call ExecuteThread(Threads(c).thread)
                 End If
             Else
-                Call ExecuteThread(threads(c).thread)
+                Call ExecuteThread(Threads(c).thread)
             End If
         End If
     Next c
@@ -203,8 +203,8 @@ Public Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
     If theProgram.programPos = -1 Or theProgram.programPos = -2 Then
         ExecuteThread = False
     Else
-        Dim retVal As RPGCODE_RETURN
-        theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retVal)
+        Dim retval As RPGCODE_RETURN
+        theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval)
         If theProgram.programPos = -1 Or theProgram.programPos = -2 Then
             'clear the program
             Call ClearRPGCodeProcess(theProgram)
@@ -223,15 +223,15 @@ Public Sub InitThreads()
     On Error Resume Next
     
     'init persistent threads...
-    ReDim threads(10)
+    ReDim Threads(10)
     Dim c As Long
-    For c = 0 To UBound(threads)
-        threads(c).filename = ""
-        threads(c).thread.programPos = -1
-        threads(c).thread.boardNum = -1
-        threads(c).bIsSleeping = False
-        Call InitRPGCodeProcess(threads(c).thread)
-        Call ClearRPGCodeProcess(threads(c).thread)
+    For c = 0 To UBound(Threads)
+        Threads(c).filename = ""
+        Threads(c).thread.programPos = -1
+        Threads(c).thread.boardNum = -1
+        Threads(c).bIsSleeping = False
+        Call InitRPGCodeProcess(Threads(c).thread)
+        Call ClearRPGCodeProcess(Threads(c).thread)
     Next c
 
 End Sub
@@ -241,23 +241,23 @@ End Sub
 '=========================================================================
 Public Sub KillThread(ByVal threadID As Long)
     On Error Resume Next
-    Dim retVal As RPGCODE_RETURN
-    Call TellThread(threadID, "Unload()", retVal, True)
-    threads(threadID).filename = ""
-    threads(threadID).thread.programPos = -1
-    threads(threadID).thread.threadID = -1
-    ReDim threads(threadID).thread.program(10)
-    Call ClearRPGCodeProcess(threads(threadID).thread)
+    Dim retval As RPGCODE_RETURN
+    Call TellThread(threadID, "Unload()", retval, True)
+    Threads(threadID).filename = ""
+    Threads(threadID).thread.programPos = -1
+    Threads(threadID).thread.threadID = -1
+    ReDim Threads(threadID).thread.program(10)
+    Call ClearRPGCodeProcess(Threads(threadID).thread)
 End Sub
 
 '=========================================================================
 ' Call a method from a thread
 '=========================================================================
-Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retVal As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
+Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
     On Error Resume Next
     Dim shortName As String
-    shortName = UCase(GetCommandName(rpgcodeCommand, threads(threadID).thread))
-    Call MethodCallRPG(rpgcodeCommand, shortName, threads(threadID).thread, retVal, noMethodNotFound)
+    shortName = UCase(GetCommandName(rpgcodeCommand))
+    Call MethodCallRPG(rpgcodeCommand, shortName, Threads(threadID).thread, retval, noMethodNotFound)
 End Sub
 
 '=========================================================================
@@ -265,9 +265,9 @@ End Sub
 '=========================================================================
 Public Sub ThreadSleep(ByVal threadID As Long, ByVal durationInSeconds As Double)
     On Error Resume Next
-    threads(threadID).bIsSleeping = True
-    threads(threadID).sleepStartTime = Timer
-    threads(threadID).sleepDuration = durationInSeconds
+    Threads(threadID).bIsSleeping = True
+    Threads(threadID).sleepStartTime = Timer
+    Threads(threadID).sleepDuration = durationInSeconds
 End Sub
 
 '=========================================================================
@@ -276,8 +276,8 @@ End Sub
 Public Function ThreadSleepRemaining(ByVal threadID As Long) As Double
     On Error Resume Next
     Dim dRet As Double
-    If threads(threadID).bIsSleeping Then
-        dRet = threads(threadID).sleepDuration - (Timer - threads(threadID).sleepStartTime)
+    If Threads(threadID).bIsSleeping Then
+        dRet = Threads(threadID).sleepDuration - (Timer - Threads(threadID).sleepStartTime)
     End If
     ThreadSleepRemaining = dRet
 End Function
@@ -287,7 +287,7 @@ End Function
 '=========================================================================
 Public Sub ThreadWake(ByVal threadID As Long)
     On Error Resume Next
-    threads(threadID).bIsSleeping = False
+    Threads(threadID).bIsSleeping = False
 End Sub
 
 '=========================================================================
@@ -296,16 +296,16 @@ End Sub
 Public Sub launchBoardThreads(ByRef board As TKBoard)
     On Error GoTo skip
     Dim a As Long, id As Long
-    For a = 0 To UBound(board.threads)
-        id = CreateThread(projectPath & prgPath & board.threads(a), False)
+    For a = 0 To UBound(board.Threads)
+        id = CreateThread(projectPath & prgPath & board.Threads(a), False)
         Call CBSetNumerical("Threads[" & CStr(a) & "]!", id)
     Next a
 skip:
     On Error GoTo skipAgain
-    Dim retVal As RPGCODE_RETURN
-    For a = 0 To UBound(threads)
-        If threads(a).bPersistent Then
-            Call TellThread(a, "EnterNewBoard()", retVal, True)
+    Dim retval As RPGCODE_RETURN
+    For a = 0 To UBound(Threads)
+        If Threads(a).bPersistent Then
+            Call TellThread(a, "EnterNewBoard()", retval, True)
         End If
     Next a
 skipAgain:
@@ -451,7 +451,7 @@ Public Sub handleThreadLooping()
         
     Loop
 
-    If Not threads(loopPRG(currentlyLooping).threadID).bIsSleeping Then
+    If Not Threads(loopPRG(currentlyLooping).threadID).bIsSleeping Then
         Dim ogbm As Boolean
         ogbm = isMultiTasking()
         gbMultiTasking = True
@@ -470,7 +470,7 @@ Private Sub incrementThreadLoop(ByVal num As Long)
     Dim rV As RPGCODE_RETURN
     prg = loopPRG(num)
 
-    Select Case LCase(GetCommandName(prg.program(prg.programPos), prg))
+    Select Case LCase(GetCommandName(prg.program(prg.programPos)))
 
         Case "openblock"
             loopDepth(num) = loopDepth(num) + 1
@@ -533,7 +533,7 @@ Public Function startMultitaskAnimation(ByVal x As Long, ByVal y As Long, ByRef 
     ReDim Preserve multitaskAnimationY(ub + 1)
     ReDim Preserve multitaskAnimationPersistent(ub + 1)
 
-    multitaskAnimationPersistent(ub + 1) = threads(prg.threadID).bPersistent
+    multitaskAnimationPersistent(ub + 1) = Threads(prg.threadID).bPersistent
     multitaskAnimations(ub + 1) = animationMem
     multitaskAnimationX(ub + 1) = x
     multitaskAnimationY(ub + 1) = y

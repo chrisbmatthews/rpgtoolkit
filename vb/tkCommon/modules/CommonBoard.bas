@@ -618,7 +618,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
         Call BinWriteInt(num, 2)    'Minor version (ie 2.2 new type, allowing large boards)
         Call BinWriteInt(num, 1)
         Call BinWriteString(num, "NOCODE")            'No reg code
-        
+
         'first is the board size...
         Call BinWriteInt(num, theBoard.bSizeX)
         Call BinWriteInt(num, theBoard.bSizeY)

@@ -1805,19 +1805,8 @@ Function CBGetCommandName(ByVal rpgcodeCommand As String) As String
     'splices the command name out of the string sent in (assuming the
     'string is an rpgcode command)
     'ie #Test(lala) returns "Test"
-    On Error GoTo errorhandler
-    Dim thePrg As RPGCodeProgram
-    ReDim thePrg.program(10)
-    thePrg.boardNum = -1     'not attached to the board
-    thePrg.autoCommand = True
-    CBGetCommandName = LCase$(GetCommandName(rpgcodeCommand, thePrg))
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    On Error Resume Next
+    CBGetCommandName = LCase$(GetCommandName(rpgcodeCommand))
 End Function
 
 

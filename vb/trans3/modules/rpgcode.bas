@@ -3312,7 +3312,7 @@ Public Function IfThen( _
     'Allow the array to enlarge itself...
     On Error GoTo enlargeDoneIf
     
-    Select Case LCase(GetCommandName(Text, prg))
+    Select Case LCase(GetCommandName(Text))
 
         Case "else"
             If Not doneIf(ub) Then
@@ -7503,7 +7503,7 @@ Sub TextRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim hdc As Long
         hdc = CanvasOpenHDC(cnv)
 
-        Select Case LCase(GetCommandName(Text, theProgram))
+        Select Case LCase(GetCommandName(Text))
             Case "text": putText lit1$, num1, num2, fontColor, fontSize, fontSize, hdc
             Case "pixeltext"
                 putText lit1, (num1 / fontSize) + 1, _
@@ -8402,7 +8402,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
     res = Evaluate(dataUseWhile$, theProgram)
     
     Dim okToRun As Boolean
-    If LCase(GetCommandName(Text, theProgram)) = "until" Then
+    If LCase(GetCommandName(Text)) = "until" Then
         If res = 0 Then okToRun = True
     Else
         If res = 1 Then okToRun = True
@@ -8413,7 +8413,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
         If isMultiTasking() And (Not theProgram.looping) Then
 
             'Let the main loop handle this...
-            If Not LCase(GetCommandName(Text, theProgram)) = "until" Then
+            If Not LCase(GetCommandName(Text)) = "until" Then
                 startThreadLoop theProgram, TYPE_WHILE, dataUseWhile
             Else
                 startThreadLoop theProgram, TYPE_UNTIL, dataUseWhile
@@ -8427,7 +8427,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
             Do Until done
                 res = Evaluate(dataUseWhile$, theProgram)
                 
-                If LCase(GetCommandName(Text, theProgram)) = "until" Then
+                If LCase(GetCommandName(Text)) = "until" Then
                     If res = 0 Then
                         res = 1
                     ElseIf res = 1 Then
@@ -9118,7 +9118,6 @@ Sub Dos(ByVal Text$, ByRef theProgram As RPGCodeProgram)
     gGameState = GS_QUIT
     
     Call closeSystems
-    Call showEndForm(True)
 
     Exit Sub
 'Begin error handling code:
@@ -10415,7 +10414,7 @@ Function DoOpenFile(Text$, ByRef theProgram As RPGCodeProgram) As Integer
  On Error GoTo error
 
  ' ! ADDED BY KSNiloc...
- If LCase(GetCommandName(Text, theProgram)) = "openfileinput" Then
+ If LCase(GetCommandName(Text)) = "openfileinput" Then
     If Not fileExists(App.path & "\" & fullfolder & file) Then
         debugger "Error: " & App.path & "\" & fullfolder & file & " does not exist!"
         Exit Function
@@ -11029,7 +11028,7 @@ Public Function SwitchCase( _
         Dim paras() As parameters
         paras() = GetParameters(Text, prg)
 
-        Select Case LCase(GetCommandName(Text, prg))
+        Select Case LCase(GetCommandName(Text))
 
             Case "switch"
                 If Not CountData(Text) = 1 Then
@@ -11264,7 +11263,7 @@ Public Sub asciiToChr( _
     'c$ = Chr(char!)
     
     If Not CountData(Text) = 1 Then
-        debugger GetCommandName(Text, prg) & _
+        debugger GetCommandName(Text) & _
             " requires one data element-- " & Text
         Exit Sub
     End If
@@ -11272,7 +11271,7 @@ Public Sub asciiToChr( _
     Dim paras() As parameters
     paras = GetParameters(Text, prg)
     
-    Select Case LCase(GetCommandName(Text, prg))
+    Select Case LCase(GetCommandName(Text))
         Case "asc"
             If Not paras(0).dataType = DT_LIT Then
                 debugger "Asc() requires a literal data element-- " & Text
@@ -11335,7 +11334,7 @@ Public Sub rightLeft( _
     On Error Resume Next
     
     If Not CountData(Text) = 2 Then
-        debugger GetCommandName(Text, prg) & _
+        debugger GetCommandName(Text) & _
             " requires two data elements-- " & Text
         Exit Sub
     End If
@@ -11344,13 +11343,13 @@ Public Sub rightLeft( _
     paras = GetParameters(Text, prg)
 
     If Not ((paras(0).dataType = DT_LIT) And (paras(1).dataType = DT_NUM)) Then
-        debugger GetCommandName(Text, prg) & _
+        debugger GetCommandName(Text) & _
             " 's elements are literal, numerical-- " & Text
         Exit Sub
     End If
     
     retval.dataType = DT_LIT
-    Select Case LCase(GetCommandName(Text, prg))
+    Select Case LCase(GetCommandName(Text))
         Case "right"
             retval.lit = Right(paras(0).lit, paras(1).num)
         Case "left"
