@@ -189,17 +189,6 @@ Public Sub redrawAllLayersAt(ByVal xBoardCoord As Integer, ByVal yBoardCoord As 
                           boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
                           boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, False)
 
-            'If cnvScrollCacheMask <> -1 Then
-            '
-            '    Call drawTileCNV(cnvScrollCacheMask, _
-            '                  projectPath & tilePath & BoardGetTile(x, y, layer, boardList(activeBoardIndex).theData), _
-            '                  xx, _
-            '                  yy, _
-            '                  boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
-            '                  boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
-            '                  boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, True, False)
-            '
-            'End If
         End If
     Next layer
 
@@ -281,15 +270,6 @@ Private Sub drawPrograms(ByVal layer As Long, ByVal cnv As Long, ByVal cnvMask A
                                         boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, False)
                     End If
 
-                    'If cnvMask <> -1 Then
-                    '    Call drawTileCNV(cnvMask, _
-                    '                    projectPath & tilePath & boardList(activeBoardIndex).theData.progGraphic$(prgNum), _
-                    '                    x - scTopX, _
-                    '                    y - scTopY, _
-                    '                    boardList(activeBoardIndex).theData.ambientRed(x, y, layer) + shadeR, _
-                    '                    boardList(activeBoardIndex).theData.ambientGreen(x, y, layer) + shadeG, _
-                    '                    boardList(activeBoardIndex).theData.ambientBlue(x, y, layer) + shadeB, True, False)
-                    'End If
                 End If
             End If
         End If
@@ -408,24 +388,15 @@ Private Sub DXDrawBoard(Optional ByVal cnvTarget As Long = -1)
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then x1 = (topX - scTopX) * 64
 
     If cnvTarget = -1 Then 'Render to screen (to the scrollcache).
-
-        'If usingDX() Then
-            Call DXDrawCanvasTransparentPartial(cnvScrollCache, 0, 0, x1, y1, tilesX * 32, tilesY * 32, TRANSP_COLOR)
-        'Else
-        '    Call DXDrawCanvasPartial(cnvScrollCacheMask, 0, 0, x1, y1, tilesX * 32, tilesY * 32, SRCAND)
-        '    Call DXDrawCanvasPartial(cnvScrollCache, 0, 0, x1, y1, tilesX * 32, tilesY * 32, SRCPAINT)
-        'End If
+        Call DXDrawCanvasTransparentPartial(cnvScrollCache, _
+            0, 0, x1, y1, tilesX * 32, tilesY * 32, TRANSP_COLOR _
+        )
 
     Else 'Render to canvas
-
-        'If usingDX() Then
-            Call canvas2CanvasBltTransparentPartial(cnvScrollCache, _
-                                                    cnvTarget, _
-                                                    0, 0, x1, y1, tilesX * 32, tilesY * 32, TRANSP_COLOR)
-        'Else
-        '    Call Canvas2CanvasBltPartial(cnvScrollCacheMask, cnvTarget, 0, 0, x1, y1, tilesX * 32, tilesY * 32, SRCAND)
-        '    Call Canvas2CanvasBltPartial(cnvScrollCache, cnvTarget, 0, 0, x1, y1, tilesX * 32, tilesY * 32, SRCPAINT)
-        'End If
+        Call canvas2CanvasBltTransparentPartial(cnvScrollCache, _
+            cnvTarget, _
+            0, 0, x1, y1, tilesX * 32, tilesY * 32, TRANSP_COLOR _
+        )
     End If
 
 End Sub
@@ -532,7 +503,7 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                         ext$ = GetExt(bgt)
                         If UCase$(ext$) <> "TAN" Then
                             'not the animated part
-                            If cnv <> -1 Then
+                            If (cnv <> -1) Then
                                 Call drawTileCnv(cnv, _
                                               projectPath & tilePath & bgt, _
                                               xx, _
@@ -542,48 +513,22 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
                                               boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
                             End If
                             
-                            'If cnvMask <> -1 Then
-                            '    Call drawTileCNV(cnvMask, _
-                            '                  projectPath & tilePath & BoardGetTile(x, y, lll, boardList(activeBoardIndex).theData), _
-                            '                  xx, _
-                            '                  yy, _
-                            '                  boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
-                            '                  boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
-                            '                  boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, False)
-                            'End If
                         Else
-                            If cnv <> -1 Then
-                                'If cnvMask <> -1 Then
-                                '    Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
-                                '                                cnv, _
-                                '                                xx, _
-                                '                                yy, _
-                                '                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
-                                '                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
-                                '                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, False)
-                                'Else
-                                    Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
-                                                                cnv, _
-                                                                xx, _
-                                                                yy, _
-                                                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
-                                                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
-                                                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, False)
-                                'End If
+                            If (cnv <> -1) Then
+                                Call TileAnmDrawNextFrameCNV( _
+                                    boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
+                                    cnv, _
+                                    xx, _
+                                    yy, _
+                                    boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
+                                    boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
+                                    boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, False _
+                                )
                             End If
-                            'If cnvMask <> -1 Then
-                            '    Call TileAnmDrawNextFrameCNV(boardList(activeBoardIndex).theData.animatedTile(t).theTile, _
-                            '                                cnvMask, _
-                            '                                xx, _
-                            '                                yy, _
-                            '                                boardList(activeBoardIndex).theData.ambientRed(x, y, lll) + shadeR, _
-                            '                                boardList(activeBoardIndex).theData.ambientGreen(x, y, lll) + shadeG, _
-                            '                                boardList(activeBoardIndex).theData.ambientBlue(x, y, lll) + shadeB, True, True, True)
-                            'End If
                         End If
                     End If
                 Next lll
-            End If 'end of should i draw this frame check
+            End If
         Next t
     End If
 
@@ -645,7 +590,7 @@ End Sub
 '=========================================================================
 ' Render the board's scroll cache
 '=========================================================================
-Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX As Long, ByVal tY As Long)
+Private Sub renderScrollCache(ByVal cnv As Long, ByVal tX As Long, ByVal tY As Long)
 
     On Error Resume Next
 
@@ -662,7 +607,7 @@ Private Sub renderScrollCache(ByVal cnv As Long, ByVal cnvMask As Long, ByVal tX
     ' Draw the board
     Call GFXDrawBoardCNV( _
         VarPtr(boardList(activeBoardIndex).theData), _
-        cnv, cnvMask, _
+        cnv, _
         0, tX, IIf(boardList(activeBoardIndex).theData.isIsometric = 1, tY * 2, tY), _
         scTilesX, IIf(boardList(activeBoardIndex).theData.isIsometric = 1, scTilesY * 2, scTilesY), _
         boardList(activeBoardIndex).theData.bSizeX, _
@@ -1090,17 +1035,9 @@ End Function
 '=========================================================================
 Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     On Error Resume Next
-    #If (USE_BACK_CANVAS) Then
-        m_cnvBack = createCanvas(width, height)
-    #End If
     cnvScrollCache = createCanvas(width * 2, height * 2)
     scTilesX = width * 2 \ 32
     scTilesY = height * 2 \ 32
-    'If Not usingDX() Then
-    '    cnvScrollCacheMask = CreateCanvas(width * 2, height * 2)
-    'Else
-    ' cnvScrollCacheMask = -1
-    'End If
     scTopX = -1
     scTopY = -1
     Dim t As Long
@@ -1125,9 +1062,6 @@ End Sub
 '=========================================================================
 Private Sub destroyCanvases()
     On Error Resume Next
-    #If (USE_BACK_CANVAS) Then
-        Call destroyCanvas(m_cnvBack)
-    #End If
     Call destroyCanvas(cnvScrollCache)
     Call destroyCanvas(cnvBackground)
     Dim t As Long
@@ -1206,8 +1140,7 @@ Private Function renderBoard() As Boolean
         If scTopX < 0 And topX >= 0 Then scTopX = 0
         If scTopY < 0 And topY >= 0 Then scTopY = 0
 
-        ' Call renderScrollCache(cnvScrollCache, cnvScrollCacheMask, scTopX, scTopY)
-        Call renderScrollCache(cnvScrollCache, -1, scTopX, scTopY)
+        Call renderScrollCache(cnvScrollCache, scTopX, scTopY)
 
         ' Call drawPrograms(1, cnvScrollCache, cnvScrollCacheMask)
         Call drawPrograms(1, cnvScrollCache, -1)
@@ -1439,113 +1372,51 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
 
     On Error Resume Next
 
-    Dim depth As Long               ' Color depth
-
-    ' Use DirectX
-    Const useDX = 1
-
-    ' Update resolution
+    ' Set up resolution
     resX = width
     resY = height
-
-    ' Number of tiles screen can hold
     tilesX = width / 32
     tilesY = height / 32
-
-    ' Dimensions of screen in isometric tiles
     isoTilesX = tilesX / 2 ' = 10.0 (640res) = 12.5 (800res)
     isoTilesY = tilesY * 2 ' = 30 (640res) = 36 (800res)
 
-    ' Get fullscreen setting from main file (unless we're testing
-    ' a PRG, then it's always windowed)
-    Dim fullScreen As Long
-    If Not (testingPRG) Then
-        ' Check main file
-        fullScreen = mainMem.extendToFullScreen
-        ' Show the end form
-        bShowEndForm = True
-    Else
-        ' Not in full screen
-        fullScreen = 0
-        ' Do not show the end form
-        bShowEndForm = False
-    End If
-
-    If (fullScreen = 0) Then
-        ' We are not in full screen mode
-        inFullScreenMode = False
-        ' Show the host windowed
-        host.style = windowed
-    Else
-        ' We are in full screen mode
-        inFullScreenMode = True
-        ' Show the host full screen
-        host.style = FullScreenMode
-    End If
-
-    ' Set the dimensions the host window will be created with
-    With host
-        .width = width * Screen.TwipsPerPixelX
-        .height = height * Screen.TwipsPerPixelY
-        .Top = (Screen.height - .height) \ 2
-        .Left = (Screen.width - .width) \ 2
-        If Not (inFullScreenMode) Then
-            ' If not in full screen mode, increase to account for window border
-            .width = .width + 6 * Screen.TwipsPerPixelX
-            .height = .height + 24 * Screen.TwipsPerPixelY
-        End If
-    End With
-
-    ' Get screen depth from the main file
-    Select Case mainMem.colordepth
-        Case COLOR16: depth = 16    ' 16 bit
-        Case COLOR24: depth = 24    ' 24 bit
-        Case COLOR32: depth = 32    ' 32 bit
-    End Select
-
-    ' Create the host window
+    ' Set up the host window
+    inFullScreenMode = ((mainMem.extendToFullScreen <> 0) And (Not (testingPRG)))
+    bShowEndForm = Not (testingPRG)
+    host.style = IIf(inFullScreenMode, WS_FULL_SCREEN, WS_WINDOWED)
+    host.width = width
+    host.height = height
+    host.Top = ((Screen.height - height * Screen.TwipsPerPixelX) \ 2) \ Screen.TwipsPerPixelX
+    host.Left = ((Screen.width - width * Screen.TwipsPerPixelY) \ 2) \ Screen.TwipsPerPixelY
     Call host.Create("DirectXHost")
 
-    ' Enter the gfx initialization loop
-    Do
+    ' Colour depth
+    Dim depth As Long
+    Select Case mainMem.colordepth
+        Case COLOR16: depth = 16
+        Case COLOR24: depth = 24
+        Case COLOR32: depth = 32
+    End Select
 
-        ' Attempt to initiate DirectX
-        If (DXInitGfxMode(host.hwnd, width, height, useDX, depth, fullScreen) = 0) Then
-            If ((depth = 16) And (fullScreen = 0)) Then
-                ' Destroy the host window
-                Call Unload(host)
-                ' Inform the user
-                Call MsgBox("Error initializing graphics mode. Make sure you have DirectX 8 or higher installed.")
-                ' Show the end form
-                Call showEndForm(True)
-            ElseIf (depth = 32) Then
-                ' Decrease color depth to 24 bit
-                depth = 24
-            ElseIf (depth = 24) Then
-                ' Decrease color depth to 16 bit
-                depth = 16
-            ElseIf (depth = 16) Then
-                ' Try windowed mode
-                fullScreen = 0
-                inFullScreenMode = False
-            End If
-        Else
-            ' Exit the initiating loop
-            Exit Do
+    ' Initialize DirectDraw
+    Do While (DXInitGfxMode(host.hwnd, width, height, 1, depth, IIf(inFullScreenMode, 1, 0)) = 0)
+        If ((depth = 16) And (Not (inFullScreenMode))) Then
+            Set host = Nothing
+            Call MsgBox("Error initializing graphics mode. Make sure you have DirectX 8 or higher installed.")
+            Call showEndForm(True)
+        ElseIf (depth = 32) Then
+            depth = 24
+        ElseIf (depth = 24) Then
+            depth = 16
+        ElseIf (depth = 16) Then
+            inFullScreenMode = False
         End If
-
     Loop
 
-    ' Now set up offscreen canvases
+    ' Finalize
     Call createCanvases(width, height)
-
-    ' Clear the screen (remove backbuffer garbage)
     Call DXClearScreen(0)
-
-    ' Render the screen
     Call DXRefresh
-
-    ' Show the DirectX host window
     Call host.Show
 
 End Sub

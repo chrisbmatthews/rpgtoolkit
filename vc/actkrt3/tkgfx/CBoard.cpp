@@ -138,7 +138,6 @@ INLINE std::string CBoard::tile(
 //--------------------------------------------------------------------------
 VOID FAST_CALL CBoard::draw(
 	CONST CNV_HANDLE cnv,
-	CONST CNV_HANDLE maskCnv,
 	CONST INT layer,
 	CONST INT topX,
 	CONST INT topY,
@@ -188,37 +187,15 @@ VOID FAST_CALL CBoard::draw(
 					CONST INT g = ambientGreen(x, y, i) + aG;
 					CONST INT b = ambientBlue(x, y, i) + aB;
 
-					// If there's a canvas
-					if (cnv != -1)
-					{
-
-						// Set the tile onto it
-						GFXDrawTileCNV(
-							pstrTile,
-							j, k,
-							r, g, b,
-							cnv,
-							bIsometric,
-							nIsoEvenOdd
-						);
-
-					}
-
-					// If there's a mask canvas
-					if (maskCnv != -1)
-					{
-
-						// Draw the tile's mask
-						GFXDrawTileMaskCNV(
-							pstrTile,
-							j, k,
-							r, g, b,
-							maskCnv, 0,
-							bIsometric,
-							nIsoEvenOdd
-						);
-
-					}
+					// Set the tile onto it
+					GFXDrawTileCNV(
+						pstrTile,
+						j, k,
+						r, g, b,
+						cnv,
+						bIsometric,
+						nIsoEvenOdd
+					);
 
 				} // if (!strTile.empty())
 

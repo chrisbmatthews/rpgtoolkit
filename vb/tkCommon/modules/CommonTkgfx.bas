@@ -40,7 +40,7 @@ Public Declare Function TKInit Lib "actkrt3.dll" () As Long
 Public Declare Function TKClose Lib "actkrt3.dll" () As Long
 Public Declare Function GFXDrawTileCNV Lib "actkrt3.dll" (ByVal fName As String, ByVal x As Double, ByVal y As Double, ByVal rRed As Long, ByVal gGreen As Long, ByVal bBlue As Long, ByVal cnvHandle As Long, ByVal nIsometric As Long, Optional ByVal isoEvenOdd As Long = 0) As Long
 Public Declare Function GFXDrawTileMaskCNV Lib "actkrt3.dll" (ByVal fName As String, ByVal x As Double, ByVal y As Double, ByVal rRed As Long, ByVal gGreen As Long, ByVal bBlue As Long, ByVal cnvHandle As Long, ByVal nDirectBlt As Long, ByVal nIsometric As Long, ByVal isoEvenOdd As Long) As Long
-Public Declare Function GFXDrawBoardCNV Lib "actkrt3.dll" (ByVal pBrd As Long, ByVal cnv As Long, ByVal cnvMask As Long, ByVal layer As Long, ByVal nTopx As Long, ByVal nTopy As Long, ByVal nTilesx As Long, ByVal nTilesy As Long, ByVal nBsizex As Long, ByVal nBsizey As Long, ByVal nBsizel As Long, ByVal ar As Long, ByVal ag As Long, ByVal ab As Long, ByVal nIsometric As Long) As Long
+Public Declare Function GFXDrawBoardCNV Lib "actkrt3.dll" (ByVal pBrd As Long, ByVal cnv As Long, ByVal layer As Long, ByVal nTopx As Long, ByVal nTopy As Long, ByVal nTilesx As Long, ByVal nTilesy As Long, ByVal nBsizex As Long, ByVal nBsizey As Long, ByVal nBsizel As Long, ByVal ar As Long, ByVal ag As Long, ByVal ab As Long, ByVal nIsometric As Long) As Long
 
 '=========================================================================
 ' Draw a tile

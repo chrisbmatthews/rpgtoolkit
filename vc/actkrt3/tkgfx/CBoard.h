@@ -80,7 +80,6 @@ public:
 	// Draw the board to a canvas
 	VOID FAST_CALL draw(
 		CONST CNV_HANDLE cnv,
-		CONST CNV_HANDLE maskCnv,
 		CONST INT layer,
 		CONST INT topX,
 		CONST INT topY,

@@ -242,7 +242,7 @@ int APIENTRY GFXdrawboard ( CBoard *brd, int hdc,
 //
 ///////////////////////////////////////////////////////
 int APIENTRY GFXDrawBoardCNV ( CBoard *brd, CNV_HANDLE cnv,
-														CNV_HANDLE maskcnv,
+														// CNV_HANDLE maskcnv,
 														int layer,
 														int topx, 
 														int topy,
@@ -257,7 +257,7 @@ int APIENTRY GFXDrawBoardCNV ( CBoard *brd, CNV_HANDLE cnv,
 														int nIsometric )
 
 {
-	brd->draw(cnv, maskcnv, layer, topx, topy, tilesX, tilesY, nBsizex, nBsizey, nBsizel, ar, ag, ab, nIsometric);
+	brd->draw(cnv, /*maskcnv,*/ layer, topx, topy, tilesX, tilesY, nBsizex, nBsizey, nBsizel, ar, ag, ab, nIsometric);
 	return 1;
 }
 

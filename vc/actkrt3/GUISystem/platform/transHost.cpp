@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------
-// All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
+// All contents copyright 2004, 2005, Colin James Fitzpatrick
 // All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
 // Read LICENSE.txt for licensing info
 //-------------------------------------------------------------------
@@ -83,7 +83,8 @@ INT APIENTRY createHostWindow(
 		caption ? caption : "RPGToolkit Version 3 Translator",
 		style,
 		x, y,
-		width, height,
+		width + GetSystemMetrics(SM_CXFIXEDFRAME),
+		height + GetSystemMetrics(SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYSIZE),
 		NULL, NULL,
 		HINSTANCE(instance),
 		NULL

@@ -12,7 +12,7 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '=========================================================================
-' All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
+' All contents copyright 2004, 2005, Colin James Fitzpatrick
 ' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '=========================================================================
@@ -84,8 +84,8 @@ Private Const COLORONCOLOR = 3
 ' Member enumerations
 '=========================================================================
 Public Enum STYLE_ENUM
-    FullScreenMode
-    windowed
+    WS_FULL_SCREEN
+    WS_WINDOWED
 End Enum
 
 '=========================================================================
@@ -107,9 +107,9 @@ End Sub
 ' Style of window
 '=========================================================================
 Public Property Let style(ByVal newValue As STYLE_ENUM)
-    If (newValue = FullScreenMode) Then
+    If (newValue = WS_FULL_SCREEN) Then
         m_createStyle = &H80000000
-    ElseIf (newValue = windowed) Then
+    ElseIf (newValue = WS_WINDOWED) Then
         m_createStyle = &H0& Or &HC00000 Or &H80000 Or &H20000
     End If
 End Property
@@ -275,10 +275,10 @@ Public Sub Create(ByRef strClass As String)
     On Error Resume Next
 
     hwnd = createHostWindow( _
-        m_createX \ Screen.TwipsPerPixelX, _
-        m_createY \ Screen.TwipsPerPixelY, _
-        m_createWidth \ Screen.TwipsPerPixelX, _
-        m_createHeight \ Screen.TwipsPerPixelY, _
+        m_createX, _
+        m_createY, _
+        m_createWidth, _
+        m_createHeight, _
         m_createStyle, _
         m_createCaption, _
         App.hInstance, _
