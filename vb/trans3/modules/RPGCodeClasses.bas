@@ -187,7 +187,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                 inStruct = False
             End If
 
-        ElseIf (inClass And (scope <> "") And (prg.program(lineIdx) <> "")) Then
+        ElseIf (inClass And (scope <> "") And (prg.program(lineIdx) <> "") And (Right(prg.program(lineIdx), 1) <> ":")) Then
             If (InStr(1, prg.program(lineIdx), "(")) Then
                 'Found a method
                 If (Not inStruct) Then

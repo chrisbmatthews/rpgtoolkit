@@ -38,7 +38,6 @@ Public Declare Function RPGCKillNum Lib "actkrt3.dll" (ByVal varname As String, 
 Public Declare Function RPGCKillLit Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCNumExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
 Public Declare Function RPGCLitExists Lib "actkrt3.dll" (ByVal varname As String, ByVal heapID As Long) As Long
-Public Declare Function RPGCEvaluate Lib "actkrt3.dll" (ByVal equation As String) As Double
 
 '=========================================================================
 ' Declarations for the actkrt3.dll redirection exports
@@ -50,6 +49,164 @@ Public Declare Function RPGCKillRedirect Lib "actkrt3.dll" (ByVal pstrMethod As 
 Public Declare Function RPGCGetRedirectName Lib "actkrt3.dll" (ByVal nItrOffset As Long, ByVal pstrToVal As String) As Long
 Public Declare Function RPGCClearRedirects Lib "actkrt3.dll" () As Long
 Public Declare Function RPGCCountRedirects Lib "actkrt3.dll" () As Long
+
+'=========================================================================
+' Detect if something is an operator
+'=========================================================================
+Private Function isOperator(ByVal test As String) As Boolean
+    isOperator = True
+    Select Case test
+        Case "-", "+", "*", "/", "^"
+        Case Else: isOperator = False
+    End Select
+End Function
+
+'=========================================================================
+' Detect if something is a number
+'=========================================================================
+Private Function isNumber(ByVal num As String) As Boolean
+    On Error GoTo error
+    Dim ret As Double
+    If (isOperator(Right(num, 1))) Then Exit Function
+    ret = CDbl(num)
+    isNumber = True
+error:
+End Function
+
+'=========================================================================
+' Evaluate an equation (Asimir & KSNiloc)
+'=========================================================================
+Private Function evaluate(ByVal text As String) As Double
+
+    On Error Resume Next
+
+    Const NEG_SIGN = 0              '- sign
+    Const PLUS_SIGN = 1             '+ sign
+    Const MULTIPLY_SIGN = 2         '* sign
+    Const DIV_SIGN = 3              '/ sign
+    Const RAISE_SIGN = 4            '^ sign
+
+    Dim idx As Long                 'Current character
+    Dim char As String              'A character
+    Dim num As String               'A number
+    Dim depth As Long               'Depth in brackets
+    Dim tokenIdx As Long            'Current token
+    Dim operatorIdx As Long         'Current operator
+    Dim toSolve As Long             'Idx to solve
+    Dim solveVal As Long            'Value of that idx
+
+    ReDim tokens(0) As Double       'Tokens in the string
+    ReDim operators(0) As Long      'Operators in the string
+    ReDim brackets(0) As Long       'Bracket counts at operators
+
+    'Set indexes to -1
+    tokenIdx = -1
+    operatorIdx = -1
+
+    'Eat spaces, replace "(-" with "(-1*", and encase string in ()s
+    text = "(" & replace(replace(replace(text, vbTab, ""), " ", ""), "(-", "(-1*") & ")"
+
+    'Loop over each character
+    For idx = 1 To Len(text)
+
+        'Grab a character
+        char = Mid(text, idx, 1)
+
+        'If we haven't started a number yet, and it's a ".",
+        'change it to a "0."
+        If ((num = "") And (char = ".")) Then char = "0."
+
+        'Check if adding this character to the current
+        'number would produce a valid number
+        If (isNumber(num & char)) Then
+            'It would, so add it on
+            num = num & char
+            If (char = "-") Then
+                'If it was a negative sign, then remove it
+                text = Mid(text, 1, idx - 1) & "0" & Mid(text, idx + 1)
+            End If
+        Else
+            'If we have a number, then we've reached its end
+            If (num <> "") Then
+                'Record the token
+                tokenIdx = tokenIdx + 1
+                ReDim Preserve tokens(tokenIdx)
+                tokens(tokenIdx) = CDbl(num)
+                'Set running num to nothing
+                num = ""
+            End If
+            'Try other things
+            If (char = "(") Then            'Opening Bracket
+                                            '---------------
+                'Getting deeper
+                depth = depth + 1
+            ElseIf (char = ")") Then        'Closing Bracket
+                                            '---------------
+                'Coming out
+                depth = depth - 1
+            ElseIf (isOperator(char)) Then  'Operator
+                                            '--------
+                'Record the operator
+                operatorIdx = operatorIdx + 1
+                ReDim Preserve operators(operatorIdx)
+                Select Case char
+                    Case "-": operators(operatorIdx) = NEG_SIGN
+                    Case "+": operators(operatorIdx) = PLUS_SIGN
+                    Case "/": operators(operatorIdx) = DIV_SIGN
+                    Case "*": operators(operatorIdx) = MULTIPLY_SIGN
+                    Case "^": operators(operatorIdx) = RAISE_SIGN
+                End Select
+                'Record the bracket depth
+                ReDim Preserve brackets(operatorIdx)
+                brackets(operatorIdx) = depth
+            End If
+        End If
+
+    Next idx
+
+    'Before we try and solve this equation, let's make sure all's good
+    If ((depth <> 0) Or ((operatorIdx + 1) <> tokenIdx)) Then
+        'Error out
+        evaluate = -1
+        Exit Function
+    End If
+
+    'Now solve this sucker, based on operator precedurence
+    Do
+        toSolve = -1
+        solveVal = -1
+        For idx = 0 To UBound(tokens)
+            If ((brackets(idx) * 5 + operators(idx)) > solveVal) Then
+                'This one has the highest precedurence yet
+                solveVal = brackets(idx) * 5 + operators(idx)
+                toSolve = idx - 1
+            End If
+        Next idx
+        'Now we know which token to solve, so let's make it happen
+        Select Case operators(toSolve)
+            Case PLUS_SIGN: tokens(toSolve) = tokens(toSolve) + tokens(toSolve + 1)
+            Case NEG_SIGN: tokens(toSolve) = tokens(toSolve) - tokens(toSolve + 1)
+            Case MULTIPLY_SIGN: tokens(toSolve) = tokens(toSolve) * tokens(toSolve + 1)
+            Case DIV_SIGN: tokens(toSolve) = tokens(toSolve) / tokens(toSolve + 1)
+            Case RAISE_SIGN: tokens(toSolve) = tokens(toSolve) ^ tokens(toSolve + 1)
+        End Select
+        'Knock the arrays back a notch
+        For idx = toSolve To UBound(tokens)
+            If (idx > toSolve) Then
+                tokens(idx + 1) = tokens(idx + 2)
+            End If
+            brackets(idx) = brackets(idx + 1)
+            operators(idx) = operators(idx + 1)
+        Next idx
+        ReDim Preserve tokens(UBound(tokens) - 1)
+        ReDim Preserve brackets(UBound(brackets) - 1)
+        ReDim Preserve operators(UBound(operators) - 1)
+    Loop Until (UBound(tokens) = 0)
+
+    'Return the result
+    evaluate = tokens(0)
+
+End Function
 
 '=========================================================================
 ' Get the value of a variable - unattached to a program
@@ -300,7 +457,7 @@ Public Function RPGCodeEquation( _
         Select Case .dataType
             Case DT_NUM
                 'Numerical!
-                .num = RPGCEvaluate(equ)
+                .num = evaluate(equ)
             Case DT_LIT
                 'Literal!
                 Dim varIdx As Long, num As Double, dat As String
@@ -409,8 +566,8 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
             Next tokenIdx
             build = Mid(build, 1, Len(build) - 2)
 
-            'Call into actkrt3.dll to evaluate the equation
-            numberUse(number) = RPGCEvaluate(build)
+            'Now actually evaluate the quation
+            numberUse(number) = evaluate(build)
 
             'Switch on the equal sign
             Select Case equal
