@@ -24,43 +24,36 @@ Attribute VB_Exposed = False
 Option Explicit
 
 '=========================================================================
-' A DirectMusic structure
-'=========================================================================
-Private Type DIRECT_MUSIC
-    dx7 As DirectX7                             ' A DirectX object
-    performance As DirectMusicPerformance       ' A performance
-    segment As DirectMusicSegment               ' A segment
-    segmentState As DirectMusicSegmentState     ' A segment state
-    loader As DirectMusicLoader                 ' Loads files
-End Type
-
-'=========================================================================
 ' Members
 '=========================================================================
-Private m_directMusic As DIRECT_MUSIC           ' DirectMusic stuff
+Private m_performance As DirectMusicPerformance       ' A performance
+Private m_segment As DirectMusicSegment               ' A segment
+Private m_segmentState As DirectMusicSegmentState     ' A segment state
+Private m_loader As DirectMusicLoader                 ' Loads files
 
 '=========================================================================
 ' Constructor
 '=========================================================================
 Private Sub Class_Initialize()
 
-    ' Create the main DirectX object
-    Set m_directMusic.dx7 = New DirectX7
+    ' Create a DirectX object
+    Dim dx7 As DirectX7
+    Set dx7 = New DirectX7
 
     ' Create a loader
-    Set m_directMusic.loader = m_directMusic.dx7.DirectMusicLoaderCreate()
+    Set m_loader = dx7.DirectMusicLoaderCreate()
 
     ' Create a performance
-    Set m_directMusic.performance = m_directMusic.dx7.DirectMusicPerformanceCreate()
+    Set m_performance = dx7.DirectMusicPerformanceCreate()
 
     ' Initiate the performance
-    Call m_directMusic.performance.Init(Nothing, 0)
+    Call m_performance.Init(Nothing, 0)
 
     ' Set to the default port
-    Call m_directMusic.performance.SetPort(-1, 80)
+    Call m_performance.SetPort(-1, 80)
 
     ' Set to automatically download instruments
-    Call m_directMusic.performance.SetMasterAutoDownload(True)
+    Call m_performance.SetMasterAutoDownload(True)
 
 End Sub
 
@@ -74,7 +67,7 @@ Public Sub setVolume(ByVal lngPercent As Long)
     If (lngPercent > 100) Then lngPercent = 100
 
     ' Set the volume
-    Call m_directMusic.performance.SetMasterVolume(lngPercent * 42 - 3000)
+    Call m_performance.SetMasterVolume(lngPercent * 42 - 3000)
 
 End Sub
 
@@ -84,22 +77,21 @@ End Sub
 Public Sub playMidi(ByRef strFilename As String, Optional ByVal bLoopMidi As Boolean = True)
 
     ' Use the loader to create a segment
-    Set m_directMusic.segment = m_directMusic.loader.LoadSegment(strFilename)
+    Set m_segment = m_loader.LoadSegment(strFilename)
 
     ' Set the format to MIDI
-    Call m_directMusic.segment.SetStandardMidiFile
+    Call m_segment.SetStandardMidiFile
 
     ' If we should loop
     If (bLoopMidi) Then
 
         ' Set it to loop
-        Call m_directMusic.segment.SetRepeats(2147483647) ' [ Infinite repeats ]
+        Call m_segment.SetRepeats(2147483647) ' [ Infinite repeats ]
 
     End If
 
     ' Play the segment
-    Set m_directMusic.segmentState = _
-        m_directMusic.performance.PlaySegment(m_directMusic.segment, 0, 0)
+    Set m_segmentState = m_performance.PlaySegment(m_segment, 0, 0)
 
 End Sub
 
@@ -109,14 +101,13 @@ End Sub
 Public Sub stopMidi()
 
     ' If a MIDI is loaded
-    If Not (m_directMusic.segment Is Nothing) Then
+    If Not (m_segment Is Nothing) Then
 
         ' Stop the segment
-        Call m_directMusic.performance.Stop( _
-            m_directMusic.segment, m_directMusic.segmentState, 0, 0)
+        Call m_performance.Stop(m_segment, m_segmentState, 0, 0)
 
         ' Kill the segment
-        Set m_directMusic.segment = Nothing
+        Set m_segment = Nothing
 
     End If
 
@@ -128,11 +119,10 @@ End Sub
 Public Function isPlaying() As Boolean
 
     ' If a MIDI is loaded
-    If Not (m_directMusic.segment Is Nothing) Then
+    If Not (m_segment Is Nothing) Then
 
         ' Return whether it's playing
-        isPlaying = m_directMusic.performance.isPlaying( _
-            m_directMusic.segment, m_directMusic.segmentState)
+        isPlaying = m_performance.isPlaying(m_segment, m_segmentState)
 
     End If
 
@@ -144,6 +134,6 @@ End Function
 Private Sub Class_Terminate()
 
     ' Close down the performance
-    Call m_directMusic.performance.CloseDown
+    Call m_performance.CloseDown
 
 End Sub
