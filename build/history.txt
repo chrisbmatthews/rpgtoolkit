@@ -34,7 +34,7 @@ Bug Fixes
 + Nestled if/else statements messed up. 
 + true/false could be killed. 
 + '<' and '>' didn't work in equations.
-+ mwin "word wrapped", though very poored
++ mwin "word wrapped", though very poorly
 
 New Features 
 -------------
