@@ -79,7 +79,7 @@ End Sub
 Public Function dataType( _
                             ByVal Text As String, _
                             Optional ByRef equType As RPGC_DT = -1 _
-                                                                    ) As RPGC_DT
+                                                                     ) As RPGC_DT
    
     On Error GoTo datatypeerr
     Dim Length As Long, dType As RPGC_DT, p As Long, part As String, a As Double, errorsA As Long
@@ -127,8 +127,9 @@ Public Function dataType( _
     End If
 
     'Before we leave, check if there is an equation
-    Dim equResult As Long
-    If isEquation(Text, equResult) Then
+    Dim equResult As RPGC_DT
+    If isEquation(Text, equResult) And _
+       (Not ((dType = DT_STRING) And (Not stringContains(Text, Chr(34))))) Then
         dType = DT_EQUATION
         If equType = -1 Then
             dType = equResult
@@ -234,7 +235,7 @@ Public Function isEquation( _
     Dim uD() As String
     Dim dt As Long
     Dim a As Long
- 
+
     litOrNum = DT_VOID
  
     'Make sure we were passed data...
