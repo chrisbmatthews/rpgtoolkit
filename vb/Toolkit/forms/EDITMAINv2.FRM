@@ -53,7 +53,6 @@ Begin VB.Form editmainfile
       _Version        =   393216
       Style           =   1
       Tabs            =   7
-      Tab             =   4
       TabsPerRow      =   7
       TabHeight       =   520
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -67,21 +66,23 @@ Begin VB.Form editmainfile
       EndProperty
       TabCaption(0)   =   "Project Settings"
       TabPicture(0)   =   "EDITMAINv2.frx":0CCA
-      Tab(0).ControlEnabled=   0   'False
-      Tab(0).Control(0)=   "prjframe"
-      Tab(0).Control(1)=   "envframe"
+      Tab(0).ControlEnabled=   -1  'True
+      Tab(0).Control(0)=   "envframe"
+      Tab(0).Control(0).Enabled=   0   'False
+      Tab(0).Control(1)=   "prjframe"
+      Tab(0).Control(1).Enabled=   0   'False
       Tab(0).ControlCount=   2
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "fraSettings"
-      Tab(1).Control(1)=   "startframe"
+      Tab(1).Control(0)=   "startframe"
+      Tab(1).Control(1)=   "fraSettings"
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "actionframe"
-      Tab(2).Control(1)=   "prgframe"
+      Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(1)=   "actionframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -90,16 +91,16 @@ Begin VB.Form editmainfile
       Tab(3).ControlCount=   1
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
-      Tab(4).ControlEnabled=   -1  'True
+      Tab(4).ControlEnabled=   0   'False
       Tab(4).Control(0)=   "screenframe"
       Tab(4).Control(0).Enabled=   0   'False
       Tab(4).ControlCount=   1
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label24"
+      Tab(5).Control(0)=   "Frame3"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Frame3"
+      Tab(5).Control(2)=   "Label24"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
@@ -1156,7 +1157,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   3615
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   19
          Tag             =   "1136"
          Top             =   600
@@ -1465,7 +1466,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1695
-         Left            =   -74760
+         Left            =   240
          TabIndex        =   12
          Tag             =   "1182"
          Top             =   600
@@ -1586,7 +1587,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1815
-         Left            =   -74760
+         Left            =   240
          TabIndex        =   2
          Top             =   2520
          Width           =   6495
@@ -3076,7 +3077,7 @@ End Sub
 '=========================================================================
 ' Custom resolution stuff
 '=========================================================================
-Private Sub txtResX_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
+Private Sub txtResX_KeyDown(ByRef keyCode As Integer, ByRef Shift As Integer)
     optResCustom.value = True
     mainMem.mainResolution = 4
 End Sub
@@ -3108,7 +3109,7 @@ End Sub
 Private Sub txtResY_Change()
     mainMem.resY = val(txtResY.Text) ' val *must* be used - CDbl is no good here
 End Sub
-Private Sub txtResY_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
+Private Sub txtResY_KeyDown(ByRef keyCode As Integer, ByRef Shift As Integer)
     optResCustom.value = True
     mainMem.mainResolution = 4
 End Sub
