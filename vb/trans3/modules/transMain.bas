@@ -311,8 +311,8 @@ Public Sub gameLogic()
             For cnt = 0 To UBound(pendingItemMovement)
                 With pendingItemMovement(cnt)
                     .direction = MV_IDLE
-                    .xOrig = itmPos(cnt).x
-                    .yOrig = itmPos(cnt).y
+                    .xOrig = itmPos(cnt).X
+                    .yOrig = itmPos(cnt).Y
                 End With
             Next cnt
 
@@ -320,8 +320,8 @@ Public Sub gameLogic()
             'whereas the movement direction can only be cleared afterwards.
             For cnt = 0 To UBound(pendingPlayerMovement)
                 With pendingPlayerMovement(cnt)
-                    .xOrig = pPos(cnt).x
-                    .yOrig = pPos(cnt).y
+                    .xOrig = pPos(cnt).X
+                    .yOrig = pPos(cnt).Y
                 End With
             Next cnt
 
@@ -336,8 +336,8 @@ Public Sub gameLogic()
                     tempPos = pPos(selectedPlayer)
 
                     tempPos.l = .lTarg
-                    tempPos.x = .xTarg
-                    tempPos.y = .yTarg
+                    tempPos.X = .xTarg
+                    tempPos.Y = .yTarg
 
                     'Test for a program
                     Call programTest(tempPos)
@@ -525,8 +525,8 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
         'Setup player position
         With pPos(0)
-            .x = boardList(activeBoardIndex).theData.playerX
-            .y = boardList(activeBoardIndex).theData.playerY
+            .X = boardList(activeBoardIndex).theData.playerX
+            .Y = boardList(activeBoardIndex).theData.playerY
             .l = boardList(activeBoardIndex).theData.playerLayer
             .stance = "WALK_S"
             .frame = 0

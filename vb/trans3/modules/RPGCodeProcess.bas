@@ -250,7 +250,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             If (Left(theLine, 1) = "#") Then theLine = Right(theLine, Len(theLine) - 1)
 
             'Read line if not comment
-            If (Not Left(theLine, 1) = "*") And Not (Left(theLine, 2) = "//") Then
+            If (Not Left(theLine, 1) = "*") And (Not Left(theLine, 2) = "//") Then
 
                 'Split that sucker like it has NEVER been split before!
                 lines() = multiSplit(theLine, c, uD, True)
@@ -310,7 +310,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
     'Now cycle over each line
     For a = 0 To UBound(thePrg.program)
-        thePrg.program(a) = replaceOutsideQuotes(thePrg.program(a), "#", "")
+        thePrg.program(a) = Trim(replaceOutsideQuotes(thePrg.program(a), "#", ""))
         If (UCase(GetCommandName(thePrg.program(a))) = "METHOD") Then
             'It's a method
             Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
