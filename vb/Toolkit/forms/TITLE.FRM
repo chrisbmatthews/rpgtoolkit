@@ -93,7 +93,7 @@ Attribute VB_Exposed = False
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 mainoption.Show
 Unload Form1
 Call openConfig("toolkit.cfg")
@@ -108,39 +108,39 @@ End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
-a = FileExist("d:\vb\toolki~2\archives\new.arc#demo1.brd")
+    On Error GoTo ErrorHandler
+a = fileExist("d:\vb\toolki~2\archives\new.arc#demo1.brd")
 MsgBox str$(a)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command3_Click()
-    On Error GoTo errorhandler
-    a = roundoff(1.9)
+    On Error GoTo ErrorHandler
+    a = roundOff(1.9)
     MsgBox a
-    a = roundoff(1.3)
+    a = roundOff(1.3)
     MsgBox a
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Public Sub Form_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Call traceString("Showing main screen...")
     
@@ -188,7 +188,7 @@ Public Sub Form_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -219,19 +219,14 @@ Private Sub Form_Load()
     Call TileAnmClear(tileAnmList(activeTileAnmIndex).theData)
     Call InitTkGfx
     Call InitCanvasEngine(True)
-   
-    
     mainMem.mainResolution = 0
-    
-    
-    currentdir$ = CurDir$
-    
+    currentDir = CurDir
     Major = 2   'Version 2
     Minor = 0   ' version 2.0
     CurrentVersion$ = "2.1"
     compression = 1 'compression is used
     publicTile.transparentLayer = 0
-    filename$(2) = ""
+    filename(2) = ""
     drawlock = 0
     boardList(activeBoardIndex).gridBoard = 0
     enemylist(activeEnemyIndex).theData.eneSizeX = 1
@@ -408,7 +403,7 @@ theerror = 1: Resume Next
 End Sub
 
 Private Sub Timer1_Timer()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call Form_Click
     Exit Sub
 mainoption.Show
@@ -425,7 +420,7 @@ End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

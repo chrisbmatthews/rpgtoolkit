@@ -115,10 +115,18 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What needs to be done
+' + Add Option Explicit
+' + Apply new visual style
+' + Standardize
+'
+'=======================================================
 
 Private Sub colcode_Change()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If val(colcode.text) > 255 Then colcode.text = "255"
     If val(colcode.text) < 0 Then colcode.text = "0"
     Call vbPicFillRect(doscurrentcol, 0, 0, 100, 100, GFXGetDOSColor(val(colcode.text)))
@@ -127,13 +135,13 @@ Private Sub colcode_Change()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
-Private Sub dospal_MouseDown(button As Integer, shift As Integer, x As Single, y As Single)
-    On Error GoTo errorhandler
+Private Sub dospal_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+    On Error GoTo ErrorHandler
     
     xx = Int((x / 10))
     yy = Int((y / 10))
@@ -147,20 +155,20 @@ Private Sub dospal_MouseDown(button As Integer, shift As Integer, x As Single, y
         publicTile.currentColor = thecolor
         End If
         If detail = 5 Or detail = 6 Then
-        publicTile.currentColor = tocolor(publicTile.currentColor, "16")
+        publicTile.currentColor = toColor(publicTile.currentColor, "16")
         End If
         Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, GFXGetDOSColor(publicTile.currentColor))
     End If
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Activate()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     x = 0
     color = 0
     For yy = 0 To 15
@@ -173,30 +181,30 @@ Private Sub Form_Activate()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub selectdoscol_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, publicTile.currentColor)
     Unload Version1Palette
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

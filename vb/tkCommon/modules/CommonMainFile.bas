@@ -26,7 +26,7 @@ Type TKMain
     runTime As String                 'run time program
     runKey As Integer                 'ascii code of run time key
     menuKey As Integer                'ascii code of menu key
-    key As Integer                    'ascii code of general run key
+    Key As Integer                    'ascii code of general run key
     'extended run time keys...
     runTimeKeys(50) As Integer        '50 extended run time keys
     runTimePrg(50) As String          '50 extended run time programs
@@ -125,7 +125,6 @@ Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
     Next t
 End Sub
 
-
 Function openMain(ByVal file As String, ByRef theMain As TKMain) As Integer
     On Error Resume Next
     'returns 1 or 0 if this file was marked registered
@@ -187,7 +186,7 @@ Function openMain(ByVal file As String, ByRef theMain As TKMain) As Integer
         theMain.runTime = BinReadString(num)
         theMain.runKey = BinReadInt(num)
         theMain.menuKey = BinReadInt(num)
-        theMain.key = BinReadInt(num)
+        theMain.Key = BinReadInt(num)
         'extended run time keys...
         Dim cnt As Long
         cnt = BinReadInt(num)
@@ -299,7 +298,7 @@ ver2oldmain:
         mainMem.menuPlugin = "tk3menu.dll"
         theMain.runKey = fread(num)            'ascii code of run time key
         theMain.menuKey = fread(num)           'ascii code of menu key
-        theMain.key = fread(num)               'ascii code of general run key
+        theMain.Key = fread(num)               'ascii code of general run key
         theMain.initBoard$ = fread(num)        'initial board
         theMain.initChar$ = fread(num)         'initial character
         theMain.fightgameYN = fread(num)       'fighting in game? 0-yes, 1-no
@@ -430,7 +429,7 @@ Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         Call BinWriteString(num, theMain.runTime)
         Call BinWriteInt(num, theMain.runKey)
         Call BinWriteInt(num, theMain.menuKey)
-        Call BinWriteInt(num, theMain.key)
+        Call BinWriteInt(num, theMain.Key)
         'extended run time keys...
         Call BinWriteInt(num, UBound(theMain.runTimeKeys))
         For t = 0 To UBound(theMain.runTimeKeys)
@@ -491,7 +490,7 @@ Sub MainClear(ByRef theMain As TKMain)
     theMain.runTime = ""                'run time program
     theMain.runKey = 0                'ascii code of run time key
     theMain.menuKey = 0               'ascii code of menu key
-    theMain.key = 0                   'ascii code of general run key
+    theMain.Key = 0                   'ascii code of general run key
     'extended run time keys...
     Dim t As Long
     For t = 0 To UBound(theMain.runTimeKeys)

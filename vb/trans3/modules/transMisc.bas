@@ -85,7 +85,6 @@ Function determineSpecialMoves(ByVal handle As String, ByRef fileList() As Strin
     determineSpecialMoves = cnt
 End Function
 
-
 Function blue(ByVal longColor As Long) As Long
     On Error Resume Next
     Dim jj As Long, bluecomp As Long
@@ -122,7 +121,6 @@ Function green(ByVal longColor As Long) As Long
     green = greencomp
 
 End Function
-
 
 Function within(ByVal num As Double, ByVal low As Double, ByVal high As Double) As Long
     'tests if a num is within the range low-high.
@@ -299,19 +297,16 @@ Sub openItems()
     
 End Sub
 
-
-
-
-Function GetSpacedElement(ByVal text As String, ByVal eleeNum As Long) As String
+Function GetSpacedElement(ByVal Text As String, ByVal eleeNum As Long) As String
     'gets element number from struing (seperated by spaces)
     On Error Resume Next
     Dim length As Long, element As Long, p As Long, part As String, ignore As Long
     Dim returnVal As String
     
-    length = Len(text$)
+    length = Len(Text$)
     element = 0
     For p = 1 To length + 1
-        part$ = Mid$(text$, p, 1)
+        part$ = Mid$(Text$, p, 1)
         If part$ = chr$(34) Then
             'A quote
             If ignore = 0 Then
@@ -338,9 +333,6 @@ Function GetSpacedElement(ByVal text As String, ByVal eleeNum As Long) As String
     Next p
 End Function
 
-
-
-
 Sub delay(ByVal sec As Double)
     'delays for sec number of seconds
     On Error Resume Next
@@ -348,7 +340,6 @@ Sub delay(ByVal sec As Double)
     millis = sec * 1000
     Call Sleep(millis)
 End Sub
-
 
 Sub CreateCharacter(ByVal file As String, ByVal number As Long)
     'loads a character into slot #num & initializes him
@@ -371,7 +362,6 @@ Sub CreateCharacter(ByVal file As String, ByVal number As Long)
     playerMem(number).nextLevel = playerMem(number).levelType
     playerMem(number).levelProgression = playerMem(number).levelType
 End Sub
-
 
 Function CanPlayerUse(ByVal file As String, ByVal num As Long) As Boolean
     'Checks if a player can use a specific item.
@@ -400,8 +390,6 @@ Function CanPlayerUse(ByVal file As String, ByVal num As Long) As Boolean
         CanPlayerUse = False
     End If
 End Function
-
-
 
 Sub removeEquip(ByVal equipNum As Long, ByVal playerNum As Long)
     'Removes equipment at position equipnum
@@ -521,5 +509,3 @@ Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file As Stri
     End If
 
 End Sub
-
-

@@ -80,9 +80,9 @@ Begin VB.Form editmainfile
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "actionframe"
+      Tab(2).Control(0)=   "prgframe"
       Tab(2).Control(0).Enabled=   0   'False
-      Tab(2).Control(1)=   "prgframe"
+      Tab(2).Control(1)=   "actionframe"
       Tab(2).Control(1).Enabled=   0   'False
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
@@ -100,11 +100,11 @@ Begin VB.Form editmainfile
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Frame3"
+      Tab(5).Control(0)=   "Label24"
       Tab(5).Control(0).Enabled=   0   'False
       Tab(5).Control(1)=   "daynightcheckbox"
       Tab(5).Control(1).Enabled=   0   'False
-      Tab(5).Control(2)=   "Label24"
+      Tab(5).Control(2)=   "Frame3"
       Tab(5).Control(2).Enabled=   0   'False
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
@@ -1781,14 +1781,19 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What needs to be done
+' + Standardize
+'
+'=======================================================
 
 Public Function formType() As Long
     'identify type of form
     On Error Resume Next
     formType = FT_MAINFILE
 End Function
-
 
 Public Sub checkSave()
     'check if the file has changed an it needs to be saved...
@@ -1924,7 +1929,7 @@ End Sub
 
 Private Sub Command10_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + pluginPath$
     
@@ -1939,16 +1944,16 @@ Private Sub Command10_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + pluginPath$ + antiPath$
-    fgtPlugin.Text = antiPath$
+    fgtPlugin.text = antiPath$
     mainMem.fightPlugin = antiPath$
 End Sub
 
 Private Sub Command14_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + brdpath$
     
@@ -1963,16 +1968,16 @@ Private Sub Command14_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + brdpath$ + antiPath$
-    initboardbox.Text = antiPath$
+    initboardbox.text = antiPath$
     mainMem.initBoard$ = antiPath$
 End Sub
 
 Private Sub Command15_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + tempath$
     
@@ -1987,16 +1992,16 @@ Private Sub Command15_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + tempath$ + antiPath$
-    initcharbox.Text = antiPath$
+    initcharbox.text = antiPath$
     mainMem.initChar$ = antiPath$
 End Sub
 
 Private Sub Command16_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + prgpath$
     
@@ -2011,16 +2016,16 @@ Private Sub Command16_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    runtimebox.Text = antiPath$
+    runtimebox.text = antiPath$
     mainMem.runTime$ = antiPath$
 End Sub
 
 Private Sub Command17_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + prgpath$
     
@@ -2035,16 +2040,16 @@ Private Sub Command17_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    startupbox.Text = antiPath$
+    startupbox.text = antiPath$
     mainMem.startupPrg$ = antiPath$
 End Sub
 
 Private Sub Command18_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + prgpath$
     
@@ -2059,11 +2064,11 @@ Private Sub Command18_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     whichType$ = extention(filename$(1))
     FileCopy filename$(1), projectPath$ + prgpath$ + antiPath$
-    Text1.Text = antiPath$
+    Text1.text = antiPath$
     mainMem.gameOverPrg$ = antiPath$
 End Sub
 
@@ -2108,7 +2113,7 @@ End Sub
 
 Private Sub Command5_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + pluginPath$
     
@@ -2122,7 +2127,7 @@ Private Sub Command5_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + plugpath$ + antiPath$
        
@@ -2137,7 +2142,7 @@ End Sub
 
 Private Sub Command6_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + pluginPath$
     
@@ -2152,17 +2157,17 @@ Private Sub Command6_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + pluginPath$ + antiPath$
-    mnuplugin.Text = antiPath$
+    mnuplugin.text = antiPath$
     mainMem.menuPlugin = antiPath$
 End Sub
 
 
 Private Sub Command7_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + mediapath$
     
@@ -2177,17 +2182,17 @@ Private Sub Command7_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
-    cursormove.Text = antiPath$
+    cursormove.text = antiPath$
     mainMem.cursorMoveSound = antiPath$
 End Sub
 
 
 Private Sub Command8_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + mediapath$
     
@@ -2202,16 +2207,16 @@ Private Sub Command8_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
-    cursorselect.Text = antiPath$
+    cursorselect.text = antiPath$
     mainMem.cursorSelectSound = antiPath$
 End Sub
 
 Private Sub Command9_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + mediapath$
     
@@ -2226,33 +2231,33 @@ Private Sub Command9_Click()
         Exit Sub
     End If
     mainNeedUpdate = True
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + mediapath$ + antiPath$
-    cursorcancel.Text = antiPath$
+    cursorcancel.text = antiPath$
     mainMem.cursorCancelSound = antiPath$
 End Sub
 
 Private Sub cursorcancel_Change()
     On Error Resume Next
-    mainMem.cursorCancelSound = cursorcancel.Text
+    mainMem.cursorCancelSound = cursorcancel.text
 End Sub
 
 Private Sub cursormove_Change()
     On Error Resume Next
-    mainMem.cursorMoveSound = cursormove.Text
+    mainMem.cursorMoveSound = cursormove.text
 End Sub
 
 Private Sub cursorselect_Change()
     On Error Resume Next
-    mainMem.cursorSelectSound = cursorselect.Text
+    mainMem.cursorSelectSound = cursorselect.text
 End Sub
 
 
 Private Sub daylengthbox_Change()
     On Error GoTo ErrorHandler
     
-    mainMem.mainDayLength = val(daylengthbox.Text)
+    mainMem.mainDayLength = val(daylengthbox.text)
 
     Exit Sub
 'Begin error handling code:
@@ -2308,7 +2313,7 @@ End Sub
 
 Private Sub fgtPlugin_Change()
     On Error Resume Next
-    mainMem.fightPlugin = fgtPlugin.Text
+    mainMem.fightPlugin = fgtPlugin.text
 End Sub
 
 Private Sub Form_Activate()
@@ -2353,8 +2358,8 @@ End Sub
 Private Sub gametitlebox_Change()
     On Error GoTo ErrorHandler
     mainNeedUpdate = True
-    mainMem.gameTitle$ = gametitlebox.Text
-    gametitlebox2.Text = mainMem.gameTitle$
+    mainMem.gameTitle$ = gametitlebox.text
+    gametitlebox2.text = mainMem.gameTitle$
 
     Exit Sub
 'Begin error handling code:
@@ -2380,50 +2385,50 @@ Private Sub infofill()
     Option1.value = True
     Option5.value = True
     If mainMem.startupPrg$ <> "" Then
-        startupbox.Text = mainMem.startupPrg$          'start up program
+        startupbox.text = mainMem.startupPrg$          'start up program
     Else
-        startupbox.Text = LoadStringLoc(1010, "None")
+        startupbox.text = LoadStringLoc(1010, "None")
     End If
     If mainMem.runTime$ <> "" Then
-        runtimebox.Text = mainMem.runTime$             'run time program
+        runtimebox.text = mainMem.runTime$             'run time program
     Else
-        runtimebox.Text = LoadStringLoc(1010, "None")
+        runtimebox.text = LoadStringLoc(1010, "None")
     End If
     If mainMem.gameOverPrg$ <> "" Then
-        Text1.Text = mainMem.gameOverPrg$             'run time program
+        Text1.text = mainMem.gameOverPrg$             'run time program
     Else
-        Text1.Text = LoadStringLoc(1010, "None")
+        Text1.text = LoadStringLoc(1010, "None")
     End If
-    mnuplugin.Text = mainMem.menuPlugin
-    fgtPlugin.Text = mainMem.fightPlugin
+    mnuplugin.text = mainMem.menuPlugin
+    fgtPlugin.text = mainMem.fightPlugin
     
     a$ = UCase$(chr$(mainMem.runKey))
     If mainMem.runKey = 32 Then a$ = "SPC"
     If mainMem.runKey = 27 Then a$ = "ESC"
     If mainMem.runKey = 13 Then a$ = "ENTR"
-    runkeybox.Text = a$
+    runkeybox.text = a$
 
     a$ = UCase$(chr$(mainMem.menuKey))
     If mainMem.menuKey = 32 Then a$ = "SPC"
     If mainMem.menuKey = 27 Then a$ = "ESC"
     If mainMem.menuKey = 13 Then a$ = "ENTR"
-    menukeybox.Text = a$
+    menukeybox.text = a$
 
     a$ = UCase$(chr$(mainMem.Key))
     If mainMem.Key = 32 Then a$ = "SPC"
     If mainMem.Key = 27 Then a$ = "ESC"
     If mainMem.Key = 13 Then a$ = "ENTR"
-    keybox.Text = a$
+    keybox.text = a$
 
     If mainMem.initBoard$ <> "" Then
-        initboardbox.Text = mainMem.initBoard$           'initial board
+        initboardbox.text = mainMem.initBoard$           'initial board
     Else
-        initboardbox.Text = LoadStringLoc(1010, "None")
+        initboardbox.text = LoadStringLoc(1010, "None")
     End If
     If mainMem.initChar$ <> "" Then
-        initcharbox.Text = mainMem.initChar$            'initial character
+        initcharbox.text = mainMem.initChar$            'initial character
     Else
-        initcharbox.Text = LoadStringLoc(1010, "None")
+        initcharbox.text = LoadStringLoc(1010, "None")
     End If
 
     Option4.value = mainMem.fightgameYN             'fighting in game? 0-yes, 1-no
@@ -2436,8 +2441,8 @@ Private Sub infofill()
     If mainMem.mainScreenType = 1 Then fullscreen.value = True
     If mainMem.mainScreenType = 2 Then smallwindowed.value = True
     
-    gametitlebox.Text = mainMem.gameTitle$
-    gametitlebox2.Text = mainMem.gameTitle$
+    gametitlebox.text = mainMem.gameTitle$
+    gametitlebox2.text = mainMem.gameTitle$
     editmainfile.Caption = LoadStringLoc(800, "Main Project Editor") + "  (" + mainfile$ + ")"
     
     pathbox.Caption = projectPath$
@@ -2479,7 +2484,7 @@ Private Sub infofill()
         daynightvirtual.value = True
         daylengthbox.Enabled = True
     End If
-    daylengthbox.Text = str$(mainMem.mainDayLength)
+    daylengthbox.text = str$(mainMem.mainDayLength)
 
     If mainMem.mainDisableProtectReg = 0 Then
         regprotect.value = 1
@@ -2489,9 +2494,9 @@ Private Sub infofill()
     
     regprotect.Visible = False
    
-    cursormove.Text = mainMem.cursorMoveSound
-    cursorselect.Text = mainMem.cursorSelectSound
-    cursorcancel.Text = mainMem.cursorCancelSound
+    cursormove.text = mainMem.cursorMoveSound
+    cursorselect.text = mainMem.cursorSelectSound
+    cursorcancel.text = mainMem.cursorCancelSound
 
     enableJoystick.value = mainMem.useJoystick
 
@@ -2516,8 +2521,8 @@ End Sub
 Private Sub gametitlebox2_Change()
     On Error GoTo ErrorHandler
     mainNeedUpdate = True
-    mainMem.gameTitle$ = gametitlebox2.Text
-    gametitlebox.Text = mainMem.gameTitle$
+    mainMem.gameTitle$ = gametitlebox2.text
+    gametitlebox.text = mainMem.gameTitle$
 
     Exit Sub
 'Begin error handling code:
@@ -2528,12 +2533,12 @@ End Sub
 
 Private Sub initboardbox_Change()
     On Error Resume Next
-    mainMem.initBoard$ = initboardbox.Text
+    mainMem.initBoard$ = initboardbox.text
 End Sub
 
 Private Sub initcharbox_Change()
     On Error Resume Next
-    mainMem.initChar$ = initcharbox.Text
+    mainMem.initChar$ = initcharbox.text
 End Sub
 
 Private Sub keybox_KeyPress(KeyAscii As Integer)
@@ -2546,7 +2551,7 @@ Private Sub keybox_KeyPress(KeyAscii As Integer)
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
-    keybox.Text = a$
+    keybox.text = a$
     KeyAscii = 0
 
 
@@ -2624,7 +2629,7 @@ Private Sub menukeybox_KeyPress(KeyAscii As Integer)
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
-    menukeybox.Text = a$
+    menukeybox.text = a$
     KeyAscii = 0
 
 
@@ -2641,7 +2646,7 @@ End Sub
 
 Private Sub mnuplugin_Change()
     On Error Resume Next
-    mainMem.menuPlugin = mnuplugin.Text
+    mainMem.menuPlugin = mnuplugin.text
 End Sub
 
 Private Sub newmain()
@@ -2684,7 +2689,7 @@ End Sub
 
 Private Sub openmnu_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = gampath$
     
@@ -2698,7 +2703,7 @@ Private Sub openmnu_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), gampath$ + antiPath$
     Call openMainFile(filename$(1))
@@ -2717,7 +2722,7 @@ End Sub
 
 Private Sub mnusaveas_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = gampath$
     
@@ -2731,10 +2736,10 @@ Private Sub mnusaveas_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     
     If filename$(1) = "" Then Exit Sub
-    aa = FileExist(filename$(1))
+    aa = fileExist(filename$(1))
     If aa = 1 Then
         bb = MsgBox(LoadStringLoc(949, "That file exists.  Are you sure you want to overwrite it?"), vbYesNo, LoadStringLoc(950, "Save"))
         If bb = 7 Then Exit Sub
@@ -2796,7 +2801,7 @@ Private Sub runkeybox_KeyPress(KeyAscii As Integer)
     If ascii = 32 Then a$ = "SPC"
     If ascii = 27 Then a$ = "ESC"
     If ascii = 13 Then a$ = "ENTR"
-    runkeybox.Text = a$
+    runkeybox.text = a$
     KeyAscii = 0
 
     Exit Sub
@@ -2808,7 +2813,7 @@ End Sub
 
 Private Sub runtimebox_Change()
     On Error Resume Next
-    mainMem.runTime$ = runtimebox.Text
+    mainMem.runTime$ = runtimebox.text
 End Sub
 
 
@@ -2851,7 +2856,7 @@ End Sub
 
 Private Sub startupbox_Change()
     On Error Resume Next
-    mainMem.startupPrg$ = startupbox.Text
+    mainMem.startupPrg$ = startupbox.text
 End Sub
 
 Private Sub tileupdate_Click()
@@ -2918,7 +2923,7 @@ End Sub
 
 Private Sub Text1_Change()
     On Error Resume Next
-    mainMem.gameOverPrg$ = Text1.Text
+    mainMem.gameOverPrg$ = Text1.text
 '    End If
 
 End Sub

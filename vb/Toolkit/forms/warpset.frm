@@ -153,25 +153,38 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What is done
+' + New visual style applied
+'
+' ---What needs to be done
+' + Rename controls
+' + Add Option Explicit
+' + Use & when appropriate
+' + Remove usage of $
+'
+'=======================================================
+
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
-    de$ = Text1.Text
-    dex = val(Text2.Text)
-    dey = val(Text3.Text)
-    del = val(Text4.Text)
+    On Error GoTo ErrorHandler
+    de$ = Text1.text
+    dex = val(Text2.text)
+    dey = val(Text3.text)
+    del = val(Text4.text)
     st = 0
     done = False
     Do While Not (done)
         tX$ = toString(st)
         If Len(tX$) < 8 Then
-            Length = Len(tX$)
-            For t = 1 To 8 - Length
+            length = Len(tX$)
+            For t = 1 To 8 - length
                 tX$ = "0" + tX$
             Next t
         End If
         tX$ = "warp" + tX$ + ".prg"
-        a = FileExist(projectPath$ + prgpath$ + tX$)
+        a = fileExist(projectPath$ + prgpath$ + tX$)
         If a = 0 Then
             done = True
         Else
@@ -205,25 +218,25 @@ Private Sub Command1_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload warpset
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command4_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = projectPath$ + brdpath$
     
@@ -237,14 +250,14 @@ Private Sub Command4_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + brdpath$ + antiPath$
-    Text1.Text = antiPath$
+    Text1.text = antiPath$
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     Frame1.Caption = str$(boardList(activeBoardIndex).infoX) + "," + str$(boardList(activeBoardIndex).infoY) + "," + str$(boardList(activeBoardIndex).currentLayer)
 
@@ -252,7 +265,7 @@ Private Sub Form_Load()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

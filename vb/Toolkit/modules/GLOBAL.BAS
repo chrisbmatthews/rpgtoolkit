@@ -3,14 +3,26 @@ Attribute VB_Name = "GLOBAL"
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
+'=======================================================
+'Cleaned up a bit, 3.0.4 by KSNiloc
+'
+' ---What is done
+' + Option Explicit added
+' + Unused declarations removed
+' + Swapped $s for 'as string'
+' + Removed variants
+' + Swapped 'Global' for 'Public'
+'
+'=======================================================
+
 Option Explicit
 
-Public currentdir As String          'Current directory
+Public currentDir As String          'Current directory
 Public CurrentVersion As String      'Version "2.0"
-Public Major As Variant               'Major version
-Public Minor As Variant                'Minor version
-Public oldvalue As Variant             'oldvalue for RGB
-Public compression As Variant          'compression used?
+Public Major As Integer               'Major version
+Public Minor As Integer                'Minor version
+Public oldValue As Long             'oldvalue for RGB
+Public compression As Integer          'compression used?
 Public filename(30) As String        'Filename array
 Public gamePath As String            'path of games
 Public tilepath As String            'Tile dir path
@@ -106,7 +118,7 @@ Public setFilename As String         'filename of selected time in tileset.
 Public ignore As Integer               'ignore next click 0-no, 1-yes
 Public lastTileset As String         'filename of last tst
 Public tstStop As Integer              'stop comparing
-Public tstnum As Variant              'current location in tileset
+Public tstnum As Long              'current location in tileset
 Public oldpath As String     'old path in file explorer.
 
 'config options
@@ -181,22 +193,3 @@ Public Images As New clsImages
 'Required for commonboard
 Public itemMem() As Boolean
 Public itmPos() As Boolean
-
-Public Sub ChangeBoolean(ByRef bol As Boolean)
- bol = Not bol
-End Sub
-
-Public Function BooleanToLong(ByVal bol As Boolean) As Long
- If bol = True Then BooleanToLong = 1
- If bol = False Then BooleanToLong = 0
-End Function
-
-Public Function integerToBoolean(ByVal inte As Integer) As Boolean
- If inte = 1 Then integerToBoolean = True
- If inte = 0 Then integerToBoolean = False
-End Function
-
-Public Function leftBit(ByVal str1 As String, ByVal str2 As String) As Boolean
- If Left(str1, Len(str2)) = str2 Then leftBit = True
-End Function
-

@@ -7,9 +7,9 @@ Option Explicit
 
 Public currentDir As String          'Current directory
 Public CurrentVersion As String      'Version "2.0"
-Public Major As Variant              'Major version
-Public Minor As Variant              'Minor version
-Public compression As Variant        'compression used?
+Public Major As Integer              'Major version
+Public Minor As Integer              'Minor version
+Public compression As Integer        'compression used?
 Public filename(30) As String        'Filename array
 Public tilePath As String            'Tile dir path
 Public brdPath As String             'board dir path

@@ -103,9 +103,9 @@ Attribute VB_Exposed = False
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 
 'FIXIT: Declare 'getMainFilename' with an early-bound data type                            FixIT90210ae-R1672-R1B8ZE
-Function getMainFilename()
-    On Error GoTo errorhandler
-    ChDir (currentdir$)
+Function getMainFilename() As String
+    On Error GoTo ErrorHandler
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = gampath$
     
@@ -119,7 +119,7 @@ Function getMainFilename()
     Else
         Exit Function
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Function
     FileCopy filename$(1), gampath$ + antiPath$
     Call openMainFile(filename$(1))
@@ -128,7 +128,7 @@ Function getMainFilename()
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function
@@ -136,7 +136,7 @@ End Function
 
 Private Sub Command1_Click()
     On Error Resume Next
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     Dim dlg As FileDialogInfo
     dlg.strDefaultFolder = gampath$
     
@@ -150,7 +150,7 @@ Private Sub Command1_Click()
     Else
         Exit Sub
     End If
-    ChDir (currentdir$)
+    ChDir (currentDir$)
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), gampath$ + antiPath$
     Call openMainFile(filename$(1))
@@ -177,18 +177,18 @@ Private Sub Command1_Click()
         Call DeleteOldFiles
     End If
     
-    mainoption.caption = "RPG Toolkit Development System, Version 2.2 (" + antiPath$ + ")"
+    mainoption.Caption = "RPG Toolkit Development System, Version 2.2 (" + antiPath$ + ")"
     MsgBox "File System Upgrade Complete!", , "Upgrade"
     Unload upgradeform
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload upgradeform
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub

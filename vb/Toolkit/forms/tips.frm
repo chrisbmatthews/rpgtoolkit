@@ -105,9 +105,18 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What needs to be done
+' + Add Option Explicit
+' + Apply new visual style
+' + Make this form used
+'
+'=======================================================
+
 Private Sub Check1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     If Check1.value = 1 Then
         tipsOnOff = 0
     Else
@@ -117,40 +126,40 @@ Private Sub Check1_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command1_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     tipNum = tipNum + 1
     maxTip = getTipCount(helppath$ + ObtainCaptionFromTag(DB_TipFile, resourcePath$ + m_LangFile))
     If tipNum > maxTip Then tipNum = 1
     ctip$ = getTipNum(helppath$ + ObtainCaptionFromTag(DB_TipFile, resourcePath$ + m_LangFile), tipNum)
-    Label2.caption = ctip$
+    Label2.Caption = ctip$
     Call saveConfig("toolkit.cfg")
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload tips
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
     
     If tipsOnOff = 1 Then
@@ -161,25 +170,25 @@ Private Sub Form_Load()
     maxTip = getTipCount(helppath$ + ObtainCaptionFromTag(DB_TipFile, resourcePath$ + m_LangFile))
     If tipNum > maxTip Then tipNum = 1
     ctip$ = getTipNum(helppath$ + ObtainCaptionFromTag(DB_TipFile, resourcePath$ + m_LangFile), tipNum)
-    Label2.caption = ctip$
+    Label2.Caption = ctip$
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
 
 Private Sub Form_Unload(Cancel As Integer)
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     tipNum = tipNum + 1
     Call saveConfig("toolkit.cfg")
     Unload tips
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
