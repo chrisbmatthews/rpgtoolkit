@@ -160,7 +160,7 @@ inline bool InitGraphicsMode(HWND handle, int nWidth, int nHeight, bool bUseDire
 	g_bUseDirectX = bUseDirectX;
 	gDXInfo.lpdd = NULL;
 	gDXInfo.lpddsSecond = NULL;
-	gDXInfo.lpddclip = NULL;
+	gDXInfo.windowedMode.lpddClip = NULL;
 	gDXInfo.bFullScreen = false;
 	gDXInfo.nColorDepth = 0;
 
@@ -190,7 +190,6 @@ inline bool InitGraphicsMode(HWND handle, int nWidth, int nHeight, bool bUseDire
 		//clear back buffer...
 		DrawFilledRect(0, 0, nWidth, nHeight, 0);
 	}
-	
 
 	return true;
 }
@@ -206,7 +205,7 @@ inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, 
 	dxInfo.lpdd = NULL;
 	dxInfo.lpddsPrime = NULL;
 	dxInfo.lpddsSecond = NULL;
-	dxInfo.lpddclip = NULL;
+	dxInfo.windowedMode.lpddClip = NULL;
 	dxInfo.nWidth = nWidth;
 	dxInfo.nHeight = nHeight;
 	dxInfo.bFullScreen = bFullScreen;
@@ -236,6 +235,7 @@ inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, 
 		ddsd.dwFlags = DDSD_CAPS;
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;	//this will be the primary surface
 	}
+
 	//Create the primary surface
 	if (FAILED(dxInfo.lpdd->CreateSurface(&ddsd, &dxInfo.lpddsPrime, NULL))) return dxInfo;
 
@@ -249,11 +249,31 @@ inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, 
 	{
 
 		//create clipper
-		dxInfo.lpdd->CreateClipper(0,&dxInfo.lpddclip,NULL);
+		dxInfo.lpdd->CreateClipper(0,&dxInfo.windowedMode.lpddClip,NULL);
+
 		//set clipper window
-		dxInfo.lpddclip->SetHWnd(0,hWnd);
+		dxInfo.windowedMode.lpddClip->SetHWnd(0,hWnd);
+
 		//attach clipper
-		dxInfo.lpddsPrime->SetClipper(dxInfo.lpddclip);
+		dxInfo.lpddsPrime->SetClipper(dxInfo.windowedMode.lpddClip);
+
+		//create rectangles for the window and for the surface
+		SetRect(&dxInfo.windowedMode.surfaceRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
+		SetRect(&dxInfo.windowedMode.destRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
+
+		//get the point of the window outside of the title bar and border
+		POINT ptPrimeBlt;
+		memset(&ptPrimeBlt, 0, sizeof(POINT));
+		ClientToScreen(ghWndMain, &ptPrimeBlt);
+
+		//now offset the top/left of the window rect by the distance from the
+		//title bar / border
+		OffsetRect(&dxInfo.windowedMode.destRect, ptPrimeBlt.x, ptPrimeBlt.y);
+
+		//setup the effects to blt with
+		memset(&dxInfo.windowedMode.bltFx, 0, sizeof(DDBLTFX));
+		dxInfo.windowedMode.bltFx.dwSize = sizeof(DDBLTFX);
+		dxInfo.windowedMode.bltFx.dwROP = SRCCOPY;
 
 		memset(&ddsd, 0, sizeof(DDSURFACEDESC2));
 		ddsd.dwSize = sizeof(DDSURFACEDESC2);
@@ -286,10 +306,10 @@ inline bool KillGraphicsMode()
 	if(g_bUseDirectX)
 	{
 		//kill clipper
-		if(gDXInfo.lpddclip)
+		if(gDXInfo.windowedMode.lpddClip)
 		{
-			if (FAILED(gDXInfo.lpddclip->Release())) return false;;
-			gDXInfo.lpddclip = NULL;
+			if (FAILED(gDXInfo.windowedMode.lpddClip->Release())) return false;;
+			gDXInfo.windowedMode.lpddClip = NULL;
 		}
 
 		//kill backbuffer
@@ -474,26 +494,8 @@ inline bool Refresh()
 		}
 		else
 		{
-			//copy secondary surface to primary surface...
-			RECT rect;
-			RECT destrect;
-			SetRect(&rect, 0, 0, gDXInfo.nWidth, gDXInfo.nHeight);
-			SetRect(&destrect, 0, 0, gDXInfo.nWidth, gDXInfo.nHeight);
-
-			//if in windowed mode, offset the rect...
-			POINT ptPrimeBlt;
-			ptPrimeBlt.x = ptPrimeBlt.y = 0;
-			ClientToScreen(ghWndMain,&ptPrimeBlt);
-
-			//offset by the screen coordinate of the window's client area
-			OffsetRect(&destrect,ptPrimeBlt.x,ptPrimeBlt.y);
-
-			DDBLTFX bltFx;
-			memset(&bltFx, 0, sizeof(DDBLTFX));
-			bltFx.dwSize = sizeof(DDBLTFX);
-			bltFx.dwROP = SRCCOPY;
-
-			gDXInfo.lpddsPrime->Blt(&destrect, gDXInfo.lpddsSecond, &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx);
+			//Blt onto the window
+			gDXInfo.lpddsPrime->Blt(&gDXInfo.windowedMode.destRect, gDXInfo.lpddsSecond, &gDXInfo.windowedMode.surfaceRect, DDBLT_WAIT | DDBLT_ROP, &gDXInfo.windowedMode.bltFx);
 		}
 	}
 	else

@@ -28,6 +28,17 @@
 #define CNV_HANDLE long					//Handle to a canvas
 
 //////////////////////////////////////////////////////////////////////////
+// Windowed mode structure
+//////////////////////////////////////////////////////////////////////////
+typedef struct dxWindowedModeTag
+{
+	LPDIRECTDRAWCLIPPER lpddClip;		//clipper
+	RECT surfaceRect;					//rect of surface
+	RECT destRect;						//rect of window's client area
+	DDBLTFX bltFx;						//effects for the blt
+} DXWINDOWEDMODE;
+
+//////////////////////////////////////////////////////////////////////////
 // DirectX info structure
 //////////////////////////////////////////////////////////////////////////
 typedef struct dxInfoTag
@@ -39,7 +50,7 @@ typedef struct dxInfoTag
 	LPDIRECTDRAW7 lpdd;					//main direct draw object
 	LPDIRECTDRAWSURFACE7 lpddsPrime;	//direct draw primary surface
 	LPDIRECTDRAWSURFACE7 lpddsSecond;	//direct draw back buffer
-	LPDIRECTDRAWCLIPPER lpddclip;		//clipper (for windowed mode only)
+	DXWINDOWEDMODE windowedMode;		//stuff only used in windowed mode
 } DXINFO;
 
 //////////////////////////////////////////////////////////////////////////
