@@ -73,11 +73,11 @@ Begin VB.Form frmMain
       Caption         =   "Copyright 2004 By Christopher Matthews and the TK3 Dev Team"
       ForeColor       =   &H00000000&
       Height          =   375
-      Left            =   2400
+      Left            =   240
       TabIndex        =   0
       Tag             =   "1094"
-      Top             =   3240
-      Width           =   3495
+      Top             =   960
+      Width           =   5535
    End
 End
 Attribute VB_Name = "frmMain"
@@ -90,6 +90,11 @@ Attribute VB_Exposed = False
 'Read LICENSE.txt for licensing info
 
 Option Explicit
+
+Private Sub Form_Load()
+
+End Sub
+
 
 Private Sub Timer1_Timer()
     '=======================================================
