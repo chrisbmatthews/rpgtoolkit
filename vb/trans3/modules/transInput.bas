@@ -215,9 +215,8 @@ Public Function getKey(Optional ByVal milliSeconds As Long = 15) As String
     'If keyWaitState = 32 Then returnVal$ = "SPACE"
     If keyWaitState = 38 Then returnVal$ = "UP"
     If keyWaitState = 40 Then returnVal$ = "DOWN"
-    
-    If keyWaitState = 37 Then returnVal$ = "LEFT"
-    If keyWaitState = 39 Then returnVal$ = "RIGHT"
+    If keyWaitState = 37 Then returnVal$ = "RIGHT"
+    If keyWaitState = 39 Then returnVal$ = "LEFT"
     
     If keyShiftState = 1 Then returnVal$ = UCase$(returnVal$) 'If shift was pressed, return an upper-case letter.
     'Might want to add numberpad here too.
