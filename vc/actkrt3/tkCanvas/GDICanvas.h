@@ -37,14 +37,16 @@ struct COLOR24
 //--------------------------------------------------------------------------
 // Definitions
 //--------------------------------------------------------------------------
-#ifdef _MSC_VER
-#	define INLINE __inline // VC++ prefers the __inline keyword
-#	define FAST_CALL __fastcall
-#else
-#	define INLINE inline
-#	define FAST_CALL // Register (fast) calls are specific to VC++
+#if !defined(INLINE) && !defined(FAST_CALL)
+#	if defined(_MSC_VER)
+#		define INLINE __inline		// VC++ prefers the __inline keyword
+#		define FAST_CALL __fastcall
+#	else
+#		define INLINE inline
+#		define FAST_CALL			// Register (fast) calls are specific to VC++
+#	endif
 #endif
-#ifndef DOUBLE
+#if !defined(DOUBLE)
 typedef double DOUBLE;
 #endif
 #define STATIC static
