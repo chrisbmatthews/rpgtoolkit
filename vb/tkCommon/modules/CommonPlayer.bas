@@ -219,6 +219,36 @@ Public Function playerGetStanceAnm(ByVal stance As String, ByRef thePlayer As TK
     stance = UCase$(stance)
     If stance = "" Then stance = "WALK_S"
     Select Case stance
+    
+        Case "STAND_S":
+            toRet = thePlayer.standingGfx(PLYR_WALK_S)
+        Case "STAND_N":
+            toRet = thePlayer.standingGfx(PLYR_WALK_N)
+        Case "STAND_E":
+            toRet = thePlayer.standingGfx(PLYR_WALK_E)
+        Case "STAND_W":
+            toRet = thePlayer.standingGfx(PLYR_WALK_W)
+        Case "STAND_NW":
+            toRet = thePlayer.standingGfx(PLYR_WALK_NW)
+            If toRet = "" Then
+                toRet = thePlayer.standingGfx(PLYR_WALK_W)
+            End If
+        Case "STAND_NE":
+            toRet = thePlayer.standingGfx(PLYR_WALK_NE)
+            If toRet = "" Then
+                toRet = thePlayer.standingGfx(PLYR_WALK_E)
+            End If
+        Case "STAND_SW":
+            toRet = thePlayer.standingGfx(PLYR_WALK_SW)
+            If toRet = "" Then
+                toRet = thePlayer.standingGfx(PLYR_WALK_W)
+            End If
+        Case "STAND_SE":
+            toRet = thePlayer.standingGfx(PLYR_WALK_SE)
+            If toRet = "" Then
+                toRet = thePlayer.standingGfx(PLYR_WALK_E)
+            End If
+
         Case "WALK_S":
             toRet = thePlayer.gfx(PLYR_WALK_S)
         Case "WALK_N":
@@ -289,19 +319,19 @@ Function FindPlayerHandle(ByVal file As String) As String
 End Function
 
 
-Sub savechar(ByVal file As String, ByRef thePlayer As TKPlayer)
+Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
     'saves character file
     On Error Resume Next
     Dim num As Long, t As Long
     num = FreeFile
     If file = "" Then Exit Sub
     
-    Kill file
+    Call Kill(file)
     
-    Open file For Binary As #num
+    Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT CHAR")   'Filetype
         Call BinWriteInt(num, major)               'Version
-        Call BinWriteInt(num, 5)            'Minor version (ie 2.5 = Version 3.0 file  2.3-- binary 2.2-- 64x64 fight gfx, 2.1-- 64x32 chars (2.0== 32x32 chars))
+        Call BinWriteInt(num, 6)            'Minor version (ie 2.5 = Version 3.0 file  2.3-- binary 2.2-- 64x64 fight gfx, 2.1-- 64x32 chars (2.0== 32x32 chars))
         Call BinWriteString(num, thePlayer.charname$)      'Charactername
         Call BinWriteString(num, thePlayer.experienceVar$)
         Call BinWriteString(num, thePlayer.defenseVar$)
@@ -350,6 +380,12 @@ Sub savechar(ByVal file As String, ByRef thePlayer As TKPlayer)
         For t = 0 To UBound(thePlayer.gfx)
             Call BinWriteString(num, thePlayer.gfx(t))
         Next t
+        
+        'MINOR VERSION 6: WRITE STANDING GRAPHICS
+        For t = 0 To UBound(thePlayer.standingGfx)
+            Call BinWriteString(num, thePlayer.standingGfx(t))
+        Next t
+        
         Dim sz As Long
         sz = UBound(thePlayer.customGfxNames)
         Call BinWriteLong(num, sz)
@@ -357,7 +393,7 @@ Sub savechar(ByVal file As String, ByRef thePlayer As TKPlayer)
             Call BinWriteString(num, thePlayer.customGfx(t))
             Call BinWriteString(num, thePlayer.customGfxNames(t))
         Next t
-    Close #num
+    Close num
 End Sub
 
 
@@ -494,6 +530,13 @@ On Error Resume Next
                 thePlayer.gfx(t) = BinReadString(num)
             Next t
             
+            'MINOR VERSION 6: READ STANDING GRAPHICS
+            If (minorVer >= 6) Then
+                For t = 0 To UBound(thePlayer.standingGfx)
+                    thePlayer.standingGfx(t) = BinReadString(num)
+                Next t
+            End If
+
             Dim cnt As Long
             cnt = BinReadLong(num)
             For t = 0 To cnt
