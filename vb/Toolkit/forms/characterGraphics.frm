@@ -829,24 +829,28 @@ End Sub
 ' Type a key in the speed field
 '========================================================================
 Private Sub txtFrameTime_KeyPress(ByRef KeyAscii As Integer)
-    On Error GoTo noKey
-    If (KeyAscii = 8) Or (chr(KeyAscii) = ".") Then Exit Sub
-    If (chr(KeyAscii) = ",") Then KeyAscii = Asc(".")
-    KeyAscii = Asc(CStr(CDbl(chr(KeyAscii))))
+    On Error GoTo letter
+    Dim ret As Double
+    ret = CDbl(txtFrameTime.Text & chr(KeyAscii))
     Exit Sub
-noKey:
-    KeyAscii = 0
+letter:
+    If (KeyAscii <> 8) Then
+        'Bad key
+        KeyAscii = 0
+    End If
 End Sub
 
 '========================================================================
 ' Type a key in the idle time field
 '========================================================================
 Private Sub txtIdleTime_KeyPress(ByRef KeyAscii As Integer)
-    On Error GoTo noKey
-    If (KeyAscii = 8) Or (chr(KeyAscii) = ".") Then Exit Sub
-    If (chr(KeyAscii) = ",") Then KeyAscii = Asc(".")
-    KeyAscii = Asc(CStr(CDbl(chr(KeyAscii))))
+    On Error GoTo letter
+    Dim ret As Double
+    ret = CDbl(txtIdleTime.Text & chr(KeyAscii))
     Exit Sub
-noKey:
-    KeyAscii = 0
+letter:
+    If (KeyAscii <> 8) Then
+        'Bad key
+        KeyAscii = 0
+    End If
 End Sub
