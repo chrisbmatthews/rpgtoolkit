@@ -5714,15 +5714,10 @@ Public Sub SaveRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram): On
         Call debugger("Error: Save() requires a literal data element!-- " & Text)
         Exit Sub
     End If
-        
-    'If progressive saving has not been disabled ( = 0).
-    If boardList(activeBoardIndex).theData.brdSavingYN = 0 Then
-    
-        'Save the requested file; add .sav if required.
-        Call SaveState(savPath & addExt(paras(0).lit, ".sav"))
-    
-    End If
-    
+
+    ' Save the requested file; add .sav if required.
+    Call SaveState(savPath & addExt(paras(0).lit, ".sav"))
+
 End Sub
 
 Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
