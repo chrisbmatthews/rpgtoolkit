@@ -10764,35 +10764,35 @@ Public Sub SplitRPG( _
 
     On Error Resume Next
 
-    If Not CountData(Text) = 3 Then
+    If (CountData(Text) <> 3) Then
         debugger "Split() requires three data elements-- " & Text
         Exit Sub
     End If
-    
+
     'Declarations...
     Dim paras() As parameters
     Dim splitIt() As String
     Dim postFix As String
     Dim a As Long
-    
-    paras() = GetParameters(Text, prg)
-    
+
+    paras = GetParameters(Text, prg)
+
     For a = 0 To UBound(paras)
-        If Not paras(a).dataType = DT_LIT Then
+        If paras(a).dataType <> DT_LIT Then
             debugger "Split() requires literal data elements-- " & Text
             Exit Sub
         End If
     Next a
 
     postFix = Right$(paras(2).lit, 1)
-    paras(2).lit = replace(paras(2).lit, "[]", vbNullString, , , vbTextCompare)
+    paras(2).lit = replace(paras(2).lit, "[]", vbNullString)
     paras(2).lit = Mid$(paras(2).lit, 1, Len(paras(2).lit) - 1)
-       
-    splitIt = Split(paras(0).lit, paras(1).lit, , vbTextCompare)
+
+    splitIt = Split(paras(0).lit, paras(1).lit)
     For a = 0 To UBound(splitIt)
-        CBSetString paras(2).lit & "[" & CStr(a) & "]" & postFix, splitIt(a)
+        Call SetVariable(paras(2).lit & "[" & CStr(a) & "]" & postFix, splitIt(a), prg)
     Next a
-    
+
     retval.dataType = DT_NUM
     retval.num = UBound(splitIt)
 
