@@ -1157,49 +1157,49 @@ Public Function obtainTileType(ByVal testX As Double, _
                              'We're moving down to two tiles. Test tiles above and to the left.
                              first = .tiletype(Int(testX), -Int(-testY), testL)
                              second = .tiletype(-Int(-testX), -Int(-testY), testL)
-        
+
                          End If
-                         
+
                  End Select
              End With
-        
+
         End If 'boardIso
-        
-        Dim a As Byte
-        For a = SOLID To STAIRS8
-            If first = a Or second = a Then
-                typetile = a
+
+        Dim i As Byte
+        For i = SOLID To STAIRS8
+            If (first = i Or second = i) Then
+                typetile = i
                 Exit For
             End If
-        Next a
-    
+        Next i
+
     End If '(usingPixelMovement)
-    
+
     'check for tiles above...
     underneath = checkAbove(testX, testY, testL)
-    
+
     'if we're sitting on stairs, forget about tiles above.
     If typetile >= STAIRS1 And typetile <= STAIRS8 Then
         passPos.l = typetile - 10
         typetile = NORMAL
         underneath = 0
     End If
-    
+
     If typetile = EAST_WEST And (direction = MV_EAST Or direction = MV_WEST) Then
         typetile = NORMAL   'if ew normal, carry on as if it were normal
     End If
-    
+
     If typetile = NORTH_SOUTH And (direction = MV_SOUTH Or direction = MV_NORTH) Then
         typetile = NORMAL   'if ns normal, carry on as if it were normal
     End If
-    
+
     If underneath = 1 And typetile <> SOLID Then
         typetile = UNDER
     End If
-    
+
     'Added: Prevent players from crossing corners of solid tiles on isometric boards:
     Dim leftTile As Byte, rightTile As Byte, aboveTile As Byte, belowTile As Byte
-    
+
     If (boardList(activeBoardIndex).theData.isIsometric = 1) And Not (movementSize <> 1) Then
         'Check if the tiles above and below the movement are solid.
         'We get the location with respect to the *test* (target) co-ordinates.
@@ -1253,9 +1253,9 @@ Public Function obtainTileType(ByVal testX As Double, _
             typetile = SOLID
         End If
     End If
-    
+
     obtainTileType = typetile
-    
+
 End Function
 
 Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On Error Resume Next
@@ -1265,27 +1265,27 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
 'If singleItem supplied, will only move this item.
 'Called by: gameLogic, runQueuedMovements
 '===========================================================
-    
+
     Dim itmIdx As Long
     Static staticTileType() As Byte
     ReDim Preserve staticTileType(UBound(pendingItemMovement))
-    
+
     For itmIdx = 0 To UBound(pendingItemMovement)
         'All of these items will be in view.
         If singleItem = itmIdx Or singleItem = -1 Then
-        
+
             If itmPos(itmIdx).loopFrame <= 0 Then
                 'Parse the queue.
                 pendingItemMovement(itmIdx).direction = getQueuedMovement(pendingItemMovement(itmIdx).queue)
-                
+
                 If pendingItemMovement(itmIdx).direction <> MV_IDLE Then
-                
+
                     'Insert the target co-ordinates.
                     Call insertTarget(pendingItemMovement(itmIdx))
-                    
+
                     'Get the tiletype once.
                     With pendingItemMovement(itmIdx)
-                    
+
                         'The board tile isn't going anywhere during the move; get it once.
                         staticTileType(itmIdx) = obtainTileType(.xTarg, _
                                                    .yTarg, _
@@ -1294,7 +1294,7 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                                                    itmPos(itmIdx), _
                                                    itmIdx)
                     End With
-                    
+
                     'Check for stationary items only (for tile mvt).
                     'Check all items now only (for pixel mvt).
                     If checkObstruction(itmPos(itmIdx), _
@@ -1307,48 +1307,43 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                         staticTileType(itmIdx) = SOLID
                         
                     End If
-                
+
                     'We can start moving.
                     itmPos(itmIdx).loopFrame = 0
-                    
+
                     With itemMem(itmIdx)
                         'Normalise the speed to the average mainloop time.
                         'Also, add the gamespeed loopoffset here.
                         'Scale the offset to match the fps. Take a 10th of the fps.
                         .loopSpeed = Round(.speed / gAvgTime) + (loopOffset * Round((1 / gAvgTime) / 10))
-   
-                        '.loopSpeed = CLng(.speed)    'If not using decimal delay.
-                        
+
                         'Check divide by zero.
-                        If .loopSpeed <= 0 Then .loopSpeed = 1
-                        
-'Call traceString(" ")
-'Call traceString("ITM.speed=" & .speed & " .loopSpeed=" & .loopSpeed & " gAvgTime=" & Round(gAvgTime, 2))
-                        
+                        If (.loopSpeed <= 0) Then .loopSpeed = 1
+
                     End With
-                    
+
                 End If '.direction <> MV_IDLE
-                
+
             End If '.loopFrame < 0
-                
+
             If pendingItemMovement(itmIdx).direction <> MV_IDLE Then
-               
+
                 If pushItem(itmIdx, staticTileType(itmIdx)) Then
                     'Only increment the frames if movement was successful.
-                    
+
                     With itmPos(itmIdx)
-    
+
                         If .loopFrame Mod (itemMem(itmIdx).loopSpeed / movementSize) = 0 Then
                             'Only increment the frame if we're on a multiple of .speed.
                             '/ movementSize to handle pixel movement.
                             .frame = .frame + 1
                         End If
-                                    
+
                         .loopFrame = .loopFrame + 1
-                        
+
                         If .loopFrame = framesPerMove * itemMem(itmIdx).loopSpeed Then
                             'The item has finished moving, update origin, reset the counter.
-                            
+
                             With pendingItemMovement(itmIdx)
                                 .direction = MV_IDLE
                                 .xOrig = .xTarg
@@ -1357,25 +1352,25 @@ Public Function moveItems(Optional ByVal singleItem As Long = -1) As Boolean: On
                                 itmPos(itmIdx).x = .xTarg
                                 itmPos(itmIdx).y = .yTarg
                             End With
-                            
+
                             'Start the idle timer:
                             .idleTime = Timer()
-                            
+
                             .loopFrame = 0
-                            
+
                         End If
-                        
+
                     End With 'itmPos(itmIdx)
-                    
+
                 End If 'pushItem
-                
+
                 'Movement occured (or was blocked), return True.
                 moveItems = True
-                
+
             End If '.direction <> MV_IDLE
-            
+
         End If 'singleItem = itmIdx or -1
-        
+
     Next itmIdx
 
 End Function
@@ -1397,7 +1392,7 @@ Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) A
             Exit Function
         End If
     End With
-    
+
     'Select the stance direction - surely .stance shouldn't be a string!!
     With itmPos(itemNum)
         Select Case pendingItemMovement(itemNum).direction
@@ -1411,27 +1406,21 @@ Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) A
             Case MV_SW: .stance = "walk_sw"
         End Select
     End With
-
-    'Call traceString("ITEM.x=" & itmPos(itemNum).x & ".y=" & itmPos(itemNum).y & _
-                ".xTarg=" & pendingItemMovement(itemNum).xTarg & _
-                ".yTarg=" & pendingItemMovement(itemNum).yTarg & _
-                ".loopFrame=" & itmPos(itemNum).loopFrame & _
-                ".tt=" & staticTileType)
-                
+               
     'Ok, we have to insert the new fractional co-ords into a
     'test pos to see if we can move this frame.
     Dim testPos As PLAYER_POSITION, testPend As PENDING_MOVEMENT
     Dim moveFraction As Double      'From moveItems
-    
+
     testPos = itmPos(itemNum)
     testPend = pendingItemMovement(itemNum)
-    
+
     'moveFraction is a fraction of the tile.
     moveFraction = movementSize / (framesPerMove * itemMem(itemNum).loopSpeed)
-    
+
     'Insert the new fractional co-ords into the test location.
     Call incrementPosition(testPos, testPend, moveFraction)
-    
+
     'Now, check the new co-ords for blocking objects.
     If _
         staticTileType = SOLID Or _
@@ -1441,10 +1430,10 @@ Private Function pushItem(ByVal itemNum As Long, ByVal staticTileType As Byte) A
         'we don't need to any other checks.
         Exit Function
     End If
-                
+
     'We can move:
     itmPos(itemNum) = testPos
-    
+
     pushItem = True
 
 End Function
