@@ -291,7 +291,7 @@ Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS
             End If
         Next idx
         theVar = theVar & variableType
-        Call addVarToScope(theVar, scope)
+        Call addVarToScope(UCase(theVar), scope)
     Loop
 
 End Sub
@@ -308,8 +308,8 @@ Private Sub addVarToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_S
     Dim pos As Long         'Position we're using
 
     'Make theVar all caps
-    origName = theVar
-    theVar = UCase(theVar)
+    origName = Trim(theVar)
+    theVar = Trim(UCase(theVar))
 
     'Make pos void
     pos = -1
@@ -522,7 +522,7 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
     End If
 
     'Make the var all caps
-    var = UCase(var)
+    var = Trim(UCase(var))
 
     'For each scope
     For scopeIdx = 0 To 1
@@ -572,7 +572,7 @@ Public Function isMethodMember(ByVal methodName As String, ByVal hClass As Long,
     End If
 
     'Make the method name all caps
-    methodName = UCase(methodName)
+    methodName = Trim(UCase(methodName))
 
     'For each scope
     For scopeIdx = 0 To 1
