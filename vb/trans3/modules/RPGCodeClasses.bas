@@ -1766,6 +1766,10 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     If ((robj <> "!") And (robj <> "$")) Then
         ' Append an "!"
         Call getValue(object & "!", object, hClassDbl, prg)
+        If (hClassDbl = 0) Then
+            ' Try without "!"
+            Call getValue(object, object, hClassDbl, prg)
+        End If
     Else
         ' "!" already found
         Call getValue(object, object, hClassDbl, prg)
