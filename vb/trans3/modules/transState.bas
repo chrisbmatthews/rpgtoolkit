@@ -91,7 +91,7 @@ Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal re
             
             For ll = playerMem(number).initLevel To hislev
                 If playerMem(number).charLevelUpType = 0 Then
-                    incr = levup * (playerMem(number).experienceIncrease / 100)
+                    incr = levup * (playerMem(number).experienceIncrease \ 100)
                     levup = Int(levup + incr)
                     total = total + levup
                 Else

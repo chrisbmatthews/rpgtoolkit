@@ -194,10 +194,10 @@ Public Sub Create()
     On Error Resume Next
 
     hwnd = createHostWindow( _
-                               m_createX / Screen.TwipsPerPixelX, _
-                               m_createY / Screen.TwipsPerPixelY, _
-                               m_createWidth / Screen.TwipsPerPixelX, _
-                               m_createHeight / Screen.TwipsPerPixelY, _
+                               m_createX \ Screen.TwipsPerPixelX, _
+                               m_createY \ Screen.TwipsPerPixelY, _
+                               m_createWidth \ Screen.TwipsPerPixelX, _
+                               m_createHeight \ Screen.TwipsPerPixelY, _
                                m_createStyle, _
                                m_createCaption, _
                                App.hInstance, _

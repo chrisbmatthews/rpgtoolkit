@@ -113,8 +113,6 @@ Private Const VK_ZOOM = &HFB
 '=========================================================================
 Private mouseX As Integer            'x pos of mouse
 Private mouseY As Integer            'y pos of mouse
-Private mouseMoveX As Integer        'x pos of mouse (dynamic)
-Private mouseMoveY As Integer        'y pos of mouse (dynamic)
 Private bWaitingForInput As Boolean  'waiting for input?
 Private keyWaitState As Long         'Key pressed on last event.
 Private keyShiftState As Long        'Key pressed shift value on last event.
@@ -127,20 +125,8 @@ Private ignoreKeyDown As Boolean     'Ignore key down events?
 Public useArrowKeys As Boolean       'Use arrow keys?
 Public useNumberPad As Boolean       'Use number pad?
 Public useJoystick As Boolean        'Use joystick?
-
-'=========================================================================
-' Get mouse x coord
-'=========================================================================
-Public Property Get getMouseX() As Long
-    getMouseX = mouseMoveX
-End Property
-
-'=========================================================================
-' Get mouse y coord
-'=========================================================================
-Public Property Get getMouseY() As Long
-    getMouseY = mouseMoveY
-End Property
+Public mouseMoveX As Integer         'x pos of mouse (dynamic)
+Public mouseMoveY As Integer         'y pos of mouse (dynamic)
 
 '=========================================================================
 ' Get the last key pressed
@@ -186,10 +172,10 @@ End Sub
 '=========================================================================
 Public Sub DoEventsFor(ByVal milliSeconds As Long)
 
-    Dim startTime As Double
+    Dim StartTime As Double
 
-    startTime = Timer()
-    Do Until (Timer() - startTime >= milliSeconds / 1000)
+    StartTime = Timer()
+    Do Until (Timer() - StartTime >= milliSeconds / 1000)
         ' Don't lock up
         Call processEvent
     Loop
@@ -419,141 +405,136 @@ End Sub
 '=========================================================================
 ' Check if a key is pressed
 '=========================================================================
-Public Function isPressed(ByVal theKey As String) As Boolean
+Public Function isPressed(ByRef theKey As String) As Boolean
 
     On Error Resume Next
+
+    '// Passing string(s) ByRef for preformance related reasons
 
     If (gGameState = GS_PAUSE) Then
         'Trans doesn't have focus!
         Exit Function
     End If
 
-    'First check the joystick...
-    Dim but(4) As Boolean
-    Dim theDir As Long
-    If mainMem.useJoystick = 1 Then
-        theDir = joyDirection(but)
-    End If
+    ' Joystick button statuses and direction stick is held
+    Dim but(4) As Boolean, theDir As Long
     
     Select Case UCase$(theKey)
-    
-        Case "LEFT":
-            If GetAsyncKeyState(VK_LEFT) < 0 Then isPressed = True
-            'If the left arrow key was pressed.
+
+        Case "LEFT"
+            isPressed = (GetAsyncKeyState(VK_LEFT) < 0)
             Exit Function
-            
-        Case "RIGHT":
-            If GetAsyncKeyState(VK_RIGHT) < 0 Then isPressed = True
+
+        Case "RIGHT"
+            isPressed = (GetAsyncKeyState(VK_RIGHT) < 0)
             Exit Function
-            
-        Case "UP":
-            If GetAsyncKeyState(VK_UP) < 0 Then isPressed = True
+
+        Case "UP"
+            isPressed = (GetAsyncKeyState(VK_UP) < 0)
             Exit Function
-            
-        Case "DOWN":
-            If GetAsyncKeyState(VK_DOWN) < 0 Then isPressed = True
+
+        Case "DOWN"
+            isPressed = (GetAsyncKeyState(VK_DOWN) < 0)
             Exit Function
-            
-        Case "SPACE":
-            If GetAsyncKeyState(VK_SPACE) < 0 Then isPressed = True
+
+        Case "SPACE"
+            isPressed = (GetAsyncKeyState(VK_SPACE) < 0)
             Exit Function
-        
-        Case "ESC", "ESCAPE":
-            If GetAsyncKeyState(VK_ESCAPE) < 0 Then isPressed = True
+
+        Case "ESC", "ESCAPE"
+            isPressed = (GetAsyncKeyState(VK_ESCAPE) < 0)
             Exit Function
-        
-        Case "ENTER":
-            If GetAsyncKeyState(VK_RETURN) < 0 Then isPressed = True
+
+        Case "ENTER"
+            isPressed = (GetAsyncKeyState(VK_RETURN) < 0)
             Exit Function
-            
-        'Added cases for the numberpad keys. Keeping them separate from directions for the moment.
-        Case "NUMPAD0":
-            If GetAsyncKeyState(VK_NUMPAD0) < 0 Then isPressed = True
+
+        Case "NUMPAD0"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD0) < 0)
             Exit Function
-        
-        Case "NUMPAD1":
-            If GetAsyncKeyState(VK_NUMPAD1) < 0 Then isPressed = True
+
+        Case "NUMPAD1"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD1) < 0)
             Exit Function
-            
-        Case "NUMPAD2":
-            If GetAsyncKeyState(VK_NUMPAD2) < 0 Then isPressed = True
+
+        Case "NUMPAD2"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD2) < 0)
             Exit Function
-        
-        Case "NUMPAD3":
-            If GetAsyncKeyState(VK_NUMPAD3) < 0 Then isPressed = True
+
+        Case "NUMPAD3"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD3) < 0)
             Exit Function
-        
-        Case "NUMPAD4":
-            If GetAsyncKeyState(VK_NUMPAD4) < 0 Then isPressed = True
+
+        Case "NUMPAD4"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD4) < 0)
             Exit Function
-        
-        Case "NUMPAD5":
-            If GetAsyncKeyState(VK_NUMPAD5) < 0 Then isPressed = True
+
+        Case "NUMPAD5"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD5) < 0)
             Exit Function
-                
-        Case "NUMPAD6":
-            If GetAsyncKeyState(VK_NUMPAD6) < 0 Then isPressed = True
+
+        Case "NUMPAD6"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD6) < 0)
             Exit Function
-            
-        Case "NUMPAD7":
-            If GetAsyncKeyState(VK_NUMPAD7) < 0 Then isPressed = True
+
+        Case "NUMPAD7"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD7) < 0)
             Exit Function
-            
-        Case "NUMPAD8":
-            If GetAsyncKeyState(VK_NUMPAD8) < 0 Then isPressed = True
+
+        Case "NUMPAD8"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD8) < 0)
             Exit Function
-        
-        Case "NUMPAD9":
-            If GetAsyncKeyState(VK_NUMPAD9) < 0 Then isPressed = True
+
+        Case "NUMPAD9"
+            isPressed = (GetAsyncKeyState(VK_NUMPAD9) < 0)
             Exit Function
-            
-        'Joystick buttons.
-        Case "JOYLEFT":
-            If theDir = 5 Or theDir = 6 Or theDir = 4 Then isPressed = True
-            'If the joystick was moved left.
+
+        Case "JOYLEFT"
+            theDir = joyDirection(but)
+            isPressed = (theDir = 5 Or theDir = 6 Or theDir = 4)
             Exit Function
-        
-        Case "JOYRIGHT":
-            If theDir = 1 Or theDir = 2 Or theDir = 8 Then isPressed = True
+
+        Case "JOYRIGHT"
+            theDir = joyDirection(but)
+            isPressed = (theDir = 1 Or theDir = 2 Or theDir = 8)
             Exit Function
-            
-        Case "JOYUP":
-            If theDir = 3 Or theDir = 4 Or theDir = 2 Then isPressed = True
+
+        Case "JOYUP"
+            theDir = joyDirection(but)
+            isPressed = (theDir = 3 Or theDir = 4 Or theDir = 2)
             Exit Function
-            
-        Case "JOYDOWN":
-            If theDir = 7 Or theDir = 8 Or theDir = 6 Then isPressed = True
+
+        Case "JOYDOWN"
+            theDir = joyDirection(but)
+            isPressed = (theDir = 7 Or theDir = 8 Or theDir = 6)
             Exit Function
-        
-        Case "BUTTON", "BUTTON1":
+
+        Case "BUTTON", "BUTTON1"
+            Call joyDirection(but)
             isPressed = but(0)
             Exit Function
-        Case "BUTTON2":
+
+        Case "BUTTON2"
+            Call joyDirection(but)
             isPressed = but(1)
             Exit Function
-        Case "BUTTON3":
+
+        Case "BUTTON3"
+            Call joyDirection(but)
             isPressed = but(2)
             Exit Function
-        Case "BUTTON4":
+
+        Case "BUTTON4"
+            Call joyDirection(but)
             isPressed = but(3)
             Exit Function
-        
-        Case Else:
-            'Not a reserved key.
-            
-            theKey = UCase$(theKey)
-            
-            'Asc function returns the the ANSI code of the character.
-            Dim code As Long
-            code = Asc(Mid$(theKey, 1, 1))
-            
-            If GetAsyncKeyState(code) < 0 Then
-                isPressed = True
-            End If
+
+        Case Else
+            ' Not a special key
+            isPressed = (GetAsyncKeyState(Asc(UCase$(theKey))) < 0)
+
     End Select
-    
-    Call processEvent
-    
+
 End Function
 
 '=========================================================================
@@ -562,11 +543,11 @@ End Function
 Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
 
     On Error Resume Next
-    
+
     ' Save old keycodes.
     keyWaitState = keyCode
     keyShiftState = Shift
-    
+
     ' When a dialog window is called, either ShowFileDialog or ShowPromptDialog
     ' Control is returned when the dialog is closed
     If (ignoreKeyDown) Then Exit Sub
@@ -574,7 +555,7 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
     ' Inform plugins
     Dim strKey As String
     Dim Index As Integer
-    
+
     ' Check some common codes.
     Select Case keyCode
         Case 13: strKey = "ENTER"
@@ -688,7 +669,7 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
             
             If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
                 'If an input is requested, return that input to the plugin.
-                Call PLUGEventInform(plugName, -1, x, y, Button, Shift, "", INPUT_MOUSEDOWN)
+                Call PLUGEventInform(plugName, -1, x, y, Button, Shift, vbNullString, INPUT_MOUSEDOWN)
             End If
         End If
     Next Index
@@ -698,7 +679,7 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
-            Call PLUGEventInform(plugName, -1, x, y, Button, Shift, "", INPUT_MOUSEDOWN)
+            Call PLUGEventInform(plugName, -1, x, y, Button, Shift, vbNullString, INPUT_MOUSEDOWN)
         End If
     End If
 
@@ -707,7 +688,7 @@ Public Sub mouseDownEvent(ByVal x As Integer, ByVal y As Integer, ByVal Shift As
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
         
         If PLUGInputRequested(plugName, INPUT_MOUSEDOWN) = 1 Then
-            Call PLUGEventInform(plugName, -1, x, y, Button, Shift, "", INPUT_MOUSEDOWN)
+            Call PLUGEventInform(plugName, -1, x, y, Button, Shift, vbNullString, INPUT_MOUSEDOWN)
         End If
     End If
 
@@ -734,24 +715,16 @@ End Sub
 Public Sub scanKeys()
 
     On Error Resume Next
-    
+
     Dim queue As String
-    queue = vbNullString
-    'Temporarily defining these true always. Defined at top of this module.
     useArrowKeys = True
     useNumberPad = True
-    
+
     If (isPressed("RIGHT") And isPressed("UP") And useArrowKeys) Or (isPressed("NUMPAD9") And useNumberPad) Then
         'Move NorthEast
-        
-        'If [UP and RIGHT are pressed and using arrow keys is enabled] or
-        '   [NUMPAD9 is pressed and the numberpad is enabled]
-        
-        'Update the origin location to the current location (however this is already done
-        'by the isometric "jump" correction in the mainLoop).
         pendingPlayerMovement(selectedPlayer).direction = MV_NE
         queue = "5"
-   
+
     ElseIf (isPressed("LEFT") And isPressed("UP") And useArrowKeys) Or (isPressed("NUMPAD7") And useNumberPad) Then
         'Move NorthWest
         pendingPlayerMovement(selectedPlayer).direction = MV_NW
@@ -761,12 +734,12 @@ Public Sub scanKeys()
         'Move SouthEast
         pendingPlayerMovement(selectedPlayer).direction = MV_SE
         queue = "7"
-    
+
     ElseIf (isPressed("LEFT") And isPressed("DOWN") And useArrowKeys) Or (isPressed("NUMPAD1") And useNumberPad) Then
         'Move SouthWest
         pendingPlayerMovement(selectedPlayer).direction = MV_SW
         queue = "8"
-    
+
     ElseIf (isPressed("UP") And useArrowKeys) Or _
         (isPressed("NUMPAD8") And useNumberPad) Or (isPressed("JOYUP") And useJoystick) Then
         'Move North
@@ -803,30 +776,12 @@ Public Sub scanKeys()
         Exit Sub
 
     End If
-    
-    'Queue up the new movement.
-    If LenB(queue) <> 0 Then
-        'Overwrite any queued movements.
+
+    ' Queue up the new movement.
+    If (StrPtr(queue)) Then
+        ' Overwrite any queued movements.
         pendingPlayerMovement(selectedPlayer).queue = queue
         gGameState = GS_MOVEMENT
     End If
-    
-    Exit Sub
-    
-    'Old:
-    
-    'Insert the target co-ordinates based on the movement direction.
-    pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
-    pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
-    pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-    Call insertTarget(pendingPlayerMovement(selectedPlayer))
-    
-    'Set the frame count for the move to zero (i.e. next frame will be the first).
-    'movementCounter = 0
-    
-    'Set the mainLoop state to movement. The mainLoop will repeat until the required number of
-    'frames are drawn.
-    gGameState = GS_MOVEMENT
-   
 
 End Sub

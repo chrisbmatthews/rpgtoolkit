@@ -41,14 +41,14 @@ Public Sub extractDir( _
     Dim fileIdx As Long, cnt As Long, perc As Long
     Call ZIPOpen(zipFile)
     cnt = ZIPGetFileCount()
-    Call statusbar.Show
+    Call statusBar.Show
     For fileIdx = 0 To (cnt - 1)
-        perc = Int(((fileIdx + 1) / cnt) * 100)
-        Call statusbar.setStatus(perc, "")
+        perc = (((fileIdx + 1) \ cnt) * 100)
+        Call statusBar.setStatus(perc, vbNullString)
         Call ZIPExtract(GetZipFilename(fileIdx), extractInto & GetZipFilename(fileIdx))
     Next fileIdx
     Call ZIPClose
-    Call Unload(statusbar)
+    Call Unload(statusBar)
 End Sub
 
 '=========================================================================

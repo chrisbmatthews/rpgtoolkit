@@ -922,8 +922,8 @@ loadtileerr:
     
         'set gfx mode...
         If resX = 0 Then
-            resX = (screenWidth) / Screen.TwipsPerPixelX
-            resY = screenHeight / Screen.TwipsPerPixelY
+            resX = (screenWidth) \ Screen.TwipsPerPixelX
+            resY = screenHeight \ Screen.TwipsPerPixelY
         End If
 
     End Sub
@@ -938,7 +938,7 @@ Public Function booleanToLong(ByVal bol As Boolean) As Long
     '=======================================================
     'Return a boolean as 1/0
     '=======================================================
-    If bol Then booleanToLong = 1
+    booleanToLong = -bol
 End Function
 
 Public Function noSpaces(ByVal Text As String) As String
@@ -946,7 +946,7 @@ Public Function noSpaces(ByVal Text As String) As String
     'Remove spaces from the text passed in
     '=======================================================
     On Error Resume Next
-    noSpaces = replace(Text, " ", "")
+    noSpaces = replace(Text, " ", vbNullString)
 End Function
 
 Public Function blue(ByVal longColor As Long) As Long
@@ -954,7 +954,7 @@ Public Function blue(ByVal longColor As Long) As Long
     'Returns blue from the color passed in
     '=======================================================
     On Error Resume Next
-    blue = Int(longColor / 65536)
+    blue = longColor \ 65536
 End Function
 
 Public Function green(ByVal longColor As Long) As Long
@@ -964,10 +964,10 @@ Public Function green(ByVal longColor As Long) As Long
     On Error Resume Next
     Dim working As Long, blueComp As Long, takeAway As Long
     working = longColor
-    blueComp = Int(working / 65536)
+    blueComp = working \ 65536
     takeAway = blueComp * 256 * 256
     working = working - takeAway
-    green = Int(working / 256)
+    green = working \ 256
 End Function
 
 Public Function red(ByVal longColor As Long) As Long
@@ -977,10 +977,10 @@ Public Function red(ByVal longColor As Long) As Long
     On Error Resume Next
     Dim working As Long, blueComp As Long, takeAway As Long, greenComp As Long
     working = longColor
-    blueComp = Int(working / 65536)
+    blueComp = working \ 65536
     takeAway = blueComp * 256 * 256
     working = working - takeAway
-    greenComp = Int(working / 256)
+    greenComp = working \ 256
     takeAway = greenComp * 256
     red = working - takeAway
 End Function

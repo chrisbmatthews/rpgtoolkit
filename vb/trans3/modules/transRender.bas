@@ -236,7 +236,7 @@ Public Sub DXRefresh()
     ' Copy the screen to that canvas
     Call CanvasGetScreen(cnv)
     ' Draw the mouse cursor
-    Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpcolor)
+    Call DXDrawCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
     ' Actually make the flip
     Call DXFlip
     ' Render the screen sans mouse cursor to the back buffer
@@ -613,7 +613,7 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVa
                 
             Case POPUP_VERTICAL:
                 stepSize = -stepSize
-                For c = h / 2 To 0 Step stepSize
+                For c = h \ 2 To 0 Step stepSize
                     Call DXDrawCanvas(cnvAllPurpose, 0, 0)
                     Call DXDrawCanvasPartial(cnv, x, y + c, 0, 0, W, h / 2 - c)
                     Call DXDrawCanvasPartial(cnv, x, y + h / 2, 0, h - cnt, W, h / 2 - c)
@@ -626,10 +626,10 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVa
         
             Case POPUP_HORIZONTAL:
                 stepSize = -stepSize
-                For c = W / 2 To 0 Step stepSize
+                For c = W \ 2 To 0 Step stepSize
                     Call DXDrawCanvas(cnvAllPurpose, 0, 0)
-                    Call DXDrawCanvasPartial(cnv, x + c, y, 0, 0, W / 2 - c, h)
-                    Call DXDrawCanvasPartial(cnv, x + W / 2, y, W - cnt, 0, W / 2 - c, h)
+                    Call DXDrawCanvasPartial(cnv, x + c, y, 0, 0, W \ 2 - c, h)
+                    Call DXDrawCanvasPartial(cnv, x + W \ 2, y, W - cnt, 0, W \ 2 - c, h)
                     Call DXRefresh
                     cnt = cnt - stepSize
                     Call delay(walkDelay)
@@ -660,7 +660,7 @@ Private Function renderAnimatedTiles(ByVal cnv As Long, ByVal cnvMask As Long) A
     Dim ext As String
 
     Static timeStamp As Double
-    If ((Timer() - timeStamp) > (5 / 1000)) Then
+    If ((Timer() - timeStamp) > (5 \ 1000)) Then
         ' Update the time stamp and render
         timeStamp = Timer()
     Else
@@ -887,7 +887,7 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     spriteHeight = GetCanvasHeight(cnvFrameID)
         
     'Will place the top left corner of the sprite frame at cornerX, cornerY:
-    cornerX = centreX - (spriteWidth / 2)
+    cornerX = centreX - spriteWidth \ 2
     cornerY = centreY - spriteHeight
        
     Dim offsetX As Long, offsetY As Long
@@ -1244,8 +1244,8 @@ End Function
 Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     On Error Resume Next
     cnvScrollCache = CreateCanvas(width * 2, height * 2)
-    scTilesX = width * 2 / 32
-    scTilesY = height * 2 / 32
+    scTilesX = width * 2 \ 32
+    scTilesY = height * 2 \ 32
     'If Not usingDX() Then
     '    cnvScrollCacheMask = CreateCanvas(width * 2, height * 2)
     'Else
@@ -1478,7 +1478,7 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
             ' Copy the screen to that canvas
             Call CanvasGetScreen(cnv)
             ' Draw the mouse cursor
-            Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpcolor)
+            Call DXDrawCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
             ' Actually make the flip
             Call DXFlip
             ' Render the screen sans mouse cursor to the back buffer
@@ -1513,7 +1513,7 @@ Public Sub renderRPGCodeScreen()
     Call CanvasGetScreen(cnv)
 
     ' Draw the mouse cursor
-    Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpcolor)
+    Call DXDrawCanvasTransparent(cnvMousePointer, mouseMoveX - host.cursorHotSpotX, mouseMoveY - host.cursorHotSpotY, mainMem.transpcolor)
 
     ' Draw the message box if it's being shown
     If (bShowMsgBox) Then
@@ -1635,8 +1635,8 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
     resY = height
 
     ' Number of tiles screen can hold
-    tilesX = Int(width / 32)
-    tilesY = Int(height / 32)
+    tilesX = width \ 32
+    tilesY = height \ 32
 
     ' Dimensions of screen in isometric tiles
     isoTilesX = tilesX / 2 ' = 10.0 (640res) = 12.5 (800res)
@@ -1673,8 +1673,8 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
     With host
         .width = width * Screen.TwipsPerPixelX
         .height = height * Screen.TwipsPerPixelY
-        .Top = (Screen.height - .height) / 2
-        .Left = (Screen.width - .width) / 2
+        .Top = (Screen.height - .height) \ 2
+        .Left = (Screen.width - .width) \ 2
         If (Not inFullScreenMode) Then
             ' If not in full screen mode, increase to account for window border
             .width = .width + 6 * Screen.TwipsPerPixelX
@@ -1756,12 +1756,12 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     useJoystick = JoyTest()
 
     ' Get screen width
-    screenWidth = Screen.height * (1 / 0.75) ' (Colin: Is this a mistake!?)
+    screenWidth = Screen.height * (1 \ 0.75) ' (Colin: Is this a mistake!?)
     screenHeight = Screen.height
 
     ' Get resolution x / y
-    resX = screenWidth / Screen.TwipsPerPixelX
-    resY = screenHeight / Screen.TwipsPerPixelY
+    resX = screenWidth \ Screen.TwipsPerPixelX
+    resY = screenHeight \ Screen.TwipsPerPixelY
 
     'Get res from main file
     If (mainMem.mainResolution = 0) Then

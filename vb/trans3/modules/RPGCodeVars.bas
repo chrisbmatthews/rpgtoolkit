@@ -113,7 +113,7 @@ Private Function evaluate(ByVal Text As String) As Double
     operatorIdx = -1
 
     ' Eat spaces, replace "(-" with "(-1*", and encase string in ()s
-    Text = replace(replace(replace("(" & Text & ")", vbTab, ""), " ", vbNullString), "(-", "(-1*")
+    Text = replace(replace(replace("(" & Text & ")", vbTab, vbNullString), " ", vbNullString), "(-", "(-1*")
 
     ' Loop over each character
     For idx = 1 To Len(Text)
@@ -505,7 +505,7 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     If (Not noVar) Then ' If there's a var
 
         ' Get the destination variable and remove unwanted characters
-        Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", ""), " ", vbNullString), vbTab, vbNullString), theProgram)
+        Destination = parseArray(replace(replace(replace(GetVarList(Text, 1), "#", vbNullString), " ", vbNullString), vbTab, vbNullString), theProgram)
         If (Right$(Destination, 1) <> "!" And Right$(Destination, 1) <> "$") Then
             ' Append a "!"
             Destination = Destination & "!"

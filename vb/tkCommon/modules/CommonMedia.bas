@@ -104,7 +104,7 @@ Public Sub PlayMCI(DriveDirFile As String, Optional ByVal strIdentifier As Strin
         shortPath = Left$(shortPath, returnLen) 'x is the length of the return buffer
     End If
     Call mciSendString("close " & strIdentifier, returnStr, 255, 0) 'just in case
-    Call mciSendString("open " & ("""") & shortPath & ("""") & " alias " & strIdentifier, returnStr, 255, 0)
+    Call mciSendString("open """ & shortPath & """ alias " & strIdentifier, returnStr, 255, 0)
     Call mciSendString("play " & strIdentifier, returnStr, 255, 0)
 End Sub
 

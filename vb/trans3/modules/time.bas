@@ -40,7 +40,7 @@ Public Function DetermineLightLevel() As Integer
     Dim tod As Long
     tod = TimeOfDay()
     
-    theTime = tod / 60 / 60
+    theTime = tod \ 60 \ 60
     
     'if it's before 4am, it's really dark out...
     If theTime <= 4 Then
@@ -87,7 +87,7 @@ Public Function IsNight() As Boolean
     Dim theTime As Long
     
     theTime = TimeOfDay()
-    theTime = theTime / 60 / 60
+    theTime = theTime \ 60 \ 60
     If theTime > 20 Then
         IsNight = True
         Exit Function
@@ -130,5 +130,5 @@ End Function
 '=========================================================================
 Public Sub updateGameTime()
     On Error Resume Next
-    gameTime = (Timer - initTime) + addTime
+    gameTime = (Timer() - initTime) + addTime
 End Sub

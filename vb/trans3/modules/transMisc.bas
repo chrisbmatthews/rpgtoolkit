@@ -122,7 +122,7 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
         effectiveSizeX = boardList(activeBoardIndex).theData.bSizeX
         effectiveSizeY = boardList(activeBoardIndex).theData.bSizeY
-        effectiveTilesX = tilesX / 2 '= isoTilesX
+        effectiveTilesX = tilesX \ 2 '= isoTilesX
         effectiveTilesY = tilesY * 2
     Else
         effectiveSizeX = boardList(activeBoardIndex).theData.bSizeX
@@ -133,14 +133,14 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
     
     If effectiveSizeX <= effectiveTilesX Then
         'If board is smaller or equal to the screen size horizontally
-        topX = -1 * Int((effectiveTilesX - effectiveSizeX) / 2)
+        topX = -((effectiveTilesX - effectiveSizeX) \ 2)
     End If
     
     If effectiveSizeY <= effectiveTilesY Then
         'If board smaller or equal to the screen size vertically
         
         'NOTE: Bug in iso board drawing where negative topYs are not properly placed!!
-        topY = -1 * Int((effectiveTilesY - effectiveSizeY) / 2)
+        topY = -((effectiveTilesY - effectiveSizeY) \ 2)
         If (boardList(activeBoardIndex).theData.isIsometric = 1) Then topY = 0 'Take this line out when bug fixed!!
     End If
     
@@ -148,8 +148,8 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
     Dim tempy As Double
     'Player position - half screen size
     'This will centre the screen on the player, unless this is off the edges.
-    tempx = playerX - effectiveTilesX / 2
-    tempy = playerY - effectiveTilesY / 2
+    tempx = playerX - effectiveTilesX \ 2
+    tempy = playerY - effectiveTilesY \ 2
 
     If tempx < 0 Then 'If player on left of board less than half a screen from the edge.
         tempx = 0

@@ -155,13 +155,13 @@ Sub fontbold()
     currentX = currentX + 1
 End Sub
 
-Sub fontitalics()
+Sub fontItalics()
     On Error Resume Next
     ReDim fbuff(100, 100) As Long
     Dim x As Long, y As Long
     For x = 1 To currentX
         For y = 1 To currentY
-            If y <= Int(currentY / 2) Then
+            If y <= currentY \ 2 Then
                 fbuff(x + 1, y) = currentFont(x, y)
             Else
                 fbuff(x, y) = currentFont(x, y)
@@ -213,7 +213,7 @@ Sub putchar(ByVal stringin$, ByVal x As Double, ByVal y As Double, ByVal coltxt 
     chari = Asc(stringin$)
     Call resize(chari, sizex, sizey)
     If Bold = 1 Then Call fontbold
-    If Italics = 1 Then Call fontitalics
+    If Italics = 1 Then Call fontItalics
     If Underline = 1 Then Call fontunderline
     Dim xx As Long, yy As Long, v As Long, aa As Long
     For xx = 1 To currentX
@@ -348,8 +348,8 @@ Sub resize(ByVal charnum As Long, ByVal x As Long, ByVal y As Long)
     Dim corx As Long, cory As Long
     For xx = 1 To x
         For yy = 1 To y
-            corx = Int((8 / x) * xx)
-            cory = Int((8 / y) * yy)
+            corx = ((8 \ x) * xx)
+            cory = ((8 \ y) * yy)
             currentFont(xx, yy) = fbuff(corx, cory)
             'If currentfont(xx, yy) = 1 Then fontedit.fontmap.PSet (xx, yy) Else fontedit.fontmap.PSet (xx, yy), vbqbcolor(15)
         Next yy
@@ -397,7 +397,7 @@ Function toBinary(ByVal decimala As Long) As String
     binNum$ = vbNullString
     For t = 1 To 8
         remain = decimala Mod 2
-        decimala = Int(decimala / 2)
+        decimala = decimala \ 2
         binNum$ = CStr(remain) + binNum$
     Next t
     Length = Len(binNum$)

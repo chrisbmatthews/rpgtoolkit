@@ -801,5 +801,5 @@ End Sub
 ' Returns if we need to render multitasking animations
 '=========================================================================
 Public Property Get multiAnimRender() As Boolean
-    multiAnimRender = (Not ((Not (Timer() - lastAnimRender >= (50 / 1000))) Or (Not threadAnimating)))
+    multiAnimRender = (Not ((Not (Timer() - lastAnimRender >= (50 \ 1000))) Or (Not threadAnimating)))
 End Property

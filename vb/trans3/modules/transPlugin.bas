@@ -975,7 +975,7 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
             With playerMem(playerSlot)
                 Dim levStart As Long, perc As Long
                 levStart = .levelStarts(CBGetNumerical(.leVar) - 1)
-                perc = (CBGetNumerical(.experienceVar) - levStart) / (.nextLevel - levStart) * 100
+                perc = (CBGetNumerical(.experienceVar) - levStart) \ (.nextLevel - levStart) * 100
                 CBGetPlayerNum = perc
             End With
     End Select
@@ -3016,7 +3016,7 @@ Function CBMessageWindow(ByVal Text As String, ByVal textColor As Long, ByVal bg
     'callback 74
     'pop up a message box
     On Error Resume Next
-    CBMessageWindow = MBox(Text, "", mbtype, textColor, bgColor, PakLocate(projectPath & bmpPath & bgPic))
+    CBMessageWindow = MBox(Text, vbNullString, mbtype, textColor, bgColor, PakLocate(projectPath & bmpPath & bgPic))
 End Function
 
 Function CBFileDialog(ByVal initialPath As String, ByVal fileFilter As String) As String

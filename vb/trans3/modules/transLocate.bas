@@ -23,13 +23,13 @@ Option Explicit
 Public movementSize As Double    'movement size (in tiles)
 
 '=========================================================================
-'Transform old-type isometric co-ordinates to new-type
+' Transform old-type isometric co-ordinates to new-type
 '=========================================================================
 Public Sub isoCoordTransform(ByVal oldX As Double, ByVal oldY As Double, _
                                   ByRef newX As Double, ByRef newY As Double)
 
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-        newX = oldX + Int((oldY - 1) / 2)
+        newX = oldX + (oldY - 1) \ 2
         newY = Int(oldY / 2) + 1 - Int(oldX) + (oldY - Int(oldY))
         
         newY = newY + boardList(activeBoardIndex).theData.bSizeX
@@ -41,7 +41,7 @@ Public Sub isoCoordTransform(ByVal oldX As Double, ByVal oldY As Double, _
 End Sub
 
 '=========================================================================
-'Inverse transform old-type isometric co-ordinates to new-type
+' Inverse transform old-type isometric co-ordinates to new-type
 '=========================================================================
 Public Sub invIsoCoordTransform(ByVal newX As Double, ByVal newY As Double, _
                                      ByRef oldX As Double, ByRef oldY As Double)
@@ -51,10 +51,10 @@ Public Sub invIsoCoordTransform(ByVal newX As Double, ByVal newY As Double, _
         newY = newY - boardList(activeBoardIndex).theData.bSizeX
     
         If Int(newX) Mod 2 = 0 Then
-            oldX = Int(newX / 2) - Int((newY - 1) / 2) + (newX - Int(newX))
+            oldX = newX \ 2 - ((newY - 1) \ 2) + (newX - Int(newX))
             oldY = Int(newX) + newY
         Else
-            oldX = Int((newX + 1) / 2) - Int(newY / 2) + (newX - Int(newX))
+            oldX = ((newX + 1) \ 2) - (newY \ 2) + (newX - Int(newX))
             oldY = Int(newX) + newY
         End If
         
@@ -364,13 +364,13 @@ Public Function roundCoords(ByRef passPos As PLAYER_POSITION, _
 
     Dim rx As Double, ry As Double, pos As PLAYER_POSITION
 
+    roundCoords = passPos
+
     If Not (movementSize <> 1) Then
-        roundCoords = passPos
         Exit Function
     End If
 
-    pos = passPos                                           'Copy across to a local.
-    With pos
+    With roundCoords
 
         If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
             'The conditions are slightly different because the sprite's base is a different
@@ -494,8 +494,6 @@ Public Function roundCoords(ByRef passPos As PLAYER_POSITION, _
 
     End With 'pos
 
-    roundCoords = pos
-
 End Function
 
 '=========================================================================
@@ -507,7 +505,6 @@ Public Function activationCoords(ByRef passPos As PLAYER_POSITION, _
                                  ByRef roundPos As PLAYER_POSITION) As PLAYER_POSITION
 
     Dim passX As Double, passY As Double
-    Dim ret As PLAYER_POSITION
 
     Call isoCoordTransform(passPos.x, passPos.y, passX, passY)
 
@@ -521,70 +518,70 @@ Public Function activationCoords(ByRef passPos As PLAYER_POSITION, _
             Case "walk_n", "stand_n"
 
                 If passX = Int(passX) Then 'Pushing against a right-hand edge.
-                    ret.x = passX - 1
+                    activationCoords.x = passX - 1
                 Else
-                    ret.x = Round(passX)
+                    activationCoords.x = Round(passX)
                 End If
                 If passY = Int(passY) Then 'Pushing against a left-hand edge.
-                    ret.y = passY - 1
+                    activationCoords.y = passY - 1
                 Else
-                    ret.y = Round(passY)
+                    activationCoords.y = Round(passY)
                 End If
 
             Case "walk_s", "stand_s"
 
                 If passX = Int(passX) Then 'Pushing against a right-hand edge.
-                    ret.x = passX + 1
+                    activationCoords.x = passX + 1
                 Else
-                    ret.x = Round(passX)
+                    activationCoords.x = Round(passX)
                 End If
                 If passY = Int(passY) Then 'Pushing against a left-hand edge.
-                    ret.y = passY + 1
+                    activationCoords.y = passY + 1
                 Else
-                    ret.y = Round(passY)
+                    activationCoords.y = Round(passY)
                 End If
 
             Case "walk_e", "stand_e"
 
                 If passX = Int(passX) Then 'Pushing against an upper edge.
-                    ret.x = passX + 1
+                    activationCoords.x = passX + 1
                 Else
-                    ret.x = Round(passX)
+                    activationCoords.x = Round(passX)
                 End If
                 If passY = Int(passY) Then 'Pushing against a lower edge.
-                    ret.y = passY - 1
+                    activationCoords.y = passY - 1
                 Else
-                    ret.y = Round(passY)
+                    activationCoords.y = Round(passY)
                 End If
 
             Case "walk_w", "stand_w"
 
                 If passX = Int(passX) Then 'Pushing against an upper edge.
-                    ret.x = passX - 1
+                    activationCoords.x = passX - 1
                 Else
-                    ret.x = Round(passX)
+                    activationCoords.x = Round(passX)
                 End If
                 If passY = Int(passY) Then 'Pushing against a lower edge.
-                    ret.y = passY + 1
+                    activationCoords.y = passY + 1
                 Else
-                    ret.y = Round(passY)
+                    activationCoords.y = Round(passY)
                 End If
 
             Case "walk_ne", "stand_ne"
-                ret.y = passY - 1
-                ret.x = Round(passX)
+                activationCoords.y = passY - 1
+                activationCoords.x = Round(passX)
 
             Case "walk_nw", "stand_nw"
-                ret.x = passX - 1
-                ret.y = Round(passY)
+                activationCoords.x = passX - 1
+                activationCoords.y = Round(passY)
 
             Case "walk_se", "stand_se"
-                ret.x = passX + 1
-                ret.y = Round(passY)
+                activationCoords.x = passX + 1
+                activationCoords.y = Round(passY)
 
             Case "walk_sw", "stand_sw"
-                ret.y = passY + 1
-                ret.x = Round(passX)
+                activationCoords.y = passY + 1
+                activationCoords.x = Round(passX)
 
         End Select
 
@@ -595,60 +592,58 @@ Public Function activationCoords(ByRef passPos As PLAYER_POSITION, _
 
             Case "walk_n", "stand_n"
 
-                ret.x = roundPos.x
+                activationCoords.x = roundPos.x
                 If (movementSize <> 1) Then
-                    ret.y = Round(passPos.y)
+                    activationCoords.y = Round(passPos.y)
                 Else
-                    ret.y = passPos.y - 1
+                    activationCoords.y = passPos.y - 1
                 End If
 
             Case "walk_s", "stand_s"
 
-                ret.x = roundPos.x
-                ret.y = Int(passPos.y) + 1
+                activationCoords.x = roundPos.x
+                activationCoords.y = Int(passPos.y) + 1
 
             Case "walk_e", "stand_e"
 
-                ret.x = Int(passPos.x) + 1
-                ret.y = -Int(-passPos.y)
+                activationCoords.x = Int(passPos.x) + 1
+                activationCoords.y = -Int(-passPos.y)
 
             Case "walk_w", "stand_w"
 
-                ret.x = -Int(-passPos.x) - 1
-                ret.y = -Int(-passPos.y)
+                activationCoords.x = -Int(-passPos.x) - 1
+                activationCoords.y = -Int(-passPos.y)
 
             Case "walk_ne", "stand_ne"
 
-                ret.x = Int(passPos.x) + 1
+                activationCoords.x = Int(passPos.x) + 1
                 If (movementSize <> 1) Then
-                    ret.y = Round(passPos.y) - 1
+                    activationCoords.y = Round(passPos.y) - 1
                 Else
-                    ret.y = passPos.y - 1
+                    activationCoords.y = passPos.y - 1
                 End If
 
             Case "walk_nw", "stand_nw"
 
-                ret.x = -Int(-passPos.x) - 1
+                activationCoords.x = -Int(-passPos.x) - 1
                 If (movementSize <> 1) Then
-                    ret.y = Round(passPos.y) - 1
+                    activationCoords.y = Round(passPos.y) - 1
                 Else
-                    ret.y = passPos.y - 1
+                    activationCoords.y = passPos.y - 1
                 End If
 
             Case "walk_se", "stand_se"
 
-                ret.x = Int(passPos.x) + 1
-                ret.y = Int(passPos.y) - 1
+                activationCoords.x = Int(passPos.x) + 1
+                activationCoords.y = Int(passPos.y) - 1
 
             Case "walk_sw", "stand_sw"
 
-                ret.x = -Int(-passPos.x) - 1
-                ret.y = Int(passPos.y) + 1
+                activationCoords.x = -Int(-passPos.x) - 1
+                activationCoords.y = Int(passPos.y) + 1
 
        End Select
 
     End If 'boardIso
-
-    activationCoords = ret
 
 End Function

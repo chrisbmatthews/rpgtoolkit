@@ -90,8 +90,8 @@ Public Sub showEndForm(Optional ByVal endProgram As Boolean = True)
         'Show the end form
         Call TKShowEndForm( _
                               endFormBackgroundHDC, _
-                              ((Screen.width - (340 * Screen.TwipsPerPixelX)) / 2) / Screen.TwipsPerPixelX, _
-                              ((Screen.height - (140 * Screen.TwipsPerPixelY)) / 2) / Screen.TwipsPerPixelY, _
+                              ((Screen.width - (340 * Screen.TwipsPerPixelX)) \ 2) \ Screen.TwipsPerPixelX, _
+                              ((Screen.height - (140 * Screen.TwipsPerPixelY)) \ 2) \ Screen.TwipsPerPixelY, _
                               statusBar.Icon.handle, _
                               App.hInstance _
                                               )

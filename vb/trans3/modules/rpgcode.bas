@@ -1335,7 +1335,7 @@ Sub DestroyPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Dim ext As String, file As String, t As Long
         ext$ = GetExt(lit$)
         Select Case UCase$(ext$)
-            Case "":
+            Case vbNullString:
                 'find slot:
                 For t = 0 To 4
                     If UCase$(playerListAr$(t)) = UCase$(lit$) Then
@@ -3847,7 +3847,7 @@ Sub MainFileRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Else
         lit$ = addExt(lit$, ".gam")
         lit$ = gamPath & lit$
-        Call EmptyRPG("", theProgram)
+        Call EmptyRPG(vbNullString, theProgram)
         Call setupMain
     End If
 
@@ -5337,7 +5337,7 @@ Sub ResetRPG(ByRef theProgram As RPGCodeProgram)
     On Error Resume Next
     Call DXClearScreen(0)
     Call DXRefresh
-    Call EmptyRPG("", theProgram)
+    Call EmptyRPG(vbNullString, theProgram)
     Dim num As Long
     For num = 0 To 4
         playerListAr$(num) = vbNullString
@@ -6126,33 +6126,29 @@ Public Sub setConstants()
 
     'Sets all RPGCode variable constants.
 
-    On Error GoTo errorhandler
-    
-    Dim t As Long
-    Dim xx As String
-    Dim yy As String
-    Dim ll As String
-    Dim hh As String
-    Dim cc As String
-    
+    On Error Resume Next
+
+    Dim t As Long, xx As String, yy As String
+    Dim ll As String, hh As String, cc As String
+
     Call setIndependentVariable("GameTime!", CStr(gameTime))
     Call setIndependentVariable("Music$", musicPlaying$)
     For t = 0 To 4
-        xx$ = replace("playerX[""" & CStr(t) & """]!", " ", "")
-        yy$ = replace("playerY[""" & CStr(t) & """]!", " ", "")
-        ll$ = replace("playerLayer[""" & CStr(t) & """]!", " ", "")
-        hh$ = replace("playerHandle[""" & CStr(t) & """]$", " ", "")
+        xx$ = replace("playerX[""" & CStr(t) & """]!", " ", vbNullString)
+        yy$ = replace("playerY[""" & CStr(t) & """]!", " ", vbNullString)
+        ll$ = replace("playerLayer[""" & CStr(t) & """]!", " ", vbNullString)
+        hh$ = replace("playerHandle[""" & CStr(t) & """]$", " ", vbNullString)
         Call setIndependentVariable(xx$, CStr(pPos(t).x))
         Call setIndependentVariable(yy$, CStr(pPos(t).y))
         Call setIndependentVariable(ll$, CStr(pPos(t).l))
         Call setIndependentVariable(hh$, playerListAr$(t))
     Next t
     For t = 0 To 10
-        cc$ = replace("Constant[""" & CStr(t) & """]!", " ", "")
+        cc$ = replace("Constant[""" & CStr(t) & """]!", " ", vbNullString)
         Call setIndependentVariable(cc$, CStr(boardList(activeBoardIndex).theData.brdConst(t)))
     Next t
     For t = 1 To 8
-        cc$ = replace("BoardTitle[""" & CStr(t) & """]$", " ", "")
+        cc$ = replace("BoardTitle[""" & CStr(t) & """]$", " ", vbNullString)
         Call setIndependentVariable(cc$, boardList(activeBoardIndex).theData.boardTitle$(t))
     Next t
     'board skill and background
@@ -6171,11 +6167,6 @@ Public Sub setConstants()
     
     Call setIndependentVariable("cnvRenderNow!", cnvRenderNow)
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
 Sub SetImageAdditiveRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -9096,23 +9087,23 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                 stepSize = 5
                 For size = 0 To (tilesX * 32) / 2 Step stepSize * 2
                     Call CanvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, fontColor)
-                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) / 2, 0, size + (tilesX * 32) / 2 + stepSize, 2000, fontColor)
+                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, fontColor)
                     Call renderRPGCodeScreen
                 Next size
                 For size = stepSize To (tilesX * 32) / 2 Step stepSize * 2
                     Call CanvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, fontColor)
-                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) / 2, 0, size + (tilesX * 32) / 2 + stepSize, 2000, fontColor)
+                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, fontColor)
                     Call renderRPGCodeScreen
                 Next size
                 Call CanvasFill(cnvRPGCodeScreen, fontColor)
                 For size = 0 To (tilesX * 32) / 2 Step stepSize * 2
                     Call CanvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, 0)
-                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) / 2, 0, size + (tilesX * 32) / 2 + stepSize, 2000, 0)
+                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, 0)
                     Call renderRPGCodeScreen
                 Next size
                 For size = stepSize To (tilesX * 32) / 2 Step stepSize * 2
                     Call CanvasFillBox(cnvRPGCodeScreen, size, 0, size + stepSize, 2000, 0)
-                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) / 2, 0, size + (tilesX * 32) / 2 + stepSize, 2000, 0)
+                    Call CanvasFillBox(cnvRPGCodeScreen, size + (tilesX * 32) \ 2, 0, size + (tilesX * 32) \ 2 + stepSize, 2000, 0)
                     Call renderRPGCodeScreen
                 Next size
                 Call CanvasFill(cnvRPGCodeScreen, fontColor)
@@ -9148,7 +9139,7 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
 
                 For radius = wi To 0 Step stepSize
                     'mainForm.boardform.Circle (px * ddx, py * ddy), radius, 0
-                    Call CanvasDrawEllipse(cnvRPGCodeScreen, pX - radius / 2, pY - radius / 2, pX + radius / 2, pY + radius / 2, 0)
+                    Call CanvasDrawEllipse(cnvRPGCodeScreen, pX - radius \ 2, pY - radius \ 2, pX + radius \ 2, pY + radius \ 2, 0)
                     Call renderRPGCodeScreen
                 Next radius
             Case 5:
@@ -9428,7 +9419,7 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
 
     yHeight = GetCanvasHeight(cnvMsgBox)
     xHeight = GetCanvasWidth(cnvMsgBox)
-    totalLines = Int(yHeight / fontSize)
+    totalLines = yHeight \ fontSize
     
     totalLines = 10
     
@@ -9440,7 +9431,7 @@ Public Sub AddToMsgBox(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     leng = Len(Text$)
     leng = leng * fontSize
     If leng / 2 > xHeight Then
-        tot = Int((xHeight) / fontSize)
+        tot = ((xHeight) \ fontSize)
         If tot <> 0 Then
             oth$ = Mid$(Text$, tot + 1, Len(Text$) - tot)
             Text$ = Mid$(Text$, 1, tot)
@@ -9813,8 +9804,8 @@ Sub zoomInRPG(Text$, ByRef theProgram As RPGCodeProgram)
             newWidth = Int(newWidth * zz)
             newHeight = Int(newHeight * zz)
                 
-            offx = -1 * Int((newWidth - (32 * tilesX)) / 2)
-            offy = -1 * Int((newHeight - (32 * tilesY)) / 2)
+            offx = -1 * ((newWidth - (32 * tilesX)) \ 2)
+            offy = -1 * ((newHeight - (32 * tilesY)) \ 2)
             
             Call StretchBlt(hdc, offx, offy, _
                 newWidth, newHeight, hdc2, _
@@ -9873,8 +9864,8 @@ Sub earthquakeRPG(Text$, ByRef theProgram As RPGCodeProgram)
             newHeight = Int(newHeight * zz)
         
         
-            offx = Int((newWidth - (32 * tilesX)) / 2)
-            offy = Int((newHeight - (32 * tilesY)) / 2)
+            offx = ((newWidth - (32 * tilesX)) \ 2)
+            offy = ((newHeight - (32 * tilesY)) \ 2)
             offx = num
             offy = num
             

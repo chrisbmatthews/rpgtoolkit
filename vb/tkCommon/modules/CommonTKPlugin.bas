@@ -14,7 +14,7 @@ Option Explicit
 '=========================================================================
 ' Old style plugin manager
 '=========================================================================
-Public Declare Function PLUGInitSystem Lib "actkrt3.dll" (cbArray As Long, ByVal cbArrayCount As Long) As Long
+Public Declare Function PLUGInitSystem Lib "actkrt3.dll" (ByRef cbArray As Long, ByVal cbArrayCount As Long) As Long
 Public Declare Function PLUGShutdownSystem Lib "actkrt3.dll" () As Long
 Public Declare Sub PLUGBegin Lib "actkrt3.dll" (ByVal plugFilename As String)
 Public Declare Function PLUGQuery Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal commandQuery As String) As Long
@@ -27,7 +27,7 @@ Public Declare Function PLUGMenu Lib "actkrt3.dll" (ByVal plugFilename As String
 Public Declare Function PLUGFight Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal enemyCount As Long, ByVal skilllevel As Long, ByVal backgroundFile As String, ByVal canrun As Long) As Long
 Public Declare Function PLUGFightInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal sourcePartyIndex As Long, ByVal sourceFighterIndex As Long, ByVal targetPartyIndex As Long, ByVal targetFighterIndex As Long, ByVal sourceHPLost As Long, ByVal sourceSMPLost As Long, ByVal targetHPLost As Long, ByVal targetSMPLost As Long, ByVal strMessage As String, ByVal attackCode As Long) As Long
 Public Declare Function PLUGInputRequested Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal inputCode As Long) As Long
-Public Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal X As Long, ByVal Y As Long, ByVal Button As Long, ByVal Shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
+Public Declare Function PLUGEventInform Lib "actkrt3.dll" (ByVal plugFilename As String, ByVal keyCode As Long, ByVal x As Long, ByVal y As Long, ByVal Button As Long, ByVal Shift As Long, ByVal strKey As String, ByVal inputCode As Long) As Long
 
 '=========================================================================
 ' Win32 APIs
@@ -104,7 +104,7 @@ Private Type PROCESS_INFORMATION
 End Type
 
 '=========================================================================
-' VB plugins manager
+' COM plugins manager
 '=========================================================================
 Private m_comPlugins() As CComPlugin
 

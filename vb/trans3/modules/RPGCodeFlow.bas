@@ -347,8 +347,8 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         For t = 1 To number
             For se = theOne To 100
                 If (LenB(pointer$(se)) = 0) Then
-                    pointer$(se) = replace(destList$(t), " ", "")
-                    correspPointer$(se) = replace(parameterList$(t), " ", "")
+                    pointer$(se) = replace(destList$(t), " ", vbNullString)
+                    correspPointer$(se) = replace(parameterList$(t), " ", vbNullString)
                     topList = se
                     Exit For
                 End If
@@ -1035,34 +1035,29 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Call Send(splice$, theProgram) 'send
             DoSingleCommand = increment(theProgram)
             Exit Function
-    
+
         Case "TEXT", "PIXELTEXT"
             Call TextRPG(splice$, theProgram) 'text
             DoSingleCommand = increment(theProgram)
             Exit Function
-               
+
         Case "LABEL":
             'Just a label- ignore it!
             DoSingleCommand = increment(theProgram)
             Exit Function
-    
+
         Case "*", "OPENBLOCK", "CLOSEBLOCK":
             'Just a comment- ignore it!
             DoSingleCommand = increment(theProgram)
             Exit Function
-               
-        Case "":
-            'Just a blank line- ignore it!
-            DoSingleCommand = increment(theProgram)
-            Exit Function
-    
+  
         Case "MBOX":
             Call AddToMsgBox(splice$, theProgram)  'Message box
             DoSingleCommand = increment(theProgram)
             Exit Function
     
         Case "@":
-            Call AddToMsgBox("", theProgram)  'Message box
+            Call AddToMsgBox(vbNullString, theProgram)  'Message box
             DoSingleCommand = increment(theProgram)
             Exit Function
         

@@ -67,8 +67,8 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
     Dim textSize As Long
     textSize = 20
     
-    offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) / 2
-    offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) / 2
+    offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) \ 2
+    offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) \ 2
     
     Dim done As Boolean
     done = False
@@ -99,7 +99,7 @@ Function ShowPromptDialog(ByVal title As String, ByVal Text As String, Optional 
         keyb = getAsciiKey()
         If LenB(keyb) <> 0 Then
             If Asc(LCase$(keyb)) >= 32 Then
-                textBoxContents = textBoxContents + LCase$(keyb)
+                textBoxContents = textBoxContents & LCase$(keyb)
             End If
             If Asc(keyb) = 8 Then
                 If LenB(textBoxContents) <> 0 Then
@@ -202,7 +202,7 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
             ShowFileDialog = vbNullString
         End If
         
-        ChDir (oldpath)
+        Call ChDir(oldpath)
         
         Exit Function
         
@@ -251,13 +251,13 @@ Function ShowFileDialog(ByVal path As String, ByVal ext As String) As String
     Dim textSize As Long
     textSize = 20
     
-    offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) / 2
-    offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) / 2
+    offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) \ 2
+    offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) \ 2
     
     
     'fill the list...
     Dim filesPerPage As Long
-    filesPerPage = Int(GetCanvasHeight(cnvList) / textSize)
+    filesPerPage = (GetCanvasHeight(cnvList) \ textSize)
     
     Dim cursorNum As Long
     cursorNum = 0
@@ -613,8 +613,8 @@ Function SelectionBox(ByVal Text As String, ByRef options() As String, Optional 
     
     Dim offsetX As Long
     Dim offsetY As Long
-    offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) / 2
-    offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) / 2
+    offsetX = (GetCanvasWidth(cnvAllPurpose) - GetCanvasWidth(cnv)) \ 2
+    offsetY = (GetCanvasHeight(cnvAllPurpose) - GetCanvasHeight(cnv)) \ 2
     
     Dim cursorNum As Long
     cursorNum = 0

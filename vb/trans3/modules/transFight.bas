@@ -53,7 +53,7 @@ Public Sub fightTest()
             If mainMem.fightType = 0 Then
                 'Random fights
                 random = Int(Rnd(1) * mainMem.chances) + 1
-                If random = Int(mainMem.chances / 2) Then
+                If random = mainMem.chances \ 2 Then
                     If mainMem.fprgYN = 0 Then
                         'Built in fight
                         If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 And boardList(activeBoardIndex).theData.BoardNightBattleOverride = 1 Then
@@ -72,7 +72,7 @@ Public Sub fightTest()
                 End If
             ElseIf mainMem.fightType = 1 Then
                 'Planned fights
-                random = Int(stepsTaken / mainMem.chances)
+                random = stepsTaken \ mainMem.chances
                 If (random * mainMem.chances) = stepsTaken Then
                     If mainMem.fprgYN = 0 Then
                         'Built in fight
@@ -163,9 +163,9 @@ Public Sub fightInformAttack(ByVal sourcePartyIndex As Long, ByVal sourceFighter
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             
             If isComPlugin(plugName) Then
-                Call comPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
+                Call comPlugin(plugName).fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, vbNullString, code)
             Else
-                Call PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, "", code)
+                Call PLUGFightInform(plugName, sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, 0, 0, targetHPLost, targetSMPLost, vbNullString, code)
             End If
 
         End If
@@ -266,9 +266,9 @@ Public Sub fightInformPartyDefeated(ByVal sourcePartyIndex As Long)
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             If isComPlugin(plugName) Then
-                Call comPlugin(plugName).fightInform(sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
+                Call comPlugin(plugName).fightInform(sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, vbNullString, code)
             Else
-                Call PLUGFightInform(plugName, sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, "", code)
+                Call PLUGFightInform(plugName, sourcePartyIndex, -1, 0, 0, 0, 0, 0, 0, vbNullString, code)
             End If
         End If
     End If
@@ -289,9 +289,9 @@ Public Sub fightInformCharge(ByVal partyIdx As Long, ByVal fighterIdx As Long)
             Dim plugName As String
             plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
             If isComPlugin(plugName) Then
-                Call comPlugin(plugName).fightInform(partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
+                Call comPlugin(plugName).fightInform(partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, vbNullString, code)
             Else
-                Call PLUGFightInform(plugName, partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, "", code)
+                Call PLUGFightInform(plugName, partyIdx, fighterIdx, -1, -1, 0, 0, 0, 0, vbNullString, code)
             End If
         End If
     End If

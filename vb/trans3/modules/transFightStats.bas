@@ -181,7 +181,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     lev = lev + 1
     Call setIndependentVariable(thePlayer.leVar$, CStr(lev))
     If thePlayer.charLevelUpType = 0 Then
-        thePlayer.levelProgression = thePlayer.levelProgression + Int(thePlayer.levelProgression * (thePlayer.experienceIncrease / 100))
+        thePlayer.levelProgression = thePlayer.levelProgression + Int(thePlayer.levelProgression * (thePlayer.experienceIncrease \ 100))
     Else
         thePlayer.levelProgression = thePlayer.levelProgression + thePlayer.experienceIncrease
     End If
@@ -191,7 +191,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     Dim hp As Double
     aa = getIndependentVariable(thePlayer.maxHealthVar$, l$, hp)
     If thePlayer.charLevelUpType = 0 Then
-        hp = hp + ((hp - equipHPadd(num)) * thePlayer.levelHp / 100)
+        hp = hp + ((hp - equipHPadd(num)) * thePlayer.levelHp \ 100)
     Else
         hp = hp + thePlayer.levelHp
     End If
@@ -201,7 +201,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     'dp up:
     aa = getIndependentVariable(thePlayer.defenseVar$, l$, hp)
     If thePlayer.charLevelUpType = 0 Then
-        hp = hp + ((hp - equipDPadd(num)) * thePlayer.levelDp / 100)
+        hp = hp + ((hp - equipDPadd(num)) * thePlayer.levelDp \ 100)
     Else
         hp = hp + thePlayer.levelDp
     End If
@@ -211,7 +211,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     'fp up:
     aa = getIndependentVariable(thePlayer.fightVar$, l$, hp)
     If thePlayer.charLevelUpType = 0 Then
-        hp = hp + ((hp - equipFPadd(num)) * thePlayer.levelFp / 100)
+        hp = hp + ((hp - equipFPadd(num)) * thePlayer.levelFp \ 100)
     Else
         hp = hp + thePlayer.levelFp
     End If
@@ -221,7 +221,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     'smp up:
     aa = getIndependentVariable(thePlayer.smMaxVar$, l$, hp)
     If thePlayer.charLevelUpType = 0 Then
-        hp = hp + ((hp - equipSMadd(num)) * thePlayer.levelSm / 100)
+        hp = hp + ((hp - equipSMadd(num)) * thePlayer.levelSm \ 100)
     Else
         hp = hp + thePlayer.levelSm
     End If
@@ -229,7 +229,7 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     Call setIndependentVariable(thePlayer.smMaxVar$, CStr(hp))
 
     Dim h As String
-    h$ = getPlayerName(thePlayer) + ": "
+    h$ = getPlayerName(thePlayer) & ": "
     
     Dim retval As RPGCODE_RETURN
     Dim thePrg As RPGCodeProgram

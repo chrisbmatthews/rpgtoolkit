@@ -87,7 +87,7 @@ Public Sub traceProgram(ByRef prg As RPGCodeProgram, ByVal file As String)
             If a = prg.programPos Then line = line & "  ** Current Line"
             Print #ff, line
         Next a
-        Print #ff, ""
+        Print #ff, vbNullString
         Print #ff, prg.programPos
     Close ff
 

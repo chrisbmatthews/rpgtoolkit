@@ -983,7 +983,7 @@ Public Function ParseRPGCodeCommand( _
 
     ' Some things don' t require parsing
     Select Case cmdName
-        Case "@", "*", "", "LABEL", "OPENBLOCK", "CLOSEBLOCK", "REDIRECT", "METHOD"
+        Case "@", "*", vbNullString, "LABEL", "OPENBLOCK", "CLOSEBLOCK", "REDIRECT", "METHOD"
             ParseRPGCodeCommand = line
             Exit Function
     End Select
@@ -1247,8 +1247,8 @@ Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram
 
     Dim toParse As String
     ' First remove spaces and tabs
-    toParse = replaceOutsideQuotes(variable, " ", "")
-    toParse = replaceOutsideQuotes(toParse, vbTab, "")
+    toParse = replaceOutsideQuotes(variable, " ", vbNullString)
+    toParse = replaceOutsideQuotes(toParse, vbTab, vbNullString)
 
     If (InStrB(1, toParse, "[") = 0) Then
         ' There's not a [ so it's not an array and we're not needed
