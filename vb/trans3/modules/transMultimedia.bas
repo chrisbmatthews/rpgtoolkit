@@ -110,17 +110,15 @@ Public Function isMediaPlaying(ByVal file As String) As Boolean
 
     On Error Resume Next
    
-    Select Case UCase(GetExt(file))
+    'Get extension
+    Dim ext As String
+    ext = UCase(GetExt(file))
 
-        Case "MID", "MIDI", "WAV", "MLP"
-            'Ask MCI
-            isMediaPlaying = IsPlayingMCI(MID_DEVICE)
-
-        Case "MP3", "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "MID", "MIDI", "WAV", "MLP"
-            'Ask Audiere
-            isMediaPlaying = TKAudiereIsPlaying(bkgDevice)
-
-    End Select
+    If (isPlayedByMCI(ext)) Then
+        isMediaPlaying = IsPlayingMCI(MID_DEVICE)
+    ElseIf (isPlayedByAudiere(ext)) Then
+        isMediaPlaying = (TKAudiereIsPlaying(bkgDevice) = 1)
+    End If
 
 End Function
 
@@ -130,11 +128,11 @@ End Function
 Public Sub killMedia()
 
     On Error Resume Next
-    
+
     Call TKAudiereDestroyHandle(bkgDevice)
     Call TKAudiereDestroyHandle(fgDevice)
     Call TKAudiereKill
-    
+
 End Sub
 
 '=========================================================================
@@ -147,19 +145,41 @@ Public Sub playMedia(ByVal file As String)
     'stop everything
     Call stopMedia
 
-    Select Case GetExt(UCase(file))
+    'Get extension
+    Dim ext As String
+    ext = UCase(GetExt(file))
 
-        Case "MID", "MIDI", "MPL"
-            'Play through MCI
-            Call PlayMCI(PakLocate(file), MID_DEVICE)
-
-        Case "MP3", "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "MID", "MIDI", "WAV", "MLP"
-            'play through audiere
-            Call TKAudierePlay(bkgDevice, PakLocate(file), 1, 0)
-            
-    End Select
+    If (isPlayedByMCI(ext)) Then
+        Call PlayMCI(file, MID_DEVICE)
+    ElseIf (isPlayedByAudiere(ext)) Then
+        Call TKAudierePlay(bkgDevice, file, 1, 0)
+    End If
 
 End Sub
+
+'=========================================================================
+' Checks if MCI supports a format
+'=========================================================================
+Private Function isPlayedByMCI(ByVal ext As String) As Boolean
+    On Error Resume Next
+    Select Case ext
+        Case "MID", "MIDI", "MPL", "MP3"
+            'MCI plays this
+            isPlayedByMCI = True
+    End Select
+End Function
+
+'=========================================================================
+' Check if audiere supports a format
+'=========================================================================
+Private Function isPlayedByAudiere(ByVal ext As String) As Boolean
+    On Error Resume Next
+    Select Case ext
+        Case "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "WAV", "MLP"
+            'Audiere plays this
+            isPlayedByAudiere = True
+    End Select
+End Function
 
 '=========================================================================
 ' Play a sound effect
@@ -168,21 +188,23 @@ Public Sub playSoundFX(ByVal file As String)
 
     On Error Resume Next
 
-    If Not fileExists(file) Then Exit Sub
+    If (Not fileExists(file)) Then
+        'Can't play it if it doesn't exist!
+        Exit Sub
+    End If
 
-    Call StopMCI(SFX_DEVICE)
+    'Stop sounds
+    Call stopSFX
 
-    Select Case GetExt(UCase(file))
+    'Get extension
+    Dim ext As String
+    ext = UCase(GetExt(file))
 
-        Case "MID", "MIDI", "MPL"
-            'play through MCI
-            Call PlayMCI(PakLocate(file), SFX_DEVICE)
-
-        Case "MP3", "MOD", "IT", "XM", "S3M", "669", "AMF", "AMS", "DBM", "DSM", "FAR", "MED", "MDL", "MTM", "NST", "OKT", "PTM", "STM", "ULT", "UMX", "WOW", "MID", "MIDI", "WAV", "MLP"
-            'play through audiere
-            Call TKAudierePlay(fgDevice, PakLocate(file), 0, 0)
-
-    End Select
+    If (isPlayedByMCI(ext)) Then
+        Call PlayMCI(file, SFX_DEVICE)
+    ElseIf (isPlayedByAudiere(ext)) Then
+        Call TKAudierePlay(bkgDevice, file, 1, 0)
+    End If
 
 End Sub
 
