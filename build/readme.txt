@@ -2,7 +2,7 @@ RPG Toolkit Development System 3.05
 -----------------------------------
 December 2004
 
-Welcome to the release of the RPGToolkit 3.05! This readme file addresses miscellaneous notes and information too timely to have been located in other places. To ensure a successful experience with version 3.05, we suggest you read this document. Also, be sure to view history.txt for a complete list of changes for this version.
+Welcome to the release of the RPGToolkit 3.05! This readme file addresses miscellaneous notes and information too timely to have been located in other places. To ensure a successful experience with version 3.05, we suggest you read this document. Also, be sure to view history.txt for a complete list of changes to this version.
 
 3.0.5 Readme - Important!
 -------------------------
@@ -32,7 +32,7 @@ method CTest::function(obj)
 	}
 }
 
-Unfortunately, code like this does not work. Methods must now specifiy the type of object they require. Objects passed in can derive from that type if required. The corrected version of code like the above is as follows:
+Unfortunately, code like this does not work. Methods must specifiy the type of object they require. Objects passed in can derive from that type if required. The corrected version of code like the above is as follows:
 
 method CTest::function(CTest obj)
 {
@@ -40,7 +40,7 @@ method CTest::function(CTest obj)
 	m_myObject = obj!
 }
 
-This enables you to make assumptions about the object passed in without worrying about its type. It also allows you to overload the function to take different types of objects. For example, this method could exist with the above:
+This enables you to make assumptions about the object passed in without worrying about its type. It also allows you to overload the function to take different types of objects. For example, this method could coexist with the above:
 
 method CTest::function(CTestTwo obj)
 {
