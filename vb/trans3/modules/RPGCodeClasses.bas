@@ -325,7 +325,10 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                         If (prg.program(methodCheckIdx) <> "") Then
                             If (prg.program(methodCheckIdx) = "{") Then
                                 ' The method's body is right here
-                                Call addMethodToPrg(prg.classes.classes(classIdx).strName & "::" & GetMethodName(prg.program(lineIdx)), methodCheckIdx, prg)
+                                Dim mName As String
+                                mName = GetMethodName(prg.program(lineIdx))
+                                ' Add this method to the program
+                                Call addMethodToPrg(prg.classes.classes(classIdx).strName & "::" & mName, lineIdx, prg)
                                 ' Flag there was a method here
                                 methodHere = True
                             End If
@@ -337,6 +340,10 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
                         Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePrivate)
                     Else
                         Call addMethodToScope(prg.classes.classes(classIdx).strName, prg.program(lineIdx), prg, prg.classes.classes(classIdx).scopePublic)
+                    End If
+                    If (methodHere) Then
+                        ' Set in the new line
+                        prg.program(lineIdx) = replace(prg.program(lineIdx), "method " & mName, "method " & prg.classes.classes(classIdx).strName & "::" & mName, , , vbTextCompare)
                     End If
                 Else
                     Call debugger("Methods are not valid in structures-- " & prg.program(lineIdx))
