@@ -70,7 +70,7 @@ Option Explicit
         Dim t As Long
         Do Until done
             t = t + 1
-            TabStrip1.Tabs.item(t).Caption = LoadStringLoc(TabStrip1.Tabs.item(t).tag, TabStrip1.Tabs.item(t).Caption)
+            TabStrip1.Tabs.item(t).Caption = LoadStringLoc(TabStrip1.Tabs.item(t).Tag, TabStrip1.Tabs.item(t).Caption)
         Loop
         Exit Sub
 tabErr:
@@ -825,7 +825,7 @@ loadtileerr:
         '=======================================================
         'Return a boolean for 1/0
         '=======================================================
-        If inte = 1 Then integerToBoolean = True
+        integerToBoolean = (inte = 1)
     End Function
 
 #Else
@@ -867,11 +867,7 @@ loadtileerr:
 
             If c = """" Then
                 If ignoreQuotes Then
-                    If Not ignore Then
-                        ignore = True
-                    Else
-                        ignore = False
-                    End If
+                    ignore = (Not ignore)
                 End If
             End If
   

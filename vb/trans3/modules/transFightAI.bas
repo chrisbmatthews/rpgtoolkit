@@ -55,11 +55,9 @@ Private Sub AIZero(ByVal partyIdx As Long, ByVal fighterIdx As Long)
     Dim playerHit As Long
     'choose the player to attack...
     Dim done As Boolean
-    Do While Not (done)
+    Do Until done
         playerHit = Int(Rnd(1) * UBound(parties(PLAYER_PARTY).fighterList))
-        If getPartyMemberHP(PLAYER_PARTY, playerHit) > 0 Then
-            done = True
-        End If
+        done = (getPartyMemberHP(PLAYER_PARTY, playerHit) > 0)
     Loop
     
     Dim res As Long
@@ -100,11 +98,9 @@ Private Sub AIOne(ByVal partyIdx As Long, ByVal fighterIdx As Long)
     Dim playerHit As Long
     'choose the player to attack...
     Dim done As Boolean
-    Do While Not (done)
+    Do Until done
         playerHit = Int(Rnd(1) * UBound(parties(PLAYER_PARTY).fighterList))
-        If getPartyMemberHP(PLAYER_PARTY, playerHit) > 0 Then
-            done = True
-        End If
+        done = (getPartyMemberHP(PLAYER_PARTY, playerHit) > 0)
     Loop
     
     'try to do special move

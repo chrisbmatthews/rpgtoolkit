@@ -37,7 +37,7 @@ Public Enum GAME_LOGIC_STATE            'state of gameLogic() procedure
     GS_PAUSE = 4                        '  pause game (do nothing)
 End Enum
 
-'Public movementCounter As Long          'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
+'Public movementCounter As Long         'number of times GS_MOVEMENT has been run (should be 4 before moving onto GS_DONEMOVE)
 Public saveFileLoaded As Boolean        'was the game loaded from start menu?
 Public runningAsEXE As Boolean          'are we running as an exe file?
 Public gShuttingDown As Boolean         'Has the shutdown process been initiated?
@@ -91,7 +91,7 @@ Public Sub closeSystems()
     Call killMedia
     Call DeletePakTemp
     Call host.Destroy
-    Call Unload(debugWin)
+    Call Unload(debugwin)
     Call closeActiveX
     Call showEndForm
 End Sub
@@ -302,7 +302,7 @@ Public Sub gameLogic()
 
         Case GS_MOVEMENT        'MOVEMENT STATE
                                 '--------------
-                                
+
             'Make sure this runs for the duration of the player's move.
             'Run this before movePlayers since .loopFrame will be reset by it.
             If pPos(selectedPlayer).loopFrame + 1 < FRAMESPERMOVE * (playerMem(selectedPlayer).loopSpeed + loopOffset) Then
@@ -312,17 +312,16 @@ Public Sub gameLogic()
                 'We're done movement
                 gGameState = GS_DONEMOVE
             End If
-            
+
             Call multiTaskNow       'run rpgcode multitasking
             Call movePlayers        'move players
             Call moveItems          'move items
 
             'Re-render the scene
             Call renderNow(-1, True)
-            
+
         Case GS_DONEMOVE        'DONE MOVEMENT STATE
                                 '-------------------
-
 
             With pendingPlayerMovement(selectedPlayer)
 
@@ -335,8 +334,8 @@ Public Sub gameLogic()
                     tempPos = pPos(selectedPlayer)
 
                     tempPos.l = .lTarg
-                    tempPos.x = .xTarg
-                    tempPos.y = .yTarg
+                    tempPos.X = .xTarg
+                    tempPos.Y = .yTarg
 
                     'Test for a program
                     Call programTest(tempPos)
@@ -378,7 +377,7 @@ Public Sub gameLogic()
             Call endProgram
 
     End Select
-    
+
     'Time a render.
     If gGameState = GS_MOVEMENT Then
         renderTime = Timer() - renderTime
@@ -536,13 +535,13 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
         'Setup player position
         With pPos(selectedPlayer)
-            .x = boardList(activeBoardIndex).theData.playerX
-            .y = boardList(activeBoardIndex).theData.playerY
+            .X = boardList(activeBoardIndex).theData.playerX
+            .Y = boardList(activeBoardIndex).theData.playerY
             .l = boardList(activeBoardIndex).theData.playerLayer
             .stance = "WALK_S"
             .frame = 0
-            pendingPlayerMovement(selectedPlayer).xOrig = .x
-            pendingPlayerMovement(selectedPlayer).yOrig = .y
+            pendingPlayerMovement(selectedPlayer).xOrig = .X
+            pendingPlayerMovement(selectedPlayer).yOrig = .Y
             pendingPlayerMovement(selectedPlayer).lOrig = .l
             .loopFrame = -1
             playerMem(selectedPlayer).loopSpeed = 1
@@ -552,11 +551,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         'Hide all players except the walking graphic one
         Dim pNum As Long
         For pNum = 0 To UBound(showPlayer)
-            If (pNum <> selectedPlayer) Then
-                showPlayer(pNum) = False
-            Else
-                showPlayer(pNum) = True
-            End If
+            showPlayer(pNum) = (pNum = selectedPlayer)
         Next pNum
 
         'Start him facing south

@@ -230,42 +230,38 @@ Public Sub openItems()
 
             'Copy item values to itmPos() array
             itmPos(itemNum).frame = 0
-            itmPos(itemNum).x = .itmX(itemNum)
-            itmPos(itemNum).y = .itmY(itemNum)
+            itmPos(itemNum).X = .itmX(itemNum)
+            itmPos(itemNum).Y = .itmY(itemNum)
             itmPos(itemNum).l = .itmLayer(itemNum)
             itmPos(itemNum).stance = "stand_s"  'I am now depreciating the item
                                                 'REST graphic into the southern
                                                 'idling graphic. Older items will
                                                 'have REST copied to this stance
                                                 'upon being opened.
-                                                
+
             'Indicate that there was no last render
             lastItemRender(itemNum).canvas = -1
-            
+
             'Copy values to pending item movements
             With pendingItemMovement(itemNum)
-                .xOrig = itmPos(itemNum).x
+                .xOrig = itmPos(itemNum).X
                 .xTarg = .xOrig
-                .yOrig = itmPos(itemNum).y
+                .yOrig = itmPos(itemNum).Y
                 .yTarg = .yOrig
                 .lOrig = itmPos(itemNum).l
                 .lTarg = .lOrig
             End With
 
             'Check if we should run this item
-            If boardList(activeBoardIndex).theData.itmActivate(itemNum) = 1 Then
+            If .itmActivate(itemNum) = 1 Then
                 runIt = False
                 checkIt = getIndependentVariable(.itmVarActivate(itemNum), lit, num)
                 If checkIt = DT_NUM Then
                     valueTestNum = num
-                    If valueTestNum = .itmActivateInitNum(itemNum) Then
-                        runIt = True
-                    End If
+                    runIt = (valueTestNum = .itmActivateInitNum(itemNum))
                 ElseIf checkIt = DT_LIT Then
                     valueTestLit = lit
-                    If valueTestLit = .itmActivateInitNum(itemNum) Then
-                        runIt = True
-                    End If
+                    runIt = (valueTestLit = .itmActivateInitNum(itemNum))
                 End If
             Else
                 runIt = True
@@ -286,11 +282,11 @@ Public Sub openItems()
             End If
 
         End With
-        
-    itemMem(itemNum).loopSpeed = 1 '[ 3.0.5 temp!]
-        
+
+        itemMem(itemNum).loopSpeed = 1 '[ 3.0.5 temp!]
+
     Next itemNum
-    
+
 End Sub
 
 '=========================================================================
@@ -412,11 +408,7 @@ Public Function CanPlayerUse(ByVal num As Long, ByRef anItem As TKItem) As Boole
             End If
         Next ll
     End If
-    If okAll = 1 Then
-        CanPlayerUse = True
-    Else
-        CanPlayerUse = False
-    End If
+    CanPlayerUse = (okAll = 1)
 End Function
 
 '=========================================================================

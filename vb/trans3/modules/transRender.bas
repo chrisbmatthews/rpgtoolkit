@@ -287,7 +287,7 @@ End Sub
 Private Sub killResPictures()
     Call DeleteDC(handHDC)
     Call DeleteDC(handBackupHDC)
-    'NOTE:  endFormBackgroundHDC is killed in showendform()
+    'NOTE:  endFormBackgroundHDC is killed in showEndForm()
 End Sub
 
 '=========================================================================
@@ -884,7 +884,7 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
 End Sub
 
 '=========================================================================
-' Render a plyer (remove string stances!!!!)
+' Render a player (remove string stances!!!!)
 '=========================================================================
 Private Function renderPlayer(ByVal cnv As Long, _
                               ByRef thePlayer As TKPlayer, _

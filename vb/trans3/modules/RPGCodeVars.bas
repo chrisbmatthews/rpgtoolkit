@@ -401,15 +401,7 @@ End Sub
 ' Determine if a redirect exists for the text passed in
 '=========================================================================
 Public Function redirectExists(ByVal methodToCheck As String) As Boolean
-    On Error Resume Next
-    Dim a As Long
-    methodToCheck = replace(methodToCheck, "#", "")
-    a = RPGCRedirectExists(UCase$(methodToCheck))
-    If a = 1 Then
-        redirectExists = True
-    Else
-        redirectExists = False
-    End If
+    redirectExists = (RPGCRedirectExists(UCase$(replace(methodToCheck, "#", ""))) = 1)
 End Function
 
 '=========================================================================
@@ -816,14 +808,7 @@ Public Function litVarExists(ByVal varname As String, ByVal heapID As Long) As B
     On Error Resume Next
     Dim r As Long
     If varname <> "" Then
-        r = RPGCLitExists(UCase$(varname), heapID)
-        If r = 1 Then
-            litVarExists = True
-        Else
-            litVarExists = False
-        End If
-    Else
-        litVarExists = False
+        litVarExists = (RPGCLitExists(UCase$(varname), heapID) = 1)
     End If
 End Function
 
@@ -889,17 +874,8 @@ End Sub
 ' Determine if a numerical variable exists
 '=========================================================================
 Public Function numVarExists(ByVal varname As String, ByVal heapID As Long) As Boolean
-    On Error Resume Next
-    Dim r As Long
     If varname <> "" Then
-        r = RPGCNumExists(UCase$(varname), heapID)
-        If r = 1 Then
-            numVarExists = True
-        Else
-            numVarExists = False
-        End If
-    Else
-        numVarExists = False
+        numVarExists = (RPGCNumExists(UCase$(varname), heapID) = 1)
     End If
 End Function
 

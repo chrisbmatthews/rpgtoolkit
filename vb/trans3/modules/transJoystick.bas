@@ -171,33 +171,33 @@ End Type
 Public Const WINVER_NT_PLATFORM = 2
 
 Public Function getWinVersion() As String
-   Dim osinfo As OSVERSIONINFO
-   Dim retvalue As Integer
+    Dim osinfo As OSVERSIONINFO
+    Dim retvalue As Integer
 
-   osinfo.dwOSVersionInfoSize = 148
-   osinfo.szCSDVersion = Space$(128)
-   retvalue = GetVersionExA(osinfo)
+    osinfo.dwOSVersionInfoSize = 148
+    osinfo.szCSDVersion = space$(128)
+    retvalue = GetVersionExA(osinfo)
 
-   With osinfo
-   Select Case .dwPlatformId
-      Case 1
-         If .dwMinorVersion = 0 Then
-            getWinVersion = "Windows 95"
-         ElseIf .dwMinorVersion = 10 Then
-            getWinVersion = "Windows 98"
-         End If
-      Case 2
-         If .dwMajorVersion = 3 Then
-            getWinVersion = "Windows NT 3.51"
-         ElseIf .dwMajorVersion = 4 Then
-            getWinVersion = "Windows NT 4.0"
-         ElseIf .dwMajorVersion = 5 Then
-            getWinVersion = "Windows 2000"
-         End If
-      Case Else
-         getWinVersion = "Failed"
-   End Select
-   End With
+    With osinfo
+        Select Case .dwPlatformId
+            Case 1
+                If .dwMinorVersion = 0 Then
+                    getWinVersion = "Windows 95"
+                ElseIf .dwMinorVersion = 10 Then
+                    getWinVersion = "Windows 98"
+                End If
+            Case 2
+                If .dwMajorVersion = 3 Then
+                    getWinVersion = "Windows NT 3.51"
+                ElseIf .dwMajorVersion = 4 Then
+                    getWinVersion = "Windows NT 4.0"
+                ElseIf .dwMajorVersion = 5 Then
+                    getWinVersion = "Windows 2000"
+                End If
+            Case Else
+                 getWinVersion = "Failed"
+        End Select
+    End With
 End Function
 
 Function joyDirection(ByRef buttonOnOff() As Boolean) As Integer
@@ -238,30 +238,12 @@ Function joyDirection(ByRef buttonOnOff() As Boolean) As Integer
     End If
          
     'get button info:
-    mask = JOY_BUTTON1
-    If (ji.dwButtons And mask) Then
-        buttonOnOff(0) = True
-    Else
-        buttonOnOff(0) = False
-    End If
-    mask = JOY_BUTTON2
-    If (ji.dwButtons And mask) Then
-        buttonOnOff(1) = True
-    Else
-        buttonOnOff(1) = False
-    End If
-    mask = JOY_BUTTON3
-    If (ji.dwButtons And mask) Then
-        buttonOnOff(2) = True
-    Else
-        buttonOnOff(2) = False
-    End If
-    mask = JOY_BUTTON4
-    If (ji.dwButtons And mask) Then
-        buttonOnOff(3) = True
-    Else
-        buttonOnOff(3) = False
-    End If
+    
+    Dim masks() As Long
+    masks = Array(JOY_BUTTON1, JOY_BUTTON2, JOY_BUTTON3, JOY_BUTTON4)
+    For mask = 0 To 3
+        buttonOnOff(mask) = (ji.dwButtons And masks(mask))
+    Next mask
     
     Dim toReturn As Long
     Dim xaxis As Long
@@ -332,7 +314,7 @@ Function JoyTest() As Boolean
     Dim retvalue As Integer
     
     osinfo.dwOSVersionInfoSize = 148
-    osinfo.szCSDVersion = Space$(128)
+    osinfo.szCSDVersion = space$(128)
     retvalue = GetVersionExA(osinfo)
     
     With osinfo
@@ -348,11 +330,8 @@ Function JoyTest() As Boolean
     Dim caps As JOYCAPS     ' joystick capabilities
     Dim rc As Long
     rc = joyGetDevCaps(JOYSTICKID1, caps, Len(caps))
-    If (rc <> 0) Then
-        JoyTest = False
-    Else
-        JoyTest = True
-    End If
+    JoyTest = (rc = 0)
+
 End Function
 
 Function numWithin(ByVal num1 As Double, ByVal low As Double, ByVal high As Double) As Boolean

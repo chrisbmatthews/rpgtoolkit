@@ -2219,7 +2219,7 @@ End Function
 Public Sub runQueuedMovements(): On Error Resume Next
 '======================================================================
 'run all player and item movements currently pending
-'without regard for gamestate (like if gamestate is GD_MOVEMENT or not)
+'without regard for gamestate (like if gamestate is GS_MOVEMENT or not)
 'won't run programs and stuff when player moves.
 '======================================================================
 'Called by ItemStepRPG, PlayerStepRPG, PushItemRPG, PushRPG, WanderRPG.

@@ -14,7 +14,7 @@ Option Explicit
 '=========================================================================
 ' FreeImage image manipulation
 '=========================================================================
-Private Declare Function IMGBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal x As Long, ByVal y As Long, ByVal hdc As Long) As Long
+Private Declare Function IMGBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal X As Long, ByVal Y As Long, ByVal hdc As Long) As Long
 Private Declare Function IMGGetWidth Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGGetHeight Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal filename As String) As Long
@@ -32,20 +32,20 @@ Private Declare Function CNVLock Lib "actkrt3.dll" (ByVal handle As Long) As Lon
 Private Declare Function CNVUnlock Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Function CNVGetWidth Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Function CNVGetHeight Lib "actkrt3.dll" (ByVal handle As Long) As Long
-Private Declare Function CNVGetPixel Lib "actkrt3.dll" (ByVal handle As Long, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function CNVSetPixel Lib "actkrt3.dll" (ByVal handle As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
+Private Declare Function CNVGetPixel Lib "actkrt3.dll" (ByVal handle As Long, ByVal X As Long, ByVal Y As Long) As Long
+Private Declare Function CNVSetPixel Lib "actkrt3.dll" (ByVal handle As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
 Private Declare Function CNVExists Lib "actkrt3.dll" (ByVal handle As Long) As Long
-Private Declare Function CNVBltCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-Private Declare Function CNVBltCanvasTransparent Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, Optional ByVal crColor As Long) As Long
-Private Declare Function CNVBltCanvasTranslucent Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+Private Declare Function CNVBltCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal X As Long, ByVal Y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Private Declare Function CNVBltCanvasTransparent Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal X As Long, ByVal Y As Long, Optional ByVal crColor As Long) As Long
+Private Declare Function CNVBltCanvasTranslucent Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal X As Long, ByVal Y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 Private Declare Function CNVGetRGBColor Lib "actkrt3.dll" (ByVal handle As Long, ByVal crColor As Long) As Long
 Private Declare Function CNVResize Lib "actkrt3.dll" (ByVal handle As Long, ByVal hdcCompatible As Long, ByVal width As Long, ByVal height As Long) As Long
 Private Declare Function CNVShiftLeft Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftRight Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftUp Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
 Private Declare Function CNVShiftDown Lib "actkrt3.dll" (ByVal handle As Long, ByVal pixels As Long) As Long
-Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
+Private Declare Function CNVBltPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal X As Long, ByVal Y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Private Declare Function CNVBltTransparentPartCanvas Lib "actkrt3.dll" (ByVal sourceHandle As Long, ByVal targetHandle As Long, ByVal X As Long, ByVal Y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal crColor As Long) As Long
 Private Declare Function CNVCreateCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long) As Long
 Private Declare Sub CNVKillCanvasHost Lib "actkrt3.dll" (ByVal hInstance As Long, ByVal hCanvasHostDC As Long)
 
@@ -59,14 +59,14 @@ Private canvasHost As Long      'This variable contains a handle to a device
 '=========================================================================
 ' Draw a background onto a canvas
 '=========================================================================
-Public Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long)
+Public Sub CanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVal X As Long, ByVal Y As Long, ByVal width As Long, ByVal height As Long)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim bkg As TKBackground
         Call openBackground(bkgFile, bkg)
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
-        Call DrawBackground(bkg, x, y, width, height, hdc)
+        Call DrawBackground(bkg, X, Y, width, height, hdc)
         Call CanvasCloseHDC(canvasID, hdc)
     End If
 End Sub
@@ -124,12 +124,12 @@ End Sub
 '=========================================================================
 ' Draw text onto a canvas
 '=========================================================================
-Public Sub CanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal x As Double, ByVal y As Double, ByVal crColor As Long, Optional ByVal Bold As Boolean = False, Optional ByVal Italics As Boolean = False, Optional ByVal Underline As Boolean = False, Optional ByVal centred As Boolean = False, Optional ByVal outlined As Boolean = False)
+Public Sub CanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal font As String, ByVal size As Long, ByVal X As Double, ByVal Y As Double, ByVal crColor As Long, Optional ByVal Bold As Boolean = False, Optional ByVal Italics As Boolean = False, Optional ByVal Underline As Boolean = False, Optional ByVal centred As Boolean = False, Optional ByVal outlined As Boolean = False)
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
         Dim hdc As Long
         hdc = CanvasOpenHDC(canvasID)
-        Call drawGDIText(Text, x, y, crColor, size, size, font, Bold, Italics, Underline, hdc, centred, outlined)
+        Call drawGDIText(Text, X, Y, crColor, size, size, font, Bold, Italics, Underline, hdc, centred, outlined)
         Call CanvasCloseHDC(canvasID, hdc)
     End If
 End Sub
@@ -406,10 +406,10 @@ End Sub
 '=========================================================================
 ' Get a pixel on a canvas
 '=========================================================================
-Public Function CanvasGetPixel(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) As Long
+Public Function CanvasGetPixel(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        CanvasGetPixel = CNVGetPixel(canvasID, x, y)
+        CanvasGetPixel = CNVGetPixel(canvasID, X, Y)
     Else
         CanvasGetPixel = -1
     End If
@@ -444,10 +444,10 @@ End Sub
 '=========================================================================
 ' Set a pixel on a canvas
 '=========================================================================
-Public Function CanvasSetPixel(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
+Public Function CanvasSetPixel(ByVal canvasID As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
     On Error Resume Next
     If CanvasOccupied(canvasID) Then
-        CanvasSetPixel = CNVSetPixel(canvasID, x, y, crColor)
+        CanvasSetPixel = CNVSetPixel(canvasID, X, Y, crColor)
     Else
         CanvasSetPixel = -1
     End If
@@ -787,8 +787,8 @@ End Sub
 '=========================================================================
 Public Sub drawImageCNV( _
                            ByVal filename As String, _
-                           ByVal x As Long, _
-                           ByVal y As Long, _
+                           ByVal X As Long, _
+                           ByVal Y As Long, _
                            ByVal cnv As Long _
                                                )
 
@@ -799,7 +799,7 @@ Public Sub drawImageCNV( _
     hdc = CanvasOpenHDC(cnv)
 
     'Draw the image onto the canvas
-    Call drawImage(filename, x, y, hdc)
+    Call drawImage(filename, X, Y, hdc)
 
     'Close the canvas' HDC
     Call CanvasCloseHDC(cnv, hdc)
@@ -810,8 +810,5 @@ End Sub
 ' Determine if a canvas exists
 '=========================================================================
 Public Property Get CanvasOccupied(ByVal handle As Long) As Boolean
-    On Error Resume Next
-    If (CNVExists(handle) <> 0) Then
-        CanvasOccupied = True
-    End If
+    CanvasOccupied = (CNVExists(handle) <> 0)
 End Property

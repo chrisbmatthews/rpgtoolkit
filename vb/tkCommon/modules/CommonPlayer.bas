@@ -480,12 +480,12 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
     'set us up for conversion of old-style embedded tiles
     'we'll take embedded tiles and spit them out as a tileset.
     'thus making them external...
-    Dim x As Long, y As Long
-    For x = 0 To 32
-        For y = 0 To 32
-            bufTile(x, y) = tileMem(x, y)
-        Next y
-    Next x
+    Dim X As Long, Y As Long
+    For X = 0 To 32
+        For Y = 0 To 32
+            bufTile(X, Y) = tileMem(X, Y)
+        Next Y
+    Next X
     Dim oldDetail As Long
     oldDetail = detail
     detail = 1
@@ -587,11 +587,7 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             
             #If (isToolkit = 0) Then
                 For t = 0 To UBound(thePlayer.standingGfx)
-                    If (thePlayer.standingGfx(t) <> "") Then
-                        thePlayer.hasIdleGfx(t) = True
-                    Else
-                        thePlayer.hasIdleGfx(t) = False
-                    End If
+                    thePlayer.hasIdleGfx(t) = (thePlayer.standingGfx(t) <> "")
                 Next t
             #End If
 
@@ -635,48 +631,48 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             Dim xx As Long, walkFix As String, anmName As String, tbmName As String
             xx = 0
             walkFix$ = "S"
-            For x = 0 To 15
+            For X = 0 To 15
                 anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
                 anmName$ = projectPath & miscPath & anmName$
                 
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(X) + ".tbm"
                 tbmName$ = projectPath & bmpPath & tbmName$
                 
                 Call TileBitmapClear(tbm)
                 Call TileBitmapResize(tbm, 1, 2)
-                For y = 0 To 1
-                    walkGfx(x, y) = BinReadString(num)
-                Next y
-                tbm.tiles(0, 0) = walkGfx(x, 0)
-                tbm.tiles(0, 1) = walkGfx(x, 1)
+                For Y = 0 To 1
+                    walkGfx(X, Y) = BinReadString(num)
+                Next Y
+                tbm.tiles(0, 0) = walkGfx(X, 0)
+                tbm.tiles(0, 1) = walkGfx(X, 1)
                 Call SaveTileBitmap(tbmName$, tbm)
                 anm.animFrame(xx) = RemovePath(tbmName$)
                 
-                If x = 3 Then
+                If X = 3 Then
                     walkFix$ = "E"
                     Call saveAnimation(anmName$, anm)
                     thePlayer.gfx(PLYR_WALK_S) = RemovePath(anmName$)
                     xx = -1
                 End If
-                If x = 7 Then
+                If X = 7 Then
                     walkFix$ = "N"
                     Call saveAnimation(anmName$, anm)
                     thePlayer.gfx(PLYR_WALK_E) = RemovePath(anmName$)
                     xx = -1
                 End If
-                If x = 11 Then
+                If X = 11 Then
                     walkFix$ = "W"
                     Call saveAnimation(anmName$, anm)
                     thePlayer.gfx(PLYR_WALK_N) = RemovePath(anmName$)
                     xx = -1
                 End If
-                If x = 15 Then
+                If X = 15 Then
                     Call saveAnimation(anmName$, anm)
                     thePlayer.gfx(PLYR_WALK_W) = RemovePath(anmName$)
                     xx = -1
                 End If
                 xx = xx + 1
-            Next x
+            Next X
             
             'FIGHT, DEF, SPC, DEATH GFX (64x64)
             anmFight.animSizeX = 64: anmFight.animSizeY = 64
@@ -687,7 +683,7 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             anmDef.animPause = 0.167
             anmSPC.animPause = 0.167
             anmDead.animPause = 0.167
-            For x = 0 To 3
+            For X = 0 To 3
                 Call TileBitmapClear(tbmFight)
                 Call TileBitmapClear(tbmDef)
                 Call TileBitmapClear(tbmSPC)
@@ -698,37 +694,37 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                 Call TileBitmapResize(tbmDead, 2, 2)
                 
                 Dim z As Long
-                For y = 0 To 1
+                For Y = 0 To 1
                     For z = 0 To 1
-                        fightingGfx(x, y, z) = BinReadString(num)
-                        defenseGfx(x, y, z) = BinReadString(num)
-                        specialGfx(x, y, z) = BinReadString(num)
-                        deathGfx(x, y, z) = BinReadString(num)
+                        fightingGfx(X, Y, z) = BinReadString(num)
+                        defenseGfx(X, Y, z) = BinReadString(num)
+                        specialGfx(X, Y, z) = BinReadString(num)
+                        deathGfx(X, Y, z) = BinReadString(num)
                         
-                        tbmFight.tiles(y, z) = fightingGfx(x, y, z)
-                        tbmDef.tiles(y, z) = defenseGfx(x, y, z)
-                        tbmSPC.tiles(y, z) = specialGfx(x, y, z)
-                        tbmDead.tiles(y, z) = deathGfx(x, y, z)
+                        tbmFight.tiles(Y, z) = fightingGfx(X, Y, z)
+                        tbmDef.tiles(Y, z) = defenseGfx(X, Y, z)
+                        tbmSPC.tiles(Y, z) = specialGfx(X, Y, z)
+                        tbmDead.tiles(Y, z) = deathGfx(X, Y, z)
                     Next z
-                Next y
+                Next Y
                 
                 'now save those tile bitmaps...
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + CStr(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + CStr(X) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmFight)
-                anmFight.animFrame(x) = tbmName$
+                anmFight.animFrame(X) = tbmName$
             
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + CStr(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + CStr(X) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDef)
-                anmDef.animFrame(x) = tbmName$
+                anmDef.animFrame(X) = tbmName$
             
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + CStr(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + CStr(X) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmSPC)
-                anmSPC.animFrame(x) = tbmName$
+                anmSPC.animFrame(X) = tbmName$
             
-                tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" & CStr(x) + ".tbm"
+                tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" & CStr(X) + ".tbm"
                 Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDead)
-                anmDead.animFrame(x) = tbmName$
-            Next x
+                anmDead.animFrame(X) = tbmName$
+            Next X
             'now save the animations...
             anmName$ = replace(RemovePath(file$), ".", "_") + "_fight" + ".anm"
             anmFight.animSound(0) = swipeWav
@@ -755,12 +751,12 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             Call TileBitmapResize(tbm, 2, 2)
             Call AnimationClear(anm)
             anm.animSizeX = 64: anm.animSizeY = 64
-            For x = 0 To 1
-                For y = 0 To 1
-                    fightRestGfx(x, y) = BinReadString(num)
-                    tbm.tiles(x, y) = fightRestGfx(x, y)
-                Next y
-            Next x
+            For X = 0 To 1
+                For Y = 0 To 1
+                    fightRestGfx(X, Y) = BinReadString(num)
+                    tbm.tiles(X, Y) = fightRestGfx(X, Y)
+                Next Y
+            Next X
             tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
             Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
             anm.animFrame(0) = tbmName$
@@ -773,23 +769,23 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             Call TileBitmapResize(tbm, 1, 2)
             Call AnimationClear(anm)
             anm.animSizeX = 32: anm.animSizeY = 64
-            For x = 0 To 9
-                For y = 0 To 1
-                    customisedGfx(x, y) = BinReadString(num)
-                    tbm.tiles(0, y) = customisedGfx(x, y)
-                Next y
+            For X = 0 To 9
+                For Y = 0 To 1
+                    customisedGfx(X, Y) = BinReadString(num)
+                    tbm.tiles(0, Y) = customisedGfx(X, Y)
+                Next Y
                 If tbm.tiles(0, 0) = "" And tbm.tiles(0, 1) = "" Then
                     'nothing there
                 Else
-                    tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(x) + ".tbm"
+                    tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(X) + ".tbm"
                     Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
                     anm.animFrame(0) = tbmName$
-                    anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(x) + ".anm"
+                    anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(X) + ".anm"
                     Call saveAnimation(projectPath & miscPath & anmName$, anm)
                     'thePlayer.customgfx(x) = anmname$
-                    Call playerAddCustomGfx(thePlayer, "Custom " + CStr(x), anmName$)
+                    Call playerAddCustomGfx(thePlayer, "Custom " + CStr(X), anmName$)
                 End If
-            Next x
+            Next X
         End If
     
     Exit Sub
@@ -847,22 +843,22 @@ ver2oldchar:
             
             Dim tstPos As Long
             tstPos = 1
-            For x = 1 To 32
-                For y = 1 To 32
-                    tileMem(x, y) = fread(num)
-                Next y
-            Next x
+            For X = 1 To 32
+                For Y = 1 To 32
+                    tileMem(X, Y) = fread(num)
+                Next Y
+            Next X
             Call createNewTileSet(tstName$)
             walkGfx$(0, 0) = ""
             walkGfx$(0, 1) = RemovePath(tstName$) + CStr(tstPos)
             tstPos = tstPos + 1
             
             For t = 1 To 15
-                For x = 1 To 32
-                    For y = 1 To 32
-                        tileMem(x, y) = fread(num)
-                    Next y
-                Next x
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        tileMem(X, Y) = fread(num)
+                    Next Y
+                Next X
                 Call addToTileSet(tstName$)
                 walkGfx$(t, 0) = ""
                 walkGfx$(t, 1) = RemovePath(tstName$) + CStr(tstPos)
@@ -874,21 +870,21 @@ ver2oldchar:
             Dim defgfx(32, 32, 4) As Long
             Dim diegfx(32, 32, 4) As Long
             For t = 1 To 4
-                For x = 1 To 32
-                    For y = 1 To 32
-                        Input #num, fgfx(x, y, t) 'Character Fighting Graphics
-                        Input #num, sgfx(x, y, t) 'Character Sp'l Move Graphics
-                        Input #num, defgfx(x, y, t) 'Character Defence Graphics
-                        Input #num, diegfx(x, y, t) 'Character Dead Graphics
-                    Next y
-                Next x
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        Input #num, fgfx(X, Y, t) 'Character Fighting Graphics
+                        Input #num, sgfx(X, Y, t) 'Character Sp'l Move Graphics
+                        Input #num, defgfx(X, Y, t) 'Character Defence Graphics
+                        Input #num, diegfx(X, Y, t) 'Character Dead Graphics
+                    Next Y
+                Next X
             Next t
             For t = 1 To 4
-                For x = 1 To 32
-                    For y = 1 To 32
-                        tileMem(x, y) = fgfx(x, y, t)
-                    Next y
-                Next x
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        tileMem(X, Y) = fgfx(X, Y, t)
+                    Next Y
+                Next X
                 Call addToTileSet(tstName$)
 
                 fightingGfx$(t - 1, 0, 0) = ""
@@ -898,11 +894,11 @@ ver2oldchar:
                 tstPos = tstPos + 1
             Next t
             For t = 1 To 4
-                For x = 1 To 32
-                    For y = 1 To 32
-                        tileMem(x, y) = sgfx(x, y, t)
-                    Next y
-                Next x
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        tileMem(X, Y) = sgfx(X, Y, t)
+                    Next Y
+                Next X
                 Call addToTileSet(tstName$)
 
                 specialGfx$(t - 1, 0, 0) = ""
@@ -912,11 +908,11 @@ ver2oldchar:
                 tstPos = tstPos + 1
             Next t
             For t = 1 To 4
-                For x = 1 To 32
-                    For y = 1 To 32
-                        tileMem(x, y) = defgfx(x, y, t)
-                    Next y
-                Next x
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        tileMem(X, Y) = defgfx(X, Y, t)
+                    Next Y
+                Next X
                 Call addToTileSet(tstName$)
 
                 defenseGfx$(t - 1, 0, 0) = ""
@@ -926,11 +922,11 @@ ver2oldchar:
                 tstPos = tstPos + 1
             Next t
             For t = 1 To 4
-                For x = 1 To 32
-                    For y = 1 To 32
-                        tileMem(x, y) = diegfx(x, y, t)
-                    Next y
-                Next x
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        tileMem(X, Y) = diegfx(X, Y, t)
+                    Next Y
+                Next X
                 Call addToTileSet(tstName$)
 
                 deathGfx$(t - 1, 0, 0) = ""
@@ -940,11 +936,11 @@ ver2oldchar:
                 tstPos = tstPos + 1
             Next t
             
-            For x = 1 To 32
-                For y = 1 To 32
-                    tileMem(x, y) = fread(num)
-                Next y
-            Next x
+            For X = 1 To 32
+                For Y = 1 To 32
+                    tileMem(X, Y) = fread(num)
+                Next Y
+            Next X
             Call addToTileSet(tstName$)
 
             fightRestGfx$(0, 0) = ""
@@ -954,11 +950,11 @@ ver2oldchar:
             tstPos = tstPos + 1
             
             For t = 0 To 9
-                For x = 1 To 32
-                    For y = 1 To 32
-                        tileMem(x, y) = fread(num)
-                    Next y
-                Next x
+                For X = 1 To 32
+                    For Y = 1 To 32
+                        tileMem(X, Y) = fread(num)
+                    Next Y
+                Next X
                 Call addToTileSet(tstName$)
                 customisedGfx$(t, 0) = ""
                 customisedGfx$(t, 1) = RemovePath$(tstName$) & CStr(tstPos)
@@ -1044,45 +1040,45 @@ ver2oldchar:
                                      
     xx = 0
     walkFix$ = "S"
-    For x = 0 To 15
+    For X = 0 To 15
         anmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + walkFix & "_" + ".anm"
         anmName$ = projectPath & miscPath & anmName$
         
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_walk_" + CStr(X) + ".tbm"
         tbmName$ = projectPath & bmpPath & tbmName$
         
         Call TileBitmapClear(tbm)
         Call TileBitmapResize(tbm, 1, 2)
-        tbm.tiles(0, 0) = walkGfx(x, 0)
-        tbm.tiles(0, 1) = walkGfx(x, 1)
+        tbm.tiles(0, 0) = walkGfx(X, 0)
+        tbm.tiles(0, 1) = walkGfx(X, 1)
         Call SaveTileBitmap(tbmName$, tbm)
         anm.animFrame(xx) = RemovePath(tbmName$)
         
-        If x = 3 Then
+        If X = 3 Then
             walkFix$ = "E"
             Call saveAnimation(anmName$, anm)
             thePlayer.gfx(PLYR_WALK_S) = RemovePath(anmName$)
             xx = -1
         End If
-        If x = 7 Then
+        If X = 7 Then
             walkFix$ = "N"
             Call saveAnimation(anmName$, anm)
             thePlayer.gfx(PLYR_WALK_E) = RemovePath(anmName$)
             xx = -1
         End If
-        If x = 11 Then
+        If X = 11 Then
             walkFix$ = "W"
             Call saveAnimation(anmName$, anm)
             thePlayer.gfx(PLYR_WALK_N) = RemovePath(anmName$)
             xx = -1
         End If
-        If x = 15 Then
+        If X = 15 Then
             Call saveAnimation(anmName$, anm)
             thePlayer.gfx(PLYR_WALK_W) = RemovePath(anmName$)
             xx = -1
         End If
         xx = xx + 1
-    Next x
+    Next X
     
     'FIGHT, DEF, SPC, DEATH GFX (64x64)
     anmFight.animSizeX = 64: anmFight.animSizeY = 64
@@ -1093,7 +1089,7 @@ ver2oldchar:
     anmDef.animPause = 0.167
     anmSPC.animPause = 0.167
     anmDead.animPause = 0.167
-    For x = 0 To 3
+    For X = 0 To 3
         Call TileBitmapClear(tbmFight)
         Call TileBitmapClear(tbmDef)
         Call TileBitmapClear(tbmSPC)
@@ -1103,32 +1099,32 @@ ver2oldchar:
         Call TileBitmapResize(tbmSPC, 2, 2)
         Call TileBitmapResize(tbmDead, 2, 2)
         
-        For y = 0 To 1
+        For Y = 0 To 1
             For z = 0 To 1
-                tbmFight.tiles(y, z) = fightingGfx(x, y, z)
-                tbmDef.tiles(y, z) = defenseGfx(x, y, z)
-                tbmSPC.tiles(y, z) = specialGfx(x, y, z)
-                tbmDead.tiles(y, z) = deathGfx(x, y, z)
+                tbmFight.tiles(Y, z) = fightingGfx(X, Y, z)
+                tbmDef.tiles(Y, z) = defenseGfx(X, Y, z)
+                tbmSPC.tiles(Y, z) = specialGfx(X, Y, z)
+                tbmDead.tiles(Y, z) = deathGfx(X, Y, z)
             Next z
-        Next y
+        Next Y
         
         'now save those tile bitmaps...
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + CStr(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_fight_" + CStr(X) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmFight)
-        anmFight.animFrame(x) = tbmName$
+        anmFight.animFrame(X) = tbmName$
     
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + CStr(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_defense_" + CStr(X) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDef)
-        anmDef.animFrame(x) = tbmName$
+        anmDef.animFrame(X) = tbmName$
     
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + CStr(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_spc_" + CStr(X) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmSPC)
-        anmSPC.animFrame(x) = tbmName$
+        anmSPC.animFrame(X) = tbmName$
     
-        tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" + CStr(x) + ".tbm"
+        tbmName$ = replace(RemovePath(file$), ".", "_") + "_death_" + CStr(X) + ".tbm"
         Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbmDead)
-        anmDead.animFrame(x) = tbmName$
-    Next x
+        anmDead.animFrame(X) = tbmName$
+    Next X
     'now save the animations...
     anmName$ = replace(RemovePath(file$), ".", "_") + "_fight" + ".anm"
     anmFight.animSound(0) = swipeWav
@@ -1155,11 +1151,11 @@ ver2oldchar:
     Call TileBitmapResize(tbm, 2, 2)
     Call AnimationClear(anm)
     anm.animSizeX = 64: anm.animSizeY = 64
-    For x = 0 To 1
-        For y = 0 To 1
-            tbm.tiles(x, y) = fightRestGfx(x, y)
-        Next y
-    Next x
+    For X = 0 To 1
+        For Y = 0 To 1
+            tbm.tiles(X, Y) = fightRestGfx(X, Y)
+        Next Y
+    Next X
     tbmName$ = replace(RemovePath(file$), ".", "_") + "_rest" + ".tbm"
     Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
     anm.animFrame(0) = tbmName$
@@ -1172,28 +1168,28 @@ ver2oldchar:
     Call TileBitmapResize(tbm, 1, 2)
     Call AnimationClear(anm)
     anm.animSizeX = 32: anm.animSizeY = 64
-    For x = 0 To 9
-        For y = 0 To 1
-            tbm.tiles(0, y) = customisedGfx(x, y)
-        Next y
+    For X = 0 To 9
+        For Y = 0 To 1
+            tbm.tiles(0, Y) = customisedGfx(X, Y)
+        Next Y
         If tbm.tiles(0, 0) = "" And tbm.tiles(0, 1) = "" Then
             'nothing there
-            thePlayer.customGfx(x) = ""
+            thePlayer.customGfx(X) = ""
         Else
-            tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(x) + ".tbm"
+            tbmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(X) + ".tbm"
             Call SaveTileBitmap(projectPath & bmpPath & tbmName$, tbm)
             anm.animFrame(0) = tbmName$
-            anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(x) + ".anm"
+            anmName$ = replace(RemovePath(file$), ".", "_") + "_custom_" + CStr(X) + ".anm"
             Call saveAnimation(projectPath & miscPath & anmName$, anm)
-            Call playerAddCustomGfx(thePlayer, "Custom " + CStr(x), anmName$)
+            Call playerAddCustomGfx(thePlayer, "Custom " + CStr(X), anmName$)
         End If
-    Next x
+    Next X
     
-    For x = 0 To 32
-        For y = 0 To 32
-            tileMem(x, y) = bufTile(x, y)
-        Next y
-    Next x
+    For X = 0 To 32
+        For Y = 0 To 32
+            tileMem(X, Y) = bufTile(X, Y)
+        Next Y
+    Next X
 
     detail = oldDetail
     

@@ -165,7 +165,7 @@ End Sub
 '=========================================================================
 Public Function equal(ByVal anotherBoardRender As BoardRender) As Boolean
     With anotherBoardRender
-        If _
+        equal = ( _
              .canvas = canvas _
              And .canvasMask = canvasMask _
              And .file = m_file _
@@ -177,6 +177,6 @@ Public Function equal(ByVal anotherBoardRender As BoardRender) As Boolean
              And .tilesY = m_tilesY _
              And .topX = topX _
              And .topY = topY _
-             Then equal = True
+             )
     End With
 End Function

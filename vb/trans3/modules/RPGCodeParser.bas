@@ -221,7 +221,7 @@ Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional B
             MathFunction = signs(whichSpot)
         End If
     Next a
-   
+
 End Function
 
 '=========================================================================
@@ -259,8 +259,8 @@ Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         andOr() = Split(LCase(use), c, , vbTextCompare)
                
         If Not UBound(andOr) = 0 Then
-            If checkBoth = 1 Or checkBoth = 2 Then stillOK = True
-            If checkBoth = 3 Or checkBoth = 4 Then stillOK = False
+            stillOK = (checkBoth = 1 Or checkBoth = 2)
+            stillOK = (Not (checkBoth = 3 Or checkBoth = 4))
             For runThrough = 0 To UBound(andOr)
                 Select Case checkBoth
                 
@@ -490,9 +490,7 @@ End Function
 ' Determine if a string contains a substring
 '=========================================================================
 Public Function stringContains(ByVal theString As String, ByVal theChar As String) As Boolean
-    If InStr(1, theString, theChar, vbTextCompare) > 0 Then
-        stringContains = True
-    End If
+    stringContains = (InStr(1, theString, theChar, vbTextCompare) > 0)
 End Function
 
 '=========================================================================
@@ -685,12 +683,7 @@ Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBr
                 bracketDepth = bracketDepth - 1
             ElseIf part = Chr(34) Then
                 'quote-- ignore stuff inside quotes.
-                If ignoreClosing = True Then
-                    'clsing quote...
-                    ignoreClosing = False
-                Else
-                    ignoreClosing = True
-                End If
+                ignoreClosing = (Not ignoreClosing)
             ElseIf part = "(" Then
                 bracketDepth = bracketDepth + 1
             End If
@@ -967,11 +960,7 @@ Public Function ParseRPGCodeCommand( _
 
             'Quote
             Case Chr(34)
-                If ignore Then
-                    ignore = False
-                Else
-                    ignore = True
-                End If
+                ignore = (Not ignore)
 
             'Opening bracket
             Case "(": If Not ignore Then depth = depth + 1
@@ -992,11 +981,7 @@ Public Function ParseRPGCodeCommand( _
 
                                 'Quote
                                 Case Chr(34)
-                                    If ignore Then
-                                        ignore = False
-                                    Else
-                                        ignore = True
-                                    End If
+                                    ignore = (Not ignore)
 
                                 'Opening/closing bracket
                                 Case "(": If Not ignore Then depth = depth - 1
@@ -1092,11 +1077,7 @@ Public Function replaceOutsideQuotes(ByVal Text As String, ByVal find As String,
         char = Mid(Text, a, 1)
         Select Case char
             Case """"
-                If ignore Then
-                    ignore = False
-                Else
-                    ignore = True
-                End If
+                ignore = (Not ignore)
         End Select
         If Not ignore Then If char = find Then char = replace
         build = build & char
@@ -1115,11 +1096,7 @@ Public Function inStrOutsideQuotes(ByVal start As Long, ByVal Text As String, By
     For a = start To Len(Text)
         char = Mid(Text, a, Len(find))
         If Left(char, 1) = Chr(34) Then
-            If ignore Then
-                ignore = False
-            Else
-                ignore = True
-            End If
+            ignore = (Not ignore)
         ElseIf (char = find) And (Not ignore) Then
             inStrOutsideQuotes = a
             Exit Function

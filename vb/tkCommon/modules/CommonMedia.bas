@@ -86,9 +86,7 @@ Public Function IsPlayingMCI(Optional ByVal strIdentifier As String = "defDevice
     On Error Resume Next
     Dim returnStr As String * 255
     Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
-    If Not (Left(returnStr, 7) = "stopped") Then
-        IsPlayingMCI = True
-    End If
+    IsPlayingMCI = (Not (Left(returnStr, 7) = "stopped"))
 End Function
 
 '=========================================================================
@@ -98,7 +96,7 @@ Public Sub PlayMCI(DriveDirFile As String, Optional ByVal strIdentifier As Strin
     On Error Resume Next
     Dim returnStr As String * 255, returnLen As Long
     Dim shortPath As String
-    shortPath = Space(Len(DriveDirFile))
+    shortPath = space(Len(DriveDirFile))
     returnLen = GetShortPathName(DriveDirFile, shortPath, Len(shortPath))
     If returnLen > Len(DriveDirFile) Then 'not a long filename
         shortPath = DriveDirFile
@@ -138,7 +136,7 @@ Public Sub StopMCI(Optional ByVal strIdentifier As String = "defDevice")
     If Left(returnStr, 7) = "playing" Then
         Call mciSendString("stop " & strIdentifier, returnStr, 255, 0)
     End If
-    returnStr = Space(255)
+    returnStr = space(255)
     Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
     If Left(returnStr, 7) = "stopped" Then
         Call mciSendString("close " & strIdentifier, returnStr, 255, 0)

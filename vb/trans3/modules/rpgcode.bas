@@ -712,8 +712,8 @@ Sub PlayerStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     'Use pathFind to determine the route towards the destination.
     'Return a string and move the first tile.
-    path = PathFind(pPos(playerNum).x, _
-                    pPos(playerNum).y, _
+    path = PathFind(pPos(playerNum).X, _
+                    pPos(playerNum).Y, _
                     paras(1).num, _
                     paras(2).num, _
                     pPos(playerNum).l, _
@@ -779,8 +779,8 @@ Sub ItemStepRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
     'Use pathFind to determine the route towards the destination.
     'Return a string and move the first tile.
-    path = PathFind(itmPos(itemNum).x, _
-                    itmPos(itemNum).y, _
+    path = PathFind(itmPos(itemNum).X, _
+                    itmPos(itemNum).Y, _
                     paras(1).num, _
                     paras(2).num, _
                     itmPos(itemNum).l, _
@@ -934,13 +934,7 @@ Public Sub AnimationRPG( _
     If isMultiTasking() Then
 
         'Check if it should be persistent
-        If (elements = 4) And (paras(3).num = 1) Then
-            animationMem.loop = True
-        Else
-            animationMem.loop = False   'Note: NOT redundant; animationMem is
-                                        '      never cleared so we must make sure
-                                        '      this is false
-        End If
+        animationMem.loop = ((elements = 4) And (paras(3).num = 1))
 
         'Initiate the animation
         retval.dataType = DT_NUM
@@ -1149,15 +1143,15 @@ Sub checkButtonRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     var2$ = GetElement(dataUse$, 2)
     var3$ = GetElement(dataUse$, 3)
     
-    Dim xx As Long, yy As Long, x As Double, y As Double
-    xx = getValue(var1$, lit$, x, theProgram)
-    yy = getValue(var2$, lit$, y, theProgram)
+    Dim xx As Long, yy As Long, X As Double, Y As Double
+    xx = getValue(var1$, lit$, X, theProgram)
+    yy = getValue(var2$, lit$, Y, theProgram)
         
     Dim theOne As Long, t As Long, b As Long
     theOne = -1
     For t = 0 To 50
-        a = within(x, buttons(t).x1, buttons(t).x2)
-        b = within(y, buttons(t).y1, buttons(t).y2)
+        a = within(X, buttons(t).x1, buttons(t).x2)
+        b = within(Y, buttons(t).y1, buttons(t).y2)
         If a = 1 And b = 1 Then
             theOne = t
             Exit For
@@ -1316,8 +1310,8 @@ Sub DestroyItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     boardList(activeBoardIndex).theData.itmName$(num) = ""
     
     'Fix: also need to remove locations, because item is still "solid" after removal:
-    itmPos(num).x = 0
-    itmPos(num).y = 0
+    itmPos(num).X = 0
+    itmPos(num).Y = 0
     itmPos(num).l = 0
 
     Exit Sub
@@ -1490,9 +1484,9 @@ Sub DrawEnemyRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If a = 0 Or b = 1 Or c = 1 Then
         Call debugger("Error: DrawEnemy data type must be literal, num, num!-- " + Text$)
     Else
-        Dim x As Double, y As Double, en As String, fn As String, hdc As Long, eenum As Long
-        x = num2
-        y = num3
+        Dim X As Double, Y As Double, en As String, fn As String, hdc As Long, eenum As Long
+        X = num2
+        Y = num3
         en$ = addExt(lit$, ".ene")
         enemyMem(4).eneFileName$ = projectPath & enePath & en$
         eenum = 4
@@ -1824,14 +1818,14 @@ Public Function ForRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram)
     u3 = useIt3
     
     theProgram.programPos = increment(theProgram)
-    res = Evaluate(u2, theProgram)
+    res = evaluate(u2, theProgram)
     
     If res = 1 Then
 
         If Not (isMultiTasking() And (Not theProgram.looping)) Then
     
             Do While res = 1
-                res = Evaluate(u2, theProgram)
+                res = evaluate(u2, theProgram)
                 Dim oldLine As Long, newPos As Long, curLine As Long
         
                 oldLine = theProgram.programPos
@@ -2627,7 +2621,7 @@ Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: GetPixel must have 5 data elements!-- " + Text$)
         Exit Sub
     End If
-    Dim useIt4 As String, useIt5 As String, xx As Long, yy As Long, x As Double, y As Double
+    Dim useIt4 As String, useIt5 As String, xx As Long, yy As Long, X As Double, Y As Double
     useIt1$ = GetElement(dataUse$, 1)
     useIt2$ = GetElement(dataUse$, 2)
     useIt3$ = GetElement(dataUse$, 3)
@@ -2636,8 +2630,8 @@ Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Dim useIt6 As String
     useIt6 = GetElement(dataUse, 6)
     
-    xx = getValue(useIt1$, lit$, x, theProgram)
-    yy = getValue(useIt2$, lit$, y, theProgram)
+    xx = getValue(useIt1$, lit$, X, theProgram)
+    yy = getValue(useIt2$, lit$, Y, theProgram)
     Dim cnv As Double
     getValue useIt6, lit, cnv, theProgram
     
@@ -2647,7 +2641,7 @@ Sub GetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: GetPixel data type must be numerical!-- " + Text$)
     Else
         Dim p As Long, rr As Long, gg As Long, bb As Long
-        p = CanvasGetPixel(cnv, x, y)
+        p = CanvasGetPixel(cnv, X, Y)
         rr = red(p)
         gg = green(p)
         bb = blue(p)
@@ -3256,7 +3250,7 @@ Public Function IfThen( _
     End Select
 
     Dim res As Long
-    res = Evaluate(GetBrackets(Text), prg)
+    res = evaluate(GetBrackets(Text), prg)
 
     If res = 1 Then
     
@@ -3330,21 +3324,15 @@ Sub IncludeRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Else
         lit$ = addExt(lit$, ".prg")
         'check if it's already included...
-        Dim foundIt As Boolean
         Dim t As Long
         
-        foundIt = False
         For t = 0 To 50
             If UCase$(theProgram.included$(t)) = UCase$(lit$) Then
-                foundIt = True
+                'Already included
+                Exit Sub
             End If
         Next t
-        
-        If foundIt = True Then
-            'already included...
-            Exit Sub
-        End If
-        
+
         For t = 0 To 50
             If theProgram.included$(t) = "" Then
                 theProgram.included$(t) = lit$
@@ -3512,11 +3500,7 @@ Sub ItalicsRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
         ' ! MODIFIED BY KSNiloc...
     
-        If UCase$(lit$) = "ON" Then
-            Italics = True
-        Else
-            Italics = False
-        End If
+        Italics = (UCase$(lit$) = "ON")
     End If
 
 
@@ -3804,11 +3788,11 @@ Sub LayerPutRPG(Text$, ByRef theProgram As RPGCodeProgram)
 
         ' ! MODIFIED BY KSNiloc...
         
-        Dim x As Long: x = num1
-        Dim y As Long: y = num2
+        Dim X As Long: X = num1
+        Dim Y As Long: Y = num2
         DXDrawCanvasPartial cnvRPGCodeScreen, _
-                            x * 32 - 32, y * 32 - 32, _
-                            x * 32 - 32, y * 32 - 32, _
+                            X * 32 - 32, Y * 32 - 32, _
+                            X * 32 - 32, Y * 32 - 32, _
                             32, 32
         DXRefresh
         
@@ -3857,7 +3841,7 @@ Sub LoadRPG(Text$, ByRef theProgram As RPGCodeProgram)
         lastRender.canvas = -1
         scTopX = -1
         scTopY = -1
-        Call alignBoard(pPos(0).x, pPos(0).y)
+        Call alignBoard(pPos(0).X, pPos(0).Y)
         Call openItems
         Call renderNow
         Call renderNow(cnvRPGCodeScreen)
@@ -4031,19 +4015,19 @@ Sub MemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'If redc = 1 Or greenc = 1 Or bluec = 1 Then
     '    Call debugger("Error: Mem data type must be numerical!-- " + text$)
     'Else
-        Dim x As Double, y As Double, memLoc As Long
-        x = num1
-        y = num2
+        Dim X As Double, Y As Double, memLoc As Long
+        X = num1
+        Y = num2
         memLoc = num3
         memLoc = inBounds(memLoc, 0, UBound(cnvRPGCodeBuffers))
         Call Canvas2CanvasBltPartial(cnvRPGCodeBuffers(memLoc), cnvRPGCodeScreen, _
-                                    x * 32 - 32, y * 32 - 32, _
+                                    X * 32 - 32, Y * 32 - 32, _
                                     0, 0, _
                                     32, 32, SRCCOPY)
         'Call renderRPGCodeScreen
         DXDrawCanvasPartial cnvRPGCodeScreen, _
-                            x * 32 - 32, y * 32 - 32, _
-                            x * 32 - 32, y * 32 - 32, _
+                            X * 32 - 32, Y * 32 - 32, _
+                            X * 32 - 32, Y * 32 - 32, _
                             32, 32
         DXRefresh
     'End If
@@ -4938,18 +4922,18 @@ Sub PutItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'This assumes the supplied item number is valid!
     theOne = num1
     
-    itmPos(theOne).x = num2
-    itmPos(theOne).y = num3
+    itmPos(theOne).X = num2
+    itmPos(theOne).Y = num3
     itmPos(theOne).l = num4
     itmPos(theOne).stance = "WALK_S"
     itmPos(theOne).frame = 0
     itemMem(theOne).bIsActive = True
     
     'Isometric addition: jumping fix for moving to new boards
-    pendingItemMovement(theOne).xOrig = itmPos(theOne).x
-    pendingItemMovement(theOne).yOrig = itmPos(theOne).y
-    pendingItemMovement(theOne).xTarg = itmPos(theOne).x
-    pendingItemMovement(theOne).yTarg = itmPos(theOne).y
+    pendingItemMovement(theOne).xOrig = itmPos(theOne).X
+    pendingItemMovement(theOne).yOrig = itmPos(theOne).Y
+    pendingItemMovement(theOne).xTarg = itmPos(theOne).X
+    pendingItemMovement(theOne).yTarg = itmPos(theOne).Y
     
     Call renderNow
     Call CanvasGetScreen(cnvRPGCodeScreen)
@@ -5041,16 +5025,16 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
     'Else, the player exists and we can place him:
     
-    pPos(theOne).x = targetX
-    pPos(theOne).y = targetY
+    pPos(theOne).X = targetX
+    pPos(theOne).Y = targetY
     pPos(theOne).l = targetL
     showPlayer(theOne) = True
     
     'Isometric fix:
-    pendingPlayerMovement(theOne).xOrig = pPos(theOne).x
-    pendingPlayerMovement(theOne).yOrig = pPos(theOne).y
-    pendingPlayerMovement(theOne).xTarg = pPos(theOne).x
-    pendingPlayerMovement(theOne).yTarg = pPos(theOne).y
+    pendingPlayerMovement(theOne).xOrig = pPos(theOne).X
+    pendingPlayerMovement(theOne).yOrig = pPos(theOne).Y
+    pendingPlayerMovement(theOne).xTarg = pPos(theOne).X
+    pendingPlayerMovement(theOne).yTarg = pPos(theOne).Y
     
     Call alignBoard(targetX, targetY)
     Call renderNow
@@ -5104,11 +5088,11 @@ Sub PutRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         ' ! MODIFIED BY KSNiloc...
         
-        Dim x As Long: x = num1
-        Dim y As Long: y = num2
+        Dim X As Long: X = num1
+        Dim Y As Long: Y = num2
         DXDrawCanvasPartial cnvRPGCodeScreen, _
-                            x * 32 - 32, y * 32 - 32, _
-                            x * 32 - 32, y * 32 - 32, _
+                            X * 32 - 32, Y * 32 - 32, _
+                            X * 32 - 32, Y * 32 - 32, _
                             32, 32
         DXRefresh
     End If
@@ -5778,16 +5762,10 @@ Sub ThreadRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram, ByRef re
     If a = 0 Or b = 1 Then
         Call debugger("Error: Thread data type must be literal, num!-- " + Text$)
     Else
-        Dim bPersist As Boolean
-        If num2 = 0 Then
-            bPersist = False
-        Else
-            bPersist = True
-        End If
         
         Dim tID As Long
         lit1$ = addExt(lit1$, ".prg")
-        tID = CreateThread(projectPath & prgPath & lit1$, bPersist)
+        tID = CreateThread(projectPath & prgPath & lit1$, (num2 <> 0))
         
         If number = 3 Then
             'save value in destination var...
@@ -5912,20 +5890,20 @@ Sub ScanRPG(Text$, ByRef theProgram As RPGCodeProgram)
     useIt2$ = GetElement(dataUse$, 2)
     useIt3$ = GetElement(dataUse$, 3)
 
-    Dim redc As Long, greenc As Long, bluec As Long, x As Double, y As Double, memLoc As Long
+    Dim redc As Long, greenc As Long, bluec As Long, X As Double, Y As Double, memLoc As Long
     redc = getValue(useIt$, lit$, num1, theProgram)
     greenc = getValue(useIt2$, lit$, num2, theProgram)
     bluec = getValue(useIt3$, lit$, num3, theProgram)
     'If redc = 1 Or greenc = 1 Or bluec = 1 Then
     '    Call debugger("Error: Scan data type must be numerical!-- " + Text$)
     'Else
-        x = num1
-        y = num2
+        X = num1
+        Y = num2
         memLoc = num3
         memLoc = inBounds(memLoc, 0, UBound(cnvRPGCodeBuffers))
         Call Canvas2CanvasBltPartial(cnvRPGCodeScreen, cnvRPGCodeBuffers(memLoc), _
                                     0, 0, _
-                                    x * 32 - 32, y * 32 - 32, _
+                                    X * 32 - 32, Y * 32 - 32, _
                                     32, 32, SRCCOPY)
     'End If
 
@@ -6050,14 +6028,14 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     
     With pPos(selectedPlayer)
     
-        .x = targetX
-        .y = targetY
+        .X = targetX
+        .Y = targetY
         .l = targetL
         
-        pendingPlayerMovement(selectedPlayer).xOrig = .x
-        pendingPlayerMovement(selectedPlayer).yOrig = .y
-        pendingPlayerMovement(selectedPlayer).xTarg = .x
-        pendingPlayerMovement(selectedPlayer).yTarg = .y
+        pendingPlayerMovement(selectedPlayer).xOrig = .X
+        pendingPlayerMovement(selectedPlayer).yOrig = .Y
+        pendingPlayerMovement(selectedPlayer).xTarg = .X
+        pendingPlayerMovement(selectedPlayer).yTarg = .Y
     
     End With
     
@@ -6168,8 +6146,8 @@ Sub setConstants()
         yy$ = replace("playerY[" + CStr(t) + "]!", " ", "")
         ll$ = replace("playerLayer[" + CStr(t) + "]!", " ", "")
         hh$ = replace("playerHandle[" + CStr(t) + "]$", " ", "")
-        Call setIndependentVariable(xx$, CStr(pPos(t).x))
-        Call setIndependentVariable(yy$, CStr(pPos(t).y))
+        Call setIndependentVariable(xx$, CStr(pPos(t).X))
+        Call setIndependentVariable(yy$, CStr(pPos(t).Y))
         Call setIndependentVariable(ll$, CStr(pPos(t).l))
         Call setIndependentVariable(hh$, playerListAr$(t))
     Next t
@@ -6536,9 +6514,9 @@ Sub SetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'Dim useIt3 As String
     useIt3 = GetElement(dataUse, 3)
     
-    Dim x As Double, y As Double, xx As Long, yy As Long
-    xx = getValue(useIt1$, lit$, x, theProgram)
-    yy = getValue(useIt2$, lit$, y, theProgram)
+    Dim X As Double, Y As Double, xx As Long, yy As Long
+    xx = getValue(useIt1$, lit$, X, theProgram)
+    yy = getValue(useIt2$, lit$, Y, theProgram)
     Dim cnv As Double
     getValue useIt3, lit, cnv, theProgram
     
@@ -6547,10 +6525,10 @@ Sub SetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
     If xx = 1 Or yy = 1 Then
         Call debugger("Error: SetPixel data type must be numerical!-- " + Text$)
     Else
-        Call CanvasSetPixel(cnv, x, y, fontColor)
+        Call CanvasSetPixel(cnv, X, Y, fontColor)
         If cnv = cnvRPGCodeScreen Then
             DXDrawCanvasPartial cnvRPGCodeScreen, _
-                                x, y, x, y, 1, 1
+                                X, Y, X, Y, 1, 1
             DXRefresh
         End If
     End If
@@ -6675,13 +6653,7 @@ Public Sub SizedAnimationRPG( _
     If isMultiTasking() Then
 
         'Check if it should be persistent
-        If (elements = 6) And (paras(5).num = 1) Then
-            animationMem.loop = True
-        Else
-            animationMem.loop = False   'Note: NOT redundant; animationMem is
-                                        '      never cleared so we must make sure
-                                        '      this is false
-        End If
+        animationMem.loop = ((elements = 6) And (paras(5).num = 1))
 
         'Initiate the animation
         retval.dataType = DT_NUM
@@ -6849,8 +6821,8 @@ Sub SourceLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
     var2$ = GetElement(dataUse$, 2)
     If sourceType = 0 Then
         'player
-        tarX$ = CStr(pPos(Source).x)
-        tarY$ = CStr(pPos(Source).y)
+        tarX$ = CStr(pPos(Source).X)
+        tarY$ = CStr(pPos(Source).Y)
     End If
     If sourceType = 1 Then
         'item
@@ -6859,8 +6831,8 @@ Sub SourceLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     If sourceType = 2 Then
         'enemy
-        tarX$ = CStr(enemyMem(Source).x)
-        tarY$ = CStr(enemyMem(Source).y)
+        tarX$ = CStr(enemyMem(Source).X)
+        tarY$ = CStr(enemyMem(Source).Y)
     End If
     Call SetVariable(var1$, tarX$, theProgram)
     Call SetVariable(var2$, tarY$, theProgram)
@@ -7238,8 +7210,8 @@ Sub TargetLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
             tarX$ = CStr(xx)
             tarY$ = CStr(yy)
         Else
-            tarX$ = CStr(pPos(target).x)
-            tarY$ = CStr(pPos(target).y)
+            tarX$ = CStr(pPos(target).X)
+            tarY$ = CStr(pPos(target).Y)
         End If
     End If
     If targetType = 1 Then
@@ -7249,8 +7221,8 @@ Sub TargetLocationRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     If targetType = 2 Then
         'enemy
-        tarX$ = CStr(enemyMem(target).x)
-        tarY$ = CStr(enemyMem(target).y)
+        tarX$ = CStr(enemyMem(target).X)
+        tarY$ = CStr(enemyMem(target).Y)
     End If
     Call SetVariable(var1$, tarX$, theProgram)
     Call SetVariable(var2$, tarY$, theProgram)
@@ -7463,11 +7435,8 @@ Sub UnderlineRPG(Text$, ByRef theProgram As RPGCodeProgram)
     
         ' ! MODIFIED BY KSNiloc...
     
-        If UCase$(lit$) = "ON" Then
-            Underline = True
-        Else
-            Underline = False
-        End If
+        Underline = (UCase$(lit$) = "ON")
+
     End If
 
     Exit Sub
@@ -7647,8 +7616,8 @@ Sub CursorMapAddRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
             Call debugger("Error: CursorMapAdd data type must be num, num num!-- " + Text$)
         Else
             Dim cm As CURSOR_MAP
-            cm.x = num1
-            cm.y = num2
+            cm.X = num1
+            cm.Y = num2
             cm.downLink = -1
             cm.leftLink = -1
             cm.rightLink = -1
@@ -8042,16 +8011,16 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
     u = use
     
     theProgram.programPos = increment(theProgram)
-    res = Evaluate(dataUseWhile$, theProgram)
+    res = evaluate(dataUseWhile$, theProgram)
     
     Dim isUntil As Boolean
     isUntil = (LCase(GetCommandName(Text)) = "until")
     
     Dim okToRun As Boolean
     If isUntil Then
-        If res = 0 Then okToRun = True
+        okToRun = (res = 0)
     Else
-        If res = 1 Then okToRun = True
+        okToRun = (res = 1)
     End If
 
     If okToRun Then
@@ -8071,7 +8040,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
 
             Dim done As Boolean
             Do Until done
-                res = Evaluate(dataUseWhile$, theProgram)
+                res = evaluate(dataUseWhile$, theProgram)
                 
                 If isUntil Then
                     If res = 0 Then
@@ -8081,7 +8050,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
                         res = 0
                     End If
                 Else
-                    If res = 0 Then done = True
+                    done = (res = 0)
                 End If
                 
                 oldLine = theProgram.programPos
@@ -8179,11 +8148,8 @@ Sub BoldRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
         ' ! MODIFIED BY KSNiloc...
     
-        If UCase$(lit$) = "ON" Then
-            Bold = True
-        Else
-            Bold = False
-        End If
+        Bold = (UCase$(lit$) = "ON")
+
     End If
 
     Exit Sub
@@ -9161,23 +9127,23 @@ Sub Fade(Text$, ByRef theProgram As RPGCodeProgram)
                 Next col
             Case 3:
                 stepSize = 4
-                Dim x As Long, skip As Long
-                For x = 0 To (tilesX * 32) + 125 Step stepSize
-                    Call CanvasFillBox(cnvRPGCodeScreen, 0, 0, x, tilesY * 32, 0)
+                Dim X As Long, skip As Long
+                For X = 0 To (tilesX * 32) + 125 Step stepSize
+                    Call CanvasFillBox(cnvRPGCodeScreen, 0, 0, X, tilesY * 32, 0)
                     skip = 0
                     For col = 125 To 0 Step stepSize * -2
-                        Call CanvasFillBox(cnvRPGCodeScreen, x - skip, 0, x - skip + stepSize, tilesY * 32, RGB(col, col, col))
+                        Call CanvasFillBox(cnvRPGCodeScreen, X - skip, 0, X - skip + stepSize, tilesY * 32, RGB(col, col, col))
                         'Call CanvasDrawLine(cnvRPGCodeScreen, x - skip, 0, x - skip, 2000, RGB(col, col, col))
                         skip = skip + stepSize
                     Next col
                     Call renderRPGCodeScreen
-                Next x
+                Next X
             Case 4:
                 'circle down to player
                 stepSize = -2
                 Dim pX As Long, pY As Long, wi As Long, radius As Long
-                pX = ((pPos(selectedPlayer).x - topX) * 32) - 16
-                pY = ((pPos(selectedPlayer).y - topY) * 32) - 16
+                pX = ((pPos(selectedPlayer).X - topX) * 32) - 16
+                pY = ((pPos(selectedPlayer).Y - topY) * 32) - 16
                 'wi = (mainForm.boardform.width / Screen.TwipsPerPixelX) + 100 * ddx
                 wi = tilesX * 32 + 200
 
@@ -10755,9 +10721,9 @@ Public Function SwitchCase( _
                         End Select
 
                         If Not useMath Then
-                            eval = Evaluate(.item(.count) & " = " & u, prg)
+                            eval = evaluate(.item(.count) & " = " & u, prg)
                         Else
-                            eval = Evaluate(.item(.count) & u, prg)
+                            eval = evaluate(.item(.count) & u, prg)
                         End If
 
                         If eval = 1 Then
