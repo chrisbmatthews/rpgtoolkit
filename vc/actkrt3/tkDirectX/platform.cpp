@@ -480,7 +480,6 @@ inline bool Refresh(CGDICanvas* cnv)
 
 		if (gDXInfo.bFullScreen)
 
-
 			if (cnv)
 
 				// Blt to a canvas
