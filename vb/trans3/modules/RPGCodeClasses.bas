@@ -284,6 +284,8 @@ End Sub
 '=========================================================================
 Public Function objectType(ByVal hObject As Long) As String
 
+    On Error Resume Next
+
     ' Check the object's type
     objectType = g_objects((hObject - m_objectOffset) / 8).strInstancedFrom
 
@@ -1765,7 +1767,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         Select Case char
 
             Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "(", ")", _
-            "%", "`", "|", "&", "~"
+            "%", "`", "|", "&", "~", "!"
                 ' It's a divider
                 If ((Not (ignore)) And (arrayDepth = 0)) Then
                     start = a + 1
