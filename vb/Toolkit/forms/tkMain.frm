@@ -96,13 +96,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   570
+      Height          =   360
       Left            =   0
       TabIndex        =   7
       Top             =   0
       Width           =   11880
       _ExtentX        =   20955
-      _ExtentY        =   1005
+      _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -858,12 +858,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3990
+      Height          =   4200
       Left            =   465
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   3510
       TabIndex        =   99
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -1086,12 +1086,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   -1350
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   1815
       TabIndex        =   95
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   1815
       Begin VB.PictureBox newBar 
@@ -1131,12 +1131,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   3990
+      Height          =   4200
       Left            =   0
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   975
       TabIndex        =   50
-      Top             =   570
+      Top             =   360
       Width           =   975
       Begin VB.PictureBox leftbar 
          BorderStyle     =   0  'None
@@ -2047,12 +2047,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   11505
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   375
       TabIndex        =   22
-      Top             =   570
+      Top             =   360
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2251,12 +2251,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   3975
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   4800
       TabIndex        =   8
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2358,12 +2358,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   3990
+      Height          =   4200
       Left            =   8775
-      ScaleHeight     =   3990
+      ScaleHeight     =   4200
       ScaleWidth      =   2730
       TabIndex        =   1
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   2730
       Begin VB.CommandButton exitbutton 
@@ -2464,13 +2464,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "09/08/2004"
+            TextSave        =   "10/08/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5054
-            TextSave        =   "9:07 PM"
+            TextSave        =   "6:49 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2923,6 +2923,8 @@ Private Function isFolder(ByVal path As String) As Boolean: On Error GoTo folder
     Open path For Input As #num
     Close #num
     isFolder = False
+
+    DoEvents
 
     Exit Function
 foldererr:
@@ -3466,14 +3468,14 @@ Private Sub ReadCommandLine_Timer()
         Dim Edit As New rpgcodeedit
         With Edit
             .tag = "1"
-            .mnuNewProject.Visible = False
+            .mnunewproject.Visible = False
             .mnunew.Visible = False
             .mnuNewPRG.Visible = True
             .mnuOpenProject.Visible = False
-            .mnuSaveAll.Visible = False
+            .mnusaveall.Visible = False
             .closemnu.Visible = False
             .mnuToolkit.Visible = False
-            .mnubuild.Visible = False
+            .mnuBuild.Visible = False
             .mnuWindow.Visible = False
             .Show
             Dim fCaption As String
@@ -4207,7 +4209,7 @@ Private Sub tilesetScroller_Change(): On Error Resume Next
 End Sub
 
 Private Sub tileTool_Click(Index As Integer): On Error Resume Next
-    Call activeTile.tileTool(Index)
+    Call activeTile.ToolSet(Index)
 End Sub
 
 Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
@@ -4215,7 +4217,7 @@ Private Sub tiletypes_MouseDown(button As Integer, Shift As Integer, x As Single
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
-    Me.Arrange 2
+    Call Me.Arrange(2)
 End Sub
 
 Public Sub toggle_Click(): On Error Resume Next
@@ -4235,7 +4237,7 @@ Private Sub ToolsTopBar_mouseDown(button As Integer, Shift As Integer, x As Sing
 End Sub
 
 Private Sub TreeView1_DblClick(): On Error Resume Next
-    If FileExists(projectPath$ + TreeView1.SelectedItem.FullPath) Then
+    If fileExists(projectPath$ + TreeView1.SelectedItem.FullPath) Then
         Call tkMainForm.openFile(projectPath$ + TreeView1.SelectedItem.FullPath)
     End If
     Call rightbar.SetFocus
@@ -4289,7 +4291,7 @@ Public Sub ShowPic(ByRef file As String): On Error Resume Next
         Call CanvasFill(cnvBkgImage, 0)
     End If
     
-    If FileExists(file) Then
+    If fileExists(file) Then
         Call CanvasLoadSizedPicture(cnvBkgImage, file)
     End If
     

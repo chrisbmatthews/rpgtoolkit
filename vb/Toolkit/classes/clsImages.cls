@@ -23,25 +23,31 @@ Option Explicit
 Dim i As New frmCommonImages
 
 Public Function Bullet() As Object
- Set Bullet = i.picNormal.Picture
+    On Error Resume Next
+    Set Bullet = i.picNormal.Picture
 End Function
 
 Public Function BulletMouseOver() As Object
- Set BulletMouseOver = i.picMouseOver.Picture
+    On Error Resume Next
+    Set BulletMouseOver = i.picMouseOver.Picture
 End Function
 
 Public Function MouseLink() As Object
- Set MouseLink = i.picNormal.MouseIcon
+    On Error Resume Next
+    Set MouseLink = i.picNormal.MouseIcon
 End Function
 
 Public Function CloseX() As Object
- Set CloseX = i.CloseX.Picture
+    On Error Resume Next
+    Set CloseX = i.CloseX.Picture
 End Function
 
 Public Function Corner() As Object
- Set Corner = i.Corner.Picture
+    On Error Resume Next
+    Set Corner = i.Corner.Picture
 End Function
 
 Private Sub Class_Terminate()
- Unload i
+    On Error Resume Next
+    Unload i
 End Sub

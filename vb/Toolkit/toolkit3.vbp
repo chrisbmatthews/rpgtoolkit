@@ -153,6 +153,7 @@ Form=forms\tiletranslucentize.frm
 Form=forms\texturize.frm
 Form=forms\skew.frm
 Class=clsVbPlugin; ..\tkCommon\classes\clsVBPlugin.cls
+Reference=*\G{00025E01-0000-0000-C000-000000000046}#4.0#0#..\..\..\..\..\Common Files\Microsoft Shared\DAO\DAO350.DLL#Microsoft DAO 3.51 Object Library
 IconForm="frmMain"
 Startup="frmMain"
 HelpFile=""

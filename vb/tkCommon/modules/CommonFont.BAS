@@ -12,9 +12,9 @@ Public fontMem(8, 8) As Long
 Public currentFont(100, 100) As Long
 Public currentX As Long, currentY As Long
 Public whichChar As Long
-Public bold As Long
-Public italics As Long
-Public underline As Long
+Public Bold As Long
+Public Italics As Long
+Public Underline As Long
 Public fName As String
 
 
@@ -22,9 +22,9 @@ Public fName As String
 Type fontAttribs
     name As String  'font name
     size As Long    'size
-    bold As Boolean 'bold?
-    italics As Boolean  'italicized?
-    underline As Boolean    'underlined?
+    Bold As Boolean 'bold?
+    Italics As Boolean  'italicized?
+    Underline As Boolean    'underlined?
 End Type
 
 Public MsgBoxAttribs As fontAttribs   'current font set to the message box
@@ -49,7 +49,7 @@ Public Declare Function SetBkMode Lib "gdi32" (ByVal hdc As Long, ByVal nBkMode 
 Public Const TRANSPARENT = 1
 Public Const OPAQUE = 2
 
-Sub drawGDIText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVal coltxt As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal fontFace As String, ByVal bold As Boolean, ByVal italics As Boolean, ByVal underline As Boolean, ByVal hdc As Long, Optional ByVal centred As Boolean = False, Optional ByVal outlined As Boolean = False)
+Sub drawGDIText(ByVal stringin As String, ByVal X As Double, ByVal Y As Double, ByVal coltxt As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal fontFace As String, ByVal Bold As Boolean, ByVal Italics As Boolean, ByVal Underline As Boolean, ByVal hdc As Long, Optional ByVal centred As Boolean = False, Optional ByVal outlined As Boolean = False)
     On Error Resume Next
                
     Dim Length As String
@@ -58,9 +58,9 @@ Sub drawGDIText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, 
     Dim theAttrib As fontAttribs
     theAttrib.name = fontFace
     theAttrib.size = sizey
-    theAttrib.italics = italics
-    theAttrib.bold = bold
-    theAttrib.underline = underline
+    theAttrib.Italics = Italics
+    theAttrib.Bold = Bold
+    theAttrib.Underline = Underline
         
     Call SetBkMode(hdc, TRANSPARENT)
     Dim hFontNew As Long
@@ -70,8 +70,8 @@ Sub drawGDIText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, 
         
     Dim xx As Long
     Dim yy As Long
-    xx = (x * sizex) - sizex
-    yy = (y - 1) * sizey
+    xx = (X * sizex) - sizex
+    yy = (Y - 1) * sizey
     
     Dim hOldBrush As Long
     Dim hNewBrush As Long
@@ -102,34 +102,34 @@ End Sub
 
 Sub antialias()
     'antialiases font
-    On Error GoTo errorhandler
-    Dim x As Long, y As Long
-    For x = 1 To currentX - 1
-        For y = 1 To currentY - 1
-            If currentFont(x, y) = 0 Then
-                If currentFont(x, y + 1) = 1 And _
-                   currentFont(x + 1, y) = 1 Then
-                    currentFont(x, y) = 2
+    On Error GoTo ErrorHandler
+    Dim X As Long, Y As Long
+    For X = 1 To currentX - 1
+        For Y = 1 To currentY - 1
+            If currentFont(X, Y) = 0 Then
+                If currentFont(X, Y + 1) = 1 And _
+                   currentFont(X + 1, Y) = 1 Then
+                    currentFont(X, Y) = 2
                 End If
-                If currentFont(x - 1, y) = 1 And _
-                    currentFont(x, y + 1) = 1 Then
-                    currentFont(x, y) = 2
+                If currentFont(X - 1, Y) = 1 And _
+                    currentFont(X, Y + 1) = 1 Then
+                    currentFont(X, Y) = 2
                 End If
-                If currentFont(x, y - 1) = 1 And _
-                    currentFont(x + 1, y) = 1 Then
-                    currentFont(x, y) = 2
+                If currentFont(X, Y - 1) = 1 And _
+                    currentFont(X + 1, Y) = 1 Then
+                    currentFont(X, Y) = 2
                 End If
-                If currentFont(x, y + 1) = 1 And _
-                    currentFont(x - 1, y) = 1 Then
-                    currentFont(x, y) = 2
+                If currentFont(X, Y + 1) = 1 And _
+                    currentFont(X - 1, Y) = 1 Then
+                    currentFont(X, Y) = 2
                 End If
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -137,50 +137,50 @@ End Sub
 Sub fontbold()
     On Error Resume Next
     ReDim fbuff(100, 100)
-    Dim x As Long, y As Long
-    For x = 1 To currentX
-        For y = 1 To currentY
-            fbuff(x, y) = currentFont(x, y)
-            If fbuff(x, y) = 0 Then
-                If currentFont(x - 1, y) = 1 Then fbuff(x, y) = 1
+    Dim X As Long, Y As Long
+    For X = 1 To currentX
+        For Y = 1 To currentY
+            fbuff(X, Y) = currentFont(X, Y)
+            If fbuff(X, Y) = 0 Then
+                If currentFont(X - 1, Y) = 1 Then fbuff(X, Y) = 1
             End If
-        Next y
-    Next x
-    For x = 1 To currentX
-        For y = 1 To currentY
-            currentFont(x, y) = fbuff(x, y)
-        Next y
-    Next x
+        Next Y
+    Next X
+    For X = 1 To currentX
+        For Y = 1 To currentY
+            currentFont(X, Y) = fbuff(X, Y)
+        Next Y
+    Next X
     currentX = currentX + 1
 End Sub
 
 Sub fontitalics()
     On Error Resume Next
     ReDim fbuff(100, 100) As Long
-    Dim x As Long, y As Long
-    For x = 1 To currentX
-        For y = 1 To currentY
-            If y <= Int(currentY / 2) Then
-                fbuff(x + 1, y) = currentFont(x, y)
+    Dim X As Long, Y As Long
+    For X = 1 To currentX
+        For Y = 1 To currentY
+            If Y <= Int(currentY / 2) Then
+                fbuff(X + 1, Y) = currentFont(X, Y)
             Else
-                fbuff(x, y) = currentFont(x, y)
+                fbuff(X, Y) = currentFont(X, Y)
             End If
-        Next y
-    Next x
-    For x = 1 To currentX
-        For y = 1 To currentY
-            currentFont(x, y) = fbuff(x, y)
-        Next y
-    Next x
+        Next Y
+    Next X
+    For X = 1 To currentX
+        For Y = 1 To currentY
+            currentFont(X, Y) = fbuff(X, Y)
+        Next Y
+    Next X
     currentX = currentX + 1
 End Sub
 
 Sub fontunderline()
     On Error Resume Next
-    Dim x As Long
-    For x = 1 To currentX
-        currentFont(x, currentY + 2) = 1
-    Next x
+    Dim X As Long
+    For X = 1 To currentX
+        currentFont(X, currentY + 2) = 1
+    Next X
     currentY = currentY + 2
 End Sub
 
@@ -205,15 +205,15 @@ Sub loadFont(filename$)
     Close #num
 End Sub
 
-Sub putchar(ByVal stringin$, ByVal x As Double, ByVal y As Double, ByVal coltxt As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long)
+Sub putchar(ByVal stringin$, ByVal X As Double, ByVal Y As Double, ByVal coltxt As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long)
     On Error Resume Next
     Dim chari As Long
     
     chari = Asc(stringin$)
     Call resize(chari, sizex, sizey)
-    If bold = 1 Then Call fontbold
-    If italics = 1 Then Call fontitalics
-    If underline = 1 Then Call fontunderline
+    If Bold = 1 Then Call fontbold
+    If Italics = 1 Then Call fontitalics
+    If Underline = 1 Then Call fontunderline
     Dim xx As Long, yy As Long, v As Long, aa As Long
     For xx = 1 To currentX
         For yy = 1 To currentY
@@ -224,7 +224,7 @@ Sub putchar(ByVal stringin$, ByVal x As Double, ByVal y As Double, ByVal coltxt 
                 If v = 15 Then
                     'aa = setpixelV(vbpichdc(messagewindow.win), xx + xx - 1, y + yy - 1, coltxt)
                     'pic.PSet (x + xx - 1, y + yy - 1), coltxt
-                    aa = SetPixelV(hdc, x + xx - 1, y + yy - 1, coltxt)
+                    aa = SetPixelV(hdc, X + xx - 1, Y + yy - 1, coltxt)
                 End If
                 If v = 8 Then
                     Dim rd As Long, gn As Long, bl As Long
@@ -239,7 +239,7 @@ Sub putchar(ByVal stringin$, ByVal x As Double, ByVal y As Double, ByVal coltxt 
                     'Else
                     '    pic.PSet (x + xx - 1, y + yy - 1), RGB(rd, bn, bl)
                     'End If
-                    aa = SetPixelV(hdc, x + xx - 1, y + yy - 1, RGB(rd, gn, bl))
+                    aa = SetPixelV(hdc, X + xx - 1, Y + yy - 1, RGB(rd, gn, bl))
                 End If
             'End If
             'If UCase$(place$) = "BOARD" Then
@@ -268,7 +268,7 @@ Sub putchar(ByVal stringin$, ByVal x As Double, ByVal y As Double, ByVal coltxt 
     
 End Sub
 
-Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVal coltxt As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long)
+Sub putText(ByVal stringin As String, ByVal X As Double, ByVal Y As Double, ByVal coltxt As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long)
     On Error Resume Next
             
     Call SetBkMode(hdc, TRANSPARENT)
@@ -276,7 +276,7 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
     Dim Length As Long
     Length = Len(stringin$)
     Dim dx As Double
-    dx = x
+    dx = X
     'If staticText = 1 Then
     '    pic.AutoRedraw = True
     'Else
@@ -294,17 +294,17 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
     If useTTFont Then
         'using a true type font!
         'pic.AutoRedraw = True
-        Dim bold As Boolean, italic As Boolean, underline As Boolean
-        If bold = 1 Then bold = True
-        If italics = 1 Then italic = True
-        If underline = 1 Then underline = True
+        Dim Bold As Boolean, italic As Boolean, Underline As Boolean
+        If Bold = 1 Then Bold = True
+        If Italics = 1 Then italic = True
+        If Underline = 1 Then Underline = True
         
         Dim theAttrib As fontAttribs
         theAttrib.name = fontName$
         theAttrib.size = sizey
-        theAttrib.italics = italic
-        theAttrib.bold = bold
-        theAttrib.underline = underline
+        theAttrib.Italics = italic
+        theAttrib.Bold = Bold
+        theAttrib.Underline = Underline
         
         Dim hFontNew As Long, hFontOld As Long
         hFontOld = SetDeviceFont(hdc, theAttrib, hFontNew)
@@ -313,7 +313,7 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
         
         Dim xx As Long, yy As Long
         xx = (dx * sizex) - sizex
-        yy = (y - 1) * sizey
+        yy = (Y - 1) * sizey
         a = TextOut(hdc, xx, yy, stringin$, Len(stringin$))
         Call SelectObject(hdc, hFontOld)
         Call DeleteObject(hFontNew)
@@ -325,7 +325,7 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
         For t = 1 To Length
             xx = (dx * sizex) - sizex
             part$ = Mid$(stringin$, t, 1)
-            Call putchar(part$, xx, (y - 1) * sizey, coltxt, sizex, sizey, hdc)
+            Call putchar(part$, xx, (Y - 1) * sizey, coltxt, sizex, sizey, hdc)
             'If staticText = 1 Then
             '    pic.Refresh
             'End If
@@ -336,12 +336,12 @@ Sub putText(ByVal stringin As String, ByVal x As Double, ByVal y As Double, ByVa
     
 End Sub
 
-Sub resize(ByVal charnum As Long, ByVal x As Long, ByVal y As Long)
+Sub resize(ByVal charnum As Long, ByVal X As Long, ByVal Y As Long)
     On Error Resume Next
     ReDim fbuff(8, 8) As Long
     
-    If x > 100 Then x = 100: If y > 100 Then y = 100
-    currentX = x: currentY = y
+    If X > 100 Then X = 100: If Y > 100 Then Y = 100
+    currentX = X: currentY = Y
     Dim xx As Long, yy As Long, colb As String, v As Long
     
     For yy = 1 To 8
@@ -355,10 +355,10 @@ Sub resize(ByVal charnum As Long, ByVal x As Long, ByVal y As Long)
     Next yy
     
     Dim corx As Long, cory As Long
-    For xx = 1 To x
-        For yy = 1 To y
-            corx = Int((8 / x) * xx)
-            cory = Int((8 / y) * yy)
+    For xx = 1 To X
+        For yy = 1 To Y
+            corx = Int((8 / X) * xx)
+            cory = Int((8 / Y) * yy)
             currentFont(xx, yy) = fbuff(corx, cory)
             'If currentfont(xx, yy) = 1 Then fontedit.fontmap.PSet (xx, yy) Else fontedit.fontmap.PSet (xx, yy), vbqbcolor(15)
         Next yy
@@ -402,13 +402,13 @@ Function SetDeviceFont(ByVal hdc As Long, ByRef theAttribs As fontAttribs, ByRef
     
     Dim fnt As Long
     Dim newFnt As Long
-    fnt = SelectFontToDevice(theAttribs.name, hdc, theAttribs.size, newFnt, theAttribs.italics, theAttribs.bold, theAttribs.underline, centred)
+    fnt = SelectFontToDevice(theAttribs.name, hdc, theAttribs.size, newFnt, theAttribs.Italics, theAttribs.Bold, theAttribs.Underline, centred)
     hFontNew = newFnt
     SetDeviceFont = fnt
 End Function
 
 Function toBinary(ByVal decimala As Long) As String
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim binNum As String, t As Long, Length As Long, newNum As String, part As String
     Dim remain As Long
     binNum$ = ""
@@ -428,7 +428,7 @@ Function toBinary(ByVal decimala As Long) As String
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Function

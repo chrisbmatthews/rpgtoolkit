@@ -19,10 +19,10 @@ Begin VB.Form frmIndentWizard
       TabIndex        =   6
       Top             =   0
       Width           =   3135
-      _ExtentX        =   5530
-      _ExtentY        =   847
-      Object.Width           =   3135
-      Caption         =   "Indent Wizard"
+      _extentx        =   5530
+      _extenty        =   847
+      Object.width           =   3135
+      caption         =   "Indent Wizard"
    End
    Begin VB.Frame frmInfo 
       Appearance      =   0  'Flat
@@ -131,10 +131,10 @@ Begin VB.Form frmIndentWizard
       TabIndex        =   0
       Top             =   720
       Width           =   1455
-      _ExtentX        =   820
-      _ExtentY        =   873
-      Object.Width           =   450
-      Caption         =   "Indent"
+      _extentx        =   820
+      _extenty        =   873
+      Object.width           =   450
+      caption         =   "Indent"
    End
    Begin VB.Shape shpBorder 
       Height          =   3375
@@ -175,7 +175,7 @@ Private Sub cmdIndent_Click()
 End Sub
 
 Private Sub Form_Activate()
- Set TopBar.theForm = Me
+ Set topBar.theForm = Me
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -195,7 +195,6 @@ Public Sub indentCode(ByVal ic As String)
  Dim noNext As Boolean
  Dim lines() As String
  Dim il As Long
- Dim Til As Long
  Dim a As Long
  Dim b As Long
  
@@ -206,7 +205,7 @@ Public Sub indentCode(ByVal ic As String)
  frmInfo.Visible = True
  
  'Indent the code...
- Set rtf = tkMainForm.activeForm.codeForm
+ Set rtf = tkMainForm.activeForm.CodeForm
  With rtf
   .Locked = True
   lblWait.Caption = "Splitting..."

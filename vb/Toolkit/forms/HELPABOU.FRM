@@ -224,83 +224,57 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+Option Explicit
 
 Private Sub Form_Load()
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
 
-    'If targetPlatform = 0 Then
-    '    gfxeng.caption = LoadStringLoc(2028, "Using 32-Bit Graphics Engine")
-    'End If
-    'If targetPlatform = 2 Then
-    '    gfxeng.caption = "Using 16-Bit Graphics Engine"
-    'End If
-    'If targetPlatform = 1 Then
-    '    gfxeng.caption = "Using Internal Graphics Engine"
-    'End If
     Label5.Caption = "Community Edition [Open Source]"
     Label4.Caption = ""
     lname.Caption = ""
     lname.Visible = True
-    
+
     Dim theText As String
-    theText = theText + "Open source contributions by: Vampz, KSNiloc, John@aljo, Delano, Euix, Geoff, Woozy, Computerdude800" + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-    
-    theText = theText + "Spanish translations provided by Ignacio Chitinsky and Jaime Peña.  French translation provided by Alexandre Thomas.  German translation provided by Martin Holtz.  Italian translation provided by Andrea Piras." + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-    
-    theText = theText + "RPGToolkit Fo' Sho' Music Pak v2.18 composed by Chris and Craig Reeves, Copyright 2000.  Used with permission.  http://www.vipcouncil.com" + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-    
-    theText = theText + "Menu System graphic and layout based on designs provided by |3lue.  Used with permission." + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-    
-    theText = theText + "This program uses FreeImage, an open source image library supporting all common bitmap formats. Get your free copy now from http://www.6ixsoft.com." + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-    
-    theText = theText + "Compression provided by zlib v1.1.3, copyright 1995-1998 Jean-loup Gailly and Mark Adler.  Used under license.  http://www.freesoftware.com/pub/infozip/zlib/" + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-    
-    theText = theText + "This product includes images from Corel Clipart which are protected by the copyright laws of the U.S., Canada and elsewhere. Used under license.  They are for viewing purposes only." + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-    
+    theText = theText & "Open source contributions by: Vampz, KSNiloc, John@aljo, Delano, Euix, Geoff, Woozy, Computerdude800" & vbCrLf & vbCrLf
+    theText = theText & "Spanish translations provided by Ignacio Chitinsky and Jaime Peña.  French translation provided by Alexandre Thomas.  German translation provided by Martin Holtz.  Italian translation provided by Andrea Piras." & vbCrLf & vbCrLf
+    theText = theText & "RPGToolkit Fo' Sho' Music Pak v2.18 composed by Chris and Craig Reeves, Copyright 2000.  Used with permission.  http://www.vipcouncil.com" & vbCrLf & vbCrLf
+    theText = theText & "Menu System graphic and layout based on designs provided by |3lue.  Used with permission." & vbCrLf & vbCrLf
+    theText = theText & "This program uses FreeImage, an open source image library supporting all common bitmap formats. Get your free copy now from http://www.6ixsoft.com." & vbCrLf & vbCrLf
+    theText = theText & "Compression provided by zlib v1.1.3, copyright 1995-1998 Jean-loup Gailly and Mark Adler.  Used under license.  http://www.freesoftware.com/pub/infozip/zlib/" & vbCrLf & vbCrLf
+    theText = theText & "This product includes images from Corel Clipart which are protected by the copyright laws of the U.S., Canada and elsewhere. Used under license.  They are for viewing purposes only." & vbCrLf & vbCrLf
+
     'RSA credits...
-    theText = theText + "Credits for RSA md5 algorithm implementation:" + chr$(13) + chr$(10)
-    theText = theText + "Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All" + chr$(13) + chr$(10)
-    theText = theText + "rights reserved." + chr$(13) + chr$(10) + chr$(13) + chr$(10)
+    theText = theText & "Credits for RSA md5 algorithm implementation:" & vbCrLf
+    theText = theText & "Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All" & vbCrLf
+    theText = theText & "rights reserved." & vbCrLf & vbCrLf
+    theText = theText & "License to copy and use this software is granted provided that it" & vbCrLf
+    theText = theText & "is identified as the 'RSA Data Security, Inc. MD5 Message-Digest" & vbCrLf
+    theText = theText & "Algorithm ' in all material mentioning or referencing this software" & vbCrLf
+    theText = theText & "or this function." & vbCrLf & vbCrLf
+    theText = theText & "License is also granted to make and use derivative works provided" & vbCrLf
+    theText = theText & "that such works are identified as 'derived from the RSA Data" & vbCrLf
+    theText = theText & "Security, Inc. MD5 Message-Digest Algorithm' in all material" & vbCrLf
+    theText = theText & "mentioning or referencing the derived work." & vbCrLf & vbCrLf
+    theText = theText & "RSA Data Security, Inc. makes no representations concerning either" & vbCrLf
+    theText = theText & "the merchantability of this software or the suitability of this" & vbCrLf
+    theText = theText & "software for any particular purpose. It is provided 'as is'" & vbCrLf
+    theText = theText & "without express or implied warranty of any kind." & vbCrLf & vbCrLf
 
-    theText = theText + "License to copy and use this software is granted provided that it" + chr$(13) + chr$(10)
-    theText = theText + "is identified as the 'RSA Data Security, Inc. MD5 Message-Digest" + chr$(13) + chr$(10)
-    theText = theText + "Algorithm ' in all material mentioning or referencing this software" + chr$(13) + chr$(10)
-    theText = theText + "or this function." + chr$(13) + chr$(10) + chr$(13) + chr$(10)
+    theText = theText & "These notices must be retained in any copies of any part of this" & vbCrLf
+    theText = theText & "documentation and/or software." & vbCrLf & vbCrLf
 
-    theText = theText + "License is also granted to make and use derivative works provided" + chr$(13) + chr$(10)
-    theText = theText + "that such works are identified as 'derived from the RSA Data" + chr$(13) + chr$(10)
-    theText = theText + "Security, Inc. MD5 Message-Digest Algorithm' in all material" + chr$(13) + chr$(10)
-    theText = theText + "mentioning or referencing the derived work." + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-    
-    theText = theText + "RSA Data Security, Inc. makes no representations concerning either" + chr$(13) + chr$(10)
-    theText = theText + "the merchantability of this software or the suitability of this" + chr$(13) + chr$(10)
-    theText = theText + "software for any particular purpose. It is provided 'as is'" + chr$(13) + chr$(10)
-    theText = theText + "without express or implied warranty of any kind." + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-    
-    theText = theText + "These notices must be retained in any copies of any part of this" + chr$(13) + chr$(10)
-    theText = theText + "documentation and/or software." + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-      
-    theText = theText + "This program uses the Audiere sound library, released under the LGPL." + chr$(13) + chr$(10)
-    theText = theText + "Used under license.  http://audiere.sourceforge.net" + chr$(13) + chr$(10) + chr$(13) + chr$(10)
-      
-      
+    theText = theText & "This program uses the Audiere sound library, released under the LGPL." & vbCrLf
+    theText = theText & "Used under license.  http://audiere.sourceforge.net" & vbCrLf & vbCrLf
+
     Text1.Text = theText
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
 
-Private Sub gfxeng_Click()
-
-End Sub
-
-
 Private Sub Text1_KeyPress(KeyAscii As Integer)
     KeyAscii = 0
 End Sub
-
-

@@ -113,7 +113,7 @@ End Sub
 Private Sub UserControl_Initialize()
 
  'putOnX CloseX.hdc, frmCommonImages.picNewX.hdc
-
+ On Error Resume Next
  CloseX.Picture = frmCommonImages.picNewX.Picture
  CloseX.Width = 310
  CloseX.height = 300

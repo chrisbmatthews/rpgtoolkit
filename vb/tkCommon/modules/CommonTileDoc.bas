@@ -33,7 +33,7 @@ Public Type tileDoc
     
     'Data
     detail As Byte                  'Detail level of tile
-    tilemem(64, 32) As Long         'The tile (EDIT for 3.0.4 by Delano - increased to 64x32)
+    tileMem(64, 32) As Long         'The tile (EDIT for 3.0.4 by Delano - increased to 64x32)
     isometric As Boolean            'Isometric? (NEW for 3.0.4 by Delano)
 End Type
 
@@ -42,21 +42,17 @@ End Type
 '========================================================================
 Public publicTile As tileDoc        'Main data
 Public detail As Byte               'Detail level of tile
-Public tilemem(64, 32) As Long      'The tile (EDIT for 3.0.4 by Delano - increased to 64x32)
-
+Public tileMem(64, 32) As Long      'The tile (EDIT for 3.0.4 by Delano - increased to 64x32)
 
 'Variables added (NEW for 3.0.4 by Woozy)
-Public tilepreview(64, 32) As Long      'Used for some effects
-Public SaveChanges As Boolean           'Used for the effects
-
+Public tilePreview(64, 32) As Long      'Used for some effects
+Public saveChanges As Boolean           'Used for the effects
 
 'Variables added by Delano for 3.0.4
-Public isoMaskBmp(64, 32) As Long   'Isomask loaded from Form1
-Global isIsoTile As Boolean         'If tile we're working on is a new isometric. Temporary!
+Public isoMaskBmp(64, 32) As Long   'Isomask loaded from frmMain
+Public isIsoTile As Boolean         'If tile we're working on is a new isometric. Temporary!
 Public xRange As Integer            '= 32 OR 64 depending on tiletype. This way we don't
-                                    'need to make new tilemem.
-
-
+                                    'need to make new tileMem.
 
 Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc As Long, Optional ByVal quality As Integer = 0)
 '=====================================================================
@@ -99,7 +95,7 @@ Public Sub tileDrawIso(ByRef pic As PictureBox, ByVal xLoc As Long, ByVal yLoc A
                 If isoMaskBmp(x, y) = RGB(0, 0, 0) Then
                     'Unmasked pixel - use the next pixel in tilemem.
                     'Set it to the (x - 1)'th and (y -1)'th pixels!!
-                    Call vbPicPSet(pic, x - 1 + xLoc, y - 1 + yLoc, tilemem(xCount, yCount))
+                    Call vbPicPSet(pic, x - 1 + xLoc, y - 1 + yLoc, tileMem(xCount, yCount))
 
                     'Increment the tilemem entry.
                     yCount = yCount + 1
@@ -186,7 +182,7 @@ Public Sub createIsoMask(): On Error Resume Next
     
     For x = 0 To 64
         For y = 0 To 32
-            tilemem(x, y) = RGB(0, 0, 0)
+            tileMem(x, y) = RGB(0, 0, 0)
             isoMaskBmp(x, y) = RGB(255, 255, 255)   'Initialize the mask.
         Next y
     Next x
@@ -202,7 +198,7 @@ Public Sub createIsoMask(): On Error Resume Next
     For x = 0 To 32
         For y = 0 To 32
             isoMaskBmp(x + 1, y + 1) = buftile(x, y)
-            tilemem(x, y) = -1
+            tileMem(x, y) = -1
         Next y
     Next x
     
@@ -212,7 +208,7 @@ Public Sub createIsoMask(): On Error Resume Next
         For y = 0 To 32
             'Insert into x, not x + 1!
             isoMaskBmp(x, y + 1) = buftile(x, y)
-            tilemem(x, y) = -1
+            tileMem(x, y) = -1
         Next y
     Next x
     
@@ -243,12 +239,12 @@ Public Sub tstToIsometric(Optional ByVal quality As Integer = 3): On Error Resum
     'texture map into 128x64 isometric tile...
     For tX = 0 To 31 Step 1
         For tY = 0 To 31 Step 1
-            crColor = tilemem(tX + 1, tY + 1)
+            crColor = tileMem(tX + 1, tY + 1)
             x = 62 + (tX) * 2 - (tY) * 2
             y = (tX) + (tY)
         
-            crColor = tilemem(tX + 1, tY + 1)
-            crColor2 = tilemem(tX + 2, tY + 1)
+            crColor = tileMem(tX + 1, tY + 1)
+            crColor2 = tileMem(tX + 2, tY + 1)
             If crColor <> -1 And crColor2 <> -1 And (quality = 1 Or quality = 2 Or quality = 3) Then
                 r1 = red(crColor)
                 g1 = green(crColor)
