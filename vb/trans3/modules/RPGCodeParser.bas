@@ -19,6 +19,7 @@ Private Declare Sub RPGCGetMethodName Lib "actkrt3.dll" (ByVal Text As Long)
 Private Declare Sub RPGCParseAfter Lib "actkrt3.dll" (ByVal Text As Long, ByVal startSymbol As Long)
 Private Declare Sub RPGCParseBefore Lib "actkrt3.dll" (ByVal Text As Long, ByVal endSymbol As Long)
 Private Declare Sub RPGCGetVarList Lib "actkrt3.dll" (ByVal Text As Long, ByVal number As Long)
+Private Declare Function RPGCStringContains Lib "actkrt3.dll" (ByVal theString As Long, ByVal theChar As Long) As Long
 
 '=========================================================================
 ' Member variables
@@ -377,9 +378,7 @@ End Function
 ' Determine if a string contains a substring
 '=========================================================================
 Public Function stringContains(ByVal theString As String, ByVal theChar As String) As Boolean
-    If InStr(1, theString, theChar, vbTextCompare) > 0 Then
-        stringContains = True
-    End If
+    stringContains = RPGCStringContains(StrPtr(theString), StrPtr(theChar))
 End Function
 
 '=========================================================================

@@ -19,6 +19,9 @@
 //////////////////////////////////////////////////////////////////////////
 CBOneParamStr setLastString;	//set the last parser string
 
+//////////////////////////////////////////////////////////////////////////
+// Check if a string contains a sub-string
+//////////////////////////////////////////////////////////////////////////
 int APIENTRY RPGCStringContains(VB_STRING pText, VB_STRING theChar)
 {
 	inlineString text = initVbString(pText);				//Text we're operating on
@@ -96,7 +99,7 @@ void APIENTRY RPGCGetVarList(VB_STRING pText, int number)
         }
 
     }
- 
+
     returnVbString(returnVal);
 
 }
