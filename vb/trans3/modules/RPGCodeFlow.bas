@@ -228,13 +228,16 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     ' Get the 'whole' method
     theMethod = theProgram.methods(i)
 
-    ' Now pass variables
+    ' Move to the correct line
     theProgram.programPos = foundIt
 
     ' Create a new local scope for this method
     Call AddHeapToStack(theProgram)
 
-    ' Now to correspond the two lists
+    ' Create a garbage heap
+    Dim heap As GARBAGE_HEAP
+
+    ' Pass variables
     For i = 1 To number
 
         Dim dUse As String
@@ -279,7 +282,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
                         End If
                     End If
 
-                    dUse = CStr(createRPGCodeObject(theMethod.classTypes(i - 1), theProgram, cParams, False))
+                    dUse = CStr(createRPGCodeObject(theMethod.classTypes(i - 1), theProgram, cParams, False, heap))
 
                 End If
 
@@ -289,6 +292,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
                     ' Make a copy of the object
                     dUse = CStr(copyObject(params(i - 1).num, theProgram))
+                    Call markForCollection(heap, CLng(dUse))
 
                 End If
 
@@ -367,6 +371,9 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             End If
         Next se
     Next t
+
+    ' Garbage collect the heap
+    Call garbageCollect(heap)
 
     ' Kill the local scope
     Call RemoveHeapFromStack(theProgram)
@@ -585,7 +592,7 @@ Public Function runBlock(ByVal runCommands As Long, ByRef prg As RPGCodeProgram,
 
                 If (runCommands) Then
                     ' Garbage collect
-                    Call garbageCollect
+                    Call garbageCollect(g_garbageHeap)
                     Call DoSingleCommand(prg.program(prg.programPos), prg, retval, True)
                 Else
                     prg.programPos = increment(prg)
@@ -785,7 +792,7 @@ Public Sub runProgram( _
     Call hideMsgBox
     Call setConstants
     Call clearButtons
-    Call garbageCollect
+    Call garbageCollect(g_garbageHeap)
 
     If (setSourceAndTarget) Then
         target = selectedPlayer
@@ -829,7 +836,7 @@ Public Sub runProgram( _
             prgPos = theProgram.programPos
 
             ' Garbage collect
-            Call garbageCollect
+            Call garbageCollect(g_garbageHeap)
 
             theProgram.programPos = DoCommand(theProgram, retval)
 
@@ -848,7 +855,7 @@ Public Sub runProgram( _
 
     errorKeep = theProgram
 
-    Call garbageCollect
+    Call garbageCollect(g_garbageHeap)
 
     If (theProgram.programPos = -1) Then
         Call renderNow(-1, True)

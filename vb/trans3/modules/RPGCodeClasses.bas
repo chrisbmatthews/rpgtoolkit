@@ -16,6 +16,7 @@ Option Explicit
 '=========================================================================
 Public g_objects() As RPGCODE_CLASS_INSTANCE ' All objects
 Public g_objHandleUsed() As Boolean          ' This handle used?
+Public g_garbageHeap As GARBAGE_HEAP         ' The global garbage heap
 
 '=========================================================================
 ' An instance of a class
@@ -106,53 +107,65 @@ Public Enum RPGC_DT
 End Enum
 
 '=========================================================================
+' A garbage heap
+'=========================================================================
+Public Type GARBAGE_HEAP
+    lngGarbage() As Long                    ' Garbage in this heap
+    lngProtected As Long                    ' Don't collect this object
+End Type
+
+'=========================================================================
 ' Members
 '=========================================================================
 Private m_objectOffset As Long              ' Address of object array
-Private m_freeableObjects() As Long         ' Objects that can safely be freed
 
 '=========================================================================
-' Clear the freeable objects array
+' Resize a heap
 '=========================================================================
-Public Sub resizeFreeableObjects(ByVal lngNewSize As Long)
+Public Sub resizeFreeableObjects(ByRef heap As GARBAGE_HEAP, ByVal lngNewSize As Long)
 
     ' Redimension the array
-    ReDim m_freeableObjects(lngNewSize)
+    ReDim heap.lngGarbage(lngNewSize)
 
 End Sub
 
 '=========================================================================
-' Mark an object for collection
+' Add an entry to a heap
 '=========================================================================
-Public Sub markForCollection(ByVal hObject As Long)
+Public Sub markForCollection(ByRef heap As GARBAGE_HEAP, ByVal hObject As Long)
+
+    On Error Resume Next
 
     ' Need more room
     Dim j As Long, ub As Long
-    ub = UBound(m_freeableObjects)
+    ub = UBound(heap.lngGarbage)
     j = ub + 1
-    ReDim Preserve m_freeableObjects(j)
+    ReDim Preserve heap.lngGarbage(j)
 
     ' Write in the data
-    m_freeableObjects(j) = hObject
+    heap.lngGarbage(j) = hObject
 
 End Sub
 
 '=========================================================================
-' Collect garbage
+' Collect garbage from a heap
 '=========================================================================
-Public Sub garbageCollect()
+Public Sub garbageCollect(ByRef heap As GARBAGE_HEAP)
+
+    On Error Resume Next
 
     ' Loop over every freeable object
-    Dim i As Long
-    For i = 0 To UBound(m_freeableObjects)
+    Dim i As Long, ub As Long
+    ub = UBound(heap.lngGarbage)
+    For i = 0 To ub
 
         ' If there's an object here
-        If (m_freeableObjects(i)) Then
+        If (heap.lngGarbage(i) <> heap.lngProtected) Then
 
             ' Free this object
             Dim lngFree As Long
-            lngFree = m_freeableObjects(i)
-            m_freeableObjects(i) = 0
+            lngFree = heap.lngGarbage(i)
+            heap.lngGarbage(i) = 0
             Call freeObject(lngFree)
 
         End If
@@ -160,22 +173,22 @@ Public Sub garbageCollect()
     Next i
 
     ' Clear all freeable objects
-    ReDim m_freeableObjects(0)
+    ReDim heap.lngGarbage(0)
 
 End Sub
 
 '=========================================================================
-' Count freeable objects
+' Count the number of entries in a heap
 '=========================================================================
-Public Function countFreeableObjects() As Long
-    countFreeableObjects = UBound(m_freeableObjects)
+Public Function countFreeableObjects(ByRef heap As GARBAGE_HEAP) As Long
+    countFreeableObjects = UBound(heap.lngGarbage)
 End Function
 
 '=========================================================================
-' Get a freeable object by index
+' Get a heap entry by index
 '=========================================================================
-Public Function getFreeableObjectHandle(ByVal Index As Long) As Long
-    getFreeableObjectHandle = m_freeableObjects(Index)
+Public Function getFreeableObjectHandle(ByRef heap As GARBAGE_HEAP, ByVal idx As Long) As Long
+    getFreeableObjectHandle = heap.lngGarbage(idx)
 End Function
 
 '=========================================================================
@@ -991,7 +1004,6 @@ End Function
 Public Sub initRPGCodeClasses()
     ReDim g_objHandleUsed(250)
     ReDim g_objects(250)
-    ReDim m_freeableObjects(0)
     m_objectOffset = VarPtr(g_objects(0))
     Call newHandle
 End Sub
@@ -1342,7 +1354,7 @@ End Sub
 '=========================================================================
 ' Create a new instance of a class
 '=========================================================================
-Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCodeProgram, ByRef constructParams() As String, ByVal noParams As Boolean) As Long
+Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCodeProgram, ByRef constructParams() As String, ByVal noParams As Boolean, ByRef heap As GARBAGE_HEAP) As Long
 
     On Error Resume Next
 
@@ -1398,7 +1410,7 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
     End If
 
     ' Mark this object for collection
-    Call markForCollection(hClass)
+    Call markForCollection(heap, hClass)
 
     ' Return a pointer to the object
     createRPGCodeObject = hClass
@@ -1520,8 +1532,11 @@ Public Function copyObject(ByVal hObject As Long, ByRef prg As RPGCodeProgram, O
     If (bCopyConstruct) Then
 
         ' Call the copy constructor
-        Dim retval As RPGCODE_RETURN
+        Dim retval As RPGCODE_RETURN, hOldObject As Long
+        hOldObject = g_garbageHeap.lngProtected
+        g_garbageHeap.lngProtected = hObject
         Call callObjectMethod(copyObject, cls.strName & "(" & CStr(hObject) & ")", prg, retval, cls.strName, True)
+        g_garbageHeap.lngProtected = hOldObject
 
     Else
 
