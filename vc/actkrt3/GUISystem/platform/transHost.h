@@ -11,14 +11,14 @@
 //-------------------------------------------------------------------
 // Protect the header file
 //-------------------------------------------------------------------
-#ifndef TRANS_HOST_H
-#define TRANS_HOST_H
+#ifndef _TRANS_HOST_H_
+#define _TRANS_HOST_H_
 #pragma once
 
 //-------------------------------------------------------------------
 // Inclusions
 //-------------------------------------------------------------------
-#define WIN32_LEAN_AND_MEAN			// Exclude MFC because it sucks
+#define WIN32_LEAN_AND_MEAN			// Obtain lean version of the API
 #include <windows.h>				// Include the windows API
 #include <cstdlib>					// Include some standard C stuff
 
@@ -28,8 +28,8 @@
 typedef VOID (__stdcall *CBNoParams) (VOID);
 typedef INT (__stdcall *CBNoParamsRet) (VOID);
 typedef VOID (__stdcall *CBOneParam) (INT);
-typedef VOID (__stdcall *CBTwoParams) (INT, INT);
-typedef VOID (__stdcall *CBFourParams) (INT, INT, INT, INT);
+typedef VOID (__stdcall *CBTwoParams) (CONST INT, CONST INT);
+typedef VOID (__stdcall *CBFourParams) (CONST INT, CONST INT, CONST INT, CONST INT);
 
 //-------------------------------------------------------------------
 // Game states
@@ -42,17 +42,89 @@ CONST INT GS_QUIT = 3;				// Shutdown sequence
 //-------------------------------------------------------------------
 // Prototypes
 //-------------------------------------------------------------------
-VOID APIENTRY mainEventLoop(CONST INT gameLogicAddress);
-INT APIENTRY createHostWindow(INT x, INT y, INT width, INT height, INT style, LPSTR caption, INT instance, LPSTR className, INT hCursor);
-VOID APIENTRY createEventCallbacks(INT forceRender, INT closeSystems, INT setAsciiKeyState, INT keyDownEvent, INT mouseMoveEvent, INT mouseDownEvent, INT isShuttingDown, INT getGameState, INT setGameState);
-VOID APIENTRY processEvent(VOID);
-VOID APIENTRY showEndForm(INT endFormBackHdc, INT x, INT y, INT hIcon, INT hInstance);
-VOID APIENTRY killHostWindow(LPSTR windowClass, INT hInstance);
-VOID APIENTRY changeHostWindowCaption(LPSTR newCaption);
-VOID APIENTRY endProgram(VOID);
-LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-LRESULT CALLBACK endFormWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-VOID APIENTRY initCounter(double *CONST ptrRenderTime,INT *CONST ptrRenderCount);
+
+// Run the main event loop
+VOID APIENTRY mainEventLoop(
+	CONST INT gameLogicAddress
+		);
+
+// Create the host window
+INT APIENTRY createHostWindow(
+	CONST INT x,
+	CONST INT y,
+	CONST INT width,
+	CONST INT height,
+	CONST INT style,
+	CONST LPSTR caption,
+	CONST INT instance,
+	CONST LPSTR className,
+	CONST INT hCursor
+		);
+
+// Create the event callbacks
+VOID APIENTRY createEventCallbacks(
+	CONST INT forceRender,
+	CONST INT closeSystems,
+	CONST INT setAsciiKeyState,
+	CONST INT keyDownEvent,
+	CONST INT mouseMoveEvent,
+	CONST INT mouseDownEvent,
+	CONST INT isShuttingDown,
+	CONST INT getGameState,
+	CONST INT setGameState
+		);
+
+// Process an event from the queue
+VOID APIENTRY processEvent(
+	VOID
+		);
+
+// Show the end form
+VOID APIENTRY showEndForm(
+	CONST INT endFormBackHdc,
+	CONST INT x,
+	CONST INT y,
+	CONST INT hIcon,
+	CONST INT hInstance
+		);
+
+// Kill the host window
+VOID APIENTRY killHostWindow(
+	CONST LPSTR windowClass,
+	CONST INT hInstance
+		);
+
+// Change the host window's caption
+VOID APIENTRY changeHostWindowCaption(
+	CONST LPSTR newCaption
+		);
+
+// End the program
+VOID APIENTRY endProgram(
+	VOID
+		);
+
+// Handle an event
+LRESULT CALLBACK eventProcessor(
+	HWND hwnd,
+	UINT msg,
+	WPARAM wParam,
+	LPARAM lParam
+		);
+
+// Handle the end form
+LRESULT CALLBACK endFormWndProc(
+	HWND hwnd,
+	UINT msg,
+	WPARAM wParam,
+	LPARAM lParam
+		);
+
+// Initiate the render counter
+VOID APIENTRY initCounter(
+	double *CONST ptrRenderTime,
+	INT *CONST ptrRenderCount
+		);
 
 //-------------------------------------------------------------------
 // End of the header file
