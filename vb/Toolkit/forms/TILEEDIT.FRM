@@ -1426,6 +1426,16 @@ End Sub
 Public Sub tileRedraw(): On Error GoTo ErrorHandler
     Call highRedraw
     Call drawGrid
+    
+    If openTileEditorDocs(indice).isometric Then
+         'Draw the tile isometrically. Send a different value to the function.
+         'Moved to highRedraw.
+     Else
+         Call tileDrawIso(tkMainForm.isoMirror, 0, 0, 3)
+     End If
+    
+     Call vbPicRefresh(tkMainForm.isoMirror)
+
 
     Exit Sub
 'Error Handler
