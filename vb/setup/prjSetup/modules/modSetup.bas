@@ -37,7 +37,7 @@ Private Const REG_SZ = 1                        ' Registry string
 Private Const HKEY_LOCAL_MACHINE = &H80000002   ' Local machine registry section
 Private Const OF_SHARE_EXCLUSIVE = &H10         ' Exclusive access
 Private Const ZIP_CRC As Long = 65000474        ' CRC checksum ran on the ZIP
-Public Const RPGTOOLKIT_VERSION = "3.06"        ' Version of the toolkit
+Public Const RPGTOOLKIT_VERSION = "3.0.6"       ' Version of the toolkit
 
 '=========================================================================
 ' Members
@@ -316,8 +316,8 @@ Public Sub performSetup()
     Call RegSetValueEx(hKey, "DisplayName", 0, REG_SZ, ByVal "RPGToolkit, Version " & RPGTOOLKIT_VERSION, Len("RPGToolkit, Version " & RPGTOOLKIT_VERSION))
     Call RegSetValueEx(hKey, "UninstallString", 0, REG_SZ, ByVal (strPath & "uninstall.exe"), Len(strPath & "uninstall.exe"))
     Call RegSetValueEx(hKey, "DisplayIcon", 0, REG_SZ, ByVal (strPath & "trans3.exe,0"), Len(strPath & "trans3.exe,0"))
-    Call RegSetValueEx(hKey, "URLInfoAbout", 0, REG_SZ, ByVal "http://www.toolkitzone.com", Len("http://www.toolkitzone.com"))
-    Call RegSetValueEx(hKey, "URLUpdateInfo", 0, REG_SZ, ByVal "http://www.toolkitzone.com", Len("http://www.toolkitzone.com"))
+    Call RegSetValueEx(hKey, "URLInfoAbout", 0, REG_SZ, ByVal "http://toolkitzone.com", Len("http://toolkitzone.com"))
+    Call RegSetValueEx(hKey, "URLUpdateInfo", 0, REG_SZ, ByVal "http://toolkitzone.com", Len("http://toolkitzone.com"))
     Call RegCloseKey(hKey)
 
     ' Make sure the start menu group has no trailing "\"
