@@ -628,20 +628,17 @@ Private Function EffectiveTileType(ByVal x As Integer, ByVal y As Integer, ByVal
 End Function
 
 Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boolean
-    '=====================================
+    '===============================================================================
     'If player walks off the edge, checks to see if a link is present and if it's
     'possible to go there. If so, then player is sent, and True returned, else False.
     'thelink is a number from 1-4  1-North, 2-South, 3-East, 4-West.
     'Code also present to check and run a program instead of a board.
     'Called by CheckEdges only.
-    '=====================================
-    'EDITED: [Isometrics - Delano 3/05/04]
-
+    '===============================================================================
     On Error Resume Next
 
     'Screen co-ords held in temporary varibles in case true variables altered.
-    Dim topXtemp As Double 'Isometric fix. Were Longs, but topX could be decimal.
-    Dim topYtemp As Double 'Not passed to any functions, so should be ok.
+    Dim topXtemp As Double, topYtemp As Double
     topXtemp = topX
     topYtemp = topY
 
@@ -653,22 +650,14 @@ Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boo
         Exit Function
     End If
 
-    Dim ex As String
-    ex = UCase$(GetExt(targetBoard$))
-
-    If (ex = "PRG") Then
-
-        ' Simplly run this program:
+    If (UCase$(GetExt(targetBoard)) = "PRG") Then
+        ' Simply run this program:
         Call runProgram(projectPath & prgPath & targetBoard)
-
         TestLink = True
         Exit Function
-
     End If
 
-    Dim testX As Long
-    Dim testY As Long
-    Dim testLayer As Long
+    Dim testX As Long, testY As Long, testLayer As Long
     testX = pPos(playerNum).x
     testY = pPos(playerNum).y
     testLayer = pPos(playerNum).l
@@ -677,8 +666,7 @@ Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boo
     'Y has to remain even or odd during transition, rather than just moving to the bottom row.
     'New function: linkIso, to check if the target board is iso. If so, sends to different co-ords.
 
-    Dim targetX As Long 'Target board dimensions
-    Dim targetY As Long
+    Dim targetX As Long, targetY As Long 'Target board dimensions
 
     Select Case theLink
 
@@ -721,7 +709,8 @@ Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boo
     Dim targetTile As Long
     targetTile = TestBoard(projectPath & brdPath & targetBoard, testX, testY, testLayer)
 
-    If ((targetTile = -1) Or (targetTile = SOLID)) Then
+    'If ((targetTile = -1) Or (targetTile = SOLID)) Then
+    If (targetTile = -1) Then
         'If board doesn't exist or board smaller than target location (-1) OR target tile is solid.
         'Stay at current position.
         topX = topXtemp
@@ -758,12 +747,18 @@ Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boo
 
     Call alignBoard(pPos(selectedPlayer).x, pPos(selectedPlayer).y)
     Call openItems
-    Call renderNow
-    Call CanvasGetScreen(cnvRPGCodeScreen)
+    Call renderNow(-1, True)
+    Call canvasGetScreen(cnvRPGCodeScreen)
+    
     Call launchBoardThreads(boardList(activeBoardIndex).theData)
-
+    
     'Set the state to GS_DONEMOVE, rather than finishing the last frames (caused pause on moving to new board).
     gGameState = GS_DONEMOVE
+    
+    'Run the program to run on entering board.
+    If LenB(boardList(activeBoardIndex).theData.enterPrg) Then
+        Call runProgram(projectPath & prgPath & boardList(activeBoardIndex).theData.enterPrg)
+    End If
 
     TestLink = True
 
@@ -1737,7 +1732,7 @@ Public Sub runQueuedMovements(): On Error Resume Next
     Loop
 
     'Update the rpgcode canvas in case we're still in a program.
-    Call CanvasGetScreen(cnvRPGCodeScreen)
+    Call canvasGetScreen(cnvRPGCodeScreen)
 
     Select Case UCase$(pPos(selectedPlayer).stance)
         Case "WALK_S": facing = SOUTH
