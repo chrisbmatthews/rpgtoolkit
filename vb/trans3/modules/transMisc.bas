@@ -531,16 +531,21 @@ Public Sub addEquip(ByVal equipNum As Long, ByVal playerNum As Long, ByVal file 
 End Sub
 
 '=========================================================================
-' Set the game speed (0 - 4)
+' Set the game speed.
+' Sets the walking speed, moderated by loopOffset.
+' LoopOffset alters the player moves by a percentage of the fps per value.
+' -ve loopOffset decreases speed proportionally, +ve increases.
 '=========================================================================
-Public Sub gameSpeed(ByVal speed As Integer)
-    Select Case speed
-        Case 0: walkDelay = 0.09: loopOffset = 2
-        Case 1: walkDelay = 0.06: loopOffset = 1
-        Case 2: walkDelay = 0.03: loopOffset = 0
-        Case 3: walkDelay = 0.01: loopOffset = -1
-        Case 4: walkDelay = 0: loopOffset = -2
-    End Select
+Public Sub gameSpeed(ByVal speed As Long)
+
+    'Bound the value.
+    If speed > MAX_GAMESPEED Then speed = MAX_GAMESPEED
+    If speed < -MAX_GAMESPEED Then speed = -MAX_GAMESPEED
+    
+    'Set the global walking offset.
+    'Take the -ve because we want +ve speed to reduce the frames-per-move.
+    loopOffset = -speed
+
 End Sub
 
 '=========================================================================
