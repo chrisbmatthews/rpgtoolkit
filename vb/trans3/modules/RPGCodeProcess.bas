@@ -556,6 +556,7 @@ Public Sub includeProgram(ByRef prg As RPGCodeProgram, ByRef strFile As String)
     ReDim Preserve backupPrg.program(ub + 2 + toInclude.Length)
     ReDim Preserve backupPrg.strCommands(ub + 2 + toInclude.Length)
     ReDim Preserve backupPrg.bRunBlock(ub + 2 + toInclude.Length)
+    ReDim Preserve backupPrg.strSwitchVar(ub + 2 + toInclude.Length)
     prg = backupPrg
 
     ' Index variable
