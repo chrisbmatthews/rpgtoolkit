@@ -2616,72 +2616,37 @@ End Sub
 '========================================================================
 
 'Blur
-Private Sub blurmnu_Click()
-    On Error GoTo ErrorHandler
+Private Sub blurmnu_Click(): On Error Resume Next
     
     'Undo
     Call setUndo
     
-    Dim x, y As Integer
-    Dim aa As Long
-    Dim r As Long, g As Long, b As Long
-    Dim r2 As Long, g2 As Long, b2 As Long
-    Dim nr As Long, ng As Long, nb As Long
-    'Start blurring
+    Dim x As Long, y As Long, r As Long, g As Long, b As Long
+    
     For x = 1 To xRange
         For y = 1 To 32
-        
-            aa = tileMem(x, y)
-            If aa = -1 Then aa = vbQBColor(15)
-            r = red(aa) / 2
-            aa = tileMem(x, y)
-            If aa = -1 Then aa = vbQBColor(15)
-            g = green(aa) / 2
-            aa = tileMem(x, y)
-            If aa = -1 Then aa = vbQBColor(15)
-            b = blue(aa) / 2
-            If x = xRange Then
-                aa = tileMem(1, y)
-                If aa = -1 Then aa = vbQBColor(15)
-            Else
-                aa = tileMem(x + 1, y)
-                If aa = -1 Then aa = vbQBColor(15)
+            'Prevent white smear at right edge in isometric mode.
+            If openTileEditorDocs(indice).isometric And _
+               isoMaskBmp(x, y) <> isoMaskBmp(x + 1, y) And _
+               x < 32 Then
+                    tileMem(x, y) = tileMem(x + 1, y)
             End If
-            r2 = red(aa) / 2
-            If x = xRange Then
-                aa = tileMem(1, y)
-                If aa = -1 Then aa = vbQBColor(15)
-            Else
-                aa = tileMem(x + 1, y)
-                If aa = -1 Then aa = vbQBColor(15)
-            End If
-            g2 = green(aa) / 2
-            If x = xRange Then
-                aa = tileMem(1, y)
-                If aa = -1 Then aa = vbQBColor(15)
-            Else
-                aa = tileMem(x + 1, y)
-                If aa = -1 Then aa = vbQBColor(15)
-            End If
-            b2 = blue(aa) / 2
-            nr = inBounds(r + r2, 0, 255)
-            ng = inBounds(g + g2, 0, 255)
-            nb = inBounds(b + b2, 0, 255)
-            If x = xRange Then
-                tileMem(1, y) = RGB(nr, ng, nb)
-            Else
-                tileMem(x + 1, y) = RGB(nr, ng, nb)
-            End If
+            
+            'Set transparent pixels white.
+            If tileMem(x, y) = -1 Then tileMem(x, y) = QBColor(15)
+            If tileMem((x Mod xRange) + 1, y) = -1 Then tileMem((x Mod xRange) + 1, y) = QBColor(15)
+            
+            r = red(tileMem(x, y)) / 2 + red(tileMem((x Mod xRange) + 1, y)) / 2
+            g = green(tileMem(x, y)) / 2 + green(tileMem((x Mod xRange) + 1, y)) / 2
+            b = blue(tileMem(x, y)) / 2 + blue(tileMem((x Mod xRange) + 1, y)) / 2
+    
+            tileMem(x + 1, y) = RGB(r, g, b)
         Next y
     Next x
+
     'Redraw
     Call tileRedraw
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 'Light Source
