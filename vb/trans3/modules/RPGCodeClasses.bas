@@ -1358,9 +1358,9 @@ Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef x(
 End Sub
 
 '=========================================================================
-' Return a handle to a copy of an object
+' Copy an object to a destination or new memory
 '=========================================================================
-Public Function copyObject(ByVal hObject As Long, ByRef prg As RPGCodeProgram) As Long
+Public Function copyObject(ByVal hObject As Long, ByRef prg As RPGCodeProgram, Optional ByVal hDestObject As Long) As Long
 
     ' Make sure we have a valid object
     If Not (isObject(hObject)) Then
@@ -1384,21 +1384,28 @@ Public Function copyObject(ByVal hObject As Long, ByRef prg As RPGCodeProgram) A
     End If
 
     ' Write in the data
-    g_objects(copyObject).strInstancedFrom = cls.strName
-    lngAddress = VarPtr(g_objects(copyObject))
-    g_objects(copyObject).hClass = lngAddress
-    copyObject = lngAddress
+    If (hDestObject) Then
+        copyObject = hDestObject
+    Else
+        g_objects(copyObject).strInstancedFrom = cls.strName
+        lngAddress = VarPtr(g_objects(copyObject))
+        g_objects(copyObject).hClass = lngAddress
+        copyObject = lngAddress
+    End If
 
     ' Check if this class has a copy constructor
-    Dim copyCtor As RPGCodeMethod
-    copyCtor.name = cls.strName & "::" & cls.strName
-    copyCtor.lngParams = 1
-    ReDim copyCtor.classTypes(0)
-    ReDim copyCtor.dtParams(0)
-    copyCtor.dtParams(0) = DT_OTHER
-    copyCtor.classTypes(0) = cls.strName
+    Dim copyCtor As RPGCodeMethod, bCopyConstruct As Boolean
+    If (hDestObject = 0) Then
+        copyCtor.name = cls.strName & "::" & cls.strName
+        copyCtor.lngParams = 1
+        ReDim copyCtor.classTypes(0)
+        ReDim copyCtor.dtParams(0)
+        copyCtor.dtParams(0) = DT_OTHER
+        copyCtor.classTypes(0) = cls.strName
+        bCopyConstruct = (getMethodLine(copyCtor, prg) <> -1)
+    End If
 
-    If (getMethodLine(copyCtor, prg) <> -1) Then
+    If (bCopyConstruct) Then
 
         ' Call the copy constructor
         Dim retval As RPGCODE_RETURN

@@ -951,12 +951,29 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 End If
             End If
 
-            If Not (noVar) Then
-                ' Set destination to the result
-                Call SetVariable(Destination, CStr(dRes), theProgram)
+            If (isObject(dRes)) Then
+
+                If (isObject(destNum)) Then
+
+                    If (equal = "=") Then
+
+                        ' Copy the object over
+                        Call copyObject(dRes, theProgram, destNum)
+
+                    End If
+
+                End If
+
             Else
-                ' Pass out via params
-                pNum = dRes
+
+                If Not (noVar) Then
+                    ' Set destination to the result
+                    Call SetVariable(Destination, CStr(dRes), theProgram)
+                Else
+                    ' Pass out via params
+                    pNum = dRes
+                End If
+
             End If
 
         Case DT_LIT         'LITERAL
