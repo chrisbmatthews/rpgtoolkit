@@ -341,7 +341,7 @@ Public Sub playVideo(ByVal file As String, Optional ByVal windowed As Boolean)
 
     With video
         .FullScreenMode = True
-        .Owner = Me.hwnd
+        .Owner = host.hwnd
     End With
     
     Call quartz.run
