@@ -25,10 +25,10 @@ Public Declare Function DXDrawText Lib "actkrt3.dll" (ByVal x As Long, ByVal y A
 Public Declare Function DXDrawCanvas Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
 Public Declare Function DXDrawCanvasTransparent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal crTranspColor As Long) As Long
 Public Declare Function DXDrawCanvasTranslucent Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
-Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
-Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
+Public Declare Function DXDrawCanvasPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal rasterOp As Long = SRCCOPY) As Long
+Public Declare Function DXDrawCanvasTransparentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTranspColor As Long) As Long
 Public Declare Function DXCopyScreenToCanvas Lib "actkrt3.dll" (ByVal canvasID As Long) As Long
-Public Declare Function DXDrawCanvasTranslucentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
+Public Declare Function DXDrawCanvasTranslucentPartial Lib "actkrt3.dll" (ByVal canvasID As Long, ByVal x As Long, ByVal y As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal width As Long, ByVal height As Long, Optional ByVal dIntensity As Double = 0.5, Optional ByVal crUnaffectedColor As Long = -1, Optional ByVal crTransparentColor As Long = -1) As Long
 
 '=========================================================================
 ' Constants
@@ -341,23 +341,43 @@ End Sub
 '=========================================================================
 ' Render the background of a board
 '=========================================================================
-Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
+Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1): On Error Resume Next
     
-    On Error Resume Next
+    #If False Then
+        'If parallaxing is disabled - to be done.
+        
+        Dim xDest As Long, yDest As Long, xSrc As Long, ySrc As Long, width As Long, height As Long
+        If topX < 0 Then
+            xDest = -topX * 32: width = getCanvasWidth(cnvBackground)
+        Else
+            xSrc = topX * 32: width = tilesX * 32
+        End If
+        If topY < 0 Then
+            yDest = -topY * 32: height = getCanvasHeight(cnvBackground)
+        Else
+            ySrc = topY * 32: height = tilesY * 32
+        End If
+        
+        If cnv = -1 Then
+            Call DXDrawCanvasPartial(cnvBackground, xDest, yDest, xSrc, ySrc, width, height)
+        Else
+            Call canvas2CanvasBltPartial(cnvBackground, cnv, xDest, yDest, xSrc, ySrc, width, height)
+        End If
+        
+    #End If
 
     If LenB(boardList(activeBoardIndex).theData.brdBack) Then
         'If there is a background.
+        
+        Dim destX As Long, destY As Long
     
         Dim pixelTopX As Long, pixelTopY As Long
         Dim pixelTilesX As Long, pixelTilesY As Long
 
-        pixelTopX = 0
-        pixelTopY = 0
         pixelTilesX = tilesX * 32
         pixelTilesY = tilesY * 32
 
-        Dim imageWidth As Long
-        Dim imageHeight As Long
+        Dim imageWidth As Long, imageHeight As Long
         
         'Dimensions of image, stored in canvas. Background image loaded into canvas when board loaded.
         imageWidth = getCanvasWidth(cnvBackground)
@@ -367,23 +387,23 @@ Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
         Dim maxScrollX As Double, maxScrollY As Double
         Dim tilesXTemp As Double
         
-        If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-            tilesXTemp = isoTilesX
-        Else
-            tilesXTemp = tilesX
-        End If
+        tilesXTemp = IIf(boardList(activeBoardIndex).theData.isIsometric = 1, isoTilesX + 0.5, tilesX)
         
-        If imageWidth > pixelTilesX Then
+        If imageWidth >= pixelTilesX Then
             'If image wider than screen
             
             percentScrollX = topX / (boardList(activeBoardIndex).theData.bSizeX - tilesXTemp)
             maxScrollX = imageWidth - pixelTilesX
             pixelTopX = Int(maxScrollX * percentScrollX)
+        Else
+            'Centre image.
+            pixelTilesX = imageWidth
+            destX = IIf(boardList(activeBoardIndex).theData.isIsometric = 1, -topX * 64 - 32, -topX * 32)
+            If destX < 0 Then destX = 0
         End If
 
         'Slightly different for Y
-
-        If imageHeight > pixelTilesY Then
+        If imageHeight >= pixelTilesY Then
             If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
                 'If image taller than screen. Isometric version:
                 percentScrollY = topY * 2 / (boardList(activeBoardIndex).theData.bSizeY - 1 - isoTilesY)
@@ -395,12 +415,17 @@ Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
                 maxScrollY = imageHeight - pixelTilesY
                 pixelTopY = Int(maxScrollY * percentScrollY)
             End If
+        Else
+            'Centre image.
+            pixelTilesY = imageHeight
+            destY = IIf(boardList(activeBoardIndex).theData.isIsometric = 1, -topY * 16 - 16, -topY * 32)
+            If destY < 0 Then destY = 0
         End If
 
         If cnv = -1 Then
-            Call DXDrawCanvasPartial(cnvBackground, 0, 0, pixelTopX, pixelTopY, pixelTilesX, pixelTilesY)
+            Call DXDrawCanvasPartial(cnvBackground, destX, destY, pixelTopX, pixelTopY, pixelTilesX, pixelTilesY)
         Else
-            Call canvas2CanvasBltPartial(cnvBackground, cnv, 0, 0, pixelTopX, pixelTopY, pixelTilesX, pixelTilesY)
+            Call canvas2CanvasBltPartial(cnvBackground, cnv, destX, destY, pixelTopX, pixelTopY, pixelTilesX, pixelTilesY)
         End If
     End If
 
@@ -610,22 +635,40 @@ End Function
 '=========================================================================
 ' Determine if the board's background needs to be rendered
 '=========================================================================
-Private Function renderBackground() As Boolean
-    On Error Resume Next
-    ' If we need to render the background
-    If (lastRenderedBackground <> boardList(activeBoardIndex).theData.brdBack) Then
-        ' Fill bkg will black
-        Call canvasFill(cnvBackground, 0)
-        ' If there's an image set
-        If (LenB(boardList(activeBoardIndex).theData.brdBack)) Then
-            ' Load the image, stretching to fit the board
-            Call canvasLoadFullPicture(cnvBackground, projectPath & bmpPath & boardList(activeBoardIndex).theData.brdBack, resX, resY)
+Private Function renderBackground() As Boolean: On Error Resume Next
+    
+    With boardList(activeBoardIndex).theData
+    
+        ' If we need to render the background.
+        If (lastRenderedBackground <> .brdBack) Then
+        
+            ' Fill bkg will black.
+            Call canvasFill(cnvBackground, 0)
+            
+            ' If there's an image set.
+            If LenB(.brdBack) Then
+                
+                ' Load the full image, resize the canvas (for parallaxing).
+                Call canvasLoadFullPicture(cnvBackground, projectPath & bmpPath & .brdBack, -1, -1)
+                
+                ' Load the image, sized to the board dimensions (no parallax).
+                'If .isIsometric Then
+                '    Call setCanvasSize(cnvBackground, .bSizeX * 64 - 32, .bSizeY * 16 - 16)
+                'Else
+                '    Call setCanvasSize(cnvBackground, .bSizeX * 32, .bSizeY * 32)
+                'End If
+                'Call canvasLoadSizedPicture(cnvBackground, projectPath & bmpPath & .brdBack)
+                
+            End If
+            
+            ' Update the last rendered background.
+            lastRenderedBackground = .brdBack
+            ' Flag we rendered the backgrond.
+            renderBackground = True
         End If
-        ' Update the last rendered background
-        lastRenderedBackground = boardList(activeBoardIndex).theData.brdBack
-        ' Flag we rendered the backgrond
-        renderBackground = True
-    End If
+        
+    End With
+    
 End Function
 
 '=========================================================================
@@ -1531,7 +1574,7 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
     With host
         .width = width * Screen.TwipsPerPixelX
         .height = height * Screen.TwipsPerPixelY
-        .Top = (Screen.height - .height) \ 2
+        .top = (Screen.height - .height) \ 2
         .Left = (Screen.width - .width) \ 2
         If Not (inFullScreenMode) Then
             ' If not in full screen mode, increase to account for window border
