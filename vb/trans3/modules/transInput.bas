@@ -829,7 +829,7 @@ Public Sub scanKeys()
     pendingPlayerMovement(selectedPlayer).xOrig = pPos(selectedPlayer).x
     pendingPlayerMovement(selectedPlayer).yOrig = pPos(selectedPlayer).y
     pendingPlayerMovement(selectedPlayer).lOrig = pPos(selectedPlayer).l
-    Call insertTarget(pendingPlayerMovement(selectedPlayer), pPos(selectedPlayer))
+    Call insertTarget(pendingPlayerMovement(selectedPlayer))
     
     'Set the frame count for the move to zero (i.e. next frame will be the first).
     'movementCounter = 0

@@ -1793,7 +1793,7 @@ Public Function moveItems() As Boolean: On Error Resume Next
             If pendingItemMovement(itmIdx).direction <> MV_IDLE Then
             
                 'Insert the target co-ordinates.
-                Call insertTarget(pendingItemMovement(itmIdx), itmPos(itmIdx), itmIdx)
+                Call insertTarget(pendingItemMovement(itmIdx))
                 
                 'Get the tiletype once.
                 With pendingItemMovement(itmIdx)
@@ -1981,7 +1981,7 @@ Public Function movePlayers() As Boolean: On Error Resume Next
                 If pendingPlayerMovement(playerIdx).direction <> MV_IDLE Then
                 
                     'Insert the target co-ordinates.
-                    Call insertTarget(pendingPlayerMovement(playerIdx), pPos(playerIdx))
+                    Call insertTarget(pendingPlayerMovement(playerIdx))
                     
                     'All cases: We only need to get the tiletype once in a move since it's not
                     '           going to change.
