@@ -6,6 +6,7 @@ December 24, 2004
 Copyright 2004 by 
 Christopher Matthews and Contributors (Vampz, KSNiloc, John@aljo, Delano, Euix, Geoff, Woozy, Occasionally_Correct, faero, Shao (With their respective copyrights, released as open source))
 
+An online copy of the 3.0.5 features can be found at: http://www.toolkitzone.com/library.php?mode=read&doc=100
 
 Toolkit Game Engine - trans3.exe
 --------------------------------
@@ -34,7 +35,8 @@ Bug Fixes
 + Nestled if/else statements messed up. 
 + true/false could be killed. 
 + '<' and '>' didn't work in equations.
-+ mwin "word wrapped", though very poorly
++ mwin "word wrapped", though very poorly.
++ Default menu jumped to the top-left corner of the screen at resolutions above 640x480.
 
 New Features 
 -------------
