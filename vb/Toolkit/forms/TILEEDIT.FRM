@@ -274,9 +274,11 @@ Begin VB.Form tileedit
       End
       Begin VB.Menu sub4 
          Caption         =   "-"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuinstallupgrade 
          Caption         =   "Install Upgrade"
+         Visible         =   0   'False
       End
    End
    Begin VB.Menu mnuBuild 
@@ -326,6 +328,7 @@ Begin VB.Form tileedit
       End
       Begin VB.Menu mnuRegistrationInfo 
          Caption         =   "Registration Info"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuAbout 
          Caption         =   "About"
@@ -569,43 +572,6 @@ Private Sub isoUpdate(): On Error Resume Next
         'tkMainForm.Command18.Enabled = Not .isometric      'Enabled 3.0.6
         'tkMainForm.Command19.Enabled = Not .isometric      'Enabled 3.0.6
     End With
-End Sub
-
-'========================================================================
-' Set the color to transparent
-'========================================================================
-Public Sub Command1_Click(): On Error GoTo ErrorHandler
-    'Set the current color to transparent
-    openTileEditorDocs(indice).currentColor = -1
-    'Update selected color Picturebox in TkMainForm
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, RGB(255, 255, 255))
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, vbQBColor(7))
-    Call vbPicFillRect(tkMainForm.selectedcolor, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, 100, 100, vbQBColor(7))
-    'Refresh
-    Call vbPicRefresh(tkMainForm.selectedcolor)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-'========================================================================
-' When you click in the color picker in TkMainform
-'========================================================================
-Public Sub palettebox_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error GoTo ErrorHandler
-    'Set the current color
-    openTileEditorDocs(indice).currentColor = vbFrmPoint(tkMainForm.palettebox, x, y)
-    
-    'Update selected color picturebox in tkMainForm
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(indice).currentColor)
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 '========================================================================
@@ -1181,8 +1147,8 @@ Private Sub Form_Activate(): On Error Resume Next
     Call ToolSet(openTileEditorDocs(indice).tileMode)
     
     'Set the selected color.
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 1000, 1000, openTileEditorDocs(indice).currentColor)
-    
+    Call updateSelectedColor
+
     'Hide tools/extras. Show the ones we need.
     Call hideAllTools
     tkMainForm.bBar.Visible = True
@@ -1311,6 +1277,14 @@ Private Sub Form_Load(): On Error Resume Next
     'Make the current tool the pen tool
     Call ToolSet(0)
     
+End Sub
+
+'========================================================================
+' Form_MouseMove - update selected color if dropper selected (will have
+' changed selected color in tileForm_MouseMove)
+'========================================================================
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    If openTileEditorDocs(indice).tileMode = 1 Then Call updateSelectedColor
 End Sub
 
 '========================================================================
@@ -1531,6 +1505,29 @@ Public Sub tileRedraw(): On Error Resume Next
 End Sub
 
 '========================================================================
+' Update the selected color boox and accompanying RGB caption
+'========================================================================
+Public Sub updateSelectedColor(Optional ByVal color As Long = -2): On Error Resume Next
+
+    If color = -2 Then color = openTileEditorDocs(indice).currentColor
+
+    If color <> -1 Then
+        tkMainForm.selectedcolor.BackColor = color
+        
+        tkMainForm.lblTileRGB.Caption = "RGB (" & red(color) & _
+                                        ", " & green(color) & _
+                                        ", " & blue(color) & ")"
+    Else
+        'Transparent colour - draw squares.
+        tkMainForm.selectedcolor.BackColor = RGB(255, 255, 255)
+        Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, vbQBColor(7))
+        Call vbPicFillRect(tkMainForm.selectedcolor, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, 100, 100, vbQBColor(7))
+        
+        tkMainForm.lblTileRGB.Caption = "RGB ( Transparent )"
+    End If
+End Sub
+
+'========================================================================
 ' Switch to recursive flood method (if gdi doesn't work)
 ' Use same setting in tile and board editors
 '========================================================================
@@ -1654,18 +1651,12 @@ Private Sub tileform_MouseDown(Button As Integer, Shift As Integer, x As Single,
             openTileEditorDocs(indice).currentColor = tileMem(mouseX + 1, mouseY + 1)
             
             'Update the selected color picturebox in TkMainForm.
-            If openTileEditorDocs(indice).currentColor <> -1 Then
-                Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(indice).currentColor)
-            Else
-                'Transparent colour - draw squares.
-                Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, RGB(255, 255, 255))
-                Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, vbQBColor(7))
-                Call vbPicFillRect(tkMainForm.selectedcolor, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, 100, 100, vbQBColor(7))
-            End If
-            
+            Call updateSelectedColor
+           
             'Change the selected tool
             openTileEditorDocs(indice).tileMode = 0
             Call ToolSet(openTileEditorDocs(indice).tileMode)
+            
         Case 2 'Fill
         
             'Use gdi version as recursive routine crashes on large boards (3.0.6)
@@ -1719,7 +1710,13 @@ Private Sub tileform_MouseMove(Button As Integer, Shift As Integer, x As Single,
     If ignore = 1 Then ignore = 0: Exit Sub
     
     'If no mousebutton is clicked, Exit Sub
-    If Button = 0 Then Exit Sub
+    If Button = 0 Then
+        'If the dropper is selected, show the color under the mouse as the selected color.
+        If openTileEditorDocs(indice).tileMode = 1 Then
+            Call updateSelectedColor(tileMem(mouseX + 1, mouseY + 1))
+        End If
+        Exit Sub
+    End If
     
     mouseX = mouseX * pixelWidth + (pixelWidth / 2)
     mouseY = mouseY * pixelHeight + (pixelHeight / 2)
@@ -2511,36 +2508,21 @@ End Sub
 
 'Color
 Public Sub scolormnu_Click(): On Error Resume Next
-
     openTileEditorDocs(activeTile.indice).currentColor = ColorDialog()
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(activeTile.indice).currentColor)
-
+    Call updateSelectedColor
 End Sub
 
 'DOS Color
-Public Sub mnuDOS_Click()
-    On Error GoTo ErrorHandler
+Public Sub mnuDOS_Click(): On Error Resume Next
     ignoreDeactivate = True
     Version1Palette.Show vbModal
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Call updateSelectedColor
 End Sub
 
 'Shade Tile
-Public Sub shadetle_Click()
-    On Error GoTo ErrorHandler
+Public Sub shadetle_Click(): On Error Resume Next
     ignoreDeactivate = True
     RGBDefine.Show vbModal
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 'Grayscale
