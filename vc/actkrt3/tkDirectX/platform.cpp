@@ -25,132 +25,9 @@ HRGN g_Clipper = NULL;							// Clipping region
 CGDICanvas* g_pBackBuffer = NULL;				// Non-DirectX backbuffer
 
 //------------------------------------------------------------------------
-// Initiate DirectDraw
-//------------------------------------------------------------------------
-int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen)
-{
-
-	// Initiate the gfx engine
-	return InitGraphicsMode(HWND(hostHwnd), nScreenX, nScreenY, bool(nUseDirectX), nColorDepth, bool(nFullScreen));
-
-}
-
-//------------------------------------------------------------------------
-// Kill DirectDraw
-//------------------------------------------------------------------------
-int APIENTRY DXKillGfxMode()
-{
-	return KillGraphicsMode();
-}
-
-//------------------------------------------------------------------------
-// Plot a pixel
-//------------------------------------------------------------------------
-int APIENTRY DXDrawPixel(int x, int y, long clr)
-{
-	return DrawPixel(x, y, clr);
-}
-
-//------------------------------------------------------------------------
-// Page flip
-//------------------------------------------------------------------------
-int APIENTRY DXRefresh(CNV_HANDLE cnvHandle)
-{
-	return Refresh((CGDICanvas*)cnvHandle);
-}
-
-//------------------------------------------------------------------------
-// Lock the screen
-//------------------------------------------------------------------------
-int APIENTRY DXLockScreen()
-{
-	ghDCLocked = OpenDC();
-	return int(ghDCLocked);
-}
-
-//------------------------------------------------------------------------
-// Unlock the screen
-//------------------------------------------------------------------------
-int APIENTRY DXUnlockScreen()
-{
-	return UnlockScreen();
-}
-
-//------------------------------------------------------------------------
-// Draw a canvas
-//------------------------------------------------------------------------
-int APIENTRY DXDrawCanvas(CNV_HANDLE cnv, int x, int y, long lRasterOp)
-{
-	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return DrawCanvas(pCnv, x, y, lRasterOp);
-}
-
-//------------------------------------------------------------------------
-// Draw a canvas transparently
-//------------------------------------------------------------------------
-int APIENTRY DXDrawCanvasTransparent(CNV_HANDLE cnv, int x, int y, long crTransparentColor)
-{
-	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return DrawCanvasTransparent(pCnv, x, y, crTransparentColor);
-}
-
-//------------------------------------------------------------------------
-// Draw a canvas translucently
-//------------------------------------------------------------------------
-int APIENTRY DXDrawCanvasTranslucent(CNV_HANDLE cnv, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor)
-{
-	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return DrawCanvasTranslucent(pCnv, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
-}
-
-//------------------------------------------------------------------------
-// Clear the screen to a color
-//------------------------------------------------------------------------
-int APIENTRY DXClearScreen(long crColor)
-{
-	ClearScreen(crColor);
-	return 1;
-}
-
-//------------------------------------------------------------------------
-// Draw text
-//------------------------------------------------------------------------
-int APIENTRY DXDrawText(int x, int y, char* strText, char* strTypeFace, int size, long clr, int bold, int italics, int underline, int centred, int outlined)
-{
-	return DrawText(x, y, strText, strTypeFace, size, clr, (bool)bold, (bool)italics, (bool)underline, (bool)centred, (bool)outlined);
-}
-
-//------------------------------------------------------------------------
-// Draw part of a canvas
-//------------------------------------------------------------------------
-int APIENTRY DXDrawCanvasPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long lRasterOp)
-{
-	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return DrawCanvasPartial(pCnv, destx, desty, srcx, srcy, width, height, lRasterOp);
-}
-
-//------------------------------------------------------------------------
-// Draw part of a canvas transparently
-//------------------------------------------------------------------------
-int APIENTRY DXDrawCanvasTransparentPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long crTransparentColor)
-{
-	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return DrawCanvasTransparentPartial(pCnv, destx, desty, srcx, srcy, width, height, crTransparentColor);
-}
-
-//------------------------------------------------------------------------
-// Copy the back buffer to a canvas
-//------------------------------------------------------------------------
-int APIENTRY DXCopyScreenToCanvas(CNV_HANDLE cnv)
-{
-	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return CopyScreenToCanvas(pCnv);
-}
-
-//------------------------------------------------------------------------
 // Initiate the graphics engine
 //------------------------------------------------------------------------
-inline bool InitGraphicsMode(HWND handle, int nWidth, int nHeight, bool bUseDirectX, long nColorDepth, bool bFullScreen)
+bool FAST_CALL InitGraphicsMode(HWND handle, int nWidth, int nHeight, bool bUseDirectX, long nColorDepth, bool bFullScreen)
 {
 	//Initiate the DirectX info structure
 	g_bUseDirectX = bUseDirectX;
@@ -194,7 +71,7 @@ inline bool InitGraphicsMode(HWND handle, int nWidth, int nHeight, bool bUseDire
 //------------------------------------------------------------------------
 // Initiate DirectX
 //------------------------------------------------------------------------
-inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, bool bFullScreen)
+DXINFO FAST_CALL InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, bool bFullScreen)
 {
 
 	//Initiate the return structure
@@ -287,7 +164,7 @@ inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, 
 //------------------------------------------------------------------------
 // Kill the graphics engine
 //------------------------------------------------------------------------
-inline bool KillGraphicsMode()
+bool FAST_CALL KillGraphicsMode()
 {
 	//shut down direct draw, but only if we're using it...
 	if(g_bUseDirectX)
@@ -333,7 +210,7 @@ inline bool KillGraphicsMode()
 //------------------------------------------------------------------------
 // Get DC of the screen
 //------------------------------------------------------------------------
-inline HDC OpenDC()
+HDC FAST_CALL OpenDC()
 {
 	//first check if the screen is locked...
 	if (ghDCLocked)
@@ -368,7 +245,7 @@ inline HDC OpenDC()
 //------------------------------------------------------------------------
 // Close the screen's DC
 //------------------------------------------------------------------------
-inline void CloseDC(HDC hdc)
+void FAST_CALL CloseDC(HDC hdc)
 {
 	//check if screen is locked
 	if (ghDCLocked)
@@ -404,7 +281,7 @@ inline void CloseDC(HDC hdc)
 //------------------------------------------------------------------------
 // Plot a pixel onto the screen
 //------------------------------------------------------------------------
-inline bool DrawPixel(int x, int y, long clr)
+bool FAST_CALL DrawPixel(int x, int y, long clr)
 {
 	HDC hdc = OpenDC();
 
@@ -417,7 +294,7 @@ inline bool DrawPixel(int x, int y, long clr)
 //------------------------------------------------------------------------
 // Draw a line on the screen
 //------------------------------------------------------------------------
-inline bool DrawLine(int x1, int y1, int x2, int y2, long clr)
+bool FAST_CALL DrawLine(int x1, int y1, int x2, int y2, long clr)
 {
 	HDC hdc = OpenDC();
 
@@ -436,7 +313,7 @@ inline bool DrawLine(int x1, int y1, int x2, int y2, long clr)
 //------------------------------------------------------------------------
 // Get the pixel at x, y
 //------------------------------------------------------------------------
-inline long GetPixelColor(int x, int y)
+long FAST_CALL GetPixelColor(int x, int y)
 {
 	HDC hdc = OpenDC();
 	long lRet = GetPixel(hdc, x, y);
@@ -447,7 +324,7 @@ inline long GetPixelColor(int x, int y)
 //------------------------------------------------------------------------
 // Draw a filled rectangle
 //------------------------------------------------------------------------
-inline bool DrawFilledRect(int x1, int y1, int x2, int y2, long clr)
+bool FAST_CALL DrawFilledRect(int x1, int y1, int x2, int y2, long clr)
 {
 	HDC hdc = OpenDC();
 	RECT r;
@@ -471,7 +348,7 @@ inline bool DrawFilledRect(int x1, int y1, int x2, int y2, long clr)
 //------------------------------------------------------------------------
 // Flip back buffer onto the screen
 //------------------------------------------------------------------------
-inline bool Refresh(CGDICanvas* cnv)
+bool FAST_CALL Refresh(CGDICanvas* cnv)
 {
 	if(g_bUseDirectX && gDXInfo.lpdd)
 	{
@@ -529,7 +406,7 @@ inline bool Refresh(CGDICanvas* cnv)
 //------------------------------------------------------------------------
 // Draw text onto the screen
 //------------------------------------------------------------------------
-inline bool DrawText(int x, int y, std::string strText, std::string strTypeFace, int size, long clr, bool bold, bool italics, bool underline, bool centred, bool outlined)
+bool FAST_CALL DrawText(int x, int y, std::string strText, std::string strTypeFace, int size, long clr, bool bold, bool italics, bool underline, bool centred, bool outlined)
 {
 
   int nWeight = 0;
@@ -603,7 +480,7 @@ inline bool DrawText(int x, int y, std::string strText, std::string strTypeFace,
 //------------------------------------------------------------------------
 // Make a back buffer with GDI
 //------------------------------------------------------------------------
-inline CGDICanvas* CreateCanvas(int nWidth, int nHeight, bool bUseDX)
+CGDICanvas *FAST_CALL CreateCanvas(int nWidth, int nHeight, bool bUseDX)
 {
 	CGDICanvas* pToRet = NULL;
 
@@ -629,7 +506,7 @@ inline CGDICanvas* CreateCanvas(int nWidth, int nHeight, bool bUseDX)
 //------------------------------------------------------------------------
 // Draw a canvas onto the back buffer
 //------------------------------------------------------------------------
-inline bool DrawCanvas(CGDICanvas* pCanvas, int x, int y, long lRasterOp)
+bool FAST_CALL DrawCanvas(CGDICanvas* pCanvas, int x, int y, long lRasterOp)
 {
 	return DrawCanvasPartial(pCanvas, x, y, 0, 0, pCanvas->GetWidth(), pCanvas->GetHeight(), lRasterOp);
 }
@@ -637,7 +514,7 @@ inline bool DrawCanvas(CGDICanvas* pCanvas, int x, int y, long lRasterOp)
 //------------------------------------------------------------------------
 // Draw a canvas with transparency
 //------------------------------------------------------------------------
-inline bool DrawCanvasTransparent(CGDICanvas* pCanvas, int x, int y, long crTransparentColor)
+bool FAST_CALL DrawCanvasTransparent(CGDICanvas* pCanvas, int x, int y, long crTransparentColor)
 {
 	return DrawCanvasTransparentPartial(pCanvas, x, y, 0, 0, pCanvas->GetWidth(), pCanvas->GetHeight(), crTransparentColor);
 }
@@ -645,7 +522,7 @@ inline bool DrawCanvasTransparent(CGDICanvas* pCanvas, int x, int y, long crTran
 //------------------------------------------------------------------------
 // Draw a canvas with translucency
 //------------------------------------------------------------------------
-inline bool DrawCanvasTranslucent(CGDICanvas* pCanvas, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor)
+bool FAST_CALL DrawCanvasTranslucent(CGDICanvas* pCanvas, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor)
 {
 	bool bToRet = false;
 	if (pCanvas)
@@ -675,7 +552,7 @@ inline bool DrawCanvasTranslucent(CGDICanvas* pCanvas, int x, int y, double dInt
 //------------------------------------------------------------------------
 // Partially draw a canvas
 //------------------------------------------------------------------------
-inline bool DrawCanvasPartial(CGDICanvas* pCanvas, int destx, int desty, int srcx, int srcy, int width, int height, long lRasterOp)
+bool FAST_CALL DrawCanvasPartial(CGDICanvas* pCanvas, int destx, int desty, int srcx, int srcy, int width, int height, long lRasterOp)
 {
 	bool bToRet = false;
 	if (pCanvas)
@@ -710,7 +587,7 @@ inline bool DrawCanvasPartial(CGDICanvas* pCanvas, int destx, int desty, int src
 //------------------------------------------------------------------------
 // Draw part of a canvas with transparency
 //------------------------------------------------------------------------
-inline bool DrawCanvasTransparentPartial(CGDICanvas* pCanvas, int destx, int desty, int srcx, int srcy, int width, int height, long crTransparentColor)
+bool FAST_CALL DrawCanvasTransparentPartial(CGDICanvas* pCanvas, int destx, int desty, int srcx, int srcy, int width, int height, long crTransparentColor)
 {
 	bool bToRet = false;
 	if (pCanvas)
@@ -742,9 +619,31 @@ inline bool DrawCanvasTransparentPartial(CGDICanvas* pCanvas, int destx, int des
 }
 
 //------------------------------------------------------------------------
+// Draw part of a canvas, using translucency
+//------------------------------------------------------------------------
+bool FAST_CALL DrawCanvasTranslucentPartial(const CGDICanvas *pCanvas, const int x, const int y, const int xSrc, const int ySrc, const int width, const int height, const double dIntensity, const long crUnaffectedColor, const long crTransparentColor)
+{
+	if (pCanvas)
+	{
+		if (g_bUseDirectX)
+		{
+			return bool(pCanvas->BltTranslucentPart(gDXInfo.lpddsSecond, x, y, xSrc, ySrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor));
+		}
+		else
+		{
+			const HDC hdc = OpenDC();
+			const int toRet = pCanvas->BltTranslucentPart(hdc, x, y, xSrc, ySrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor);
+			CloseDC(hdc);
+			return bool(toRet);
+		}
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------
 // Copy contents of screen to a canvas
 //------------------------------------------------------------------------
-inline BOOL CopyScreenToCanvas(CGDICanvas* pCanvas)
+BOOL FAST_CALL CopyScreenToCanvas(CGDICanvas* pCanvas)
 {
 	BOOL nRet = FALSE;
 	if (pCanvas)
@@ -761,7 +660,7 @@ inline BOOL CopyScreenToCanvas(CGDICanvas* pCanvas)
 //------------------------------------------------------------------------
 // Clear the screen to a color
 //------------------------------------------------------------------------
-inline void ClearScreen(long crColor)
+void FAST_CALL ClearScreen(long crColor)
 {
 	HDC hdc = OpenDC();
 	RECT r;
@@ -797,10 +696,19 @@ inline void ClearScreen(long crColor)
 //------------------------------------------------------------------------
 // Unlock the screen
 //------------------------------------------------------------------------
-inline bool UnlockScreen()
+bool FAST_CALL UnlockScreen()
 {
 	HDC hdc = ghDCLocked;
 	ghDCLocked = NULL;
 	CloseDC(hdc);
+	return true;
+}
+
+//------------------------------------------------------------------------
+// Lock the screen
+//------------------------------------------------------------------------
+bool FAST_CALL LockScreen()
+{
+	ghDCLocked = OpenDC();
 	return true;
 }

@@ -27,9 +27,23 @@
 //------------------------------------------------------------------------
 
 // Initialize a DirectDraw struct
-#define INIT_DD_STRUCT(x) \
+#define DD_INIT_STRUCT(x) \
 	memset(&x, 0, sizeof(x)); \
 	x.dwSize = sizeof(x)
+
+// Standard calling conventions
+#if !defined(INLINE) && !defined(FAST_CALL)
+#	if defined(_MSC_VER)
+#		define INLINE __inline		// VC++ prefers the __inline keyword
+#		define FAST_CALL __fastcall
+#	else
+#		define INLINE inline
+#		define FAST_CALL			// Register (fast) calls are specific to VC++
+#	endif
+#endif
+#if !defined(DOUBLE)
+typedef double DOUBLE;
+#endif
 
 //------------------------------------------------------------------------
 // DirectX info structure
@@ -63,45 +77,28 @@ class CGDICanvas;
 //------------------------------------------------------------------------
 // Prototypes
 //------------------------------------------------------------------------
-inline bool InitGraphicsMode(HWND hostHwnd, int nWidth, int nHeight, bool bUseDirectX, long nColorDepth, bool bFullScreen);
-inline bool KillGraphicsMode();
-inline bool DrawPixel(int x, int y, long clr);
-inline bool DrawLine(int x1, int y1, int x2, int y2, long clr);
-inline bool DrawFilledRect(int x1, int y1, int x2, int y2, long clr);
-inline bool Refresh(CGDICanvas* cnv = NULL);
-inline bool DrawText(int x, int y, std::string strText, std::string strTypeFace, int size, long clr, bool bold = false, bool italics = false, bool underline = false, bool centred = false, bool outlined = false);
-inline BOOL CopyScreenToCanvas(CGDICanvas* pCanvas);
-inline bool DrawCanvas(CGDICanvas* pCanvas, int x, int y, long lRasterOp = SRCCOPY);
-inline bool DrawCanvasTransparent(CGDICanvas* pCanvas, int x, int y, long crTransparentColor);
-inline bool DrawCanvasTranslucent(CGDICanvas* pCanvas, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor);
-inline bool DrawCanvasPartial(CGDICanvas* pCanvas, int destx, int desty, int srcx, int srcy, int width, int height, long lRasterOp = SRCCOPY);
-inline bool DrawCanvasTransparentPartial(CGDICanvas* pCanvas, int destx, int desty, int srcx, int srcy, int width, int height, long crTransparentColor);
-inline void ClearScreen(long crColor);
-inline long GetPixelColor(int x, int y);
-inline void CloseDC(HDC hdc);
-inline bool LockScreen();
-inline bool UnlockScreen();
-inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, bool bFullScreen);
-inline HDC OpenDC();
-inline CGDICanvas* CreateCanvas(int nWidth, int nHeight, bool bUseDX = false);
-
-//------------------------------------------------------------------------
-// Exports
-//------------------------------------------------------------------------
-int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen);
-int APIENTRY DXKillGfxMode();
-int APIENTRY DXDrawPixel(int x, int y, long clr);
-int APIENTRY DXRefresh(CNV_HANDLE cnvHandle = NULL);
-int APIENTRY DXLockScreen();
-int APIENTRY DXUnlockScreen();
-int APIENTRY DXDrawCanvas(CNV_HANDLE cnv, int x, int y, long lRasterOp = SRCCOPY);
-int APIENTRY DXDrawCanvasTransparent(CNV_HANDLE cnv, int x, int y, long crTransparentColor);
-int APIENTRY DXDrawCanvasTranslucent(CNV_HANDLE cnv, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor);
-int APIENTRY DXClearScreen(long crColor);
-int APIENTRY DXDrawText(int x, int y, char* strText, char* strTypeFace, int size, long clr, int bold = 0, int italics = 0, int underline = 0, int centred = 0, int outlined = 0);
-int APIENTRY DXDrawCanvasPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long lRasterOp = SRCCOPY);
-int APIENTRY DXDrawCanvasTransparentPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long crTrasparentColor);
-int APIENTRY DXCopyScreenToCanvas(CNV_HANDLE cnv);
+bool FAST_CALL InitGraphicsMode(HWND hostHwnd, int nWidth, int nHeight, bool bUseDirectX, long nColorDepth, bool bFullScreen);
+bool FAST_CALL KillGraphicsMode();
+bool FAST_CALL DrawPixel(int x, int y, long clr);
+bool FAST_CALL DrawLine(int x1, int y1, int x2, int y2, long clr);
+bool FAST_CALL DrawFilledRect(int x1, int y1, int x2, int y2, long clr);
+bool FAST_CALL Refresh(CGDICanvas *cnv = NULL);
+bool FAST_CALL DrawText(int x, int y, std::string strText, std::string strTypeFace, int size, long clr, bool bold = false, bool italics = false, bool underline = false, bool centred = false, bool outlined = false);
+BOOL FAST_CALL CopyScreenToCanvas(CGDICanvas *pCanvas);
+bool FAST_CALL DrawCanvas(CGDICanvas* pCanvas, int x, int y, long lRasterOp = SRCCOPY);
+bool FAST_CALL DrawCanvasTransparent(CGDICanvas *pCanvas, int x, int y, long crTransparentColor);
+bool FAST_CALL DrawCanvasTranslucent(CGDICanvas *pCanvas, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor);
+bool FAST_CALL DrawCanvasTranslucentPartial(const CGDICanvas *pCanvas, const int x, const int y, const int xSrc, const int ySrc, const int width, const int height, const double dIntensity, const long crUnaffectedColor, const long crTransparentColor);
+bool FAST_CALL DrawCanvasPartial(CGDICanvas *pCanvas, int destx, int desty, int srcx, int srcy, int width, int height, long lRasterOp = SRCCOPY);
+bool FAST_CALL DrawCanvasTransparentPartial(CGDICanvas *pCanvas, int destx, int desty, int srcx, int srcy, int width, int height, long crTransparentColor);
+void FAST_CALL ClearScreen(long crColor);
+long FAST_CALL GetPixelColor(int x, int y);
+void FAST_CALL CloseDC(HDC hdc);
+bool FAST_CALL LockScreen();
+bool FAST_CALL UnlockScreen();
+DXINFO FAST_CALL InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, bool bFullScreen);
+HDC FAST_CALL OpenDC();
+CGDICanvas *FAST_CALL CreateCanvas(int nWidth, int nHeight, bool bUseDX = false);
 
 //------------------------------------------------------------------------
 // End of the header file
