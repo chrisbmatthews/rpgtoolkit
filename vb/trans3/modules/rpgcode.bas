@@ -8578,46 +8578,38 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub drainAllRPG(text$, ByRef theProgram As RPGCodeProgram)
-    '#DrainAll(100)
-    'attacks all enemy or players (drains SMP)
-    'uses whatever is targeted.
-    On Error GoTo errorhandler
-    Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    use$ = text$
-    dataUse$ = GetBrackets(use$)    'Get text inside brackets
-    number = CountData(dataUse$)        'how many data elements are there?
-    If number <> 1 Then
-        Call debugger("Warning: DrainAll has more than 1 data element!-- " + text$)
+Public Sub drainAllRPG(ByRef text As String, ByRef theProgram As RPGCodeProgram)
+
+    Dim paras() As parameters, count As Long
+    paras = getParameters(text, theProgram, count)
+    If (count <> 1) Then
+        Call debugger("DrainAll() requires one parameter-- " & text)
+        Exit Sub
     End If
-    useIt$ = GetElement(dataUse$, 1)
-    a = getValue(useIt$, lit$, num, theProgram)
-    If a = 1 Then
-        Call debugger("Error: DrainAll data type must be numerical!-- " + text$)
-    Else
-        If targetType = 0 Then
-            'players targeted.
-            Dim t As Long
-            For t = 0 To 4
-                If (LenB(playerListAr$(t))) Then
-                    Call doAttack(-1, -1, PLAYER_PARTY, 1, num, True)
-                End If
-            Next t
-        End If
-        If targetType = 2 Then
-            'enemies targeted.
-            For t = 0 To numEne - 1
-                Call addEnemySMP(-1 * num, enemyMem(t))
-                Call doAttack(-1, -1, ENEMY_PARTY, t, num, True)
-            Next t
-        End If
+    If (paras(0).dataType <> DT_NUM) Then
+        Call debugger("DrainAll() requires a numerical parameter-- " & text)
+        Exit Sub
     End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    Dim i As Long
+    If (targetType = TYPE_PLAYER) Then
+        ' Players targeted
+        For i = 0 To 4
+            If (LenB(playerListAr(i))) Then
+                Call addPlayerSMP(-paras(0).num, playerMem(i))
+                Call fightInformRemoveStat(PLAYER_PARTY, i, paras(0).num, True)
+            End If
+        Next i
+    ElseIf (targetType = TYPE_ENEMY) Then
+        ' Enemies targeted
+        For i = 0 To numEne - 1
+            If (enemyMem(i).eneHP > 0) Then
+                Call addEnemySMP(-paras(0).num, enemyMem(i))
+                Call fightInformRemoveStat(ENEMY_PARTY, i, paras(0).num, True)
+            End If
+        Next i
+    End If
+
 End Sub
 
 Sub DrawLineRPG(text$, ByRef theProgram As RPGCodeProgram)
