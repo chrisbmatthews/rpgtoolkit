@@ -15,7 +15,7 @@ Option Explicit
 ' Declarations
 '=======================================================================
 Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As Long)
-Private Declare Function initCounter Lib "actkrt3.dll" (ByRef ptrRenderTime As Double, ByRef ptrRenderCount As Long)
+Private Declare Sub initCounter Lib "actkrt3.dll" (ByRef ptrRenderTime As Double, ByRef ptrRenderCount As Long)
 Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 '=======================================================================
@@ -475,8 +475,6 @@ Public Sub setupMain(): On Error Resume Next
         End If
         
     End If
-
-    Call traceString("setupMain: Initial fps = " & CStr(Round(1 / gAvgTime, 1)))
 
     ' Register all fonts
     Call LoadFontsFromFolder(projectPath & fontPath)
